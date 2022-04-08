@@ -16,7 +16,7 @@ import { Lao, LaoState } from '../objects';
  * and a reference to the current open one.
  */
 
-interface LaoReducerState {
+export interface LaoReducerState {
   byId: Record<string, LaoState>;
   allIds: string[];
   currentId?: string;
@@ -36,9 +36,10 @@ const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoS
   }
 };
 
-const laoReducerPath = 'laos';
+export const LAO_REDUCER_PATH = 'laos';
+
 const laosSlice = createSlice({
-  name: laoReducerPath,
+  name: LAO_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a LAO to the list of known LAOs
@@ -90,7 +91,7 @@ const laosSlice = createSlice({
     },
 
     // Set the LAO server address
-    setLaoServerAddress: {
+    addLaoServerAddress: {
       prepare(laoId: Hash | string, serverAddress: string) {
         return {
           payload: {
@@ -113,7 +114,10 @@ const laosSlice = createSlice({
           return;
         }
 
-        state.byId[laoId].server_address = serverAddress;
+        // if not already in the list, add the new address
+        if (!state.byId[laoId].server_addresses.find((a) => a === serverAddress)) {
+          state.byId[laoId].server_addresses.push(serverAddress);
+        }
       },
     },
 
@@ -173,10 +177,10 @@ export const {
   connectToLao,
   disconnectFromLao,
   setLaoLastRollCall,
-  setLaoServerAddress,
+  addLaoServerAddress,
 } = laosSlice.actions;
 
-export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];
+export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];
 
 export function makeLao(id: string | undefined = undefined) {
   return createSelector(
@@ -255,5 +259,5 @@ export const selectIsLaoOrganizer = createSelector(
 export const laoReduce = laosSlice.reducer;
 
 export default {
-  [laoReducerPath]: laosSlice.reducer,
+  [LAO_REDUCER_PATH]: laosSlice.reducer,
 };

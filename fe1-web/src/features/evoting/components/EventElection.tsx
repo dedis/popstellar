@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { election, isOrganizer } = props;
+  const { event: election, isOrganizer } = props;
   const laoId = EvotingHooks.useCurrentLaoId();
 
   const toast = useToast();
@@ -160,7 +160,7 @@ const EventElection = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  election: PropTypes.instanceOf(Election).isRequired,
+  event: PropTypes.instanceOf(Election).isRequired,
   isOrganizer: PropTypes.bool,
 };
 EventElection.propTypes = propTypes;
@@ -171,3 +171,11 @@ EventElection.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventElection;
+
+export const ElectionEventTypeComponent = {
+  isOfType: (event: unknown) => event instanceof Election,
+  Component: EventElection as FunctionComponent<{
+    event: unknown;
+    isOrganizer: boolean | null | undefined;
+  }>,
+};

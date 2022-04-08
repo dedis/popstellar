@@ -7,9 +7,11 @@ import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 import { RpcOperationError } from './RpcOperationError';
 
+const WEBSOCKET_CONNECTION_MAX_ATTEMPTS = 3;
+const WEBSOCKET_CONNECTION_FAILURE_TIMEOUT = 1000;
+
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
-
 const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 
 const JSON_RPC_ID_WRAP_AROUND = 10000;
@@ -32,6 +34,8 @@ export class NetworkConnection {
 
   public readonly address: string;
 
+  private failedConnectionAttempts: number = 0;
+
   constructor(address: string, handler?: JsonRpcHandler) {
     this.ws = this.establishConnection(address);
     this.address = this.ws.url;
@@ -53,8 +57,19 @@ export class NetworkConnection {
     this.ws.close();
   }
 
+  public reconnectIfNecessary() {
+    // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
+    if (this.ws.readyState > 1) {
+      this.disconnect();
+      this.ws = this.establishConnection(this.address);
+    }
+  }
+
   private onOpen(): void {
     console.info(`Initiating web socket : ${this.address}`);
+
+    // reset failed connection attempts
+    this.failedConnectionAttempts = 0;
   }
 
   private onMessage(message: IMessageEvent): void {
@@ -80,9 +95,17 @@ export class NetworkConnection {
   }
 
   private onError(event: Error): void {
+    this.failedConnectionAttempts += 1;
+
     console.error(`WebSocket error observed on '${this.address}' : `, event);
     console.error(`Trying to establish a new connection at address : ${this.address}`);
-    this.ws = this.establishConnection(this.address);
+
+    // only retry a certain number of times and add a wait before retrying
+    if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
+      setTimeout(() => {
+        this.reconnectIfNecessary();
+      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
+    }
   }
 
   private static parseIncomingData(data: any): JsonRpcResponse | JsonRpcRequest {

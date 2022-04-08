@@ -64,3 +64,18 @@ func (message LaoCreate) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (LaoCreate) GetObject() string {
+	return LAOObject
+}
+
+// GetAction implements MessageData
+func (LaoCreate) GetAction() string {
+	return LAOActionCreate
+}
+
+// NewEmpty implements MessageData
+func (LaoCreate) NewEmpty() MessageData {
+	return &LaoCreate{}
+}

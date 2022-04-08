@@ -1,0 +1,873 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LaoList renders correctly with no item 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <RNCSafeAreaProvider
+    onInsetsChange={[Function]}
+    style={
+      Array [
+        Object {
+          "flex": 1,
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "backgroundColor": "rgb(242, 242, 242)",
+            "flex": 1,
+          },
+          undefined,
+        ]
+      }
+    >
+      <View
+        pointerEvents="box-none"
+        style={
+          Object {
+            "zIndex": 1,
+          }
+        }
+      >
+        <View
+          accessibilityElementsHidden={false}
+          importantForAccessibility="auto"
+          onLayout={[Function]}
+          pointerEvents="box-none"
+          style={null}
+        >
+          <View
+            pointerEvents="box-none"
+            style={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "opacity": 1,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+                "zIndex": 0,
+              }
+            }
+          >
+            <View
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "backgroundColor": "rgb(255, 255, 255)",
+                  "borderBottomColor": "rgb(216, 216, 216)",
+                  "flex": 1,
+                  "shadowColor": "rgb(216, 216, 216)",
+                  "shadowOffset": Object {
+                    "height": 0.5,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.85,
+                  "shadowRadius": 0,
+                }
+              }
+            />
+          </View>
+          <View
+            collapsable={false}
+            nativeID="animatedComponent"
+            pointerEvents="box-none"
+            style={
+              Object {
+                "height": 44,
+                "maxHeight": undefined,
+                "minHeight": undefined,
+                "opacity": undefined,
+                "transform": undefined,
+              }
+            }
+          >
+            <View
+              pointerEvents="none"
+              style={
+                Object {
+                  "height": 0,
+                }
+              }
+            />
+            <View
+              pointerEvents="box-none"
+              style={
+                Object {
+                  "alignItems": "stretch",
+                  "flex": 1,
+                  "flexDirection": "row",
+                }
+              }
+            >
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "alignItems": "flex-start",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "justifyContent": "center",
+                    "marginStart": 0,
+                    "opacity": 1,
+                  }
+                }
+              />
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "justifyContent": "center",
+                    "marginHorizontal": 16,
+                    "maxWidth": 718,
+                    "opacity": 1,
+                  }
+                }
+              >
+                <Text
+                  accessibilityRole="header"
+                  aria-level="1"
+                  collapsable={false}
+                  nativeID="animatedComponent"
+                  numberOfLines={1}
+                  onLayout={[Function]}
+                  style={
+                    Object {
+                      "color": "rgb(28, 28, 30)",
+                      "fontSize": 17,
+                      "fontWeight": "600",
+                    }
+                  }
+                >
+                  MockScreen
+                </Text>
+              </View>
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "alignItems": "flex-end",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "justifyContent": "center",
+                    "marginEnd": 0,
+                    "opacity": 1,
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+      <RNSScreenContainer
+        onLayout={[Function]}
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <RNSScreen
+          activityState={2}
+          forwardedRef={[Function]}
+          pointerEvents="box-none"
+          style={
+            Object {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        >
+          <View
+            collapsable={false}
+            style={
+              Object {
+                "opacity": 1,
+              }
+            }
+          />
+          <View
+            accessibilityElementsHidden={false}
+            closing={false}
+            gestureVelocityImpact={0.3}
+            importantForAccessibility="auto"
+            onClose={[Function]}
+            onGestureBegin={[Function]}
+            onGestureCanceled={[Function]}
+            onGestureEnd={[Function]}
+            onOpen={[Function]}
+            onTransition={[Function]}
+            pointerEvents="box-none"
+            style={
+              Array [
+                Object {
+                  "display": "flex",
+                  "overflow": undefined,
+                },
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                },
+              ]
+            }
+            transitionSpec={
+              Object {
+                "close": Object {
+                  "animation": "spring",
+                  "config": Object {
+                    "damping": 500,
+                    "mass": 3,
+                    "overshootClamping": true,
+                    "restDisplacementThreshold": 10,
+                    "restSpeedThreshold": 10,
+                    "stiffness": 1000,
+                  },
+                },
+                "open": Object {
+                  "animation": "spring",
+                  "config": Object {
+                    "damping": 500,
+                    "mass": 3,
+                    "overshootClamping": true,
+                    "restDisplacementThreshold": 10,
+                    "restSpeedThreshold": 10,
+                    "stiffness": 1000,
+                  },
+                },
+              }
+            }
+          >
+            <View
+              collapsable={false}
+              nativeID="animatedComponent"
+              pointerEvents="box-none"
+              style={
+                Object {
+                  "flex": 1,
+                }
+              }
+            >
+              <View
+                collapsable={false}
+                forwardedRef={[Function]}
+                needsOffscreenAlphaCompositing={false}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                style={
+                  Object {
+                    "flex": 1,
+                    "transform": Array [
+                      Object {
+                        "translateX": 0,
+                      },
+                      Object {
+                        "translateX": 0,
+                      },
+                    ],
+                  }
+                }
+              >
+                <View
+                  style={
+                    Array [
+                      Object {
+                        "flex": 1,
+                        "overflow": "hidden",
+                      },
+                      Array [
+                        Object {
+                          "backgroundColor": "rgb(242, 242, 242)",
+                        },
+                        undefined,
+                      ],
+                    ]
+                  }
+                >
+                  <View
+                    style={
+                      Object {
+                        "flex": 1,
+                        "flexDirection": "column-reverse",
+                      }
+                    }
+                  >
+                    <View
+                      style={
+                        Object {
+                          "flex": 1,
+                        }
+                      }
+                    >
+                      <View
+                        style={
+                          Object {
+                            "flex": 1,
+                            "justifyContent": "center",
+                          }
+                        }
+                      >
+                        <RCTScrollView
+                          data={Array []}
+                          getItem={[Function]}
+                          getItemCount={[Function]}
+                          keyExtractor={[Function]}
+                          onContentSizeChange={[Function]}
+                          onLayout={[Function]}
+                          onMomentumScrollBegin={[Function]}
+                          onMomentumScrollEnd={[Function]}
+                          onScroll={[Function]}
+                          onScrollBeginDrag={[Function]}
+                          onScrollEndDrag={[Function]}
+                          removeClippedSubviews={false}
+                          renderItem={[Function]}
+                          scrollEventThrottle={50}
+                          stickyHeaderIndices={Array []}
+                          style={
+                            Object {
+                              "marginTop": 20,
+                            }
+                          }
+                          viewabilityConfigCallbackPairs={Array []}
+                        >
+                          <View />
+                        </RCTScrollView>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        </RNSScreen>
+      </RNSScreenContainer>
+    </View>
+  </RNCSafeAreaProvider>
+</View>
+`;
+
+exports[`LaoList renders correctly with one item 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <RNCSafeAreaProvider
+    onInsetsChange={[Function]}
+    style={
+      Array [
+        Object {
+          "flex": 1,
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "backgroundColor": "rgb(242, 242, 242)",
+            "flex": 1,
+          },
+          undefined,
+        ]
+      }
+    >
+      <View
+        pointerEvents="box-none"
+        style={
+          Object {
+            "zIndex": 1,
+          }
+        }
+      >
+        <View
+          accessibilityElementsHidden={false}
+          importantForAccessibility="auto"
+          onLayout={[Function]}
+          pointerEvents="box-none"
+          style={null}
+        >
+          <View
+            pointerEvents="box-none"
+            style={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "opacity": 1,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+                "zIndex": 0,
+              }
+            }
+          >
+            <View
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "backgroundColor": "rgb(255, 255, 255)",
+                  "borderBottomColor": "rgb(216, 216, 216)",
+                  "flex": 1,
+                  "shadowColor": "rgb(216, 216, 216)",
+                  "shadowOffset": Object {
+                    "height": 0.5,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.85,
+                  "shadowRadius": 0,
+                }
+              }
+            />
+          </View>
+          <View
+            collapsable={false}
+            nativeID="animatedComponent"
+            pointerEvents="box-none"
+            style={
+              Object {
+                "height": 44,
+                "maxHeight": undefined,
+                "minHeight": undefined,
+                "opacity": undefined,
+                "transform": undefined,
+              }
+            }
+          >
+            <View
+              pointerEvents="none"
+              style={
+                Object {
+                  "height": 0,
+                }
+              }
+            />
+            <View
+              pointerEvents="box-none"
+              style={
+                Object {
+                  "alignItems": "stretch",
+                  "flex": 1,
+                  "flexDirection": "row",
+                }
+              }
+            >
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "alignItems": "flex-start",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "justifyContent": "center",
+                    "marginStart": 0,
+                    "opacity": 1,
+                  }
+                }
+              />
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "justifyContent": "center",
+                    "marginHorizontal": 16,
+                    "maxWidth": 718,
+                    "opacity": 1,
+                  }
+                }
+              >
+                <Text
+                  accessibilityRole="header"
+                  aria-level="1"
+                  collapsable={false}
+                  nativeID="animatedComponent"
+                  numberOfLines={1}
+                  onLayout={[Function]}
+                  style={
+                    Object {
+                      "color": "rgb(28, 28, 30)",
+                      "fontSize": 17,
+                      "fontWeight": "600",
+                    }
+                  }
+                >
+                  MockScreen
+                </Text>
+              </View>
+              <View
+                pointerEvents="box-none"
+                style={
+                  Object {
+                    "alignItems": "flex-end",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "justifyContent": "center",
+                    "marginEnd": 0,
+                    "opacity": 1,
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+      <RNSScreenContainer
+        onLayout={[Function]}
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <RNSScreen
+          activityState={2}
+          forwardedRef={[Function]}
+          pointerEvents="box-none"
+          style={
+            Object {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        >
+          <View
+            collapsable={false}
+            style={
+              Object {
+                "opacity": 1,
+              }
+            }
+          />
+          <View
+            accessibilityElementsHidden={false}
+            closing={false}
+            gestureVelocityImpact={0.3}
+            importantForAccessibility="auto"
+            onClose={[Function]}
+            onGestureBegin={[Function]}
+            onGestureCanceled={[Function]}
+            onGestureEnd={[Function]}
+            onOpen={[Function]}
+            onTransition={[Function]}
+            pointerEvents="box-none"
+            style={
+              Array [
+                Object {
+                  "display": "flex",
+                  "overflow": undefined,
+                },
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                },
+              ]
+            }
+            transitionSpec={
+              Object {
+                "close": Object {
+                  "animation": "spring",
+                  "config": Object {
+                    "damping": 500,
+                    "mass": 3,
+                    "overshootClamping": true,
+                    "restDisplacementThreshold": 10,
+                    "restSpeedThreshold": 10,
+                    "stiffness": 1000,
+                  },
+                },
+                "open": Object {
+                  "animation": "spring",
+                  "config": Object {
+                    "damping": 500,
+                    "mass": 3,
+                    "overshootClamping": true,
+                    "restDisplacementThreshold": 10,
+                    "restSpeedThreshold": 10,
+                    "stiffness": 1000,
+                  },
+                },
+              }
+            }
+          >
+            <View
+              collapsable={false}
+              nativeID="animatedComponent"
+              pointerEvents="box-none"
+              style={
+                Object {
+                  "flex": 1,
+                }
+              }
+            >
+              <View
+                collapsable={false}
+                forwardedRef={[Function]}
+                needsOffscreenAlphaCompositing={false}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                style={
+                  Object {
+                    "flex": 1,
+                    "transform": Array [
+                      Object {
+                        "translateX": 0,
+                      },
+                      Object {
+                        "translateX": 0,
+                      },
+                    ],
+                  }
+                }
+              >
+                <View
+                  style={
+                    Array [
+                      Object {
+                        "flex": 1,
+                        "overflow": "hidden",
+                      },
+                      Array [
+                        Object {
+                          "backgroundColor": "rgb(242, 242, 242)",
+                        },
+                        undefined,
+                      ],
+                    ]
+                  }
+                >
+                  <View
+                    style={
+                      Object {
+                        "flex": 1,
+                        "flexDirection": "column-reverse",
+                      }
+                    }
+                  >
+                    <View
+                      style={
+                        Object {
+                          "flex": 1,
+                        }
+                      }
+                    >
+                      <View
+                        style={
+                          Object {
+                            "flex": 1,
+                            "justifyContent": "center",
+                          }
+                        }
+                      >
+                        <RCTScrollView
+                          data={
+                            Array [
+                              Lao {
+                                "creation": Timestamp {},
+                                "id": Hash {
+                                  "0": "-",
+                                  "1": "M",
+                                  "10": "k",
+                                  "11": "L",
+                                  "12": "V",
+                                  "13": "l",
+                                  "14": "X",
+                                  "15": "B",
+                                  "16": "R",
+                                  "17": "a",
+                                  "18": "8",
+                                  "19": "9",
+                                  "2": "2",
+                                  "20": "3",
+                                  "21": "p",
+                                  "22": "c",
+                                  "23": "E",
+                                  "24": "-",
+                                  "25": "4",
+                                  "26": "s",
+                                  "27": "7",
+                                  "28": "s",
+                                  "29": "s",
+                                  "3": "5",
+                                  "30": "O",
+                                  "31": "8",
+                                  "32": "J",
+                                  "33": "v",
+                                  "34": "5",
+                                  "35": "g",
+                                  "36": "X",
+                                  "37": "O",
+                                  "38": "v",
+                                  "39": "t",
+                                  "4": "9",
+                                  "40": "r",
+                                  "41": "e",
+                                  "42": "E",
+                                  "43": "=",
+                                  "5": "c",
+                                  "6": "5",
+                                  "7": "J",
+                                  "8": "l",
+                                  "9": "a",
+                                },
+                                "last_modified": Timestamp {},
+                                "last_roll_call_id": undefined,
+                                "last_tokenized_roll_call_id": undefined,
+                                "name": "MyLao",
+                                "organizer": PublicKey {
+                                  "0": "J",
+                                  "1": "9",
+                                  "10": "k",
+                                  "11": "5",
+                                  "12": "c",
+                                  "13": "-",
+                                  "14": "i",
+                                  "15": "3",
+                                  "16": "2",
+                                  "17": "7",
+                                  "18": "7",
+                                  "19": "U",
+                                  "2": "f",
+                                  "20": "q",
+                                  "21": "4",
+                                  "22": "C",
+                                  "23": "m",
+                                  "24": "e",
+                                  "25": "L",
+                                  "26": "4",
+                                  "27": "t",
+                                  "28": "5",
+                                  "29": "3",
+                                  "3": "B",
+                                  "30": "W",
+                                  "31": "D",
+                                  "32": "f",
+                                  "33": "U",
+                                  "34": "g",
+                                  "35": "h",
+                                  "36": "a",
+                                  "37": "K",
+                                  "38": "0",
+                                  "39": "H",
+                                  "4": "z",
+                                  "40": "p",
+                                  "41": "e",
+                                  "42": "M",
+                                  "43": "=",
+                                  "5": "J",
+                                  "6": "V",
+                                  "7": "7",
+                                  "8": "0",
+                                  "9": "J",
+                                },
+                                "server_addresses": Array [],
+                                "witnesses": Array [],
+                              },
+                            ]
+                          }
+                          getItem={[Function]}
+                          getItemCount={[Function]}
+                          keyExtractor={[Function]}
+                          onContentSizeChange={[Function]}
+                          onLayout={[Function]}
+                          onMomentumScrollBegin={[Function]}
+                          onMomentumScrollEnd={[Function]}
+                          onScroll={[Function]}
+                          onScrollBeginDrag={[Function]}
+                          onScrollEndDrag={[Function]}
+                          removeClippedSubviews={false}
+                          renderItem={[Function]}
+                          scrollEventThrottle={50}
+                          stickyHeaderIndices={Array []}
+                          style={
+                            Object {
+                              "marginTop": 20,
+                            }
+                          }
+                          viewabilityConfigCallbackPairs={Array []}
+                        >
+                          <View>
+                            <View
+                              onLayout={[Function]}
+                              style={null}
+                            >
+                              <View
+                                style={
+                                  Object {
+                                    "marginBottom": 10,
+                                  }
+                                }
+                              >
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  nativeID="animatedComponent"
+                                  onClick={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Object {
+                                        "borderRadius": 5,
+                                        "borderWidth": 1,
+                                        "fontSize": 25,
+                                        "marginHorizontal": 10,
+                                        "textAlign": "center",
+                                      }
+                                    }
+                                  >
+                                    MyLao
+                                  </Text>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </RCTScrollView>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        </RNSScreen>
+      </RNSScreenContainer>
+    </View>
+  </RNCSafeAreaProvider>
+</View>
+`;
