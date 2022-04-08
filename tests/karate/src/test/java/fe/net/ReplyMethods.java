@@ -29,7 +29,7 @@ public class ReplyMethods {
         return template.replace("%ID%", Integer.toString(id));
       };
 
-  public static Function<String, String> BROADCAST_VALID =
+  public static Function<String, String> CATCHUP_LAO =
           msg -> {
             Json msgJson = Json.of(msg);
             int id = (int) msgJson.get("id") + 1;

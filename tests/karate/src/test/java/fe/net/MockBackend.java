@@ -67,9 +67,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
     // Send back the reply
     if (replyProducer != null) send(replyProducer.apply(frameText));
-    if (frameText.contains("publish")){
-        send(ReplyMethods.BROADCAST_VALID.apply(frameText));
-    }
+
   }
 
 //    private void broadcastResponse(String frameText) {
