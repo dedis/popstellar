@@ -21,6 +21,7 @@ type ConsensusLearn struct {
 	AcceptorSignatures []string `json:"acceptor-signatures"`
 }
 
+// ValueLearn defines the final decision of the consensus
 type ValueLearn struct {
 	Decision bool `json:"decision"`
 }

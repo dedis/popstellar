@@ -29,72 +29,6 @@ const (
 	failedToBroadcast  = "failed to broadcast message: %v"
 )
 
-// attendees represents the attendees in an election.
-type attendees struct {
-	sync.Mutex
-	store map[string]struct{}
-}
-
-// isPresent checks if a key representing a user is present in
-// the list of attendees.
-func (a *attendees) isPresent(key string) bool {
-	a.Lock()
-	defer a.Unlock()
-
-	_, ok := a.store[key]
-
-	return ok
-}
-
-// NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
-
-	log = log.With().Str("channel", "election").Logger()
-
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
-
-	newChannel := &Channel{
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
-		channelID: channelPath,
-
-		start:      msgData.StartTime,
-		end:        msgData.EndTime,
-		started:    false,
-		terminated: false,
-		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
-
-		attendees: &attendees{
-			store: attendeesMap,
-		},
-
-		hub: hub,
-
-		log: log,
-
-		organiserPubKey: organizerPubKey,
-	}
-
-	newChannel.registry = newChannel.NewElectionRegistry()
-
-	return newChannel
-}
-
-// NewElectionRegistry creates a new registry for the election channel
-func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-
-	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
-	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
-	registry.Register(messagedata.ElectionEnd{}, c.processElectionEnd)
-	registry.Register(messagedata.ElectionResult{}, c.processElectionResult)
-
-	return registry
-}
-
 // Channel is used to handle election messages.
 type Channel struct {
 	sockets   channel.Sockets
@@ -165,25 +99,52 @@ type validVote struct {
 	indexes []int
 }
 
-// Publish is used to handle publish messages in the election channel.
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	err := c.verifyMessage(publish.Params.Message)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an "+
-			"election channel: %w", err)
-	}
-
-	err = c.handleMessage(publish.Params.Message, socket)
-	if err != nil {
-		return xerrors.Errorf("failed to handle a publish message: %v", err)
-	}
-
-	return nil
+// attendees represents the attendees in an election.
+type attendees struct {
+	sync.Mutex
+	store map[string]struct{}
 }
+
+// NewChannel returns a new initialized election channel
+func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
+	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+
+	log = log.With().Str("channel", "election").Logger()
+
+	// Saving on election channel too so it self-contains the entire election history
+	// electionCh.inbox.storeMessage(msg)
+
+	newChannel := &Channel{
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.NewInbox(channelPath),
+		channelID: channelPath,
+
+		start:      msgData.StartTime,
+		end:        msgData.EndTime,
+		started:    false,
+		terminated: false,
+		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
+
+		attendees: &attendees{
+			store: attendeesMap,
+		},
+
+		hub: hub,
+
+		log: log,
+
+		organiserPubKey: organizerPubKey,
+	}
+
+	newChannel.registry = newChannel.NewElectionRegistry()
+
+	return newChannel
+}
+
+// ---
+// Publish-subscribe / channel.Channel implementation
+// ---
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
@@ -205,6 +166,26 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	return nil
+}
+
+// Publish is used to handle publish messages in the election channel.
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on an "+
+			"election channel: %w", err)
+	}
+
+	err = c.handleMessage(publish.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle a publish message: %v", err)
 	}
 
 	return nil
@@ -237,6 +218,10 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 	return nil
 }
 
+// ---
+// Message handling
+// ---
+
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
@@ -250,60 +235,16 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	return nil
 }
 
-// broadcastToAllClients is a helper message to broadcast a message to all
-// subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
-	c.log.Info().
-		Str(msgID, msg.MessageID).
-		Msg("broadcasting message to all clients")
+// NewElectionRegistry creates a new registry for the election channel
+func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
 
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodBroadcast,
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			c.channelID,
-			msg,
-		},
-	}
+	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
+	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
+	registry.Register(messagedata.ElectionEnd{}, c.processElectionEnd)
+	registry.Register(messagedata.ElectionResult{}, c.processElectionResult)
 
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
-	}
-
-	c.sockets.SendToAll(buf)
-
-	return nil
-}
-
-// verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
-
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
-	}
-
-	// Verify the data
-	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		return xerrors.Errorf("failed to verify json schema: %w", err)
-	}
-
-	// Check if the message already exists
-	_, ok := c.inbox.GetMessage(msg.MessageID)
-	if ok {
-		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
+	return registry
 }
 
 func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
@@ -485,6 +426,73 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 	}
 
 	return nil
+}
+
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf(failedToDecodeData, err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
+	c.log.Info().
+		Str(msgID, msg.MessageID).
+		Msg("broadcasting message to all clients")
+
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodBroadcast,
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	c.sockets.SendToAll(buf)
+
+	return nil
+}
+
+// isPresent checks if a key representing a user is present in
+// the list of attendees.
+func (a *attendees) isPresent(key string) bool {
+	a.Lock()
+	defer a.Unlock()
+
+	_, ok := a.store[key]
+
+	return ok
 }
 
 // broadcastElectionResult gathers and broadcasts the results of an election

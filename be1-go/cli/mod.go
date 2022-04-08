@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"net/url"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
@@ -16,6 +15,8 @@ import (
 	"popstellar/network/socket"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"

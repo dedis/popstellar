@@ -2,10 +2,11 @@ package lao
 
 import (
 	"encoding/base64"
-	"golang.org/x/xerrors"
 	"popstellar/message/messagedata"
 	"strconv"
 	"strings"
+
+	"golang.org/x/xerrors"
 )
 
 // rollCallFlag for the RollCall ID
@@ -231,9 +232,9 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	}
 
 	// verify lao id is channel's lao id
-	laoId := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	if electionSetup.Lao != laoId {
-		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoId)
+	laoID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	if electionSetup.Lao != laoID {
+		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoID)
 	}
 
 	// verify election id is base64URL encoded
@@ -245,7 +246,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	// verify election setup message id
 	expectedID := messagedata.Hash(
 		electionFlag,
-		laoId,
+		laoID,
 		strconv.Itoa(int(electionSetup.CreatedAt)),
 		electionSetup.Name,
 	)

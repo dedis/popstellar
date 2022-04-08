@@ -271,12 +271,12 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	signature := publish.Params.Message.Signature
-	messageId := publish.Params.Message.MessageID
+	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
 
-	expectedMessageId := messagedata.Hash(data, signature)
-	if expectedMessageId != messageId {
-		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageID, messageID)
 	}
 
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
@@ -319,12 +319,12 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	}
 
 	signature := broadcast.Params.Message.Signature
-	messageId := broadcast.Params.Message.MessageID
+	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageId := messagedata.Hash(data, signature)
-	if expectedMessageId != messageId {
-		return xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageID, messageID)
 	}
 
 	h.Lock()

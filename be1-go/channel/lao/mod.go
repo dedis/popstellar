@@ -49,6 +49,15 @@ const (
 	msgID         = "msg id"
 	social        = "/social/"
 	chirps        = "chirps"
+
+	// Open represents the open roll call state.
+	Open rollCallState = "open"
+
+	// Closed represents the closed roll call state.
+	Closed rollCallState = "closed"
+
+	// Created represents the created roll call state.
+	Created rollCallState = "created"
 )
 
 // Channel defines a LAO channel
@@ -76,6 +85,15 @@ type Channel struct {
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
+}
+
+// rollCallState denotes the state of the roll call.
+type rollCallState string
+
+// rollCall represents a roll call.
+type rollCall struct {
+	state rollCallState
+	id    string
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -117,23 +135,9 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	return newChannel
 }
 
-// NewLAORegistry creates a new registry for the LAO channel
-func (c *Channel) NewLAORegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-
-	registry.Register(messagedata.LaoState{}, c.processLaoState)
-	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
-	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
-	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
-	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
-	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
-	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
-	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
-	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
-	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
-
-	return registry
-}
+// ---
+// Publish-subscribe / channel.Channel implementation
+// ---
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
@@ -155,6 +159,25 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	return nil
+}
+
+// Publish handles publish messages for the LAO channel.
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	err = c.handleMessage(publish.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
 	}
 
 	return nil
@@ -186,110 +209,9 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 	return nil
 }
 
-// broadcastToAllClients is a helper message to broadcast a message to all
-// subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
-	c.log.Info().
-		Str(msgID, msg.MessageID).
-		Msg("broadcasting message to all clients")
-
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "broadcast",
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			c.channelID,
-			msg,
-		},
-	}
-
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
-	}
-
-	c.sockets.SendToAll(buf)
-
-	return nil
-}
-
-// verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
-
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
-	}
-
-	// Verify the data
-	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		return xerrors.Errorf("failed to verify json schema: %w", err)
-	}
-
-	// Check if the message already exists
-	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
-}
-
-// createGeneralChirpingChannel creates a new general chirping channel and returns it
-func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
-	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
-	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
-
-	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
-
-	return generalChirpingChannel
-}
-
-// rollCallState denotes the state of the roll call.
-type rollCallState string
-
-const (
-	// Open represents the open roll call state.
-	Open rollCallState = "open"
-
-	// Closed represents the closed roll call state.
-	Closed rollCallState = "closed"
-
-	// Created represents the created roll call state.
-	Created rollCallState = "created"
-)
-
-// rollCall represents a roll call.
-type rollCall struct {
-	state rollCallState
-	id    string
-}
-
-// Publish handles publish messages for the LAO channel.
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	err := c.verifyMessage(publish.Params.Message)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message: %w", err)
-	}
-
-	err = c.handleMessage(publish.Params.Message, socket)
-	if err != nil {
-		return xerrors.Errorf("failed to handle publish message: %v", err)
-	}
-
-	return nil
-}
+// ---
+// Message handling
+// ---
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
@@ -307,6 +229,24 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	}
 
 	return nil
+}
+
+// NewLAORegistry creates a new registry for the LAO channel
+func (c *Channel) NewLAORegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+
+	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
+	registry.Register(messagedata.LaoState{}, c.processLaoState)
+	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
+	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
+	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
+	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
+	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
+	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
+	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
+	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
+
+	return registry
 }
 
 // processLaoState processes a lao state action.
@@ -373,148 +313,6 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 	if err != nil {
 		return xerrors.Errorf("failed to compare lao/update and existing state: %w", err)
 	}
-
-	return nil
-}
-
-func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
-	if update.LastModified != state.LastModified {
-		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
-	}
-
-	if update.Name != state.Name {
-		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s", update.Name, state.Name)
-	}
-
-	M := len(update.Witnesses)
-	N := len(state.Witnesses)
-
-	if M != N {
-		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
-	}
-
-	match := 0
-
-	for i := 0; i < M; i++ {
-		for j := 0; j < N; j++ {
-			if update.Witnesses[i] == state.Witnesses[j] {
-				match++
-				break
-			}
-		}
-	}
-
-	if match != M {
-		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
-	}
-
-	return nil
-}
-
-// processMessageWitness handles a message object.
-func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
-
-	_, ok := msgData.(*messagedata.MessageWitness)
-	if !ok {
-		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
-	}
-
-	var witnessData messagedata.MessageWitness
-
-	err := msg.UnmarshalData(&witnessData)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
-	}
-
-	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
-	if err != nil {
-		return answer.NewError(-4, "invalid witness signature")
-	}
-
-	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature: %w", err)
-	}
-
-	return nil
-}
-
-func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
-	chirpingChannelPath := c.channelID + social + publicKey
-
-	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
-	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
-	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
-}
-
-// processElectionObject handles an election object.
-func (c *Channel) processElectionObject(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
-
-	_, ok := msgData.(*messagedata.ElectionSetup)
-	if !ok {
-		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
-	}
-
-	// Check if the sender of election creation message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
-	}
-
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "Sender key does not match the "+
-			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
-	}
-
-	var electionSetup messagedata.ElectionSetup
-
-	err = msg.UnmarshalData(&electionSetup)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
-	}
-
-	err = c.verifyMessageElectionSetup(electionSetup)
-	if err != nil {
-		return xerrors.Errorf("invalid election#setup message: %v", err)
-	}
-
-	err = c.createElection(msg, electionSetup, senderSocket)
-	if err != nil {
-		return xerrors.Errorf("failed to create election: %w", err)
-	}
-
-	c.log.Info().Msg("election created with success")
-	return nil
-}
-
-// createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message,
-	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
-
-	// Check if the Lao ID of the message corresponds to the channel ID
-	channelID := c.channelID[6:]
-	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be equal to the channel ID %s",
-			setupMsg.Lao, channelID)
-	}
-
-	// Compute the new election channel id
-	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
-
-	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees, c.hub, c.log, c.organizerPubKey)
-
-	// Saving the election channel creation message on the lao channel
-	c.inbox.StoreMessage(msg)
-
-	// Add the new election channel to the organizerHub
-	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil
 }
@@ -635,7 +433,215 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	return nil
 }
 
+// processElectionObject handles an election object.
+func (c *Channel) processElectionObject(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.ElectionSetup)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf(keyDecodeError, err)
+	}
+
+	// Check if the sender of election creation message is the organizer
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
+	}
+
+	if !c.organizerPubKey.Equal(senderPoint) {
+		return answer.NewErrorf(-5, "Sender key does not match the "+
+			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
+	}
+
+	var electionSetup messagedata.ElectionSetup
+
+	err = msg.UnmarshalData(&electionSetup)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
+	}
+
+	err = c.verifyMessageElectionSetup(electionSetup)
+	if err != nil {
+		return xerrors.Errorf("invalid election#setup message: %v", err)
+	}
+
+	err = c.createElection(msg, electionSetup, senderSocket)
+	if err != nil {
+		return xerrors.Errorf("failed to create election: %w", err)
+	}
+
+	c.log.Info().Msg("election created with success")
+	return nil
+}
+
+// processMessageWitness handles a message object.
+func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.MessageWitness)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
+	}
+
+	var witnessData messagedata.MessageWitness
+
+	err := msg.UnmarshalData(&witnessData)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
+	if err != nil {
+		return answer.NewError(-4, "invalid witness signature")
+	}
+
+	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to add witness signature: %w", err)
+	}
+
+	return nil
+}
+
 func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error {
+	return nil
+}
+
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf(failedToDecodeData, err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
+	c.log.Info().
+		Str(msgID, msg.MessageID).
+		Msg("broadcasting message to all clients")
+
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	c.sockets.SendToAll(buf)
+
+	return nil
+}
+
+// createGeneralChirpingChannel creates a new general chirping channel and returns it
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
+	generalChannelPath := laoID + social + chirps
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
+
+	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
+
+	return generalChirpingChannel
+}
+
+func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
+	chirpingChannelPath := c.channelID + social + publicKey
+
+	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
+	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
+	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
+}
+
+// createElection creates an election in the LAO.
+func (c *Channel) createElection(msg message.Message,
+	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
+
+	// Check if the Lao ID of the message corresponds to the channel ID
+	channelID := c.channelID[6:]
+	if channelID != setupMsg.Lao {
+		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be equal to the channel ID %s",
+			setupMsg.Lao, channelID)
+	}
+
+	// Compute the new election channel id
+	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
+
+	// Create the new election channel
+	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees, c.hub, c.log, c.organizerPubKey)
+
+	// Saving the election channel creation message on the lao channel
+	c.inbox.StoreMessage(msg)
+
+	// Add the new election channel to the organizerHub
+	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
+
+	return nil
+}
+
+func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
+	if update.LastModified != state.LastModified {
+		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
+	}
+
+	if update.Name != state.Name {
+		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s", update.Name, state.Name)
+	}
+
+	M := len(update.Witnesses)
+	N := len(state.Witnesses)
+
+	if M != N {
+		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
+	}
+
+	match := 0
+
+	for i := 0; i < M; i++ {
+		for j := 0; j < N; j++ {
+			if update.Witnesses[i] == state.Witnesses[j] {
+				match++
+				break
+			}
+		}
+	}
+
+	if match != M {
+		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
+	}
+
 	return nil
 }
 

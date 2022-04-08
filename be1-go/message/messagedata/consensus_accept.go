@@ -19,6 +19,7 @@ type ConsensusAccept struct {
 	Value ValueAccept `json:"value"`
 }
 
+// ValueAccept defines the accepted value and try of a ConsensusAccept message
 type ValueAccept struct {
 	AcceptedTry   int64 `json:"accepted_try"`
 	AcceptedValue bool  `json:"accepted_value"`
