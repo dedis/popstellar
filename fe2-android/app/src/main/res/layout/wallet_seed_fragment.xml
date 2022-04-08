@@ -46,7 +46,8 @@
       android:src="@drawable/ic_copy_content"
       app:layout_constraintBottom_toBottomOf="@+id/seed_wallet_text"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/wallet_seed_warning_text" />
+      app:layout_constraintTop_toBottomOf="@+id/wallet_seed_warning_text"
+      android:contentDescription="@string/copy_button_descriptor" />
 
     <LinearLayout
       android:id="@+id/linearLayout2"
