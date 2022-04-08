@@ -152,6 +152,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 	}
 
 	messages := h.rootInbox.GetSortedMessages()
+	
 	return messages, catchup.ID, nil
 }
 

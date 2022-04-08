@@ -243,6 +243,7 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 // catchup from the new server
 func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
+
 	err := h.catchupToServer(socket, rootChannel)
 	return err
 }
@@ -286,6 +287,7 @@ func (h *Hub) catchupToServer(socket socket.Socket, channel string) error {
 	}
 
 	socket.Send(buf)
+
 	return nil
 }
 
@@ -376,6 +378,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	socket.SendResult(id, nil)
+
 	return nil
 }
 
@@ -459,6 +462,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	socket.SendResult(id, nil)
+
 	return nil
 }
 
@@ -574,6 +578,7 @@ func (h *Hub) Sign(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to sign the data: %v", err)
 	}
+	
 	return signatureBuf, nil
 }
 

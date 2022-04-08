@@ -184,6 +184,7 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ so
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
+	
 	return nil
 }
 

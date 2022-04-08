@@ -149,6 +149,7 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	if !ok {
 		return nil, false
 	}
+	
 	return &msgInfo.message, true
 }
 

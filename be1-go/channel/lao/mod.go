@@ -338,6 +338,7 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 
 	c.rollCall.id = string(data.ID)
 	c.rollCall.state = Created
+
 	return nil
 }
 
@@ -373,6 +374,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, 
 
 	c.rollCall.id = rollCallOpen.UpdateID
 	c.rollCall.state = Open
+
 	return nil
 }
 
@@ -476,6 +478,7 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 	}
 
 	c.log.Info().Msg("election created with success")
+	
 	return nil
 }
 

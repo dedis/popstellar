@@ -49,6 +49,7 @@ func (message ConsensusAccept) Verify() error {
 	if message.Value.AcceptedTry < -1 {
 		return xerrors.Errorf("accepted try is %d, should be minimum -1", message.Value.AcceptedTry)
 	}
+	
 	return nil
 }
 
