@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json",
+    "description": "Match an ElectionKey query. This message is sent by the server",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "key"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The election id the new election key is associated with",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        },
+        "election_key": {
+            "description": "[Base64String] public key of the election",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "election", "election_key"]
+}

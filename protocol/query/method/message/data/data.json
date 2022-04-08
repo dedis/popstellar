@@ -23,6 +23,9 @@
             "$ref": "dataRequestKeyElection.json"
         },
         {
+            "$ref": "dataKeyElection.json"
+        },
+        {
             "$ref": "dataEndElection.json"
         },
         {

@@ -19,6 +19,7 @@
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
   - [Requesting a key for an encrypted election (election#request_key)](#requesting-a-key-for-an-encrypted-election-electionrequest_key)
+  - [Receiving a key for an encrypted election (election#key)](#receiving-a-key-for-an-encrypted-election-electionkey)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
   - [Opening an Election (election#open)](#opening-an-election-electionopen)
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
@@ -1050,9 +1051,10 @@ the organizer forgets to scan an attendee’s public key.
 
 An election has the following phases:
 
-(Request key) → Setup → Open → Cast vote(s) → End → Result
+(Request key → Receive key) → Setup → Open → Cast vote(s) → End → Result
 
-**(Request key)**: If the election is supposed to have secret (encrypted, confidential) ballots, the frontend first has to request an election key.
+**(Request key)**: If the election is supposed to have secret (encrypted, confidential) ballots, the frontend first has to request an election key on the `/root/election/key` channel.
+**(Receive key)**: If previously an election key was requested, the backend has to broadcast it on the `/root/election/key` channel.
 **Setup**: This phase consists of the organizer creating a new election.
 **Open**: This state consists of the organizer opening the election.
 **Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
@@ -1064,7 +1066,7 @@ An election has the following phases:
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*election#request_key*)
 
-There are two supported versions for elections: Open and secret ballot. In order to set up a secret ballot election, the backend(-s) need to establish a shared key among them per election. The corresponding public key is included on the election#setup message and can then be used to encrypt the votes before casting them.
+There are two supported versions for elections: Open and secret ballot. In order to set up a secret ballot election, the backend(-s) need to establish a shared key among them per election. The corresponding public key is included on the election#setup message and can then be used to encrypt the votes before casting them. This message has to be sent on the `/root/election/key` channel and the corresponding answer message ([election#key](#receiving-a-key-for-an-encrypted-election-electionkey)) will also be broadcasted by the backend on this channel.
 
 <details>
 <summary>
@@ -1112,13 +1114,73 @@ There are two supported versions for elections: Open and secret ballot. In order
 
 ```
 
+## Receiving a key for an encrypted election (election#key)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#key*)
+
+After sending an [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message, the frontend expects the backend to return an empheral election key. In order not to break the abstraction of pub/sub channels, the backend does not directly respond but rather broadcasts an election#key message on the `/root/election/key` channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_request_key/election_request_key.json
+
+{
+    "object": "election",
+    "action": "key",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataKeyElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json",
+    "description": "Match an ElectionKey query. This message is sent by the server",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "key"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The election id the new election key is associated with",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        },
+        "election_key": {
+            "description": "[Base64String] public key of the election",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "election", "election_key"]
+}
+
+```
+
 ## Setting up an Election (election#setup)
 
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*election#setup*)
 
 By sending the election/setup message to the organizer’s server’s channel
-(“/root/lao-channel”), the main channel of the election will be created with the identifier id.
+(“/root/lao-channel”), the main channel of the election will be created with the identifier id, i.e. `/root/<election_id>`.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
 
 An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively. If it is a secret ballot election, then the message must additionally contain the public key of the election that was previously obtained from a [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message.

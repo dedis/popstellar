@@ -137,6 +137,9 @@ test("message data: election", () => {
     election_request_key = require("../examples/messageData/election_request_key/election_request_key.json");
     expect(election_request_key).toBeValid(messageDataSchema);
 
+    election_key = require("../examples/messageData/election_key/election_key.json");
+    expect(election_key).toBeValid(messageDataSchema);
+
     election_setup = require("../examples/messageData/election_setup/election_setup.json");
     expect(election_setup).toBeValid(messageDataSchema);
 
@@ -168,6 +171,22 @@ test("message data: election", () => {
     expect(failure).not.toBeValid(messageDataSchema);
 
     failure = require("../examples/messageData/election_request_key/wrong_missing_object.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // election#key
+    failure = require("../examples/messageData/election_key/wrong_election_key_additional_property.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_action.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_election.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_election_key.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_object.json");
     expect(failure).not.toBeValid(messageDataSchema);
 
     // election#setup
