@@ -210,12 +210,9 @@ public class ElectionHandlerTest extends TestCase {
 
     for (EventState state : EventState.values()) {
       election.setEventState(state);
-
+      messageHandler.handleMessage(laoRepository, messageSender,
+          election.getChannel(), message);
       if (state == EventState.CREATED) {
-
-        //If the previous state was CREATED, it should change it to OPENED.
-        messageHandler.handleMessage(laoRepository, messageSender,
-            election.getChannel(), message);
         assertEquals(EventState.OPENED, election.getState());
         //Test for current TimeStamp
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
