@@ -1,19 +1,22 @@
 package fe.net;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
+import common.utils.JsonUtils;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Function;
+
+import static common.utils.JsonUtils.*;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -29,6 +32,10 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   // Can be null if no reply should be sent back.
   private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
+  Json laoCreationMessageData;
+
+  private static final String VALID_CATCHUP_REPLY_TEMPLATE =
+      "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":[]}";
 
   public MockBackend(MessageQueue queue, int port) {
     this.queue = queue;
@@ -61,29 +68,52 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   @Override
   protected void channelRead0(
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
-      String frameText = frame.text();
+    String frameText = frame.text();
     logger.info("message received : {}", frameText);
     queue.onNewMsg(frameText);
+    Json json = Json.of(frame.text());
 
-    // Send back the reply
-    if (replyProducer != null) send(replyProducer.apply(frameText));
 
+    if (json.get("method").equals("publish")){
+      Json paramJson = getJSON(json, "params");
+      logger.info("params is {}", paramJson);
+//      if (param == null){
+//        logger.info("params is null");
+//      }
+      Json msg = getJSON(paramJson, "message");
+      logger.info("msg is {}", msg);
+      laoCreationMessageData = msg;
+    }
+
+    if (json.get("method").equals("catchup") && laoCreationMessageData != null){
+      if (json.toString().contains("consensus")){
+        if (replyProducer != null) send(replyProducer.apply(frameText));
+      } else {
+        String replaceId =
+            VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) json.get("id")));
+        String toSend = replaceId.replace("[]", "[" + laoCreationMessageData.toString() + "]");
+        send(toSend);
+      }
+    } else {
+      // Send back the reply
+      if (replyProducer != null) send(replyProducer.apply(frameText));
+    }
   }
 
-//    private void broadcastResponse(String frameText) {
-//        JsonObject jsonObject = (JsonObject) JsonParser.parseString(frameText);
-//        if (jsonObject == null){
-//            throw new IllegalStateException();
-//        }
-//        JsonObject msgData = jsonObject.getAsJsonObject("params").getAsJsonObject("")
-//        logger.info("Json extracted is {}", jsonObject.toString());
-//        logger.info("Part is {}", jsonObject.getAsJsonObject("params"));
-//        Gson gson = new Gson();
-//
-//
-//    }
+    //    private void broadcastResponse(String frameText) {
+  //        JsonObject jsonObject = (JsonObject) JsonParser.parseString(frameText);
+  //        if (jsonObject == null){
+  //            throw new IllegalStateException();
+  //        }
+  //        JsonObject msgData = jsonObject.getAsJsonObject("params").getAsJsonObject("")
+  //        logger.info("Json extracted is {}", jsonObject.toString());
+  //        logger.info("Part is {}", jsonObject.getAsJsonObject("params"));
+  //        Gson gson = new Gson();
+  //
+  //
+  //    }
 
-    public int getPort() {
+  public int getPort() {
     return server.getPort();
   }
 
@@ -120,4 +150,6 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   public MessageBuffer getBuffer() {
     return queue;
   }
+
+
 }

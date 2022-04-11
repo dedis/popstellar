@@ -12,6 +12,7 @@ import java.util.function.Predicate;
  */
 public class ReplyMethods {
 
+
   private static final String VALID_REPLY_TEMPLATE =
       "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":0}";
   private static final String VALID_CATCHUP_REPLY_TEMPLATE =
@@ -30,11 +31,12 @@ public class ReplyMethods {
       };
 
   public static Function<String, String> CATCHUP_LAO =
-          msg -> {
-            Json msgJson = Json.of(msg);
-            int id = (int) msgJson.get("id") + 1;
-            msgJson.set("id", id+1);
-            msgJson.set("method", "broadcast");
-            return msgJson.toString();
-          };
+      msg -> {
+        Json msgJson = Json.of(msg);
+        int id = (int) msgJson.get("id") + 1;
+        msgJson.set("id", id + 1);
+        msgJson.set("method", "broadcast");
+        return msgJson.toString();
+      };
+
 }

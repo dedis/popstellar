@@ -27,6 +27,11 @@ Feature: android page object
     # Lao Event List
     * def add_event_selector = '#com.github.dedis.popstellar:id/add_future_event_button'
 
+    * def lao_list = '#com.github.dedis.popstellar:id/lao_list'
+    * def lao_list_2 = '{}Lao Name'
+
+    * def add_event_selector = '#com.github.dedis.popstellar:id/add_future_event_button'
+
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
