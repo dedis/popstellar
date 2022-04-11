@@ -49,7 +49,7 @@ object ElectionHandler extends MessageHandler {
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // no need to propagate here, hence the use of dbAskWrite rpcMessage
-    val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
 
     Await.result(ask, duration)
   }
@@ -106,7 +106,8 @@ object ElectionHandler extends MessageHandler {
     val castsVotesElections: List[CastVoteElection] = getLastVotes(electionChannel)
     val question2Ballots = getSetupMessage(electionChannel).questions.map(question => question.id -> question.ballot_options).toMap
     // results is a map [Question ID -> [Ballot name -> count]]
-    val results = mutable.HashMap[Hash, Map[String, Int]]()
+    val r = question2Ballots.keys.map(question => question -> question2Ballots(question).map(_ -> 0).toMap).toMap
+    val results = mutable.HashMap[Hash, Map[String, Int]]() ++ r
     for (castVoteElection <- castsVotesElections;
          voteElection <- castVoteElection.votes) {
       val question = voteElection.question //.asInstanceOf[ElectionQuestion]
