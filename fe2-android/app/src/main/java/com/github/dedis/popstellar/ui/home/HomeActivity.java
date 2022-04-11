@@ -83,13 +83,13 @@ public class HomeActivity extends AppCompatActivity {
   private void subscribeOpenHomeEvents() {
     // Subscribe to "open home" event
     mViewModel
-        .getOpenSettingsEvent()
+        .getOpenHomeEvent()
         .observe(
             this,
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSettingsActivity();
+                setupHomeFragment();
               }
             });
   }
