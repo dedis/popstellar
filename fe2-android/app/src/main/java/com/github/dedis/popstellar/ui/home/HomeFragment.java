@@ -5,11 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 
@@ -64,19 +66,26 @@ public final class HomeFragment extends Fragment {
 
               mListAdapter.replaceList(laos);
 
-              // TODO: perhaps move this to data binding
-              if (laos.size() > 0) {
+              if (!laos.isEmpty()) {
                 mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
                 mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
+                mHomeFragBinding.homeTitle.setVisibility(View.VISIBLE);
               }
             });
   }
 
   private void setupListAdapter() {
-    ListView listView = mHomeFragBinding.laoList;
+    RecyclerView recyclerView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), true);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, true);
 
-    listView.setAdapter(mListAdapter);
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+    recyclerView.setLayoutManager(mLayoutManager);
+
+    DividerItemDecoration dividerItemDecoration =
+        new DividerItemDecoration(getContext(), mLayoutManager.getOrientation());
+    recyclerView.addItemDecoration(dividerItemDecoration);
+
+    recyclerView.setAdapter(mListAdapter);
   }
 }

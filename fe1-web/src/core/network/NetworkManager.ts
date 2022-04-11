@@ -1,11 +1,11 @@
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { AppState, AppStateStatus } from 'react-native';
 
-import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
+import { ExtendedJsonRpcResponse, JsonRpcRequest } from './jsonrpc';
 import { NetworkConnection } from './NetworkConnection';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
-import { SendingStrategy } from './strategies/client-multiple-servers/ClientMultipleServerStrategy';
-import { sendToAllServersStrategy } from './strategies/client-multiple-servers/SendToAllServersStrategy';
+import { SendingStrategy } from './strategies/ClientMultipleServerStrategy';
+import { sendToAllServersStrategy } from './strategies/SendToAllServersStrategy';
 
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
@@ -44,7 +44,7 @@ class NetworkManager {
     if (!this.isOnline && isOnline) {
       // if we were disconnected before and are now reconnected to the network
       // then try to reconnect all connections
-      this.reconnect();
+      this.reconnectIfNecessary();
     }
 
     this.isOnline = isOnline;
@@ -55,7 +55,7 @@ class NetworkManager {
     if (!this.isFocused && isFocused) {
       // if we were backgrounded and become active again, the websocket
       // connections are very likely to be broken
-      this.reconnect();
+      this.reconnectIfNecessary();
     }
 
     this.isFocused = isFocused;
@@ -73,12 +73,12 @@ class NetworkManager {
     this.reconnectionHandlers = [];
   }
 
-  private reconnect() {
+  private reconnectIfNecessary() {
     // the sending strategy will fail if we have no connection
     if (this.connections.length > 0) {
-      console.info('Reconnecting to all websockets..');
+      console.info('Reconnecting to all disconnected websockets..');
       for (const connection of this.connections) {
-        connection.reconnect();
+        connection.reconnectIfNecessary();
       }
       for (const handler of this.reconnectionHandlers) {
         handler();
@@ -151,7 +151,7 @@ class NetworkManager {
   public sendPayload(
     payload: JsonRpcRequest,
     connections?: NetworkConnection[],
-  ): Promise<JsonRpcResponse[]> {
+  ): Promise<ExtendedJsonRpcResponse[]> {
     return this.sendingStrategy(payload, connections || this.connections);
   }
 
@@ -168,3 +168,5 @@ export function getNetworkManager(): NetworkManager {
   }
   return NETWORK_MANAGER_INSTANCE;
 }
+
+export const TEST_ONLY_EXPORTS = { NetworkManager };

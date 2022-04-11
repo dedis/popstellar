@@ -24,3 +24,18 @@ type ModificationSignature struct {
 	Witness   string `json:"witness"`
 	Signature string `json:"signature"`
 }
+
+// GetObject implements MessageData
+func (LaoState) GetObject() string {
+	return LAOObject
+}
+
+// GetAction implements MessageData
+func (LaoState) GetAction() string {
+	return LAOActionState
+}
+
+// NewEmpty implements MessageData
+func (LaoState) NewEmpty() MessageData {
+	return &LaoState{}
+}

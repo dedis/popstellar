@@ -20,7 +20,7 @@ export interface ConnectConfiguration {
    * @param laoId The id of the lao whose channel should be returned
    * @returns The channel related to the passed lao id or undefined it the lao id is invalid
    */
-  getLaoChannel(laoId: string): Channel;
+  getLaoChannel(laoId: string): Channel | undefined;
 
   /**
    * A hook returning the current lao id
@@ -35,7 +35,7 @@ export type ConnectReactContext = Pick<
 >;
 
 /**
- * The interface the evoting feature exposes
+ * The interface the connect feature exposes
  */
 export interface ConnectInterface extends FeatureInterface {
   navigation: {

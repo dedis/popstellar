@@ -12,7 +12,7 @@ import { addLao, laoReducer } from 'features/lao/reducer';
 
 import { HomeHooks } from '../index';
 
-const createLao = jest.fn();
+const requestCreateLao = jest.fn();
 const addLaoServerAddress = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
@@ -22,7 +22,7 @@ const mainNavigationScreens: HomeFeature.Screen[] = [
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
-    createLao,
+    requestCreateLao,
     addLaoServerAddress,
     connectToTestLao,
     useLaoList: LaoHooks.useLaoList,
@@ -44,8 +44,8 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 describe('Home hooks', () => {
   describe('HomeHooks.useCreateLao', () => {
     it('should return the function for creating a lao', () => {
-      const { result } = renderHook(() => HomeHooks.useCreateLao(), { wrapper });
-      expect(result.current).toEqual(createLao);
+      const { result } = renderHook(() => HomeHooks.useRequestCreateLao(), { wrapper });
+      expect(result.current).toEqual(requestCreateLao);
     });
   });
 

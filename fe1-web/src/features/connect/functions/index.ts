@@ -1,1 +1,1 @@
-export * from './lao-connection';
+export * from './LaoConnection';

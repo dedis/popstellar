@@ -21,6 +21,7 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
 	ElectionActionSetup  = "setup"

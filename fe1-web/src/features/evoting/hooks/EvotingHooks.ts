@@ -34,12 +34,4 @@ export namespace EvotingHooks {
   export const useCurrentLao = () => {
     return useEvotingContext().useCurrentLao();
   };
-
-  /**
-   * Gets the onConfirmEventCreation helper function
-   * @returns The onConfirmEventCreation function
-   */
-  export const useOnConfirmEventCreation = () => {
-    return useEvotingContext().onConfirmEventCreation;
-  };
 }

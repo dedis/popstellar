@@ -35,13 +35,13 @@ function fn() {
     } else if (env === 'android') {
       const android = {};
       android["desiredConfig"] = {
-        "app" : "../../fe2-android/app/build/outputs/apk/prod/debug/app-prod-debug.apk",
+        "app" : "../../fe2-android/app/build/outputs/apk/debug/app-debug.apk",
         "newCommandTimeout" : 300,
         "platformVersion" : "9.0",
         "platformName" : "Android",
         "connectHardwareKeyboard" : true,
         "deviceName" : "emulator-5554",
-        "avd" : "Pixel_2_API_29",
+        "avd" : "Pixel_4_API_30",
         "automationName" : "UiAutomator2"
       }
       config["android"] = android

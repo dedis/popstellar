@@ -40,6 +40,173 @@ func Test_Add_Server_Socket(t *testing.T) {
 	require.Equal(t, 1, hub.queries.nextID)
 }
 
+func Test_Create_LAO_Bad_Key(t *testing.T) {
+	keypair := generateKeyPair(t)
+	wrongKeypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	h := sha256.New()
+	h.Write(wrongKeypair.publicBuf)
+	h.Write([]byte(fmt.Sprintf("%d", now)))
+	h.Write([]byte(name))
+
+	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, wrongKeypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.EqualError(
+		t, sock.err,
+		fmt.Sprintf(
+			"failed to handle method: failed to handle root channel message: sender's public key does not "+
+				"match the organizer's: %q != %q", wrongKeypair.public.String(), keypair.public.String()))
+}
+
+func Test_Create_LAO_Bad_MessageID(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	h := sha256.New()
+	h.Write(keypair.publicBuf)
+	h.Write([]byte(fmt.Sprintf("%d", now)))
+	h.Write([]byte(name))
+
+	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+	badMessageID := ""
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         badMessageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	expectedMessageId := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageId, badMessageID))
+}
+
 func Test_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -77,10 +244,14 @@ func Test_Create_LAO(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -376,10 +547,14 @@ func Test_Handle_Publish(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -451,10 +626,14 @@ func Test_Handle_Broadcast(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -517,24 +696,20 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	now := time.Now().Unix()
 	name := "LAO X"
+	creationTime := 123
+	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  int64(creationTime),
+		Organizer: organizer,
 		Witnesses: []string{},
 	}
 
@@ -544,10 +719,14 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -594,6 +773,84 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 
 	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
+}
+
+// Tests that a broadcast without a valid message id returns an error
+func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	name := "LAO X"
+	creationTime := 12300000
+	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  int64(creationTime),
+		Organizer: organizer,
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+	fakeMessageID := ""
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         fakeMessageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	broadcast := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodBroadcast,
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&broadcast)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	expectedMessageId := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageId, fakeMessageID))
 }
 
 // Check that if the organizer receives a subscribe message, it will call the
@@ -832,10 +1089,14 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -891,7 +1152,7 @@ type keypair struct {
 
 var nolog = zerolog.New(io.Discard)
 
-//var suite = crypto.Suite
+// var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())

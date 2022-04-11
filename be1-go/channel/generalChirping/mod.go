@@ -73,7 +73,7 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 }
 
 // Broadcast is used to handle broadcast messages.
-func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
 	err := c.VerifyBroadcastMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
@@ -82,7 +82,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 
 	msg := broadcast.Params.Message
 
-	err = c.registry.Process(msg)
+	err = c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
@@ -191,7 +191,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 }
 
 // addChirp checks an add chirp message
-func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
+func (c *Channel) addChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
@@ -206,7 +206,7 @@ func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 }
 
 // deleteChirp checks a delete chirp message
-func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
+func (c *Channel) deleteChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)

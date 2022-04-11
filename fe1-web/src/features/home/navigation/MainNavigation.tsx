@@ -1,11 +1,12 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
-import { Home } from '../screens';
+import { HomeFeature } from '../interface';
+import { Home, Launch } from '../screens';
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
@@ -25,9 +26,28 @@ const styles = StyleSheet.create({
 });
 
 const MainNavigation = () => {
-  const screens = HomeHooks.useMainNavigationScreens();
-  // sort screens by order before rendering them
-  screens.sort((a, b) => a.order - b.order);
+  const navigationScreens = HomeHooks.useMainNavigationScreens();
+
+  const screens: HomeFeature.Screen[] = useMemo(() => {
+    return [
+      ...navigationScreens,
+      // add home screen to the navigation
+      {
+        id: STRINGS.navigation_tab_home,
+        title: STRINGS.navigation_tab_home,
+        Component: Home,
+        order: -99999999,
+      } as HomeFeature.Screen,
+      // add launch screen to the navigation
+      {
+        id: STRINGS.navigation_tab_launch,
+        title: STRINGS.navigation_tab_launch,
+        Component: Launch,
+        order: -1000,
+      } as HomeFeature.Screen,
+      // sort screens by order before rendering them
+    ].sort((a, b) => a.order - b.order);
+  }, [navigationScreens]);
 
   return (
     <HomeTopTabNavigator.Navigator
@@ -36,7 +56,6 @@ const MainNavigation = () => {
       screenOptions={{
         swipeEnabled: false,
       }}>
-      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
       {screens.map(({ id, title, Component }) => (
         <HomeTopTabNavigator.Screen
           key={id}

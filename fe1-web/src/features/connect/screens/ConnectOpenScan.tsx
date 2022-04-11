@@ -83,25 +83,24 @@ const ConnectOpenScan = () => {
     }
   };
 
+  const onCancel = () => {
+    setShowScanner(false);
+
+    // if we have an active lao, this was an additional connection and thus we navigate (back)
+    // to the organization user screen
+    if (laoId) {
+      navigation.navigate(STRINGS.app_navigation_tab_user, {
+        screen: STRINGS.organization_navigation_tab_user,
+      });
+    } else {
+      navigation.navigate(STRINGS.connect_unapproved_title);
+    }
+  };
+
   return showScanner ? (
     <View style={containerStyles.centeredXY}>
       <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={() => {
-          setShowScanner(false);
-
-          // if we have an active lao, this was an additional connection and thus we navigate (back)
-          // to the organization user screen
-          if (laoId) {
-            navigation.navigate(STRINGS.app_navigation_tab_user, {
-              screen: STRINGS.organization_navigation_tab_user,
-            });
-          } else {
-            navigation.navigate(STRINGS.connect_unapproved_title);
-          }
-        }}
-      />
+      <WideButtonView title={STRINGS.general_button_cancel} onPress={onCancel} />
     </View>
   ) : (
     <View style={containerStyles.centeredY} />

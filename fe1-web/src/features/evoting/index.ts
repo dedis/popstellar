@@ -10,14 +10,7 @@ import * as screens from './screens';
  * @returns
  */
 export const configure = (config: EvotingConfiguration): EvotingInterface => {
-  const {
-    useCurrentLao,
-    useCurrentLaoId,
-    getEventById,
-    addEvent,
-    updateEvent,
-    onConfirmEventCreation,
-  } = config;
+  const { useCurrentLao, useCurrentLaoId, getEventById, addEvent, updateEvent } = config;
   // configure message registry to correctly handle incoming messages
   configureNetwork(config);
   // return the interface that is exposed by the evoting feature
@@ -34,7 +27,6 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
       getEventById,
       addEvent,
       updateEvent,
-      onConfirmEventCreation,
     },
   };
 };
