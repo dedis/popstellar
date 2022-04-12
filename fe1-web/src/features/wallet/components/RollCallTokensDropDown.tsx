@@ -16,9 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 const RollCallTokensDropDown = (props: IPropTypes) => {
-  const { onTokenChange } = props;
-  const { rollCallTokens } = props;
-  const { selectedToken } = props;
+  const { onTokenChange, rollCallTokens, selectedToken } = props;
 
   const options = rollCallTokens.map((rc) => {
     const value = rc?.token.publicKey.valueOf() || '';

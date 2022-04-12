@@ -5,6 +5,13 @@ import MockNavigator from '__tests__/components/MockNavigator';
 
 import { WalletCreateSeed } from '../index';
 
+const mockSeed = 'one two three';
+
+jest.mock('../../objects/Seed', () => {
+  return {
+    generateMnemonicSeed: () => mockSeed,
+  };
+});
 beforeEach(() => {
   jest.clearAllMocks();
 });

@@ -367,7 +367,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 "width": 750,
                               }
                             }
-                            value="shy various radio truly found deliver reveal credit scatter ill march salmon"
+                            value="one two three"
                           />
                           <View
                             accessible={true}

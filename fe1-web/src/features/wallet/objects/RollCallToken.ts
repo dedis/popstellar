@@ -43,22 +43,4 @@ export class RollCallToken {
     this.rollCallId = obj.rollCallId;
     this.rollCallName = obj.rollCallName;
   }
-
-  public static fromState(rct: RollCallTokenState): RollCallToken {
-    return new RollCallToken({
-      token: PopToken.fromState(rct.token),
-      laoId: new Hash(rct.laoId),
-      rollCallId: new Hash(rct.rollCallId),
-      rollCallName: rct.rollCallName,
-    });
-  }
-
-  public toState(): RollCallTokenState {
-    return {
-      token: this.token.toState(),
-      laoId: this.laoId.valueOf(),
-      rollCallId: this.rollCallId.valueOf(),
-      rollCallName: this.rollCallName,
-    };
-  }
 }
