@@ -189,7 +189,7 @@ func Test_SendReaction(t *testing.T) {
 
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	var reactionChannelName = "/root/" + laoID + "/digitalCash/transaction"
+	var digitalCashChannelName = "/root/" + laoID + "/digitalCash/transaction"
 
 	keypair := generateKeyPair(t)
 
@@ -197,10 +197,10 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the channel
-	channel := NewChannel(reactionChannelName, nolog, fakeHub)
+	channel := NewChannel(digitalCashChannelName, nolog, fakeHub)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, channel)
-	_, found := fakeHub.channelByID[reactionChannelName]
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
 	//channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
@@ -209,6 +209,7 @@ func Test_SendReaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
+	//load example
 	file := filepath.Join(relativePath, "cash", "post_transaction.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -236,7 +237,7 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	message.Params.Message = m
-	message.Params.Channel = reactionChannelName
+	message.Params.Channel = digitalCashChannelName
 
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }

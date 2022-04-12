@@ -199,28 +199,17 @@ func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 
 func (c *Channel) processTransactionPost(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
-	/*
-		_, ok := msgData.(*messagedata.MessageWitness)
-		if !ok {
-			return xerrors.Errorf("message %v isn't a message#witness message", msgData)
-		}
+	_, ok := msgData.(*messagedata.TransactionPost)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a transaction#post message", msgData)
+	}
 
-		var witnessData messagedata.MessageWitness
+	var transactionData messagedata.TransactionPost
 
-		err := msg.UnmarshalData(&witnessData)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal witness data: %v", err)
-		}
+	err := msg.UnmarshalData(&transactionData)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal transaction data: %v", err)
+	}
 
-		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
-		if err != nil {
-			return answer.NewError(-4, "invalid witness signature")
-		}
-
-		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-		if err != nil {
-			return xerrors.Errorf("failed to add witness signature: %w", err)
-		}
-	*/
 	return nil
 }
