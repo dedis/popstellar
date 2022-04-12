@@ -3,6 +3,7 @@ package be.utils;
 import com.intuit.karate.Json;
 import org.junit.jupiter.api.Test;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -75,7 +76,7 @@ public class JsonConverterTest {
   }
 
   @Test
-  public void testIfHashIsCorrect(){
+  public void testIfHashIsCorrect() throws NoSuchAlgorithmException {
     // The message examined is a valid message sent by fe2 and can be found
     // in data/lao/valid_lao_create_fe2.json folder
     JsonConverter jsonConverter = new JsonConverter();
