@@ -233,10 +233,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     Button digitalCashButton = findViewById(R.id.tab_digital_cash);
     digitalCashButton.setOnClickListener(
         new View.OnClickListener() {
-          public void onClick(View v) {
-            Toast.makeText(LaoDetailActivity.this, "Button for Transaction", Toast.LENGTH_LONG)
-                .show();
-          }
+         v -> Toast.makeText(LaoDetailActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show()
         });
   }
 
