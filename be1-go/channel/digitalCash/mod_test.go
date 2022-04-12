@@ -209,7 +209,7 @@ func Test_SendReaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "transaction_post", "transaction_post.json")
+	file := filepath.Join(relativePath, "cash", "post_transaction.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
