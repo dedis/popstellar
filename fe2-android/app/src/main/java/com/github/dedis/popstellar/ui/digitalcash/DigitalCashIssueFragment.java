@@ -1,34 +1,51 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListAdapter;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
- * method to create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+/** Fragment where we issue money when we are the organiser */
+@AndroidEntryPoint
 public class DigitalCashIssueFragment extends Fragment {
+  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+  public static final String EXTRA_ID = "id";
 
-  public DigitalCashIssueFragment() {
-    // Required empty public constructor
-  }
+  private DigitalCashIssueFragmentBinding mdigitalCashIssueFragmentBinding;
+  private DigitalCashViewModel mdigitalCashViewModel;
+  private LaoDetailViewModel mLaoDetailViewModel;
+  private AttendeesListAdapter mAttendeesListAdapter;
 
-  /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
-   *
-   * @return A new instance of fragment DigitalCashIssueFragment.
-   */
-  // TODO: Rename and change types and number of parameters
   public static DigitalCashIssueFragment newInstance() {
-    DigitalCashIssueFragment fragment = new DigitalCashIssueFragment();
-    return fragment;
+    DigitalCashIssueFragment digitalCashIssueFragment = new DigitalCashIssueFragment();
+    Bundle bundle = new Bundle(1);
+    bundle.putString(EXTRA_ID,"0");
+    digitalCashIssueFragment.setArguments(bundle);
+    return digitalCashIssueFragment;
   }
 
   @Override
@@ -43,10 +60,33 @@ public class DigitalCashIssueFragment extends Fragment {
   // Toast.makeText(getApplicationContext(),country[position] , Toast.LENGTH_LONG).show();
   // }
 
+  @Nullable
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_issue_fragment, container, false);
+    mdigitalCashIssueFragmentBinding =
+        DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
+    mdigitalCashViewModel = DigitalCashMain.obtainViewModel(requireActivity());
+
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+
+    mdigitalCashIssueFragmentBinding.setViewModel(mdigitalCashViewModel);
+    mdigitalCashIssueFragmentBinding.setLifecycleOwner(getViewLifecycleOwner());
+    return mdigitalCashIssueFragmentBinding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    setupSpinner();
+    // Set up the spinner
+
+  }
+
+  private void setupSpinner() {
+    RollCall rollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCalls().values().stream().max(Comparator.comparing(RollCall::getEnd));
+    mAttendeesListAdapter =
+        new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()), getActivity());
+    mdigitalCashIssueFragmentBinding.digitalCashIssueUser.setAdapter(mAttendeesListAdapter);
   }
 }
