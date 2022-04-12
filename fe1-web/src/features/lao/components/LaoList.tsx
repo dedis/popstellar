@@ -27,7 +27,7 @@ const LaoList = () => {
       <FlatList
         data={laos}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <LaoItem LAO={item} />}
+        renderItem={({ item }) => <LaoItem lao={item} />}
         style={styles.flatList}
       />
     </View>

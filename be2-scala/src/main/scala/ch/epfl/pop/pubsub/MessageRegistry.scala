@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
+import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
@@ -87,6 +88,9 @@ object MessageRegistry {
 
     register.add((ObjectType.REACTION, ActionType.ADD), createSchemaVerifier("dataAddReaction.json"), AddReaction.buildFromJson, SocialMediaValidator.validateAddReaction, SocialMediaHandler.handleAddReaction)
     register.add((ObjectType.REACTION, ActionType.DELETE), createSchemaVerifier("dataDeleteReaction.json"), DeleteReaction.buildFromJson, SocialMediaValidator.validateDeleteReaction, SocialMediaHandler.handleDeleteReaction)
+
+    // data digital cash
+    register.add((ObjectType.TRANSACTION, ActionType.POST), createSchemaVerifier("dataCashTransaction.json"), PostTransaction.buildFromJson, CashValidator.validatePostTransaction, CashHandler.handlePostTransaction)
 
     new MessageRegistry(register.get)
   }

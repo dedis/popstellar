@@ -464,7 +464,9 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(

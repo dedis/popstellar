@@ -87,6 +87,9 @@
         },
         {
             "$ref": "dataFailure.json"
+        },
+        {
+            "$ref": "dataCashTransaction.json"
         }
     ]
 }
