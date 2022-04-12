@@ -1,6 +1,7 @@
 package digitalCash
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -179,6 +181,64 @@ func Test_General_Channel_Publish(t *testing.T) {
 
 	err = channelDC.Publish(message, socket.ClientSocket{})
 	require.Error(t, err, "nothing should be directly published in the general")
+}
+
+// Tests that the channel works correctly when it receives a reaction
+func Test_SendReaction(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var reactionChannelName = "/root/" + laoID + "/digitalCash/transaction"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(reactionChannelName, nolog, fakeHub)
+
+	fakeHub.RegisterNewChannel(reactionChannelName, channel)
+	_, found := fakeHub.channelByID[reactionChannelName]
+	require.True(t, found)
+
+	//channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "transaction_post", "transaction_post.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = reactionChannelName
+
+	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
 // -----------------------------------------------------------------------------
