@@ -26,6 +26,7 @@ public enum Action {
   LEARN("learn"),
   FAILURE("failure"),
   ADD("add"),
+  POST("post"),
   NOTIFY_ADD("notify_add"),
   DELETE("delete"),
   NOTIFY_DELETE("notify_delete");
