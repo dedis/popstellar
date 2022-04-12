@@ -11,7 +11,7 @@ import java.util.List;
 public class Greeting extends Message {
 
   // Backend sender address
-  private PublicKey sender;
+  private PublicKey senderKey;
   // Backend server address
   private String address;
   // Backend "peer", list of addresses of future 1 Client -> multiple Server communication
@@ -23,18 +23,18 @@ public class Greeting extends Message {
    * @param channel the channel over which the message is sent
    * @throws IllegalArgumentException if channel is null
    */
-  public Greeting(Channel channel, String address, String sender,String... peers) {
+  public Greeting(Channel channel, String address, String senderKey, String... peers) {
     super(channel);
     if (address == null) {
       throw new IllegalArgumentException("The address of the backend can't be null");
-    } else if (sender == null) {
+    } else if (senderKey == null) {
       throw new IllegalArgumentException("The public key of the backend can't be null");
     }
     // Peers can be empty
     this.peers = Arrays.asList(peers);
     this.address = address;
     // Check of validity should be done via the Public Key class
-    this.sender = new PublicKey(sender);
+    this.senderKey = new PublicKey(senderKey);
   }
 
   //Getter for params
@@ -43,7 +43,7 @@ public class Greeting extends Message {
     return Method.GREETING.getMethod();
   }
 
-  public PublicKey getSender(){return sender;}
+  public PublicKey getSenderKey(){return senderKey;}
 
   public String getAddress(){return address;}
 
@@ -65,19 +65,18 @@ public class Greeting extends Message {
 
     Greeting that = (Greeting) o;
 
-    // Check fields
-    boolean checkAdress = that.getAddress().equals(getAddress());
-    boolean checkSender = that.getSender().equals(getSender());
+    // Check fields, how to equality check to keys ?
+    boolean checkAddress = that.getAddress().equals(getAddress());
     boolean checkPeers =
         that.getPeers().containsAll(getPeers());
 
-    return checkSender && checkPeers && checkAdress;
+    return checkPeers && checkAddress;
   }
 
   @Override
   public String toString() {
-    return "Greeting{" + "channel='" + getChannel() + "', method='" + getMethod() + "', "
-        + "sender = " + getSender() + "address=" + getAddress() + "}";
+    return "Greeting{" + "channel='" + getChannel().toString() + "', method='" + getMethod() + "', "
+        + "sender = " + getSenderKey().toString() + "address=" + getAddress() + "}";
   }
 
 }
