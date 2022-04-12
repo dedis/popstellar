@@ -113,10 +113,10 @@ public class HomeActivity extends AppCompatActivity {
               HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
-                    case  SCAN:
+                  case SCAN:
                     setupScanFragment();
                     break;
-                  case  REQUEST_CAMERA_PERMISSION:
+                  case REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
                 }
@@ -207,20 +207,20 @@ public class HomeActivity extends AppCompatActivity {
                 setupSocialMediaActivity();
               }
             });
-    }
+  }
 
-    private void subscribeDigitalCashEvent() {
-      // Subscribe to "open social media" event
-        mViewModel
-             .getOpenDigitalCashEvent()
-             .observe(
-                          this,
-                          booleanEvent -> {
-                              Boolean event = booleanEvent.getContentIfNotHandled();
-                              if (event != null) {
-                                  setupDigitalCashActivity();
-                              }
-                          });
+  private void subscribeDigitalCashEvent() {
+    // Subscribe to "digital cash media" event
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupDigitalCashActivity();
+              }
+            });
   }
 
   @Override
@@ -280,8 +280,8 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupDigitalCashButton() {
-    Button socialMediaButton = findViewById(R.id.tab_digital_cash);
-    socialMediaButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
   private void setupHomeFragment() {
@@ -329,27 +329,22 @@ public class HomeActivity extends AppCompatActivity {
     startActivity(intent);
   }
 
-  private void setupDigitalCashActivity() {
+  private void setupSocialMediaActivity() {
     if (mViewModel.getLAOs().getValue() == null) {
       Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
     } else {
-      Intent intent = new Intent(this, DigitalCashMain.class);
-      Log.d(TAG, "Trying to open digital cash");
+      Intent intent = new Intent(this, SocialMediaActivity.class);
+      Log.d(TAG, "Trying to open social media");
       intent.putExtra(OPENED_FROM, TAG);
       startActivity(intent);
     }
   }
 
-      private void setupSocialMediaActivity() {
-          if (mViewModel.getLAOs().getValue() == null) {
-              Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
-          } else {
-              Intent intent = new Intent(this, SocialMediaActivity.class);
-              Log.d(TAG, "Trying to open social media");
-              intent.putExtra(OPENED_FROM, TAG);
-              startActivity(intent);
-          }
-      }
+  private void setupDigitalCashActivity() {
+    Intent intent = new Intent(this, DigitalCashMain.class);
+    Log.d(TAG, "Trying to open digital_cash");
+    startActivity(intent);
+  }
 
   private void openLaoDetails(String laoId) {
     openLaoDetailActivity(laoId, true);

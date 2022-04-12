@@ -72,7 +72,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
-          new MutableLiveData<>();
+      new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment

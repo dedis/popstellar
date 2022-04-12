@@ -1,58 +1,21 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
-
-import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
-  /*
-   * Dependencies for this class
-   */
-  private final LAORepository laoRepository;
-  private final GlobalNetworkManager networkManager;
-  private final Gson gson;
-  private final KeyManager keyManager;
-  private final CompositeDisposable disposables;
-
-  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-
-  @Inject Wallet wallet;
-
-  //TODO are we in a row call
-  private RollCall rollCall;
-
-  private static final String DIGITAL_CASH = "DIGITAL_CASH";
 
   /*
    * LiveData objects for capturing events
@@ -64,27 +27,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
 
-  private final LiveData<List<Lao>> mLAOs;
-  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-
   @Inject
-  public DigitalCashViewModel(
-      @NonNull Application application,
-      LAORepository laoRepository,
-      GlobalNetworkManager networkManager,
-      Gson gson,
-      KeyManager keyManager) {
+  public DigitalCashViewModel(@NonNull Application application) {
     super(application);
-    this.laoRepository = laoRepository;
-    this.networkManager = networkManager;
-    this.gson = gson;
-    this.keyManager = keyManager;
-    disposables = new CompositeDisposable();
-
-    this.mLAOs =
-        LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   /*
@@ -114,18 +59,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mOpenReceiptEvent;
   }
 
-  public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
-  }
-
-  public LiveData<String> getLaoId() {
-    return mLaoId;
-  }
-
-  public LiveData<String> getLaoName() {
-    return mLaoName;
-  }
-
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -151,54 +84,5 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public void openReceipt() {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void setLaoId(String laoId) {
-    mLaoId.setValue(laoId);
-  }
-
-  public void setLaoName(String laoName) {
-    mLaoName.setValue(laoName);
-  }
-
-  /**
-   * Send a coin to your own channel.
-   *
-   * <p>Publish a MessageGeneral containing AddChirp data.
-   *
-   * @param amount int
-   * @param sender_address String
-   * @param receiver_address String
-   */
-
-  public void sendCoin(int amount ,@Nullable String sender_address, @Nullable String receiver_address){
-    Log.d(TAG, "Sending a transaction");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
-    }
-
-
-
-  }
-
-  @Override
-  protected void onCleared() {
-    super.onCleared();
-    disposables.dispose();
-  }
-
-  @Nullable
-  public Lao getCurrentLao() {
-    return getLao(getLaoId().getValue());
-  }
-
-  @Nullable
-  private Lao getLao(String laoId) {
-    LAOState laoState = laoRepository.getLaoById().get(laoId);
-    if (laoState == null) return null;
-
-    return laoState.getLao();
   }
 }

@@ -9,6 +9,7 @@
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
   <string name="tab_social_media">Chirp</string>
+  <string name="tab_digital_cash">Transaction</string>
 
   <!-- Home -->
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
@@ -229,6 +230,7 @@
   <string name="digital_cash_issue">ISSUE</string>
   <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_receipt">RECEIPT</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
@@ -260,6 +262,4 @@
   <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
   <string name="seed_validation_exception">unable to validate seed</string>
   <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

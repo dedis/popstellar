@@ -17,7 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_social_media" />
+    app:layout_constraintGuide_percent="0.84" />
 
   <Button
     android:id="@+id/tab_social_media"

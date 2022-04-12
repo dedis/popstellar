@@ -35,7 +35,7 @@
     <!--activity android:name=".ui.digitalcah.DigitalCashMain" /-->
     <activity android:name=".ui.digitalcash.DigitalCashMain" />
     <activity android:name=".ui.socialmedia.SocialMediaActivity" />
-
+    <activity android:name=".ui.digitalcash.DigitalCashMain" />
     <uses-library
       android:name="android.test.runner"
       android:required="false" />

@@ -3,8 +3,6 @@ package com.github.dedis.popstellar.ui.digitalcash;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,54 +11,27 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Activity for the social media */
+/** Activity for the digital cash */
 @AndroidEntryPoint
 public class DigitalCashMain extends AppCompatActivity {
-  public static final String OPENED_FROM = "OPENED_FROM";
-  public static final String LAO_ID = "LAO_ID";
-  public static final String LAO_NAME = "LAO_NAME";
   private DigitalCashViewModel mViewModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     setContentView(R.layout.digital_cash_main_activity);
+
     mViewModel = obtainViewModel(this);
 
-    // When we launch the social media from a lao, it directly sets its id and name
-    if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
-      mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
-      mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
-    }
-    setupDigitalCashHomeFragment();
+    setupFragment(R.id.fragment_digital_cash_send);
     setupNavigationBar();
-
-    // Subscribe to "lao name" string
-    mViewModel
-        .getLaoName()
-        .observe(
-            this,
-            newLaoName -> {
-              if (newLaoName != null) {
-                Objects.requireNonNull(getSupportActionBar())
-                    .setTitle(String.format("popstellar - %s", newLaoName));
-              }
-            });
-
-    mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
 
     // Subscribe to "open home"
     mViewModel
@@ -70,7 +41,7 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupDigitalCashHomeFragment();
+                setupFragment(R.id.fragment_digital_cash_home);
               }
             });
 
@@ -82,7 +53,7 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupDigitalCashHistoryFragment();
+                setupFragment(R.id.fragment_digital_cash_history);
               }
             });
 
@@ -94,7 +65,7 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupDigitalCashSendFragment();
+                setupFragment(R.id.fragment_digital_cash_send);
               }
             });
 
@@ -106,7 +77,7 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupDigitalCashReceiveFragment();
+                setupFragment(R.id.fragment_digital_cash_receive);
               }
             });
 
@@ -118,7 +89,19 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupDigitalCashIssueFragment();
+                setupFragment(R.id.fragment_digital_cash_issue);
+              }
+            });
+
+    // Subscribe to "open receipt"
+    mViewModel
+        .getOpenIssueEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupFragment(R.id.fragment_digital_cash_receipt);
               }
             });
   }
@@ -130,45 +113,12 @@ public class DigitalCashMain extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.digital_cash_menu, menu);
-
-    // Get the submenu and clear its unique item. The item was needed to create the submenu
-    SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
-    // Adding all currently opened lao name to the submenu
-    mViewModel
-        .getLAOs()
-        .observe(
-            this,
-            list -> {
-              if (list != null) {
-                laosList.clear();
-                for (int i = 0; i < list.size(); ++i) {
-                  // Creating a unique id using the index of the lao within the list
-                  laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, list.get(i).getName());
-                }
-              }
-            });
-
     return true;
   }
 
   @SuppressLint("NonConstantResourceId")
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Retrieve the index of the lao within the list
-    int i = item.getItemId();
-    List<Lao> laos = mViewModel.getLAOs().getValue();
-    if (laos != null && i >= 0 && i < laos.size()) {
-      Lao lao = laos.get(i);
-      mViewModel.setLaoId(lao.getId());
-      mViewModel.setLaoName(lao.getName());
-      return true;
-    }
-    return super.onOptionsItemSelected(item);
-  }
-
-  @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
+    BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
           switch (item.getItemId()) {
@@ -193,24 +143,30 @@ public class DigitalCashMain extends AppCompatActivity {
         });
   }
 
-  public void setupDigitalCashHomeFragment() {
-    setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
-  }
-
-  public void setupDigitalCashSendFragment() {
-    setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
-  }
-
-  public void setupDigitalCashHistoryFragment() {
-    setCurrentFragment(R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
-  }
-
-  public void setupDigitalCashReceiveFragment() {
-    setCurrentFragment(R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
-  }
-
-  public void setupDigitalCashIssueFragment() {
-    setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+  public void setupFragment(int id) {
+    switch (id) {
+      case R.id.fragment_digital_cash_home:
+        setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
+        break;
+      case R.id.fragment_digital_cash_history:
+        setCurrentFragment(
+            R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
+        break;
+      case R.id.fragment_digital_cash_send:
+        setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
+        break;
+      case R.id.fragment_digital_cash_receive:
+        setCurrentFragment(
+            R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
+        break;
+      case R.id.fragment_digital_cash_issue:
+        setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+        break;
+      case R.id.fragment_digital_cash_receipt:
+        setCurrentFragment(R.id.fragment_digital_cash_receipt, DigitalCashReceipt::newInstance);
+        break;
+      default:
+    }
   }
 
   /**
@@ -226,6 +182,6 @@ public class DigitalCashMain extends AppCompatActivity {
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_social_media);
+        getSupportFragmentManager(), fragment, R.id.fragment_container_digital_cash);
   }
 }

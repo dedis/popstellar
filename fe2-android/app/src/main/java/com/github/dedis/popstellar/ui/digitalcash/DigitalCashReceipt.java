@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 
 /**
- * A simple {@link Fragment} subclass. Use the {@link DigitalCashHistoryFragment#newInstance}
+ * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
  */
-public class DigitalCashHistoryFragment extends Fragment {
+public class DigitalCashReceipt extends Fragment {
 
-  public DigitalCashHistoryFragment() {
+  public DigitalCashReceipt() {
     // Required empty public constructor
   }
 
@@ -23,11 +23,12 @@ public class DigitalCashHistoryFragment extends Fragment {
    * Use this factory method to create a new instance of this fragment using the provided
    * parameters.
    *
-   * @return A new instance of fragment DigitalCashHistoryFragment.
+   * @return A new instance of fragment DigitalCashReceiveFragment.
    */
   // TODO: Rename and change types and number of parameters
-  public static DigitalCashHistoryFragment newInstance() {
-    DigitalCashHistoryFragment fragment = new DigitalCashHistoryFragment();
+  public static DigitalCashReceiveFragment newInstance() {
+    DigitalCashReceiveFragment fragment = new DigitalCashReceiveFragment();
+    Bundle args = new Bundle();
     return fragment;
   }
 
@@ -40,6 +41,6 @@ public class DigitalCashHistoryFragment extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
+    return inflater.inflate(R.layout.digital_cash_receive_fragment, container, false);
   }
 }
