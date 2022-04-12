@@ -17,6 +17,12 @@ import { configureNetwork } from 'core/network';
 import { persist, store } from 'core/redux';
 import { configureFeatures } from 'features';
 
+const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
+configureKeyPair();
+configureNetwork(messageRegistry, keyPairRegistry);
+// start persisting the redux state after all reducers have been registered
+persist.persist();
+
 /*
  * The starting point of the app.
  *
@@ -27,10 +33,6 @@ import { configureFeatures } from 'features';
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 function App() {
-  const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
-  configureKeyPair();
-  configureNetwork(messageRegistry, keyPairRegistry);
-
   const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);
 

@@ -268,6 +268,10 @@ public class HomeViewModel extends AndroidViewModel
     return mIsWalletSetUp.getValue();
   }
 
+  public LiveData<Boolean> getIsWalletSetUpEvent(){
+    return mIsWalletSetUp;
+  }
+
   public LiveData<SingleEvent<Boolean>> getOpenWalletEvent() {
     return mOpenWalletEvent;
   }

@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockLao } from '__tests__/utils';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { mockAddress, mockLao } from '__tests__/utils';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { getStore } from 'core/redux';
 import { selectEventById } from 'features/events/network/EventHandlerUtils';
@@ -62,10 +62,15 @@ const mockRollCallCreated = RollCall.fromState(rollCallStateCreated);
 const mockRollCallOpened = RollCall.fromState(rollCallStateOpened);
 const mockRollCallReopened = RollCall.fromState(rollCallStateReopened);
 
-const createMockMsg = (type: ActionType, status: RollCallStatus, rollCallState: any) => {
+const createMockMsg = (
+  type: ActionType,
+  status: RollCallStatus,
+  rollCallState: any,
+): ProcessableMessage => {
   return {
     laoId: ID,
     receivedAt: TIMESTAMP_START,
+    receivedFrom: mockAddress,
     channel: 'undefined',
     data: Base64UrlData.encode(''),
     sender: ID,

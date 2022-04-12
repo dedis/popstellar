@@ -4,7 +4,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel, getLaoIdFromChannel } from 'core/objects';
+import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -34,7 +34,6 @@ const Launch = () => {
 
   const connectToTestLao = HomeHooks.useConnectToTestLao();
   const requestCreateLao = HomeHooks.useRequestCreateLao();
-  const addLaoServerAddress = HomeHooks.useAddLaoServerAddress();
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
@@ -46,9 +45,6 @@ const Launch = () => {
     requestCreateLao(laoName)
       .then((channel: Channel) =>
         subscribeToChannel(channel).then(() => {
-          // after subscribing to the LAO channel, add the server address to the lao state
-          dispatch(addLaoServerAddress(getLaoIdFromChannel(channel), inputAddress));
-
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.app_navigation_tab_user, {
             screen: STRINGS.organization_navigation_tab_user,
