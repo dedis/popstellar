@@ -230,6 +230,7 @@
   <string name="digital_cash_issue">ISSUE</string>
   <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_receipt">RECEIPT</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

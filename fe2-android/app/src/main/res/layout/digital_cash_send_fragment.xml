@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <variable
+      name="view_model"
+      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_digital_cash_send"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.digitalcash.DigitalCashSendFragment">
+
+    <LinearLayout
+      android:layout_width="409dp"
+      android:layout_height="601dp"
+      android:layout_marginStart="1dp"
+      android:layout_marginTop="1dp"
+      android:layout_marginEnd="1dp"
+      android:layout_marginBottom="1dp"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <Space
+        android:layout_width="match_parent"
+        android:layout_height="116dp" />
+
+      <LinearLayout
+        android:layout_width="205dp"
+        android:layout_height="111dp"
+        android:orientation="horizontal">
+
+        <Space
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <EditText
+          android:id="@+id/ed_amount"
+          android:layout_width="match_parent"
+          android:layout_height="65dp"
+          android:hint="Amount LAO COIN" />
+
+      </LinearLayout>
+
+      <EditText
+        android:id="@+id/ed_sender_address"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Give Sender Address"></EditText>
+
+      <EditText
+        android:id="@+id/ed_receiver_address"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Give Receiver Address"></EditText>
+
+      <Button
+        android:id="@+id/button_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/digital_cash_send" />
+
+    </LinearLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
