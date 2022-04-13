@@ -16,34 +16,32 @@ const styles = StyleSheet.create({
   },
 });
 const RollCallTokensDropDown = (props: IPropTypes) => {
-  const { onTokenChange, rollCallTokens, selectedToken } = props;
+  const { onIndexChange, rollCallTokens, selectedTokenIndex } = props;
 
-  const options = rollCallTokens.map((rc) => {
+  const options = rollCallTokens.map((rc, index) => {
     const value = rc?.token.publicKey.valueOf() || '';
-    return <Picker.Item key={value} label={value} />;
+    return <Picker.Item value={index} label={value} />;
   });
 
-  const onChange = (pk: string) => {
-    const found = rollCallTokens.find((rct) => rct?.token.publicKey.valueOf() === pk);
-    if (found) {
-      onTokenChange(found);
-    }
+  const onChange = (index: number) => {
+    onIndexChange(index);
+    console.debug(`Changing index to ${index}`);
   };
 
   return (
     <Picker
-      onValueChange={(val: any) => onChange(val)}
+      onValueChange={(value: number) => onChange(value)}
       style={styles.pickerStyle}
-      selectedValue={selectedToken?.token.publicKey.valueOf()}>
+      selectedValue={selectedTokenIndex}>
       {options}
     </Picker>
   );
 };
 
 const propTypes = {
-  onTokenChange: PropTypes.func.isRequired,
+  onIndexChange: PropTypes.func.isRequired,
   rollCallTokens: PropTypes.arrayOf(PropTypes.instanceOf(RollCallToken)).isRequired,
-  selectedToken: PropTypes.instanceOf(RollCallToken).isRequired,
+  selectedTokenIndex: PropTypes.number.isRequired,
 };
 RollCallTokensDropDown.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

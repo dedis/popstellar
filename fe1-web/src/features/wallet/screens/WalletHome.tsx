@@ -39,7 +39,7 @@ const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CAL
  */
 const WalletHome = ({ navigation }: IPropTypes) => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
-  const [selectedToken, setSelectedToken] = useState<RollCallToken>();
+  const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
   const rollCalls = useSelector(rollCallSelector);
   const lao = useSelector(selectCurrentLao);
@@ -48,15 +48,17 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     if (lao && rollCalls) {
       Wallet.recoverWalletRollCallTokens(rollCalls, lao)
         .then((rct) => {
-          setTokens(rct);
-          setSelectedToken(rct[0]);
+          if (rct.length > 0) {
+            setTokens(rct);
+            setSelectedTokenIndex(0);
+          }
         })
         .catch((e) => {
           console.debug(e);
         });
     } else {
       // Clear tokens screen state
-      setSelectedToken(undefined);
+      setSelectedTokenIndex(-1);
       setTokens(undefined);
     }
   }, [rollCalls, isDebug, lao]);
@@ -70,12 +72,12 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     }
   };
   const tokenInfos = () => {
-    if (selectedToken) {
-      const rollCallName = `Roll Call name: ${selectedToken.rollCallName.valueOf()}`;
+    if (selectedTokenIndex !== -1 && tokens) {
+      const rollCallName = `Roll Call name: ${tokens[selectedTokenIndex].rollCallName.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
           <TextBlock size={18} text={rollCallName} />
-          <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />
+          <QRCode value={tokens[selectedTokenIndex].token.publicKey.valueOf()} visibility />
         </View>
       );
     }
@@ -86,15 +88,15 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     <View style={styles.homeContainer}>
       <TextBlock bold text={STRINGS.wallet_welcome} />
       <View style={styles.tokenSelectContainer}>
-        {tokens && tokens.length > 0 && selectedToken && (
+        {tokens && (
           <RollCallTokensDropDown
             rollCallTokens={tokens}
-            onTokenChange={setSelectedToken}
-            selectedToken={selectedToken}
+            onIndexChange={setSelectedTokenIndex}
+            selectedTokenIndex={selectedTokenIndex}
           />
         )}
       </View>
-      {selectedToken && tokenInfos()}
+      {tokens && tokenInfos()}
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
