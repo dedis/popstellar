@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Wallet create seed screen renders correctly 1`] = `
+exports[`Wallet error screen renders correctly 1`] = `
 <View
   style={
     Object {
