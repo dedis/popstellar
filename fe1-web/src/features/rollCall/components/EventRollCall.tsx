@@ -90,6 +90,7 @@ const EventRollCall = (props: IPropTypes) => {
     if (eventHasBeenOpened) {
       navigation.navigate(STRINGS.roll_call_open, {
         rollCallID: rollCall.id.toString(),
+        rollCallIDAlias: rollCall.idAlias.toString(),
       });
     } else {
       makeToastErr('Unable to scan attendees, the event does not have an idAlias');
