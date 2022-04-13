@@ -13,14 +13,15 @@ const Stack = createStackNavigator();
  * Allows to navigate between the wallet screens.
  */
 export default function WalletNavigation() {
-  const hasSeed = WalletStore.hasSeed();
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
       initialRouteName={
-        hasSeed ? STRINGS.navigation_wallet_home_tab : STRINGS.navigation_wallet_setup_tab
+        WalletStore.hasSeed()
+          ? STRINGS.navigation_wallet_home_tab
+          : STRINGS.navigation_wallet_setup_tab
       }>
       <Stack.Screen name={STRINGS.navigation_wallet_setup_tab} component={WalletSetup} />
       <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
