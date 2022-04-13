@@ -62,13 +62,6 @@ const PROPS_TYPE = {
     name: string,
     witnesses: arrayOf(string),
   }),
-
-  // --- navigation type of react-navigation (simplified) ---
-  navigation: shape({
-    navigate: func.isRequired,
-    addListener: func.isRequired,
-    reset: func.isRequired,
-  }),
 };
 
 export interface INavigation {
