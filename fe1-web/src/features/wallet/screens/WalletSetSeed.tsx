@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
@@ -21,9 +20,10 @@ const styles = StyleSheet.create({
 /**
  * Wallet screen to set an already existing mnemonic
  */
-const WalletSetSeed = ({ navigation }: IPropTypes) => {
+const WalletSetSeed = () => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
+  const navigation = useNavigation<any>();
 
   const initWallet = async () => {
     try {
@@ -54,12 +54,5 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-WalletSetSeed.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WalletSetSeed;

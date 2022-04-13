@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -10,7 +10,6 @@ import { LaoEventType } from 'features/events/objects';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { selectLaosMap } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
@@ -33,11 +32,13 @@ const hasTokens = (tokensByLao: Record<string, Record<string, PopToken>>): boole
 /**
  * Wallet UI once the wallet is synced
  */
-const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
+const WalletSyncedSeed = () => {
   /* boolean set to true if the token recover process is finished */
   const [showTokens, setShowTokens] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
+
+  const navigation = useNavigation<any>();
 
   const rollCalls = useSelector(rollCallSelector);
   const laos = useSelector(selectLaosMap);
@@ -146,12 +147,5 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-WalletSyncedSeed.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WalletSyncedSeed;
