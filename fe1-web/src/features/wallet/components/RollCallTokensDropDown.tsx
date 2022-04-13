@@ -19,17 +19,12 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onIndexChange, rollCallTokens, selectedTokenIndex } = props;
 
   const options = rollCallTokens.map((rc, index) => {
-    const value = rc?.token.publicKey.valueOf() || '';
-    return <Picker.Item value={index} label={value} />;
+    return <Picker.Item value={index} label={rc.token.publicKey.valueOf()} />;
   });
-
-  const onChange = (index: number) => {
-    onIndexChange(index);
-  };
 
   return (
     <Picker
-      onValueChange={(value: number) => onChange(value)}
+      onValueChange={(value: number) => onIndexChange(value)}
       style={styles.pickerStyle}
       selectedValue={selectedTokenIndex}>
       {options}
@@ -39,7 +34,7 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
 
 const propTypes = {
   onIndexChange: PropTypes.func.isRequired,
-  rollCallTokens: PropTypes.arrayOf(PropTypes.instanceOf(RollCallToken)).isRequired,
+  rollCallTokens: PropTypes.arrayOf(PropTypes.instanceOf(RollCallToken).isRequired).isRequired,
   selectedTokenIndex: PropTypes.number.isRequired,
 };
 RollCallTokensDropDown.propTypes = propTypes;
