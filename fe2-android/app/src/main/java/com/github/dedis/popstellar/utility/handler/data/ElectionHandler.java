@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
@@ -12,6 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -21,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +59,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      election.setEventState(OPENED);
+      election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
       context.getMessageSender().subscribe(election.getChannel()).subscribe();
@@ -91,6 +94,32 @@ public final class ElectionHandler {
     election.setEventState(RESULTS_READY);
     lao.updateElection(election.getId(), election);
   }
+
+  /**
+   * Process an OpenElection message.
+   * @param context the HandlerContext of the message
+   * @param openElection the message that was received
+   */
+  @SuppressWarnings("unused")
+  public static void handleElectionOpen(HandlerContext context, OpenElection openElection) {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleOpenElection: channel " + channel);
+    Lao lao = laoRepository.getLaoByChannel(channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    //If created --> open it
+    if (election.getState() == CREATED) {
+      election.setEventState(OPENED);
+    }
+
+    //Sets the start time to now
+    election.setStart(Instant.now().getEpochSecond());
+    Log.d(TAG, "election opened " + election.getStartTimestamp());
+    lao.updateElection(election.getId(), election);
+  }
+
 
   /**
    * Process an ElectionEnd message.
@@ -135,7 +164,7 @@ public final class ElectionHandler {
               .map(Map.Entry::getKey)
               .findFirst();
       // Retrieve the creation time of the previous cast vote, if doesn't exist replace with min
-      // value
+      // Value
       long previousMessageCreation =
           previousMessageIdOption
               .map(s -> laoRepository.getMessageById().get(s))
