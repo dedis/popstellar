@@ -88,6 +88,7 @@ public class LAONetworkManager implements MessageSender {
   }
 
   private void processIncomingMessages() {
+
     disposables.add(
         Observable.merge(
                 // Normal message received over the wire

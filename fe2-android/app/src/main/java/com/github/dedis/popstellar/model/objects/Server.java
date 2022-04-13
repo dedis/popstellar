@@ -16,7 +16,7 @@ public class Server {
 
   // NOTE: There is no need to store peers: ServerAddress[] here.
   // As soon as a greeting message arrives in the future, we connect to all peers. The server
-  // addresses
+  // addresses will first be added to the Server repository and then
   // will be added to the lao state as soon as a lao creation message is received
   // over each connection
 

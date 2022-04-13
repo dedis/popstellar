@@ -12,12 +12,12 @@ public class ServerTest {
   public static final Server SERVER = new Server(RANDOM_ADDRESS, RANDOM_KEY);
 
   @Test
-  public void getPublicKey() {
+  public void getPublicKeyTest() {
     assertEquals(RANDOM_KEY, SERVER.getPublicKey());
   }
 
   @Test
-  public void getServerAddress() {
+  public void getServerAddressTest() {
     assertEquals(RANDOM_ADDRESS, SERVER.getServerAddress());
   }
 }

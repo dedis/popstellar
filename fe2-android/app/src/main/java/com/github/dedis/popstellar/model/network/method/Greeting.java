@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Greeting message, doesn't expect any answers, sent by the backend after connecting to it
@@ -47,7 +48,7 @@ public class Greeting extends Message {
     this.senderKey = senderKey;
   }
 
-  //Getter for params
+  // Getter for params
   @Override
   public String getMethod() {
     return Method.GREETING.getMethod();
@@ -85,7 +86,12 @@ public class Greeting extends Message {
     boolean checkPeers =
         that.getPeers().containsAll(getPeers());
 
-    return checkPeers && checkAddress;
+    return checkPeers && checkSendKey && checkAddress;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(senderKey, address, peers);
   }
 
   @Override
