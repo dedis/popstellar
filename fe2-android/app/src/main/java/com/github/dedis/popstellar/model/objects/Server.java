@@ -2,6 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+/**
+ * A basic instance of the server what will be created while handling the
+ * Greeting election message
+ */
 public class Server {
 
   // Canonical address of the server
