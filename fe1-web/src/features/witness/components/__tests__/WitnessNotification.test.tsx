@@ -3,7 +3,13 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { configureTestFeatures, mockKeyPair, mockLao } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockKeyPair,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+} from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
@@ -17,6 +23,7 @@ import {
 import {
   MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
   WintessReactContext,
+  WitnessFeature,
   WITNESS_FEATURE_IDENTIFIER,
 } from 'features/witness/interface';
 import { addMessageToWitness, witnessReducer } from 'features/witness/reducer';
@@ -34,12 +41,14 @@ const timestamp = new Timestamp(1607277600);
 const mockStore = createStore(combineReducers({ ...notificationReducer, ...witnessReducer }));
 const mockNotification = {
   id: 0,
+  laoId: mockLaoId,
   title: 'a notification',
   timestamp: 0,
   type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
   hasBeenRead: false,
   messageId: mockMessageId,
-};
+} as WitnessFeature.MessageToWitnessNotification;
+
 mockStore.dispatch(
   addMessageToWitness(
     ExtendedMessage.fromMessage(
@@ -57,11 +66,10 @@ mockStore.dispatch(addNotification(mockNotification));
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
+    useCurrentLaoId: () => mockLaoIdHash,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
-    discardNotifications: (notificationIds) =>
-      mockStore.dispatch(discardNotifications(notificationIds)),
-    markNotificationAsRead: (notificationId) =>
-      mockStore.dispatch(markNotificationAsRead(notificationId)),
+    discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),
+    markNotificationAsRead: (args) => mockStore.dispatch(markNotificationAsRead(args)),
     useCurrentLao: () => mockLao,
   } as WintessReactContext,
 };

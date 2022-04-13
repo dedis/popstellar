@@ -11,6 +11,7 @@ export namespace WitnessFeature {
 
   export interface Notification {
     id: number;
+    laoId: string;
     hasBeenRead: boolean;
     timestamp: number;
     title: string;

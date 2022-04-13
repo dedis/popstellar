@@ -7,7 +7,7 @@ import { WintessReactContext, WITNESS_FEATURE_IDENTIFIER } from '../interface/Co
 export namespace WitnessHooks {
   /* Hooks passed by dependencies */
 
-  export const useNotificationContext = (): WintessReactContext => {
+  export const useWitnessContext = (): WintessReactContext => {
     const featureContext = useContext(FeatureContext);
     // assert that the witness context exists
     if (!(WITNESS_FEATURE_IDENTIFIER in featureContext)) {
@@ -17,20 +17,33 @@ export namespace WitnessHooks {
   };
 
   /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  export const useCurrentLaoId = () => {
+    const laoId = useWitnessContext().useCurrentLaoId();
+
+    if (!laoId) {
+      throw new Error('You are currently not connected to a lao!');
+    }
+    return laoId;
+  };
+
+  /**
    * Gets discard notifications action creator
    * @returns The action creator
    */
-  export const useDiscardNotifications = () => useNotificationContext().discardNotifications;
+  export const useDiscardNotifications = () => useWitnessContext().discardNotifications;
 
   /**
    * Gets mark notification as read action creator
    * @returns The action creator
    */
-  export const useMarkNotificationAsRead = () => useNotificationContext().markNotificationAsRead;
+  export const useMarkNotificationAsRead = () => useWitnessContext().markNotificationAsRead;
 
   /**
    * Checks if the witness feature is enabled
    * @returns Whether the feature is enabled or not
    */
-  export const useIsEnabled = () => useNotificationContext().enabled;
+  export const useIsEnabled = () => useWitnessContext().enabled;
 }

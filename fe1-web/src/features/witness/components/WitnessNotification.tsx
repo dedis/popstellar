@@ -21,10 +21,13 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
   const isEnabled = WitnessHooks.useIsEnabled();
+  const laoId = WitnessHooks.useCurrentLaoId();
 
   const onWitness = () => {
     if (message) {
-      dispatch(discardNotifications([notification.id]));
+      dispatch(
+        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
+      );
       if (isEnabled) {
         requestWitnessMessage(message.channel, message.message_id);
       }
@@ -35,7 +38,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 
   const onDecline = () => {
     if (message) {
-      dispatch(markNotificationAsRead(notification.id));
+      dispatch(markNotificationAsRead({ laoId: laoId.valueOf(), notificationId: notification.id }));
       navigateToNotificationScreen();
     }
   };
@@ -43,10 +46,12 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   // if the notification state somehow gets out of sync, remove the corresponding notification
   useEffect(() => {
     if (!message) {
-      dispatch(discardNotifications([notification.id]));
+      dispatch(
+        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
+      );
       navigateToNotificationScreen();
     }
-  }, [navigateToNotificationScreen, discardNotifications, notification.id, message]);
+  }, [laoId, navigateToNotificationScreen, discardNotifications, notification.id, message]);
 
   return (
     <View>

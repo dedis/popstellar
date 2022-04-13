@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
+import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
@@ -22,8 +23,8 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
 
   actionCreators: {
     addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;
-    markNotificationAsRead: (notificationId: number) => AnyAction;
-    discardNotifications: (notificationIds: number[]) => AnyAction;
+    markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
+    discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
   };
 
   reducers: {
@@ -32,6 +33,12 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
 }
 
 export interface NotificationCompositionConfiguration {
+  /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  useCurrentLaoId: () => Hash | undefined;
+
   notificationTypes: {
     /**
      * Checks if a given notification is of this type
@@ -59,7 +66,7 @@ export interface NotificationCompositionConfiguration {
  */
 export type NotificationReactContext = Pick<
   NotificationCompositionConfiguration,
-  'notificationTypes'
+  'useCurrentLaoId' | 'notificationTypes'
 >;
 
 export interface NotificationCompositionInterface extends FeatureInterface {

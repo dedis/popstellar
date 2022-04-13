@@ -30,6 +30,7 @@ const afterMessageProcessingHandler =
   (
     enabled: WitnessConfiguration['enabled'],
     addNotification: WitnessConfiguration['addNotification'],
+    getCurrentLao: WitnessConfiguration['getCurrentLao'],
     /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
   ): AfterProcessingHandler =>
   (msg: ProcessableMessage) => {
@@ -52,6 +53,7 @@ const afterMessageProcessingHandler =
     }
 
     const entry = getWitnessRegistryEntry(msg.messageData);
+    const lao = getCurrentLao();
 
     if (entry) {
       // we have a wintessing entry for this message type
@@ -74,6 +76,7 @@ const afterMessageProcessingHandler =
           dispatch(addMessageToWitness(new ExtendedMessage(msg).toState()));
           dispatch(
             addNotification({
+              laoId: lao.id.valueOf(),
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
               timestamp: Timestamp.EpochNow().valueOf(),
               type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
@@ -103,6 +106,10 @@ export const configureNetwork = (config: WitnessConfiguration) => {
   );
 
   config.messageRegistry.addAfterProcessingHandler(
-    afterMessageProcessingHandler(config.enabled, config.addNotification /* config.isLaoWitness */),
+    afterMessageProcessingHandler(
+      config.enabled,
+      config.addNotification,
+      config.getCurrentLao /* config.isLaoWitness */,
+    ),
   );
 };

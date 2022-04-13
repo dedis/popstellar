@@ -1,6 +1,7 @@
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { WITNESS_REDUCER_PATH, MessagesToWitnessReducerState } from '../reducer';
@@ -25,6 +26,12 @@ export interface WitnessConfiguration {
   getCurrentLao: () => WitnessFeature.Lao;
 
   /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  useCurrentLaoId: () => Hash | undefined;
+
+  /**
    * Returns whether the user is witness of the current lao
    * @returns Whether the user is witness of the current lao
    */
@@ -40,13 +47,13 @@ export interface WitnessConfiguration {
    * Creates an action that marks a message as read inside the redux store
    * @returns A redux action that can be dispatched
    */
-  markNotificationAsRead: (notificationId: number) => AnyAction;
+  markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
 
   /**
    * Creates an action to discard a notification
    * @returns A redux action that can be dispatched
    */
-  discardNotifications: (notificationIds: number[]) => AnyAction;
+  discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
 }
 
 /**
@@ -54,7 +61,11 @@ export interface WitnessConfiguration {
  */
 export type WintessReactContext = Pick<
   WitnessConfiguration,
-  'enabled' | 'addNotification' | 'markNotificationAsRead' | 'discardNotifications'
+  | 'enabled'
+  | 'useCurrentLaoId'
+  | 'addNotification'
+  | 'markNotificationAsRead'
+  | 'discardNotifications'
 >;
 
 /**

@@ -51,6 +51,7 @@ export function configureFeatures() {
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     addNotification: notificationConfiguration.actionCreators.addNotification,
@@ -61,6 +62,7 @@ export function configureFeatures() {
 
   // compose features
   const notificationComposition = notification.compose({
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     notificationTypes: [...witnessConfiguration.notificationTypes],
   });
   const homeComposition = home.compose({

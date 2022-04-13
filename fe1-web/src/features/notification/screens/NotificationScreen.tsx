@@ -20,7 +20,7 @@ import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
-import { discardNotifications, NotificationState, selectAllNotifications } from '../reducer';
+import { discardNotifications, NotificationState, makeAllNotificationsSelector } from '../reducer';
 
 interface ListSeparatorItem {
   title: string;
@@ -51,6 +51,11 @@ type NavigationProps = StackScreenProps<
 const NotificationScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
+  const laoId = NotificationHooks.useCurrentLaoId();
+  const selectAllNotifications = useMemo(
+    () => makeAllNotificationsSelector(laoId.valueOf()),
+    [laoId],
+  );
   const notifications = useSelector(selectAllNotifications);
   const notificationData = useMemo(() => {
     const read: NotificationItem[] = [];
@@ -98,7 +103,12 @@ const NotificationScreen = () => {
       }
     }
     // remove notifications from the notification reducer
-    dispatch(discardNotifications(notifications.map((n) => n.id)));
+    dispatch(
+      discardNotifications({
+        laoId: laoId.valueOf(),
+        notificationIds: notifications.map((n) => n.id),
+      }),
+    );
   };
 
   return (

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 
-import { selectUnreadNotificationCount } from '../reducer';
+import { NotificationHooks } from '../hooks';
+import { makeUnreadNotificationCountSelector } from '../reducer';
 
 const NotificationBadgeStyles = StyleSheet.create({
   container: {
@@ -18,6 +19,11 @@ const NotificationBadgeStyles = StyleSheet.create({
 });
 
 const NotificationBadge = () => {
+  const laoId = NotificationHooks.useCurrentLaoId();
+  const selectUnreadNotificationCount = useMemo(
+    () => makeUnreadNotificationCountSelector(laoId.valueOf()),
+    [laoId],
+  );
   const count = useSelector(selectUnreadNotificationCount);
 
   if (count <= 0) {

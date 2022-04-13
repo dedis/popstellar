@@ -335,6 +335,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                   "hasBeenRead": false,
                                   "id": 0,
                                   "isLastItem": true,
+                                  "laoId": "-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=",
                                   "timestamp": 0,
                                   "title": "a notification",
                                   "type": "mock-notification",

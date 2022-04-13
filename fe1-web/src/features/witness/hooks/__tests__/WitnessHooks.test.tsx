@@ -2,6 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
+import { mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { WintessReactContext, WITNESS_FEATURE_IDENTIFIER } from 'features/witness/interface';
 
@@ -14,6 +15,7 @@ const markNotificationAsRead = jest.fn();
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
+    useCurrentLaoId: () => mockLaoIdHash,
     addNotification,
     discardNotifications,
     markNotificationAsRead,
@@ -27,6 +29,15 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('WitnessHooks', () => {
+  describe('WitnessHooks.useCurrentLaoId', () => {
+    it('should return the correct value', () => {
+      const { result } = renderHook(() => WitnessHooks.useCurrentLaoId(), {
+        wrapper,
+      });
+      expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
   describe('WitnessHooks.useDiscardNotifications', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => WitnessHooks.useDiscardNotifications(), {

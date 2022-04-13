@@ -20,6 +20,19 @@ export namespace NotificationHooks {
   };
 
   /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  export const useCurrentLaoId = () => {
+    const laoId = useNotificationContext().useCurrentLaoId();
+
+    if (!laoId) {
+      throw new Error('You are currently not connected to a lao!');
+    }
+    return laoId;
+  };
+
+  /**
    * Gets the list of notification types with e.g. the component that should be used to
    * render them
    * @returns The list of different notification types

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
+import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   NotificationReactContext,
@@ -16,6 +17,7 @@ import NotificationScreen from '../NotificationScreen';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
+    useCurrentLaoId: () => mockLaoIdHash,
     notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };
@@ -23,7 +25,12 @@ const contextValue = {
 // set up mock store
 const mockStore = createStore(combineReducers({ ...notificationReducer }));
 mockStore.dispatch(
-  addNotification({ title: 'a notification', timestamp: 0, type: 'mock-notification' }),
+  addNotification({
+    laoId: mockLaoId,
+    title: 'a notification',
+    timestamp: 0,
+    type: 'mock-notification',
+  }),
 );
 
 describe('NotificationScreen', () => {

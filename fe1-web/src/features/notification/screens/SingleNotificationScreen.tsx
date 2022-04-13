@@ -18,7 +18,8 @@ const SingleNotificationScreen = () => {
   const { notificationId } = route.params;
 
   const store = useStore();
-  const notification = getNotification(notificationId, store.getState());
+  const laoId = NotificationHooks.useCurrentLaoId();
+  const notification = getNotification(laoId.valueOf(), notificationId, store.getState());
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
   // search the notification type component list for a fitting comonent to render
