@@ -28,11 +28,12 @@ public class Greeting extends Message {
 
   /**
    * Constructor for a Greeting Message
+   *
    * @param channel the channel over which the message is sent
    * @throws IllegalArgumentException if channel is null
    */
-  public Greeting(Channel channel,@NonNull String address,
-      @NonNull String senderKey, String... peers) {
+  public Greeting(
+      Channel channel, @NonNull String senderKey, @NonNull String address, String... peers) {
     super(channel);
     // Peers can be empty
     this.peers = Arrays.asList(peers);
@@ -52,9 +53,13 @@ public class Greeting extends Message {
     return Method.GREETING.getMethod();
   }
 
-  public String getSenderKey(){return senderKey;}
+  @NonNull
+  public String getSenderKey() {
+    return senderKey;}
 
-  public String getAddress(){return address;}
+  @NonNull
+  public String getAddress() {
+    return address;}
 
   public List<String> getPeers(){
       return peers;
@@ -76,6 +81,7 @@ public class Greeting extends Message {
 
     // Check fields, how to equality check to keys ?
     boolean checkAddress = that.getAddress().equals(getAddress());
+    boolean checkSendKey = that.getSenderKey().equals(getSenderKey());
     boolean checkPeers =
         that.getPeers().containsAll(getPeers());
 
@@ -88,15 +94,15 @@ public class Greeting extends Message {
         + "channel='"
         + getChannel().toString()
         + '\''
-        + ", sender="
+        + ", sender='"
         + getSenderKey()
         + '\''
-        + ", address="
+        + ", address='"
         + getAddress()
         + '\''
-        + ", params="
+        + ", peers='"
         + Arrays.toString(peers.toArray())
-        + '}';
+        + "'}";
   }
 
 }
