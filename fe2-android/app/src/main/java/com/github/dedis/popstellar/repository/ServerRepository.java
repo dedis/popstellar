@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 /**
  * Represents the set of all backends that are currently connected
  * to the app. Greetings message handling should handle this repository.
+ * Should be a global repository.
  */
 @Singleton
 public class ServerRepository {
