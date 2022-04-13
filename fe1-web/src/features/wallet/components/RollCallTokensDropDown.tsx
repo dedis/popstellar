@@ -25,7 +25,6 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
 
   const onChange = (index: number) => {
     onIndexChange(index);
-    console.debug(`Changing index to ${index}`);
   };
 
   return (
