@@ -5,6 +5,7 @@ import { Hash } from 'core/objects';
 import { DigitalCashTransaction, TxOut } from '../network/DigitalCashTransaction';
 
 interface DigitalCashReducerState {
+  transactions: DigitalCashTransaction[];
   transactionsByHash: Record<string, DigitalCashTransaction>;
   txsOutByPKHash: Record<string, TxOut[]>;
 }
@@ -49,6 +50,7 @@ const digitalCashSlice = createSlice({
 
           if(!(rollCallId in state.byLaoId[laoId])){
             state.byLaoId[laoId].byRCId[rollCallId] = {
+              transactions: [],
               txsOutByPKHash: {},
               transactionsByHash: {},
             };
