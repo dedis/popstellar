@@ -2,7 +2,8 @@ import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface DigitalCashTransactionState {
   version: number;
-  txsIn: TxIn[];
+  transactionID: string;
+  txsIn: TxIn[]; // those should have a state
   txsOut: TxOut[];
   lockTime: number;
 }
@@ -28,6 +29,8 @@ export interface TxOut {
 export class DigitalCashTransaction {
   public readonly version: number;
 
+  public readonly transactionID: Hash;
+
   public readonly txsIn: TxIn[];
 
   public readonly txsOut: TxOut[];
@@ -52,22 +55,30 @@ export class DigitalCashTransaction {
     if (obj.lockTime === undefined) {
       throw new Error("Undefined 'lockTime' when creating 'DigitalCashTransaction'");
     }
+    if (obj.transactionID === undefined) {
+      throw new Error("Undefined 'transactionID' when creating 'DigitalCashTransaction'");
+    }
 
     this.version = obj.version;
     this.txsIn = obj.txsIn;
     this.txsOut = obj.txsOut;
     this.lockTime = obj.lockTime;
+    this.transactionID = obj.transactionID;
   }
 
   public static fromState(
     digitalCashTransactionState: DigitalCashTransactionState,
   ): DigitalCashTransaction {
-    return new DigitalCashTransaction(digitalCashTransactionState);
+    return new DigitalCashTransaction({
+      ...digitalCashTransactionState,
+      transactionID: new Hash(digitalCashTransactionState.transactionID),
+    });
   }
 
   public toState(): DigitalCashTransactionState {
     return {
       ...this,
+      transactionID: this.transactionID.valueOf(),
     };
   }
 }
