@@ -12,8 +12,8 @@ import org.junit.Test;
 
 public class GreetingTest {
 
-  private static final Channel CHANNEL = Channel.ROOT;
-  private static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
+  public static final Channel CHANNEL = Channel.ROOT;
+  public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
   public static final String RANDOM_PEER = "http://128.0.0.2";
 
