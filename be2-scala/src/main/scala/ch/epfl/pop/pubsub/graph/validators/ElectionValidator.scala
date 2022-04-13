@@ -7,6 +7,12 @@ import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection,
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadAck
+
+import scala.collection.mutable
+import scala.concurrent.Await
+import scala.util.Success
 
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "Election"
@@ -58,10 +64,38 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val channel: Channel = rpcMessage.getParamsChannel
 
         //val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.created_at.toString, data.electionId.toString) //find name here) // is this right? as no name but election
-
-        if (!validateTimestampStaleness(data.created_at)) {
+        val setupMessage = getSetupMessage(channel)
+        val questions = setupMessage.questions
+        val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
+        // check for timestamp
+        if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        }
+        // TODO before this check if the channel exists
+        else if (false)
+          Right(validationError(s"the election channel doesn't exists"))
+        //  check it the question id exists
+        else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question)))
+          Right(validationError(s"Incorrect parameter questionId"))
+        // check if the ballots are correct
+        else if (!data.votes.forall(
+          voteElection => {
+            val vote = voteElection.vote match {
+              case Some(v :: _) => v
+              case _ => -1
+            }
+            // check if the ballot is available
+            vote < q2Ballots(voteElection.question).size
+          }
+        ))
+          Right(validationError(s"Incorrect parameter ballot"))
+        // check for question id duplication
+        else if (data.votes.map(_.question).distinct.length != data.votes.length)
+          Right(validationError(s"The castvote contains twice the same question id"))
+        // check open and end constraints
+        else if (getOpenMessage(channel).isEmpty)
+          Right(validationError(s"This election has not started yet"))
+        else if (getEndMessage(channel).isDefined)
+          Right(validationError(s"This election has already ended"))
         /*else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
         } */
@@ -82,6 +116,74 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+
+  private def getSetupMessage(electionChannel: Channel): SetupElection = {
+    var result: SetupElection = null
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
+      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+        for (message <- channelData.messages) {
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
+            case Some(Success(value)) => value
+            case _ => None
+          }) match {
+            case DbActorReadAck(Some(message)) =>
+              try {
+                result = SetupElection.buildFromJson(message.data.decodeToString())
+              } catch {
+                case exception: Throwable => print(exception)
+              }
+          }
+        }
+      case _ =>
+    }
+    result
+  }
+
+  private def getOpenMessage(electionChannel: Channel): Option[EndElection] = {
+    var result: Option[EndElection] = None
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
+      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+        for (message <- channelData.messages) {
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
+            case Some(Success(value)) => value
+            case _ => None
+          }) match {
+            case DbActorReadAck(Some(message)) =>
+              try {
+                result = Some(EndElection.buildFromJson(message.data.decodeToString()))
+              } catch {
+                case exception: Throwable => print(exception)
+              }
+          }
+        }
+      case _ =>
+    }
+    result
+  }
+
+
+  private def getEndMessage(electionChannel: Channel): Option[EndElection] = {
+    var result: Option[EndElection] = None
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
+      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+        for (message <- channelData.messages) {
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
+            case Some(Success(value)) => value
+            case _ => None
+          }) match {
+            case DbActorReadAck(Some(message)) =>
+              try {
+                result = Some(EndElection.buildFromJson(message.data.decodeToString()))
+              } catch {
+                case exception: Throwable => print(exception)
+              }
+          }
+        }
+      case _ =>
+    }
+    result
+  }
+
 
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
