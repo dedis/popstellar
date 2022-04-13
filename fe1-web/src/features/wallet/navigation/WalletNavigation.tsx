@@ -4,6 +4,7 @@ import React from 'react';
 import STRINGS from 'resources/strings';
 
 import { WalletError, WalletHome, WalletSetSeed, WalletSetup, WalletCreateSeed } from '../screens';
+import { WalletStore } from '../store';
 
 const Stack = createStackNavigator();
 
@@ -12,11 +13,15 @@ const Stack = createStackNavigator();
  * Allows to navigate between the wallet screens.
  */
 export default function WalletNavigation() {
+  const hasSeed = WalletStore.hasSeed();
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+      initialRouteName={
+        hasSeed ? STRINGS.navigation_wallet_home_tab : STRINGS.navigation_wallet_setup_tab
+      }>
       <Stack.Screen name={STRINGS.navigation_wallet_setup_tab} component={WalletSetup} />
       <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
       <Stack.Screen name={STRINGS.navigation_wallet_create_seed} component={WalletCreateSeed} />
