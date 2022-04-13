@@ -4,7 +4,8 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
+import ch.epfl.pop.pubsub.graph.handlers.ElectionHandler.{dbActor, duration}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -218,19 +219,64 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
 
-        if (!validateTimestampStaleness(data.created_at)) {
+        if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        } else if (laoId != data.lao) {
+        else if (laoId != data.lao)
           Right(validationError("unexpected lao id"))
-        } else if (!validateOwner(sender, channel)) {
+        else if (!validateOwner(sender, channel))
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
+        else if (!validateChannelType(ObjectType.ELECTION, channel))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        } else {
+        // TODO : check it - is this check ok ?
+        else if (!compareResults(getLastVotes(channel).flatMap(_.votes.map(_.id)), data.registered_votes))
+          Right(validationError(s"Incorrect verification hash"))
+
+        else {
           Left(rpcMessage)
         }
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+
+  private def getLastVotes(electionChannel: Channel): List[CastVoteElection] =
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
+      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+        val messages: List[Hash] = channelData.messages
+        val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
+        for (messageIdHash <- messages) {
+          val dbAnswer =
+            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value match {
+              case Some(Success(value)) => value
+              case _ => None
+            }
+          dbAnswer match {
+            case DbActorReadAck(Some(message)) =>
+              val sender = message.sender
+              // FIXME : the message contains the correct base64-encoded json in data, but message.decodedData return None
+              /*message.decodedData match {
+                case Some(castVote: CastVoteElection) =>
+                  if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at))
+                    lastVotes.update(sender, castVote)
+                case _ =>
+                  ()
+              }*/
+              try {
+                val castVote: CastVoteElection = CastVoteElection.buildFromJson(message.data.decodeToString())
+                if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at)) {
+                  lastVotes.update(sender, castVote)
+                }
+              } catch {
+                case exception: Throwable => print(exception)
+              }
+            case _ =>
+          }
+        }
+        println(lastVotes)
+        lastVotes.values.toList
+      case _ => Nil
+    }
+
+  private def compareResults(messages: List[Hash], checkHash: Hash): Boolean =
+    Hash(Base64Data(messages.map(_.toString).sorted.foldLeft("")(_ + _))) == checkHash
 }
