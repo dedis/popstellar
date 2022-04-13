@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,6 @@ import { LaoEventType } from 'features/events/objects';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
@@ -37,12 +36,13 @@ const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CAL
 /**
  * Wallet UI once the wallet is synced
  */
-const WalletHome = ({ navigation }: IPropTypes) => {
+const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
   const rollCalls = useSelector(rollCallSelector);
   const lao = useSelector(selectCurrentLao);
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     if (lao && rollCalls[lao.id.valueOf()]) {
@@ -112,12 +112,5 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-WalletHome.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WalletHome;
