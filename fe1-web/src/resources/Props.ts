@@ -67,6 +67,7 @@ const PROPS_TYPE = {
   navigation: shape({
     navigate: func.isRequired,
     addListener: func.isRequired,
+    reset: func.isRequired,
   }),
 };
 

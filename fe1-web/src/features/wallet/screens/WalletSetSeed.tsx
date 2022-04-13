@@ -28,7 +28,10 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   const initWallet = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.navigation_synced_wallet);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: STRINGS.navigation_synced_wallet }],
+      });
     } catch (e) {
       console.error(e);
       navigation.navigate(STRINGS.navigation_wallet_error);
