@@ -135,7 +135,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions *map[s
 	// get hashed ID of valid votes sorted by msg ID
 	validVotes := make(map[string]string)
 	validVotesSorted := make([]string, 0)
-
+ 
 	for _, question := range *questions {
 		msgIDs := make([]string, 0)
 
