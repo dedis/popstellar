@@ -47,6 +47,19 @@ describe('ServerReducer', () => {
         byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
       } as ServerReducerState);
     });
+
+    it('should throw if the same address is added twice', () => {
+      const fn = () =>
+        serverReduce(
+          {
+            allAddresses: [mockAddress],
+            byAddress: { [mockAddress]: mockServerState },
+          } as ServerReducerState,
+          addServer(mockServerState),
+        );
+
+      expect(fn).toThrow(Error);
+    });
   });
 
   describe('updateServer', () => {

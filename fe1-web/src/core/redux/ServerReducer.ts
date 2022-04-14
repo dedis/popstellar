@@ -30,6 +30,12 @@ const serverSlice = createSlice({
     addServer: (state: Draft<ServerReducerState>, action: PayloadAction<ServerState>) => {
       const server = action.payload;
 
+      if (server.address in state.byAddress) {
+        throw Error(
+          `${server.address} is already part of state.byAddress. Use updateServer() instead of addServer()`,
+        );
+      }
+
       state.byAddress[server.address] = server;
       state.allAddresses.push(server.address);
     },
