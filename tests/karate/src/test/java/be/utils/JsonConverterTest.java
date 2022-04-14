@@ -3,42 +3,43 @@ package be.utils;
 import com.intuit.karate.Json;
 import org.junit.jupiter.api.Test;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JsonConverterTest {
 
-  private Json constructJsonDataForValidLao(){
-    Map<String,Object> laoData = new LinkedHashMap<>();
-    laoData.put("object","lao");
-    laoData.put("action","create");
-    laoData.put("name","LAO");
-    laoData.put("creation",1633035721);
-    laoData.put("organizer","J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
-    String witness[] = new String[0];
-    laoData.put("witnesses",witness);
-    laoData.put("id","p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=");
+  private Json constructJsonDataForValidLao() {
+    Map<String, Object> laoData = new LinkedHashMap<>();
+    laoData.put("object", "lao");
+    laoData.put("action", "create");
+    laoData.put("name", "LAO");
+    laoData.put("creation", 1633035721);
+    laoData.put("organizer", "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
+    String[] witness = new String[0];
+    laoData.put("witnesses", witness);
+    laoData.put("id", "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=");
     Json laoDataJson = Json.of(laoData);
     return laoDataJson;
   }
 
-
   @Test
-  public void testJsonDataToBase64PrintsInDesiredFormat(){
+  public void testJsonDataToBase64PrintsInDesiredFormat() {
     JsonConverter jsonConverter = new JsonConverter();
-    Map<String,Object> testMap = new LinkedHashMap<>();
-    testMap.put("test1","test2");
+    Map<String, Object> testMap = new LinkedHashMap<>();
+    testMap.put("test1", "test2");
     Json testJson = Json.of(testMap);
-    Json testConverter = jsonConverter.publishМessageFromData(testJson.toString(),2, "/root");
+    Json testConverter = jsonConverter.publishМessageFromData(testJson.toString(), 2, "/root");
     String jsonString = testConverter.toString();
     System.out.println(jsonString);
   }
 
   @Test
-  public void testIfMessageFromDataCorrespondsToTrueMessageForValidLao(){
+  public void testIfMessageFromDataCorrespondsToTrueMessageForValidLao() {
     JsonConverter jsonConverter = new JsonConverter();
 
-    String rawBase64ValidLaoData = "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9";
+    String rawBase64ValidLaoData =
+        "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9";
     Json laoDataJson = constructJsonDataForValidLao();
 
     String constructedData = jsonConverter.convertJsonToBase64(laoDataJson);
@@ -46,53 +47,59 @@ public class JsonConverterTest {
   }
 
   @Test
-  public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage(){
+  public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage() {
     String laoDataJsonString = constructJsonDataForValidLao().toString();
     JsonConverter jsonConverter = new JsonConverter();
-    Json jsonValidLaoMessage= jsonConverter.publishМessageFromData(laoDataJsonString,1,"/root");
-    Map<String,Object> validStringMessage = new LinkedHashMap<>();
-    validStringMessage.put("method","publish");
-    validStringMessage.put("id",1);
-    Map<String,Object> paramsMap = new LinkedHashMap<>();
-    paramsMap.put("channel","/root");
-    Map<String,Object> messageMap  = new LinkedHashMap<>();
+    Json jsonValidLaoMessage = jsonConverter.publishМessageFromData(laoDataJsonString, 1, "/root");
+    Map<String, Object> validStringMessage = new LinkedHashMap<>();
+    validStringMessage.put("method", "publish");
+    validStringMessage.put("id", 1);
+    Map<String, Object> paramsMap = new LinkedHashMap<>();
+    paramsMap.put("channel", "/root");
+    Map<String, Object> messageMap = new LinkedHashMap<>();
 
     // fields are taken from valid_lao_create.json
-    messageMap.put("data","eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9");
-    messageMap.put("sender","J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
-    messageMap.put("signature","ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==");
-    messageMap.put("message_id","2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=");
+    messageMap.put(
+        "data",
+        "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9");
+    messageMap.put("sender", "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
+    messageMap.put(
+        "signature",
+        "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==");
+    messageMap.put("message_id", "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=");
 
     String[] witness = new String[0];
-    messageMap.put("witness_signatures",witness);
-    paramsMap.put("message",messageMap);
-    validStringMessage.put("params",paramsMap);
-    validStringMessage.put("jsonrpc","2.0");
+    messageMap.put("witness_signatures", witness);
+    paramsMap.put("message", messageMap);
+    validStringMessage.put("params", paramsMap);
+    validStringMessage.put("jsonrpc", "2.0");
     Json toCompare = Json.of(validStringMessage);
 
     assert toCompare.toString().equals(jsonValidLaoMessage.toString());
-
   }
 
   @Test
-  public void testIfHashIsCorrect(){
+  public void testIfHashIsCorrect() throws NoSuchAlgorithmException {
     // The message examined is a valid message sent by fe2 and can be found
     // in data/lao/valid_lao_create_fe2.json folder
     JsonConverter jsonConverter = new JsonConverter();
     // This data was collected from a message sent by fe-2 and can be found in
     // data/lao/data/valid_lao_create_fe2_data.json folder
-    String signature_sent = "QZMdg27-pdQKUDQMlsQY1uAiIgHtT5s29n7kUUI4cHdAGVRMNopC7wVJHvpC1j6p95RN0IqZyC-VhldE0bMgAA==";
+    String signature_sent =
+        "QZMdg27-pdQKUDQMlsQY1uAiIgHtT5s29n7kUUI4cHdAGVRMNopC7wVJHvpC1j6p95RN0IqZyC-VhldE0bMgAA==";
     String message_id_sent = "ZV_OUCYDlF2ScULlLDmjZuiqzcbujEgjcaoFmLsArpU=";
-    String dataBase64_sent = "eyJjcmVhdGlvbiI6MTY0ODgxOTE0OCwiaWQiOiJoTVNoM2t2a0lHMGdBcWpLQ3ZrajBQV2Eza3VHd21PdnR5SEVua2d4UzdrPSIsIm5hbWUiOiJsYW80Iiwib3JnYW5pemVyIjoiWUdaR25NUkFkS2J3MDZpX1lZczFxVDA3TlBZTEFLMGNubnpDcnNDTFE0QT0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==";
+    String dataBase64_sent =
+        "eyJjcmVhdGlvbiI6MTY0ODgxOTE0OCwiaWQiOiJoTVNoM2t2a0lHMGdBcWpLQ3ZrajBQV2Eza3VHd21PdnR5SEVua2d4UzdrPSIsIm5hbWUiOiJsYW80Iiwib3JnYW5pemVyIjoiWUdaR25NUkFkS2J3MDZpX1lZczFxVDA3TlBZTEFLMGNubnpDcnNDTFE0QT0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==";
 
     // Testing if the hash function works
-    String message_id_check = jsonConverter.hash(dataBase64_sent.getBytes(),signature_sent.getBytes());
+    String message_id_check =
+        jsonConverter.hash(dataBase64_sent.getBytes(), signature_sent.getBytes());
 
     assert message_id_sent.equals(message_id_check);
   }
 
   @Test
-  public void checkRegisteredVoteFieldIsValid(){
+  public void checkRegisteredVoteFieldIsValid() throws NoSuchAlgorithmException {
     JsonConverter jsonConverter = new JsonConverter();
     // registered votes filed present in valid_election_data.json
     String registeredVotes = "GX9slST3yY_Mltkjimp-eNq71mfbSbQ9sruABYN8EoM=";
@@ -100,7 +107,5 @@ public class JsonConverterTest {
     String realRegisteredVotes = jsonConverter.hash("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=".getBytes());
     assert registeredVotes.equals(realRegisteredVotes);
   }
-
-
 
 }
