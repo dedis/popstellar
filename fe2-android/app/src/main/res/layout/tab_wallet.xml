@@ -17,14 +17,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.46" />
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet_change_digital_cash" />
 
   <androidx.constraintlayout.widget.Guideline
     android:id="@+id/guideline_vertical2_tab_wallet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.64" />
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet_change_social_media_digital_cash" />
 
   <Button
     android:id="@+id/tab_wallet"
