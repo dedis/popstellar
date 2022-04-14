@@ -26,5 +26,11 @@ public enum ScanningAction {
     public String toString() {
       return "Add Participants to the LAO";
     }
+  },
+
+  POST_TRANSACTION_PARTICIPANT {
+    @NonNull
+    @Override
+    public String toString() {return "Post Transaction to a participant";}
   }
 }

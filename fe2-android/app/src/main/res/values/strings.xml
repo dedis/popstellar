@@ -110,6 +110,7 @@
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="roll_call_title_required">Roll-Call Title required</string>
   <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
+  <string name="qrcode_scanning_to_send_transaction">Scan personal QR code to one you would make a transaction </string>
 
   <!-- Witness -->
   <string name="delete_witness_dialog_title">Delete ?</string>
