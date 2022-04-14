@@ -1,48 +1,10 @@
-import {
-  ActionType,
-  AfterProcessingHandler,
-  ObjectType,
-  ProcessableMessage,
-} from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { getStore } from 'core/redux';
 
 import { WitnessConfiguration } from '../interface';
 import { WitnessMessage } from './messages';
-import { WitnessingType, getWitnessRegistryEntry } from './messages/WitnessRegistry';
 import { handleWitnessMessage } from './WitnessHandler';
-import { requestWitnessMessage } from './WitnessMessageApi';
-
-/**
- * Is executed after a message has been successfully handled.
- * It handles the passive witnessing for messages and prepares
- * the application store for the act of manually witnessing
- * other messages
- */
-const afterMessageProcessingHandler =
-  (
-    enabled: WitnessConfiguration['enabled'],
-    /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
-  ): AfterProcessingHandler =>
-  (msg: ProcessableMessage) => {
-    const entry = getWitnessRegistryEntry(msg.messageData);
-
-    if (entry) {
-      // we have a wintessing entry for this message type
-      switch (entry.type) {
-        case WitnessingType.PASSIVE:
-          if (enabled) {
-            requestWitnessMessage(msg.channel, msg.message_id);
-          }
-          break;
-
-        case WitnessingType.ACTIVE:
-          break;
-
-        case WitnessingType.NO_WITNESSING:
-        default:
-          break;
-      }
-    }
-  };
+import { afterMessageProcessingHandler, makeWitnessStoreWatcher } from './WitnessStoreWatcher';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
@@ -57,7 +19,10 @@ export const configureNetwork = (config: WitnessConfiguration) => {
     WitnessMessage.fromJson,
   );
 
-  config.messageRegistry.addAfterProcessingHandler(
-    afterMessageProcessingHandler(config.enabled /* config.isLaoWitness */),
-  );
+  // listen for new processable messages
+  const store = getStore();
+  store.subscribe(makeWitnessStoreWatcher(store, afterMessageProcessingHandler(config.enabled)));
+  /* config.messageRegistry.addAfterProcessingHandler(
+    afterMessageProcessingHandler(config.enabled, config.isLaoWitness),
+  ); */
 };
