@@ -3,6 +3,7 @@ import { Store } from 'redux';
 import { KeyPairStore } from 'core/keypair';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
+import { Timestamp } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import {
