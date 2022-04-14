@@ -77,8 +77,8 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
     // connect to all received peer addresses
     // IMPORTANT: The network manager deduplicates connections to the same address (string)
     // and the received peer addresses are supposed to be the canonical ones.
-    // Hence it just has to be made sure that the first connection also is to the canonical
-    // address, otherwiese a client will connect to the same server twice (e.g. using its IP and then
+    // Hence we just have to make sure that the first connection is also to the canonical
+    // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
     // then using the canonical domain address)
     const networkManager = getNetworkManager();
     for (const peerAddress of greetingParams.peers) {

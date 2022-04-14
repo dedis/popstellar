@@ -72,7 +72,7 @@ export const getServerState = (state: any): ServerReducerState => state[SERVER_R
 
 /**
  * A function to directly retrieve the public key from the redux store.
- * NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
  * @param address The server address
  * @param state The redux state
  * @returns The public key for the given server address or undefined if there is none
@@ -99,7 +99,7 @@ export const makeServerSelector = (address: ServerAddress) =>
   createSelector(
     // First input: map of addresses to servers
     (state) => getServerState(state).byAddress,
-    // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+    // Selector: returns the server object associated to the given address
     (byAddress: Record<string, ServerState>): Server | undefined =>
       address in byAddress ? Server.fromState(byAddress[address]) : undefined,
   );
