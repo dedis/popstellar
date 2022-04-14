@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Ca
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
@@ -148,6 +149,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -259,6 +261,44 @@ public class LaoDetailViewModel extends AndroidViewModel
   protected void onCleared() {
     super.onCleared();
     disposables.dispose();
+  }
+
+  /**
+   * Opens the election and publish opening message
+   * triggers OpenElection event on success or logs appropriate error
+   * @param e election to be opened
+   */
+  public void openElection(Election e){
+
+    Log.d(TAG, "opening election with name : " + e.getName());
+    Lao lao = getCurrentLaoValue();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+
+    Channel channel = e.getChannel();
+    String laoId = lao.getId();
+
+    // The time will have to be modified on the backend
+    OpenElection openElection =
+        new OpenElection(laoId, e.getId(), e.getStartTimestamp());
+
+    Log.d(TAG, PUBLISH_MESSAGE);
+    Disposable disposable =
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, openElection)
+            .subscribe(
+                () -> {
+                  Log.d(TAG, "opened election successfully");
+                  // Block action button on expandableListViewAdapter
+                  openElectionEvent();
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_open_election));
+    disposables.add(disposable);
   }
 
   public void endElection(Election election) {
@@ -635,7 +675,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       KeyPair mainKey = keyManager.getMainKeyPair();
-      // generate the signature of the message
+      // Generate the signature of the message
       Signature signature = mainKey.sign(witnessMessage.getMessageId());
 
       Log.d(TAG, PUBLISH_MESSAGE);
@@ -677,6 +717,10 @@ public class LaoDetailViewModel extends AndroidViewModel
    */
   public LiveData<SingleEvent<Boolean>> getOpenLaoDetailEvent() {
     return mOpenLaoDetailEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent() {
+    return mOpenElectionEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getEndElectionEvent() {
@@ -944,6 +988,13 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openDigitalCash() {
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
+  }
+  
+  /**
+   * Propagates the open election event
+   */
+  public void openElectionEvent() {
+    mOpenElectionEvent.postValue(new SingleEvent<>(true));
   }
 
   public void endElectionEvent() {
