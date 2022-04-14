@@ -37,39 +37,34 @@ public class JsonConverter {
    * and the channel where the message is supposed to be sent
    */
   public Json publishМessageFromData(String stringData, int id, String channel) {
-    Json messageData = Json.of(stringData);
-    Map<String, Object> messageJson = new LinkedHashMap<>();
-
-    messageJson.put("method", "publish");
-    messageJson.put("id", id);
+    Json messageData = Json.object();
+    messageData.set("method", "publish");
+    messageData.set("id", id);
     Map<String, Object> paramsPart = new LinkedHashMap<>();
     try{
     paramsPart = constructParamsField(channel, stringData);
+    messageData.set("params", paramsPart);
     }catch (GeneralSecurityException e){
       e.printStackTrace();
     }
+    messageData.set("jsonrpc", "2.0");
 
-    messageJson.put("params", paramsPart);
-    messageJson.put("jsonrpc", "2.0");
-
-    return Json.of(messageJson);
+    return messageData;
   }
 
   public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException, NoSuchAlgorithmException {
     Map<String, Object> messagePart = new LinkedHashMap<>();
     Json messageData = Json.of(stringData);
     String messageDataBase64 = convertJsonToBase64(messageData);
+    String signature = constructSignature(stringData);
+    String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
+    String[] witness = new String[0];
+
     messagePart.put("data", messageDataBase64);
     messagePart.put("sender", senderPk);
-
-    String signature = constructSignature(stringData);
     messagePart.put("signature", signature);
-    String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
-
     messagePart.put("message_id", messageId);
     System.out.println("message id is : " + messageId);
-
-    String[] witness = new String[0];
     messagePart.put("witness_signatures", witness);
 
     return messagePart;
@@ -77,9 +72,9 @@ public class JsonConverter {
 
   public Map<String, Object> constructParamsField(String channel, String messageDataBase64) throws GeneralSecurityException {
     Map<String, Object> paramsPart = new LinkedHashMap<>();
-    paramsPart.put("channel", channel);
-
     Map<String, Object> messagePart = constructMessageField(messageDataBase64);
+
+    paramsPart.put("channel", channel);
     paramsPart.put("message", messagePart);
 
     return paramsPart;
