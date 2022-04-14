@@ -8,10 +8,11 @@
   <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
-  <string name="tab_social_media">Chirp</string>
+  <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Transaction</string>
 
   <!-- Home -->
+  <string name="home_title">My LAOs</string>
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
   <string name="text_body_welcome">\n\n To connect to a local organization (LAO), please tap Connect above. \n\n To
         launch a new LAO as an organizer, please tap Launch tab above.
@@ -198,6 +199,7 @@
   <string name="logout_title">Log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="copied_to_clipboard">Copied to clipboard</string>
+  <string name="copy_button_descriptor">Button to copy seed</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
