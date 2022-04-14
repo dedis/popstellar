@@ -25,74 +25,75 @@ jobs:
         working-directory: ./fe1-web
 
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+    - name: Setup repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
-      - name: Setup node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Setup node ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Setup expo action
-        uses: expo/expo-github-action@v5
-        with:
-          expo-version: 4.x
+    - name: Setup expo action
+      uses: expo/expo-github-action@v5
+      with:
+        expo-version: 4.x
 
-      - name: Setup node cache
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+    - name: Setup node cache
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
-      - name: Setup npm dependencies
-        run: |
-          npm install
+    - name: Setup npm dependencies
+      run: |
+        npm install
 
-      - name: Check npm security issues
-        run: npm audit fix
-        continue-on-error: true
+    - name: Check npm security issues
+      run: npm audit fix
+      continue-on-error: true
 
-      - name: Run lint
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }} # execute even if previous steps failed
-        run: npm run eslint
+    - name: Run lint
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }}  # execute even if previous steps failed
+      run: npm run eslint
 
-      - name: Validate dependencies
-        if: ${{ always() }} # execute even if previous steps failed
-        run: npm run depcruise
+    - name: Validate dependencies
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: npm run depcruise
 
-      - name: Run tsdoc
-        if: ${{ always() }} # execute even if previous steps failed
-        run: npm run docs
+    - name: Run tsdoc
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: npm run docs
 
-      - name: Run test
-        if: ${{ always() }} # execute even if previous steps failed
-        run: npm run test
+    - name: Run test
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: npm run test
 
-      - name: Run code analysis
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }} # execute even if previous steps failed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-        run: |
-          npm install -g sonarqube-scanner
-          sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN_FE1 }}
+    - name: Run code analysis
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }}  # execute even if previous steps failed
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+      run: |
+        npm install -g sonarqube-scanner
+        sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN_FE1 }}
 
-      - name: Verify expo project health
-        if: ${{ always() }} # execute even if previous steps failed
-        run: |
-          expo doctor
+    - name: Verify expo project health
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: |
+        expo doctor
 
-      - name: Build expo web project
-        run: |
-          expo build:web
+    - name: Build expo web project
+      run: |
+        expo build:web
+
 
   be1-go:
     name: Be1-Go
@@ -106,61 +107,58 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Setup Go 1.17.8 #Temporary fix to get the CI running again for now (5.4.2022)
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17.8
+    - name: Setup Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
 
-      - name: Setup repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+    - name: Setup repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
-      - uses: actions/cache@v2
-        with:
-          # In order:
-          # * Module download cache
-          # * Build cache (Linux)
-          # * Build cache (Mac)
-          # * Build cache (Windows)
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-            ~/Library/Caches/go-build
-            %LocalAppData%\go-build
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+    - uses: actions/cache@v2
+      with:
+        # In order:
+        # * Module download cache
+        # * Build cache (Linux)
+        # * Build cache (Mac)
+        # * Build cache (Windows)
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+          ~/Library/Caches/go-build
+          %LocalAppData%\go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
 
-      - name: Format
-        if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: make check-fmt ; if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
+    - name: Format
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
+      run: make check-fmt ; if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
 
-      - name: Run check target
-        run: |
-          make check
+    - name: Run check target
+      run: |
+        make check
 
-      - name: Run go vet
-        run: |
-          make vet
+    - name: Run go vet
+      run: |
+        make vet
 
-      - uses: dominikh/staticcheck-action@v1.1.0
-        with:
-          version: "2021.1.1"
+    - name: Build
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: |
+        make build
 
-      - name: Build
-        if: ${{ always() }} # execute even if previous steps failed
-        run: |
-          make build
+    - name: Run code analysis
+      if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: be1-go
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE1 }}
 
-      - name: Run code analysis
-        if: ${{ matrix.platform == 'ubuntu-latest' }} # execute even if previous steps failed
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: be1-go
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE1 }}
 
   fe2-android:
     name: Fe2-Android
@@ -176,13 +174,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
-
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
+        
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          distribution: "zulu"
-          java-version: "11"
+          distribution: 'zulu'
+          java-version: '11'  
 
       - name: Cache Gradle
         uses: actions/cache@v2
@@ -202,7 +200,7 @@ jobs:
           # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
           ( set -o pipefail; ./gradlew build --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
-
+      
       - name: Generate Coverage Report
         shell: bash
         run: |
@@ -238,13 +236,13 @@ jobs:
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
-          distribution: "zulu"
-          java-version: "11"
+          distribution: 'zulu'
+          java-version: '11'
 
       - name: Setup repo
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
       - name: Run unit tests
         run: sbt clean coverage test
@@ -271,37 +269,37 @@ jobs:
         working-directory: ./protocol/test
 
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+    - name: Setup repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
-      - name: Setup node 12.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
+    - name: Setup node 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
 
-      - name: Setup node cache
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+    - name: Setup node cache
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
-      - name: Setup npm dependencies
-        run: |
-          npm install
+    - name: Setup npm dependencies
+      run: |
+        npm install
 
-      - name: Check npm security issues
-        run: |
-          npm audit fix
+    - name: Check npm security issues
+      run: |
+        npm audit fix
 
-      - name: Run test
-        run: |
-          npm run test
+    - name: Run test
+      run: |
+        npm run test
