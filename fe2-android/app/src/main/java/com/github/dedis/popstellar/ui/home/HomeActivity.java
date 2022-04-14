@@ -5,6 +5,8 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +32,10 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.NoLAOException;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
 
@@ -41,8 +47,13 @@ public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
   public static final int LAO_DETAIL_REQUEST_CODE = 0;
+  private static final int CONNECT_POSITION = 1;
+  private static final int LAUNCH_POSITION = 2;
+  private static final int SOCIAL_MEDIA_POSITION = 4;
 
   private HomeViewModel mViewModel;
+
+  private BottomNavigationView navbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,8 @@ public class HomeActivity extends AppCompatActivity {
           JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
+    navbar = findViewById(R.id.home_nav_bar);
+    setupNavigationBar();
 
     setupHomeButton();
     setupLaunchButton();
@@ -67,6 +80,12 @@ public class HomeActivity extends AppCompatActivity {
     setupWalletButton();
     setupSocialMediaButton();
     setupDigitalCashButton();
+
+    subscribeOpenHomeEvents();
+    subscribeWalletEvents();
+    subscribeSocialMediaEvents();
+    subscribeLaoRelatedEvents();
+    subscribeSettingsEvents();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -79,6 +98,9 @@ public class HomeActivity extends AppCompatActivity {
                 openLaoDetails(laoId);
               }
             });
+  }
+
+  private void subscribeOpenHomeEvents() {
 
     // Subscribe to "open home" event
     mViewModel
@@ -89,6 +111,20 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupHomeFragment();
+              }
+            });
+  }
+
+  private void subscribeLaoRelatedEvents() {
+    // Subscribe to "open lao" event
+    mViewModel
+        .getOpenLaoEvent()
+        .observe(
+            this,
+            stringEvent -> {
+              String laoId = stringEvent.getContentIfNotHandled();
+              if (laoId != null) {
+                openLaoDetails(laoId);
               }
             });
 
@@ -134,6 +170,9 @@ public class HomeActivity extends AppCompatActivity {
                 setupLaunchFragment();
               }
             });
+  }
+
+  private void subscribeSettingsEvents() {
 
     // Subscribe to "open settings" event
     mViewModel
@@ -148,11 +187,14 @@ public class HomeActivity extends AppCompatActivity {
             });
 
     subscribeWalletEvents();
-    subscribeSocialMediaEvent();
+    subscribeSocialMediaEvents();
     subscribeDigitalCashEvent();
   }
 
   private void subscribeWalletEvents() {
+
+    MenuItem connectItem = navbar.getMenu().getItem(CONNECT_POSITION);
+    MenuItem launchItem = navbar.getMenu().getItem(LAUNCH_POSITION);
 
     // Subscribe to "open Seed" event
     mViewModel
@@ -193,8 +235,22 @@ public class HomeActivity extends AppCompatActivity {
                 openContentWallet(laoId);
               }
             });
-  }
 
+    mViewModel
+        .getIsWalletSetUpEvent()
+        .observe(
+            this,
+            aBoolean -> {
+              // We set transparency of the
+              if (Boolean.TRUE.equals(aBoolean)) {
+                connectItem.setIcon(R.drawable.ic_home_connect_opaque_foreground);
+                launchItem.setIcon(R.drawable.ic_home_launch_opaque_foreground);
+              } else {
+                connectItem.setIcon(R.drawable.ic_home_connect_transparent_foreground);
+                launchItem.setIcon(R.drawable.ic_home_launch_transparent_foreground);
+              }
+            });
+  }
 
   @Override
   protected void onResume() {
@@ -390,5 +446,75 @@ public class HomeActivity extends AppCompatActivity {
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
         getSupportFragmentManager(), fragment, R.id.fragment_container_home);
+  }
+
+  public void setupNavigationBar() {
+    navbar.setOnItemSelectedListener(
+        item -> {
+          int id = item.getItemId();
+          if (id == R.id.home_home_menu) {
+            mViewModel.openHome();
+          } else if (id == R.id.home_connect_menu) {
+            handleConnectNavigation();
+          } else if (id == R.id.home_launch_menu) {
+            handleLaunchNavigation();
+          } else if (id == R.id.home_wallet_menu) {
+            mViewModel.openWallet();
+          } else if (id == R.id.home_social_media_menu) {
+            handleSocialMediaNavigation();
+          }
+          return true;
+        });
+  }
+
+  private void handleSocialMediaNavigation() {
+    if (mViewModel.getLAOs().getValue() == null) {
+      ErrorUtils.logAndShow(
+          getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
+      revertToHome();
+    } else {
+      mViewModel.openSocialMedia();
+    }
+  }
+
+  private void handleConnectNavigation() {
+    if (checkWalletInitialization()) {
+      mViewModel.openConnect();
+    } else {
+      revertToHome();
+    }
+  }
+
+  private void handleLaunchNavigation() {
+    if (checkWalletInitialization()) {
+      mViewModel.openLaunch();
+    } else {
+      revertToHome();
+    }
+  }
+
+  /**
+   * Checks the status the wallet initialization and log and display error if needed
+   *
+   * @return true if the wallet is already initialized, else return false and deals with error
+   *     displaying and logging
+   */
+  private boolean checkWalletInitialization() {
+    if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+      ErrorUtils.logAndShow(
+          getApplicationContext(),
+          TAG,
+          new UninitializedWalletException(),
+          R.string.uninitialized_wallet_exception);
+      return false;
+    }
+    return true;
+  }
+
+  private void revertToHome() {
+    new Handler(Looper.getMainLooper())
+        .postDelayed(
+            () -> navbar.setSelectedItemId(R.id.home_home_menu),
+            getResources().getInteger(R.integer.navigation_reversion_delay));
   }
 }

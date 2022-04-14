@@ -7,9 +7,7 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -234,10 +232,6 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   public void setupDigitalCashButton() {
     Button digitalCashButton = findViewById(R.id.tab_digital_cash);
-    digitalCashButton.setOnClickListener(
-        new View.OnClickListener() {
-         v -> Toast.makeText(LaoDetailActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show()
-        });
     digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
