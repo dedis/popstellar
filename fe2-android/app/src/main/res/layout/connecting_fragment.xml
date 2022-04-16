@@ -8,7 +8,7 @@
 
     <variable
       name="view_model"
-      type="com.github.dedis.popstellar.ui.home.HomeViewModel" />
+      type="com.github.dedis.popstellar.ui.home.ConnectingViewModel" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,7 +45,6 @@
         <ProgressBar
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-
           android:indeterminate="true" />
       </RelativeLayout>
 

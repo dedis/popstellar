@@ -104,12 +104,14 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Completable catchup(Channel channel) {
-    Log.d(TAG, "sending a catchup to the channel " + channel);
     Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
+    Log.d(TAG, "sending a catchup to the channel " + channel + " with id " + requestCounter.get());
+
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
         .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
+        .doOnError(msg -> Log.d(TAG, "Error in catchup is " + msg))
         .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
@@ -136,10 +138,10 @@ public class LAONetworkManager implements MessageSender {
         // Catchup already sent messages after the subscription to the channel is complete
         // || TODO This should be used instead of the two next uncommented lines as it allows the
         // || returned Completable to complete only when both subscribe and catchup are complete.
-        // || But right now, the LAO creation need this specific behavior.
-        // .flatMapCompletable(answer -> catchup(channel))
-        .doAfterSuccess(answer -> catchup(channel).subscribe())
-        .ignoreElement();
+        // || But right now, the LAO creation need this specific behavior
+        .flatMapCompletable(answer -> catchup(channel));
+    // .doAfterSuccess(answer -> catchup(channel).subscribe())
+    // .ignoreElement();
   }
 
   @Override
@@ -150,6 +152,11 @@ public class LAONetworkManager implements MessageSender {
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
         .ignoreElement();
+  }
+
+  @Override
+  public Connection getConnection() {
+    return connection;
   }
 
   private void handleBroadcast(Broadcast broadcast) {
@@ -176,11 +183,27 @@ public class LAONetworkManager implements MessageSender {
   private Single<Answer> request(Query query) {
     Single<Answer> answerSingle =
         connection
-            .observeMessage() // Observe incoming messages
+            .observeMessage()
+            .filter(
+                f -> {
+                  Log.d(TAG, "catchup before filter : " + f);
+                  return true;
+                }) // Observe incoming messages
             .filter(Answer.class::isInstance) // Filter the Answers
+            .filter(
+                f -> {
+                  Log.d(TAG, "catchup after filter : " + f);
+                  return true;
+                })
             .map(Answer.class::cast)
             // This specific request has an id, only let the related Answer pass
-            .filter(answer -> answer.getId() == query.getRequestId())
+            .filter(
+                answer -> {
+                  Log.d(
+                      TAG,
+                      "answerId is " + answer.getId() + " query id is " + query.getRequestId());
+                  return answer.getId() == query.getRequestId();
+                })
             .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
             // Transform from an Observable to a Single
             // This Means that we expect a result before the source is disposed and an error will be

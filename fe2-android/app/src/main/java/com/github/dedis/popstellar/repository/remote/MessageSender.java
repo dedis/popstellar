@@ -60,4 +60,6 @@ public interface MessageSender extends Disposable {
    * @return a {@link Completable} the will complete once the unsubscribe is finished
    */
   Completable unsubscribe(Channel channel);
+
+  public Connection getConnection();
 }

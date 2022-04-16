@@ -14,17 +14,19 @@ import java.lang.reflect.Type;
 
 /** Json deserializer for the generic messages */
 public class JsonGenericMessageDeserializer implements JsonDeserializer<GenericMessage> {
-
+  public static final String TAG = JsonGenericMessageDeserializer.class.getSimpleName();
   private static final String METHOD = "method";
 
   @Override
   public GenericMessage deserialize(
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    Log.d("deserializer", "deserializing generic message");
+    Log.d(TAG, "deserializing generic message");
     if (json.getAsJsonObject().has(METHOD)) {
+      Log.d(TAG, "has method");
       return context.deserialize(json, Message.class);
     } else {
+      Log.d(TAG, "Has not Method");
       return context.deserialize(json, Answer.class);
     }
   }

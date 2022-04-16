@@ -42,7 +42,6 @@ public class ConnectionFactory {
     // Create a behavior subject that will be used to close or start the socket manually
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
-
     // Create the Scarlet instance
     Scarlet scarlet =
         new Scarlet.Builder()

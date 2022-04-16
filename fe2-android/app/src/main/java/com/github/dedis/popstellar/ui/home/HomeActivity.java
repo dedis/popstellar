@@ -112,10 +112,10 @@ public class HomeActivity extends AppCompatActivity {
         .getOpenConnectingEvent()
         .observe(
             this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
+            stringEvent -> {
+              String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupConnectingFragment();
+                setupConnectingActivity(event);
               }
             });
 
@@ -316,8 +316,10 @@ public class HomeActivity extends AppCompatActivity {
     setCurrentFragment(R.id.fragment_launch, LaunchFragment::newInstance);
   }
 
-  private void setupConnectingFragment() {
-    setCurrentFragment(R.id.fragment_connecting, ConnectingFragment::newInstance);
+  private void setupConnectingActivity(String laoId) {
+    Intent intent = new Intent(this, ConnectingActivity.class);
+    intent.putExtra("LAO_ID", laoId);
+    startActivity(intent);
   }
 
   private void setupWalletFragment() {
