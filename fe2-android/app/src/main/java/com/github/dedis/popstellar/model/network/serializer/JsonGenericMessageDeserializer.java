@@ -23,10 +23,8 @@ public class JsonGenericMessageDeserializer implements JsonDeserializer<GenericM
       throws JsonParseException {
     Log.d(TAG, "deserializing generic message");
     if (json.getAsJsonObject().has(METHOD)) {
-      Log.d(TAG, "has method");
       return context.deserialize(json, Message.class);
     } else {
-      Log.d(TAG, "Has not Method");
       return context.deserialize(json, Answer.class);
     }
   }

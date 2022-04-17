@@ -104,6 +104,7 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Completable catchup(Channel channel) {
+    Log.d(TAG, "sending a catchup to the channel " + channel);
     Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
 
     return request(catchup)
@@ -184,6 +185,7 @@ public class LAONetworkManager implements MessageSender {
             .map(Answer.class::cast)
             // This specific request has an id, only let the related Answer pass
             .filter(answer -> answer.getId() == query.getRequestId())
+            .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
             // Transform from an Observable to a Single
             // This Means that we expect a result before the source is disposed and an error will be
             // produced if no value is received.

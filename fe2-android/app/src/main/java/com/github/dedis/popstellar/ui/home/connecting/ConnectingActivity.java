@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home.connecting;
 
-import static com.github.dedis.popstellar.ui.home.HomeActivity.LAO_DETAIL_REQUEST_CODE;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -78,7 +76,7 @@ public class ConnectingActivity extends AppCompatActivity {
     intent.putExtra("LAO_ID", laoId);
     intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
 
-    startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
+    startActivity(intent);
   }
 
   private void openHomeActivity() {

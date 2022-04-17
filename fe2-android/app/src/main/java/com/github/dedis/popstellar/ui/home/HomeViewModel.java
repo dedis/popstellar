@@ -76,8 +76,6 @@ public class HomeViewModel extends AndroidViewModel
       new MutableLiveData<>();
 
   /** LiveData objects that represent the state in a fragment */
-  private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
-
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;

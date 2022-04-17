@@ -68,10 +68,7 @@ public class ConnectingViewModel extends AndroidViewModel {
             .subscribe(
                 () -> {
                   Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-
                   Log.d(TAG, "got success result for subscribe to lao");
-
-                  //  openLAO(lao.getId());
                 },
                 error -> {
                   // In case of error, log it and go to home activity

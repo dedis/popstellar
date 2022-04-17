@@ -18,7 +18,6 @@ import io.reactivex.disposables.Disposable;
 public class GlobalNetworkManager implements Disposable {
 
   private static final String DEFAULT_URL = "ws://10.0.2.2:9000/organizer/client";
-  //  private static final String DEFAULT_URL = "wss://popdemo.dedis.ch";
 
   private final LAORepository laoRepository;
   private final MessageHandler messageHandler;
