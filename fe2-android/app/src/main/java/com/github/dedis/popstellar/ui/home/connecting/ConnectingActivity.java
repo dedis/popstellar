@@ -83,8 +83,8 @@ public class ConnectingActivity extends AppCompatActivity {
     Log.d(TAG, "Opening Home activity");
 
     Intent intent = new Intent(this, HomeActivity.class);
-
     startActivity(intent);
+    finish();
   }
 
   private void setConnectingFragment() {

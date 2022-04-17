@@ -49,6 +49,8 @@ public class ConnectingViewModel extends AndroidViewModel {
   }
 
   /**
+   * Handles the subscription and catchup process to an LAO
+   *
    * @param channelId
    */
   private void handleConnecting(String channelId) {
@@ -64,7 +66,7 @@ public class ConnectingViewModel extends AndroidViewModel {
         networkManager
             .getMessageSender()
             .subscribe(lao.getChannel())
-            .doAfterTerminate(() -> openLAO(lao.getId()))
+            .doOnComplete(() -> openLAO(lao.getId())) // We wait for the catchup to be done
             .subscribe(
                 () -> {
                   Log.d(TAG, "subscribing to LAO with id " + lao.getId());
