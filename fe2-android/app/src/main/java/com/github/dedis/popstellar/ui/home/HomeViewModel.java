@@ -58,11 +58,8 @@ public class HomeViewModel extends AndroidViewModel
 
   /** LiveData objects for capturing events like button clicks */
   private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<String>> mOpenConnectingEvent = new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
