@@ -4,6 +4,6 @@
   android:id="@+id/fragment_container_connecting"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".ui.home.ConnectingActivity">
+  tools:context=".ui.home.connecting.ConnectingActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

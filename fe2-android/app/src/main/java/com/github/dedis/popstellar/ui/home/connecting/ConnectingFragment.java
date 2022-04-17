@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.home;
+package com.github.dedis.popstellar.ui.home.connecting;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

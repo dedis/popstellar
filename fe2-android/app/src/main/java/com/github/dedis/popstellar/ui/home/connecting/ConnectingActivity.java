@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.home;
+package com.github.dedis.popstellar.ui.home.connecting;
 
 import static com.github.dedis.popstellar.ui.home.HomeActivity.LAO_DETAIL_REQUEST_CODE;
 
@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.util.function.Supplier;
@@ -36,20 +37,10 @@ public class ConnectingActivity extends AppCompatActivity {
 
     mViewModel = obtainViewModel(this);
 
-    // We make sure to be subscribed to events before launching the connect process
+    // We make sure to be subscribed to events before launching the connection to lao process
     subscribeToEvents();
 
-    mViewModel
-        .getNetworkManager()
-        .getMessageSender()
-        .getConnection()
-        .observeConnectionEvents()
-        .subscribe(
-            v -> {
-              if (v.toString().contains("OnConnectionOpened")) {
-                mViewModel.handleConnecting(channelId);
-              }
-            });
+    mViewModel.handleOpenConnection(channelId);
   }
 
   private void subscribeToEvents() {

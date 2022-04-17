@@ -142,15 +142,9 @@ public class HomeViewModel extends AndroidViewModel
       return;
     }
 
+    // Establish connection with new address
     networkManager.connect(data.server);
-    networkManager
-        .getMessageSender()
-        .getConnection()
-        .observeConnectionEvents()
-        .subscribe(
-            v -> {
-              Log.d(TAG, "Type of v is " + v.getClass() + " v is " + v);
-            });
+
     openConnecting(data.lao);
   }
 
@@ -238,14 +232,6 @@ public class HomeViewModel extends AndroidViewModel
     return mCancelNewLaoEvent;
   }
 
-  public LiveData<String> getConnectingLao() {
-    return mConnectingLao;
-  }
-
-  public LiveData<String> getLaoName() {
-    return mLaoName;
-  }
-
   public Boolean isWalletSetUp() {
     return mIsWalletSetUp.getValue();
   }
@@ -287,7 +273,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openConnecting(String laoId) {
-    mOpenConnectingEvent.postValue(new SingleEvent<String>(laoId));
+    mOpenConnectingEvent.postValue(new SingleEvent<>(laoId));
   }
 
   public void openWallet() {

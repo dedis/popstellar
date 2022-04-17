@@ -61,5 +61,5 @@ public interface MessageSender extends Disposable {
    */
   Completable unsubscribe(Channel channel);
 
-  public Connection getConnection();
+  Connection getConnection();
 }
