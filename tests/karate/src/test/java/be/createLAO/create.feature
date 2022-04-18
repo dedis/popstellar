@@ -22,18 +22,21 @@ Feature: Create a pop LAO
 #    Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2
-    Given json badLaoReq =
+    Given def badLaoReq =
       """
-        object    : "lao"
-        action    : "create"
-        id        : "fff"
-        name      : ""
-        creation  : 1633098234
-        organizer : "fff"
-        witnesses : []
+       JSON.stringify(
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '(#getLaoIdEmptyName)',
+          "name": "",
+          "creation": 1633098234,
+          "organizer": '(#getOrganizerPublicKey)',
+          "witnesses": []
+        })
       """
     When frontend.publish(badLaoReq, id, channel)
-    And json answer = frontend.getBackendResponseWithBroadcast()
+    And json answer = frontend.getBackendResponseWithBroadcast("ff")
     Then match answer contains {error: {code: -6, description: '#string'}}
 #    And receiveNoMoreResponses
 

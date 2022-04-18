@@ -47,9 +47,14 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     this.send(request.toString());
   }
 
-  public Json getBackendResponseWithBroadcast(){
-    String broadcast = getBuffer().takeTimeout(5000);
+  public String getBackendResponseWithBroadcast(String a){
+    //String broadcast = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
-    return Json.of(result);
+    System.out.println("***************************" + a);
+    System.out.println("result is "+ result);
+    System.out.println("***************************");
+    System.out.println("result json is "+ Json.of(result));
+    System.out.println("***************************");
+    return result;
   }
 }
