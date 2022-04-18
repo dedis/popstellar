@@ -19,3 +19,18 @@ type RollCallCreate struct {
 	Location    string `json:"location"`
 	Description string `json:"description"`
 }
+
+// GetObject implements MessageData
+func (RollCallCreate) GetObject() string {
+	return RollCallObject
+}
+
+// GetAction implements MessageData
+func (RollCallCreate) GetAction() string {
+	return RollCallActionCreate
+}
+
+// NewEmpty implements MessageData
+func (RollCallCreate) NewEmpty() MessageData {
+	return &RollCallCreate{}
+}

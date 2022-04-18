@@ -29,3 +29,18 @@ type ElectionSetupQuestion struct {
 	BallotOptions []string `json:"ballot_options"`
 	WriteIn       bool     `json:"write_in"`
 }
+
+// GetObject implements MessageData
+func (ElectionSetup) GetObject() string {
+	return ElectionObject
+}
+
+// GetAction implements MessageData
+func (ElectionSetup) GetAction() string {
+	return ElectionActionSetup
+}
+
+// NewEmpty implements MessageData
+func (ElectionSetup) NewEmpty() MessageData {
+	return &ElectionSetup{}
+}

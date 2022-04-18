@@ -16,12 +16,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_tab"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <TextView
       android:id="@+id/title_wallet"
@@ -30,34 +24,33 @@
       android:layout_height="wrap_content"
       android:gravity="center"
       android:text="@string/content_title"
-      android:textSize="@dimen/size_title"
-      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab" />
+      style="@style/title_style"
+      app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
       android:id="@+id/welcome_screen"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="0dp"
       android:gravity="center_vertical"
       android:orientation="vertical"
       android:visibility="visible"
-      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+      app:layout_constraintTop_toBottomOf="@id/title_wallet"
+      app:layout_constraintBottom_toBottomOf="parent">
 
       <TextView
+        android:id="@+id/wallet_content_text_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
         android:text="@string/wallet_empty"
-        android:textSize="@dimen/size_title"
+        style="@style/explication_welcome_style"
         android:textStyle="bold" />
 
       <TextView
+        android:id="@+id/wallet_content_text_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
         android:text="@string/tokens_introduction"
-        android:textSize="@dimen/size_body"
+        style="@style/explication_text_style"
         android:textStyle="bold" />
 
     </LinearLayout>
@@ -65,18 +58,19 @@
     <LinearLayout
       android:id="@+id/list_screen"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="0dp"
       android:gravity="center"
       android:orientation="vertical"
       android:visibility="gone"
-      app:layout_constraintTop_toBottomOf="@id/title_wallet">
+      app:layout_constraintTop_toBottomOf="@id/title_wallet"
+      app:layout_constraintBottom_toBottomOf="parent">
 
       <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/lao_list"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -93,7 +87,11 @@
       android:layout_height="wrap_content"
       android:text="@string/logout_button"
       android:visibility="gone"
+      android:textColor="@color/white"
+      android:layout_margin="@dimen/lone_bottom_button_top_margin"
+      android:backgroundTint="@color/red"
       app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { ParagraphBlock, TimeDisplay } from 'core/components';
 
@@ -29,3 +29,11 @@ EventMeeting.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventMeeting;
+
+export const MeetingEventTypeComponent = {
+  isOfType: (event: unknown) => event instanceof Meeting,
+  Component: EventMeeting as FunctionComponent<{
+    event: unknown;
+    isOrganizer: boolean | null | undefined;
+  }>,
+};

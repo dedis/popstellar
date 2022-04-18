@@ -1,6 +1,6 @@
-import { JsonRpcRequest } from './jsonrpc';
+import { ExtendedJsonRpcRequest } from './jsonrpc';
 
-export type JsonRpcHandler = (message: JsonRpcRequest) => void;
+export type JsonRpcHandler = (message: ExtendedJsonRpcRequest) => void;
 
-export const defaultRpcHandler: JsonRpcHandler = (message: JsonRpcRequest) =>
+export const defaultRpcHandler: JsonRpcHandler = (message: ExtendedJsonRpcRequest) =>
   console.warn('No RPC handler was provided to manage messages : ', message);
