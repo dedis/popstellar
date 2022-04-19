@@ -1,9 +1,10 @@
 @env=go,scala
 Feature: Cast a vote
   Background:
-        # This is feature will be called to test Cast Vote
+        # This feature will be called to test Cast Vote
         # For every test a file containing the json representation of the message is read
-        # and is sent to the backend this is done via :
+        # then sent to the backend and stored there.
+        # This is done via :
         # eval frontend.send(<message>) where a mock frontend sends a message to backend
         # Then the response sent by the backend and stored in a buffer :
         # json response = frontend_buffer.takeTimeout(timeout)
@@ -18,7 +19,7 @@ Feature: Cast a vote
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   # Testing if after setting up a valid lao, subscribing to it, sending a catchup
-  # creating a valid election setup that casting a valid vote succeeds
+  # creating a valid election setup then casting a valid vote succeeds
   Scenario: Casting a valid vote on a started election
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
     And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
@@ -27,6 +28,9 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', result: 0}
 
+  # Testing if after setting up a valid lao, subscribing to it, sending a catchup
+  # creating a valid election setup that casting vote on a lao channel instead of election
+  # channel should return an error from the backend
   Scenario: Casting a vote on a lao channel should return an error
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
     And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, laoChannel)
@@ -35,7 +39,9 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
-
+  # Testing if after setting up a valid lao, subscribing to it, sending a catchup
+  # then casting a valid vote without setting up the election channel first should
+  # return an error from the backend
   Scenario: Casting a valid vote on non existent election should return an error
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_election_id_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
@@ -44,6 +50,9 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
+  # Testing if after setting up a valid lao, subscribing to it, sending a catchup
+  # creating a valid election setup then casting a valid vote but with wrong vote id
+  # should return an error from the backend
   Scenario: Casting a valid vote with wrong vote id should return an error
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_vote_id_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
@@ -52,6 +61,9 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
+  # Testing if after setting up a valid lao, subscribing to it, sending a catchup
+  # creating a valid election setup then casting a valid vote but after the election
+  # end time should return an error from the backend
   Scenario: Casting a valid vote too late should return an error
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_late_vote_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
@@ -60,6 +72,9 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
+  # Testing if after setting up a valid lao, subscribing to it, sending a catchup,
+  # creating a valid election setup, then an individual that did not participate in the created
+  # roll call casting a valid vote should return an error from the backend
   Scenario: Non attendee casting a vote should return an error
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')

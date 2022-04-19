@@ -7,37 +7,37 @@ public class ServerTest {
   // see https://github.com/intuit/karate#naming-conventions
   @Karate.Test
   Karate testCreateLAO() {
-    return Karate.run("classpath:be/createLAO");
+    return Karate.run("classpath:be/LAO");
   }
 
   @Karate.Test
   Karate testCreateRollCall() {
-    return Karate.run("classpath:be/createRollCall/createRollCall.feature");
+    return Karate.run("classpath:be/rollCall/createRollCall.feature");
   }
 
   @Karate.Test
   Karate testOpenRollCall() {
-    return Karate.run("classpath:be/createRollCall/openRollCall.feature");
+    return Karate.run("classpath:be/rollCall/openRollCall.feature");
   }
 
   @Karate.Test
   Karate testCloseRollCall() {
-    return Karate.run("classpath:be/createRollCall/closeRollCall.feature");
+    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
   }
 
   @Karate.Test
   Karate testElectionSetup(){
-    return Karate.run("classpath:be/createElection/electionSetup.feature");
+    return Karate.run("classpath:be/election/electionSetup.feature");
   }
 
   @Karate.Test
   Karate testCastVote(){
-    return Karate.run("classpath:be/createElection/castVote.feature");
+    return Karate.run("classpath:be/election/castVote.feature");
   }
 
   @Karate.Test
   Karate testElectionEnd(){
-    return Karate.run("classpath:be/createElection/electionEnd.feature");
+    return Karate.run("classpath:be/election/electionEnd.feature");
   }
 }
 
