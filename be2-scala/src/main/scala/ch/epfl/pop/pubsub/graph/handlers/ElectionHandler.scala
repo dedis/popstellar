@@ -22,8 +22,9 @@ object ElectionHandler extends MessageHandler {
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     val combined = for {
-      _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
-      _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
+      _ <- dbActor ? DbActor.CreateChannel(electionChannel /* TODO : replace with rpcMessage.getParamsChannel ? */ , ObjectType.ELECTION)
+      _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
     } yield ()
 
     Await.ready(combined, duration).value match {
