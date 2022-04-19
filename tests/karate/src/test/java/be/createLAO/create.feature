@@ -35,7 +35,10 @@ Feature: Create a pop LAO
           "witnesses": []
         })
       """
-    When frontend.publish(badLaoReq, id, channel)
+    * karate.log("******************************")
+    * karate.log(badLaoReq)
+    * karate.log("******************************")
+    When frontend.publish(badLaoReq, id, channel)z
     And json answer = frontend.getBackendResponseWithBroadcast("ff")
     Then match answer contains {error: {code: -6, description: '#string'}}
 #    And receiveNoMoreResponses
