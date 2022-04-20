@@ -68,9 +68,8 @@ Feature: Cast a vote
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
-  # Testing if after setting up a valid lao, subscribing to it, sending a catchup,
-  # creating a valid election setup, then an individual that did not participate in the created
-  # roll call casting a valid vote should return an error from the backend
+  # Testing if after creating an election correctly the backend returns an error
+  # upon a non-attendee casting a valid vote.
   Scenario: Non attendee casting a vote should return an error
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
