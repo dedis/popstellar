@@ -58,8 +58,7 @@ Feature: Cast a vote
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
   # Testing if after creating an election correctly, the backend returns an error
-  # upon casting a valid vote but after the election
-  # end time returns an error from the backend
+  # upon casting a valid vote but after the election end time
   Scenario: Casting a valid vote too late should return an error
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_late_vote_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
