@@ -28,17 +28,17 @@ Feature: Create a pop LAO
         {
           "object": "lao",
           "action": "create",
-          "id": '(#getLaoIdEmptyName)',
+          "id": 'p8TW08AWlBScs9FGXK3KbLQX7Fbgz8_gLwX-B5VEWS0=',
           "name": "",
           "creation": 1633098234,
-          "organizer": '(#getOrganizerPublicKey)',
+          "organizer": 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=',
           "witnesses": []
         })
       """
     * karate.log("******************************")
     * karate.log(badLaoReq)
     * karate.log("******************************")
-    When frontend.publish(badLaoReq, id, channel)z
+    When frontend.publish(badLaoReq, id, channel)
     And json answer = frontend.getBackendResponseWithBroadcast("ff")
     Then match answer contains {error: {code: -6, description: '#string'}}
 #    And receiveNoMoreResponses
