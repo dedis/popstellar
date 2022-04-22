@@ -7,15 +7,15 @@ final case class Channel(channel: String) {
   /**
    * Extract the laoId from a channel name (even though it might be in the middle)
    *
-   * @return An Option of Base64Data corresponding to the decoded laoId or None if an error occurred
+   * @return A Hash corresponding to the decoded laoId or None if an error occurred
    */
-  def decodeChannelLaoId: Option[Base64Data] = channel match {
+  def decodeChannelLaoId: Hash = channel match {
     case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64Data(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.CHANNEL_SEPARATOR)(0))) match {
-        case Success(value) => Some(value)
-        case _ => None
+      Try(Hash(Base64Data(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.CHANNEL_SEPARATOR)(0)))) match {
+        case Success(value) => value
+        case _ => ???
       }
-    case _ => None
+    case _ => ???
   }
 
   /**

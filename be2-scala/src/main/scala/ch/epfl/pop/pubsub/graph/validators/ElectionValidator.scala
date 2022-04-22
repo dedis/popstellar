@@ -74,17 +74,18 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case Some(message: Message) =>
         val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
 
-        val electionId: Hash = rpcMessage.extractLaoId
+        val channel: Channel = rpcMessage.getParamsChannel
+
+        val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val channel: Channel = rpcMessage.getParamsChannel
-        val laoId: Base64Data = channel.decodeChannelLaoId.get
+        val laoId: Hash = channel.decodeChannelLaoId
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (electionId !=  data.election) {
           Right(validationError("Unexpected election id"))
-        } else if (laoId != data.lao.base64Data) {
+        } else if (laoId != data.lao) {
           Right(validationError("Unexpected lao id"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
@@ -104,17 +105,19 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
-        val electionId: Hash = rpcMessage.extractLaoId
-        val sender: PublicKey = message.sender
 
         val channel: Channel = rpcMessage.getParamsChannel
-        val laoId: Base64Data = channel.decodeChannelLaoId.get
+
+        val electionId: Hash = channel.extractChildChannel
+        val sender: PublicKey = message.sender
+
+        val laoId: Hash = channel.decodeChannelLaoId
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (electionId != data.election) {
           Right(validationError("unexpected election id"))
-        } else if (laoId != data.lao.base64Data){
+        } else if (laoId != data.lao){
           Right(validationError("unexpected lao id"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
@@ -156,18 +159,20 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: EndElection = message.decodedData.get.asInstanceOf[EndElection]
-        val electionId: Hash = rpcMessage.extractLaoId
+
+        val channel: Channel = rpcMessage.getParamsChannel
+
+        val electionId: Hash = channel.extractChildChannel
 
         val sender: PublicKey = message.sender
 
-        val channel: Channel = rpcMessage.getParamsChannel
-        val laoId: Base64Data = channel.decodeChannelLaoId.get
+        val laoId: Hash = channel.decodeChannelLaoId
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (electionId != data.election) {
           Right(validationError("unexpected election id"))
-        } else if (laoId != data.lao.base64Data) {
+        } else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
