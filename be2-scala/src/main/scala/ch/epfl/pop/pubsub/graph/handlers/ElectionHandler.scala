@@ -58,8 +58,15 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration)
+    //checks first if the election is created (i.e. if the channel election exists)
+    val askChannelExist = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+    Await.ready(askChannelExist, duration).value.get match {
+      case Success(_) =>
+        val askWritePropagate: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+        Await.result(askWritePropagate, duration)
+      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
+      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
+    }
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {

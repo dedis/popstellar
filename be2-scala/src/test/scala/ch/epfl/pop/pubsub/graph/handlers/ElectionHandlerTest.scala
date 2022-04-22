@@ -104,6 +104,16 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
+  test("OpenElection should fail if the election does not exist") {
+    val mockedDB = mockDbElectionNotSetUp
+    val rc = new ElectionHandler(mockedDB)
+    val request = OpenElectionMessages.openElection
+
+    rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
+
+    system.stop(mockedDB.actorRef)
+  }
+
   test("OpenElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     val rc = new ElectionHandler(mockedDB)
