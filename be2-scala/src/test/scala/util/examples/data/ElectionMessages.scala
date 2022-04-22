@@ -27,7 +27,7 @@ object OpenElectionMessages extends ElectionMessagesTrait {
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("open_election_channel"))
 
-  final val openElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_open.json")()
+  final val openElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_open/election_open.json")()
 
   //TODO: Generate other Open Election messages
 }

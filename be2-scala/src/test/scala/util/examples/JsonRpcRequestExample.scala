@@ -7,7 +7,6 @@ import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
-import util.examples.Election.ResultElectionExamples._
 import util.examples.MessageExample._
 import util.examples.socialMedia.AddChirpExamples._
 import util.examples.socialMedia.AddReactionExamples._
@@ -129,12 +128,6 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongId, id)
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
-
-  //For ResultElection testing
-  private final val paramsWithResultElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_RESULT_ELECTION_WORKING)
-  private final val paramsWithResultElectionWrongOwner: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_RESULT_ELECTION_WRONG_OWNER)
-  final val RESULT_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElection, id)
-  final val RESULT_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElectionWrongOwner, id)
 
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)

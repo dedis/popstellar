@@ -144,6 +144,7 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
+        //Election
         case (ObjectType.ELECTION, ActionType.SETUP) =>
           messageData = SetupElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
@@ -153,7 +154,8 @@ object HighLevelMessageGenerator {
           messageData = OpenElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
-        
+
+        //Digital cash
         case (ObjectType.TRANSACTION, ActionType.POST) =>
           messageData = PostTransaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)

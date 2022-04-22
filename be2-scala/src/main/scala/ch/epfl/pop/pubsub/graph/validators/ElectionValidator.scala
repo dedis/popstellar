@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
@@ -128,10 +128,11 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
+  //not implemented since the back end does not recieve a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
-    //TODO : need to check the hash id if they correspond to the registerd ones
-    rpcMessage.getParamsMessage match {
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id))
+    //TODO: needs to be implemented when server to server communication will be done
+    /*rpcMessage.getParamsMessage match {
       case Some(message) =>
         val data: ResultElection = message.decodedData.get.asInstanceOf[ResultElection]
 
@@ -146,7 +147,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Left(rpcMessage)
         }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
-    }
+    }*/
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
