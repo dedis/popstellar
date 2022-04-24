@@ -12,6 +12,11 @@ import { DigitalCashMessage, DigitalCashTransaction } from '../network/DigitalCa
 interface DigitalCashReducerState {
   transactionMessages: DigitalCashMessage[];
   transactionsByHash: Record<string, DigitalCashTransaction>;
+  /**
+   * A mapping between public key hashes and a set of the transactions which contain this hash
+   * in one or more of their TxOuts
+   */
+  transactionsMessagesByPubHash: Record<string, Set<DigitalCashMessage>>;
 }
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
@@ -70,13 +75,21 @@ const digitalCashSlice = createSlice({
           state.byLaoId[laoId].byRCId[rollCallId] = {
             transactionMessages: [],
             transactionsByHash: {},
+            transactionsMessagesByPubHash: {},
           };
         }
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
+
         rollCallState.transactionsByHash[transactionMessage.transactionID.valueOf()] =
           transactionMessage.transaction;
         rollCallState.transactionMessages.push(transactionMessage);
+
+        transactionMessage.transaction.txsOut.forEach((txOut) => {
+          rollCallState.transactionsMessagesByPubHash[txOut.script.publicKeyHash.valueOf()].add(
+            transactionMessage,
+          );
+        });
       },
     },
   },
