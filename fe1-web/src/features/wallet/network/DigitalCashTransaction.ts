@@ -2,8 +2,37 @@ import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface DigitalCashTransactionState {
   version: number;
+  txsIn: TxInState[];
+  txsOut: TxOutState[];
+  lockTime: number;
+}
+export interface DigitalCashMessageState {
+  transaction: DigitalCashTransactionState;
   transactionID: string;
-  txsIn: TxIn[]; // those should have a state
+}
+export interface TxOutState {
+  value: number;
+  script: TxOutScriptState;
+}
+export interface TxInScriptState {
+  type: string;
+  publicKey: string;
+  signature: string;
+}
+
+export interface TxInState {
+  txOutHash: string;
+  txOutIndex: number;
+  script: TxInScriptState;
+}
+export interface TxOutScriptState {
+  type: string;
+  publicKeyHash: string;
+}
+
+export interface DigitalCashTransaction {
+  version: number;
+  txsIn: TxIn[];
   txsOut: TxOut[];
   lockTime: number;
 }
@@ -25,59 +54,83 @@ export interface TxOut {
   value: number;
   script: TxOutScript;
 }
-
-export class DigitalCashTransaction {
-  public readonly version: number;
-
+export class DigitalCashMessage {
   public readonly transactionID: Hash;
 
-  public readonly txsIn: TxIn[];
+  public readonly transaction: DigitalCashTransaction;
 
-  public readonly txsOut: TxOut[];
-
-  public readonly lockTime: number;
-
-  constructor(obj: Partial<DigitalCashTransaction>) {
+  constructor(obj: Partial<DigitalCashMessage>) {
     if (obj === undefined || obj === null) {
       throw new Error(
         'Error encountered while creating a DigitalCashTransaction object: undefined/null parameters',
       );
     }
-    if (obj.version === undefined) {
-      throw new Error("Undefined 'version' when creating 'DigitalCashTransaction'");
-    }
-    if (obj.txsIn === undefined) {
-      throw new Error("Undefined 'txsIn' when creating 'DigitalCashTransaction'");
-    }
-    if (obj.txsOut === undefined) {
-      throw new Error("Undefined 'txsOut' when creating 'DigitalCashTransaction'");
-    }
-    if (obj.lockTime === undefined) {
-      throw new Error("Undefined 'lockTime' when creating 'DigitalCashTransaction'");
+    if (obj.transaction === undefined) {
+      throw new Error("Undefined 'transaction' when creating 'DigitalCashMessage'");
     }
     if (obj.transactionID === undefined) {
       throw new Error("Undefined 'transactionID' when creating 'DigitalCashTransaction'");
     }
 
-    this.version = obj.version;
-    this.txsIn = obj.txsIn;
-    this.txsOut = obj.txsOut;
-    this.lockTime = obj.lockTime;
+    this.transaction = obj.transaction;
     this.transactionID = obj.transactionID;
   }
 
-  public static fromState(
-    digitalCashTransactionState: DigitalCashTransactionState,
-  ): DigitalCashTransaction {
-    return new DigitalCashTransaction({
-      ...digitalCashTransactionState,
-      transactionID: new Hash(digitalCashTransactionState.transactionID),
+  public static fromState(digitalCashMessageState: DigitalCashMessageState): DigitalCashMessage {
+    return new DigitalCashMessage({
+      transaction: {
+        version: digitalCashMessageState.transaction.version,
+        txsOut: digitalCashMessageState.transaction.txsOut.map((txOutState) => {
+          return {
+            ...txOutState,
+            script: {
+              type: txOutState.script.type,
+              publicKeyHash: new Hash(txOutState.script.publicKeyHash),
+            },
+          };
+        }),
+        txsIn: digitalCashMessageState.transaction.txsIn.map((txInState) => {
+          return {
+            ...txInState,
+            txOutHash: new Hash(txInState.txOutHash),
+            script: {
+              type: txInState.script.type,
+              publicKey: new PublicKey(txInState.script.publicKey),
+              signature: new Signature(txInState.script.signature),
+            },
+          };
+        }),
+        lockTime: digitalCashMessageState.transaction.lockTime,
+      },
+      transactionID: new Hash(digitalCashMessageState.transactionID),
     });
   }
 
-  public toState(): DigitalCashTransactionState {
+  public toState(): DigitalCashMessageState {
     return {
-      ...this,
+      transaction: {
+        ...this.transaction,
+        txsOut: this.transaction.txsOut.map((txOut) => {
+          return {
+            ...txOut,
+            script: {
+              type: txOut.script.type,
+              publicKeyHash: txOut.script.publicKeyHash.valueOf(),
+            },
+          };
+        }),
+        txsIn: this.transaction.txsIn.map((txIn) => {
+          return {
+            ...txIn,
+            txOutHash: txIn.txOutHash.valueOf(),
+            script: {
+              type: txIn.script.type,
+              publicKey: txIn.script.publicKey.valueOf(),
+              signature: txIn.script.signature.valueOf(),
+            },
+          };
+        }),
+      },
       transactionID: this.transactionID.valueOf(),
     };
   }

@@ -12,7 +12,6 @@ import { DigitalCashTransaction, TxOut } from '../network/DigitalCashTransaction
 interface DigitalCashReducerState {
   transactions: DigitalCashTransaction[];
   transactionsByHash: Record<string, DigitalCashTransaction>;
-  txsOutByPKHash: Record<string, TxOut[]>;
 }
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
@@ -70,7 +69,6 @@ const digitalCashSlice = createSlice({
         if (!(rollCallId in state.byLaoId[laoId])) {
           state.byLaoId[laoId].byRCId[rollCallId] = {
             transactions: [],
-            txsOutByPKHash: {},
             transactionsByHash: {},
           };
         }
@@ -78,9 +76,6 @@ const digitalCashSlice = createSlice({
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
         rollCallState.transactionsByHash[transaction.transactionID.valueOf()] = transaction;
         rollCallState.transactions.push(transaction);
-        for (const txOut of transaction.txsOut) {
-          rollCallState.txsOutByPKHash[txOut.script.publicKeyHash.valueOf()].push(txOut);
-        }
       },
     },
   },
