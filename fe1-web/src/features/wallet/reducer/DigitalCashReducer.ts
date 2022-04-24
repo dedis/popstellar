@@ -7,10 +7,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import { DigitalCashTransaction, TxOut } from '../network/DigitalCashTransaction';
+import { DigitalCashMessage, DigitalCashTransaction } from '../network/DigitalCashTransaction';
 
 interface DigitalCashReducerState {
-  transactions: DigitalCashTransaction[];
+  transactionMessages: DigitalCashMessage[];
   transactionsByHash: Record<string, DigitalCashTransaction>;
 }
 interface DigitalCashRollCallReducerState {
@@ -40,13 +40,13 @@ const digitalCashSlice = createSlice({
       prepare(
         laoId: Hash | string,
         rollCallId: Hash | string,
-        transaction: DigitalCashTransaction,
+        transactionMessage: DigitalCashMessage,
       ): any {
         return {
           payload: {
             laoId: laoId.valueOf(),
             rollCallId: rollCallId.valueOf(),
-            transaction: transaction,
+            transactionMessage: transactionMessage,
           },
         };
       },
@@ -55,10 +55,10 @@ const digitalCashSlice = createSlice({
         action: PayloadAction<{
           laoId: string;
           rollCallId: string;
-          transaction: DigitalCashTransaction;
+          transactionMessage: DigitalCashMessage;
         }>,
       ) {
-        const { laoId, rollCallId, transaction } = action.payload;
+        const { laoId, rollCallId, transactionMessage } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
@@ -68,14 +68,15 @@ const digitalCashSlice = createSlice({
 
         if (!(rollCallId in state.byLaoId[laoId])) {
           state.byLaoId[laoId].byRCId[rollCallId] = {
-            transactions: [],
+            transactionMessages: [],
             transactionsByHash: {},
           };
         }
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
-        rollCallState.transactionsByHash[transaction.transactionID.valueOf()] = transaction;
-        rollCallState.transactions.push(transaction);
+        rollCallState.transactionsByHash[transactionMessage.transactionID.valueOf()] =
+          transactionMessage.transaction;
+        rollCallState.transactionMessages.push(transactionMessage);
       },
     },
   },
