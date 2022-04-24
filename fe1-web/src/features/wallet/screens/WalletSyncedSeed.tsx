@@ -38,6 +38,7 @@ const WalletSyncedSeed = () => {
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
+  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
   const rollCalls = useSelector(rollCallSelector);

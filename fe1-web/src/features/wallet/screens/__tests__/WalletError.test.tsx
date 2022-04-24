@@ -8,7 +8,7 @@ import { WalletError } from '../index';
 
 const mockSeed = 'one two three';
 
-jest.mock('../../objects/Seed', () => {
+jest.mock('features/wallet/objects/Seed', () => {
   return {
     generateMnemonicSeed: () => mockSeed,
   };
