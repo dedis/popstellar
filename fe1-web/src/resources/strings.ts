@@ -207,6 +207,9 @@ namespace STRINGS {
   export const meeting_create_finish_time = 'End time= ';
   export const meeting_create_location = 'Location';
 
+  /* --- Notification screen Strings --- */
+  export const notification_clear_all = 'Clear notifications';
+
   /* --- Time Display Strings --- */
   export const time_display_start = 'Start: ';
   export const time_display_end = 'End: ';

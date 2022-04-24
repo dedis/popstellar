@@ -5,12 +5,16 @@ import { Text } from 'react-native';
 import { useStore } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
 import { getNotification } from '../reducer';
 
-type NavigationProps = StackScreenProps<NotificationStackParamList, 'Notification'>;
+type NavigationProps = StackScreenProps<
+  NotificationStackParamList,
+  typeof STRINGS.notification_navigation_tab_single_notification
+>;
 
 const SingleNotificationScreen = () => {
   const route = useRoute<NavigationProps['route']>();

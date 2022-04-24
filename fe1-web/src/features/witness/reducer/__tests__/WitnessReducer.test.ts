@@ -51,7 +51,7 @@ describe('WitnessReducer', () => {
       expect(newState.byId).toHaveProperty(message.message_id.valueOf(), extendedMessage);
     });
 
-    it("doesn't add a messages a second time to the store", () => {
+    it("doesn't add a message a second time to the store", () => {
       const message: Message = Message.fromData(
         {
           object: ObjectType.CHIRP,

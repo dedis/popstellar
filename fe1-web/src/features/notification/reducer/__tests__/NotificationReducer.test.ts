@@ -176,7 +176,9 @@ describe('NotificationReducer', () => {
   });
 
   describe('discardAllNotifications', () => {
-    it('removes all notifications from the store', () => {
+    it('removes all notifications for a given lao from the store', () => {
+      const otherMockLaoId = 'some other id';
+
       const newState = notificationReduce(
         {
           byLaoId: {
@@ -202,12 +204,41 @@ describe('NotificationReducer', () => {
               },
               nextId: 11,
             },
+            [otherMockLaoId]: {
+              allIds: [0],
+              byId: {
+                0: {
+                  id: 0,
+                  laoId: otherMockLaoId,
+                  hasBeenRead: false,
+                  timestamp: 13,
+                  title: 'some title',
+                  type: 'some-type',
+                },
+              },
+              nextId: 1,
+            },
           },
         } as NotificationReducerState,
-        discardAllNotifications(),
+        discardAllNotifications(mockLaoId),
       );
 
-      expect(newState.byLaoId).toEqual({});
+      expect(newState.byLaoId).toEqual({
+        [otherMockLaoId]: {
+          allIds: [0],
+          byId: {
+            0: {
+              id: 0,
+              laoId: otherMockLaoId,
+              hasBeenRead: false,
+              timestamp: 13,
+              title: 'some title',
+              type: 'some-type',
+            },
+          },
+          nextId: 1,
+        },
+      } as NotificationReducerState['byLaoId']);
     });
   });
 

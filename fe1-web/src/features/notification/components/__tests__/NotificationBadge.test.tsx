@@ -21,8 +21,6 @@ const contextValue = {
   } as NotificationReactContext,
 };
 
-// set up mock store
-
 describe('NotificationScreen', () => {
   it('renders correctly for an empty store', () => {
     const mockStore = createStore(combineReducers({ ...notificationReducer }));

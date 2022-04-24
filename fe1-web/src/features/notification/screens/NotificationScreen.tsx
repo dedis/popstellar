@@ -45,7 +45,7 @@ const NotificationScreenStyles = StyleSheet.create({
 
 type NavigationProps = StackScreenProps<
   NotificationStackParamList,
-  'NotificationNavigation Notifications'
+  typeof STRINGS.notification_navigation_tab_notifications
 >;
 
 const NotificationScreen = () => {
@@ -67,10 +67,6 @@ const NotificationScreen = () => {
         unread.push({ ...notification, isLastItem: false });
       }
     }
-
-    // sort in descending order, i.e. newest/latest first
-    read.sort((a, b) => b.timestamp - a.timestamp);
-    unread.sort((a, b) => b.timestamp - a.timestamp);
 
     const items: (ListSeparatorItem | NotificationItem)[] = [];
     if (unread.length > 0) {
@@ -145,7 +141,7 @@ const NotificationScreen = () => {
           return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
         }}
       />
-      <Button title="Clear notifications" onPress={onClearNotifications} />
+      <Button title={STRINGS.notification_clear_all} onPress={onClearNotifications} />
     </ScreenWrapper>
   );
 };

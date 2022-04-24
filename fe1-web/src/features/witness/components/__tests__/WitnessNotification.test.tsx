@@ -32,7 +32,7 @@ import WitnessNotification from '../WitnessNotification';
 
 const mockMessageId = 'some message id';
 
-// otherwise .formData won't work
+// otherwise .fromData won't work
 configureTestFeatures();
 
 const timestamp = new Timestamp(1607277600);

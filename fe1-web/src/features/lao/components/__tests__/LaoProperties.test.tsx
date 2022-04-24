@@ -2,7 +2,6 @@ import { describe } from '@jest/globals';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { act } from 'react-test-renderer';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';

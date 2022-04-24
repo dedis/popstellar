@@ -85,7 +85,7 @@ const notificationSlice = createSlice({
       state.byLaoId[laoId].byId[notificationId].hasBeenRead = true;
     },
 
-    // Discards a notification
+    // Discards a set of notifications
     discardNotifications: (
       state: Draft<NotificationReducerState>,
       action: PayloadAction<{ laoId: string; notificationIds: number[] }>,
@@ -104,16 +104,27 @@ const notificationSlice = createSlice({
         }
 
         delete state.byLaoId[laoId].byId[notificationId];
+        // remove the id from allIds
+        state.byLaoId[laoId].allIds.splice(
+          state.byLaoId[laoId].allIds.findIndex((id) => id === notificationId),
+          1,
+        );
       }
-
-      state.byLaoId[laoId].allIds = state.byLaoId[laoId].allIds.filter(
-        (id) => !notificationIds.includes(id),
-      );
     },
 
     // Discards all notifications
-    discardAllNotifications: (state: Draft<NotificationReducerState>) => {
-      state.byLaoId = {};
+    discardAllNotifications: (
+      state: Draft<NotificationReducerState>,
+      action: PayloadAction<string>,
+    ) => {
+      const laoId = action.payload;
+
+      if (!(laoId in state.byLaoId)) {
+        // there was no notification for this lao anyway
+        return;
+      }
+
+      delete state.byLaoId[laoId];
     },
   },
 });
@@ -154,7 +165,7 @@ export const makeUnreadNotificationCountSelector = (laoId: string) =>
   );
 
 /**
- * Creates a selector that returns all notifications for a specific lao
+ * Creates a selector that returns all notifications for a specific lao ordererd with the newest first
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
@@ -164,7 +175,7 @@ export const makeAllNotificationsSelector = (laoId: string) =>
     (state) => getNotificationState(state).byLaoId[laoId]?.byId,
     // Second input: all notification ids
     (state) => getNotificationState(state).byLaoId[laoId]?.allIds,
-    // Selector: returns the number of unread notifications
+    // Selector: returns all notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
       allIds: number[] | undefined,
@@ -173,7 +184,12 @@ export const makeAllNotificationsSelector = (laoId: string) =>
         return [];
       }
 
-      return allIds.map((id) => notificationMap[id]);
+      const notifications = allIds.map((id) => notificationMap[id]);
+
+      // sort in descending order, i.e. newest/latest first
+      notifications.sort((a, b) => b.timestamp - a.timestamp);
+
+      return notifications;
     },
   );
 
