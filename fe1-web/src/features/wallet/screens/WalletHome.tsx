@@ -19,7 +19,7 @@ import { RollCallToken } from '../objects/RollCallToken';
 const styles = StyleSheet.create({
   homeContainer: {
     ...containerStyles.centeredXY,
-    padding: '30px',
+    padding: 30,
   } as ViewStyle,
   smallPadding: {
     padding: '1rem',

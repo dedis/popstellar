@@ -1,11 +1,5 @@
-import { Hash, KeyPairState, PopToken } from 'core/objects';
+import { Hash, PopToken } from 'core/objects';
 
-export interface RollCallTokenState {
-  token: KeyPairState;
-  laoId: string;
-  rollCallId: string;
-  rollCallName: string;
-}
 /**
  * A Roll Call Token object, defined by a Pop token, its lao id hash and its Roll Call id hash
  */

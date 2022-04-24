@@ -87,6 +87,7 @@ const hashMock1 = Hash.fromStringArray(
   mockRollCallState.start.valueOf(),
   mockRCName1,
 );
+
 /*
  * Generates a mock state with some mock popTokens
  */

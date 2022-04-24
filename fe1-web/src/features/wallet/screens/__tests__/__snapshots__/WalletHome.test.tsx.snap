@@ -320,7 +320,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             "alignItems": "center",
                             "flex": 1,
                             "justifyContent": "center",
-                            "padding": "30px",
+                            "padding": 30,
                           }
                         }
                       >
