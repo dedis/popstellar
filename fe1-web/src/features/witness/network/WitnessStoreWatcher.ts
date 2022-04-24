@@ -4,7 +4,7 @@ import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 
 import { WitnessConfiguration } from '../interface';
-import { WitnessingType, getWitnessRegistryEntry } from './messages/WitnessRegistry';
+import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
 
 /**
@@ -19,10 +19,10 @@ export const afterMessageProcessingHandler =
     /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
   ) =>
   (msg: ExtendedMessage) => {
-    const entry = getWitnessRegistryEntry(msg.messageData);
+    const entry = getWitnessRegistryEntryType(msg.messageData);
 
     if (entry) {
-      // we have a wintessing entry for this message type
+      // we have a witnessing entry for this message type
       switch (entry.type) {
         case WitnessingType.PASSIVE:
           if (enabled) {

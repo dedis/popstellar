@@ -66,7 +66,6 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Checks whether the current user is an organizer of the current lao
-     * @returns Whether the current user is an organizer of the current lao
      */
     useIsLaoOrganizer: () => boolean;
 
@@ -123,7 +122,6 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Returns whether the user is witness of the current lao
-     * @returns Whether the user is witness of the current lao
      */
     isLaoWitness: () => boolean;
 
