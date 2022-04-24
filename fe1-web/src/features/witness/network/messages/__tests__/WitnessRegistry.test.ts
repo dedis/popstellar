@@ -1,7 +1,6 @@
 import { describe, it } from '@jest/globals';
 
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { ProtocolError } from 'core/objects';
 
 import { getWitnessRegistryEntryType } from '../WitnessRegistry';
 
