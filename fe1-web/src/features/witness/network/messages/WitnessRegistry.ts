@@ -68,14 +68,10 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   [k(REACTION, ADD), { type: WitnessingType.PASSIVE }],
 ]);
 
-const getWitnessRegistryEntry = (data: MessageData): WitnessEntry => {
+const getWitnessRegistryEntry = (data: MessageData): WitnessEntry | undefined => {
   const key = k(data.object, data.action);
-  const messageEntry = WITNESSING_TYPE_MAP.get(key);
-  if (messageEntry === undefined) {
-    throw new ProtocolError(`Message '${key}' is not contained in WitnessRegistry`);
-  }
-  return messageEntry;
+  return WITNESSING_TYPE_MAP.get(key);
 };
 
-export const getWitnessRegistryEntryType = (data: MessageData): WitnessingType =>
-  getWitnessRegistryEntry(data).type;
+export const getWitnessRegistryEntryType = (data: MessageData): WitnessingType | undefined =>
+  getWitnessRegistryEntry(data)?.type;

@@ -7,17 +7,23 @@ import { getWitnessRegistryEntryType } from '../WitnessRegistry';
 
 describe('WitnessRegistry', () => {
   it('does not throw an error for valid message data input', () => {
-    expect(() => {
-      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.SETUP });
-      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.OPEN });
-      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.CAST_VOTE });
-      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.END });
-    }).not.toThrow(ProtocolError);
+    expect(
+      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.SETUP }),
+    ).not.toBeUndefined();
+    expect(
+      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.OPEN }),
+    ).not.toBeUndefined();
+    expect(
+      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.CAST_VOTE }),
+    ).not.toBeUndefined();
+    expect(
+      getWitnessRegistryEntryType({ object: ObjectType.ELECTION, action: ActionType.END }),
+    ).not.toBeUndefined();
   });
 
   it('throws for invalid message data input', () => {
-    expect(() =>
+    expect(
       getWitnessRegistryEntryType({ object: ObjectType.CHIRP, action: ActionType.CAST_VOTE }),
-    ).toThrow(ProtocolError);
+    ).toBeUndefined();
   });
 });

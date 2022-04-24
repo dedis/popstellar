@@ -19,11 +19,11 @@ export const afterMessageProcessingHandler =
     /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
   ) =>
   (msg: ExtendedMessage) => {
-    const entry = getWitnessRegistryEntryType(msg.messageData);
+    const type = getWitnessRegistryEntryType(msg.messageData);
 
-    if (entry) {
+    if (type) {
       // we have a witnessing entry for this message type
-      switch (entry.type) {
+      switch (type) {
         case WitnessingType.PASSIVE:
           if (enabled) {
             requestWitnessMessage(msg.channel, msg.message_id);
