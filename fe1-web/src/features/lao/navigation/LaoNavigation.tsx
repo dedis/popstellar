@@ -1,15 +1,13 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { getKeyPairState } from 'core/keypair';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectCurrentLao } from '../reducer';
+import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
 import OrganizerEventsNavigation from './OrganizerNavigation';
 
@@ -38,16 +36,10 @@ const styles = StyleSheet.create({
 });
 
 const LaoNavigation: React.FC = () => {
-  const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const store = useStore();
-
-  const publicKeyRaw = getKeyPairState(store.getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
-
-  const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
-  const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isWitness = useSelector(selectIsLaoWitness);
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.Screen[] = useMemo(() => {

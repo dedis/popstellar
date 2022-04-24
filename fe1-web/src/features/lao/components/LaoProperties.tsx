@@ -2,15 +2,14 @@ import { useNavigation } from '@react-navigation/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
-import { useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
-import { getKeyPairState } from 'core/keypair';
-import { PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
+import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 
 const laoPropertiesStyles = StyleSheet.create({
   default: {
@@ -42,14 +41,8 @@ const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
 
   const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
-  const store = useStore();
-
-  const publicKeyRaw = getKeyPairState(store.getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
-
-  const isOrganizer = !!(publicKey && publicKey.equals(lao.organizer));
-
-  const isWitness = !!(publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isWitness = useSelector(selectIsLaoWitness);
 
   return (
     <View style={laoPropertiesStyles.default}>
