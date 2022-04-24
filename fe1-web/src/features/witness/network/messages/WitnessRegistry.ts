@@ -1,5 +1,4 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { ProtocolError } from 'core/objects';
 
 const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
 const {
