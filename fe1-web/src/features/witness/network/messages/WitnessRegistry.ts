@@ -21,9 +21,9 @@ const {
 } = ActionType;
 
 export enum WitnessingType {
-  'NO_WITNESSING',
-  'PASSIVE',
-  'ACTIVE',
+  NO_WITNESSING = 'NO_WITNESSING',
+  PASSIVE = 'PASSIVE',
+  ACTIVE = 'ACTIVE',
 }
 
 export interface WitnessEntry {
@@ -68,11 +68,10 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   [k(REACTION, ADD), { type: WitnessingType.PASSIVE }],
 ]);
 
-export const getWitnessRegistryEntry = (data: MessageData): WitnessEntry => {
+const getWitnessRegistryEntry = (data: MessageData): WitnessEntry | undefined => {
   const key = k(data.object, data.action);
-  const messageEntry = WITNESSING_TYPE_MAP.get(key);
-  if (messageEntry === undefined) {
-    throw new ProtocolError(`Message '${key}' is not contained in WitnessRegistry`);
-  }
-  return messageEntry;
+  return WITNESSING_TYPE_MAP.get(key);
 };
+
+export const getWitnessRegistryEntryType = (data: MessageData): WitnessingType | undefined =>
+  getWitnessRegistryEntry(data)?.type;

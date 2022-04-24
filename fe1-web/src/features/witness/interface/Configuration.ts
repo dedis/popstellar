@@ -33,7 +33,6 @@ export interface WitnessConfiguration {
 
   /**
    * Returns whether the user is witness of the current lao
-   * @returns Whether the user is witness of the current lao
    */
   isLaoWitness: () => boolean;
 

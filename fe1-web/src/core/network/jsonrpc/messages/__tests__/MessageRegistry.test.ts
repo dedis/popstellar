@@ -51,7 +51,7 @@ describe('MessageRegistry', () => {
     const message = Message.fromData(messageData, mockPopToken);
     const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
 
-    const mockHandle = jest.fn().mockImplementation(() => true);
+    const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 

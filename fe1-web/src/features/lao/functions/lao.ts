@@ -25,7 +25,6 @@ export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
 
 /**
  * Returns whether the user is witness of the current lao
- * @returns Whether the user is witness of the current lao
  */
 export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
 

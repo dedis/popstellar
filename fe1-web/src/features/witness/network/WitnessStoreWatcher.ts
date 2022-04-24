@@ -12,7 +12,7 @@ import {
   WitnessFeature,
 } from '../interface';
 import { addMessageToWitness, getMessageToWitness } from '../reducer';
-import { WitnessingType, getWitnessRegistryEntry } from './messages/WitnessRegistry';
+import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
 
 /**
@@ -47,13 +47,13 @@ export const afterMessageProcessingHandler =
       return;
     }
 
-    const entry = getWitnessRegistryEntry(msg.messageData);
+    const type = getWitnessRegistryEntryType(msg.messageData);
     const lao = getCurrentLao();
 
-    if (entry) {
+    if (type) {
       // we have a wintessing entry for this message type
 
-      switch (entry.type) {
+      switch (type) {
         case WitnessingType.PASSIVE:
           if (!enabled) {
             return;
