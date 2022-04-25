@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
