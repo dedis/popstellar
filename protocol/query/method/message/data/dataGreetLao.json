@@ -16,8 +16,8 @@
             "contentEncoding": "base64",
             "$comment": "ID of the LAO"
         },
-        "sender": {
-            "description": "[Base64String] public key of the server",
+        "frontend": {
+            "description": "[Base64String] public key of the frontend of the server owner",
             "type": "string",
             "contentEncoding": "base64",
             "$comment": "Note: the string is encoded in Base64"
@@ -45,5 +45,5 @@
         }
     },
     "additionalProperties": false,
-    "required": ["object", "action", "lao", "sender", "address", "peers"]
+    "required": ["object", "action", "lao", "frontend", "address", "peers"]
 }
