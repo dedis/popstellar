@@ -49,7 +49,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           for (
             channelExists <- dbActor ? DbActor.ChannelExists(rollCallChannel)
           ) yield channelExists match {
-            case DbActorAck =>
+            case DbActor.DbActorAck =>
               Future(Right(PipelineError(0, "", rpcRequest.getId)))
             case _ =>
               for (
