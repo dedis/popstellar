@@ -34,6 +34,33 @@ type Channel struct {
 	log zerolog.Logger
 }
 
+// NewChannel returns a new initialized digitalCash channel
+func NewChannel(channelID string, hub channel.HubFunctionalities,
+	log zerolog.Logger) channel.Channel {
+
+	box := inbox.NewInbox(channelID)
+
+	log = log.With().Str("channel", "digitalCash").Logger()
+
+	// Saving on Digital Cash channel too so it self-contains the entire cash history
+	retChannel := &Channel{
+		sockets:   channel.NewSockets(),
+		inbox:     box,
+		channelID: channelID,
+		hub:       hub,
+		log:       log,
+	}
+
+	retChannel.registry = retChannel.NewDigitalCashRegistry()
+
+	return retChannel
+}
+
+// ---
+// Publish-subscribe / channel.Channel implementation
+// ---
+
+// Subscribe is used to handle a subscribe message from the client
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
 	c.sockets.Upsert(socket)
@@ -41,6 +68,7 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	return nil
 }
 
+// Unsubscribe is used to handle an unsubscribe message.
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
@@ -52,6 +80,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	return nil
 }
 
+// Publish handles publish messages for the consensus channel
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -60,7 +89,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+
-			"election channel: %w", err)
+			"digital cash channel: %w", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -71,12 +100,14 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	return nil
 }
 
+// Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
 
+// Broadcast is used to handle a broadcast message.
 func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
@@ -93,29 +124,37 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 	return nil
 }
 
-// NewChannel returns a new initialized digitalCash channel
-func NewChannel(channelID string, log zerolog.Logger, hub channel.HubFunctionalities) channel.Channel {
+// ---
+// Message handling
+// ---
 
-	log = log.With().Str("channel", "digitalCash").Logger()
-
-	box := inbox.NewInbox(channelID)
-
-	// Saving on Digital Cash channel too so it self-contains the entire cash history
-	retChannel := &Channel{
-		sockets:   channel.NewSockets(),
-		hub:       hub,
-		inbox:     box,
-		channelID: channelID,
-		log:       log,
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+	err := c.registry.Process(msg, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
-	retChannel.registry = retChannel.NewDigitalCashRegistry()
+	c.inbox.StoreMessage(msg)
 
-	return retChannel
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
+	return nil
 }
 
-// broadcastToAllClients is a helper message to broadcast a message to all
-// clients.
+// NewDigitalCashRegistry creates a new registry for the digital cash channel
+func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+
+	registry.Register(messagedata.TransactionPost{}, c.processTransactionPost)
+
+	return registry
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all clients.
 func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all")
 
@@ -146,7 +185,6 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf("failed to decode message data: %v", err)
@@ -168,36 +206,9 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
-
-	err := c.registry.Process(msg, socket)
-	if err != nil {
-		return xerrors.Errorf("failed to process message: %w", err)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	err = c.broadcastToAllClients(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
-	}
-
-	return nil
-}
-
-func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-
-	registry.Register(messagedata.TransactionPost{}, c.processTransactionPost)
-
-	return registry
-}
-
-// UPDATE FOLLOWING
-// processMessageObject handles a message object.
-
-func (c *Channel) processTransactionPost(msg message.Message, msgData interface{}, _ socket.Socket) error {
+// processTransactionPost handles a message object.
+func (c *Channel) processTransactionPost(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.TransactionPost)
 	if !ok {

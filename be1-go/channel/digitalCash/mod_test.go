@@ -27,11 +27,6 @@ import (
 
 const protocolRelativePath string = "../../../protocol"
 
-func Test_Message(t *testing.T) {
-	//msgdata := messagedata.TransactionPost{}
-	//msgdata.Object
-}
-
 // Tests that the channel works correctly when it receives a subscribe
 func Test_General_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
