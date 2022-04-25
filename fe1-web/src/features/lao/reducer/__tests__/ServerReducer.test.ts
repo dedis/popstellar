@@ -1,11 +1,25 @@
-import { AnyAction } from 'redux';
+import { AnyAction, combineReducers, createStore } from 'redux';
 
-import { mockAddress, mockLaoId, mockPublicKey, mockPublicKey2 } from '__tests__/utils';
+import {
+  mockAddress,
+  mockKeyPair,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockLaoState,
+  mockPopToken,
+  mockPublicKey,
+  mockPublicKey2,
+  org,
+} from '__tests__/utils';
 import { ServerState } from 'features/lao/objects/Server';
 
+import { laoReducer, serverReducer } from '../index';
+import { connectToLao } from '../LaoReducer';
 import {
   addServer,
   clearAllServers,
+  getLaoOrganizerBackendPublicKey,
   removeServer,
   serverReduce,
   ServerReducerState,
@@ -175,6 +189,48 @@ describe('ServerReducer', () => {
           clearAllServers(),
         ),
       ).toEqual(emptyState);
+    });
+  });
+
+  describe('getLaoOrganizerBackendPublicKey', () => {
+    it('should return the correct value if a lao and server entry exist', () => {
+      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
+      mockStore.dispatch(connectToLao(mockLaoState));
+
+      mockStore.dispatch(
+        addServer({
+          address: mockAddress,
+          laoId: mockLaoId,
+          frontendPublicKey: org.valueOf(),
+          serverPublicKey: mockKeyPair.publicKey.valueOf(),
+        }),
+      );
+
+      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())?.valueOf()).toEqual(
+        org.valueOf(),
+      );
+    });
+
+    it('should return undefined if there is no lao entry for the given id', () => {
+      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
+
+      mockStore.dispatch(
+        addServer({
+          address: mockAddress,
+          laoId: mockLaoId,
+          frontendPublicKey: org.valueOf(),
+          serverPublicKey: mockKeyPair.publicKey.valueOf(),
+        }),
+      );
+
+      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())).toBeUndefined();
+    });
+
+    it('should return undefined if there is no server entry for the organizer public key', () => {
+      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
+      mockStore.dispatch(connectToLao(mockLaoState));
+
+      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())).toBeUndefined();
     });
   });
 });
