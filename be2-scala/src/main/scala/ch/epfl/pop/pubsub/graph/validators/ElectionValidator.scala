@@ -140,8 +140,8 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     result
   }
 
-  private def getOpenMessage(electionChannel: Channel): Option[EndElection] = {
-    var result: Option[EndElection] = None
+  private def getOpenMessage(electionChannel: Channel): Option[OpenElection] = {
+    var result: Option[OpenElection] = None
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         for (message <- channelData.messages) {
@@ -151,7 +151,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
           }) match {
             case DbActorReadAck(Some(message)) =>
               try {
-                result = Some(EndElection.buildFromJson(message.data.decodeToString()))
+                result = Some(OpenElection.buildFromJson(message.data.decodeToString()))
               } catch {
                 case exception: Throwable => print(exception)
               }
