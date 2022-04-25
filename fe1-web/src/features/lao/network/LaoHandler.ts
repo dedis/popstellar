@@ -1,9 +1,13 @@
+import { getNetworkManager } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
+import { Server } from '../objects/Server';
 import { connectToLao } from '../reducer';
+import { addServer } from '../reducer/ServerReducer';
 import { CreateLao } from './messages';
+import { GreetLao } from './messages/GreetLao';
 
 export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.CREATE) {
@@ -72,6 +76,40 @@ export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
   dispatch(updateLao(lao.toState()));
   return true; */
 }
+
+export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
+  if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.GREET) {
+    console.warn('handleLaoGreetMessage was called to process an unsupported message', msg);
+    return false;
+  }
+
+  const greetLaoMsg = msg.messageData as GreetLao;
+
+  dispatch(
+    addServer(
+      new Server({
+        laoId: greetLaoMsg.lao,
+        address: greetLaoMsg.address,
+        publicKey: greetLaoMsg.sender,
+      }).toState(),
+    ),
+  );
+
+  // connect to all received peer addresses
+  // after connecting to each peer, we will send a catchup which contains the lao#create message
+  // as soon as we have parsed this message, we will connect to the LAO on the new connection as well
+  // which will trigger another lao#greet message
+  // IMPORTANT: The network manager deduplicates connections to the same address (string)
+  // and the received peer addresses are supposed to be the canonical ones.
+  // Hence we just have to make sure that the first connection is also to the canonical
+  // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
+  // then using the canonical domain address)
+  const networkManager = getNetworkManager();
+  for (const peerAddress of greetLaoMsg.peers) {
+    networkManager.connect(peerAddress.address);
+  }
+  return true;
+};
 
 export function handleLaoUpdatePropertiesMessage(msg: ProcessableMessage): boolean {
   console.debug(`lao/update_properties message was archived: no action needs to be taken ${msg}`);

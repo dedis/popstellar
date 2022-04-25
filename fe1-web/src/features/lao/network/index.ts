@@ -6,10 +6,12 @@ import { getLaoChannel } from '../functions/lao';
 import { selectCurrentLaoId } from '../reducer';
 import {
   handleLaoCreateMessage,
+  handleLaoGreetMessage,
   handleLaoStateMessage,
   handleLaoUpdatePropertiesMessage,
 } from './LaoHandler';
 import { CreateLao, StateLao, UpdateLao } from './messages';
+import { GreetLao } from './messages/GreetLao';
 
 export * from './LaoMessageApi';
 
@@ -27,6 +29,7 @@ export function configureNetwork(registry: MessageRegistry) {
     handleLaoUpdatePropertiesMessage,
     UpdateLao.fromJson,
   );
+  registry.add(ObjectType.LAO, ActionType.GREET, handleLaoGreetMessage, GreetLao.fromJson);
 
   // in case of a reconnection, subscribe to and catchup on the LAO channel
   getNetworkManager().addReconnectionHandler(async () => {

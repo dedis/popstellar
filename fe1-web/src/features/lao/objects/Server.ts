@@ -1,15 +1,22 @@
 import { RemoveMethods } from 'core/types';
 
-import { PublicKey } from './PublicKey';
+import { Hash } from '../../../core/objects/Hash';
+import { PublicKey } from '../../../core/objects/PublicKey';
 
 export type ServerAddress = string;
 
 export interface ServerState {
+  laoId: string;
   address: string;
   publicKey: string;
 }
 
 export class Server {
+  /**
+   * The lao this server is associated to
+   */
+  laoId: Hash;
+
   /**
    * The canonical address of the server
    */
@@ -30,6 +37,11 @@ export class Server {
    * @param server The properties of the new server instance
    */
   constructor(server: RemoveMethods<Server>) {
+    if (server.laoId === undefined) {
+      throw new Error("Undefined 'laoId' when creating 'Server'");
+    }
+    this.laoId = server.laoId;
+
     if (server.address === undefined) {
       throw new Error("Undefined 'address' when creating 'Server'");
     }
@@ -48,6 +60,7 @@ export class Server {
    */
   public static fromState(server: ServerState): Server {
     return new Server({
+      laoId: new Hash(server.laoId),
       address: server.address,
       publicKey: new PublicKey(server.publicKey),
     });

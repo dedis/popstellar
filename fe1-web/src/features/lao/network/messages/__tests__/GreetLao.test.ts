@@ -1,46 +1,47 @@
-import { mockAddress, mockChannel, mockKeyPair, mockPublicKey } from '__tests__/utils';
-import { ProtocolError, PublicKey } from 'core/objects';
+import { mockAddress, mockKeyPair, mockLaoId, mockLaoIdHash, mockPublicKey } from '__tests__/utils';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
-import { Greeting } from '../Greeting';
+import { GreetLao } from '../GreetLao';
 
-const otherAddress = 'some other address';
+const otherAddress = 'wss://some-other-address.com';
 
-describe('Greeting', () => {
+describe('GreetLao', () => {
   describe('constructor', () => {
     it('can correctly construct a greeting instance', () => {
-      const peers = [otherAddress];
+      const peers = [{ address: otherAddress }];
 
-      const g = new Greeting({
+      const g = new GreetLao({
         address: mockAddress,
-        channel: mockChannel,
+        lao: mockLaoIdHash,
         peers,
         sender: mockKeyPair.publicKey,
       });
 
       expect(g.address).toBe(mockAddress);
-      expect(g.channel).toBe(mockChannel);
+      expect(g.lao).toBe(mockLaoIdHash);
       expect(g.peers).toBe(peers);
       expect(g.sender).toBe(mockKeyPair.publicKey);
     });
 
     it('throw an error if the address is undefined', () => {
       const fn = () =>
-        new Greeting({
+        new GreetLao({
           address: undefined as unknown as string,
-          channel: mockChannel,
-          peers: [otherAddress],
+          lao: mockLaoIdHash,
+          peers: [{ address: otherAddress }],
           sender: mockKeyPair.publicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
     });
 
-    it('throw an error if the channel is undefined', () => {
+    it('throw an error if the lao is undefined', () => {
       const fn = () =>
-        new Greeting({
+        new GreetLao({
           address: mockAddress,
-          channel: undefined as unknown as string,
-          peers: [otherAddress],
+          lao: undefined as unknown as Hash,
+          peers: [{ address: otherAddress }],
           sender: mockKeyPair.publicKey,
         });
 
@@ -49,10 +50,10 @@ describe('Greeting', () => {
 
     it('throw an error if the peers are undefined', () => {
       const fn = () =>
-        new Greeting({
+        new GreetLao({
           address: mockAddress,
-          channel: mockChannel,
-          peers: undefined as unknown as string[],
+          lao: mockLaoIdHash,
+          peers: undefined as unknown as GreetLao['peers'],
           sender: mockKeyPair.publicKey,
         });
 
@@ -61,10 +62,10 @@ describe('Greeting', () => {
 
     it('throw an error if the sender is undefined', () => {
       const fn = () =>
-        new Greeting({
+        new GreetLao({
           address: mockAddress,
-          channel: mockChannel,
-          peers: [otherAddress],
+          lao: mockLaoIdHash,
+          peers: [{ address: otherAddress }],
           sender: undefined as unknown as PublicKey,
         });
 
@@ -73,10 +74,10 @@ describe('Greeting', () => {
 
     it('throw an error if the peers contain the address', () => {
       const fn = () =>
-        new Greeting({
+        new GreetLao({
           address: mockAddress,
-          channel: mockChannel,
-          peers: [mockAddress],
+          lao: mockLaoIdHash,
+          peers: [{ address: mockAddress }],
           sender: undefined as unknown as PublicKey,
         });
 
@@ -86,17 +87,19 @@ describe('Greeting', () => {
 
   describe('fromJson', () => {
     it('can correctly construct a greeting instance', () => {
-      const peers = [otherAddress];
+      const peers = [{ address: otherAddress }];
 
-      const g = Greeting.fromJson({
+      const g = GreetLao.fromJson({
+        object: ObjectType.LAO,
+        action: ActionType.GREET,
         address: mockAddress,
-        channel: mockChannel,
+        lao: mockLaoId,
         peers,
         sender: mockPublicKey,
       });
 
       expect(g.address).toEqual(mockAddress);
-      expect(g.channel).toEqual(mockChannel);
+      expect(g.lao.valueOf()).toEqual(mockLaoId);
       expect(g.peers).toEqual(peers);
       expect(g.sender.valueOf()).toEqual(mockPublicKey);
     });

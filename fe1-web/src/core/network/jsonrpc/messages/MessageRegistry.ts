@@ -11,6 +11,7 @@ const {
   CREATE,
   STATE,
   UPDATE_PROPERTIES,
+  GREET,
   OPEN,
   CLOSE,
   REOPEN,
@@ -54,6 +55,7 @@ export class MessageRegistry {
     [k(LAO, CREATE), { signature: KEYPAIR }],
     [k(LAO, STATE), { signature: KEYPAIR }],
     [k(LAO, UPDATE_PROPERTIES), { signature: KEYPAIR }],
+    [k(LAO, GREET), { signature: KEYPAIR }],
 
     // Meeting
     [k(MEETING, CREATE), { signature: KEYPAIR }],
