@@ -40,47 +40,37 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private val unknownAnswer: String = "Database actor returned an unknown answer"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
-    Await.result(ask, duration) match {
-      case Left(_) =>
-        rpcRequest.getParamsMessage match {
-          case Some(message: Message) =>
-            val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
-            // we are using the rollcall id instead of the message_id at rollcall creation
-            val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
-            val combined = for {
-              // check whether the rollcall already exists in db
-              _ <- {
-                (dbActor ? DbActor.ChannelExists(rollCallChannel)).transformWith {
-                  case Success(_) => Future {
-                    throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollcall already exists in db")
-                  }
-                  case _ => Future {
-                    ()
-                  }
-                }
-              }
-              // create rollcall channel
-              _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
-              // write rollcall creation message
-              _ <- dbActor ? DbActor.WriteAndPropagate(rollCallChannel, message)
-              // write rollcall data
-            } yield ()
+    rpcRequest.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        // we are using the rollcall id instead of the message_id at rollcall creation
+        val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        val ask =
+          for (
+            channelExists <- dbActor ? DbActor.ChannelExists(rollCallChannel)
+          ) yield channelExists match {
+            case DbActorAck() =>
+              Future(Right(PipelineError(0, "", rpcRequest.getId)))
+            case _ =>
+              for (
+                _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL);
+                x <- dbAskWritePropagate(rpcRequest)
+              )
+              yield x
+          }
 
-            Await.ready(combined, duration).value.get match {
-              case Success(_) => Left(rpcRequest)
-              case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
-              case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
-            }
-
-          case _ => Right(PipelineError(
-            ErrorCodes.SERVER_ERROR.id,
-            s"Unable to handle rollcall message $rpcRequest. Not a Publish/Broadcast message",
-            rpcRequest.id
-          ))
+        Await.result(Await.result(ask, duration), duration) match {
+          case success@Left(_) =>
+            success
+          case error@Right(_) => error
+          case _ => Right(
+            PipelineError(ErrorCodes.ALREADY_EXISTS.id, "Rollcall already exists in db", rpcRequest.getId)
+          )
         }
-      case error@Right(_) => error
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcRequest.id))
+      case _ =>
+        Right(
+          PipelineError(ErrorCodes.SERVER_ERROR.id, "The server is doing something unexpected", rpcRequest.getId)
+        )
     }
   }
 

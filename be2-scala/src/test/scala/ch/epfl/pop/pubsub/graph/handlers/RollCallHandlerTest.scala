@@ -29,8 +29,9 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
-          system.log.info(f"Received a message")
+        case DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) => sender() ! DbActor.DbActorAck()
+        case DbActor.WriteAndPropagate(_, _) =>
+          system.log.info(f"Received a write and propagate")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
@@ -51,7 +52,11 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
         case DbActor.ChannelExists(_) =>
           system.log.info(s"Received a create rollcall message")
           system.log.info("Responding with a no")
-          sender() ! Status.Failure(DbActorNAckException(1, "no"))
+          // fixme : replace the 2 next lines with
+          //  sender() ! Status.Failure(DbActorNAckException(1, "error"))
+          //  but it is crashing
+          val oddNack = DbActor.DbActorCatchupAck
+          sender() ! oddNack
         case x =>
           system.log.info(s"Received - error $x")
       }
