@@ -11,7 +11,6 @@ const method_unsubscribe_schema = require("../query/method/unsubscribe.json");
 const method_broadcast_schema = require("../query/method/broadcast.json");
 const method_publish_schema = require("../query/method/publish.json");
 const method_catchup_schema = require("../query/method/catchup.json");
-const method_greeting_schema = require("../query/method/greeting.json");
 
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
@@ -20,6 +19,7 @@ const message_data_roll_call_open_schema = require("../query/method/message/data
 const message_data_lao_create_schema = require("../query/method/message/data/dataCreateLao.json");
 const message_data_lao_update_schema = require("../query/method/message/data/dataUpdateLao.json");
 const message_data_lao_state_schema = require("../query/method/message/data/dataStateLao.json");
+const message_data_lao_greet_schema = require("../query/method/message/data/dataGreetLao.json");
 const message_data_vote_cast_schema = require("../query/method/message/data/dataCastVote.json");
 const message_data_election_open_schema = require("../query/method/message/data/dataOpenElection.json");
 const message_data_election_end_schema = require("../query/method/message/data/dataEndElection.json");
@@ -60,7 +60,6 @@ ajv.addSchema([
     method_broadcast_schema,
     method_publish_schema,
     method_catchup_schema,
-    method_greeting_schema,
 
     message_data_schema,
 
@@ -71,6 +70,7 @@ ajv.addSchema([
     message_data_lao_create_schema,
     message_data_lao_update_schema,
     message_data_lao_state_schema,
+    message_data_lao_greet_schema,
 
     message_data_vote_cast_schema,
 

@@ -1,0 +1,14 @@
+{
+    "object": "lao",
+    "action": "greet",
+    "lao": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ=",
+    "address": "wss://popdemo.dedis.ch/demo",
+    "peers": [
+        {
+            "address": "wss://popdemo.dedis.ch/second-organizer-demo"
+        },
+        {
+            "address": "wss://popdemo.dedis.ch/witness-demo"
+        }
+    ]
+}

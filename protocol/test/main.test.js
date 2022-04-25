@@ -30,20 +30,8 @@ expect.extend({
 });
 
 // Tests all files in specified directories.
-describe("Check files", () => {
+const checkDirectoriesAgainstSchema = (directories, schema) => {
     let data = [];
-
-    const directories = [
-        ".",
-        "answer",
-        "query",
-        "query/broadcast",
-        "query/subscribe",
-        "query/unsubscribe",
-        "query/publish",
-        "query/catchup",
-        "query/greeting"
-    ];
 
     directories.forEach((directory) => {
         let absolutePath = path.join(__dirname, "..", "examples", directory);
@@ -71,11 +59,31 @@ describe("Check files", () => {
         const filename = path.basename(filePath);
 
         if (filename.startsWith("wrong_")) {
-            expect(file).not.toBeValid(rootSchema);
+            expect(file).not.toBeValid(schema);
         } else {
-            expect(file).toBeValid(rootSchema);
+            expect(file).toBeValid(schema);
         }
     });
+};
+
+describe("Check root schema", () => {
+    checkDirectoriesAgainstSchema(
+        [
+            ".",
+            "answer",
+            "query",
+            "query/broadcast",
+            "query/subscribe",
+            "query/unsubscribe",
+            "query/publish",
+            "query/catchup"
+        ],
+        rootSchema
+    );
+});
+
+describe("Check message schema", () => {
+    checkDirectoriesAgainstSchema(["messageData/lao_greet"], messageDataSchema);
 });
 
 test("message data: lao", () => {
