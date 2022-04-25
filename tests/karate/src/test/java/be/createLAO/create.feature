@@ -8,6 +8,7 @@ Feature: Create a pop LAO
         # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
+    * call read('classpath:be/constants.feature')
     * def id = 1
     * string channel = "/root"
 
@@ -22,26 +23,24 @@ Feature: Create a pop LAO
 #    Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2
+    * def laoId = call createLaoId
+    * def organizer = call organizerPk
     Given def badLaoReq =
       """
-       JSON.stringify(
         {
           "object": "lao",
           "action": "create",
-          "id": 'p8TW08AWlBScs9FGXK3KbLQX7Fbgz8_gLwX-B5VEWS0=',
+          "id": '#(laoId)',
           "name": "",
           "creation": 1633098234,
-          "organizer": 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=',
+          "organizer": '#(organizer)',
           "witnesses": []
-        })
+        }
       """
-    * karate.log("******************************")
-    * karate.log(badLaoReq)
-    * karate.log("******************************")
-    When frontend.publish(badLaoReq, id, channel)
-    And json answer = frontend.getBackendResponseWithBroadcast("ff")
-    Then match answer contains {error: {code: -6, description: '#string'}}
-#    And receiveNoMoreResponses
+    When frontend.publish(JSON.stringify(badLaoReq), id, channel)
+    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    Then match answer contains {error: {code: '#(INTERNAL_SERVER_ERROR)', description: '#string'}}
+    And match frontend.receiveNoMoreResponses() == true
 
 
 #  Scenario: Create Lao with negative time should fail with an error response

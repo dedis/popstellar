@@ -5,6 +5,7 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
+import com.intuit.karate.graal.JsMap;
 import net.minidev.asm.ConvertDate;
 
 /** A WebSocketClient that can handle multiple received messages */
@@ -48,13 +49,18 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public String getBackendResponseWithBroadcast(String a){
-    //String broadcast = getBuffer().takeTimeout(5000);
+    String broadcast = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
-    System.out.println("***************************" + a);
-    System.out.println("result is "+ result);
-    System.out.println("***************************");
-    System.out.println("result json is "+ Json.of(result));
-    System.out.println("***************************");
     return result;
+  }
+
+  public String getBackendResponseWithoutBroadcast(){
+    String result = getBuffer().takeTimeout(5000);
+    return result;
+  }
+
+  public boolean receiveNoMoreResponses(){
+    String result = getBuffer().takeTimeout(5000);
+    return result == null;
   }
 }

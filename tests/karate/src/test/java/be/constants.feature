@@ -8,7 +8,7 @@ Feature: Constants
         }
       """
 
-    * def getLaoIdEmptyName  = call createLaoId
+#    * def getLaoIdEmptyName  = call createLaoId
 
     * def organizerPk =
       """
@@ -16,3 +16,5 @@ Feature: Constants
           return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
         }
       """
+    * def INTERNAL_SERVER_ERROR = -6
+    * def INVALID_MESSAGE_FIELD = -4
