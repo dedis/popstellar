@@ -75,7 +75,7 @@ const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
-const VERSION = 'version';
+const VERSION = STRINGS.election_version_open_ballot;
 
 beforeAll(() => {
   jest.useFakeTimers('modern');

@@ -14,6 +14,8 @@ const {
   OPEN,
   CLOSE,
   REOPEN,
+  REQUEST_KEY,
+  KEY,
   SETUP,
   CAST_VOTE,
   END,
@@ -66,6 +68,8 @@ export class MessageRegistry {
     [k(ROLL_CALL, REOPEN), { signature: KEYPAIR }],
 
     // Election
+    [k(ELECTION, REQUEST_KEY), { signature: KEYPAIR }],
+    [k(ELECTION, KEY), { signature: KEYPAIR }],
     [k(ELECTION, SETUP), { signature: KEYPAIR }],
     [k(ELECTION, OPEN), { signature: KEYPAIR }],
     [k(ELECTION, CAST_VOTE), { signature: POP_TOKEN }],

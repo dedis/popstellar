@@ -6,7 +6,7 @@ import STRINGS from 'resources/strings';
 import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../objects/Election';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const VERSION = STRINGS.election_version_identifier;
+const VERSION = STRINGS.election_version_open_ballot;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 
 export const mockElectionName = 'An election';
