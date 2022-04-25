@@ -3,11 +3,8 @@ import { AnyAction, combineReducers, createStore } from 'redux';
 import {
   mockAddress,
   mockKeyPair,
-  mockLao,
   mockLaoId,
-  mockLaoIdHash,
   mockLaoState,
-  mockPopToken,
   mockPublicKey,
   mockPublicKey2,
   org,

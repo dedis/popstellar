@@ -11,7 +11,7 @@ import {
 import { addMessages, clearAllMessages, messageReducer } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Signature, Timestamp } from 'core/objects';
+import { Timestamp } from 'core/objects';
 import { WitnessMessage } from 'features/witness/network/messages';
 
 import { makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
