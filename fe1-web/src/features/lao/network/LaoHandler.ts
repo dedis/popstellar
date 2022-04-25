@@ -3,7 +3,7 @@ import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
 import { connectToLao } from '../reducer';
-import { handleValidLaoGreet } from './LaoGreetWatcher';
+import { handleLaoGreet } from './LaoGreetWatcher';
 import { CreateLao } from './messages';
 import { GreetLao } from './messages/GreetLao';
 
@@ -95,7 +95,7 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
     // return true;
   }
 
-  handleValidLaoGreet(greetLaoMsg, msg.sender);
+  handleLaoGreet(greetLaoMsg, msg.sender);
 
   return true;
 };

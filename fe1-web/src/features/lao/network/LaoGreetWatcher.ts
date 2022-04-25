@@ -12,7 +12,7 @@ import { Server } from '../objects/Server';
 import { addServer } from '../reducer/ServerReducer';
 import { GreetLao } from './messages/GreetLao';
 
-export const handleValidLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
+export const handleLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
   dispatch(
     addServer(
       new Server({
@@ -44,8 +44,12 @@ export const handleValidLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey)
  * become valid after they are witnessed by the corresponding frontend
  * @remark Implemented analogous to 'makeMessageStoreWatcher'
  * @param store The redux store to watch
+ * @param laoGreetSignatureHandler The function to call when a signature is added to a lao#greet message
  */
-export const makeLaoGreetStoreWatcher = (store: Store) => {
+export const makeLaoGreetStoreWatcher = (
+  store: Store,
+  laoGreetSignatureHandler: (greetLaoMsg: GreetLao, publicKey: PublicKey) => void,
+) => {
   let previousValue: string[] | undefined;
   let currentValue: string[] | undefined;
   return () => {
@@ -87,11 +91,11 @@ export const makeLaoGreetStoreWatcher = (store: Store) => {
         ) {
           // the newly witnessed message is of type lao#greet. check if the new signature comes from the corresponding frontend
           const laoGreetMessage = witnessedMessage.messageData as GreetLao;
-          if (witnessMessage.sender === laoGreetMessage.frontend) {
+          if (witnessMessage.sender.valueOf() === laoGreetMessage.frontend.valueOf()) {
             // if it is, then we can now treat this lao#greet message as being valid
             // it is only added to the store if the signature matches which means we do not
             // have to do this a second time
-            handleValidLaoGreet(laoGreetMessage, witnessedMessage.sender);
+            laoGreetSignatureHandler(laoGreetMessage, witnessedMessage.sender);
           }
         }
       }
