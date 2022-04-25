@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -34,7 +33,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", nolog, fakeHub)
+	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -62,7 +61,7 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", nolog, fakeHub)
+	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -92,7 +91,7 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", nolog, fakeHub)
+	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -122,7 +121,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	messages := make([]message.Message, numMessages)
 
 	// Create the channel
-	channel := NewChannel("channel0", nolog, fakeHub)
+	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -160,7 +159,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the channel
-	channel := NewChannel("channel0", nolog, fakeHub)
+	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -192,7 +191,7 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the channel
-	channel := NewChannel(digitalCashChannelName, nolog, fakeHub)
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
