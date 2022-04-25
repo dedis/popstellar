@@ -93,7 +93,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallNotCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) should equal(Left(request))
+    rc.handleCreateRollCall(request) should matchPattern { case Left(_) => }
     system.stop(mockedDB.actorRef)
   }
 
@@ -101,7 +101,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    // rc.handleCreateRollCall(request) should matchPattern { case Right(_) => }
+      rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
