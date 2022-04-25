@@ -19,6 +19,7 @@ type ConsensusPrepare struct {
 	Value ValuePrepare `json:"value"`
 }
 
+// ValuePrepare defines the id of the proposition
 type ValuePrepare struct {
 	ProposedTry int64 `json:"proposed_try"`
 }

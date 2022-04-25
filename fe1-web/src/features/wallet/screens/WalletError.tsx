@@ -16,7 +16,9 @@ const styles = StyleSheet.create({
  * Wallet synchronization error screen
  */
 const WalletError = () => {
+  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
+
   return (
     <View style={containerStyles.centeredY}>
       <TextBlock text={STRINGS.wallet_error} />

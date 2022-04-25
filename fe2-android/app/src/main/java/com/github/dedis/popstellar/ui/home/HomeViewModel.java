@@ -200,8 +200,7 @@ public class HomeViewModel extends AndroidViewModel
 
                   // Send subscribe and catchup after creating a LAO
                   networkManager.getMessageSender().subscribe(lao.getChannel()).subscribe();
-
-                  openHome();
+                  openLAO(lao.getId());
                 },
                 error ->
                     ErrorUtils.logAndShow(

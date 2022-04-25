@@ -23,6 +23,8 @@ const styles = StyleSheet.create({
 const WalletSetSeed = () => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
+
+  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
   const initWallet = async () => {

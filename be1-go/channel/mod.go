@@ -86,6 +86,7 @@ func (s *Sockets) Delete(ID string) bool {
 	}
 
 	delete(s.store, ID)
+
 	return true
 }
 
