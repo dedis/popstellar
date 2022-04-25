@@ -8,7 +8,8 @@ export type ServerAddress = string;
 export interface ServerState {
   laoId: string;
   address: string;
-  publicKey: string;
+  serverPublicKey: string;
+  frontendPublicKey: string;
 }
 
 export class Server {
@@ -25,7 +26,12 @@ export class Server {
   /**
    * The public key of the server that can be used to send encrypted messages
    */
-  publicKey: PublicKey;
+  serverPublicKey: PublicKey;
+
+  /**
+   * The public key of the server that can be used to send encrypted messages
+   */
+  frontendPublicKey: PublicKey;
 
   // NOTE: There is no need to store peers: ServerAddress[] here.
   // As soon as a greeting message arrives, we connect to all peers. The server addresses
@@ -47,10 +53,15 @@ export class Server {
     }
     this.address = server.address;
 
-    if (server.publicKey === undefined) {
-      throw new Error("Undefined 'publicKey' when creating 'Server'");
+    if (server.serverPublicKey === undefined) {
+      throw new Error("Undefined 'serverPublicKey' when creating 'Server'");
     }
-    this.publicKey = server.publicKey;
+    this.serverPublicKey = server.serverPublicKey;
+
+    if (server.frontendPublicKey === undefined) {
+      throw new Error("Undefined 'frontendPublicKey' when creating 'Server'");
+    }
+    this.frontendPublicKey = server.frontendPublicKey;
   }
 
   /**
@@ -62,7 +73,8 @@ export class Server {
     return new Server({
       laoId: new Hash(server.laoId),
       address: server.address,
-      publicKey: new PublicKey(server.publicKey),
+      serverPublicKey: new PublicKey(server.serverPublicKey),
+      frontendPublicKey: new PublicKey(server.frontendPublicKey),
     });
   }
 

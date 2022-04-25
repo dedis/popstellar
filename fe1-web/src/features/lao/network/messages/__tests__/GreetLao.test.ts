@@ -15,13 +15,13 @@ describe('GreetLao', () => {
         address: mockAddress,
         lao: mockLaoIdHash,
         peers,
-        sender: mockKeyPair.publicKey,
+        frontend: mockKeyPair.publicKey,
       });
 
       expect(g.address).toBe(mockAddress);
       expect(g.lao).toBe(mockLaoIdHash);
       expect(g.peers).toBe(peers);
-      expect(g.sender).toBe(mockKeyPair.publicKey);
+      expect(g.frontend).toBe(mockKeyPair.publicKey);
     });
 
     it('throw an error if the address is undefined', () => {
@@ -30,7 +30,7 @@ describe('GreetLao', () => {
           address: undefined as unknown as string,
           lao: mockLaoIdHash,
           peers: [{ address: otherAddress }],
-          sender: mockKeyPair.publicKey,
+          frontend: mockKeyPair.publicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
@@ -42,7 +42,7 @@ describe('GreetLao', () => {
           address: mockAddress,
           lao: undefined as unknown as Hash,
           peers: [{ address: otherAddress }],
-          sender: mockKeyPair.publicKey,
+          frontend: mockKeyPair.publicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
@@ -54,19 +54,19 @@ describe('GreetLao', () => {
           address: mockAddress,
           lao: mockLaoIdHash,
           peers: undefined as unknown as GreetLao['peers'],
-          sender: mockKeyPair.publicKey,
+          frontend: mockKeyPair.publicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
     });
 
-    it('throw an error if the sender is undefined', () => {
+    it('throw an error if the frontend is undefined', () => {
       const fn = () =>
         new GreetLao({
           address: mockAddress,
           lao: mockLaoIdHash,
           peers: [{ address: otherAddress }],
-          sender: undefined as unknown as PublicKey,
+          frontend: undefined as unknown as PublicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
@@ -78,7 +78,7 @@ describe('GreetLao', () => {
           address: mockAddress,
           lao: mockLaoIdHash,
           peers: [{ address: mockAddress }],
-          sender: undefined as unknown as PublicKey,
+          frontend: undefined as unknown as PublicKey,
         });
 
       expect(fn).toThrow(ProtocolError);
@@ -95,13 +95,13 @@ describe('GreetLao', () => {
         address: mockAddress,
         lao: mockLaoId,
         peers,
-        sender: mockPublicKey,
+        frontend: mockPublicKey,
       });
 
       expect(g.address).toEqual(mockAddress);
       expect(g.lao.valueOf()).toEqual(mockLaoId);
       expect(g.peers).toEqual(peers);
-      expect(g.sender.valueOf()).toEqual(mockPublicKey);
+      expect(g.frontend.valueOf()).toEqual(mockPublicKey);
     });
   });
 });

@@ -14,18 +14,21 @@ import {
 
 const emptyState = {
   byLaoId: {},
+  backendKeyByFrontendKey: {},
 } as ServerReducerState;
 
 const otherAddress = 'some other address';
 const mockServerState: ServerState = {
   laoId: mockLaoId,
   address: mockAddress,
-  publicKey: mockPublicKey,
+  serverPublicKey: mockPublicKey,
+  frontendPublicKey: mockPublicKey2,
 };
 const otherMockServerState: ServerState = {
   laoId: mockLaoId,
   address: otherAddress,
-  publicKey: mockPublicKey2,
+  serverPublicKey: mockPublicKey2,
+  frontendPublicKey: mockPublicKey,
 };
 
 describe('ServerReducer', () => {
@@ -44,6 +47,9 @@ describe('ServerReducer', () => {
                 byAddress: { [otherAddress]: otherMockServerState },
               },
             },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+            },
           } as ServerReducerState,
           addServer(mockServerState),
         ),
@@ -53,6 +59,10 @@ describe('ServerReducer', () => {
             allAddresses: [otherAddress, mockAddress],
             byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey]: mockPublicKey2,
+          [mockPublicKey2]: mockPublicKey,
         },
       } as ServerReducerState);
     });
@@ -66,6 +76,9 @@ describe('ServerReducer', () => {
                 allAddresses: [mockAddress],
                 byAddress: { [mockAddress]: mockServerState },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           addServer(mockServerState),
@@ -86,18 +99,26 @@ describe('ServerReducer', () => {
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
               },
             },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
+            },
           } as ServerReducerState,
-          updateServer({ ...mockServerState, publicKey: mockPublicKey2 }),
+          updateServer({ ...mockServerState, serverPublicKey: mockPublicKey2 }),
         ),
       ).toEqual({
         byLaoId: {
           [mockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
             byAddress: {
-              [mockAddress]: { ...mockServerState, publicKey: mockPublicKey2 },
+              [mockAddress]: { ...mockServerState, serverPublicKey: mockPublicKey2 },
               [otherAddress]: otherMockServerState,
             },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey]: mockPublicKey2,
+          [mockPublicKey2]: mockPublicKey2,
         },
       } as ServerReducerState);
     });
@@ -114,6 +135,10 @@ describe('ServerReducer', () => {
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
               },
             },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
+            },
           } as ServerReducerState,
           removeServer({ laoId: mockLaoId, address: otherAddress }),
         ),
@@ -123,6 +148,9 @@ describe('ServerReducer', () => {
             allAddresses: [mockAddress],
             byAddress: { [mockAddress]: mockServerState },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey2]: mockPublicKey,
         },
       } as ServerReducerState);
     });
@@ -138,6 +166,10 @@ describe('ServerReducer', () => {
                 allAddresses: [mockAddress, otherAddress],
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           clearAllServers(),

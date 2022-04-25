@@ -1,11 +1,9 @@
-import { getNetworkManager } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { Server } from '../objects/Server';
 import { connectToLao } from '../reducer';
-import { addServer } from '../reducer/ServerReducer';
+import { handleValidLaoGreet } from './LaoGreetWatcher';
 import { CreateLao } from './messages';
 import { GreetLao } from './messages/GreetLao';
 
@@ -85,29 +83,20 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
 
   const greetLaoMsg = msg.messageData as GreetLao;
 
-  dispatch(
-    addServer(
-      new Server({
-        laoId: greetLaoMsg.lao,
-        address: greetLaoMsg.address,
-        publicKey: greetLaoMsg.sender,
-      }).toState(),
-    ),
-  );
-
-  // connect to all received peer addresses
-  // after connecting to each peer, we will send a catchup which contains the lao#create message
-  // as soon as we have parsed this message, we will connect to the LAO on the new connection as well
-  // which will trigger another lao#greet message
-  // IMPORTANT: The network manager deduplicates connections to the same address (string)
-  // and the received peer addresses are supposed to be the canonical ones.
-  // Hence we just have to make sure that the first connection is also to the canonical
-  // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
-  // then using the canonical domain address)
-  const networkManager = getNetworkManager();
-  for (const peerAddress of greetLaoMsg.peers) {
-    networkManager.connect(peerAddress.address);
+  // only treat the message as being valid when it is signed by the advertised frontend public key
+  if (
+    !msg.witness_signatures.find((witnessSignature) =>
+      witnessSignature.signature.verify(greetLaoMsg.frontend, msg.message_id),
+    )
+  ) {
+    // lao#greet message has not (yet) been signed by the corresponding frontend
+    // wait for the signature in LaoGreetWatcher
+    // FIXME: for now the witnessing feature is not working and thus we omit this check (2022-04-25, Tyratox)
+    // return true;
   }
+
+  handleValidLaoGreet(greetLaoMsg, msg.sender);
+
   return true;
 };
 

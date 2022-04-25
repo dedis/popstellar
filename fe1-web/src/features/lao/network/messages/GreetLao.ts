@@ -15,9 +15,9 @@ export class GreetLao implements MessageData {
   public readonly lao: Hash;
 
   /**
-   * The public key of the server
+   * The public key of the frontend used by the server's owner
    */
-  public readonly sender: PublicKey;
+  public readonly frontend: PublicKey;
 
   /**
    * The canonical address of the server with a protocol prefix
@@ -35,11 +35,11 @@ export class GreetLao implements MessageData {
     }
     this.lao = params.lao;
 
-    if (params.sender === undefined || params.sender === null) {
-      throw new ProtocolError("Undefined 'sender' parameter in GreetLao");
+    if (params.frontend === undefined || params.frontend === null) {
+      throw new ProtocolError("Undefined 'frontend' parameter in GreetLao");
     }
 
-    this.sender = params.sender;
+    this.frontend = params.frontend;
 
     if (params.address === undefined || params.address === null) {
       throw new ProtocolError("Undefined 'address' parameter in GreetLao");
@@ -68,7 +68,7 @@ export class GreetLao implements MessageData {
 
     return new GreetLao({
       lao: new Hash(obj.lao),
-      sender: obj.sender,
+      frontend: obj.frontend,
       address: obj.address,
       peers: obj.peers,
     });

@@ -1,4 +1,12 @@
-import { mockAddress, mockKeyPair, mockLaoId, mockLaoIdHash, mockPublicKey } from '__tests__/utils';
+import {
+  mockAddress,
+  mockKeyPair,
+  mockLaoId,
+  mockLaoIdHash,
+  mockPopToken,
+  mockPublicKey,
+  mockPublicKey2,
+} from '__tests__/utils';
 import { PublicKey } from 'core/objects/PublicKey';
 
 import { Server } from '../Server';
@@ -9,12 +17,13 @@ describe('Server', () => {
       const s = new Server({
         laoId: mockLaoIdHash,
         address: mockAddress,
-        publicKey: mockKeyPair.publicKey,
+        serverPublicKey: mockKeyPair.publicKey,
+        frontendPublicKey: mockPopToken.publicKey,
       });
 
       expect(s.laoId.valueOf()).toBe(mockLaoId);
       expect(s.address).toBe(mockAddress);
-      expect(s.publicKey).toBe(mockKeyPair.publicKey);
+      expect(s.serverPublicKey).toBe(mockKeyPair.publicKey);
     });
 
     it('throws an error of the address is undefined', () => {
@@ -22,18 +31,32 @@ describe('Server', () => {
         new Server({
           laoId: mockLaoIdHash,
           address: undefined as unknown as string,
-          publicKey: mockKeyPair.publicKey,
+          serverPublicKey: mockKeyPair.publicKey,
+          frontendPublicKey: mockPopToken.publicKey,
         });
 
       expect(fn).toThrow(Error);
     });
 
-    it('throws an error of the public key is undefined', () => {
+    it('throws an error of the server public key is undefined', () => {
       const fn = () =>
         new Server({
           laoId: mockLaoIdHash,
           address: mockAddress,
-          publicKey: undefined as unknown as PublicKey,
+          serverPublicKey: undefined as unknown as PublicKey,
+          frontendPublicKey: mockPopToken.publicKey,
+        });
+
+      expect(fn).toThrow(Error);
+    });
+
+    it('throws an error of the frontend key is undefined', () => {
+      const fn = () =>
+        new Server({
+          laoId: mockLaoIdHash,
+          address: mockAddress,
+          serverPublicKey: mockKeyPair.publicKey,
+          frontendPublicKey: undefined as unknown as PublicKey,
         });
 
       expect(fn).toThrow(Error);
@@ -45,12 +68,13 @@ describe('Server', () => {
       const s = Server.fromState({
         laoId: mockLaoId,
         address: mockAddress,
-        publicKey: mockPublicKey,
+        serverPublicKey: mockPublicKey,
+        frontendPublicKey: mockPublicKey2,
       });
 
       expect(s.laoId.valueOf()).toEqual(mockLaoId);
       expect(s.address).toEqual(mockAddress);
-      expect(s.publicKey.valueOf()).toEqual(mockKeyPair.publicKey.valueOf());
+      expect(s.serverPublicKey.valueOf()).toEqual(mockKeyPair.publicKey.valueOf());
     });
   });
 
@@ -59,12 +83,14 @@ describe('Server', () => {
       const s = new Server({
         laoId: mockLaoIdHash,
         address: mockAddress,
-        publicKey: mockKeyPair.publicKey,
+        serverPublicKey: mockKeyPair.publicKey,
+        frontendPublicKey: mockPopToken.publicKey,
       }).toState();
 
       expect(s.laoId).toEqual(mockLaoId);
       expect(s.address).toEqual(mockAddress);
-      expect(s.publicKey).toEqual(mockPublicKey);
+      expect(s.serverPublicKey).toEqual(mockPublicKey);
+      expect(s.frontendPublicKey).toEqual(mockPublicKey2);
     });
   });
 });
