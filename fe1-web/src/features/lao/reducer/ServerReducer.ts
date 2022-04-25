@@ -8,7 +8,7 @@ import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/tool
 import { PublicKey } from 'core/objects';
 
 import { Server, ServerAddress, ServerState } from '../objects/Server';
-import { getLaosState } from './LaoReducer';
+import { getLaosState, LaoReducerState } from './LaoReducer';
 
 /**
  * Reducer & associated function implementation to store all known servers
@@ -149,32 +149,32 @@ export const getServerPublicKeyByAddress = (
 };
 
 /**
- * A function to directly retrieve the public key of the lao organizer's backend
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * A function that creats a selector that retrieve the public key of the lao organizer's backend
  * @param laoId The lao id
- * @param state The redux state
  * @returns The public key of the lao organizer's backend and undefined if there is none
  */
-export const getLaoOrganizerBackendPublicKey = (
-  laoId: string,
-  state: any,
-): PublicKey | undefined => {
-  const serverState = getServerState(state);
-  const laoState = getLaosState(state);
+export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
+  createSelector(
+    // First input: The server state
+    (state) => getServerState(state),
+    // Second input: The laos state
+    (state) => getLaosState(state),
+    // Selector: returns the server object associated to the given address
+    (serverState: ServerReducerState, laoState: LaoReducerState): PublicKey | undefined => {
+      // if there is no current lao, return undefined
+      if (!(laoId in laoState.byId)) {
+        return undefined;
+      }
 
-  // if there is no current lao, return undefined
-  if (!(laoId in laoState.byId)) {
-    return undefined;
-  }
+      const currentLaoState = laoState.byId[laoId];
 
-  const currentLaoState = laoState.byId[laoId];
+      if (currentLaoState.organizer in serverState.backendKeyByFrontendKey) {
+        return new PublicKey(serverState.backendKeyByFrontendKey[currentLaoState.organizer]);
+      }
 
-  if (currentLaoState.organizer in serverState.backendKeyByFrontendKey) {
-    return new PublicKey(serverState.backendKeyByFrontendKey[currentLaoState.organizer]);
-  }
-
-  return undefined;
-};
+      return undefined;
+    },
+  );
 
 /**
  * Creates a server selector for a given lao id and server address. Can for example be used in useSelector()

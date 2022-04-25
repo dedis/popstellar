@@ -48,7 +48,7 @@ export const mockQuestionObject1: Question = {
 export const mockQuestionObject2: Question = {
   id: mockQuestionId2.toString(),
   question: mockQuestion2,
-  voting_method: STRINGS.election_method_Approval,
+  voting_method: STRINGS.election_method_Plurality,
   ballot_options: mockBallotOptions,
   write_in: false,
 };

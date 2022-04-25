@@ -2,7 +2,7 @@ import React from 'react';
 import { AnyAction } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { EvotingFeature } from './Feature';
@@ -58,6 +58,13 @@ export interface EvotingConfiguration {
    * @returns The event or undefined if none was found
    */
   getEventById: (id: Hash) => EvotingFeature.Event | undefined;
+
+  /**
+   * Given a lao id, this function returns the public key of the backend
+   * @param laoId The id of the lao
+   * @returns The public key of the lao organizer's backend or undefined if none is known
+   */
+  getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
 }
 
 /**

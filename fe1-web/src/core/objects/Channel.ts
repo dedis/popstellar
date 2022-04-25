@@ -53,6 +53,22 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/reactions`;
 }
 
+/** Returns the first part of the channel which is usually the lao id
+ * Example:
+ * Input: /root/laoID/electionID
+ * Output: laoID
+ *
+ * @param channel - The channel whose first component we want to obtain
+ *
+ * @remarks
+ * Using this function is equivalent to making a lot of assumptions about the channel.
+ * This can be brittle and using a more validation-heavy logic may be preferable.
+ */
+export function getFirstPartOfChannel(channel: Channel): Hash {
+  const channels = channel.split('/');
+  return new Hash(channels[2]);
+}
+
 /** Returns the last part of the channel which is usually an event id
  * Example:
  * Input: /root/laoID/electionID
