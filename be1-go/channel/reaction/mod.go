@@ -22,8 +22,25 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const msgID = "msg id"
-const failedToDecodeData = "failed to decode message data: %v"
+const (
+	msgID              = "msg id"
+	failedToDecodeData = "failed to decode message data: %v"
+)
+
+// Channel is used to handle reaction messages.
+type Channel struct {
+	sockets   channel.Sockets
+	inbox     *inbox.Inbox
+	attendees *attendees
+
+	// channel path
+	channelID string
+
+	hub channel.HubFunctionalities
+	log zerolog.Logger
+
+	registry registry.MessageRegistry
+}
 
 // NewChannel returns a new initialized reaction channel
 func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
@@ -43,50 +60,9 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 	return newChannel
 }
 
-// NewReactionRegistry creates a new registry for the consensus channel
-func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-
-	registry.Register(messagedata.ReactionAdd{}, c.processReactionAdd)
-	registry.Register(messagedata.ReactionDelete{}, c.processReactionDelete)
-
-	return registry
-}
-
-// Channel is used to handle reaction messages.
-type Channel struct {
-	sockets   channel.Sockets
-	inbox     *inbox.Inbox
-	attendees *attendees
-
-	// channel path
-	channelID string
-
-	hub channel.HubFunctionalities
-	log zerolog.Logger
-
-	registry registry.MessageRegistry
-}
-
-// Publish is used to handle publish messages in the reaction channel.
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	err := c.verifyMessage(publish.Params.Message)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on a "+
-			"reaction channel: %w", err)
-	}
-
-	err = c.handleMessage(publish.Params.Message, socket)
-	if err != nil {
-		return xerrors.Errorf("failed to handle publish message: %v", err)
-	}
-
-	return nil
-}
+// ---
+// Publish-subscribe / channel.Channel implementation
+// ---
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
@@ -108,6 +84,26 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	return nil
+}
+
+// Publish is used to handle publish messages in the reaction channel.
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on a "+
+			"reaction channel: %w", err)
+	}
+
+	err = c.handleMessage(publish.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
 	}
 
 	return nil
@@ -140,9 +136,12 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 	return nil
 }
 
+// ---
+// Message handling
+// ---
+
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
-
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -158,38 +157,42 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	return nil
 }
 
-// broadcastToAllClients is a helper message to broadcast a message to all
-// subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodBroadcast,
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			c.channelID,
-			msg,
-		},
-	}
+// NewReactionRegistry creates a new registry for the consensus channel
+func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
 
-	buf, err := json.Marshal(&rpcMessage)
+	registry.Register(messagedata.ReactionAdd{}, c.processReactionAdd)
+	registry.Register(messagedata.ReactionDelete{}, c.processReactionDelete)
+
+	return registry
+}
+
+// processReactionAdd is the callback that processes reaction#add messages
+func (c *Channel) processReactionAdd(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
+	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast: %v", err)
+		return xerrors.Errorf("failed to verify add reaction message: %v", err)
 	}
 
-	c.sockets.SendToAll(buf)
+	return nil
+}
+
+// processReactionDelete is the callback that processes reaction#delete messages
+func (c *Channel) processReactionDelete(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
+	err := c.verifyDeleteReactionMessage(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
+	}
 
 	return nil
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -205,26 +208,6 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	_, ok := c.inbox.GetMessage(msg.MessageID)
 	if ok {
 		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
-}
-
-// processReactionAdd is the callback that processes reaction#add messages
-func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}, _ socket.Socket) error {
-	err := c.verifyAddReactionMessage(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to verify add reaction message: %v", err)
-	}
-
-	return nil
-}
-
-// processReactionDelete is the callback that processes reaction#delete messages
-func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}, _ socket.Socket) error {
-	err := c.verifyDeleteReactionMessage(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
 	}
 
 	return nil
@@ -297,6 +280,39 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
 	return nil
 }
 
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodBroadcast,
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast: %v", err)
+	}
+
+	c.sockets.SendToAll(buf)
+
+	return nil
+}
+
+// ---
+// Others
+// ---
+
 // AddAttendee adds an attendee to the reaction channel.
 func (c *Channel) AddAttendee(key string) {
 	c.attendees.add(key)
@@ -322,6 +338,7 @@ func (a *attendees) isPresent(key string) bool {
 	defer a.Unlock()
 
 	_, ok := a.store[key]
+
 	return ok
 }
 

@@ -203,8 +203,8 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	expectedMessageId := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageId, badMessageID))
+	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
 func Test_Create_LAO(t *testing.T) {
@@ -849,8 +849,8 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	expectedMessageId := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageId, fakeMessageID))
+	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the organizer receives a subscribe message, it will call the

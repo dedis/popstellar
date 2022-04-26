@@ -10,6 +10,7 @@ import {
   WalletShowSeed,
   WalletSyncedSeed,
 } from '../screens';
+import { WalletStore } from '../store';
 
 const Stack = createStackNavigator();
 
@@ -22,7 +23,12 @@ export default function WalletNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+      initialRouteName={
+        WalletStore.hasSeed()
+          ? STRINGS.navigation_synced_wallet
+          : STRINGS.navigation_home_tab_wallet
+      }>
       <Stack.Screen name={STRINGS.navigation_home_tab_wallet} component={WalletHome} />
       <Stack.Screen name={STRINGS.navigation_show_seed_wallet} component={WalletShowSeed} />
       <Stack.Screen name={STRINGS.navigation_insert_seed_tab_wallet} component={WalletSetSeed} />

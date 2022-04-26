@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
+
 	"golang.org/x/xerrors"
 )
 

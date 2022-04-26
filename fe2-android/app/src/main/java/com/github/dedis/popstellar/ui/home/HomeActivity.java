@@ -195,7 +195,16 @@ public class HomeActivity extends AppCompatActivity {
             });
   }
 
-  private void subscribeSocialMediaEvent() {
+  @Override
+  protected void onResume() {
+    super.onResume();
+    mViewModel.openHome();
+  }
+
+  private void subscribeSocialMediaEvents() {
+
+    MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
+
     // Subscribe to "open social media" event
     mViewModel
         .getOpenSocialMediaEvent()

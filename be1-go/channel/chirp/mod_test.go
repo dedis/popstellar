@@ -279,7 +279,7 @@ func Test_Send_Chirp(t *testing.T) {
 	checkData := messagedata.ChirpBroadcast{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpId:   messagedata.Hash(buf64, "h"),
+		ChirpID:   messagedata.Hash(buf64, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -329,7 +329,7 @@ func Test_Delete_Chirp(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	addChirpId := m.MessageID
+	addChirpID := m.MessageID
 
 	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
 
@@ -359,7 +359,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	err = json.Unmarshal(buf, &chirpDel)
 	require.NoError(t, err)
 
-	chirpDel.ChirpId = addChirpId
+	chirpDel.ChirpID = addChirpID
 
 	buf, err = json.Marshal(chirpDel)
 	require.NoError(t, err)
@@ -385,7 +385,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataAdd := messagedata.ChirpBroadcast{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpId:   messagedata.Hash(buf64add, "h"),
+		ChirpID:   messagedata.Hash(buf64add, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -396,7 +396,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataDelete := messagedata.ChirpBroadcast{
 		Object:    "chirp",
 		Action:    "notify_delete",
-		ChirpId:   messagedata.Hash(buf64delete, "h"),
+		ChirpID:   messagedata.Hash(buf64delete, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
