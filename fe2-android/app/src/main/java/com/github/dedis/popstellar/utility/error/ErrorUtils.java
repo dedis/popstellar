@@ -39,24 +39,23 @@ public class ErrorUtils {
 
     Log.e(tag, exceptionMsg, error);
 
-    //This makes it so that the toast is run on the UI thread
-    //Otherwise it would crash
-    new Handler(context.getMainLooper()).post(
-            () -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
+    // This makes it so that the toast is run on the UI thread
+    // Otherwise it would crash
+    new Handler(context.getMainLooper())
+        .post(() -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
   }
 
   private static String getLocalizedMessage(
       Context context, Throwable error, @StringRes int action, String... actionArgs) {
     String errorSpecificMessage = getErrorSpecificMessage(context, error);
     actionArgs = Arrays.append(actionArgs, errorSpecificMessage);
-    return context.getString(action, (Object) actionArgs);
+    return context.getString(action, java.util.Arrays.toString(actionArgs));
   }
 
   private static String getErrorSpecificMessage(Context context, Throwable error) {
     if (error instanceof GenericException) {
       GenericException exception = (GenericException) error;
-      return context.getString(
-          exception.getUserMessage(), (Object) exception.getUserMessageArguments());
+      return context.getString(exception.getUserMessage(), exception.getUserMessageArguments());
     } else if (error instanceof TimeoutException) {
       return context.getString(R.string.timeout_exception);
     } else {

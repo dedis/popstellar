@@ -1,1 +1,1 @@
-export { default as EventRollCall } from './EventRollCall';
+export { default as EventRollCall, RollCallEventTypeComponent } from './EventRollCall';

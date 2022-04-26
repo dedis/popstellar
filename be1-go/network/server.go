@@ -75,6 +75,7 @@ func NewServer(hub hub.Hub, port int, st socket.SocketType, log zerolog.Logger) 
 	log.Info().Msgf("setting handler at %s for port %d", path, port)
 
 	server.srv = httpServer
+
 	return server
 }
 
@@ -150,6 +151,7 @@ func (s *Server) Shutdown() error {
 	close(s.done)
 
 	s.wg.Wait()
+
 	return nil
 }
 

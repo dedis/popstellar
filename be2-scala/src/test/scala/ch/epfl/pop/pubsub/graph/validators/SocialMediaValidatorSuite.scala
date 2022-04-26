@@ -10,7 +10,7 @@ import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
@@ -26,7 +26,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   final val DB_TEST_FOLDER: String = "databaseSocialMediaTest"
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, InMemoryStorage())), "DbActor")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, MessageRegistry(), InMemoryStorage())), "DbActor")
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)

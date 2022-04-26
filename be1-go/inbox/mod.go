@@ -149,6 +149,7 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	if !ok {
 		return nil, false
 	}
+
 	return &msgInfo.message, true
 }
 
@@ -186,7 +187,8 @@ func (i *Inbox) storeMessageInDB(messageInfo *messageInfo) error {
 
 	msg := messageInfo.message
 
-	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.storedTime, i.channelID)
+	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data,
+		messageInfo.storedTime, i.channelID)
 	if err != nil {
 		return xerrors.Errorf("failed to exec query: %v", err)
 	}

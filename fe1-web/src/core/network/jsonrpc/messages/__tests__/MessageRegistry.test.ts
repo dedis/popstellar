@@ -27,6 +27,7 @@ const laoState: LaoState = {
   last_modified: 1577833500,
   organizer: 'organizerPublicKey',
   witnesses: [],
+  server_addresses: [],
 };
 const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));
@@ -46,8 +47,8 @@ describe('MessageRegistry', () => {
   });
 
   it('should work correctly for handling message', async () => {
-    const message = await Message.fromData(messageData, mockPopToken);
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
+    const message = Message.fromData(messageData, mockPopToken);
+    const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
 
     const mockHandle = jest.fn();
     const mockBuild = jest.fn();

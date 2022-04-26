@@ -6,12 +6,12 @@ import {
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
-  mockMessageRegistry,
+  messageRegistryInstance,
   mockReduxAction,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import {
   Election,
   ElectionStatus,
@@ -144,7 +144,7 @@ const contextValue = {
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
-    messageRegistry: mockMessageRegistry,
+    messageRegistry: messageRegistryInstance,
     onConfirmEventCreation: () => undefined,
   },
 };
@@ -154,7 +154,7 @@ describe('EventElection', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={notStartedElection} isOrganizer />,
+          <EventElection event={notStartedElection} isOrganizer />,
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -163,7 +163,7 @@ describe('EventElection', () => {
     it('renders correctly for an attendee', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={notStartedElection} />
+          <EventElection event={notStartedElection} />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -174,7 +174,7 @@ describe('EventElection', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={runningElection} isOrganizer />
+          <EventElection event={runningElection} isOrganizer />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -183,7 +183,7 @@ describe('EventElection', () => {
     it('renders correctly for an attendee', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={runningElection} />
+          <EventElection event={runningElection} />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -194,7 +194,7 @@ describe('EventElection', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={terminatedElection} isOrganizer />,
+          <EventElection event={terminatedElection} isOrganizer />,
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -203,7 +203,7 @@ describe('EventElection', () => {
     it('renders correctly for an attendee', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={terminatedElection} />
+          <EventElection event={terminatedElection} />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -214,7 +214,7 @@ describe('EventElection', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={resultElection} isOrganizer />
+          <EventElection event={resultElection} isOrganizer />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -223,7 +223,7 @@ describe('EventElection', () => {
     it('renders correctly for an attendee', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={resultElection} />
+          <EventElection event={resultElection} />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -234,7 +234,7 @@ describe('EventElection', () => {
     it('renders null for an organizer', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={undefinedElection} isOrganizer />
+          <EventElection event={undefinedElection} isOrganizer />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -243,7 +243,7 @@ describe('EventElection', () => {
     it('renders null for an attendee', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <EventElection election={undefinedElection} />
+          <EventElection event={undefinedElection} />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();

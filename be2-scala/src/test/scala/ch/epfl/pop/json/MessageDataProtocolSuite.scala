@@ -6,6 +6,7 @@ import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.{BufferedSource, Source}
+import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -55,7 +56,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     example
   }
 
-  test("Parser correctly encodes/decodes a CreateLao message data") {
+  test("Parser correctly decodes a CreateLao message data") {
     val example: String = getExampleMessage("messageData/lao_create/lao_create.json")
     val messageData = CreateLao.buildFromJson(example)
 
@@ -65,7 +66,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a SetupElection message data") {
+  test("Parser correctly decodes a SetupElection message data") {
     val example: String = getExampleMessage("messageData/election_setup/election_setup.json")
     val messageData = SetupElection.buildFromJson(example)
 
@@ -76,7 +77,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a ResultElection message data") {
+  test("Parser correctly decodes a ResultElection message data") {
     val example: String = getExampleMessage("messageData/election_result.json")
 
     val messageData = ResultElection.buildFromJson(example)
@@ -90,7 +91,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a EndElection message data") {
+  test("Parser correctly decodes a EndElection message data") {
     val example: String = getExampleMessage("messageData/election_end/election_end.json")
     val messageData = EndElection.buildFromJson(example)
 
@@ -100,7 +101,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a CastVoteElection write_in message data") {
+  test("Parser correctly decodes a CastVoteElection write_in message data") {
     val example: String = getExampleMessage("messageData/vote_cast_write_in.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
@@ -109,5 +110,15 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
     messageData shouldBe a[CastVoteElection]
     messageData shouldEqualTo (expected)
+  }
+
+  test("Parser correctly encodes/decodes a CashTransaction message data") {
+    val example: String = getExampleMessage("messageData/cash/post_transaction.json")
+    val messageData = PostTransaction.buildFromJson(example)
+
+    val expected = PostTransaction(Transaction(Version=1, TxIn=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), TxOut=List(TxOut(32, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk=")))))))
+
+    messageData shouldBe a[PostTransaction]
+    messageData should equal (expected)
   }
 }

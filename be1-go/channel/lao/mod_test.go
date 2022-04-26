@@ -54,12 +54,12 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	socket := &fakeSocket{id: "socket"}
+	socket := &fakeSocket{id: "sockSocket"}
 
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
-	require.True(t, laoChannel.sockets.Delete("socket"))
+	require.True(t, laoChannel.sockets.Delete("sockSocket"))
 }
 
 func TestLAOChannel_Unsubscribe(t *testing.T) {
@@ -85,16 +85,16 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	socket := &fakeSocket{id: "socket"}
+	socket := &fakeSocket{id: "sockSocket"}
 	laoChannel.sockets.Upsert(socket)
 
-	require.NoError(t, channel.Unsubscribe("socket", message))
+	require.NoError(t, channel.Unsubscribe("sockSocket", message))
 
-	// we check that the socket has been deleted
-	require.False(t, laoChannel.sockets.Delete("socket"))
+	// we check that the sockSocket has been deleted
+	require.False(t, laoChannel.sockets.Delete("sockSocket"))
 
-	// unsubscribing two times with the same socket must fail
-	require.Error(t, channel.Unsubscribe("socket", message))
+	// unsubscribing two times with the same sockSocket must fail
+	require.Error(t, channel.Unsubscribe("sockSocket", message))
 }
 
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
@@ -133,8 +133,8 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	laoChannel := channel.(*Channel)
 
-	// Creates a socket subscribed to the channel
-	fakeSock := &fakeSocket{id: "socket"}
+	// Creates a sockSocket subscribed to the channel
+	fakeSock := &fakeSocket{id: "sockSocket"}
 	laoChannel.sockets.Upsert(fakeSock)
 
 	// Create an update lao message
@@ -635,7 +635,7 @@ func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
 
-// fakeSocket is a fake implementation of a socket
+// fakeSocket is a fake implementation of a Socket
 //
 // - implements socket.Socket
 type fakeSocket struct {
@@ -647,7 +647,7 @@ type fakeSocket struct {
 
 	err error
 
-	// the socket ID
+	// the sockSocket ID
 	id string
 }
 
