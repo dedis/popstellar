@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/tab_digital_cash_only"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_horizontal_tab_digital_cash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="@dimen/guideline_horizontaldown_digital_cash" />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_horizontal2_tab_digital_cash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="@dimen/guideline_horizontaltop_digital_cash" />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_vertical_tab_digital_cash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="@dimen/guideline_horizontalleft_digital_cash" />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_vertical2_tab_digital_cash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="@dimen/guideline_horizontalright_digital_cash" />
+
+  <Button
+    android:id="@+id/tab_digital_cash"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:text="@string/tab_digital_cash"
+    android:textSize="@dimen/size_small"
+    app:layout_constraintTop_toTopOf="@+id/guideline_horizontal2_tab_digital_cash"
+    app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal_tab_digital_cash"
+    app:layout_constraintEnd_toEndOf="@+id/guideline_vertical2_tab_digital_cash"
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_digital_cash"
+    app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

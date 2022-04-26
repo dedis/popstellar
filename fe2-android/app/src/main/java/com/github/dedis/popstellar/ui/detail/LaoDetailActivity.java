@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragme
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -69,6 +70,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeButton();
     setupIdentityButton();
     setupSocialMediaButton();
+    setupDigitalCashButton();
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -86,6 +88,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupIdentityFragment();
     // Subscribe to " open social media " event
     setupSocialMediaActivity();
+    // Subscribe to " open digital cash " event
+    setupDigitalCashMainActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -226,6 +230,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  }
+
   private void setupLaoFragment() {
     setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
@@ -272,6 +281,21 @@ public class LaoDetailActivity extends AppCompatActivity {
                 intent.putExtra(LAO_ID, mViewModel.getCurrentLaoValue().getId());
                 intent.putExtra(LAO_NAME, mViewModel.getCurrentLaoValue().getName());
                 intent.putExtra(OPENED_FROM, TAG);
+                startActivity(intent);
+              }
+            });
+  }
+
+  private void setupDigitalCashMainActivity() {
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                Intent intent = new Intent(this, DigitalCashMain.class);
+                Log.d(TAG, "Trying to open social media");
                 startActivity(intent);
               }
             });
@@ -434,7 +458,9 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
