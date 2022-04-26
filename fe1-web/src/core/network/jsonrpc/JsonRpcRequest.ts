@@ -32,6 +32,7 @@ export class JsonRpcRequest {
     switch (req.method) {
       // notification methods, expect no ID
       case JsonRpcMethod.BROADCAST:
+      case JsonRpcMethod.GREETING:
         if (req.id !== undefined) {
           throw new ProtocolError("Found 'id' parameter in JSON-RPC notification");
         }
