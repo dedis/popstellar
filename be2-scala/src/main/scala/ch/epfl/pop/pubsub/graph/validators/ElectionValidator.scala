@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
