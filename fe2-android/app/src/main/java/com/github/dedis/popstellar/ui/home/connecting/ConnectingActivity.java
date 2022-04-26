@@ -37,7 +37,6 @@ public class ConnectingActivity extends AppCompatActivity {
 
     // We make sure to be subscribed to events before launching the connection to lao process
     subscribeToEvents();
-    Log.d(TAG, "Went into connecting activity");
     mViewModel.handleOpenConnection(channelId);
   }
 
