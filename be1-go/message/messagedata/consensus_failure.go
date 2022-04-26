@@ -6,7 +6,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusLearn defines a message data
+// ConsensusFailure defines a message data
 type ConsensusFailure struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`

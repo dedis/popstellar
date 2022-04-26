@@ -243,6 +243,7 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 // catchup from the new server
 func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
+
 	err := h.catchupToServer(socket, rootChannel)
 	return err
 }
@@ -286,6 +287,7 @@ func (h *Hub) catchupToServer(socket socket.Socket, channel string) error {
 	}
 
 	socket.Send(buf)
+
 	return nil
 }
 
@@ -376,6 +378,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	socket.SendResult(id, nil)
+
 	return nil
 }
 
@@ -459,6 +462,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	socket.SendResult(id, nil)
+
 	return nil
 }
 
@@ -542,7 +546,8 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	}
 
 	if !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q", senderPubKey, h.GetPubKeyOwner())
+		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q",
+			senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
@@ -574,6 +579,7 @@ func (h *Hub) Sign(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to sign the data: %v", err)
 	}
+
 	return signatureBuf, nil
 }
 

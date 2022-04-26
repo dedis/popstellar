@@ -19,7 +19,8 @@ const (
 )
 
 func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpen) error {
-	c.log.Info().Msgf("verifying election#open message of election with id %s", electionOpen.Election)
+	c.log.Info().Msgf("verifying election#open message of election with id %s",
+		electionOpen.Election)
 
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(electionOpen.Lao)
@@ -56,7 +57,8 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 
 	// verify opened at is positive
 	if electionOpen.OpenedAt < 0 {
-		return xerrors.Errorf("election open created at is %d, should be minimum 0", electionOpen.OpenedAt)
+		return xerrors.Errorf("election open created at is %d, should be minimum 0",
+			electionOpen.OpenedAt)
 	}
 
 	// verify if the election was already started or terminated
@@ -69,7 +71,8 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 
 // verifyMessageCastVote checks the election#cast_vote message data is valid.
 func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error {
-	c.log.Info().Msgf("verifying election#cast_vote message of election with id %s", castVote.Election)
+	c.log.Info().Msgf("verifying election#cast_vote message of election with id %s",
+		castVote.Election)
 
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(castVote.Lao)
@@ -104,12 +107,14 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 
 	//verify if election is terminated
 	if c.terminated {
-		return xerrors.Errorf("cast vote created at is %d, but the election is terminated", castVote.CreatedAt)
+		return xerrors.Errorf("cast vote created at is %d, but the election is terminated",
+			castVote.CreatedAt)
 	}
 
 	// verify if election is not open
 	if !c.started {
-		return xerrors.Errorf("cast vote created at is %d, but the election is not started", castVote.CreatedAt)
+		return xerrors.Errorf("cast vote created at is %d, but the election is not started",
+			castVote.CreatedAt)
 	}
 
 	// verify created at is positive
@@ -119,7 +124,8 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 
 	// verify created at is after start of election
 	if castVote.CreatedAt < c.start {
-		return xerrors.Errorf("cast vote created at is %d, should be greater or equal to defined start time %d",
+		return xerrors.Errorf("cast vote created at is %d, should be greater or "+
+			"equal to defined start time %d",
 			castVote.CreatedAt, c.start)
 	}
 
@@ -127,7 +133,8 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	if castVote.CreatedAt > c.end {
 		// note that CreatedAt is provided by the client and can't be fully trusted.
 		// We leave this check as is until we have a better solution.
-		return xerrors.Errorf("cast vote created at is %d, should be smaller or equal to defined end time %d",
+		return xerrors.Errorf("cast vote created at is %d, should be smaller or "+
+			"equal to defined end time %d",
 			castVote.CreatedAt, c.end)
 	}
 
@@ -136,7 +143,8 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 
 // verifyMessageElectionEnd checks the election#end message data is valid.
 func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) error {
-	c.log.Info().Msgf("verifying election#end message of election with id %s", electionEnd.Election)
+	c.log.Info().Msgf("verifying election#end message of election with id %s",
+		electionEnd.Election)
 
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(electionEnd.Lao)
@@ -171,7 +179,8 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify created at is positive
 	if electionEnd.CreatedAt < 0 {
-		return xerrors.Errorf("election end created at is %d, should be minimum 0", electionEnd.CreatedAt)
+		return xerrors.Errorf("election end created at is %d, should be minimum 0",
+			electionEnd.CreatedAt)
 	}
 
 	// verify if the election is not terminated
@@ -186,7 +195,8 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify registered votes are base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes); err != nil {
-		return xerrors.Errorf("election registered votes is %s, should be base64URL encoded", electionEnd.RegisteredVotes)
+		return xerrors.Errorf("election registered votes is %s, should be base64URL encoded",
+			electionEnd.RegisteredVotes)
 	}
 
 	// verify order of registered votes
@@ -202,7 +212,9 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 }
 
 // verifyRegisteredVotes checks the registered votes of an election end message are valid.
-func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions *map[string]*question) error {
+func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
+	questions *map[string]*question) error {
+
 	// get hashed ID of valid votes sorted by msg ID
 	validVotes := make(map[string]string)
 	validVotesSorted := make([]string, 0)
