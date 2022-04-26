@@ -197,8 +197,6 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
-	c.log.Info().Str(msgID, msg.MessageID).Msg("!!!NEWMSG!!!: " + msg.Data)
-
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
 		return answer.NewError(-3, "message already exists")
