@@ -180,6 +180,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	}
 
 	c.sockets.SendToAll(buf)
+
 	return nil
 }
 
