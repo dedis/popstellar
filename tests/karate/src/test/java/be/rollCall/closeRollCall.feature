@@ -23,7 +23,7 @@ Feature: Close a Roll Call
     Given string rollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/valid_roll_call_close_data.json')
     And string rollCallClose = converter.publishМessageFromData(rollCallCloseData, closeRollCallId, laoChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
-    And  eval frontend.send(rollCallClose)
+    When  eval frontend.send(rollCallClose)
     * json close_roll_broadcast = frontend_buffer.takeTimeout(timeout)
     * json close_roll_result = frontend_buffer.takeTimeout(timeout)
     Then match close_roll_result contains deep {jsonrpc: '2.0', id: '#(closeRollCallId)', result: 0}
@@ -33,7 +33,7 @@ Feature: Close a Roll Call
   Scenario: Close a valid roll call with wrong update_id should return an error message
     Given string badRollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/bad_roll_call_close_invalid_update_id_data.json')
     And string badRollCallClose = converter.publishМessageFromData(badRollCallCloseData, closeRollCallId, laoChannel)
-    And  eval frontend.send(badRollCallClose)
+    When  eval frontend.send(badRollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
     Then  match close_roll_err contains deep {jsonrpc: '2.0', id: '#(closeRollCallId)', error: {code: -4, description: '#string'}}
 
@@ -46,7 +46,7 @@ Feature: Close a Roll Call
     And string rollCallClose = converter.publishМessageFromData(rollCallCloseData, closeRollCallId, laoChannel)
 
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-    And eval frontend.send(rollCallClose)
+    When eval frontend.send(rollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
     Then  match close_roll_err contains deep {jsonrpc: '2.0', id: '#(closeRollCallId)', error: {code: -4, description: '#string'}}
 

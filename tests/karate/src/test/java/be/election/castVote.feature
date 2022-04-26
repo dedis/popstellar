@@ -23,7 +23,7 @@ Feature: Cast a vote
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
     And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And eval frontend.send(castVote)
+    When eval frontend.send(castVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', result: 0}
 
@@ -33,7 +33,7 @@ Feature: Cast a vote
     Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
     And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, laoChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And eval frontend.send(castVote)
+    When eval frontend.send(castVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
@@ -43,7 +43,7 @@ Feature: Cast a vote
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_election_id_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And eval frontend.send(badCastVote)
+    When eval frontend.send(badCastVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
@@ -53,7 +53,7 @@ Feature: Cast a vote
     Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_vote_id_data.json')
     And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And eval frontend.send(badCastVote)
+    When eval frontend.send(badCastVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 
@@ -77,7 +77,7 @@ Feature: Cast a vote
     * converter.setSenderSk(nonAttendeeSkHex)
     * converter.setSenderPk(nonAttendeePk)
     And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
-    And eval frontend.send(castVote)
+    When eval frontend.send(castVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
 

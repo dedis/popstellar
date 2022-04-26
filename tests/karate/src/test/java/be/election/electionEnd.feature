@@ -24,7 +24,7 @@ Feature: Terminate an election
     Given string electionEndData = read('classpath:data/election/data/electionEnd/valid_election_end_data.json')
     And string electionEnd = converter.publishМessageFromData(electionEndData, electionEndId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-    And eval frontend.send(electionEnd)
+    When eval frontend.send(electionEnd)
     * json election_end = frontend_buffer.takeTimeout(timeout)
     Then match election_end contains deep {jsonrpc: '2.0', id: '#(electionEndId)', result: 0}
 
@@ -34,7 +34,7 @@ Feature: Terminate an election
     Given string badElectionEndData = read('classpath:data/election/data/electionEnd/bad_election_end_invalid_election_id_data.json')
     And string badElectionEnd = converter.publishМessageFromData(badElectionEndData, electionEndId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-    And eval frontend.send(badElectionEnd)
+    When eval frontend.send(badElectionEnd)
     * json election_end = frontend_buffer.takeTimeout(timeout)
     Then match election_end contains deep {jsonrpc: '2.0', id: '#(electionEndId)', error: {code: -4, description: '#string'}}
 
@@ -44,7 +44,7 @@ Feature: Terminate an election
     Given string electionEndData = read('classpath:data/election/data/electionEnd/bad_election_end_invalid_registered_votes_data.json')
     And string electionEnd = converter.publishМessageFromData(electionEndData, electionEndId, electionChannel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-    And eval frontend.send(electionEnd)
+    When eval frontend.send(electionEnd)
     * json election_end = frontend_buffer.takeTimeout(timeout)
     Then match election_end contains deep {jsonrpc: '2.0', id: '#(electionEndId)', error: {code: -4, description: '#string'}}
 
