@@ -10,12 +10,12 @@ import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { makeEventGetter } from '../../events/reducer';
 import { requestCloseRollCall } from '../network';
 import { RollCall } from '../objects';
 
