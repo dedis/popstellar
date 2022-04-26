@@ -31,7 +31,7 @@ public class ConnectingActivity extends AppCompatActivity {
     setContentView(R.layout.connecting_activity);
     setConnectingFragment();
 
-    String channelId = (String) (getIntent().getExtras()).get(getString(R.string.lao_id));
+    String channelId = (String) getIntent().getExtras().get(getString(R.string.lao_id));
 
     mViewModel = obtainViewModel(this);
 

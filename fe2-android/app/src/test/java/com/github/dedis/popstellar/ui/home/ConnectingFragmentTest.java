@@ -81,5 +81,6 @@ public class ConnectingFragmentTest {
     Intents.init();
     cancelButton().perform(click());
     intended(hasComponent(HomeActivity.class.getName()));
+    Intents.release();
   }
 }
