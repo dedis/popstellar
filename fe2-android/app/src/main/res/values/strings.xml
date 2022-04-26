@@ -208,6 +208,14 @@
   <string name="text_hint_server_url">Enter the server URL</string>
   <string name="apply_button">APPLY</string>
 
+  <!-- Digital Cash -->
+  <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_receive">RECEIVE</string>
+  <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_amount">LAO COIN</string>
+
   <!-- Social Media -->
   <string name="home">HOME</string>
   <string name="search">SEARCH</string>
