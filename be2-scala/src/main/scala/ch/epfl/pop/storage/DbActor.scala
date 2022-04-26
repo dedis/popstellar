@@ -172,8 +172,12 @@ final case class DbActor(
 
   @throws [DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
-    val data: Hash = channel.decodeChannelLaoId
-    s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+    channel.decodeChannelLaoId match {
+      case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+      case None =>
+        log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
+        throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
+    }
   }
 
 

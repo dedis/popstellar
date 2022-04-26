@@ -79,7 +79,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId
+        val laoId: Hash = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
@@ -111,7 +111,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId
+        val laoId: Hash = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
@@ -166,7 +166,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId
+        val laoId: Hash = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))

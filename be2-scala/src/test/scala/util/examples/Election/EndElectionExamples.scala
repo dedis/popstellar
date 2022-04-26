@@ -14,7 +14,7 @@ object EndElectionExamples {
   final val SIGNATURE: Signature = SetupElectionExamples.SIGNATURE
 
   final val ID: Hash = Hash(Base64Data.encode("election"))
-  final val LOA_ID: Hash = Hash(Base64Data.encode("laoId"))
+  final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
   final val REGISTERED_VOTES: Hash = Hash(Base64Data("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU"))
 
@@ -22,7 +22,7 @@ object EndElectionExamples {
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
-  val workingEndElection: EndElection = EndElection(LOA_ID, ID, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
+  val workingEndElection: EndElection = EndElection(LAO_ID, ID, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
   final val MESSAGE_END_ELECTION_WORKING: Message = new Message(
     Base64Data.encode(workingEndElection.toJson.toString),
     SENDER,
@@ -32,7 +32,7 @@ object EndElectionExamples {
     Some(workingEndElection)
   )
 
-  val wrongTimestampEndElection: EndElection = EndElection(LOA_ID, ID, invalidTimestamp, REGISTERED_VOTES)
+  val wrongTimestampEndElection: EndElection = EndElection(LAO_ID, ID, invalidTimestamp, REGISTERED_VOTES)
   final val MESSAGE_END_ELECTION_WRONG_TIMESTAMP: Message = new Message(
     Base64Data.encode(wrongTimestampEndElection.toJson.toString),
     SENDER,
@@ -42,7 +42,7 @@ object EndElectionExamples {
     Some(wrongTimestampEndElection)
   )
 
-  val wrongIdEndElection: EndElection = EndElection(LOA_ID, invalidId, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
+  val wrongIdEndElection: EndElection = EndElection(LAO_ID, invalidId, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
   final val MESSAGE_END_ELECTION_WRONG_ID: Message = new Message(
     Base64Data.encode(wrongIdEndElection.toJson.toString),
     SENDER,

@@ -8,8 +8,16 @@ import scala.concurrent.{Await, Future}
 case object MeetingHandler extends MessageHandler {
 
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration)
+    rpcMessage.getParamsChannel.decodeChannelLaoId match {
+      case Some(_) =>
+        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+        Await.result(ask, duration)
+      case _ => Right(PipelineError(
+        ErrorCodes.INVALID_DATA.id,
+        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
+        rpcMessage.id
+      ))
+    }
   }
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
