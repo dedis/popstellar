@@ -16,7 +16,26 @@ import scala.collection.mutable
 import scala.concurrent.Await
 import scala.util.Success
 
+//Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
+//The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
+
+  val electionValidator = new ElectionValidator(DbActor.getInstance)
+
+  override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
+
+  def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateSetupElection(rpcMessage)
+
+  def validateOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateOpenElection(rpcMessage)
+
+  def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateCastVoteElection(rpcMessage)
+
+  def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateResultElection(rpcMessage)
+
+  def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateEndElection(rpcMessage)
+}
+
+sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "Election"
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -226,6 +245,10 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
           Right(validationError("unexpected lao id"))
         else if (!validateOwner(sender, channel))
           Right(validationError(s"invalid sender $sender"))
+        else if (getOpenMessage(channel).isEmpty)
+          Right(validationError(s"This election has not started yet"))
+        else if (getEndMessage(channel).isDefined)
+          Right(validationError(s"This election has already ended"))
         else if (!validateChannelType(ObjectType.ELECTION, channel))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
         // TODO : check it - is this check ok ?
