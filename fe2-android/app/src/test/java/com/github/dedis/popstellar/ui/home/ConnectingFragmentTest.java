@@ -35,10 +35,10 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class ConnectingFragmentTest {
-  private static final String laoName = "Lao Name";
-  private static final PublicKey pk = Base64DataUtils.generatePublicKey();
-  private static final Lao lao = new Lao(laoName, pk, 10223421);
-  private static final String laoId = lao.getId();
+  private static final String LAO_NAME = "Lao Name";
+  private static final PublicKey PK = Base64DataUtils.generatePublicKey();
+  private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
+  private static final String LAO_ID = LAO.getId();
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
@@ -50,7 +50,7 @@ public class ConnectingFragmentTest {
   public final ActivityScenarioRule<ConnectingActivity> activityScenarioRule =
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
-              ConnectingActivity.class, new BundleBuilder().putString("LAO_ID", laoId).build()));
+              ConnectingActivity.class, new BundleBuilder().putString("LAO_ID", LAO_ID).build()));
 
   @Before
   public void setup() {
@@ -73,7 +73,7 @@ public class ConnectingFragmentTest {
 
   @Test
   public void dynamicTextTest() {
-    laoConnectingText().check(matches(withText(laoId)));
+    laoConnectingText().check(matches(withText(LAO_ID)));
   }
 
   @Test
