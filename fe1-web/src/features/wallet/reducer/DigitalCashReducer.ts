@@ -3,7 +3,7 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
@@ -94,3 +94,12 @@ const digitalCashSlice = createSlice({
     },
   },
 });
+export const { addTransaction } = digitalCashSlice.actions;
+export const digitalCashReduce = digitalCashSlice.reducer;
+
+export default {
+  [DIGITAL_CASH_REDUCER_PATH]: digitalCashSlice.reducer,
+};
+
+export const getDigitalCashState = (state: any): DigitalCashReducerState =>
+  state[DIGITAL_CASH_REDUCER_PATH];

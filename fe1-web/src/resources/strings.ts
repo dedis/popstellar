@@ -236,6 +236,9 @@ const STRINGS = {
   lao_name: 'LAO name',
   roll_call_name: 'Roll Call name',
 
+  /* --- Digital Cash Strings --- */
+  script_type: 'Pay-to-Pubkey-Hash',
+
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
   add_option: 'Add option',
