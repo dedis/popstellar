@@ -102,7 +102,10 @@ const WalletHome = () => {
         title={STRINGS.logout_from_wallet}
         onPress={() => {
           Wallet.forget();
-          navigation.navigate(STRINGS.navigation_wallet_setup_tab);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
+          });
         }}
       />
       <WideButtonView
