@@ -111,7 +111,6 @@ public class LAONetworkManager implements MessageSender {
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
         .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
-        .doOnError(msg -> Log.d(TAG, "Error in catchup is " + msg))
         .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
@@ -152,8 +151,8 @@ public class LAONetworkManager implements MessageSender {
   }
 
   @Override
-  public Connection getConnection() {
-    return connection;
+  public Observable<WebSocket.Event> getConnectEvents() {
+    return connection.observeConnectionEvents();
   }
 
   private void handleBroadcast(Broadcast broadcast) {

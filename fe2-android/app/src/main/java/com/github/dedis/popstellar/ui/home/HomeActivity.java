@@ -319,7 +319,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupConnectingActivity(String laoId) {
     Intent intent = new Intent(this, ConnectingActivity.class);
-    intent.putExtra("LAO_ID", laoId);
+    intent.putExtra(getString(R.string.lao_id), laoId);
     startActivity(intent);
   }
 
@@ -359,11 +359,12 @@ public class HomeActivity extends AppCompatActivity {
   private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra("LAO_ID", laoId);
+    intent.putExtra(getString(R.string.lao_id), laoId);
     if (openLaoDetail) {
-      intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+      intent.putExtra(getString(R.string.fragment_to_open), getString(R.string.lao_detail_extra));
     } else {
-      intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
+      intent.putExtra(
+          getString(R.string.fragment_to_open), getString(R.string.content_wallet_extra));
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }

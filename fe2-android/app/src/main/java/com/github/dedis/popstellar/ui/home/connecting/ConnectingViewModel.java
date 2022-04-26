@@ -12,14 +12,15 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.tinder.scarlet.WebSocket;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observables.ConnectableObservable;
 
 @HiltViewModel
 public class ConnectingViewModel extends AndroidViewModel {
@@ -56,21 +57,16 @@ public class ConnectingViewModel extends AndroidViewModel {
   private void handleConnecting(String channelId) {
     Lao lao = new Lao(channelId);
 
-    Log.d(TAG, "about to start connecting to lao " + channelId);
-
-    // Create the new LAO and add it to the LAORepository LAO lists
-    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-    laoRepository.setAllLaoSubject();
-
+    Log.d(TAG, "connecting to lao " + channelId);
     disposables.add(
         networkManager
             .getMessageSender()
             .subscribe(lao.getChannel())
-            .doOnComplete(() -> openLAO(lao.getId())) // We wait for the catchup to be done
             .subscribe(
                 () -> {
                   Log.d(TAG, "subscribing to LAO with id " + lao.getId());
                   Log.d(TAG, "got success result for subscribe to lao");
+                  openLAO(lao.getId());
                 },
                 error -> {
                   // In case of error, log it and go to home activity
@@ -121,16 +117,20 @@ public class ConnectingViewModel extends AndroidViewModel {
     // Sets the lao id displayed to users
     setConnectingLao(channelId);
 
+    // This object will allow us to get all the event of the underlying observable, even if they
+    // were emitted prior to the subscribe
+    ConnectableObservable<WebSocket.Event> replay =
+        networkManager.getMessageSender().getConnectEvents().replay();
     disposables.add(
-        networkManager
-            .getMessageSender()
-            .getConnection()
-            .observeConnectionEvents()
-            .subscribe(
-                v -> {
-                  if (v.toString().contains("OnConnectionOpened")) {
-                    handleConnecting(channelId);
-                  }
-                }));
+        replay.subscribe(
+            v -> {
+              if (v.toString().contains("OnConnectionOpened")) {
+                Log.d(TAG, "connection opened with new server address");
+                handleConnecting(channelId);
+              }
+            }));
+
+    // Now that we observe the events we let the observable know it can begin to emit events
+    replay.connect();
   }
 }

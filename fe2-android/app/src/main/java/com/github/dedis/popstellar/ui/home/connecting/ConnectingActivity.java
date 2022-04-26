@@ -31,13 +31,13 @@ public class ConnectingActivity extends AppCompatActivity {
     setContentView(R.layout.connecting_activity);
     setConnectingFragment();
 
-    String channelId = (String) (getIntent().getExtras()).get("LAO_ID");
+    String channelId = (String) (getIntent().getExtras()).get(getString(R.string.lao_id));
 
     mViewModel = obtainViewModel(this);
 
     // We make sure to be subscribed to events before launching the connection to lao process
     subscribeToEvents();
-
+    Log.d(TAG, "Went into connecting activity");
     mViewModel.handleOpenConnection(channelId);
   }
 
@@ -73,8 +73,8 @@ public class ConnectingActivity extends AppCompatActivity {
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
 
     Intent intent = new Intent(this, LaoDetailActivity.class);
-    intent.putExtra("LAO_ID", laoId);
-    intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+    intent.putExtra(getString(R.string.lao_id), laoId);
+    intent.putExtra(getString(R.string.fragment_to_open), getString(R.string.lao_detail_extra));
 
     startActivity(intent);
   }

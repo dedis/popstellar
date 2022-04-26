@@ -60,8 +60,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    if (getIntent().getExtras().get("FRAGMENT_TO_OPEN").equals("LaoDetail")) {
+        (String) Objects.requireNonNull(getIntent().getExtras()).get(getString(R.string.lao_id)));
+    if (getIntent()
+        .getExtras()
+        .get(getString(R.string.fragment_to_open))
+        .equals(getString(R.string.lao_detail_extra))) {
       setupLaoFragment();
     } else {
       setupLaoWalletFragment();
