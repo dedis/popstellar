@@ -23,17 +23,15 @@ Feature: Create a pop LAO
 #    Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2
-    * def laoId = call createLaoId
-    * def organizer = call organizerPk
     Given def badLaoReq =
       """
         {
           "object": "lao",
           "action": "create",
-          "id": '#(laoId)',
+          "id": '#(getLaoIdEmptyName)',
           "name": "",
           "creation": 1633098234,
-          "organizer": '#(organizer)',
+          "organizer": '#(getOrganizer)',
           "witnesses": []
         }
       """

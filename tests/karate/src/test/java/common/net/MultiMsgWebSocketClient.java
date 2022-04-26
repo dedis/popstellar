@@ -60,7 +60,11 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public boolean receiveNoMoreResponses(){
+    String result2 = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
+    System.out.println("----------------------////////------------");
+    System.out.println(result);
+    System.out.println("----------------------////////-------");
     return result == null;
   }
 }
