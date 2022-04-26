@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
@@ -32,6 +32,8 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
 sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = "Election"
+
+  private val HASH_ERROR: Hash = Hash(Base64Data("error"))
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
@@ -79,7 +81,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId.get
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
@@ -111,7 +113,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId.get
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
@@ -166,7 +168,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId.get
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
