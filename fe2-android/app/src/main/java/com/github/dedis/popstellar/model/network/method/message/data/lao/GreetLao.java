@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
-import com.github.dedis.popstellar.model.network.method.Greeting;
-import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.Method;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -13,13 +11,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
 
-
-
 public class GreetLao extends Data {
+
+      @NonNull
+      @SerializedName("lao")
+      private final String id;
+
       // Backend sender address
       @NonNull
-      @SerializedName("sender")
-      private String senderKey;
+      @SerializedName("frontend")
+      private String frontendKey;
 
       //Backend server address
       @NonNull
@@ -33,36 +34,33 @@ public class GreetLao extends Data {
       /**
       * Constructor for a Greeting Message
       *
-      * @param channel the channel over which the message is sent
       * @throws IllegalArgumentException if channel is null
       */
-      public GreetLao(Channel channel, @NonNull String senderKey, @NonNull String address, String... peers) {
-        super(channel);
+      public GreetLao(@NonNull String id, @NonNull String frontend, @NonNull String address, String... peers) {
         // Peers can be empty
         this.peers = Arrays.asList(peers);
         this.address = address;
-        // Check of validity of the public key should be done via the Public Key class
+        // Check the validity of the public key should is done via the Public Key class
         try {
-          new PublicKey(senderKey);
+          new PublicKey(frontend);
         } catch (Exception e) {
           throw new IllegalArgumentException("Please provide a valid public key");
         }
-        this.senderKey = senderKey;
+        this.frontendKey = frontend;
+        this.id=id;
       }
 
-      // Getter for params
-      @Override
-      public String getMethod() {
-      return Method.GREETING.getMethod();
-    }
+
 
       @NonNull
-      public String getSenderKey() {
-        return senderKey;}
+      public String getFrontendKey() {
+        return frontendKey;
+      }
 
       @NonNull
       public String getAddress() {
-        return address;}
+        return address;
+      }
 
       public List<String> getPeers(){
       return peers;
@@ -80,11 +78,11 @@ public class GreetLao extends Data {
           return false;
         }
 
-        com.github.dedis.popstellar.model.network.method.Greeting that = (com.github.dedis.popstellar.model.network.method.Greeting) o;
+        GreetLao that = (GreetLao) o;
 
         // Check fields, how to equality check to keys ?
         boolean checkAddress = that.getAddress().equals(getAddress());
-        boolean checkSendKey = that.getSenderKey().equals(getSenderKey());
+        boolean checkSendKey = that.getFrontendKey().equals(getFrontendKey());
         boolean checkPeers =
             that.getPeers().containsAll(getPeers());
 
@@ -93,17 +91,17 @@ public class GreetLao extends Data {
 
       @Override
       public int hashCode() {
-        return java.util.Objects.hash(senderKey, address, peers);
+        return java.util.Objects.hash(frontendKey, address, peers);
       }
 
       @Override
       public String toString() {
-        return "Greeting={"
+        return "GreetLao={"
             + "channel='"
             + getChannel().toString()
             + '\''
             + ", sender='"
-            + getSenderKey()
+            + getFrontendKey()
             + '\''
             + ", address='"
             + getAddress()
