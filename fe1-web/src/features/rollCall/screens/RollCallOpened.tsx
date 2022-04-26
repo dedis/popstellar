@@ -38,7 +38,7 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID } = route.params;
+  const { rollCallID, rollCallIDAlias } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -105,7 +105,7 @@ const RollCallOpened = () => {
 
   const onCloseRollCall = () => {
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(rollCallID, attendeesList)
+    return requestCloseRollCall(rollCallIDAlias, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

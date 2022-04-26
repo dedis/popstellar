@@ -44,7 +44,9 @@ func NewMessageRegistry() MessageRegistry {
 //   // when we need to process a message we call "processMsg"
 //   err = registry.processMsg(msg)
 //
-func (m MessageRegistry) Register(msg messagedata.MessageData, f func(message.Message, interface{}, socket.Socket) error) {
+func (m MessageRegistry) Register(msg messagedata.MessageData, f func(message.Message,
+	interface{}, socket.Socket) error) {
+
 	m.registry[msg.GetObject()+"#"+msg.GetAction()] = CallbackData{
 		Callback:     f,
 		ConcreteType: msg,
