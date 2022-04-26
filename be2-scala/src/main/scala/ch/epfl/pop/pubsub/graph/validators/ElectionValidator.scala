@@ -33,7 +33,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   override val EVENT_HASH_PREFIX: String = "Election"
 
-  private val HASH_ERROR: Hash = Hash(Base64Data("error"))
+  private val HASH_ERROR: Hash = Hash(Base64Data(""))
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
