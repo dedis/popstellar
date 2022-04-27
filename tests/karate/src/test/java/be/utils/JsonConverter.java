@@ -127,7 +127,7 @@ public class JsonConverter {
       }
       return Base64.getUrlEncoder().encodeToString(digest.digest());
   }
-
+  
   private byte[] getPrivateKeyBytes(){
     byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
 
