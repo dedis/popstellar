@@ -22,14 +22,12 @@ import {
 } from 'features/evoting/__tests__/utils';
 import STRINGS from 'resources/strings';
 
-import { Question } from '../../../objects';
+import { ElectionVersion, Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
 // region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const OPEN_BALLOT_VERSION = STRINGS.election_version_open_ballot;
-const SECRET_BALLOT_VERSION = STRINGS.election_version_secret_ballot;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 
@@ -42,7 +40,7 @@ const sampleSetupElectionOpenBallot: Partial<SetupElection> = {
   id: mockElectionId,
   lao: mockLaoIdHash,
   name: mockLaoName,
-  version: OPEN_BALLOT_VERSION,
+  version: ElectionVersion.OPEN_BALLOT,
   created_at: TIMESTAMP,
   start_time: TIMESTAMP,
   end_time: CLOSE_TIMESTAMP,
@@ -55,7 +53,7 @@ const setupElectionOpenBallotJson: string = `{
   "id": "${mockElectionId.valueOf()}",
   "lao": "${mockLaoId}",
   "name": "${mockLaoName}",
-  "version": "${OPEN_BALLOT_VERSION}",
+  "version": "${ElectionVersion.OPEN_BALLOT}",
   "created_at": ${TIMESTAMP.valueOf()},
   "start_time": ${TIMESTAMP.valueOf()},
   "end_time": ${CLOSE_TIMESTAMP.valueOf()},
@@ -69,7 +67,7 @@ const sampleSetupElectionSecretBallot: Partial<SetupElection> = {
   lao: mockLaoIdHash,
   name: mockLaoName,
   key: mockKeyPair.publicKey,
-  version: SECRET_BALLOT_VERSION,
+  version: ElectionVersion.SECRET_BALLOT,
   created_at: TIMESTAMP,
   start_time: TIMESTAMP,
   end_time: CLOSE_TIMESTAMP,
@@ -83,7 +81,7 @@ const setupElectionSecretBallotJson: string = `{
   "lao": "${mockLaoId}",
   "name": "${mockLaoName}",
   "key": "${mockPublicKey.valueOf()}",
-  "version": "${SECRET_BALLOT_VERSION}",
+  "version": "${ElectionVersion.SECRET_BALLOT}",
   "created_at": ${TIMESTAMP.valueOf()},
   "start_time": ${TIMESTAMP.valueOf()},
   "end_time": ${CLOSE_TIMESTAMP.valueOf()},
@@ -97,7 +95,7 @@ beforeAll(() => {
 });
 
 describe('SetupElection', () => {
-  describe(`${OPEN_BALLOT_VERSION}`, () => {
+  describe(`${ElectionVersion.OPEN_BALLOT}`, () => {
     it('should be created correctly from Json', () => {
       expect(
         new SetupElection(sampleSetupElectionOpenBallot as MessageDataProperties<SetupElection>),
@@ -105,7 +103,7 @@ describe('SetupElection', () => {
       const temp = {
         object: ObjectType.ELECTION,
         action: ActionType.SETUP,
-        version: OPEN_BALLOT_VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId,
         lao: mockLaoIdHash,
         name: mockLaoName,
@@ -137,7 +135,7 @@ describe('SetupElection', () => {
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
         name: mockLaoName,
-        version: OPEN_BALLOT_VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         created_at: TIMESTAMP.valueOf(),
         start_time: TIMESTAMP.valueOf(),
         end_time: CLOSE_TIMESTAMP.valueOf(),
@@ -151,7 +149,7 @@ describe('SetupElection', () => {
       const obj = {
         object: ObjectType.CHIRP,
         action: ActionType.SETUP,
-        version: OPEN_BALLOT_VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
         name: mockLaoName,
@@ -168,7 +166,7 @@ describe('SetupElection', () => {
       it('should throw an error if id is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: undefined as unknown as Hash,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -183,7 +181,7 @@ describe('SetupElection', () => {
       it('should throw an error if lao is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: undefined as unknown as Hash,
             name: mockLaoName,
@@ -198,7 +196,7 @@ describe('SetupElection', () => {
       it('should throw an error if name is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: undefined as unknown as string,
@@ -213,7 +211,7 @@ describe('SetupElection', () => {
       it('should throw an error if key is defined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -259,7 +257,7 @@ describe('SetupElection', () => {
       it('should throw an error if created_at is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -274,7 +272,7 @@ describe('SetupElection', () => {
       it('should throw an error if start_time is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -289,7 +287,7 @@ describe('SetupElection', () => {
       it('should throw an error if end_time is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -304,7 +302,7 @@ describe('SetupElection', () => {
       it('should throw an error if questions is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -319,7 +317,7 @@ describe('SetupElection', () => {
       it('should throw an error if start_time is before created_at', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -334,7 +332,7 @@ describe('SetupElection', () => {
       it('should throw an error if end_time is before start_time', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: OPEN_BALLOT_VERSION,
+            version: ElectionVersion.OPEN_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -351,7 +349,7 @@ describe('SetupElection', () => {
       const msg = new SetupElection({
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
-        version: OPEN_BALLOT_VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId,
         lao: mockLaoIdHash,
         name: mockLaoName,
@@ -366,7 +364,7 @@ describe('SetupElection', () => {
     });
   });
 
-  describe(`${SECRET_BALLOT_VERSION}`, () => {
+  describe(`${ElectionVersion.SECRET_BALLOT}`, () => {
     it('should be created correctly from Json', () => {
       expect(
         new SetupElection(sampleSetupElectionOpenBallot as MessageDataProperties<SetupElection>),
@@ -374,7 +372,7 @@ describe('SetupElection', () => {
       const temp = {
         object: ObjectType.ELECTION,
         action: ActionType.SETUP,
-        version: SECRET_BALLOT_VERSION,
+        version: ElectionVersion.SECRET_BALLOT,
         id: mockElectionId,
         lao: mockLaoIdHash,
         name: mockLaoName,
@@ -404,7 +402,7 @@ describe('SetupElection', () => {
       const obj = {
         object: ObjectType.ELECTION,
         action: ActionType.NOTIFY_ADD,
-        version: SECRET_BALLOT_VERSION,
+        version: ElectionVersion.SECRET_BALLOT,
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
         name: mockLaoName,
@@ -422,7 +420,7 @@ describe('SetupElection', () => {
       const obj = {
         object: ObjectType.CHIRP,
         action: ActionType.SETUP,
-        version: SECRET_BALLOT_VERSION,
+        version: ElectionVersion.SECRET_BALLOT,
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
         name: mockLaoName,
@@ -440,7 +438,7 @@ describe('SetupElection', () => {
       it('should throw an error if id is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: undefined as unknown as Hash,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -456,7 +454,7 @@ describe('SetupElection', () => {
       it('should throw an error if lao is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: undefined as unknown as Hash,
             name: mockLaoName,
@@ -472,7 +470,7 @@ describe('SetupElection', () => {
       it('should throw an error if name is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: undefined as unknown as string,
@@ -488,7 +486,7 @@ describe('SetupElection', () => {
       it('should throw an error if key is defined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -536,7 +534,7 @@ describe('SetupElection', () => {
       it('should throw an error if created_at is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -552,7 +550,7 @@ describe('SetupElection', () => {
       it('should throw an error if start_time is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -568,7 +566,7 @@ describe('SetupElection', () => {
       it('should throw an error if end_time is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -584,7 +582,7 @@ describe('SetupElection', () => {
       it('should throw an error if questions is undefined', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -600,7 +598,7 @@ describe('SetupElection', () => {
       it('should throw an error if start_time is before created_at', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -616,7 +614,7 @@ describe('SetupElection', () => {
       it('should throw an error if end_time is before start_time', () => {
         const createWrongObj = () =>
           new SetupElection({
-            version: SECRET_BALLOT_VERSION,
+            version: ElectionVersion.SECRET_BALLOT,
             id: mockElectionId,
             lao: mockLaoIdHash,
             name: mockLaoName,
@@ -634,7 +632,7 @@ describe('SetupElection', () => {
       const msg = new SetupElection({
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
-        version: SECRET_BALLOT_VERSION,
+        version: ElectionVersion.SECRET_BALLOT,
         id: mockElectionId,
         lao: mockLaoIdHash,
         name: mockLaoName,

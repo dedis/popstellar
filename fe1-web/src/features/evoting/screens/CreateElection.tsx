@@ -23,7 +23,7 @@ import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { Question } from '../objects';
+import { ElectionVersion, Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -58,6 +58,7 @@ const isQuestionInvalid = (question: NewQuestion): boolean =>
 /**
  * Creates a new election based on the given values and returns the related request promise
  * @param laoId The id of the lao in which the new election should be created
+ * @param version The version of the lection that should be created
  * @param electionName The name of the election
  * @param questions The questions created in the UI
  * @param startTime The start time of the election
@@ -66,6 +67,7 @@ const isQuestionInvalid = (question: NewQuestion): boolean =>
  */
 const createElection = (
   laoId: Hash,
+  version: ElectionVersion,
   electionName: string,
   questions: NewQuestion[],
   startTime: Timestamp,
@@ -93,7 +95,7 @@ const createElection = (
   return requestCreateElection(
     laoId,
     electionName,
-    STRINGS.election_version_open_ballot,
+    version,
     startTime,
     endTime,
     questionsWithId,
@@ -111,6 +113,7 @@ const CreateElection = ({ route }: any) => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
+  const currentLao = EvotingHooks.useCurrentLao();
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -120,18 +123,17 @@ const CreateElection = ({ route }: any) => {
   const [electionName, setElectionName] = useState<string>('');
 
   const [questions, setQuestions] = useState<NewQuestion[]>([EMPTY_QUESTION]);
+  const [version] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
 
   // UI state
   const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
-  const currentLao = EvotingHooks.useCurrentLao();
-
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
 
   const onCreateElection = () => {
-    createElection(currentLao.id, electionName, questions, startTime, endTime)
+    createElection(currentLao.id, version, electionName, questions, startTime, endTime)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

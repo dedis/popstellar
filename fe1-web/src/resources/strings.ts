@@ -141,8 +141,6 @@ const STRINGS = {
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
   election_method_Approval: 'Approval',
-  election_version_open_ballot: 'open-ballot',
-  election_version_secret_ballot: 'secret-ballot',
 
   /* --- Event Creation Strings --- */
   modal_event_creation_failed: 'Event creation failed',

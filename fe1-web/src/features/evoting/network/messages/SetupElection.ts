@@ -3,9 +3,8 @@ import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 import { EventTags, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
-import STRINGS from 'resources/strings';
 
-import { Question } from '../../objects';
+import { ElectionVersion, Question } from '../../objects';
 
 /** Data sent to setup an Election event */
 export class SetupElection implements MessageData {
@@ -53,14 +52,14 @@ export class SetupElection implements MessageData {
     this.name = msg.name;
 
     switch (msg.version) {
-      case STRINGS.election_version_open_ballot:
+      case ElectionVersion.OPEN_BALLOT:
         if (msg.key !== undefined) {
           throw new ProtocolError(
             "Defined 'key' parameter encountered during open ballot 'SetupElection'",
           );
         }
         break;
-      case STRINGS.election_version_secret_ballot:
+      case ElectionVersion.SECRET_BALLOT:
         if (!msg.key) {
           throw new ProtocolError(
             "Undefined 'key' parameter encountered during secret ballot 'SetupElection'",

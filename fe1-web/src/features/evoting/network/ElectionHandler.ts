@@ -5,7 +5,7 @@ import { channelFromIds, getFirstPartOfChannel, getLastPartOfChannel } from 'cor
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionStatus, RegisteredVote } from '../objects';
+import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
 import { addElectionKey } from '../reducer/ElectionKeyReducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
@@ -101,11 +101,24 @@ export const handleElectionSetupMessage =
     const elecMsg = msg.messageData as SetupElection;
     elecMsg.validate(msg.laoId);
 
+    // check if the election version is supported by the frontend
+    if (
+      ![ElectionVersion.OPEN_BALLOT, ElectionVersion.SECRET_BALLOT].includes(
+        elecMsg.version as ElectionVersion,
+      )
+    ) {
+      console.warn(
+        'handleElectionSetupMessage was called to process an unsupported election version',
+        msg,
+      );
+      return false;
+    }
+
     const election = new Election({
       lao: elecMsg.lao,
       id: elecMsg.id,
       name: elecMsg.name,
-      version: elecMsg.version,
+      version: elecMsg.version as ElectionVersion,
       createdAt: elecMsg.created_at,
       start: elecMsg.start_time,
       end: elecMsg.end_time,
