@@ -10,7 +10,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.Election.SetupElectionExamples
+import util.examples.Election.{CastVoteElectionExamples, SetupElectionExamples}
 import util.examples.JsonRpcRequestExample._
 
 import java.io.File
@@ -51,6 +51,10 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
   private final val channelDataWrongElection: ChannelData =ChannelData(ObjectType.LAO, List.empty)
+
+  private final val channelDataWithSetupAndOpenMessage: ChannelData = CastVoteElectionExamples.CHANNEL_DATA
+  private final val channelDataWrongChannelCastVote: ChannelData = CastVoteElectionExamples.WRONG_CHANNEL_DATA
+
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -124,6 +128,42 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.actorOf(dbActorMock)
   }
 
+
+  private def mockDbCastVote: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenMessage)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  private def mockDbWrongTokenCastVote: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenMessage)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  private def mockDbWrongChannelCastVote: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongChannelCastVote)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
 
   //Setup Election
   test("Setting up an election works as intended") {
@@ -250,7 +290,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   //CastVote Election
   test("Casting a vote works as intended") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     println(dbActorRef)
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message should equal(Left(CAST_VOTE_ELECTION_RPC))
@@ -258,49 +298,49 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   }
 
   test("Casting a vote with invalid Timestamp fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without valid PoP token fails") {
-    val dbActorRef = mockDbWrongToken
+    val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote on wrong type of channel fails") {
-    val dbActorRef = mockDbWrongChannel
+    val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid id fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid lao id fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with wrong sender fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_OWNER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without Params does not work in validateCastVoteElection") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
