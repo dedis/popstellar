@@ -47,25 +47,22 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val ask =
           for (
-            channelExists <- dbActor ? DbActor.ChannelExists(rollCallChannel)
-          ) yield channelExists match {
-            case DbActorAck =>
-              Future(Right(PipelineError(0, "", rpcRequest.getId)))
-            case _ =>
-              for (
-                _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL);
-                x <- dbAskWritePropagate(rpcRequest)
-              )
-              yield x
-          }
+            _ <- dbActor ? DbActor.ChannelExists(rollCallChannel) transformWith {
+              case Success(_) => Future {
+                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db")
+              }
+              case _ => Future {
+                ()
+              }
+            };
+            _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL);
+            _ <- dbAskWritePropagate(rpcRequest)
+          ) yield ()
 
-        Await.result(Await.result(ask, duration), duration) match {
-          case success@Left(_) =>
-            success
-          case error@Right(_) => error
-          case _ => Right(
-            PipelineError(ErrorCodes.ALREADY_EXISTS.id, "Rollcall already exists in db", rpcRequest.getId)
-          )
+        Await.ready(ask, duration).value match {
+          case Some(Success(_)) => Left(rpcRequest)
+          case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
       case _ =>
         Right(
