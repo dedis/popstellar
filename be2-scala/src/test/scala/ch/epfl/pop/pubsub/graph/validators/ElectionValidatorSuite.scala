@@ -10,7 +10,10 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.Election.{CastVoteElectionExamples, SetupElectionExamples}
+import util.examples.Election.CastVoteElectionExamples.{DATA_CAST_VOTE_MESSAGE, MESSAGE_CAST_VOTE_ELECTION_WORKING}
+import util.examples.Election.OpenElectionExamples.{DATA_OPEN_MESSAGE, MESSAGE_OPEN_ELECTION_WORKING}
+import util.examples.Election.SetupElectionExamples.{DATA_SET_UP_MESSAGE, MESSAGE_SETUPELECTION_WORKING}
+import util.examples.Election.{SetupElectionExamples}
 import util.examples.JsonRpcRequestExample._
 
 import java.io.File
@@ -50,10 +53,10 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
 
   private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
-  private final val channelDataWrongElection: ChannelData =ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
-  private final val channelDataWithSetupAndOpenMessage: ChannelData = CastVoteElectionExamples.CHANNEL_DATA
-  private final val channelDataWrongChannelCastVote: ChannelData = CastVoteElectionExamples.WRONG_CHANNEL_DATA
+  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
+  private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.LAO, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
 
 
   private def mockDbWorkingSetup: AskableActorRef = {
@@ -135,7 +138,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenMessage)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -147,7 +156,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenMessage)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -160,6 +175,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongChannelCastVote)
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -291,7 +312,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   //CastVote Election
   test("Casting a vote works as intended") {
     val dbActorRef = mockDbCastVote
-    println(dbActorRef)
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message should equal(Left(CAST_VOTE_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
@@ -342,6 +362,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Casting a vote without Params does not work in validateCastVoteElection") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(RPC_NO_PARAMS)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("Casting an invalid vote should fail") {
+    val dbActorRef = mockDbCastVote
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_INVALID_VOTE_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
