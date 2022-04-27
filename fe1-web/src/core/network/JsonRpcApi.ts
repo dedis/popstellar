@@ -9,6 +9,7 @@ import {
   ExtendedJsonRpcResponse,
   Publish,
   Subscribe,
+  Unsubscribe,
 } from './jsonrpc';
 import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 import { NetworkConnection } from './NetworkConnection';
@@ -75,6 +76,28 @@ export async function subscribe(
     method: JsonRpcMethod.SUBSCRIBE,
     params: new Subscribe({
       channel: channel,
+    }),
+    id: AUTO_ASSIGN_ID,
+  });
+
+  await getNetworkManager().sendPayload(request, connections);
+  // propagate the catch() with the full error message, as it needs to be handled on a higher level
+}
+
+/**
+ * Unsubscribe from a channel
+ *
+ * @param channel - The channel from which we want to unsubscribe
+ * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
+ */
+export async function unsubscribe(
+  channel: Channel,
+  connections?: NetworkConnection[],
+): Promise<void> {
+  const request = new JsonRpcRequest({
+    method: JsonRpcMethod.UNSUBSCRIBE,
+    params: new Unsubscribe({
+      channel,
     }),
     id: AUTO_ASSIGN_ID,
   });
