@@ -49,7 +49,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           for (
             _ <- dbActor ? DbActor.ChannelExists(rollCallChannel) transformWith {
               case Success(_) => Future {
-                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db")
+                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall already exists in db")
               }
               case _ => Future {
                 ()
