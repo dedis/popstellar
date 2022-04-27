@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
+import com.github.dedis.popstellar.model.objects.Server;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -20,12 +21,9 @@ import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import javax.inject.Inject;
 
 /** Lao messages handler class */
 public final class LaoHandler {
-
-  @Inject ServerRepository serverRepository;
 
   public static final String TAG = LaoHandler.class.getSimpleName();
 
@@ -193,7 +191,7 @@ public final class LaoHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     // Check the correctness of the LAO id
-    if (lao.getId() != greetLao.getId()) {
+    if (!lao.getId().equals(greetLao.getId())) {
       Log.d(
           TAG,
           "Current lao id "
@@ -204,7 +202,15 @@ public final class LaoHandler {
       throw new IllegalArgumentException(
           "Current lao doesn't march the lao id frome the greetLao message");
     }
+    Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
+
+    Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
 
     Log.d(TAG, "Adding the server to the repository for lao id : " + lao.getId());
+    ServerRepository serverRepository = context.getServerRepository();
+    serverRepository.addServer(greetLao.getId(), server);
+
+    // TODO In the future, implement automatic connection to all the peers contained in the peers
+    // message
   }
 }

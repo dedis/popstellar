@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import java.util.Arrays;
@@ -79,5 +80,10 @@ public class GreetLaoTest {
             "GreetLao={lao='%s', " + "frontend='%s', " + "address='%s', " + "peers='%s'}",
             LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, Arrays.toString(listTest.toArray()));
     assertEquals(greetingToString, GREETING_MSG.toString());
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(GREETING_MSG);
   }
 }

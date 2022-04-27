@@ -21,25 +21,23 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import io.reactivex.Completable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
-
-import io.reactivex.Completable;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LaoHandlerTest {
@@ -54,6 +52,7 @@ public class LaoHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
+  private ServerRepository serverRepository;
 
   private Lao lao;
   private MessageGeneral createLaoMessage;
@@ -69,7 +68,9 @@ public class LaoHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
+    serverRepository = new ServerRepository();
+    messageHandler =
+        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -135,4 +136,7 @@ public class LaoHandlerTest {
         stateLao.getModificationId(),
         laoRepository.getLaoByChannel(LAO_CHANNEL).getModificationId());
   }
+
+  @Test
+  public void testGreetLao() throws DataHandlingException {}
 }
