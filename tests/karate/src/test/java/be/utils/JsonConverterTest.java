@@ -97,4 +97,15 @@ public class JsonConverterTest {
 
     assert message_id_sent.equals(message_id_check);
   }
+
+  @Test
+  public void checkRegisteredVoteFieldIsValid() throws NoSuchAlgorithmException {
+    JsonConverter jsonConverter = new JsonConverter();
+    // registered votes filed present in valid_election_data.json
+    String registeredVotes = "GX9slST3yY_Mltkjimp-eNq71mfbSbQ9sruABYN8EoM=";
+    // registered votes constructed with the id of the cast vot present in valid_cast_vote_2_data.json
+    String realRegisteredVotes = jsonConverter.hash("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=".getBytes());
+    assert registeredVotes.equals(realRegisteredVotes);
+  }
+
 }
