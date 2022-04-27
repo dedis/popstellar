@@ -52,9 +52,6 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
         case DbActor.ChannelExists(_) =>
           system.log.info(s"Received a create rollcall message")
           system.log.info("Responding with a no")
-          // fixme : replace the 2 next lines with
-          //  sender() ! Status.Failure(DbActorNAckException(1, "error"))
-          //  but it is crashing
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
           system.log.info(s"Received - error $x")
