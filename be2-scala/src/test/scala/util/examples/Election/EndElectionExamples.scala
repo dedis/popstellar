@@ -23,8 +23,9 @@ object EndElectionExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingEndElection: EndElection = EndElection(LAO_ID, ID, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
+  final val DATA_END_ELECTION_MESSAGE: Hash = Hash(Base64Data.encode(workingEndElection.toJson.toString))
   final val MESSAGE_END_ELECTION_WORKING: Message = new Message(
-    Base64Data.encode(workingEndElection.toJson.toString),
+    DATA_END_ELECTION_MESSAGE.base64Data,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
