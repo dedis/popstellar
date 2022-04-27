@@ -13,18 +13,22 @@ import containerStyles from '../styles/stylesheets/containerStyles';
  *  - Default selected option (not required, if not specified then first in the array is chosen)
  */
 
-const DropdownSelector = (props: IPropTypes) => {
-  const { selected } = props;
-  const { onChange } = props;
-  const { values } = props;
-  const options: any = [];
-  values.forEach((value) => options.push(<Picker.Item key={value} label={value || ''} />));
+const DropdownSelector = (
+  props: Omit<IPropTypes, 'onChange'> & {
+    // make the type for 'onChange' more concrete than the inferred type
+    onChange: (itemValue: string | null, itemIndex: number) => void;
+  },
+) => {
+  const { selected, onChange, options } = props;
+
   return (
     <Picker
       selectedValue={selected}
-      onValueChange={(val: any) => onChange(val)}
+      onValueChange={onChange}
       style={containerStyles.centerWithMargin}>
-      {options}
+      {options.map((option) => (
+        <Picker.Item key={option.value} label={option.label} value={option.value} />
+      ))}
     </Picker>
   );
 };
@@ -32,7 +36,12 @@ const DropdownSelector = (props: IPropTypes) => {
 const propTypes = {
   selected: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  values: PropTypes.arrayOf(PropTypes.string).isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
 };
 DropdownSelector.propTypes = propTypes;
 
