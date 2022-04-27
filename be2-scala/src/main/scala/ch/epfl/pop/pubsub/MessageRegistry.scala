@@ -74,7 +74,7 @@ object MessageRegistry {
     // data election
     register.add((ObjectType.ELECTION, ActionType.SETUP), createSchemaVerifier("dataSetupElection.json"), SetupElection.buildFromJson, ElectionValidator.validateSetupElection, ElectionHandler.handleSetupElection)
     register.add((ObjectType.ELECTION, ActionType.CAST_VOTE), createSchemaVerifier("dataCastVote.json"), CastVoteElection.buildFromJson, ElectionValidator.validateCastVoteElection, ElectionHandler.handleCastVoteElection)
-    register.add((ObjectType.ELECTION, ActionType.RESULT), createSchemaVerifier("dataResultElection.json"), ResultElection.buildFromJson, ElectionValidator.validateResultElection, ElectionHandler.handleResultElection)
+    //register.add((ObjectType.ELECTION, ActionType.RESULT), createSchemaVerifier("dataResultElection.json"), ResultElection.buildFromJson, ElectionValidator.validateResultElection, ElectionHandler.handleResultElection)
     register.add((ObjectType.ELECTION, ActionType.END), createSchemaVerifier("dataEndElection.json"), EndElection.buildFromJson, ElectionValidator.validateEndElection, ElectionHandler.handleEndElection)
 
     // data witness
