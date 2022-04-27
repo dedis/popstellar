@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,10 +76,7 @@ public class GreetLaoTest {
     List<String> listTest = Collections.singletonList(RANDOM_PEER);
     String greetingToString =
         String.format(
-            "Greeting={lao='%s', "
-                + "sender='%s', "
-                + "address='%s', "
-                + "peers='%s'}",
+            "GreetLao={lao='%s', " + "frontend='%s', " + "address='%s', " + "peers='%s'}",
             LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, Arrays.toString(listTest.toArray()));
     assertEquals(greetingToString, GREETING_MSG.toString());
   }
