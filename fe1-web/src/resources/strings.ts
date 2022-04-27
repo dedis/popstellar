@@ -132,6 +132,8 @@ const STRINGS = {
   /* --- Election creation Strings --- */
   election_create_setup: 'Election Setup',
   election_create_name: 'Name*',
+  election_create_version_open_ballot: 'Open Ballot',
+  election_create_version_secret_ballot: 'Secret Ballot',
   election_create_start_time: 'Start time: ',
   election_create_finish_time: 'End time:  ',
   election_create_question: 'Question*',

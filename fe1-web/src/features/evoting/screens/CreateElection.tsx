@@ -9,6 +9,7 @@ import {
   ConfirmModal,
   DatePicker,
   DismissModal,
+  DropdownSelector,
   ParagraphBlock,
   TextBlock,
   TextInputLine,
@@ -123,7 +124,7 @@ const CreateElection = ({ route }: any) => {
   const [electionName, setElectionName] = useState<string>('');
 
   const [questions, setQuestions] = useState<NewQuestion[]>([EMPTY_QUESTION]);
-  const [version] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
+  const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
 
   // UI state
   const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
@@ -155,6 +156,24 @@ const CreateElection = ({ route }: any) => {
         onChangeText={(text: string) => {
           setElectionName(text);
         }}
+      />
+      <DropdownSelector
+        selected={version}
+        onChange={(value) => {
+          if (value) {
+            setVersion(value as ElectionVersion);
+          }
+        }}
+        options={[
+          {
+            value: ElectionVersion.OPEN_BALLOT,
+            label: STRINGS.election_create_version_open_ballot,
+          },
+          {
+            value: ElectionVersion.SECRET_BALLOT,
+            label: STRINGS.election_create_version_secret_ballot,
+          },
+        ]}
       />
       {
         // the date picker for the web
