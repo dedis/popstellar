@@ -42,6 +42,8 @@ const WalletHome = () => {
   const [isDebug, setIsDebug] = useState(false);
   const rollCalls = useSelector(rollCallSelector);
   const lao = useSelector(selectCurrentLao);
+
+  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const WalletHome = () => {
           />
         )}
       </View>
-      {tokens && tokenInfos()}
+      {tokenInfos()}
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
