@@ -32,7 +32,7 @@ import {
   mockVote1,
   mockVote2,
 } from 'features/evoting/__tests__/utils';
-import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
+import { addElectionKeyMessage } from 'features/evoting/reducer/ElectionKeyReducer';
 
 import { EvotingConfiguration } from '../../interface';
 import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
@@ -179,7 +179,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -195,7 +195,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -211,7 +211,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -227,15 +227,14 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeTrue();
 
       expect(dispatch).toHaveBeenCalledWith(
-        addElectionKey({
+        addElectionKeyMessage({
           electionId: mockElectionId.valueOf(),
-          electionKey: mockKeyPair.publicKey.valueOf(),
           messageId: mockMessageData.message_id.valueOf(),
         }),
       );

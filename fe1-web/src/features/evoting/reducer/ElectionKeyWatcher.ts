@@ -1,8 +1,8 @@
 import { Store } from 'redux';
 
-import { Hash, PublicKey } from 'core/objects';
+import { Hash } from 'core/objects';
 
-import { getElectionKeyByElectionId } from './ElectionKeyReducer';
+import { getElectionKeyMessageIdByElectionId } from './ElectionKeyReducer';
 
 /**
  * Watches the redux store for new election#key message for the given election id
@@ -11,15 +11,10 @@ import { getElectionKeyByElectionId } from './ElectionKeyReducer';
  * @param callback The function to call when a the corresponding election#key message is received
  */
 export const makeElectionKeyStoreWatcher =
-  (
-    electionId: string,
-    store: Store,
-    callback: (electionKey: { electionKey: PublicKey; messageId: Hash }) => void,
-  ) =>
-  () => {
-    const electionKey = getElectionKeyByElectionId(electionId, store.getState());
+  (electionId: string, store: Store, callback: (messageId: Hash) => void) => () => {
+    const messageId = getElectionKeyMessageIdByElectionId(electionId, store.getState());
 
-    if (electionKey) {
-      callback(electionKey);
+    if (messageId) {
+      callback(messageId);
     }
   };

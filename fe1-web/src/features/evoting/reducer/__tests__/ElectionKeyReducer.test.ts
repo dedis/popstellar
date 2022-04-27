@@ -1,16 +1,15 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockPublicKey } from '__tests__/utils';
 import { mockElectionId } from 'features/evoting/__tests__/utils';
 
 import {
-  addElectionKey,
+  addElectionKeyMessage,
   electionKeyReduce,
-  ElectionKeyReducerState,
-  ELECTION_KEY_REDUCER_PATH,
-  getElectionKeyByElectionId,
-  removeElectionKey,
+  ElectionKeyMessageReducerState,
+  ELECTION_KEY_MESSAGE_REDUCER_PATH,
+  getElectionKeyMessageIdByElectionId,
+  removeElectionKeyMessage,
 } from '../ElectionKeyReducer';
 
 describe('ElectionKeyReducer', () => {
@@ -20,30 +19,20 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {
-              someElectionId: {
-                electionKey: 'someOtherKey',
-                messageId: 'someOtherMessageId',
-              },
+              someElectionId: 'someOtherMessageId',
             },
           },
-          addElectionKey({
+          addElectionKeyMessage({
             electionId: mockElectionId.valueOf(),
-            electionKey: mockPublicKey,
             messageId: 'someMessageId',
           }),
         ),
       ).toEqual({
         byElectionId: {
-          someElectionId: {
-            electionKey: 'someOtherKey',
-            messageId: 'someOtherMessageId',
-          },
-          [mockElectionId.valueOf()]: {
-            electionKey: mockPublicKey,
-            messageId: 'someMessageId',
-          },
+          someElectionId: 'someOtherMessageId',
+          [mockElectionId.valueOf()]: 'someMessageId',
         },
-      } as ElectionKeyReducerState);
+      } as ElectionKeyMessageReducerState);
     });
 
     it('should throw an error when trying to add an election key if one is already present', () => {
@@ -51,15 +40,11 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {
-              [mockElectionId.valueOf()]: {
-                electionKey: mockPublicKey,
-                messageId: 'someMessageId',
-              },
+              [mockElectionId.valueOf()]: 'someMessageId',
             },
-          } as ElectionKeyReducerState,
-          addElectionKey({
+          } as ElectionKeyMessageReducerState,
+          addElectionKeyMessage({
             electionId: mockElectionId.valueOf(),
-            electionKey: mockPublicKey,
             messageId: 'someMessageId',
           }),
         );
@@ -73,17 +58,14 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {
-              [mockElectionId.valueOf()]: {
-                electionKey: mockPublicKey,
-                messageId: 'mockPublicKey',
-              },
+              [mockElectionId.valueOf()]: 'someMessageId',
             },
-          } as ElectionKeyReducerState,
-          removeElectionKey(mockElectionId.valueOf()),
+          } as ElectionKeyMessageReducerState,
+          removeElectionKeyMessage(mockElectionId.valueOf()),
         ),
       ).toEqual({
         byElectionId: {},
-      } as ElectionKeyReducerState);
+      } as ElectionKeyMessageReducerState);
     });
 
     it('should not throw an error if no key is stored for a given election id', () => {
@@ -91,8 +73,8 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {},
-          } as ElectionKeyReducerState,
-          removeElectionKey(mockElectionId.valueOf()),
+          } as ElectionKeyMessageReducerState,
+          removeElectionKeyMessage(mockElectionId.valueOf()),
         ),
       ).not.toThrow();
     });
@@ -102,34 +84,25 @@ describe('ElectionKeyReducer', () => {
 describe('getElectionKeyByElectionId', () => {
   it('returns the correct key for a given election id', () => {
     expect(
-      getElectionKeyByElectionId(mockElectionId.valueOf(), {
-        [ELECTION_KEY_REDUCER_PATH]: {
+      getElectionKeyMessageIdByElectionId(mockElectionId.valueOf(), {
+        [ELECTION_KEY_MESSAGE_REDUCER_PATH]: {
           byElectionId: {
-            [mockElectionId.valueOf()]: {
-              electionKey: mockPublicKey,
-              messageId: 'someMessageId',
-            },
-            someOtherId: {
-              electionKey: 'someOtherKey',
-              messageId: 'someOtherMessageId',
-            },
+            [mockElectionId.valueOf()]: 'someMessageId',
+            someOtherId: 'someOtherMessageId',
           },
-        } as ElectionKeyReducerState,
+        } as ElectionKeyMessageReducerState,
       }),
-    ).toBeJsonEqual({ electionKey: mockPublicKey, messageId: 'someMessageId' });
+    ).toBeJsonEqual('someMessageId');
   });
 
   it('returns the undefined if no key is found for a given election id', () => {
     expect(
-      getElectionKeyByElectionId(mockElectionId.valueOf(), {
-        [ELECTION_KEY_REDUCER_PATH]: {
+      getElectionKeyMessageIdByElectionId(mockElectionId.valueOf(), {
+        [ELECTION_KEY_MESSAGE_REDUCER_PATH]: {
           byElectionId: {
-            someOtherId: {
-              electionKey: 'someOtherKey',
-              messageId: 'someMessageId',
-            },
+            someOtherId: 'someMessageId',
           },
-        } as ElectionKeyReducerState,
+        } as ElectionKeyMessageReducerState,
       }),
     ).toBeUndefined();
   });

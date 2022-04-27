@@ -1,143 +1,239 @@
 import 'jest-extended';
 
-import { mockKeyPair, mockLaoIdHash } from '__tests__/utils';
-import { publish } from 'core/network';
+import { combineReducers, createStore } from 'redux';
+
+import {
+  mockAddress,
+  mockChannel,
+  mockKeyPair,
+  mockLaoId,
+  mockLaoIdHash,
+  mockPopToken,
+} from '__tests__/utils';
+import { publish, subscribeToChannel } from 'core/network';
+import { addMessages, messageReducer } from 'core/network/ingestion';
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
+import {
+  ActionType,
+  configureMessages,
+  MessageRegistry,
+  ObjectType,
+} from 'core/network/jsonrpc/messages';
 import { channelFromIds, Timestamp } from 'core/objects';
+import { dispatch } from 'core/redux';
 import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
+import { addElectionKeyMessage, electionKeyReducer } from 'features/evoting/reducer';
 
 import {
   castVote,
   openElection,
   requestCreateElection,
+  requestElectionKey,
   terminateElection,
 } from '../ElectionMessageApi';
 import { CastVote, EndElection, SetupElection } from '../messages';
+import { ElectionKey } from '../messages/ElectionKey';
 import { OpenElection } from '../messages/OpenElection';
-
-const mockChannelId = 'some channel id';
+import { RequestElectionKey } from '../messages/RequestElectionKey';
 
 jest.mock('core/objects', () => {
   return {
     ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn().mockImplementation(() => mockChannelId),
+    channelFromIds: jest.fn().mockImplementation(() => mockChannel),
   };
 });
 
-jest.mock('core/network');
+const mockStore = createStore(combineReducers({ ...messageReducer, ...electionKeyReducer }));
+
+jest.mock('core/redux', () => {
+  return {
+    ...jest.requireActual('core/redux'),
+    store: mockStore,
+    getStore: () => mockStore,
+    dispatch: (action: any) => mockStore.dispatch(action),
+  };
+});
+
+jest.mock('core/network', () => {
+  return {
+    ...jest.requireActual('core/network'),
+    publish: jest.fn(Promise.resolve),
+    subscribe: jest.fn(Promise.resolve),
+    subscribeToChannel: jest.fn(Promise.resolve),
+    unsubscribeFromChannel: jest.fn(Promise.resolve),
+  };
+});
+
+const mockRegistry = new MessageRegistry();
+const handleElectionKeyMessage = jest.fn();
+mockRegistry.add(
+  ObjectType.ELECTION,
+  ActionType.KEY,
+  handleElectionKeyMessage,
+  ElectionKey.fromJson,
+);
+configureMessages(mockRegistry);
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('mockElectionNotStarted.id', () => {
-  describe('requestCreateElection', () => {
-    it('works as expected using a valid set of parameters', () => {
-      requestCreateElection(
-        mockLaoIdHash,
-        mockElectionNotStarted.name,
-        mockElectionNotStarted.version,
-        mockElectionNotStarted.start,
-        mockElectionNotStarted.end,
-        mockElectionNotStarted.questions,
-        mockElectionNotStarted.createdAt,
-        mockKeyPair.publicKey,
-      );
+describe('requestElectionKey', () => {
+  it('works as expected using a valid set of parameters', async () => {
+    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
+    const promise = requestElectionKey(
+      mockLaoIdHash,
+      mockElectionNotStarted.id,
+      mockKeyPair.publicKey,
+    );
+    expect(promise).toBeInstanceOf(Promise);
 
-      expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);
-      expect(channelFromIds).toHaveBeenCalledTimes(1);
+    // the function should setup a store watcher, wait for it to do so
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const setupElectionMessage = new SetupElection({
-        lao: mockElectionNotStarted.lao,
-        id: mockElectionNotStarted.id,
-        name: mockElectionNotStarted.name,
-        version: mockElectionNotStarted.version,
-        created_at: mockElectionNotStarted.createdAt,
-        start_time: mockElectionNotStarted.start,
-        end_time: mockElectionNotStarted.end,
-        questions: mockElectionNotStarted.questions,
-      });
+    // then trigger it
+    const msg = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(
+        new ElectionKey({
+          election: mockElectionNotStarted.id,
+          election_key: mockPopToken.publicKey,
+        }),
+        mockKeyPair,
+      ),
+      mockElectionKeyChannel,
+      mockAddress,
+    );
+    dispatch(addMessages([msg.toState()]));
 
-      expect(publish).toHaveBeenLastCalledWith(mockChannelId, setupElectionMessage);
-      expect(publish).toHaveBeenCalledTimes(1);
+    dispatch(
+      addElectionKeyMessage({
+        electionId: mockElectionNotStarted.id.valueOf(),
+        messageId: msg.message_id.valueOf(),
+      }),
+    );
+
+    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
+    expect((await promise).valueOf()).toEqual(mockPopToken.publicKey.valueOf());
+
+    expect(subscribeToChannel).toHaveBeenCalledWith(mockElectionKeyChannel, undefined, false);
+    expect(subscribeToChannel).toHaveBeenCalledTimes(1);
+
+    const requestKeyMessage = new RequestElectionKey({
+      election: mockElectionNotStarted.id,
     });
+
+    expect(publish).toHaveBeenLastCalledWith(mockElectionKeyChannel, requestKeyMessage);
+    expect(publish).toHaveBeenCalledTimes(1);
   });
+});
 
-  describe('openElection', () => {
-    it('works as expected using a valid set of parameters', () => {
-      openElection(mockLaoIdHash, mockElectionNotStarted);
+describe('requestCreateElection', () => {
+  it('works as expected using a valid set of parameters', () => {
+    requestCreateElection(
+      mockLaoIdHash,
+      mockElectionNotStarted.name,
+      mockElectionNotStarted.version,
+      mockElectionNotStarted.start,
+      mockElectionNotStarted.end,
+      mockElectionNotStarted.questions,
+      mockElectionNotStarted.createdAt,
+      mockKeyPair.publicKey,
+    );
 
-      expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
-      expect(channelFromIds).toHaveBeenCalledTimes(1);
+    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);
+    expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      // cannot directly match the openElection message here as openedAt is set inside the openElection function
-      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
-
-      // of the first call [0] to publish, extract the second argument [1]
-      const openElectionMessage = (publish as jest.Mock).mock.calls[0][1];
-      expect(openElectionMessage).toBeInstanceOf(OpenElection);
-      expect(openElectionMessage.election).toEqual(mockElectionNotStarted.id);
-      expect(openElectionMessage.lao).toEqual(mockElectionNotStarted.lao);
-      expect(openElectionMessage.opened_at.valueOf()).toBeLessThanOrEqual(
-        Timestamp.EpochNow().valueOf(),
-      );
-
-      expect(publish).toHaveBeenCalledTimes(1);
+    const setupElectionMessage = new SetupElection({
+      lao: mockElectionNotStarted.lao,
+      id: mockElectionNotStarted.id,
+      name: mockElectionNotStarted.name,
+      version: mockElectionNotStarted.version,
+      created_at: mockElectionNotStarted.createdAt,
+      start_time: mockElectionNotStarted.start,
+      end_time: mockElectionNotStarted.end,
+      questions: mockElectionNotStarted.questions,
     });
+
+    expect(publish).toHaveBeenLastCalledWith(mockChannel, setupElectionMessage);
+    expect(publish).toHaveBeenCalledTimes(1);
   });
+});
 
-  describe('castVote', () => {
-    it('works as expected using a valid set of parameters', () => {
-      const selectedBallots: SelectedBallots = { 0: new Set([0]), 1: new Set([1]) };
+describe('openElection', () => {
+  it('works as expected using a valid set of parameters', () => {
+    openElection(mockLaoIdHash, mockElectionNotStarted);
 
-      castVote(mockLaoIdHash, mockElectionNotStarted, selectedBallots);
+    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
+    expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
-      expect(channelFromIds).toHaveBeenCalledTimes(1);
+    // cannot directly match the openElection message here as openedAt is set inside the openElection function
+    expect(publish).toHaveBeenCalledWith(mockChannel, expect.anything());
 
-      // cannot directly match the openElection message here as created_at is set inside the openElection function
-      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
+    // of the first call [0] to publish, extract the second argument [1]
+    const openElectionMessage = (publish as jest.Mock).mock.calls[0][1];
+    expect(openElectionMessage).toBeInstanceOf(OpenElection);
+    expect(openElectionMessage.election).toEqual(mockElectionNotStarted.id);
+    expect(openElectionMessage.lao).toEqual(mockElectionNotStarted.lao);
+    expect(openElectionMessage.opened_at.valueOf()).toBeLessThanOrEqual(
+      Timestamp.EpochNow().valueOf(),
+    );
 
-      // of the first call [0] to publish, extract the second argument [1]
-      const castVoteMessage = (publish as jest.Mock).mock.calls[0][1] as CastVote;
-      expect(castVoteMessage).toBeInstanceOf(CastVote);
-      expect(castVoteMessage.election).toEqual(mockElectionNotStarted.id);
-      expect(castVoteMessage.lao).toEqual(mockElectionNotStarted.lao);
-      expect(castVoteMessage.created_at.valueOf()).toBeLessThanOrEqual(
-        Timestamp.EpochNow().valueOf(),
-      );
-      expect(castVoteMessage.votes).toEqual(
-        CastVote.selectedBallotsToVotes(mockElectionNotStarted, selectedBallots),
-      );
-
-      expect(publish).toHaveBeenCalledTimes(1);
-    });
+    expect(publish).toHaveBeenCalledTimes(1);
   });
+});
 
-  describe('terminateElection', () => {
-    it('works as expected using a valid set of parameters', () => {
-      terminateElection(mockLaoIdHash, mockElectionOpened);
+describe('castVote', () => {
+  it('works as expected using a valid set of parameters', () => {
+    const selectedBallots: SelectedBallots = { 0: new Set([0]), 1: new Set([1]) };
 
-      expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionOpened.id);
-      expect(channelFromIds).toHaveBeenCalledTimes(1);
+    castVote(mockLaoIdHash, mockElectionNotStarted, selectedBallots);
 
-      // cannot directly match the openElection message here as created_at is set inside the openElection function
-      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
+    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
+    expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      // of the first call [0] to publish, extract the second argument [1]
-      const endElectionMessage = (publish as jest.Mock).mock.calls[0][1] as EndElection;
+    // cannot directly match the openElection message here as created_at is set inside the openElection function
+    expect(publish).toHaveBeenCalledWith(mockChannel, expect.anything());
 
-      expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(EndElection);
-      expect(endElectionMessage.election).toEqual(mockElectionOpened.id);
-      expect(endElectionMessage.lao).toEqual(mockElectionOpened.lao);
-      expect(endElectionMessage.created_at.valueOf()).toBeLessThanOrEqual(
-        Timestamp.EpochNow().valueOf(),
-      );
-      expect(endElectionMessage.registered_votes).toEqual(
-        EndElection.computeRegisteredVotesHash(mockElectionOpened),
-      );
+    // of the first call [0] to publish, extract the second argument [1]
+    const castVoteMessage = (publish as jest.Mock).mock.calls[0][1] as CastVote;
+    expect(castVoteMessage).toBeInstanceOf(CastVote);
+    expect(castVoteMessage.election).toEqual(mockElectionNotStarted.id);
+    expect(castVoteMessage.lao).toEqual(mockElectionNotStarted.lao);
+    expect(castVoteMessage.created_at.valueOf()).toBeLessThanOrEqual(
+      Timestamp.EpochNow().valueOf(),
+    );
+    expect(castVoteMessage.votes).toEqual(
+      CastVote.selectedBallotsToVotes(mockElectionNotStarted, selectedBallots),
+    );
 
-      expect(publish).toHaveBeenCalledTimes(1);
-    });
+    expect(publish).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('terminateElection', () => {
+  it('works as expected using a valid set of parameters', () => {
+    terminateElection(mockLaoIdHash, mockElectionOpened);
+
+    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionOpened.id);
+    expect(channelFromIds).toHaveBeenCalledTimes(1);
+
+    // cannot directly match the openElection message here as created_at is set inside the openElection function
+    expect(publish).toHaveBeenCalledWith(mockChannel, expect.anything());
+
+    // of the first call [0] to publish, extract the second argument [1]
+    const endElectionMessage = (publish as jest.Mock).mock.calls[0][1] as EndElection;
+
+    expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(EndElection);
+    expect(endElectionMessage.election).toEqual(mockElectionOpened.id);
+    expect(endElectionMessage.lao).toEqual(mockElectionOpened.lao);
+    expect(endElectionMessage.created_at.valueOf()).toBeLessThanOrEqual(
+      Timestamp.EpochNow().valueOf(),
+    );
+    expect(endElectionMessage.registered_votes).toEqual(
+      EndElection.computeRegisteredVotesHash(mockElectionOpened),
+    );
+
+    expect(publish).toHaveBeenCalledTimes(1);
   });
 });

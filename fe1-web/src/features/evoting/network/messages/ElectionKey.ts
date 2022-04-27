@@ -11,7 +11,7 @@ export class ElectionKey implements MessageData {
 
   public readonly election: Hash;
 
-  public readonly electionKey: PublicKey;
+  public readonly election_key: PublicKey;
 
   constructor(msg: MessageDataProperties<ElectionKey>) {
     if (!msg.election) {
@@ -19,10 +19,10 @@ export class ElectionKey implements MessageData {
     }
     this.election = msg.election;
 
-    if (!msg.electionKey) {
+    if (!msg.election_key) {
       throw new ProtocolError("Invalid 'electionKey' parameter encountered during 'ElectionKey'");
     }
-    this.electionKey = msg.electionKey;
+    this.election_key = msg.election_key;
   }
 
   /**
@@ -40,7 +40,7 @@ export class ElectionKey implements MessageData {
     return new ElectionKey({
       ...obj,
       election: new Hash(obj.election),
-      electionKey: new PublicKey(obj.election_key),
+      election_key: new PublicKey(obj.election_key),
     });
   }
 }

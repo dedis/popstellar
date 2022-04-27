@@ -17,6 +17,7 @@ import { getStore } from 'core/redux';
 import { Election, ElectionVersion, Question, SelectedBallots } from '../objects';
 import { makeElectionKeyStoreWatcher } from '../reducer/ElectionKeyWatcher';
 import { CastVote, EndElection, SetupElection } from './messages';
+import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
 import { RequestElectionKey } from './messages/RequestElectionKey';
 
@@ -57,11 +58,12 @@ export const requestElectionKey = async (
 
   const store = getStore();
 
-  const key = await new Promise<{ electionKey: PublicKey; messageId: Hash }>((resolve, reject) => {
+  const messageId = await new Promise<Hash>((resolve, reject) => {
     // the watcher will resolve the promise as soon as an election#key message is observed
     const watcher = makeElectionKeyStoreWatcher(electionId.valueOf(), store, resolve);
     // set the variable that allows us to unsubscribe from the redux store after the
     // election#key message is found
+
     unsubscribeFromStore = store.subscribe(watcher);
 
     // now that the listener is set up, we can public the election#request_key message
@@ -79,7 +81,7 @@ export const requestElectionKey = async (
   // verify whether the election key was sent by the organizer
   // for this we retrieve the associated message from the store
   const msgState = getMessagesState(store.getState());
-  const electionKeyMessage = ExtendedMessage.fromState(msgState.byId[key.messageId.valueOf()]);
+  const electionKeyMessage = ExtendedMessage.fromState(msgState.byId[messageId.valueOf()]);
 
   // sanity check
   if (
@@ -92,14 +94,14 @@ export const requestElectionKey = async (
   }
 
   // check if the sender of the message is the lao organizer's backend
-  if (electionKeyMessage.sender !== laoOrganizerBackendPublicKey) {
+  if (electionKeyMessage.sender.valueOf() !== laoOrganizerBackendPublicKey.valueOf()) {
     throw new Error(
       "The received election#key message was sent by somebody other than the lao's organizer!",
     );
   }
 
   // and return the obtained key
-  return key.electionKey;
+  return (electionKeyMessage.messageData as ElectionKey).election_key;
 };
 
 /**
