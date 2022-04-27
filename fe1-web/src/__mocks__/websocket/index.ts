@@ -36,7 +36,7 @@ export class w3cwebsocket {
     this.onerror(error);
   }
 
-  public close = jest.fn().mockImplementation(() => {
+  public close = jest.fn(() => {
     this.readyState = 3;
   });
 

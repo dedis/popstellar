@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"net/url"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
@@ -16,6 +15,8 @@ import (
 	"popstellar/network/socket"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -64,7 +65,8 @@ func Serve(cliCtx *cli.Context, user string) error {
 	var hubType = hub.HubType(user)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, log.With().Str("role", user).Logger(), lao.NewChannel, hubType)
+	h, err := standard_hub.NewHub(point, log.With().Str("role", user).Logger(),
+		lao.NewChannel, hubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)
 	}
@@ -135,7 +137,9 @@ func Serve(cliCtx *cli.Context, user string) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
+func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub,
+	wg *sync.WaitGroup, done chan struct{}) error {
+
 	log := be1_go.Logger
 
 	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
