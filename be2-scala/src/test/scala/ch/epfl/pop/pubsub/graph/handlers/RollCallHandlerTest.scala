@@ -55,8 +55,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           // fixme : replace the 2 next lines with
           //  sender() ! Status.Failure(DbActorNAckException(1, "error"))
           //  but it is crashing
-          val oddNack = DbActor.DbActorCatchupAck
-          sender() ! oddNack
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
           system.log.info(s"Received - error $x")
       }
