@@ -24,7 +24,7 @@ jest.mock('core/redux', () => {
   const actualModule = jest.requireActual('core/redux');
   return {
     ...actualModule,
-    dispatch: jest.fn().mockImplementation(() => {}),
+    dispatch: jest.fn(() => {}),
   };
 });
 
