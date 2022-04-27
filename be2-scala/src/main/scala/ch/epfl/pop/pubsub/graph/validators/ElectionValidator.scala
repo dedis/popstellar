@@ -12,7 +12,6 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadAck
 
-import scala.collection.mutable
 import scala.concurrent.Await
 import scala.util.Success
 
