@@ -76,6 +76,7 @@ export const handleElectionKeyMessage =
       addElectionKey({
         electionId: electionKeyMessage.election.valueOf(),
         electionKey: electionKeyMessage.electionKey.valueOf(),
+        messageId: msg.message_id.valueOf(),
       }),
     );
 

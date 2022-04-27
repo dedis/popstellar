@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { channelFromIds, Timestamp } from 'core/objects';
 import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
@@ -41,6 +41,7 @@ describe('mockElectionNotStarted.id', () => {
         mockElectionNotStarted.end,
         mockElectionNotStarted.questions,
         mockElectionNotStarted.createdAt,
+        mockKeyPair.publicKey,
       );
 
       expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);

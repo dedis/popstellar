@@ -6,7 +6,7 @@
 
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-import { PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 
 /**
  * Reducer & associated functions to store received election keys
@@ -14,7 +14,10 @@ import { PublicKey } from 'core/objects';
 
 export interface ElectionKeyReducerState {
   byElectionId: {
-    [electionId: string]: string;
+    [electionId: string]: {
+      electionKey: string;
+      messageId: string;
+    };
   };
 }
 
@@ -30,9 +33,9 @@ const electionKeySlice = createSlice({
   reducers: {
     addElectionKey: (
       state: Draft<ElectionKeyReducerState>,
-      action: PayloadAction<{ electionId: string; electionKey: string }>,
+      action: PayloadAction<{ electionId: string; electionKey: string; messageId: string }>,
     ) => {
-      const { electionId, electionKey } = action.payload;
+      const { electionId, electionKey, messageId } = action.payload;
 
       if (electionId in state.byElectionId) {
         throw new Error(
@@ -40,7 +43,10 @@ const electionKeySlice = createSlice({
         );
       }
 
-      state.byElectionId[electionId] = electionKey;
+      state.byElectionId[electionId] = {
+        electionKey,
+        messageId,
+      };
     },
 
     removeElectionKey: (state, action: PayloadAction<string>) => {
@@ -80,11 +86,14 @@ export const getElectionKeyState = (state: any): ElectionKeyReducerState =>
 export const getElectionKeyByElectionId = (
   electionId: string,
   state: any,
-): PublicKey | undefined => {
+): { electionKey: PublicKey; messageId: Hash } | undefined => {
   const electionKeyState = getElectionKeyState(state);
 
   if (electionId in electionKeyState.byElectionId) {
-    return new PublicKey(electionKeyState.byElectionId[electionId]);
+    return {
+      electionKey: new PublicKey(electionKeyState.byElectionId[electionId].electionKey),
+      messageId: new Hash(electionKeyState.byElectionId[electionId].messageId),
+    };
   }
 
   return undefined;
@@ -100,9 +109,14 @@ export const makeElectionKeySelector = (electionId: string) =>
     // First input: map of lao ids to servers
     (state) => getElectionKeyState(state).byElectionId,
     // Selector: returns the election key associated to the given election id
-    (byElectionId: ElectionKeyReducerState['byElectionId']): PublicKey | undefined => {
+    (
+      byElectionId: ElectionKeyReducerState['byElectionId'],
+    ): { electionKey: PublicKey; messageId: Hash } | undefined => {
       if (electionId in byElectionId) {
-        return new PublicKey(byElectionId[electionId]);
+        return {
+          electionKey: new PublicKey(byElectionId[electionId].electionKey),
+          messageId: new Hash(byElectionId[electionId].messageId),
+        };
       }
 
       return undefined;

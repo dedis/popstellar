@@ -236,6 +236,7 @@ describe('ElectionHandler', () => {
         addElectionKey({
           electionId: mockElectionId.valueOf(),
           electionKey: mockKeyPair.publicKey.valueOf(),
+          messageId: mockMessageData.message_id.valueOf(),
         }),
       );
       expect(dispatch).toHaveBeenCalledTimes(1);

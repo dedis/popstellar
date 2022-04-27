@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -6,6 +6,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
+  makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoOrganizer,
@@ -86,4 +87,14 @@ export namespace LaoHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
+
+  /**
+   * Returns the public key of the organizer's backend for a given lao id
+   * @param laoId The lao id for which the key should be retrieved
+   * @returns The public key or undefined if there is none
+   */
+  export const useLaoOrganizerBackendPublicKey = (laoId: string) => {
+    const selector = useMemo(() => makeLaoOrganizerBackendPublicKeySelector(laoId), [laoId]);
+    return useSelector(selector);
+  };
 }

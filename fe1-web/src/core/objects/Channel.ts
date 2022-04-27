@@ -53,6 +53,14 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/reactions`;
 }
 
+/**
+ * Returns the channel where election keys are requested and sent
+ * @param laoId - The id of the lao for which we want to obtain the channel
+ */
+export const getElectionKeyChannel = (laoId: Hash): Channel => {
+  return `${ROOT_CHANNEL}/${laoId.valueOf()}/election/key`;
+};
+
 /** Returns the first part of the channel which is usually the lao id
  * Example:
  * Input: /root/laoID/electionID

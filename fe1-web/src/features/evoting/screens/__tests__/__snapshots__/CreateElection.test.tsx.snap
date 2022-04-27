@@ -344,6 +344,45 @@ exports[`CreateElection renders correctly 1`] = `
                               }
                             }
                           />
+                          <View
+                            style={
+                              Object {
+                                "alignItems": "center",
+                                "flex": 1,
+                                "marginHorizontal": 50,
+                                "marginVertical": 10,
+                              }
+                            }
+                          >
+                            <RNCPicker
+                              items={
+                                Array [
+                                  Object {
+                                    "label": "Open Ballot",
+                                    "testID": undefined,
+                                    "textColor": undefined,
+                                    "value": "open-ballot",
+                                  },
+                                  Object {
+                                    "label": "Secret Ballot",
+                                    "testID": undefined,
+                                    "textColor": undefined,
+                                    "value": "secret-ballot",
+                                  },
+                                ]
+                              }
+                              onChange={[Function]}
+                              selectedIndex={0}
+                              style={
+                                Array [
+                                  Object {
+                                    "height": 216,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            />
+                          </View>
                           <View>
                             <TextInput
                               defaultValue=""
