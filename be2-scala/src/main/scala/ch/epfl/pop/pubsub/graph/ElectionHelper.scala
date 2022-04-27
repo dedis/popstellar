@@ -11,7 +11,9 @@ import scala.collection.mutable
 import scala.concurrent.Await
 import scala.util.Success
 
-
+/**
+ * functions that are used in handlers and validators of election
+ */
 object ElectionHelper extends AskPatternConstants {
 
   /** returns the SetupElection message from the channel
