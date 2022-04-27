@@ -4,10 +4,15 @@ import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects.{Base64Data, ChannelData, DbActorNAckException, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import util.examples.Election.CastVoteElectionExamples.{DATA_CAST_VOTE_MESSAGE, MESSAGE_CAST_VOTE_ELECTION_WORKING}
+import util.examples.Election.OpenElectionExamples.{DATA_OPEN_MESSAGE, MESSAGE_OPEN_ELECTION_WORKING}
+import util.examples.Election.SetupElectionExamples.{DATA_SET_UP_MESSAGE, MESSAGE_SETUPELECTION_WORKING}
+import util.examples.Election._
 import util.examples.data.{CastVoteElectionMessages, EndElectionMessages, OpenElectionMessages, SetupElectionMessages}
 
 import scala.concurrent.duration.FiniteDuration
@@ -22,6 +27,15 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
   }
+
+  private final val sender: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION
+
+  private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+  private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+
+  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
 
   def mockDbWithNack: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -78,16 +92,97 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
 
         case DbActor.ReadLaoData(_) =>
           system.log.info("Responding with a NAck")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
+
+        case DbActor.ReadChannelData(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK-NAckLaoData")
+    system.actorOf(dbActorMock, "MockedDB-NACK-ReadLaoData-EndElection")
+  }
+
+  def mockDbWithAckEndElection: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+
+        case DbActor.ReadLaoData(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+
+        case DbActor.ReadChannelData(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+      }
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK-EndElection")
+  }
+
+  def mockDbWithNAckEndElection: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info(f"Received a message")
+          system.log.info("Responding with a Nack")
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
+
+        case DbActor.ReadLaoData(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+
+        case DbActor.ReadChannelData(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+
+        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+
+        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+      }
+    })
+    system.actorOf(dbActorMock, "MockedDB-NACK-EndElection")
   }
 
   test("SetupElection should fail if the database fails storing the message") {
@@ -162,7 +257,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
   }
 
   test("EndElection should succeed if the election already exists") {
-    val mockedDB = mockDbWithAck
+    val mockedDB = mockDbWithAckEndElection
     val rc = new ElectionHandler(mockedDB)
     val request = EndElectionMessages.endElection
 
@@ -192,7 +287,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
   }
 
   test("EndElection should fail if the database fails storing the message") {
-    val mockedDB = mockDbWithNack
+    val mockedDB = mockDbWithNAckEndElection
     val rc = new ElectionHandler(mockedDB)
     val request = EndElectionMessages.endElection
 
