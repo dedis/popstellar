@@ -15,10 +15,10 @@ public class Server {
   @NonNull private String publicKey;
 
   // NOTE: There is no need to store peers: ServerAddress[] here.
-  // As soon as a greeting message arrives in the future, we connect to all peers. The server
+  // As soon as a GreetLao message arrives in the future, we connect to all peers. The server
   // addresses will first be added to the Server repository and then
   // will be added to the lao state as soon as a lao creation message is received
-  // over each connection
+  // over each connection.
 
   /**
    * Instantiate a server, for now it's a basic object which holds data about it, later, it will be

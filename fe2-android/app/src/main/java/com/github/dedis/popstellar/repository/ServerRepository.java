@@ -9,43 +9,43 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Represents the set of all backends that are currently connected
- * to the app. Greetings message handling should handle this repository.
+ * Represents the set of all 'LAO connected backends'.
+ * Greetings message handling should handle this repository.
  * Should be a global repository.
  */
 @Singleton
 public class ServerRepository {
 
-  private Map<String, Server> serverByURL;
+  private Map<String, Server> serverByLaoId;
 
   @Inject
   public ServerRepository(){
-    serverByURL = new HashMap<>();
+    serverByLaoId = new HashMap<>();
   }
 
   /**
    * Add a server to the repository
    */
-  public void addServer(Server server){
-    serverByURL.put(server.getServerAddress(), server);
+  public void addServer(String laoId, Server server){
+    serverByLaoId.put(laoId, server);
   }
 
   /**
-   * Get the corresponding server to the given URL (if present)
+   * Get the corresponding server to the given Lao Id (if present)
    */
-  public Server getServerByURL(String address){
-    if (serverByURL.containsKey(address)) {
-      return serverByURL.get(address);
+  public Server getServerByLaoId(String laoId){
+    if (serverByLaoId.containsKey(laoId)) {
+      return serverByLaoId.get(laoId);
     } else {
-      throw new IllegalArgumentException(String.format("There is no server with address '%s'", address));
+      throw new IllegalArgumentException(String.format("There is no backend associated with the LAO '%s'", laoId));
     }
   }
 
   /**
-   * Returns the complete collection of the server
+   * Returns the complete collection of servers
    */
   public Collection<Server> getAllServer(){
-    return serverByURL.values();
+    return serverByLaoId.values();
   }
 
 }

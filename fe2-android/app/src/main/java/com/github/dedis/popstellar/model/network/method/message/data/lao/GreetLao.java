@@ -37,9 +37,11 @@ public class GreetLao extends Data {
       * @throws IllegalArgumentException if channel is null
       */
       public GreetLao(@NonNull String id, @NonNull String frontend, @NonNull String address, String... peers) {
+
         // Peers can be empty
         this.peers = Arrays.asList(peers);
         this.address = address;
+
         // Check the validity of the public key should is done via the Public Key class
         try {
           new PublicKey(frontend);
@@ -47,11 +49,12 @@ public class GreetLao extends Data {
           throw new IllegalArgumentException("Please provide a valid public key");
         }
         this.frontendKey = frontend;
+
+        // Assume the id of the LAO will be checked via the handler
         this.id=id;
       }
 
-
-
+      // Set of getters for t
       @NonNull
       public String getFrontendKey() {
         return frontendKey;
@@ -65,6 +68,11 @@ public class GreetLao extends Data {
       public List<String> getPeers(){
       return peers;
     }
+
+      @NonNull
+      public String getId() {
+    return id;
+  }
 
       @Override
       public boolean equals(Object o){
@@ -81,12 +89,12 @@ public class GreetLao extends Data {
         GreetLao that = (GreetLao) o;
 
         // Check fields, how to equality check to keys ?
+        boolean checkId = that.getId().equals(getId());
         boolean checkAddress = that.getAddress().equals(getAddress());
         boolean checkSendKey = that.getFrontendKey().equals(getFrontendKey());
-        boolean checkPeers =
-            that.getPeers().containsAll(getPeers());
+        boolean checkPeers = that.getPeers().containsAll(getPeers());
 
-        return checkPeers && checkSendKey && checkAddress;
+        return checkId && checkPeers && checkSendKey && checkAddress;
       }
 
       @Override
@@ -97,8 +105,8 @@ public class GreetLao extends Data {
       @Override
       public String toString() {
         return "GreetLao={"
-            + "channel='"
-            + getChannel().toString()
+            + "lao='"
+            + id
             + '\''
             + ", sender='"
             + getFrontendKey()
