@@ -22,6 +22,7 @@ object CastVoteElectionExamples {
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
   val invalidVotes: List[VoteElection] = List(VoteElection(Hash(Base64Data("KNRSAzia1ngjKZPwBpHQIYssS33VBl3eP5LWDUikAh4=")), invalidId, Some(List(1)), None))
+  val invalidBallot: List[VoteElection] = List(VoteElection(Hash(Base64Data("KNRSAzia1ngjKZPwBpHQIYssS33VBl3eP5LWDUikAh4=")), Hash(Base64Data("1I1mAuxuZsAFX2mYf4ZsU2xeAw6oadTIkBlMMZvivpo=")), Some(List(2)), None))
 
   val workingCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, VOTES)
   val DATA_CAST_VOTE_MESSAGE: Hash = Hash(Base64Data.encode(workingCastVoteElection.toJson.toString))
@@ -76,11 +77,22 @@ object CastVoteElectionExamples {
   val invalidVoteCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidVotes)
   val DATA_CAST_VOTE_INVALID_VOTES: Hash = Hash(Base64Data.encode(invalidVoteCastVoteElection.toJson.toString))
   final val MESSAGE_CAST_VOTE_INVALID_VOTES: Message = new Message(
-    DATA_CAST_VOTE_MESSAGE.base64Data,
+    DATA_CAST_VOTE_INVALID_VOTES.base64Data,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
     Some(invalidVoteCastVoteElection)
+  )
+
+  val invalidBallotCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidBallot)
+  val DATA_CAST_VOTE_INVALID_BALLOT: Hash = Hash(Base64Data.encode(invalidBallotCastVoteElection.toJson.toString))
+  final val MESSAGE_CAST_VOTE_INVALID_BALLOT: Message = new Message(
+    DATA_CAST_VOTE_INVALID_BALLOT.base64Data,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(invalidBallotCastVoteElection)
   )
 }
