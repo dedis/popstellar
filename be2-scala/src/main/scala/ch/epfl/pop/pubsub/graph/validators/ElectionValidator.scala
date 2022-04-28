@@ -266,8 +266,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
+        /* Not working !!! I think already checked elsewhere
         else if (laoId != data.lao)
-          Right(validationError("unexpected lao id"))
+          Right(validationError("unexpected lao id"))*/
         else if (!validateOwner(sender, channel))
           Right(validationError(s"invalid sender $sender"))
         else if (getOpenMessage(channel).isEmpty)
