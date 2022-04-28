@@ -58,7 +58,7 @@ export const mockQuestions: Question[] = [mockQuestionObject1, mockQuestionObjec
 export const mockRegisteredVotes: RegisteredVote[] = [
   {
     createdAt: 0,
-    messageId: '0',
+    messageId: 'b',
     sender: 'sender 1',
     votes: [
       { id: 'id1', question: 'q1', vote: [0] },
@@ -67,7 +67,7 @@ export const mockRegisteredVotes: RegisteredVote[] = [
   },
   {
     createdAt: 1,
-    messageId: '1',
+    messageId: 'a',
     sender: 'sender 2',
     votes: [
       { id: 'id3', question: 'q3', vote: [0] },

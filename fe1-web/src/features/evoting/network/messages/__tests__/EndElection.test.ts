@@ -159,6 +159,6 @@ describe('EndElection', () => {
     // we would simply write the same code here again?
     const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
     expect(fn).not.toThrow();
-    expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
+    expect(fn().valueOf()).toEqual('7RMB8OiW5qRw3n2jqwmrY24Chye0wG6HOASt53YDCJ4=');
   });
 });
