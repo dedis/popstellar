@@ -4,9 +4,8 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.handlers.ElectionHandler.{dbActor, duration}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
