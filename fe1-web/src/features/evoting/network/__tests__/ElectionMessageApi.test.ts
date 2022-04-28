@@ -23,7 +23,11 @@ import { channelFromIds, Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
-import { addElectionKeyMessage, electionKeyReducer } from 'features/evoting/reducer';
+import {
+  addElectionKeyMessage,
+  clearAllElectionKeyMessages,
+  electionKeyReducer,
+} from 'features/evoting/reducer';
 
 import {
   castVote,
@@ -67,19 +71,100 @@ jest.mock('core/network', () => {
 
 const mockRegistry = new MessageRegistry();
 const handleElectionKeyMessage = jest.fn();
+const handleElectionRequestKeyMessage = jest.fn();
 mockRegistry.add(
   ObjectType.ELECTION,
   ActionType.KEY,
   handleElectionKeyMessage,
   ElectionKey.fromJson,
 );
+mockRegistry.add(
+  ObjectType.ELECTION,
+  ActionType.REQUEST_KEY,
+  handleElectionRequestKeyMessage,
+  RequestElectionKey.fromJson,
+);
 configureMessages(mockRegistry);
 
 afterEach(() => {
   jest.clearAllMocks();
+  mockStore.dispatch(clearAllElectionKeyMessages());
 });
 
 describe('requestElectionKey', () => {
+  it('throws an error if the stored message is not of type election#key', async () => {
+    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
+    const promise = requestElectionKey(
+      mockLaoIdHash,
+      mockElectionNotStarted.id,
+      mockKeyPair.publicKey,
+    );
+    expect(promise).toBeInstanceOf(Promise);
+
+    // the function should setup a store watcher, wait for it to do so
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // then trigger it USING A WRONG MESSAGE
+    const msg = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(
+        new RequestElectionKey({
+          election: mockElectionNotStarted.id,
+        }),
+        mockKeyPair,
+      ),
+      mockElectionKeyChannel,
+      mockAddress,
+    );
+    dispatch(addMessages([msg.toState()]));
+
+    dispatch(
+      addElectionKeyMessage({
+        electionId: mockElectionNotStarted.id.valueOf(),
+        messageId: msg.message_id.valueOf(),
+      }),
+    );
+
+    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
+    await expect(promise).toReject();
+  });
+
+  it('throws an error if the stored message was not sent by the organizer', async () => {
+    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
+    const promise = requestElectionKey(
+      mockLaoIdHash,
+      mockElectionNotStarted.id,
+      mockKeyPair.publicKey,
+    );
+    expect(promise).toBeInstanceOf(Promise);
+
+    // the function should setup a store watcher, wait for it to do so
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // then trigger it
+    const msg = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(
+        new ElectionKey({
+          election: mockElectionNotStarted.id,
+          election_key: mockPopToken.publicKey,
+        }),
+        mockPopToken, // not the organizer's public key
+      ),
+      mockElectionKeyChannel,
+      mockAddress,
+    );
+    dispatch(addMessages([msg.toState()]));
+
+    dispatch(
+      addElectionKeyMessage({
+        electionId: mockElectionNotStarted.id.valueOf(),
+        messageId: msg.message_id.valueOf(),
+      }),
+    );
+
+    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
+    await expect(promise).toReject();
+  });
+
   it('works as expected using a valid set of parameters', async () => {
     const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
     const promise = requestElectionKey(
