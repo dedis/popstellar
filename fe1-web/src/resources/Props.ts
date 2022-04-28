@@ -1,5 +1,5 @@
 import { Action } from '@react-navigation/routers/src/CommonActions';
-import { arrayOf, func, number, object, oneOf, shape, string } from 'prop-types';
+import { arrayOf, number, object, oneOf, shape, string } from 'prop-types';
 
 const PROPS_TYPE = {
   // --- LAO type ---
@@ -61,12 +61,6 @@ const PROPS_TYPE = {
     id: string.isRequired,
     name: string,
     witnesses: arrayOf(string),
-  }),
-
-  // --- navigation type of react-navigation (simplified) ---
-  navigation: shape({
-    navigate: func.isRequired,
-    addListener: func.isRequired,
   }),
 };
 
