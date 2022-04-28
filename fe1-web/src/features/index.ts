@@ -50,6 +50,7 @@ export function configureFeatures() {
     enabled: false,
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });
