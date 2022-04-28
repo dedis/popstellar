@@ -125,12 +125,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         // check for timestamp
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        // TODO before this check if the channel exists
-        else if (false)
-          Right(validationError(s"the election channel doesn't exists"))
         //  check it the question id exists
-        else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question)))
+        else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
           Right(validationError(s"Incorrect parameter questionId"))
+        }
         // check if the ballots are correct
         else if (!data.votes.forall(
           voteElection => {
@@ -154,12 +152,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         /*else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
         } */
-        // FIXME: implement electionId check using the election name from the DB and some way to check votes
-        /*else if (expectedHash != data.electionId){
-          Right(validationError("unexpected election id"))
-        }*/
-        // FIXME: check the actual votes
-        // FIXME: for the VoteElection list, we need to check question ids but what do they mean? No info in documentation
         else if (!validateAttendee(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
@@ -285,9 +277,14 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"This election has already ended"))
         else if (!validateChannelType(ObjectType.ELECTION, channel))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        // TODO : check it - is this check ok ?
-        else if (!compareResults(getLastVotes(channel).flatMap(_.votes.map(_.id)), data.registered_votes))
+
+        // fixme : this doesn't work (the verification hash never match)
+        else if ( {
+          val votes = getAllVotesHash(channel)
+          !compareResults(votes, data.registered_votes)
+        })
           Right(validationError(s"Incorrect verification hash"))
+
 
         else {
           Left(rpcMessage)
@@ -297,11 +294,11 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def getLastVotes(electionChannel: Channel): List[CastVoteElection] =
+  private def getAllVotesHash(electionChannel: Channel): List[Hash] =
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         val messages: List[Hash] = channelData.messages
-        val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
+        var allVotes: List[Hash] = Nil
         for (messageIdHash <- messages) {
           val dbAnswer =
             Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value match {
@@ -321,20 +318,17 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
               }*/
               try {
                 val castVote: CastVoteElection = CastVoteElection.buildFromJson(message.data.decodeToString())
-                if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at)) {
-                  lastVotes.update(sender, castVote)
-                }
+                allVotes = messageIdHash :: allVotes
               } catch {
                 case exception: Throwable => print(exception)
               }
             case _ =>
           }
         }
-        println(lastVotes)
-        lastVotes.values.toList
+        allVotes
       case _ => Nil
     }
 
   private def compareResults(messages: List[Hash], checkHash: Hash): Boolean =
-    Hash(Base64Data(messages.map(_.toString).sorted.foldLeft("")(_ + _))) == checkHash
+    Hash.sha256Hash(messages.map(_.toString).sorted.foldLeft("")(_ + _)) == checkHash
 }
