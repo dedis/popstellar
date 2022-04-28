@@ -176,6 +176,11 @@ test("message data: chirp", () => {
     expect(reaction_delete).toBeValid(messageDataSchema)
 })
 
+test("message data: cash", () => {
+    cash_transaction = require("../examples/messageData/cash/post_transaction.json")
+    expect(cash_transaction).toBeValid(messageDataSchema)
+})
+
 test("message data: consensus", () => {
     elect = require("../examples/messageData/consensus_elect/elect.json");
     expect(elect).toBeValid(messageDataSchema)
