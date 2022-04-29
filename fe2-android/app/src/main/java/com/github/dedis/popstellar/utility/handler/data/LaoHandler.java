@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
@@ -36,6 +37,7 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
+  @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
@@ -52,7 +54,13 @@ public final class LaoHandler {
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      context.getMessageSender().subscribe(lao.getChannel().subChannel("consensus")).subscribe();
+      context
+          .getMessageSender()
+          .subscribe(lao.getChannel().subChannel("consensus"))
+          .subscribe( // For now if we receive an error, we assume that it is because the server
+              // running is the scala one which does not implement consensus
+              () -> Log.d(TAG, "subscription to consensus channel was a success"),
+              error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
     }
     laoRepository.updateNodes(channel);
   }
