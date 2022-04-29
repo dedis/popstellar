@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.function.Supplier;
 
@@ -31,7 +32,7 @@ public class ConnectingActivity extends AppCompatActivity {
     setContentView(R.layout.connecting_activity);
     setConnectingFragment();
 
-    String channelId = (String) getIntent().getExtras().get(getString(R.string.lao_id));
+    String channelId = (String) getIntent().getExtras().get(Constants.LAO_ID_EXTRA);
 
     mViewModel = obtainViewModel(this);
 
@@ -72,8 +73,8 @@ public class ConnectingActivity extends AppCompatActivity {
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
 
     Intent intent = new Intent(this, LaoDetailActivity.class);
-    intent.putExtra(getString(R.string.lao_id), laoId);
-    intent.putExtra(getString(R.string.fragment_to_open), getString(R.string.lao_detail_extra));
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
 
     startActivity(intent);
   }

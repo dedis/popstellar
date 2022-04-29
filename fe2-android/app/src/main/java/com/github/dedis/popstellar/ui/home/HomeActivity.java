@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -319,7 +320,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupConnectingActivity(String laoId) {
     Intent intent = new Intent(this, ConnectingActivity.class);
-    intent.putExtra(getString(R.string.lao_id), laoId);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     startActivity(intent);
   }
 
@@ -359,12 +360,11 @@ public class HomeActivity extends AppCompatActivity {
   private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra(getString(R.string.lao_id), laoId);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     if (openLaoDetail) {
-      intent.putExtra(getString(R.string.fragment_to_open), getString(R.string.lao_detail_extra));
+      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
     } else {
-      intent.putExtra(
-          getString(R.string.fragment_to_open), getString(R.string.content_wallet_extra));
+      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }

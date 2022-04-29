@@ -38,6 +38,7 @@ import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -60,11 +61,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get(getString(R.string.lao_id)));
+        (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
     if (getIntent()
         .getExtras()
-        .get(getString(R.string.fragment_to_open))
-        .equals(getString(R.string.lao_detail_extra))) {
+        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
+        .equals(Constants.LAO_DETAIL_EXTRA)) {
       setupLaoFragment();
     } else {
       setupLaoWalletFragment();

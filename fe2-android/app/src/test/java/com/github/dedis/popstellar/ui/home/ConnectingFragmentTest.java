@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
 import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
+import com.github.dedis.popstellar.utility.Constants;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,7 +51,8 @@ public class ConnectingFragmentTest {
   public final ActivityScenarioRule<ConnectingActivity> activityScenarioRule =
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
-              ConnectingActivity.class, new BundleBuilder().putString("LAO_ID", LAO_ID).build()));
+              ConnectingActivity.class,
+              new BundleBuilder().putString(Constants.LAO_ID_EXTRA, LAO_ID).build()));
 
   @Before
   public void setup() {
