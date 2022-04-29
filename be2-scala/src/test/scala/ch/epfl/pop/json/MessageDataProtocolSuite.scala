@@ -112,7 +112,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData shouldEqualTo (expected)
   }
 
-  test("Parser correctly encodes/decodes a CashTransaction message data") {
+  test("Parser correctly encodes/decodes a PostTransaction message data") {
     val example: String = getExampleMessage("messageData/cash/post_transaction.json")
     val messageData = PostTransaction.buildFromJson(example)
 
