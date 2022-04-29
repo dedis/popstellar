@@ -45,9 +45,9 @@ public final class Lao {
   // Some useful map for the digital cash
   private Map<String, PublicKey> pub_keyByHash;
   // Map for the history
-  private Map<PublicKey, List<Transaction_object>> transaction_historyByUser;
+  private Map<PublicKey, List<TransactionObject>> transaction_historyByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, Transaction_object> transactionByUser;
+  private Map<PublicKey, TransactionObject> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -182,7 +182,7 @@ public final class Lao {
   }
 
   // add a function that update all the transaction
-  public void updateTransactionMaps(Transaction_object transaction_object) {
+  public void updateTransactionMaps(TransactionObject transaction_object) {
     if (transaction_object == null) {
       throw new IllegalArgumentException("The transaction is null");
     }
@@ -198,7 +198,7 @@ public final class Lao {
     // Contained in the receiver there are also the sender
     // which has to be in the list of attendees of the roll call
     Iterator<PublicKey> receivers_ite =
-        transaction_object.get_receivers_transaction(pub_keyByHash).iterator();
+        transaction_object.getReceiversTransaction(pub_keyByHash).iterator();
     while (receivers_ite.hasNext()) {
       PublicKey current = receivers_ite.next();
       // Add the transaction in the current state  / for the sender and the receiver
@@ -384,11 +384,11 @@ public final class Lao {
         .collect(Collectors.toList());
   }
 
-  public Map<PublicKey, List<Transaction_object>> getTransaction_historyByUser() {
+  public Map<PublicKey, List<TransactionObject>> getTransaction_historyByUser() {
     return transaction_historyByUser;
   }
 
-  public Map<PublicKey, Transaction_object> getTransactionByUser() {
+  public Map<PublicKey, TransactionObject> getTransactionByUser() {
     return transactionByUser;
   }
 
