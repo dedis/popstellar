@@ -31,7 +31,7 @@
       android:windowSoftInputMode="adjustPan" />
     <activity android:name=".ui.settings.SettingsActivity" />
     <activity android:name=".ui.socialmedia.SocialMediaActivity" />
-
+    <activity android:name=".ui.digitalcash.DigitalCashMain" />
     <uses-library
       android:name="android.test.runner"
       android:required="false" />

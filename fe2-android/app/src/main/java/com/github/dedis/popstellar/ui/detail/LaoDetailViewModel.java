@@ -146,6 +146,9 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
+          new MutableLiveData<>();
+
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -1189,6 +1192,14 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openAttendeesList(String rollCallId) {
     mOpenAttendeesListEvent.postValue(new SingleEvent<>(rollCallId));
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
+  }
+
+  public void openDigitalCash() {
+    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
   @Override

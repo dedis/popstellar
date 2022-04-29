@@ -9,6 +9,7 @@
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
   <string name="tab_social_media">Chirp</string>
+  <string name="tab_digital_cash">Coin</string>
 
   <!-- Home -->
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
@@ -221,6 +222,15 @@
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
+
+  <!-- Digital Cash -->
+  <string name="transaction">TRANSACTION</string>
+  <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_receive">RECEIVE</string>
+  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_receipt">RECEIPT</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

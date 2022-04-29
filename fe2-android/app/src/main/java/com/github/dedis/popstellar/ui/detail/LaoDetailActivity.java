@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragme
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -68,7 +69,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
     setupHomeButton();
     setupIdentityButton();
-    setupSocialMediaButton();
+    setupDigitalCashButton();
+    // Because of space constraints and future changes remove temporaly the social media button
+    // setupSocialMediaButton();
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -84,8 +87,10 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeActivity();
     // Subscribe to "open identity" event
     setupIdentityFragment();
+    // Subscribe to " open digital cash " event
+    setupDigitalCashMainActivity();
     // Subscribe to " open social media " event
-    setupSocialMediaActivity();
+    // setupSocialMediaActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -425,6 +430,25 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  }
+
+  private void setupDigitalCashMainActivity() {
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                Intent intent = new Intent(this, DigitalCashMain.class);
+                Log.d(TAG, "Trying to open social media");
+                startActivity(intent);
+              }
+            });
+  }
   /**
    * Set the current fragment in the container of the activity
    *
