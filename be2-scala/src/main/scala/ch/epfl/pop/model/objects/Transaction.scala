@@ -30,6 +30,7 @@ final case class Transaction(
   Version: Int,
   TxIn: List[TxIn],
   TxOut: List[TxOut],
+  LockTime: Int,
   )
 
 object Transaction extends Parsable {
