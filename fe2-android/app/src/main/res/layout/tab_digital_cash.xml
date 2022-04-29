@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/tab_digital_cash_only"
+  android:id="@+id/tab_social_media_only"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
@@ -17,14 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.64" />
-
-  <androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_vertical2_tab_digital_cash"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.84" />
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_digital_cash" />
 
   <Button
     android:id="@+id/tab_digital_cash"
@@ -33,8 +26,9 @@
     android:text="@string/tab_digital_cash"
     android:textSize="@dimen/size_small"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_digital_cash"
-    app:layout_constraintEnd_toEndOf="@+id/guideline_vertical2_tab_digital_cash"
+    app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_digital_cash"
     app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

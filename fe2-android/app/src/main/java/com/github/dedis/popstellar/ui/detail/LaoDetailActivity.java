@@ -7,9 +7,7 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -71,8 +69,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
     setupHomeButton();
     setupIdentityButton();
-    setupSocialMediaButton();
     setupDigitalCashButton();
+    // Because of space constraints and future changes remove temporaly the social media button
+    // setupSocialMediaButton();
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -88,10 +87,10 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeActivity();
     // Subscribe to "open identity" event
     setupIdentityFragment();
-    // Subscribe to " open social media " event
-    setupSocialMediaActivity();
     // Subscribe to " open digital cash " event
     setupDigitalCashMainActivity();
+    // Subscribe to " open social media " event
+    // setupSocialMediaActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -232,15 +231,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
-  public void setupDigitalCashButton() {
-    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
-    digitalCashButton.setOnClickListener(
-        new View.OnClickListener() {
-         v -> Toast.makeText(LaoDetailActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show()
-        });
-    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
-  }
-
   private void setupLaoFragment() {
     setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
@@ -287,21 +277,6 @@ public class LaoDetailActivity extends AppCompatActivity {
                 intent.putExtra(LAO_ID, mViewModel.getCurrentLaoValue().getId());
                 intent.putExtra(LAO_NAME, mViewModel.getCurrentLaoValue().getName());
                 intent.putExtra(OPENED_FROM, TAG);
-                startActivity(intent);
-              }
-            });
-  }
-
-  private void setupDigitalCashMainActivity() {
-    mViewModel
-        .getOpenDigitalCashEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                Intent intent = new Intent(this, DigitalCashMain.class);
-                Log.d(TAG, "Trying to open social media");
                 startActivity(intent);
               }
             });
@@ -455,6 +430,25 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  }
+
+  private void setupDigitalCashMainActivity() {
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                Intent intent = new Intent(this, DigitalCashMain.class);
+                Log.d(TAG, "Trying to open social media");
+                startActivity(intent);
+              }
+            });
+  }
   /**
    * Set the current fragment in the container of the activity
    *
@@ -464,9 +458,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) {
-      fragment = fragmentSupplier.get();
-    }
+    if (fragment == null) fragment = fragmentSupplier.get();
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
