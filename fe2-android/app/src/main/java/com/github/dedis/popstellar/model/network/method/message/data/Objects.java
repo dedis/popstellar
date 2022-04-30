@@ -12,7 +12,8 @@ public enum Objects {
   ROLL_CALL("roll_call"),
   ELECTION("election"),
   CONSENSUS("consensus"),
-  CHIRP("chirp");
+  CHIRP("chirp"),
+  TRANSACTION("transaction");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String object;
