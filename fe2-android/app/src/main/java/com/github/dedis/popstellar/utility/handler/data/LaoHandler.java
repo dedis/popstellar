@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
@@ -43,7 +44,11 @@ public final class LaoHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Lao lao = new Lao(createLao.getId());
+
+    // Adding the newly created LAO to the repository
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
+    laoRepository.setAllLaoSubject();
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
