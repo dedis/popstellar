@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.json.MessageDataProtocol.ResultElectionFormat
+import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -88,7 +88,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case _ => Nil
         }
         val resultElection: ResultElection = ResultElection(results, witness_signatures)
-        val data: Base64Data = Base64Data.encode(ResultElectionFormat.write(resultElection).toString())
+        val data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString())
         // TODO create the signature
         val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
         Await.ready(askLaoData, duration).value match {

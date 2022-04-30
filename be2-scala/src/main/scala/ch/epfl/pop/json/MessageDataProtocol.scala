@@ -255,35 +255,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, List[VoteElection], CastVoteElection](CastVoteElection.apply, "lao", "election", "created_at", "votes"))
   implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
-  //implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
+  implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
-
-  implicit object ResultElectionFormat extends RootJsonFormat[ResultElection] {
-    final private val PARAM_QUESTION_RESULT: String = "questions"
-    final private val PARAM_WITNESS_SIGNATURE: String = "witness_signatures"
-
-    override def read(json: JsValue): ResultElection = {
-      val jsonObject: JsObject = json.asJsObject
-      jsonObject.getFields(PARAM_QUESTION_RESULT, PARAM_WITNESS_SIGNATURE) match {
-        case Seq(questions@JsString(_), witness@JsString(_)) =>
-          ResultElection(
-            questions.convertTo[List[ElectionQuestionResult]],
-            witness.convertTo[List[Signature]]
-          )
-        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a ResultElection object")
-      }
-    }
-
-    override def write(obj: ResultElection): JsValue = {
-      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
-        "object" -> JsString(obj._object.toString),
-        "action" -> JsString(obj.action.toString),
-        PARAM_QUESTION_RESULT -> obj.questions.toJson,
-        PARAM_WITNESS_SIGNATURE -> obj.witness_signatures.toJson)
-
-      JsObject(jsObjectContent)
-    }
-  }
+  implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))
