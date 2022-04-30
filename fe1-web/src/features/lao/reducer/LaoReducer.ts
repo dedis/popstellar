@@ -259,14 +259,29 @@ export const selectIsLaoOrganizer = createSelector(
   (state) => getLaosState(state).byId,
   // Second input: current LAO id
   (state) => getLaosState(state)?.currentId,
-  // Second input: sorted LAO ids list
+  // Third input: the public key of the user
   (state) => getKeyPairState(state)?.keyPair?.publicKey,
-  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+  // Selector: returns whether the user is an organizer of the current lao
   (
     laoMap: Record<string, LaoState>,
     laoId: string | undefined,
     pKey: string | undefined,
   ): boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
+);
+
+export const selectIsLaoWitness = createSelector(
+  // First input: all LAOs map
+  (state) => getLaosState(state).byId,
+  // Second input: current LAO id
+  (state) => getLaosState(state)?.currentId,
+  // Third input: the public key of the user
+  (state) => getKeyPairState(state)?.keyPair?.publicKey,
+  // Selector: returns whether the user is a witness of the current lao
+  (
+    laoMap: Record<string, LaoState>,
+    laoId: string | undefined,
+    pKey: string | undefined,
+  ): boolean => !!(laoId && pKey) && laoMap[laoId]?.witnesses.includes(pKey),
 );
 
 export const laoReduce = laosSlice.reducer;

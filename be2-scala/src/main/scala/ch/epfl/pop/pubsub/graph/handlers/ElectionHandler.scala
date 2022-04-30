@@ -28,6 +28,8 @@ object ElectionHandler extends MessageHandler {
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCastVoteElection(rpcMessage)
 
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleResultElection(rpcMessage)
+
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleEndElection(rpcMessage)
 }
 
@@ -47,9 +49,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     //need to write and propagate the election message
     val combined = for {
-      _ <- dbActor ? DbActor.CreateChannel(electionChannel /* TODO : replace with rpcMessage.getParamsChannel ? */ , ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
-      _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
+      _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
     } yield ()
 
     Await.ready(combined, duration).value match {

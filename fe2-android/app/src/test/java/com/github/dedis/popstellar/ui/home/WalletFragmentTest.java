@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.allOf;
 import android.widget.Button;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
 
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
@@ -41,7 +40,6 @@ import org.mockito.junit.MockitoTestRule;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-@LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class WalletFragmentTest {

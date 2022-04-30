@@ -5,7 +5,7 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects.{Base64Data, ChannelData, DbActorNAckException, LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}

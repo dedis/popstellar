@@ -12,7 +12,6 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.{MessageData, ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.MessageRegistry
 import spray.json._
 
 import scala.collection.immutable.ListMap
