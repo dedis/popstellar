@@ -100,23 +100,7 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
-  // in case the election is a secret ballot election, tell the user whether an election key has been received or not
-  if (election.version === ElectionVersion.SECRET_BALLOT && !electionKey) {
-    return (
-      <>
-        <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-        <SectionList
-          sections={questions}
-          keyExtractor={(item, index) => item + index}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={styles.textQuestions}>{title}</Text>
-          )}
-          renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-        />
-        <Text>{STRINGS.election_wait_for_election_key}</Text>
-      </>
-    );
-  }
+  const canCastVote = election.version !== ElectionVersion.SECRET_BALLOT || electionKey;
 
   switch (election.electionStatus) {
     case ElectionStatus.NOT_STARTED:
@@ -138,24 +122,34 @@ const EventElection = (props: IPropTypes) => {
       return (
         <>
           <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-          {questions.map((q, idx) => (
-            <CheckboxList
-              key={q.title + idx.toString()}
-              title={q.title}
-              values={q.data}
-              onChange={(values: number[]) =>
-                setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
-              }
-            />
-          ))}
-          <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
-          <Badge value={hasVoted} status="success" />
-          {isOrganizer && (
-            <WideButtonView
-              title="Terminate Election / Tally Votes"
-              onPress={onTerminateElection}
-            />
-          )}
+          {
+            // in case the election is a secret ballot election, tell the
+            // user if no election key has been received yet
+            canCastVote ? (
+              <>
+                {questions.map((q, idx) => (
+                  <CheckboxList
+                    key={q.title + idx.toString()}
+                    title={q.title}
+                    values={q.data}
+                    onChange={(values: number[]) =>
+                      setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
+                    }
+                  />
+                ))}
+                <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
+                <Badge value={hasVoted} status="success" />
+                {isOrganizer && (
+                  <WideButtonView
+                    title="Terminate Election / Tally Votes"
+                    onPress={onTerminateElection}
+                  />
+                )}
+              </>
+            ) : (
+              <Text>{STRINGS.election_wait_for_election_key}</Text>
+            )
+          }
         </>
       );
     case ElectionStatus.TERMINATED:

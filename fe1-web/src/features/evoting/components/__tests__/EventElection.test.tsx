@@ -83,19 +83,6 @@ const notStartedElection = new Election({
   registeredVotes: [],
 });
 
-const notStartedSecretBallotElection = new Election({
-  lao: mockLaoIdHash,
-  id: mockElectionId,
-  name: 'An election',
-  version: ElectionVersion.SECRET_BALLOT,
-  createdAt: TIMESTAMP,
-  start: TIMESTAMP,
-  end: CLOSE_TIMESTAMP,
-  questions: [question],
-  electionStatus: ElectionStatus.NOT_STARTED,
-  registeredVotes: [],
-});
-
 const runningElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
@@ -148,6 +135,19 @@ const undefinedElection = new Election({
   electionStatus: 'undefined' as ElectionStatus,
   registeredVotes: [registeredVote],
   questionResult: [questionResult],
+});
+
+const openedSecretBallotElection = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: ElectionVersion.SECRET_BALLOT,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: [question],
+  electionStatus: ElectionStatus.OPENED,
+  registeredVotes: [],
 });
 
 // endregion
@@ -294,7 +294,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection event={notStartedSecretBallotElection} isOrganizer />,
+            <EventElection event={openedSecretBallotElection} isOrganizer />,
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -305,7 +305,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection event={notStartedSecretBallotElection} />
+            <EventElection event={openedSecretBallotElection} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
