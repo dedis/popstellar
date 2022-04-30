@@ -78,6 +78,10 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.result(ask, duration)
   }
 
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
+  )
+
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //no need to propagate the results, we only need to write the results in the db
     Await.ready(dbAskWritePropagate(rpcMessage), duration).value match {

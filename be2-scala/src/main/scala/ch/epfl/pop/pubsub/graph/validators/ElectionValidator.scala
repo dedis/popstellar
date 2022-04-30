@@ -89,10 +89,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId match {
-          case Some(x) => Hash(x)
-          case _ => HASH_ERROR
-        }
+        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
@@ -124,10 +121,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId match {
-          case Some(x) => Hash(x)
-          case _ => HASH_ERROR
-        }
+        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
         val setupMessage: SetupElection = getSetupMessage(channel, dbActor)
         val questions = setupMessage.questions
@@ -251,10 +245,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId match {
-          case Some(x) => Hash(x)
-          case _ => HASH_ERROR
-        }
+        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
