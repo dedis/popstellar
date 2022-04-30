@@ -104,7 +104,7 @@ object HighLevelMessageGenerator {
     //TODO : implement other object types and actions
     def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
 
-      assume(payload.trim.length != 0 && methodType != null)
+      assume(payload.trim.nonEmpty && methodType != null)
 
       (objType, actionType) match {
         //Roll Calls
@@ -152,6 +152,16 @@ object HighLevelMessageGenerator {
 
         case (ObjectType.ELECTION, ActionType.OPEN) =>
           messageData = OpenElection.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.ELECTION, ActionType.CAST_VOTE) =>
+          messageData = CastVoteElection.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.ELECTION, ActionType.END) =>
+          messageData = EndElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
