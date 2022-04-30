@@ -2,44 +2,22 @@ import 'jest-extended';
 
 import { combineReducers, createStore } from 'redux';
 
-import {
-  mockAddress,
-  mockChannel,
-  mockKeyPair,
-  mockLaoId,
-  mockLaoIdHash,
-  mockPopToken,
-} from '__tests__/utils';
-import { publish, subscribeToChannel } from 'core/network';
-import { addMessages, messageReducer } from 'core/network/ingestion';
-import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import {
-  ActionType,
-  configureMessages,
-  MessageRegistry,
-  ObjectType,
-} from 'core/network/jsonrpc/messages';
+import { mockChannel, mockLaoIdHash } from '__tests__/utils';
+import { publish } from 'core/network';
+import { messageReducer } from 'core/network/ingestion';
 import { channelFromIds, Timestamp } from 'core/objects';
-import { dispatch } from 'core/redux';
 import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
-import {
-  addElectionKeyMessage,
-  clearAllElectionKeyMessages,
-  electionKeyReducer,
-} from 'features/evoting/reducer';
+import { electionKeyReducer } from 'features/evoting/reducer';
 
 import {
   castVote,
   openElection,
   requestCreateElection,
-  requestElectionKey,
   terminateElection,
 } from '../ElectionMessageApi';
 import { CastVote, EndElection, SetupElection } from '../messages';
-import { ElectionKey } from '../messages/ElectionKey';
 import { OpenElection } from '../messages/OpenElection';
-import { RequestElectionKey } from '../messages/RequestElectionKey';
 
 jest.mock('core/objects', () => {
   return {
@@ -69,148 +47,8 @@ jest.mock('core/network', () => {
   };
 });
 
-const mockRegistry = new MessageRegistry();
-const handleElectionKeyMessage = jest.fn();
-const handleElectionRequestKeyMessage = jest.fn();
-mockRegistry.add(
-  ObjectType.ELECTION,
-  ActionType.KEY,
-  handleElectionKeyMessage,
-  ElectionKey.fromJson,
-);
-mockRegistry.add(
-  ObjectType.ELECTION,
-  ActionType.REQUEST_KEY,
-  handleElectionRequestKeyMessage,
-  RequestElectionKey.fromJson,
-);
-configureMessages(mockRegistry);
-
 afterEach(() => {
   jest.clearAllMocks();
-  mockStore.dispatch(clearAllElectionKeyMessages());
-});
-
-describe('requestElectionKey', () => {
-  it('throws an error if the stored message is not of type election#key', async () => {
-    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
-    const promise = requestElectionKey(
-      mockLaoIdHash,
-      mockElectionNotStarted.id,
-      mockKeyPair.publicKey,
-    );
-    expect(promise).toBeInstanceOf(Promise);
-
-    // the function should setup a store watcher, wait for it to do so
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // then trigger it USING A WRONG MESSAGE
-    const msg = ExtendedMessage.fromMessage(
-      ExtendedMessage.fromData(
-        new RequestElectionKey({
-          election: mockElectionNotStarted.id,
-        }),
-        mockKeyPair,
-      ),
-      mockElectionKeyChannel,
-      mockAddress,
-    );
-    dispatch(addMessages([msg.toState()]));
-
-    dispatch(
-      addElectionKeyMessage({
-        electionId: mockElectionNotStarted.id.valueOf(),
-        messageId: msg.message_id.valueOf(),
-      }),
-    );
-
-    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
-    await expect(promise).toReject();
-  });
-
-  it('throws an error if the stored message was not sent by the organizer', async () => {
-    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
-    const promise = requestElectionKey(
-      mockLaoIdHash,
-      mockElectionNotStarted.id,
-      mockKeyPair.publicKey,
-    );
-    expect(promise).toBeInstanceOf(Promise);
-
-    // the function should setup a store watcher, wait for it to do so
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // then trigger it
-    const msg = ExtendedMessage.fromMessage(
-      ExtendedMessage.fromData(
-        new ElectionKey({
-          election: mockElectionNotStarted.id,
-          election_key: mockPopToken.publicKey,
-        }),
-        mockPopToken, // not the organizer's public key
-      ),
-      mockElectionKeyChannel,
-      mockAddress,
-    );
-    dispatch(addMessages([msg.toState()]));
-
-    dispatch(
-      addElectionKeyMessage({
-        electionId: mockElectionNotStarted.id.valueOf(),
-        messageId: msg.message_id.valueOf(),
-      }),
-    );
-
-    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
-    await expect(promise).toReject();
-  });
-
-  it('works as expected using a valid set of parameters', async () => {
-    const mockElectionKeyChannel = `/root/${mockLaoId}/election/key`;
-    const promise = requestElectionKey(
-      mockLaoIdHash,
-      mockElectionNotStarted.id,
-      mockKeyPair.publicKey,
-    );
-    expect(promise).toBeInstanceOf(Promise);
-
-    // the function should setup a store watcher, wait for it to do so
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // then trigger it
-    const msg = ExtendedMessage.fromMessage(
-      ExtendedMessage.fromData(
-        new ElectionKey({
-          election: mockElectionNotStarted.id,
-          election_key: mockPopToken.publicKey,
-        }),
-        mockKeyPair,
-      ),
-      mockElectionKeyChannel,
-      mockAddress,
-    );
-    dispatch(addMessages([msg.toState()]));
-
-    dispatch(
-      addElectionKeyMessage({
-        electionId: mockElectionNotStarted.id.valueOf(),
-        messageId: msg.message_id.valueOf(),
-      }),
-    );
-
-    // after that, the function should unsubscribe from the channel and resolve the promise to an election key
-    expect((await promise).valueOf()).toEqual(mockPopToken.publicKey.valueOf());
-
-    expect(subscribeToChannel).toHaveBeenCalledWith(mockElectionKeyChannel, undefined, false);
-    expect(subscribeToChannel).toHaveBeenCalledTimes(1);
-
-    const requestKeyMessage = new RequestElectionKey({
-      election: mockElectionNotStarted.id,
-    });
-
-    expect(publish).toHaveBeenLastCalledWith(mockElectionKeyChannel, requestKeyMessage);
-    expect(publish).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('requestCreateElection', () => {
@@ -223,7 +61,6 @@ describe('requestCreateElection', () => {
       mockElectionNotStarted.end,
       mockElectionNotStarted.questions,
       mockElectionNotStarted.createdAt,
-      mockKeyPair.publicKey,
     );
 
     expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);

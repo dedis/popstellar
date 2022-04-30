@@ -18,7 +18,7 @@ import {
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
-import { EventTags, Hash, PublicKey, Timestamp } from 'core/objects';
+import { EventTags, Hash, Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -64,7 +64,6 @@ const isQuestionInvalid = (question: NewQuestion): boolean =>
  * @param questions The questions created in the UI
  * @param startTime The start time of the election
  * @param endTime The end time of the election
- * @param laoOrganizerBackendPublicKey The public key of lao organizer's backend
  * @returns The promise returned by the requestCreateElection() function
  */
 const createElection = (
@@ -74,7 +73,6 @@ const createElection = (
   questions: NewQuestion[],
   startTime: Timestamp,
   endTime: Timestamp,
-  laoOrganizerBackendPublicKey: PublicKey,
 ) => {
   // get the current time
   const now = Timestamp.EpochNow();
@@ -103,7 +101,6 @@ const createElection = (
     endTime,
     questionsWithId,
     now,
-    laoOrganizerBackendPublicKey,
   );
 };
 
@@ -118,9 +115,6 @@ const CreateElection = ({ route }: any) => {
   const navigation = useNavigation<any>();
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
-  const laoOrganizerBackendPublicKey = EvotingHooks.useLaoOrganizerBackendPublicKey(
-    currentLao.id.valueOf(),
-  );
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -140,15 +134,7 @@ const CreateElection = ({ route }: any) => {
   const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
 
   const onCreateElection = () => {
-    createElection(
-      currentLao.id,
-      version,
-      electionName,
-      questions,
-      startTime,
-      endTime,
-      laoOrganizerBackendPublicKey,
-    )
+    createElection(currentLao.id, version, electionName, questions, startTime, endTime)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

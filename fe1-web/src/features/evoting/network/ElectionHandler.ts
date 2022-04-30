@@ -6,7 +6,7 @@ import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
 import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
-import { addElectionKeyMessage } from '../reducer/ElectionKeyReducer';
+import { addElectionKey } from '../reducer/ElectionKeyReducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
@@ -54,9 +54,9 @@ export const handleElectionKeyMessage =
     }
 
     dispatch(
-      addElectionKeyMessage({
+      addElectionKey({
         electionId: electionKeyMessage.election.valueOf(),
-        messageId: msg.message_id.valueOf(),
+        electionKey: electionKeyMessage.election_key.valueOf(),
       }),
     );
 

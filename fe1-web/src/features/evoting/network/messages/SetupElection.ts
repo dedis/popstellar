@@ -20,8 +20,6 @@ export class SetupElection implements MessageData {
 
   public readonly name: string;
 
-  public readonly key?: PublicKey;
-
   public readonly created_at: Timestamp;
 
   public readonly start_time: Timestamp;
@@ -33,6 +31,13 @@ export class SetupElection implements MessageData {
   constructor(msg: MessageDataProperties<SetupElection>) {
     if (!msg.version) {
       throw new ProtocolError("Undefined 'version' parameter encountered during 'SetupElection'");
+    }
+    if (
+      ![ElectionVersion.OPEN_BALLOT, ElectionVersion.SECRET_BALLOT].includes(
+        msg.version as ElectionVersion,
+      )
+    ) {
+      throw new ProtocolError("Invalid 'version' parameter encountered during 'SetupElection'");
     }
     this.version = msg.version;
 
@@ -50,26 +55,6 @@ export class SetupElection implements MessageData {
       throw new ProtocolError("Undefined 'name' parameter encountered during 'SetupElection'");
     }
     this.name = msg.name;
-
-    switch (msg.version) {
-      case ElectionVersion.OPEN_BALLOT:
-        if (msg.key !== undefined) {
-          throw new ProtocolError(
-            "Defined 'key' parameter encountered during open ballot 'SetupElection'",
-          );
-        }
-        break;
-      case ElectionVersion.SECRET_BALLOT:
-        if (!msg.key) {
-          throw new ProtocolError(
-            "Undefined 'key' parameter encountered during secret ballot 'SetupElection'",
-          );
-        }
-        break;
-      default:
-        throw new ProtocolError("Unkown 'version' parameter encountered during 'SetupElection'");
-    }
-    this.key = msg.key;
 
     if (!msg.created_at) {
       throw new ProtocolError(

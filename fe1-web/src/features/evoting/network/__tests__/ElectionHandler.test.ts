@@ -32,7 +32,7 @@ import {
   mockVote1,
   mockVote2,
 } from 'features/evoting/__tests__/utils';
-import { addElectionKeyMessage } from 'features/evoting/reducer/ElectionKeyReducer';
+import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
 
 import { EvotingConfiguration } from '../../interface';
 import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
@@ -196,9 +196,9 @@ describe('ElectionHandler', () => {
       ).toBeTrue();
 
       expect(dispatch).toHaveBeenCalledWith(
-        addElectionKeyMessage({
+        addElectionKey({
           electionId: mockElectionId.valueOf(),
-          messageId: mockMessageData.message_id.valueOf(),
+          electionKey: mockKeyPair.publicKey.valueOf(),
         }),
       );
       expect(dispatch).toHaveBeenCalledTimes(1);

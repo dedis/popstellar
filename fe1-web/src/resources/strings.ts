@@ -143,6 +143,7 @@ const STRINGS = {
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
   election_method_Approval: 'Approval',
+  election_wait_for_election_key: 'Waiting for the election key to be broadcasted',
 
   /* --- Event Creation Strings --- */
   modal_event_creation_failed: 'Event creation failed',

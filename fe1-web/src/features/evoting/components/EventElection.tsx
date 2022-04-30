@@ -3,6 +3,7 @@ import React, { FunctionComponent, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
@@ -11,7 +12,14 @@ import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
-import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
+import {
+  Election,
+  ElectionStatus,
+  ElectionVersion,
+  QuestionResult,
+  SelectedBallots,
+} from '../objects';
+import { makeElectionKeySelector } from '../reducer';
 import BarChartDisplay from './BarChartDisplay';
 
 /**
@@ -36,6 +44,12 @@ const styles = StyleSheet.create({
 const EventElection = (props: IPropTypes) => {
   const { event: election, isOrganizer } = props;
   const laoId = EvotingHooks.useCurrentLaoId();
+
+  const electionKeySelector = useMemo(
+    () => makeElectionKeySelector(election.id.valueOf()),
+    [election.id],
+  );
+  const electionKey = useSelector(electionKeySelector);
 
   const toast = useToast();
   const questions = useMemo(
@@ -86,77 +100,87 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
-  // Here we use the election object form the redux store in order to see the electionStatus
-  // update when an  incoming electionEnd or electionResult message comes
-  // (in handler/ElectionHandler.ts)
-  const getElectionDisplay = (status: ElectionStatus) => {
-    switch (status) {
-      case ElectionStatus.NOT_STARTED:
-        return (
-          <>
-            <SectionList
-              sections={questions}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={styles.textQuestions}>{title}</Text>
-              )}
-              renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-            />
-            {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
-          </>
-        );
-      case ElectionStatus.OPENED:
-        return (
-          <>
-            {questions.map((q, idx) => (
-              <CheckboxList
-                key={q.title + idx.toString()}
-                title={q.title}
-                values={q.data}
-                onChange={(values: number[]) =>
-                  setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
-                }
-              />
-            ))}
-            <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
-            <Badge value={hasVoted} status="success" />
-            {isOrganizer && (
-              <WideButtonView
-                title="Terminate Election / Tally Votes"
-                onPress={onTerminateElection}
-              />
-            )}
-          </>
-        );
-      case ElectionStatus.TERMINATED:
-        return (
-          <>
-            <Text style={styles.text}>Election Terminated</Text>
-            <Text style={styles.text}>Waiting for result</Text>
-          </>
-        );
-      case ElectionStatus.RESULT:
-        return (
-          <>
-            <Text style={styles.text}>Election Result</Text>
-            {election.questionResult &&
-              election.questionResult.map((question: QuestionResult) => (
-                <BarChartDisplay data={question.result} key={question.id.valueOf()} />
-              ))}
-          </>
-        );
-      default:
-        console.warn('Election Status was undefined in Election display', election);
-        return null;
-    }
-  };
+  // in case the election is a secret ballot election, tell the user whether an election key has been received or not
+  if (election.version === ElectionVersion.SECRET_BALLOT && !electionKey) {
+    return (
+      <>
+        <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+        <SectionList
+          sections={questions}
+          keyExtractor={(item, index) => item + index}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.textQuestions}>{title}</Text>
+          )}
+          renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
+        />
+        <Text>{STRINGS.election_wait_for_election_key}</Text>
+      </>
+    );
+  }
 
-  return (
-    <>
-      <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      {getElectionDisplay(election.electionStatus)}
-    </>
-  );
+  switch (election.electionStatus) {
+    case ElectionStatus.NOT_STARTED:
+      return (
+        <>
+          <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+          <SectionList
+            sections={questions}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={styles.textQuestions}>{title}</Text>
+            )}
+            renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
+          />
+          {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
+        </>
+      );
+    case ElectionStatus.OPENED:
+      return (
+        <>
+          <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+          {questions.map((q, idx) => (
+            <CheckboxList
+              key={q.title + idx.toString()}
+              title={q.title}
+              values={q.data}
+              onChange={(values: number[]) =>
+                setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
+              }
+            />
+          ))}
+          <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
+          <Badge value={hasVoted} status="success" />
+          {isOrganizer && (
+            <WideButtonView
+              title="Terminate Election / Tally Votes"
+              onPress={onTerminateElection}
+            />
+          )}
+        </>
+      );
+    case ElectionStatus.TERMINATED:
+      return (
+        <>
+          <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+          <Text style={styles.text}>Election Terminated</Text>
+          <Text style={styles.text}>Waiting for result</Text>
+        </>
+      );
+    case ElectionStatus.RESULT:
+      return (
+        <>
+          <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+          <Text style={styles.text}>Election Result</Text>
+          {election.questionResult &&
+            election.questionResult.map((question: QuestionResult) => (
+              <BarChartDisplay data={question.result} key={question.id.valueOf()} />
+            ))}
+        </>
+      );
+    default:
+      console.warn('Election Status was undefined in Election display', election);
+      return null;
+  }
 };
 
 const propTypes = {

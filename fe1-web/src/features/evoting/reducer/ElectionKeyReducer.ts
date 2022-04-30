@@ -6,33 +6,33 @@
 
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash } from 'core/objects';
+import { PublicKey } from 'core/objects';
 
 /**
- * Reducer & associated functions to store received election key message id
+ * Reducer & associated functions to store received election key
  */
 
-export interface ElectionKeyMessageReducerState {
+export interface ElectionKeyReducerState {
   byElectionId: {
     [electionId: string]: string;
   };
 }
 
-const initialState: ElectionKeyMessageReducerState = {
+const initialState: ElectionKeyReducerState = {
   byElectionId: {},
 };
 
-export const ELECTION_KEY_MESSAGE_REDUCER_PATH = 'electionKeyMessage';
+export const ELECTION_KEY_REDUCER_PATH = 'electionKey';
 
-const electionKeyMessageSlice = createSlice({
-  name: ELECTION_KEY_MESSAGE_REDUCER_PATH,
+const electionKeySlice = createSlice({
+  name: ELECTION_KEY_REDUCER_PATH,
   initialState,
   reducers: {
-    addElectionKeyMessage: (
-      state: Draft<ElectionKeyMessageReducerState>,
-      action: PayloadAction<{ electionId: string; messageId: string }>,
+    addElectionKey: (
+      state: Draft<ElectionKeyReducerState>,
+      action: PayloadAction<{ electionId: string; electionKey: string }>,
     ) => {
-      const { electionId, messageId } = action.payload;
+      const { electionId, electionKey } = action.payload;
 
       if (electionId in state.byElectionId) {
         throw new Error(
@@ -40,10 +40,10 @@ const electionKeyMessageSlice = createSlice({
         );
       }
 
-      state.byElectionId[electionId] = messageId;
+      state.byElectionId[electionId] = electionKey;
     },
 
-    removeElectionKeyMessage: (state, action: PayloadAction<string>) => {
+    removeElectionKey: (state, action: PayloadAction<string>) => {
       const electionId = action.payload;
 
       if (!(electionId in state.byElectionId)) {
@@ -53,39 +53,38 @@ const electionKeyMessageSlice = createSlice({
       delete state.byElectionId[electionId];
     },
 
-    clearAllElectionKeyMessages: (state) => {
+    clearAllElectionKeys: (state) => {
       state.byElectionId = {};
     },
   },
 });
 
-export const { addElectionKeyMessage, removeElectionKeyMessage, clearAllElectionKeyMessages } =
-  electionKeyMessageSlice.actions;
+export const { addElectionKey, removeElectionKey, clearAllElectionKeys } = electionKeySlice.actions;
 
-export const electionKeyReduce = electionKeyMessageSlice.reducer;
+export const electionKeyReduce = electionKeySlice.reducer;
 
 export default {
-  [ELECTION_KEY_MESSAGE_REDUCER_PATH]: electionKeyMessageSlice.reducer,
+  [ELECTION_KEY_REDUCER_PATH]: electionKeySlice.reducer,
 };
 
-export const getElectionKeyState = (state: any): ElectionKeyMessageReducerState =>
-  state[ELECTION_KEY_MESSAGE_REDUCER_PATH];
+export const getElectionKeyState = (state: any): ElectionKeyReducerState =>
+  state[ELECTION_KEY_REDUCER_PATH];
 
 /**
  * A function to directly retrieve the election key from the redux store for a election lao id
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark NOTE: This function does not memoize the result. If you need this, use makeElectionKeySelector instead
  * @param electionId The election id
  * @param state The redux state
- * @returns The public key for the given server address or undefined if there is none
+ * @returns The election key for the election id or undefined if there is none
  */
-export const getElectionKeyMessageIdByElectionId = (
+export const getElectionKeyByElectionId = (
   electionId: string,
   state: any,
-): Hash | undefined => {
+): PublicKey | undefined => {
   const electionKeyState = getElectionKeyState(state);
 
   if (electionId in electionKeyState.byElectionId) {
-    return new Hash(electionKeyState.byElectionId[electionId]);
+    return new PublicKey(electionKeyState.byElectionId[electionId]);
   }
 
   return undefined;
@@ -94,16 +93,16 @@ export const getElectionKeyMessageIdByElectionId = (
 /**
  * Creates a election key selector for a given election id. Can for example be used in useSelector()
  * @param electionId The election id
- * @returns A selector for the election key for the given electio id or undefined if there is none
+ * @returns A selector for the election key for the given election id or undefined if there is none
  */
-export const makeElectionKeyMessageIdSelector = (electionId: string) =>
+export const makeElectionKeySelector = (electionId: string) =>
   createSelector(
     // First input: map of lao ids to servers
     (state) => getElectionKeyState(state).byElectionId,
     // Selector: returns the election key associated to the given election id
-    (byElectionId: ElectionKeyMessageReducerState['byElectionId']): Hash | undefined => {
+    (byElectionId: ElectionKeyReducerState['byElectionId']): PublicKey | undefined => {
       if (electionId in byElectionId) {
-        return new Hash(byElectionId[electionId]);
+        return new PublicKey(byElectionId[electionId]);
       }
 
       return undefined;
