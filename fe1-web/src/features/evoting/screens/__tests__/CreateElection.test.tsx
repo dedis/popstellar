@@ -2,9 +2,9 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
+import { mockLao, mockLaoIdHash, messageRegistryInstance, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 
 import CreateElection from '../CreateElection';
 
@@ -17,7 +17,7 @@ const contextValue = {
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventFromId: () => undefined,
-    messageRegistry: mockMessageRegistry,
+    messageRegistry: messageRegistryInstance,
     onConfirmEventCreation: () => undefined,
   },
 };

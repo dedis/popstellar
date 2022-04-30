@@ -26,7 +26,7 @@ describe('Message', () => {
       timestamp: new Timestamp(1607277600),
     });
 
-    const m = await Message.fromData(messageData, mockPopToken);
+    const m = Message.fromData(messageData, mockPopToken);
 
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const signature = mockPopToken.privateKey.sign(encodedDataJson);

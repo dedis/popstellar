@@ -1,7 +1,9 @@
 import testKeyPair from 'test_data/keypair.json';
 
+import { KeyPairRegistry } from 'core/keypair';
+import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
+import { Channel, Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
@@ -36,6 +38,7 @@ export const mockLaoState: LaoState = {
   last_modified: mockLaoCreationTime.valueOf(),
   organizer: org.valueOf(),
   witnesses: [],
+  server_addresses: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 
@@ -46,4 +49,26 @@ export const mockReduxAction = {
   payload: undefined,
 };
 
-export const mockMessageRegistry = new MessageRegistry();
+export const messageRegistryInstance = new MessageRegistry();
+
+export const mockSignatureType = 'some signature';
+
+export const mockMessageRegistry = {
+  getSignatureType: jest.fn(() => mockSignatureType),
+  buildMessageData: jest.fn((input) => JSON.stringify(input)),
+} as unknown as MessageRegistry;
+
+export const mockKeyPairRegistry = {
+  getSignatureKeyPair: jest.fn(() => Promise.resolve(mockKeyPair)),
+} as unknown as KeyPairRegistry;
+
+export const mockChannel: Channel = 'some channel';
+export const mockAddress = 'some address';
+
+export const mockJsonRequest: Partial<JsonRpcRequest> = {
+  jsonrpc: 'some data',
+  method: JsonRpcMethod.BROADCAST,
+  params: { channel: mockChannel },
+};
+
+export const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };

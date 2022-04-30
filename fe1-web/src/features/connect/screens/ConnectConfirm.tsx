@@ -1,19 +1,17 @@
-import { useRoute } from '@react-navigation/core';
-import PropTypes from 'prop-types';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
-import { useDispatch } from 'react-redux';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel, channelFromIds, Hash } from 'core/objects';
+import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { setLaoServerAddress } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
+
+import { ConnectHooks } from '../hooks';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -35,61 +33,46 @@ const styles = StyleSheet.create({
  *
  * @param serverUrl
  */
-export function connectTo(serverUrl: string): boolean {
+export function connectTo(serverUrl: string): NetworkConnection | undefined {
   try {
     const { href } = new URL(serverUrl); // validate
-    getNetworkManager().connect(href);
+    return getNetworkManager().connect(href);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
-    return false;
+    return undefined;
   }
-  return true;
 }
 
-/**
- * Checks if the LAO exists by trying to find its id in created channels.
- *
- * @param laoId the id of the LAO we want to validate
- */
-export function validateLaoId(laoId: string): Channel | undefined {
-  try {
-    const h = new Hash(laoId);
-    return channelFromIds(h);
-  } catch (err) {
-    console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, err);
-  }
-  return undefined;
-}
-
-const ConnectConfirm = ({ navigation }: IPropTypes) => {
+const ConnectConfirm = () => {
   // FIXME: route should use proper type
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
+
   const laoIdIn = route.params?.laoIdIn || '';
   const url = route.params?.url || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);
+
   const toast = useToast();
-  const dispatch = useDispatch();
+  const getLaoChannel = ConnectHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
-    if (!connectTo(serverUrl)) {
-      return;
-    }
-
-    const channel = validateLaoId(laoId);
-    if (channel === undefined) {
+    const connection = connectTo(serverUrl);
+    if (!connection) {
       return;
     }
 
     try {
-      await subscribeToChannel(channel);
-      dispatch(setLaoServerAddress(laoId, serverUrl));
-      navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-        screen: STRINGS.organization_navigation_tab_organizer,
-        params: {
-          screen: STRINGS.organizer_navigation_tab_home,
-          params: { url: serverUrl },
-        },
+      const channel = getLaoChannel(laoId);
+      if (!channel) {
+        throw new Error('The given LAO ID is invalid');
+      }
+
+      // subscribe to the lao channel on the new connection
+      await subscribeToChannel(channel, [connection]);
+
+      navigation.navigate(STRINGS.app_navigation_tab_user, {
+        screen: STRINGS.organization_navigation_tab_user,
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
@@ -124,13 +107,5 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-
-ConnectConfirm.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ConnectConfirm;

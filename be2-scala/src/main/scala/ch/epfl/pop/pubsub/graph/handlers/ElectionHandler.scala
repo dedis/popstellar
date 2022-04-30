@@ -1,5 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -12,7 +13,30 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
+/**
+ * ElectionHandler object uses the db instance from the MessageHandler
+ */
 object ElectionHandler extends MessageHandler {
+  final lazy val handlerInstance = new ElectionHandler(super.dbActor)
+
+  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleSetupElection(rpcMessage)
+
+  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenElection(rpcMessage)
+
+  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCastVoteElection(rpcMessage)
+
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleResultElection(rpcMessage)
+
+  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleEndElection(rpcMessage)
+}
+
+class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  /**
+   *
+   * Overrides default DbActor with provided parameter
+   */
+  override final val dbActor: AskableActorRef = dbRef
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
@@ -20,8 +44,9 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
+    //need to write and propagate the election message
     val combined = for {
-      _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
     } yield ()
 
@@ -32,13 +57,25 @@ object ElectionHandler extends MessageHandler {
     }
   }
 
+  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    //checks first if the election is created (i.e. if the channel election exists)
+    val askChannelExist = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+    Await.ready(askChannelExist, duration).value.get match {
+      case Success(_) =>
+        val askWritePropagate: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+        Await.result(askWritePropagate, duration)
+      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
+      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
+    }
+  }
+
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // no need to propagate here, hence the use of dbAskWrite
     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
     Await.result(ask, duration)
   }
 
-  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 

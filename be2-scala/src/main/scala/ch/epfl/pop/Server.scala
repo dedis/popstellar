@@ -45,9 +45,9 @@ object Server {
       val options: Options = new Options()
       options.createIfMissing(true)
 
-      val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef)), "DbActor")
       val messageRegistry: MessageRegistry = MessageRegistry()
+      val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
+      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
 
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))

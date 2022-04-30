@@ -46,10 +46,14 @@ const chirp1 = new Chirp({
 jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn().mockImplementation(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
+  useSelector: jest.fn(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
+// Ionicons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons');
+
 // endregion
 
 beforeAll(() => {

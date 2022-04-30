@@ -27,12 +27,14 @@ const laoState: LaoState = {
   last_modified: 1577833500,
   organizer: 'organizerPublicKey',
   witnesses: [],
+  server_addresses: [],
 };
 const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));
 
 let registry: MessageRegistry;
 beforeEach(() => {
+  // setup fresh message registry for each test
   registry = configureTestFeatures();
   configureMessages(registry);
 });
@@ -46,14 +48,14 @@ describe('MessageRegistry', () => {
   });
 
   it('should work correctly for handling message', async () => {
-    const message = await Message.fromData(messageData, mockPopToken);
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
+    const message = Message.fromData(messageData, mockPopToken);
+    const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
 
-    const mockHandle = jest.fn();
+    const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 
-    registry.handleMessage(extMsg);
+    expect(registry.handleMessage(extMsg)).toBeTrue();
 
     expect(mockHandle).toHaveBeenCalledTimes(1);
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
