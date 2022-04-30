@@ -14,7 +14,6 @@ import dataCloseRollCall from 'protocol/query/method/message/data/dataCloseRollC
 
 import dataWitnessMessage from 'protocol/query/method/message/data/dataWitnessMessage.json';
 
-import dataRequestKeyElection from 'protocol/query/method/message/data/dataRequestKeyElection.json';
 import dataKeyElection from 'protocol/query/method/message/data/dataKeyElection.json';
 import dataSetupElection from 'protocol/query/method/message/data/dataSetupElection.json';
 import dataOpenElection from 'protocol/query/method/message/data/dataOpenElection.json';
@@ -43,7 +42,6 @@ const dataSchemas = [
   dataOpenRollCall,
   dataCloseRollCall,
 
-  dataRequestKeyElection,
   dataKeyElection,
   dataSetupElection,
   dataOpenElection,

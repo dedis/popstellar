@@ -41,7 +41,6 @@ import {
   handleElectionEndMessage,
   handleElectionKeyMessage,
   handleElectionOpenMessage,
-  handleElectionRequestKeyMessage,
   handleElectionResultMessage,
   handleElectionSetupMessage,
 } from '../ElectionHandler';
@@ -103,42 +102,6 @@ beforeEach(() => {
 });
 
 describe('ElectionHandler', () => {
-  describe('election#request_key', () => {
-    it('should return false if the object is not "election"', () => {
-      expect(
-        handleElectionRequestKeyMessage({
-          ...mockMessageData,
-          messageData: {
-            object: ObjectType.CHIRP,
-            action: ActionType.REQUEST_KEY,
-          },
-        }),
-      ).toBeFalse();
-    });
-    it('should return false if the action is not "request_key"', () => {
-      expect(
-        handleElectionRequestKeyMessage({
-          ...mockMessageData,
-          messageData: {
-            object: ObjectType.ELECTION,
-            action: ActionType.ADD,
-          },
-        }),
-      ).toBeFalse();
-    });
-    it('should return true if the object and action parameters match', () => {
-      expect(
-        handleElectionRequestKeyMessage({
-          ...mockMessageData,
-          messageData: {
-            object: ObjectType.ELECTION,
-            action: ActionType.REQUEST_KEY,
-          },
-        }),
-      ).toBeTrue();
-    });
-  });
-
   describe('election#key', () => {
     it('should return false if the object is not "election"', () => {
       const mockGetLaoOrganizerBackendPublicKey = jest.fn();

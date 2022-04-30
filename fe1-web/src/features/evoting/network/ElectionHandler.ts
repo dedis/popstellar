@@ -16,25 +16,6 @@ import { OpenElection } from './messages/OpenElection';
  */
 
 /**
- * Returns a function that handles an ElectionRequestKey message
- * It simply returns true since election key requests are only of interest for the backend
- */
-export const handleElectionRequestKeyMessage = (msg: ProcessableMessage) => {
-  if (
-    msg.messageData.object !== ObjectType.ELECTION ||
-    msg.messageData.action !== ActionType.REQUEST_KEY
-  ) {
-    console.warn(
-      'handleElectionRequestKeyMessage was called to process an unsupported message',
-      msg,
-    );
-    return false;
-  }
-
-  return true;
-};
-
-/**
  * Returns a function that handles an ElectionKey message
  * It does so by storing the election key in the redux store
  */

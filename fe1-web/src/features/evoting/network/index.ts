@@ -6,7 +6,6 @@ import {
   handleElectionEndMessage,
   handleElectionKeyMessage,
   handleElectionOpenMessage,
-  handleElectionRequestKeyMessage,
   handleElectionResultMessage,
   handleElectionSetupMessage,
 } from './ElectionHandler';
@@ -18,12 +17,6 @@ import { OpenElection } from './messages/OpenElection';
  * @param config - An evoting config object
  */
 export const configureNetwork = (config: EvotingConfiguration) => {
-  config.messageRegistry.add(
-    ObjectType.ELECTION,
-    ActionType.REQUEST_KEY,
-    handleElectionRequestKeyMessage,
-    ElectionResult.fromJson,
-  );
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.KEY,

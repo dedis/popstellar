@@ -45,7 +45,6 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CLOSE]: 'dataCloseRollCall',
   },
   [ObjectType.ELECTION]: {
-    [ActionType.REQUEST_KEY]: 'dataRequestKeyElection',
     [ActionType.KEY]: 'dataKeyElection',
     [ActionType.SETUP]: 'dataSetupElection',
     [ActionType.OPEN]: 'dataOpenElection',
