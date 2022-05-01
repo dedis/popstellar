@@ -1493,7 +1493,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)" - the vote_ids need to be sorted alphabetically by message_id
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be orderd alphabetically by message_id; the multiple vote_ids in a election#cast_vote message should stay the same as in the original message"
         }
     },
     "additionalProperties": false,
