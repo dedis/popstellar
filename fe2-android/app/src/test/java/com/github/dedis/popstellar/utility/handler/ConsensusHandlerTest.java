@@ -36,13 +36,15 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import dagger.hilt.android.testing.HiltAndroidTest;
+import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +63,7 @@ import java.util.Set;
 
 import io.reactivex.Completable;
 
+@HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
 
@@ -104,6 +107,8 @@ public class ConsensusHandlerTest {
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
+  @Inject ServerRepository serverRepository;
+
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
@@ -112,15 +117,15 @@ public class ConsensusHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
-    lao = new Lao(LAO_ID);
-    laoRepository.getLaoById().put(LAO_ID, new LAOState(lao));
+    Channel channel = Channel.getLaoChannel(LAO_ID);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
-    messageHandler.handleMessage(laoRepository, messageSender, lao.getChannel(), createLaoMessage);
+    messageHandler.handleMessage(laoRepository, messageSender, channel, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
+    lao = laoRepository.getLaoById().get(LAO_ID).getLao();
   }
 
   /**

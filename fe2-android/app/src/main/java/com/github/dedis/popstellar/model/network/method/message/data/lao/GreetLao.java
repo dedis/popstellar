@@ -7,7 +7,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GreetLao extends Data {
 
@@ -110,9 +112,9 @@ public class GreetLao extends Data {
         + ", address='"
         + getAddress()
         + '\''
-        + ", peers='"
+        + ", peers="
         + Arrays.toString(peers.toArray())
-        + "'}";
+        + '}';
   }
 
     @Override

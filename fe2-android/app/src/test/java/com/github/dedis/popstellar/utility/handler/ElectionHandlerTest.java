@@ -28,11 +28,14 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import dagger.hilt.android.testing.HiltAndroidTest;
+import javax.inject.Inject;
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -51,8 +54,11 @@ import java.util.Optional;
 
 import io.reactivex.Completable;
 
+@HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
+
+  @Inject ServerRepository serverRepository;
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -84,7 +90,7 @@ public class ElectionHandlerTest extends TestCase {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());

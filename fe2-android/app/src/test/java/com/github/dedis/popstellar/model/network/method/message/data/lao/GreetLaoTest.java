@@ -16,7 +16,7 @@ public class GreetLaoTest {
   public static final String LAO_ID = "someID";
   public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
-  public static final String RANDOM_PEER = "http://128.0.0.2";
+  public static final String RANDOM_PEER = "128.0.0.2";
 
   public static GreetLao GREETING_MSG =
       new GreetLao(LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, RANDOM_PEER);
@@ -77,7 +77,7 @@ public class GreetLaoTest {
     List<String> listTest = Collections.singletonList(RANDOM_PEER);
     String greetingToString =
         String.format(
-            "GreetLao={lao='%s', " + "frontend='%s', " + "address='%s', " + "peers='%s'}",
+            "GreetLao={lao='%s', " + "frontend='%s', " + "address='%s', " + "peers=%s}",
             LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, Arrays.toString(listTest.toArray()));
     assertEquals(greetingToString, GREETING_MSG.toString());
   }

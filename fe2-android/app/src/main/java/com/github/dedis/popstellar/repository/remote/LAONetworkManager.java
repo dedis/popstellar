@@ -107,6 +107,7 @@ public class LAONetworkManager implements MessageSender {
   public Completable catchup(Channel channel) {
     Log.d(TAG, "sending a catchup to the channel " + channel);
     Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
+
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
@@ -135,12 +136,9 @@ public class LAONetworkManager implements MessageSender {
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
         // Catchup already sent messages after the subscription to the channel is complete
-        // || TODO This should be used instead of the two next uncommented lines as it allows the
-        // || returned Completable to complete only when both subscribe and catchup are complete.
-        // || But right now, the LAO creation need this specific behavior.
-        // .flatMapCompletable(answer -> catchup(channel))
-        .doAfterSuccess(answer -> catchup(channel).subscribe())
-        .ignoreElement();
+        // This allows for the completion of the returned completable only when both subscribe
+        // and catchup are completed
+        .flatMapCompletable(answer -> catchup(channel));
   }
 
   @Override
@@ -151,6 +149,11 @@ public class LAONetworkManager implements MessageSender {
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
         .ignoreElement();
+  }
+
+  @Override
+  public Observable<WebSocket.Event> getConnectEvents() {
+    return connection.observeConnectionEvents();
   }
 
   private void handleBroadcast(Broadcast broadcast) {

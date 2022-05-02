@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -53,6 +54,10 @@ public class LaoHandlerTest {
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
+
+  public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
+  public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
+  public static final String RANDOM_PEER = "http://128.0.0.2";
 
   private Lao lao;
   private MessageGeneral createLaoMessage;
@@ -138,5 +143,16 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testGreetLao() throws DataHandlingException {}
+  public void testGreetLao() throws DataHandlingException {
+    // Create the Greet Lao
+    GreetLao greetLao =
+        new GreetLao(
+            lao.getId(),
+            RANDOM_KEY,
+            RANDOM_ADDRESS,
+            RANDOM_PEER
+        );
+
+
+  }
 }
