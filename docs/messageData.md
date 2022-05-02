@@ -19,7 +19,6 @@
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
-  - [Requesting a key for an encrypted election (election#request_key)](#requesting-a-key-for-an-encrypted-election-electionrequest_key)
   - [Receiving a key for an encrypted election (election#key)](#receiving-a-key-for-an-encrypted-election-electionkey)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
   - [Opening an Election (election#open)](#opening-an-election-electionopen)
@@ -1150,128 +1149,14 @@ the organizer forgets to scan an attendee’s public key.
 
 An election has the following phases:
 
-(Request key → Receive key) → Setup → Open → Cast vote(s) → End → Result
+Setup (→ Receive key) → Open → Cast vote(s) → End → Result
 
-**(Request key)**: If the election is supposed to have secret (encrypted, confidential) ballots, the frontend first has to request an election key on the `/root/<lao_id>/election/key` channel.
-**(Receive key)**: If previously an election key was requested, the backend has to broadcast it on the `/root/<lao_id>/election/key` channel.
 **Setup**: This phase consists of the organizer creating a new election.
+**(Receive key)**: If the election was setup with the secret ballot option. The backend will send this message after generating the key.
 **Open**: This state consists of the organizer opening the election.
 **Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
 **End**: This phase consists of the organizer ending the election. No new votes are accepted from now on.
 **Result**: This phase consists of the organizer determining the outcome of the election and retrieving the **witness* signatures on it.
-
-## Requesting a key for an encrypted election (election#request_key)
-
-🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
-**Mid Level** > **High level** (*election#request_key*)
-
-There are two supported versions for elections: Open and secret ballot. In order to set up a secret ballot election, the backend(-s) need to establish a shared key among them per election. The corresponding public key is included on the election#setup message and can then be used to encrypt the votes before casting them. This message has to be sent on the `/root/<lao_id>/election/key` channel and the corresponding answer message ([election#key](#receiving-a-key-for-an-encrypted-election-electionkey)) will also be broadcasted by the backend on this channel.
-
-<details>
-<summary>
-💡 See an example
-</summary>
-
-```json5
-// ../protocol/examples/messageData/election_request_key/election_request_key.json
-
-{
-    "object": "election",
-    "action": "request_key",
-    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/query/method/message/data/dataRequestKeyElection.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataRequestKeyElection.json",
-    "description": "Match an ElectionRequestKey query",
-    "type": "object",
-    "properties": {
-        "object": {
-            "const": "election"
-        },
-        "action": {
-            "const": "request_key"
-        },
-        "election": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "description": "The election id already has to be known so that the backend can more easily associate the following election#setup message",
-            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
-        }
-    },
-    "additionalProperties": false,
-    "required": ["object", "action", "election"]
-}
-
-```
-
-## Receiving a key for an encrypted election (election#key)
-
-🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
-**Mid Level** > **High level** (*election#key*)
-
-After sending an [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message, the frontend expects the backend to return an empheral election key. In order not to break the abstraction of pub/sub channels, the backend does not directly respond but rather broadcasts an election#key message on the `/root/<lao_id>/election/key` channel.
-
-<details>
-<summary>
-💡 See an example
-</summary>
-
-```json5
-// ../protocol/examples/messageData/election_request_key/election_request_key.json
-
-{
-    "object": "election",
-    "action": "key",
-    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
-    "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/query/method/message/data/dataKeyElection.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json",
-    "description": "Match an ElectionKey query. This message is sent by the server",
-    "type": "object",
-    "properties": {
-        "object": {
-            "const": "election"
-        },
-        "action": {
-            "const": "key"
-        },
-        "election": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "description": "The election id the new election key is associated with",
-            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
-        },
-        "election_key": {
-            "description": "[Base64String] public key of the election",
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "Note: the string is encoded in Base64"
-        }
-    },
-    "additionalProperties": false,
-    "required": ["object", "action", "election", "election_key"]
-}
-
-```
 
 ## Setting up an Election (election#setup)
 
@@ -1487,6 +1372,70 @@ In the future elections may allow write-in or support different voting methods b
     ]
 }
 
+```
+
+## Receiving a key for an encrypted election (election#key)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#key*)
+
+After receiving an [election#setup](#setting-up-an-election-electionsetup) message with a secret ballot voting method, the backend will generate a key pair and broadcast an election#key message to all the channel subscribers to encrypt the votes.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_request_key/election_request_key.json
+
+{
+    "object": "election",
+    "action": "key",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataKeyElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json",
+    "description": "Match an ElectionKey query. This message is sent by the server",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "key"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the election"
+        },
+        "election_key": {
+            "description": "[Base64String] public key of the election",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "election", "election_key"]
+}
 
 ```
 
