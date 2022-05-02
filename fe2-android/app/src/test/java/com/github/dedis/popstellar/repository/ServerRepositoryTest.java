@@ -1,9 +1,10 @@
 package com.github.dedis.popstellar.repository;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.objects.Server;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,10 +31,10 @@ public class ServerRepositoryTest {
     assertEquals(SERVER_1, serverRepository.getServerByLaoId(LAO_1));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void getServerByLaoIdFailsWithEmptyRepo(){
+  @Test
+  public void getServerByLaoIdFailsWithEmptyRepo() {
     ServerRepository emptyRepo = new ServerRepository();
-    assertEquals(SERVER_1, emptyRepo.getServerByLaoId(LAO_1));
+    assertThrows(IllegalArgumentException.class, () -> emptyRepo.getServerByLaoId(LAO_1));
   }
 
   @Test

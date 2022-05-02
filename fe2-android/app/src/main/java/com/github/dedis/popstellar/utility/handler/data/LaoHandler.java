@@ -223,7 +223,7 @@ public final class LaoHandler {
     ServerRepository serverRepository = context.getServerRepository();
     serverRepository.addServer(greetLao.getId(), server);
 
-    // TODO In the future, implement automatic connection to all the peers contained in the peers
+    // In the future, implement automatic connection to all the peers contained in the peers
     // message
   }
 }

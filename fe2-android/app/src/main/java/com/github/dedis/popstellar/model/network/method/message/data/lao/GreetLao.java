@@ -84,7 +84,6 @@ public class GreetLao extends Data {
       return true;
     }
     if (o == null || getClass() != o.getClass()) {
-      System.out.println(1);
       return false;
     }
 

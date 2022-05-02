@@ -157,9 +157,9 @@ public class LaoHandlerTest {
     messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check that the server repository contains the key of the server
-    assertEquals(serverRepository.getServerByLaoId(lao.getId()).getServerAddress(), RANDOM_ADDRESS);
+    assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).getServerAddress());
     // Check that it contains the key as well
-    assertEquals(serverRepository.getServerByLaoId(lao.getId()).getPublicKey(), RANDOM_KEY);
+    assertEquals(RANDOM_KEY, serverRepository.getServerByLaoId(lao.getId()).getPublicKey());
 
     // Test for invalid LAO Id
     GreetLao greetLao_invalid =
