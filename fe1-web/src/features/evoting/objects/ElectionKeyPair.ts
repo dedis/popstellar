@@ -1,7 +1,5 @@
 import { curve } from '@dedis/kyber';
 
-import { Base64UrlData } from 'core/objects';
-
 import { ElectionPrivateKey } from './ElectionPrivateKey';
 import { ElectionPublicKey } from './ElectionPublicKey';
 

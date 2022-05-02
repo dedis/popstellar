@@ -60,7 +60,7 @@ export type SelectedBallots = { [questionIndex: number]: Set<number> };
 export interface RegisteredVote {
   createdAt: number;
   sender: string;
-  votes: Vote[];
+  votes: Vote[] | EncryptedVote[];
   messageId: string;
 }
 
