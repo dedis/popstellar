@@ -4,6 +4,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.app.AlertDialog.Builder;
@@ -332,6 +333,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             });
 
     if (category == PRESENT) {
+      // Check that election has been opened (synch with backend, casting enabled only after opened)
+      // Election has to opens automatically when it reaches it's scheduled start time
+      if (election.getState() == CREATED){
+        viewModel.setCurrentElection(election);
+        viewModel.openElection(election);
+      }
+
       electionBinding.electionActionButton.setText(R.string.cast_vote);
       electionBinding.electionActionButton.setEnabled(true);
       electionBinding.electionActionButton.setOnClickListener(
@@ -365,12 +373,31 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               viewModel.endElection(election);
             });
       }
+    } else if (category == FUTURE){
+      electionBinding.electionActionButton.setOnClickListener(
+          clicked -> {
+            viewModel.setCurrentElection(election);
+            viewModel.openElection(election);
+          });
+
+      electionBinding.electionActionButton.setText(R.string.start);
+      // Only the organizer can start the vote
+      electionBinding.electionActionButton.setEnabled(viewModel.isOrganizer().getValue());
+      viewModel
+          .getOpenElectionEvent()
+          .observe(
+              lifecycleOwner,
+              open -> {
+                electionBinding.electionActionButton.setText(R.string.refresh_start);
+                electionBinding.electionActionButton.setEnabled(false);
+              });
     }
+
     electionBinding.electionEditButton.setOnClickListener(
-        clicked -> {
-          viewModel.setCurrentElection(election);
-          viewModel.openManageElection(true);
-        });
+      clicked -> {
+        viewModel.setCurrentElection(election);
+        viewModel.openManageElection(true);
+      });
 
     electionBinding.detailsButton.setOnClickListener(
         clicked -> {

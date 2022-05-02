@@ -2,6 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
+
 	"golang.org/x/xerrors"
 )
 
@@ -9,7 +10,7 @@ import (
 type ChirpBroadcast struct {
 	Object  string `json:"object"`
 	Action  string `json:"action"`
-	ChirpId string `json:"chirp_id"`
+	ChirpID string `json:"chirp_id"`
 	Channel string `json:"channel"`
 
 	// Timestamp is a Unix timestamp
@@ -24,9 +25,9 @@ func (message ChirpBroadcast) Verify() error {
 	}
 
 	// verify that the chirp id is base64URL encoded
-	_, err := base64.URLEncoding.DecodeString(message.ChirpId)
+	_, err := base64.URLEncoding.DecodeString(message.ChirpID)
 	if err != nil {
-		return xerrors.Errorf("chirp id is %s, should be base64URL encoded", message.ChirpId)
+		return xerrors.Errorf("chirp id is %s, should be base64URL encoded", message.ChirpID)
 	}
 
 	return nil

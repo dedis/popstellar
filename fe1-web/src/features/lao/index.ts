@@ -31,6 +31,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     hooks: {
       useLaoList: hooks.LaoHooks.useLaoList,
       useIsLaoOrganizer: hooks.LaoHooks.useIsLaoOrganizer,
+      useIsLaoWitness: hooks.LaoHooks.useIsLaoWitness,
       useLaoMap: hooks.LaoHooks.useLaoMap,
       useCurrentLao: hooks.LaoHooks.useCurrentLao,
       useCurrentLaoId: hooks.LaoHooks.useCurrentLaoId,

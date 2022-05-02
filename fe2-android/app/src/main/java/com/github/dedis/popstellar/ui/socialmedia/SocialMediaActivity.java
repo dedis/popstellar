@@ -152,25 +152,19 @@ public class SocialMediaActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
     BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
-          switch (item.getItemId()) {
-            case R.id.social_media_home_menu:
-              mViewModel.openHome();
-              break;
-            case R.id.social_media_search_menu:
-              mViewModel.openSearch();
-              break;
-            case R.id.social_media_following_menu:
-              mViewModel.openFollowing();
-              break;
-            case R.id.social_media_profile_menu:
-              mViewModel.openProfile();
-              break;
-            default:
+          int itemId = item.getItemId();
+          if (itemId == R.id.social_media_home_menu) {
+            mViewModel.openHome();
+          } else if (itemId == R.id.social_media_search_menu) {
+            mViewModel.openSearch();
+          } else if (itemId == R.id.social_media_following_menu) {
+            mViewModel.openFollowing();
+          } else if (itemId == R.id.social_media_profile_menu) {
+            mViewModel.openProfile();
           }
           return true;
         });

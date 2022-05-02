@@ -72,14 +72,14 @@ const mockChannelId = 'someChannelId';
 jest.mock('core/objects', () => {
   return {
     ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn().mockImplementation(() => mockChannelId),
+    channelFromIds: jest.fn(() => mockChannelId),
   };
 });
 
 jest.mock('core/network', () => {
   return {
     ...jest.requireActual('core/network'),
-    subscribeToChannel: jest.fn().mockImplementation(() => Promise.resolve()),
+    subscribeToChannel: jest.fn(() => Promise.resolve()),
   };
 });
 
@@ -236,7 +236,7 @@ describe('ElectionHandler', () => {
     it('should create the election', () => {
       let storedElection: ElectionState | undefined;
 
-      const addEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const addEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator
@@ -335,8 +335,8 @@ describe('ElectionHandler', () => {
     it('should update the election status', () => {
       let storedElection = mockElectionNotStarted.toState();
 
-      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const getEventById = jest.fn(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator
@@ -457,8 +457,8 @@ describe('ElectionHandler', () => {
 
       let storedElection = mockElectionOpened.toState();
 
-      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const getEventById = jest.fn(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator
@@ -499,8 +499,8 @@ describe('ElectionHandler', () => {
 
       let storedElection = mockElectionOpened.toState();
 
-      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const getEventById = jest.fn(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator
@@ -603,8 +603,8 @@ describe('ElectionHandler', () => {
     it('should update the election status', () => {
       let storedElection = mockElectionOpened.toState();
 
-      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const getEventById = jest.fn(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator
@@ -713,8 +713,8 @@ describe('ElectionHandler', () => {
     it('should update the election status and store results', () => {
       let storedElection = mockElectionTerminated.toState();
 
-      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+      const getEventById = jest.fn(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn((laoId, eventState) => {
         storedElection = eventState;
 
         // Return a redux action, should be an action creator

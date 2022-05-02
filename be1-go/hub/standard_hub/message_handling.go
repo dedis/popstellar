@@ -44,7 +44,8 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, but found %s#%s", object, action)
+		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, "+
+			"but found %s#%s", object, action)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -77,7 +78,9 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 }
 
 // handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
-func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast method.Broadcast) error {
+func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket,
+	broadcast method.Broadcast) error {
+
 	id := -1
 
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
@@ -105,7 +108,8 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(id, "only lao#create is allowed on root, but found %s#%s", object, action)
+		err := answer.NewErrorf(id, "only lao#create is allowed on root, but found %s#%s",
+			object, action)
 		sock.SendError(&id, err)
 		return err
 	}
@@ -139,7 +143,9 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 }
 
 // handleRootCatchup handles an incoming catchup message on the root channel
-func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
+	byteMessage []byte) ([]message.Message, int, error) {
+
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -148,10 +154,12 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 	}
 
 	if catchup.Params.Channel != rootChannel {
-		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root channel")
+		return nil, catchup.ID, xerrors.Errorf("server catchup message can only " +
+			"be sent on /root channel")
 	}
 
 	messages := h.rootInbox.GetSortedMessages()
+
 	return messages, catchup.ID, nil
 }
 
@@ -231,7 +239,6 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 // handleDuringCatchup handle a message obtained by the server catching up
 func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) error {
-
 	h.Lock()
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
@@ -271,12 +278,13 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	signature := publish.Params.Message.Signature
-	messageId := publish.Params.Message.MessageID
+	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
 
-	expectedMessageId := messagedata.Hash(data, signature)
-	if expectedMessageId != messageId {
-		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q",
+			expectedMessageID, messageID)
 	}
 
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
@@ -319,12 +327,13 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	}
 
 	signature := broadcast.Params.Message.Signature
-	messageId := broadcast.Params.Message.MessageID
+	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageId := messagedata.Hash(data, signature)
-	if expectedMessageId != messageId {
-		return xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return xerrors.Errorf("message_id is wrong: expected %q found %q",
+			expectedMessageID, messageID)
 	}
 
 	h.Lock()
@@ -403,7 +412,9 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 	return unsubscribe.ID, nil
 }
 
-func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleCatchup(socket socket.Socket,
+	byteMessage []byte) ([]message.Message, int, error) {
+
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
