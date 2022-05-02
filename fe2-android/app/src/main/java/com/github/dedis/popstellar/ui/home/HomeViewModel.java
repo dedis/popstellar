@@ -58,16 +58,13 @@ public class HomeViewModel extends AndroidViewModel
 
   /** LiveData objects for capturing events like button clicks */
   private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
-
+  private final MutableLiveData<SingleEvent<String>> mOpenConnectingEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
@@ -76,8 +73,6 @@ public class HomeViewModel extends AndroidViewModel
       new MutableLiveData<>();
 
   /** LiveData objects that represent the state in a fragment */
-  private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
-
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
@@ -142,29 +137,10 @@ public class HomeViewModel extends AndroidViewModel
       return;
     }
 
+    // Establish connection with new address
     networkManager.connect(data.server);
-    Lao lao = new Lao(data.lao);
-    disposables.add(
-        networkManager
-            .getMessageSender()
-            .subscribe(lao.getChannel())
-            .doFinally(this::openHome)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
 
-                  // Create the new LAO and add it to the LAORepository LAO lists
-                  laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-                  laoRepository.setAllLaoSubject();
-
-                  Log.d(TAG, "got success result for subscribe to lao");
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_subscribe_lao)));
-
-    setConnectingLao(lao.getId());
-    openConnecting();
+    openConnecting(data.lao);
   }
 
   /** onCleared is used to cancel all subscriptions to observables. */
@@ -200,8 +176,7 @@ public class HomeViewModel extends AndroidViewModel
 
                   // Send subscribe and catchup after creating a LAO
                   networkManager.getMessageSender().subscribe(lao.getChannel()).subscribe();
-
-                  openHome();
+                  openLAO(lao.getId());
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -232,7 +207,7 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenHomeEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenConnectingEvent() {
+  public LiveData<SingleEvent<String>> getOpenConnectingEvent() {
     return mOpenConnectingEvent;
   }
 
@@ -250,18 +225,6 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<SingleEvent<Boolean>> getCancelNewLaoEvent() {
     return mCancelNewLaoEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCancelConnectEvent() {
-    return mCancelConnectEvent;
-  }
-
-  public LiveData<String> getConnectingLao() {
-    return mConnectingLao;
-  }
-
-  public LiveData<String> getLaoName() {
-    return mLaoName;
   }
 
   public Boolean isWalletSetUp() {
@@ -300,8 +263,8 @@ public class HomeViewModel extends AndroidViewModel
     mOpenHomeEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openConnecting() {
-    mOpenConnectingEvent.postValue(new SingleEvent<>(true));
+  public void openConnecting(String laoId) {
+    mOpenConnectingEvent.postValue(new SingleEvent<>(laoId));
   }
 
   public void openWallet() {
@@ -347,14 +310,6 @@ public class HomeViewModel extends AndroidViewModel
 
   public void cancelNewLao() {
     mCancelNewLaoEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void cancelConnect() {
-    mCancelConnectEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void setConnectingLao(String lao) {
-    this.mConnectingLao.postValue(lao);
   }
 
   public void setLaoName(String name) {

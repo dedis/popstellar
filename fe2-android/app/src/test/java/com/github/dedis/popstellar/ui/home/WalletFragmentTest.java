@@ -1,50 +1,61 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+<<<<<<< HEAD
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+=======
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
+>>>>>>> master
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+<<<<<<< HEAD
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+=======
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.iOwnASeedButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.logoutButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.newWalletButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcomeText1;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcomeText2;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcomeText3;
+import static org.hamcrest.Matchers.allOf;
+>>>>>>> master
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Button;
 
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
 
+<<<<<<< HEAD
 import com.github.dedis.popstellar.R;
+=======
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.ui.wallet.WalletFragment;
+>>>>>>> master
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-@LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class WalletFragmentTest {
 
+<<<<<<< HEAD
   // TODO: update those tests: needs to be simplified and readable
   public ActivityScenarioRule<HomeActivity> mActivityScenarioRule =
       new ActivityScenarioRule<>(HomeActivity.class);
@@ -204,6 +215,43 @@ public class WalletFragmentTest {
 
     assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("Cancel"), isDisplayed()));
+=======
+  @Rule(order = 0)
+  public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
+
+  @Rule(order = 1)
+  public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+  @Rule(order = 3)
+  public final ActivityFragmentScenarioRule<HomeActivity, WalletFragment> fragmentRule =
+      ActivityFragmentScenarioRule.launchIn(
+          HomeActivity.class,
+          homeFragmentContainerId(),
+          WalletFragment.class,
+          WalletFragment::newInstance);
+
+  @Before
+  public void setup() {
+    hiltRule.inject();
+  }
+
+  @Test
+  public void welcomeWalletTextsIsDisplayed() {
+    welcomeText1().check(matches(isDisplayed()));
+    welcomeText2().check(matches(isDisplayed()));
+    welcomeText3().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void navBarIsDisplayed() {
+    navBar().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void actionButtonsAreDisplayed() {
+    newWalletButton().check(matches(isDisplayed()));
+    iOwnASeedButton().check(matches(isDisplayed()));
+>>>>>>> master
   }
 
   @Test
@@ -342,6 +390,7 @@ public class WalletFragmentTest {
   }
 
   @Test
+<<<<<<< HEAD
   public void setUpWithSeedWalletUITest() {
     ViewInteraction appCompatButton =
         onView(
@@ -366,6 +415,10 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton2.perform(click());
 
+=======
+  public void iOwnASeedButtonDisplaysDialogOnClick() {
+    iOwnASeedButton().perform(click());
+>>>>>>> master
     Button setupWallet = dialogPositiveButton();
 
     assertThat(setupWallet, allOf(withText("SET UP WALLET"), isDisplayed()));
@@ -413,6 +466,7 @@ public class WalletFragmentTest {
     assertThat(confirm, allOf(withText("Confirm"), isDisplayed()));
     confirm.performClick();
   }
+<<<<<<< HEAD
 
   private static Matcher<View> childAtPosition(
       final Matcher<View> parentMatcher, final int position) {
@@ -433,4 +487,6 @@ public class WalletFragmentTest {
       }
     };
   }
+=======
+>>>>>>> master
 }

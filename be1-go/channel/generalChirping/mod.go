@@ -53,15 +53,32 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 	return newChannel
 }
 
-// NewGeneralChirpingRegistry creates a new registry for a general chirping
-// channel and populates the registry with the actions of the channel.
-func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
-	newRegistry := registry.NewMessageRegistry()
+// ---
+// Publish-subscribe / channel.Channel implementation
+// ---
 
-	newRegistry.Register(messagedata.ChirpNotifyAdd{}, c.addChirp)
-	newRegistry.Register(messagedata.ChirpNotifyDelete{}, c.deleteChirp)
+// Subscribe is used to handle a subscribe message from the client.
+func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a subscribe")
+	c.sockets.Upsert(socket)
 
-	return newRegistry
+	return nil
+}
+
+// Unsubscribe is used to handle an unsubscribe message.
+func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a unsubscribe")
+
+	ok := c.sockets.Delete(socketID)
+	if !ok {
+		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	return nil
 }
 
 // Publish is used to handle a publish message.
@@ -70,6 +87,14 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("nothing should be published in the general")
 	return xerrors.Errorf("nothing should be directly published in the general")
+}
+
+// Catchup is used to handle a catchup message.
+func (c *Channel) Catchup(msg method.Catchup) []message.Message {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a catchup")
+	return c.inbox.GetSortedMessages()
 }
 
 // Broadcast is used to handle broadcast messages.
@@ -97,68 +122,49 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 	return nil
 }
 
-// Subscribe is used to handle a subscribe message from the client.
-func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(msg.ID)).
-		Msg("received a subscribe")
-	c.sockets.Upsert(socket)
+// ---
+// Message handling
+// ---
 
-	return nil
+// NewGeneralChirpingRegistry creates a new registry for a general chirping
+// channel and populates the registry with the actions of the channel.
+func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
+	newRegistry := registry.NewMessageRegistry()
+
+	newRegistry.Register(messagedata.ChirpNotifyAdd{}, c.processAddChirp)
+	newRegistry.Register(messagedata.ChirpNotifyDelete{}, c.processDeleteChirp)
+
+	return newRegistry
 }
 
-// Unsubscribe is used to handle an unsubscribe message.
-func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(msg.ID)).
-		Msg("received a unsubscribe")
-
-	ok := c.sockets.Delete(socketID)
+// processAddChirp checks an add chirp message
+func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
+	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
 	if !ok {
-		return answer.NewError(-2, "client is not subscribed to this channel")
+		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
+	}
+
+	err := c.verifyNotifyChirp(msg, data)
+	if err != nil {
+		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
 
 	return nil
 }
 
-// Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(msg method.Catchup) []message.Message {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(msg.ID)).
-		Msg("received a catchup")
-	return c.inbox.GetSortedMessages()
-}
+// processDeleteChirp checks a delete chirp message
+func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
-// broadcastToAllClients is a helper message to broadcast a message to all
-// subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
-
-	c.log.Info().
-		Str(msgID, msg.MessageID).
-		Msg("broadcast new chirp to all clients")
-
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodBroadcast,
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			c.channelPath,
-			msg,
-		},
+	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}
 
-	buf, err := json.Marshal(&rpcMessage)
+	err := c.verifyNotifyChirp(msg, data)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}
-
-	c.sockets.SendToAll(buf)
 
 	return nil
 }
@@ -190,36 +196,6 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-// addChirp checks an add chirp message
-func (c *Channel) addChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
-	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
-	if !ok {
-		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
-	}
-
-	err := c.verifyNotifyChirp(msg, data)
-	if err != nil {
-		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
-	}
-
-	return nil
-}
-
-// deleteChirp checks a delete chirp message
-func (c *Channel) deleteChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
-	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
-	if !ok {
-		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
-	}
-
-	err := c.verifyNotifyChirp(msg, data)
-	if err != nil {
-		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
-	}
-
-	return nil
-}
-
 func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
@@ -241,6 +217,39 @@ func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Ve
 	if !ok {
 		return answer.NewError(-4, "only the server can broadcast the chirp messages")
 	}
+
+	return nil
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
+	c.log.Info().
+		Str(msgID, msg.MessageID).
+		Msg("broadcast new chirp to all clients")
+
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodBroadcast,
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelPath,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	c.sockets.SendToAll(buf)
 
 	return nil
 }

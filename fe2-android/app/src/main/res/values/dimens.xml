@@ -10,7 +10,7 @@
   <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
 
   <!-- Text -->
-  <dimen name="margin_text">32dp</dimen>
+  <dimen name="margin_text">28dp</dimen>
   <dimen name="margin_text_small">16dp</dimen>
   <dimen name="margin_top">5dp</dimen>
   <dimen name="size_title">24sp</dimen>
@@ -94,5 +94,29 @@
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
+<<<<<<< HEAD
+=======
+  <dimen name="card_view_elevation">1dp</dimen>
+  <dimen name="lone_bottom_button_top_margin">30dp</dimen>
+  <integer name="min_number_lines_seed_text">3</integer>
+
+  <!-- Lao ist dimensions -->
+  <dimen name="rv_margin_top">20dp</dimen>
+
+  <!--  Card View dimensions-->
+  <integer name="camera_preview_width">240</integer>
+  <integer name="camera_preview_height">320</integer>
+  <integer name="requested_preview_width">1600</integer>
+
+  <!-- Recycler View dimensions  -->
+  <integer name="requested_preview_height">1024</integer>
+  <integer name="navigation_reversion_delay">500</integer>
+
+  <!-- Menu icons dimensions -->
+  <string name="camera_preview_ratio">3:4</string>
+
+  <!--  Home dimensions-->
+  <dimen name="home_card_view_height">50dp</dimen>
+>>>>>>> master
 
 </resources>

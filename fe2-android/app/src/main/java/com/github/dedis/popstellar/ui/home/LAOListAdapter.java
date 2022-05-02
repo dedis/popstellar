@@ -23,8 +23,13 @@ public class LAOListAdapter extends BaseAdapter {
 
   private final boolean openLaoDetail;
 
+<<<<<<< HEAD
   public LAOListAdapter(
       List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
+=======
+  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
+
+>>>>>>> master
     this.homeViewModel = homeViewModel;
     setList(laos);
     lifecycleOwner = activity;
@@ -41,6 +46,7 @@ public class LAOListAdapter extends BaseAdapter {
   }
 
   @Override
+<<<<<<< HEAD
   public int getCount() {
     return laos != null ? laos.size() : 0;
   }
@@ -48,6 +54,31 @@ public class LAOListAdapter extends BaseAdapter {
   @Override
   public Object getItem(int position) {
     return laos.get(position);
+=======
+  public LAOListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    View view = layoutInflater.inflate(R.layout.lao_card, parent, false);
+    return new LAOListItemViewHolder(view);
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull LAOListItemViewHolder holder, int position) {
+
+    final Lao lao = laos.get(position);
+
+    CardView cardView = holder.cardView;
+    cardView.setOnClickListener(
+        v -> {
+          if (openLaoDetail) {
+            homeViewModel.openLAO(lao.getId());
+          } else {
+            homeViewModel.openLaoWallet(lao.getId());
+          }
+        });
+
+    TextView laoTitle = holder.laoTitle;
+    laoTitle.setText(lao.getName());
+>>>>>>> master
   }
 
   @Override
@@ -67,7 +98,11 @@ public class LAOListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+<<<<<<< HEAD
     if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+=======
+  static class LAOListItemViewHolder extends RecyclerView.ViewHolder {
+>>>>>>> master
 
     LAOItemUserActionsListener userActionsListener =
         lao -> {
@@ -81,10 +116,16 @@ public class LAOListAdapter extends BaseAdapter {
     binding.setLao(laos.get(position));
     binding.setLifecycleOwner(lifecycleOwner);
 
+<<<<<<< HEAD
     binding.setListener(userActionsListener);
 
     binding.executePendingBindings();
 
     return binding.getRoot();
+=======
+      cardView = itemView.findViewById(R.id.lao_card_view);
+      laoTitle = itemView.findViewById(R.id.lao_card_text_view);
+    }
+>>>>>>> master
   }
 }

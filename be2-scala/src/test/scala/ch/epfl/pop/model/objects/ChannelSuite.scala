@@ -71,7 +71,7 @@ class ChannelSuite extends FunSuite with Matchers {
 
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(laoId))
 
-    val expected = Base64Data.encode(laoId)
+    val expected = Hash(Base64Data.encode(laoId))
     noException shouldBe thrownBy(channel)
     channel.decodeChannelLaoId.get should equal(expected)
   }
@@ -81,7 +81,7 @@ class ChannelSuite extends FunSuite with Matchers {
 
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data(laoId))
 
-    val expected = Base64Data(laoId)
+    val expected = Hash(Base64Data(laoId))
 
     noException shouldBe thrownBy(channel)
     channel.decodeChannelLaoId.get should equal(expected)
@@ -92,7 +92,7 @@ class ChannelSuite extends FunSuite with Matchers {
 
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data(laoId) + Channel.CHANNEL_SEPARATOR + Base64Data.encode("social"))
 
-    val expected = Base64Data(laoId)
+    val expected = Hash(Base64Data(laoId))
 
     noException shouldBe thrownBy(channel)
     channel.decodeChannelLaoId.get should equal(expected)
@@ -127,6 +127,7 @@ class ChannelSuite extends FunSuite with Matchers {
 
     an[IllegalArgumentException] shouldBe thrownBy(channel)
   }
+
 
   test("Bad LaoId: not encoded in base64 extraction channel test (2)") {
     val laoId = "not_base64_lao_id"

@@ -20,7 +20,7 @@ export class MockNetworkConnection {
 
   public setRpcHandler = jest.fn();
 
-  public sendPayload = jest.fn().mockImplementation(() => {
+  public sendPayload = jest.fn(() => {
     if (this.sendingSucceeds) {
       return Promise.resolve(this.sendResponse);
     }

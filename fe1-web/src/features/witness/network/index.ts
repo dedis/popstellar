@@ -1,18 +1,25 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { getStore } from 'core/redux';
 
+import { WitnessConfiguration } from '../interface';
 import { WitnessMessage } from './messages';
 import { handleWitnessMessage } from './WitnessHandler';
+import { afterMessageProcessingHandler, makeWitnessStoreWatcher } from './WitnessStoreWatcher';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - The witness feature configuration object
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (config: WitnessConfiguration) => {
+  config.messageRegistry.add(
     ObjectType.MESSAGE,
     ActionType.WITNESS,
-    handleWitnessMessage,
+    handleWitnessMessage(config.getCurrentLao),
     WitnessMessage.fromJson,
   );
-}
+
+  // listen for new processable messages
+  const store = getStore();
+  store.subscribe(makeWitnessStoreWatcher(store, afterMessageProcessingHandler(config.enabled)));
+};

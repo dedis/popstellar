@@ -11,6 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+<<<<<<< HEAD
+=======
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+>>>>>>> master
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
@@ -103,7 +108,12 @@ public class ContentWalletFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mWalletContentBinding.laoList;
 
+<<<<<<< HEAD
     mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), false);
+=======
+    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, false);
+>>>>>>> master
 
     listView.setAdapter(mListAdapter);
   }

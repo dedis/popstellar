@@ -32,6 +32,7 @@
   <string name="text_entry_launch">Organization name</string>
   <string name="text_button_launch">Launch</string>
 
+
   <!-- Abstract Event-->
   <string name="start_date_required">Start Date*</string>
   <string name="start_time_required">Start Time*</string>
@@ -168,6 +169,8 @@
   <string name="tally_votes">Tally up votes</string>
   <string name="cast_vote">Cast votes</string>
   <string name="show_results">Show results</string>
+  <string name="start">Start</string>
+  <string name="refresh_start">Refresh to start</string>
 
   <!-- Consensus -->
   <string name="start_election">Start Election</string>
@@ -198,6 +201,7 @@
   <string name="logout_title">Log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="copied_to_clipboard">Copied to clipboard</string>
+  <string name="copy_button_descriptor">Button to copy seed</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -245,6 +249,7 @@
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
+  <string name="error_open_election">Could not open the election\n%1$s</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

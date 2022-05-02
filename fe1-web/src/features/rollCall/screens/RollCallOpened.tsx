@@ -7,15 +7,17 @@ import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { Hash, PublicKey } from 'core/objects';
+import { PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall } from '../network';
+import { RollCall } from '../objects';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -48,15 +50,21 @@ const RollCallOpened = () => {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
   }
 
+  const rollCall = useSelector(makeEventGetter(lao.id, rollCallID)) as RollCall;
+
+  if (!rollCall) {
+    throw new Error('Impossible to open a Roll Call that does not exist');
+  }
+
   // This will run only when the state changes
   useEffect(() => {
-    if (!lao || !lao.id || !rollCallID || !toast) {
+    if (!lao || !lao.id || !toast) {
       return;
     }
 
     const addOwnToken = async () => {
       try {
-        const tok = await Wallet.generateToken(lao.id, new Hash(rollCallID));
+        const tok = await Wallet.generateToken(lao.id, rollCall.id);
         updateAttendees((prev) => new Set<string>([...prev, tok.publicKey.valueOf()]));
       } catch (err) {
         toast.show(`Could not generate organizer's PoP token, error: ${err}`, {
@@ -68,8 +76,10 @@ const RollCallOpened = () => {
     };
 
     // Add the token of the organizer as soon as we open the roll call
-    addOwnToken().catch((e) => console.error(e));
-  }, [lao, rollCallID, toast]);
+    if (!rollCall.attendees) {
+      addOwnToken().catch((e) => console.error(e));
+    }
+  }, [lao, rollCall, toast]);
 
   const handleError = (err: any) => {
     console.error(err.toString());
@@ -104,8 +114,14 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = () => {
-    const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(rollCallID, attendeesList)
+    const screenAttendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
+    const attendeesList = rollCall.attendees
+      ? rollCall.attendees.concat(screenAttendeesList)
+      : screenAttendeesList;
+    if (!rollCall.idAlias) {
+      throw new Error('Trying to close a roll call that has no idAlias defined');
+    }
+    return requestCloseRollCall(rollCall.idAlias, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

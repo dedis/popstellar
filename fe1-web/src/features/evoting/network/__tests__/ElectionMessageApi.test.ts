@@ -20,7 +20,7 @@ const mockChannelId = 'some channel id';
 jest.mock('core/objects', () => {
   return {
     ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn().mockImplementation(() => mockChannelId),
+    channelFromIds: jest.fn(() => mockChannelId),
   };
 });
 

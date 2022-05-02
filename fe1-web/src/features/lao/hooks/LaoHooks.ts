@@ -9,6 +9,7 @@ import {
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoOrganizer,
+  selectIsLaoWitness,
   selectLaosList,
   selectLaosMap,
 } from '../reducer';
@@ -57,9 +58,14 @@ export namespace LaoHooks {
   export const useLaoList = (): Lao[] => useSelector(selectLaosList);
 
   /**
-   * Indicates whether we're organizers of the current LAO
+   * Indicates whether we are an organizer of the current LAO
    */
   export const useIsLaoOrganizer = (): boolean => useSelector(selectIsLaoOrganizer);
+
+  /**
+   * Indicates whether we are a witness of the current LAO
+   */
+  export const useIsLaoWitness = (): boolean => useSelector(selectIsLaoWitness);
 
   /**
    * Retrieve a map of the LAOs

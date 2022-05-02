@@ -19,6 +19,10 @@ const mockPublicKey2 = new PublicKey(keyPair.publicKey2);
 const TIMESTAMP = 1609455600;
 const time = new Timestamp(TIMESTAMP).toString(); // 1st january 2021
 const rollCallId = Hash.fromStringArray('R', mockLaoId, time, mockLaoName).toString();
+const mockRollCall = {
+  id: rollCallId,
+  idAlias: rollCallId,
+};
 
 jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
@@ -38,14 +42,14 @@ beforeEach(() => {
   jest.resetAllMocks();
 
   const useSelectorMock = jest.spyOn(reactRedux, 'useSelector');
-  useSelectorMock.mockReturnValue(mockLao);
+  useSelectorMock.mockReturnValueOnce(mockLao).mockReturnValue(mockRollCall);
 
   promise = Promise.resolve(mockPopToken);
   generateTokenMock.mockImplementation(() => promise);
 
   (useRoute as jest.Mock).mockReturnValue({
     name: STRINGS.roll_call_open,
-    params: { rollCallID: rollCallId, updateID: rollCallId },
+    params: { rollCallID: rollCallId },
   });
 
   (useNavigation as jest.Mock).mockReturnValue({
