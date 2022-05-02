@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -44,6 +44,13 @@ const EMPTY_QUESTION: NewQuestion = {
 };
 
 const MIN_BALLOT_OPTIONS = 2;
+
+const styles = StyleSheet.create({
+  padding: { padding: 5 } as ViewStyle,
+  // this fixes a UI issue specific to the web date picker
+  // probably has to be changed when compiling for mobile
+  zIndexInitial: { zIndex: 'initial' } as unknown as ViewStyle,
+});
 
 /**
  * Some helper functions
@@ -109,7 +116,7 @@ const createElection = (
  */
 
 const CreateElection = ({ route }: any) => {
-  const styles = route.params;
+  const routeStyles = route.params;
 
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
@@ -179,8 +186,8 @@ const CreateElection = ({ route }: any) => {
         // the date picker for the web
         // see archive branches for date picker used for native apps
         Platform.OS === 'web' && (
-          <View style={styles.viewVertical}>
-            <View style={[styles.view, { padding: 5 }]}>
+          <View style={routeStyles.viewVertical}>
+            <View style={[routeStyles.view, styles.padding]}>
               <ParagraphBlock text={STRINGS.election_create_start_time} />
               <DatePicker
                 selected={startTime.toDate()}
@@ -189,7 +196,7 @@ const CreateElection = ({ route }: any) => {
                 }
               />
             </View>
-            <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+            <View style={[routeStyles.view, styles.padding, styles.zIndexInitial]}>
               <ParagraphBlock text={STRINGS.election_create_finish_time} />
               <DatePicker
                 selected={endTime.toDate()}
@@ -224,7 +231,7 @@ const CreateElection = ({ route }: any) => {
         ))
       }
 
-      <View style={[styles.view, { zIndex: 'initial' }]}>
+      <View style={[routeStyles.view, styles.zIndexInitial]}>
         <WideButtonView
           title="Add Question"
           onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}

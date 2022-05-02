@@ -84,9 +84,12 @@ describe('requestCreateElection', () => {
 
 describe('openElection', () => {
   it('works as expected using a valid set of parameters', () => {
-    openElection(mockLaoIdHash, mockElectionNotStarted);
+    openElection(mockElectionNotStarted);
 
-    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
+    expect(channelFromIds).toHaveBeenCalledWith(
+      mockElectionNotStarted.lao,
+      mockElectionNotStarted.id,
+    );
     expect(channelFromIds).toHaveBeenCalledTimes(1);
 
     // cannot directly match the openElection message here as openedAt is set inside the openElection function
@@ -109,9 +112,12 @@ describe('castVote', () => {
   it('works as expected using a valid set of parameters', () => {
     const selectedBallots: SelectedBallots = { 0: new Set([0]), 1: new Set([1]) };
 
-    castVote(mockLaoIdHash, mockElectionNotStarted, selectedBallots);
+    castVote(mockElectionNotStarted, selectedBallots);
 
-    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
+    expect(channelFromIds).toHaveBeenCalledWith(
+      mockElectionNotStarted.lao,
+      mockElectionNotStarted.id,
+    );
     expect(channelFromIds).toHaveBeenCalledTimes(1);
 
     // cannot directly match the openElection message here as created_at is set inside the openElection function
@@ -135,9 +141,9 @@ describe('castVote', () => {
 
 describe('terminateElection', () => {
   it('works as expected using a valid set of parameters', () => {
-    terminateElection(mockLaoIdHash, mockElectionOpened);
+    terminateElection(mockElectionOpened);
 
-    expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionOpened.id);
+    expect(channelFromIds).toHaveBeenCalledWith(mockElectionOpened.lao, mockElectionOpened.id);
     expect(channelFromIds).toHaveBeenCalledTimes(1);
 
     // cannot directly match the openElection message here as created_at is set inside the openElection function

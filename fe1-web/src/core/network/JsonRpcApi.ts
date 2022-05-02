@@ -81,7 +81,7 @@ export async function subscribe(
   });
 
   await getNetworkManager().sendPayload(request, connections);
-  // propagate the catch() with the full error message, as it needs to be handled on a higher level
+  // do not catch exceptions at this level, as the full error message needs to be handled at a higher level
 }
 
 /**
@@ -103,7 +103,7 @@ export async function unsubscribe(
   });
 
   await getNetworkManager().sendPayload(request, connections);
-  // propagate the catch() with the full error message, as it needs to be handled on a higher level
+  // do not catch exceptions at this level, as the full error message needs to be handled at a higher level
 }
 
 interface ReceivedMessage {

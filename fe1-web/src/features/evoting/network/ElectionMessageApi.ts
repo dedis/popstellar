@@ -56,37 +56,31 @@ export async function requestCreateElection(
 /**
  * Sends a query to open an election.
  *
- * @param laoId - The id of the lao in which the given election should be opened
  * @param election - The election that should be opened
  */
-export function openElection(laoId: Hash, election: Election): Promise<void> {
+export function openElection(election: Election): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const message = new OpenElection({
-    lao: laoId,
+    lao: election.lao,
     election: election.id,
     opened_at: time,
   });
 
   // publish on the LAO channel specific to this election
-  return publish(channelFromIds(laoId, election.id), message);
+  return publish(channelFromIds(election.lao, election.id), message);
 }
 
 /**
  * Sends a query to cast a vote during an election.
  *
- * @param laoId - The id of the lao in which this vote should be casted
  * @param election - The election for which the vote should be casted
  * @param selectedBallots - The votes to be added, a map from question index to the set of selected answer indices
  */
-export function castVote(
-  laoId: Hash,
-  election: Election,
-  selectedBallots: SelectedBallots,
-): Promise<void> {
+export function castVote(election: Election, selectedBallots: SelectedBallots): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
 
   const message = new CastVote({
-    lao: laoId,
+    lao: election.lao,
     election: election.id,
     created_at: time,
     // Convert object to array
@@ -94,24 +88,23 @@ export function castVote(
   });
 
   // publish on the LAO channel specific to this election
-  return publish(channelFromIds(laoId, election.id), message);
+  return publish(channelFromIds(election.lao, election.id), message);
 }
 
 /**
  * Sends a query to terminate an election.
  *
- * @param laoId - The id of the lao in which the given election should be terminated
  * @param election - The election that should be terminated
  */
-export function terminateElection(laoId: Hash, election: Election): Promise<void> {
+export function terminateElection(election: Election): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const message = new EndElection({
-    lao: laoId,
+    lao: election.lao,
     election: election.id,
     created_at: time,
     registered_votes: EndElection.computeRegisteredVotesHash(election),
   });
 
   // publish on the LAO channel specific to this election
-  return publish(channelFromIds(laoId, election.id), message);
+  return publish(channelFromIds(election.lao, election.id), message);
 }

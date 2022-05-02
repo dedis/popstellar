@@ -2,6 +2,8 @@ import { Picker } from '@react-native-picker/picker';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { ExtendType } from 'core/types';
+
 import containerStyles from '../styles/stylesheets/containerStyles';
 
 /**
@@ -14,10 +16,13 @@ import containerStyles from '../styles/stylesheets/containerStyles';
  */
 
 const DropdownSelector = (
-  props: Omit<IPropTypes, 'onChange'> & {
-    // make the type for 'onChange' more concrete than the inferred type
-    onChange: (itemValue: string | null, itemIndex: number) => void;
-  },
+  props: ExtendType<
+    IPropTypes,
+    {
+      // make the type for 'onChange' more concrete than the inferred type
+      onChange: (itemValue: string | null, itemIndex: number) => void;
+    }
+  >,
 ) => {
   const { selected, onChange, options } = props;
 
