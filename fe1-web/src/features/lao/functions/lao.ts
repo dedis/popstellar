@@ -5,6 +5,7 @@ import {
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
+  selectIsLaoWitness,
 } from '../reducer';
 
 /**
@@ -34,6 +35,11 @@ export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
  */
 export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
   makeLaoOrganizerBackendPublicKeySelector(laoId)(getStore().getState());
+
+/**
+ * Returns whether the user is witness of the current lao
+ */
+export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
 
 /**
  * Get a LAOs channel by its id

@@ -22,7 +22,7 @@ import { OpenElection } from '../messages/OpenElection';
 jest.mock('core/objects', () => {
   return {
     ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn().mockImplementation(() => mockChannel),
+    channelFromIds: jest.fn(() => mockChannel),
   };
 });
 

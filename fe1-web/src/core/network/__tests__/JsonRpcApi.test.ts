@@ -47,11 +47,9 @@ let mockResponseMessage: Message;
 let mockResponse: JsonRpcResponse;
 
 const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: ActionType.OPEN };
-const mockSendingStrategy: SendingStrategy = jest
-  .fn()
-  .mockImplementation(() =>
-    Promise.resolve([new ExtendedJsonRpcResponse({ receivedFrom: mockAddress }, mockResponse)]),
-  );
+const mockSendingStrategy: SendingStrategy = jest.fn(() =>
+  Promise.resolve([new ExtendedJsonRpcResponse({ receivedFrom: mockAddress }, mockResponse)]),
+);
 
 jest.mock('core/network/NetworkManager', () => {
   const actual = jest.requireActual('/core/network/NetworkManager');
