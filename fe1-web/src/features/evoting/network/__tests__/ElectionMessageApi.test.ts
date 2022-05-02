@@ -6,8 +6,13 @@ import { mockChannel, mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { messageReducer } from 'core/network/ingestion';
 import { channelFromIds, Timestamp } from 'core/objects';
-import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
+import {
+  mockElectionNotStarted,
+  mockElectionOpened,
+  mockSecretBallotElectionNotStarted,
+} from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
+import { ElectionKeyPair } from 'features/evoting/objects/ElectionKeyPair';
 import { electionKeyReducer } from 'features/evoting/reducer';
 
 import {
@@ -109,10 +114,10 @@ describe('openElection', () => {
 });
 
 describe('castVote', () => {
-  it('works as expected using a valid set of parameters', () => {
+  it('works as expected using a valid set of parameters (open ballot)', () => {
     const selectedBallots: SelectedBallots = { 0: new Set([0]), 1: new Set([1]) };
 
-    castVote(mockElectionNotStarted, selectedBallots);
+    castVote(mockElectionNotStarted, undefined, selectedBallots);
 
     expect(channelFromIds).toHaveBeenCalledWith(
       mockElectionNotStarted.lao,
@@ -134,6 +139,47 @@ describe('castVote', () => {
     expect(castVoteMessage.votes).toEqual(
       CastVote.selectedBallotsToVotes(mockElectionNotStarted, selectedBallots),
     );
+
+    expect(publish).toHaveBeenCalledTimes(1);
+  });
+
+  it('works as expected using a valid set of parameters (secret ballot)', () => {
+    const selectedBallots: SelectedBallots = { 0: new Set([3]), 1: new Set([7]) };
+    const keyPair = ElectionKeyPair.generate();
+
+    castVote(mockSecretBallotElectionNotStarted, keyPair.publicKey, selectedBallots);
+
+    expect(channelFromIds).toHaveBeenCalledWith(
+      mockElectionNotStarted.lao,
+      mockElectionNotStarted.id,
+    );
+    expect(channelFromIds).toHaveBeenCalledTimes(1);
+
+    // cannot directly match the openElection message here as created_at is set inside the openElection function
+    expect(publish).toHaveBeenCalledWith(mockChannel, expect.anything());
+
+    // of the first call [0] to publish, extract the second argument [1]
+    const castVoteMessage = (publish as jest.Mock).mock.calls[0][1] as CastVote;
+    expect(castVoteMessage).toBeInstanceOf(CastVote);
+    expect(castVoteMessage.election).toEqual(mockElectionNotStarted.id);
+    expect(castVoteMessage.lao).toEqual(mockElectionNotStarted.lao);
+    expect(castVoteMessage.created_at.valueOf()).toBeLessThanOrEqual(
+      Timestamp.EpochNow().valueOf(),
+    );
+
+    expect(castVoteMessage.votes.length).toEqual(2);
+    expect(castVoteMessage.votes[0].vote.length).toEqual(1);
+    expect(castVoteMessage.votes[1].vote.length).toEqual(1);
+
+    expect(castVoteMessage.votes[0].vote[0]).toBeString();
+    expect(castVoteMessage.votes[1].vote[0]).toBeString();
+
+    expect(
+      keyPair.privateKey.decrypt(castVoteMessage.votes[0].vote[0] as string).toString('utf-8'),
+    ).toEqual('3');
+    expect(
+      keyPair.privateKey.decrypt(castVoteMessage.votes[1].vote[0] as string).toString('utf-8'),
+    ).toEqual('7');
 
     expect(publish).toHaveBeenCalledTimes(1);
   });

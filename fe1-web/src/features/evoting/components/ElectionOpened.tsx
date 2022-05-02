@@ -9,16 +9,19 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import { Election, SelectedBallots } from '../objects';
+import { Election, ElectionVersion, SelectedBallots } from '../objects';
+import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
-const ElectionOpened = ({ election, questions, isOrganizer, canCastVote }: IPropTypes) => {
+const ElectionOpened = ({ election, questions, isOrganizer, electionKey }: IPropTypes) => {
   const toast = useToast();
 
   const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
   const [hasVoted, setHasVoted] = useState(0);
 
+  const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
+
   const onCastVote = () => {
-    castVote(election, selectedBallots)
+    castVote(election, electionKey || undefined, selectedBallots)
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
@@ -88,13 +91,13 @@ const propTypes = {
     }).isRequired,
   ).isRequired,
   isOrganizer: PropTypes.bool,
-  canCastVote: PropTypes.bool,
+  electionKey: PropTypes.instanceOf(ElectionPublicKey),
 };
 ElectionOpened.propTypes = propTypes;
 
 ElectionOpened.defaultProps = {
   isOrganizer: false,
-  canCastVote: false,
+  electionKey: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

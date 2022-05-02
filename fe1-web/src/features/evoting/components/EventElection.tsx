@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Election, ElectionStatus, ElectionVersion } from '../objects';
+import { Election, ElectionStatus } from '../objects';
 import { makeElectionKeySelector } from '../reducer';
 import ElectionNotStarted from './ElectionNotStarted';
 import ElectionOpened from './ElectionOpened';
@@ -27,8 +27,6 @@ const EventElection = (props: IPropTypes) => {
     [election.questions],
   );
 
-  const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
-
   switch (election.electionStatus) {
     case ElectionStatus.NOT_STARTED:
       return (
@@ -40,7 +38,7 @@ const EventElection = (props: IPropTypes) => {
           election={election}
           questions={questions}
           isOrganizer={isOrganizer}
-          canCastVote={canCastVote}
+          electionKey={electionKey}
         />
       );
     case ElectionStatus.TERMINATED:

@@ -3,8 +3,9 @@ import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
-import { Election, SelectedBallots, Vote } from '../../objects';
+import { Election, ElectionVersion, EncryptedVote, SelectedBallots, Vote } from '../../objects';
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {
@@ -18,7 +19,7 @@ export class CastVote implements MessageData {
 
   public readonly created_at: Timestamp;
 
-  public readonly votes: Vote[];
+  public readonly votes: Vote[] | EncryptedVote[];
 
   constructor(msg: MessageDataProperties<CastVote>) {
     if (!msg.election) {
@@ -52,7 +53,7 @@ export class CastVote implements MessageData {
    *
    * @param votes - The array of votes to be checked
    */
-  public static validateVotes(votes: Vote[]) {
+  public static validateVotes(votes: Vote[] | EncryptedVote[]) {
     votes.forEach((vote) => {
       if (!vote.id) {
         throw new ProtocolError("Undefined 'vote id' parameter encountered during 'CastVote'");
@@ -95,6 +96,9 @@ export class CastVote implements MessageData {
     election: Election,
     selectedBallots: SelectedBallots,
   ): Vote[] {
+    if (election.version !== ElectionVersion.OPEN_BALLOT) {
+      throw new Error('selectedBallotsToVotes() should only be called on open ballot elections');
+    }
     // Convert object to array
     const ballotArray = Object.entries(selectedBallots).map(([idx, selectionOptions]) => ({
       index: parseInt(idx, 10),
@@ -114,6 +118,49 @@ export class CastVote implements MessageData {
           question: election.questions[index].id,
           // convert the set to an array and sort votes in ascending order
           vote: [...selectionOptions].sort((a, b) => a - b),
+        }))
+    );
+  }
+
+  /**
+   * Converts an object of type SelectedBallots to an array of encrypted votes ready to be passed to a CastVote message
+   * @param election The election for which these votes are cast
+   * @param electionKey The public key of the election or undefined if there is none
+   * @param selectedBallots The selected ballot options
+   * @returns An array of encrypted votes that can be passed to a CastVote message
+   */
+  public static selectedBallotsToEncryptedVotes(
+    election: Election,
+    electionKey: ElectionPublicKey,
+    selectedBallots: SelectedBallots,
+  ): EncryptedVote[] {
+    if (election.version !== ElectionVersion.SECRET_BALLOT) {
+      throw new Error(
+        'selectedBallotsToEncryptedVotes() should only be called on secret ballot elections',
+      );
+    }
+
+    // Convert object to array
+    const ballotArray = Object.entries(selectedBallots).map(([idx, selectionOptions]) => ({
+      index: parseInt(idx, 10),
+      selectionOptions,
+    }));
+
+    // sort the answers by index
+    ballotArray.sort((a, b) => a.index - b.index);
+
+    return (
+      ballotArray
+        // and add an id to all votes as well as the matching question id
+        .map<EncryptedVote>(({ index, selectionOptions }) => ({
+          // generate the vote id
+          id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
+          // find matching question id from the election
+          question: election.questions[index].id,
+          // convert the set to an array and sort votes in ascending order
+          vote: [...selectionOptions]
+            .sort((a, b) => a - b)
+            .map((option) => electionKey.encrypt(Buffer.from(option.toString(), 'utf-8'))),
         }))
     );
   }
