@@ -19,8 +19,8 @@
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
-  - [Receiving a key for an encrypted election (election#key)](#receiving-a-key-for-an-encrypted-election-electionkey)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
+  - [Receiving a key for an encrypted election (election#key)](#receiving-a-key-for-an-encrypted-election-electionkey)
   - [Opening an Election (election#open)](#opening-an-election-electionopen)
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
   - [Ending an Election (election#end)](#ending-an-election-electionend)
@@ -1219,7 +1219,6 @@ In the future elections may allow write-in or support different voting methods b
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
-    "key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
@@ -1272,12 +1271,6 @@ In the future elections may allow write-in or support different voting methods b
             "type": "string",
             "$comment": "name of the election",
             "minLength": 1
-        },
-        "key": {
-            "description": "Optional field. Required for secret-ballot elections; use an ephemeral keypair for each election and place the base64 encoded public key here.",
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "Note: the string is encoded in Base64"
         },
         "created_at": {
             "description": "[Timestamp] time created in UTC",
@@ -1346,29 +1339,14 @@ In the future elections may allow write-in or support different voting methods b
     "required": [
         "object",
         "action",
+        "version",
         "id",
         "lao",
         "name",
-        "version",
         "created_at",
         "start_time",
         "end_time",
         "questions"
-    ],
-    "anyOf": [
-        {
-            "$comment": "Require the key property if the version is set 'secret-ballot'. If the key property is set for other election versions, it must be ignored.",
-            "properties": {
-                "version": { "const": "secret-ballot" }
-            },
-            "required": ["key"]
-        },
-        {
-            "properties": {
-                "version": { "const": "open-ballot" }
-            },
-            "required": []
-        }
     ]
 }
 
@@ -1380,6 +1358,10 @@ In the future elections may allow write-in or support different voting methods b
 **Mid Level** > **High level** (*election#key*)
 
 After receiving an [election#setup](#setting-up-an-election-electionsetup) message with a secret ballot voting method, the backend will generate a key pair and broadcast an election#key message to all the channel subscribers to encrypt the votes.
+
+**Security Considerations**
+
+The receiver has to authenticate the message by checking whether it was sent by the backend of the lao's organizer.
 
 <details>
 <summary>

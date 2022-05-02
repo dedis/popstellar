@@ -30,12 +30,6 @@
             "$comment": "name of the election",
             "minLength": 1
         },
-        "key": {
-            "description": "Optional field. Required for secret-ballot elections; use an ephemeral keypair for each election and place the base64 encoded public key here.",
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "Note: the string is encoded in Base64"
-        },
         "created_at": {
             "description": "[Timestamp] time created in UTC",
             "type": "integer",
@@ -103,28 +97,13 @@
     "required": [
         "object",
         "action",
+        "version",
         "id",
         "lao",
         "name",
-        "version",
         "created_at",
         "start_time",
         "end_time",
         "questions"
-    ],
-    "anyOf": [
-        {
-            "$comment": "Require the key property if the version is set 'secret-ballot'. If the key property is set for other election versions, it must be ignored.",
-            "properties": {
-                "version": { "const": "secret-ballot" }
-            },
-            "required": ["key"]
-        },
-        {
-            "properties": {
-                "version": { "const": "open-ballot" }
-            },
-            "required": []
-        }
     ]
 }
