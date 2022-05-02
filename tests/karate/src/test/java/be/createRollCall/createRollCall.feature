@@ -22,15 +22,23 @@ Feature: Create a Roll Call
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
   Scenario: Valid Roll Call
-    Given string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_data.json')
-    And string rollCallCreate = converter.publishМessageFromData(rollCallData, id, channel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    * karate.log('Request for lao creation sent')
-    * frontend_buffer.takeTimeout(timeout)
-    Then eval frontend.send(rollCallCreate)
-    * json roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
-    * json roll_call_result = frontend_buffer.takeTimeout(timeout)
-    Then match roll_call_result contains deep {jsonrpc: '2.0', id: '#(id)', result: 0}
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    And def validCreateRollCall =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(getLaoIdEmptyName)',
+          "name": "",
+          "creation": 1633098234,
+          "organizer": '#(getOrganizer)',
+          "witnesses": []
+        }
+      """
+    When frontend.publish(JSON.stringify(validCreateRollCall), id, channel)
+    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    Then match answer contains VALID_MESSAGE
+    And match frontend.receiveNoMoreResponses() == true
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an empty roll call name should result in an error message from the backend.
