@@ -63,7 +63,7 @@ export const mockKeyPairRegistry = {
 } as unknown as KeyPairRegistry;
 
 export const mockChannel: Channel = 'some channel';
-export const mockAddress = 'some address';
+export const mockAddress = 'wss://some-address.com';
 
 export const mockJsonRequest: Partial<JsonRpcRequest> = {
   jsonrpc: 'some data',
