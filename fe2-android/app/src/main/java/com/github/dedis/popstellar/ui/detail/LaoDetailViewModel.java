@@ -1181,7 +1181,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 lao -> {
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
-                  boolean isOrganizer = keyManager.getMainPublicKey().equals(lao.getOrganizer());
+                  boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
                   mIsOrganizer.setValue(isOrganizer);
                 }));
   }
