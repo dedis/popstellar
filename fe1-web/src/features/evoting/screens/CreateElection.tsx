@@ -47,9 +47,7 @@ const MIN_BALLOT_OPTIONS = 2;
 
 const styles = StyleSheet.create({
   padding: { padding: 5 } as ViewStyle,
-  // this fixes a UI issue specific to the web date picker
-  // probably has to be changed when compiling for mobile
-  zIndexInitial: { zIndex: 'initial' } as unknown as ViewStyle,
+  zIndexInitial: { zIndex: 0 } as ViewStyle,
 });
 
 /**
