@@ -1,9 +1,15 @@
-import { Hash, PopToken, PublicKey } from 'core/objects';
+import { Base64UrlData, Hash, PopToken, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashStore } from '../store/DigitalCashStore';
-import { getPartialTxsIn, getTotalValue } from './DigitalCashHelper';
-import { TxIn, TxOut } from './DigitalCashTransaction';
+import {
+  concatenateTxData,
+  getPartialTxsIn,
+  getTotalValue,
+  getTxsInToSign,
+} from './DigitalCashHelper';
+import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from "./DigitalCashTransaction";
+import { timestamp } from "rxjs";
 
 export function requestSendTransaction(from: PopToken, to: PublicKey, amount: number) {
   // 1. Find all transactions with the "from" public key (hash) in their txOut
@@ -40,7 +46,7 @@ export function requestSendTransaction(from: PopToken, to: PublicKey, amount: nu
   const txOuts: TxOut[] = [txOutTo];
 
   if (totalValueOut > amount) {
-    // Send the rest of the value back to the owner, so that the entire balance
+    // Send the rest lof the value back to the owner, so that the entire balance
     // is always in only one TxOut
     const txOutFrom: TxOut = {
       value: totalValueOut - amount,
@@ -52,7 +58,28 @@ export function requestSendTransaction(from: PopToken, to: PublicKey, amount: nu
     txOuts.push(txOutFrom);
   }
 
-  const partialTxIns: Partial<TxIn>[] = getPartialTxsIn(from.publicKey.valueOf(), messages);
-
+  const txIns: Omit<TxIn, 'script'>[] = getTxsInToSign(from.publicKey.valueOf(), messages);
   // Now we need to define each objects because we need some string representation of everything to hash on
+
+  const dataString = concatenateTxData(txIns, txOuts);
+
+  const signature = from.privateKey.signUtf8(dataString);
+
+  const finalTxIns: TxIn[] = txIns.map((txIn) => {
+    return {
+      ...txIn,
+      script: {
+        type: STRINGS.script_type,
+        publicKey: from.publicKey,
+        signature: signature,
+      },
+    };
+  });
+
+  const transaction: DigitalCashTransaction = {
+    version: 1,
+    txsIn: finalTxIns,
+    txsOut: txOuts,
+    lockTime: 0,
+  };
 }

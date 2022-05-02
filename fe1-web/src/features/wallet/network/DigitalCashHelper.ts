@@ -1,4 +1,4 @@
-import { Hash } from 'core/objects';
+import { Base64UrlData, Hash } from 'core/objects';
 
 import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './DigitalCashTransaction';
 
@@ -27,18 +27,30 @@ export const getTotalValue = (
   return txOuts.reduce((total, current) => total + current.value, 0);
 };
 
-export const getPartialTxsIn = (
+export const getTxsInToSign = (
   pk: string,
   transactionMessages: DigitalCashMessage[],
-): Partial<TxIn>[] => {
+): Omit<TxIn, 'script'>[] => {
   return transactionMessages.flatMap((tr) =>
     tr.transaction.txsOut
       .filter((txOut) => txOut.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
-      .map((txOut, index): Partial<TxIn> => {
+      .map((txOut, index) => {
         return {
           txOutHash: tr.transactionID,
           txOutIndex: index,
         };
       }),
+  );
+};
+
+export const concatenateTxData = (txsInt: Omit<TxIn, 'script'>[], txOuts: TxOut[]) => {
+  const txsInDataString = txsInt.reduce(
+    (dataString, txIn) => dataString + txIn.txOutHash.valueOf() + txIn.txOutIndex.toString(),
+    '',
+  );
+  return txOuts.reduce(
+    (dataString, txOut) =>
+      dataString + txOut.value.toString() + Base64UrlData.encode(JSON.stringify(txOut.script)),
+    txsInDataString,
   );
 };
