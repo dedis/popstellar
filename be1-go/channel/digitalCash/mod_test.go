@@ -281,9 +281,8 @@ func Test_SendReaction_MissingData(t *testing.T) {
 	message.Params.Channel = digitalCashChannelName
 
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.EqualError(
-		t, err,
-		"failed to verify publish message: failed to verify json schema: failed to validate schema: EOF")
+	require.EqualError(t, err, "failed to verify publish message: failed to "+
+		"verify json schema: failed to validate schema: EOF")
 }
 
 // -----------------------------------------------------------------------------
