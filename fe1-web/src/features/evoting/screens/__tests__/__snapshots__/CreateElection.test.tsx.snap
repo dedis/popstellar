@@ -458,7 +458,7 @@ exports[`CreateElection renders correctly 1`] = `
                               Array [
                                 undefined,
                                 Object {
-                                  "zIndex": "initial",
+                                  "zIndex": 0,
                                 },
                               ]
                             }
