@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -29,6 +30,7 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -112,10 +114,10 @@ public class HomeActivity extends AppCompatActivity {
         .getOpenConnectingEvent()
         .observe(
             this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
+            stringEvent -> {
+              String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupConnectingFragment();
+                setupConnectingActivity(event);
               }
             });
 
@@ -316,8 +318,10 @@ public class HomeActivity extends AppCompatActivity {
     setCurrentFragment(R.id.fragment_launch, LaunchFragment::newInstance);
   }
 
-  private void setupConnectingFragment() {
-    setCurrentFragment(R.id.fragment_connecting, ConnectingFragment::newInstance);
+  private void setupConnectingActivity(String laoId) {
+    Intent intent = new Intent(this, ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    startActivity(intent);
   }
 
   private void setupWalletFragment() {
@@ -356,11 +360,11 @@ public class HomeActivity extends AppCompatActivity {
   private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra("LAO_ID", laoId);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     if (openLaoDetail) {
-      intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
     } else {
-      intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
+      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
