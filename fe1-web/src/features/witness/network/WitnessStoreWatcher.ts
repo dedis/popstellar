@@ -2,6 +2,7 @@ import { Store } from 'redux';
 
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
+import { Hash } from 'core/objects';
 
 import { WitnessConfiguration } from '../interface';
 import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
