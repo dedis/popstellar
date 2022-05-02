@@ -235,7 +235,7 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel works correctly when it receives a reaction
+// Tests that the channel throw an error when receiving an incomplete json message
 func Test_SendReaction_MissingData(t *testing.T) {
 	// Create the hub
 
