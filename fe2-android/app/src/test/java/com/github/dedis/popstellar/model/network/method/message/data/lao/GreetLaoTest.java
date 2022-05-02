@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class GreetLaoTest {
 
   @Test
   public void getFrontendKeyTest(){
-    assertEquals(RANDOM_KEY, GREETING_MSG.getFrontendKey());
+    assertEquals(new PublicKey(RANDOM_KEY), GREETING_MSG.getFrontendKey());
   }
 
   @Test
@@ -86,7 +87,7 @@ public class GreetLaoTest {
     String greetingToString =
         String.format(
             "GreetLao={lao='%s', " + "frontend='%s', " + "address='%s', " + "peers=%s}",
-            LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, Arrays.toString(listTest.toArray()));
+            LAO_ID, new PublicKey(RANDOM_KEY), RANDOM_ADDRESS, Arrays.toString(listTest.toArray()));
     assertEquals(greetingToString, GREETING_MSG.toString());
   }
 

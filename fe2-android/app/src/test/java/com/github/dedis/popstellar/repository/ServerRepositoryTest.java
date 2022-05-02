@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.objects.Server;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,8 +14,8 @@ public class ServerRepositoryTest {
   public static ServerRepository serverRepository = new ServerRepository();
   public static String LAO_1 = "id_1";
   public static String LAO_2 = "id_2";
-  public static String KEY_1 = "key_1";
-  public static String KEY_2 = "key_2";
+  public static PublicKey KEY_1 = new PublicKey("oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8");
+  public static PublicKey KEY_2 = new PublicKey("oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm9");
   public static String ADDRESS_1 = "10.0.2.2:9000";
   public static String ADDRESS_2 = "128.0.0.2:9445";
   public static Server SERVER_1 = new Server(ADDRESS_1, KEY_1);

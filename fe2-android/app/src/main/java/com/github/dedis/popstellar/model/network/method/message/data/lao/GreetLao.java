@@ -20,7 +20,7 @@ public class GreetLao extends Data {
   // Backend sender address
   @NonNull
   @SerializedName("frontend")
-  private String frontendKey;
+  private PublicKey frontendKey;
 
   // Backend server address
   @NonNull
@@ -47,11 +47,10 @@ public class GreetLao extends Data {
 
     // Check the validity of the public key should is done via the Public Key class
     try {
-      new PublicKey(frontend);
+      this.frontendKey = new PublicKey(frontend);
     } catch (Exception e) {
       throw new IllegalArgumentException("Please provide a valid public key");
     }
-    this.frontendKey = frontend;
 
     // Assume the id of the LAO will be checked via the handler
     this.id = lao;
@@ -59,7 +58,7 @@ public class GreetLao extends Data {
 
   // Set of getters for t
   @NonNull
-  public String getFrontendKey() {
+  public PublicKey getFrontendKey() {
         return frontendKey;
       }
 

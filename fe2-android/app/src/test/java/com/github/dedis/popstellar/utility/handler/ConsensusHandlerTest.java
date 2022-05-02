@@ -42,16 +42,7 @@ import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import dagger.hilt.android.testing.HiltAndroidTest;
-import javax.inject.Inject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.internal.util.collections.Sets;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import io.reactivex.Completable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -60,10 +51,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.util.collections.Sets;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import io.reactivex.Completable;
-
-@HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
 
@@ -99,6 +93,7 @@ public class ConsensusHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
+  private ServerRepository serverRepository;
 
   private MessageGeneral electMsg;
   private MessageID messageId;
@@ -106,8 +101,6 @@ public class ConsensusHandlerTest {
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
-
-  @Inject ServerRepository serverRepository;
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {

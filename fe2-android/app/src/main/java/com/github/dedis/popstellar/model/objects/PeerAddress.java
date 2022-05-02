@@ -6,10 +6,9 @@ import com.google.gson.annotations.SerializedName;
 /** Represents an peer address */
 public class PeerAddress {
 
-  /* Purpose of this class is that, in the future, the content of the peers field will contain
-  additional fields:
-  peers: "type": "array", "items": {"type": "object", [...] }
-  ex: peers: [{address: "x", type:"organizer"}, {address: "x", type:"witness"}]*/
+  // Purpose of this class is that, in the future, the content of the peers field will contain
+  // additional fields: peers: "type": "array", "items": {"type": "object", [...] }
+  // ex: peers: {address: "x", type:"organizer"}, {address: "x", type:"witness"}]*/
 
   @SerializedName("address")
   private final String address;

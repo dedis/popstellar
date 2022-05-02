@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -33,17 +32,7 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import dagger.hilt.android.testing.HiltAndroidTest;
-import javax.inject.Inject;
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import io.reactivex.Completable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -51,14 +40,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
+import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import io.reactivex.Completable;
-
-@HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
-
-  @Inject ServerRepository serverRepository;
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -76,6 +66,7 @@ public class ElectionHandlerTest extends TestCase {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
+  private ServerRepository serverRepository;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;

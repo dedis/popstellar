@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.repository;
 import com.github.dedis.popstellar.model.objects.Server;
 import java.util.Collection;
 import java.util.HashMap;
-
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,9 +35,9 @@ public class ServerRepository {
   public Server getServerByLaoId(String laoId){
     if (serverByLaoId.containsKey(laoId)) {
       return serverByLaoId.get(laoId);
-    } else {
-      throw new IllegalArgumentException(String.format("There is no backend associated with the LAO '%s'", laoId));
     }
+    throw new IllegalArgumentException(
+        String.format("There is no backend associated with the LAO '%s'", laoId));
   }
 
   /**
