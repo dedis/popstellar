@@ -24,7 +24,7 @@ export interface WitnessConfiguration {
 
   /**
    * Returns the currently active lao id. Should be used outside react components
-   * @returns The current lao  or undefined if there is none.
+   * @returns The current lao or undefined if there is none.
    */
   getCurrentLaoId: () => Hash | undefined;
 
