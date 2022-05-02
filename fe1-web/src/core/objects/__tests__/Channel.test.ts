@@ -4,7 +4,6 @@ import { mockLaoIdHash } from '__tests__/utils';
 
 import {
   channelFromIds,
-  getFirstPartOfChannel,
   getGeneralChirpsChannel,
   getLaoIdFromChannel,
   getLastPartOfChannel,
@@ -54,12 +53,6 @@ describe('Channel object', () => {
     expect(getReactionChannel(mockLaoIdHash)).toStrictEqual(
       `/root/${mockLaoIdHash}/social/reactions`,
     );
-  });
-
-  it('getFirstPartOfChannel works correctly', () => {
-    const channel = '/root/laoID/electionID';
-    const expectedHash = new Hash('laoID');
-    expect(getFirstPartOfChannel(channel)).toStrictEqual(expectedHash);
   });
 
   it('getLastPartOfChannel works correctly', () => {

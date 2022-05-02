@@ -1,7 +1,7 @@
 import { KeyPairStore } from 'core/keypair';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { channelFromIds, getFirstPartOfChannel, getLastPartOfChannel } from 'core/objects';
+import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
@@ -37,11 +37,10 @@ export const handleElectionKeyMessage =
       console.warn(makeErr('No channel found in message'));
       return false;
     }
-    const laoId = getFirstPartOfChannel(msg.channel);
 
     const electionKeyMessage = msg.messageData as ElectionKey;
     // for now *ALL* election key messages *MUST* be sent by the backend of the organizer
-    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(laoId.valueOf());
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
 
     if (!organizerBackendPublicKey) {
       console.warn(makeErr("the organizer backend's public key is unkown"));
