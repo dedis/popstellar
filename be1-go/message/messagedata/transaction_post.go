@@ -8,7 +8,7 @@ type TransactionPost struct {
 }
 
 //TBC
-type TransactionStruct struct {
+type Transaction struct {
 	Version  int           `json:"version"`
 	TxIn     []TxInStruct  `json:"txin"`  // min 1
 	TxOut    []TxOutStruct `json:"txout"` //min 1
