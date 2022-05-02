@@ -60,7 +60,7 @@ object MessageRegistry {
     register.add((ObjectType.LAO, ActionType.CREATE), createSchemaVerifier("dataCreateLao.json"), CreateLao.buildFromJson, LaoValidator.validateCreateLao, LaoHandler.handleCreateLao)
     register.add((ObjectType.LAO, ActionType.STATE), createSchemaVerifier("dataStateLao.json"), StateLao.buildFromJson, LaoValidator.validateStateLao, LaoHandler.handleStateLao)
     register.add((ObjectType.LAO, ActionType.UPDATE_PROPERTIES), createSchemaVerifier("dataUpdateLao.json"), UpdateLao.buildFromJson, LaoValidator.validateUpdateLao, LaoHandler.handleUpdateLao)
-    //register.add((ObjectType.LAO, ActionType.GREET), createSchemaVerifier("dataGreetLao.json"), GreetLao.buildFromJson, LaoValidator.validateGreetLao, LaoHandler.handleGreetLao)
+    register.add((ObjectType.LAO, ActionType.GREET), createSchemaVerifier("dataGreetLao.json"), GreetLao.buildFromJson, LaoValidator.validateGreetLao, LaoHandler.handleGreetLao)
 
     // data meeting
     register.add((ObjectType.MEETING, ActionType.CREATE), createSchemaVerifier("dataCreateMeeting.json"), CreateMeeting.buildFromJson, MeetingValidator.validateCreateMeeting, MeetingHandler.handleCreateMeeting)
