@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class GreetLao extends Data {
 
@@ -27,9 +27,9 @@ public class GreetLao extends Data {
   @SerializedName("address")
   private String address;
 
-  // Backend "peer", list of addresses of future 1 Client -> multiple Server communication
+  // Backend "peer", list of addresses of future (1 Client / multiple Servers) communication
   @SerializedName("peers")
-  private List<String> peers;
+  private List<PeerAddress> peers;
 
   /**
    * Constructor for a Greeting Message
@@ -37,9 +37,12 @@ public class GreetLao extends Data {
    * @throws IllegalArgumentException if channel is null
    */
   public GreetLao(
-      @NonNull String lao, @NonNull String frontend, @NonNull String address, String... peers) {
-    // Peers can be empty
-    this.peers = Arrays.asList(peers);
+      @NonNull String lao,
+      @NonNull String frontend,
+      @NonNull String address,
+      List<PeerAddress> peers) {
+    // Peers can be empty and address can be the same
+    this.peers = new ArrayList<>(peers);
     this.address = address;
 
     // Check the validity of the public key should is done via the Public Key class
@@ -65,7 +68,7 @@ public class GreetLao extends Data {
         return address;
       }
 
-  public List<String> getPeers() {
+  public List<PeerAddress> getPeers() {
       return peers;
     }
 
@@ -100,6 +103,7 @@ public class GreetLao extends Data {
         return java.util.Objects.hash(frontendKey, address, peers);
       }
 
+  @NonNull
   @Override
   public String toString() {
     return "GreetLao={"

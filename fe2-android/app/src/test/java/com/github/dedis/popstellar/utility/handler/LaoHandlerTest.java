@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
@@ -17,6 +18,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLa
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import org.junit.Before;
@@ -57,7 +60,7 @@ public class LaoHandlerTest {
 
   public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
-  public static final String RANDOM_PEER = "http://128.0.0.2";
+  public static final PeerAddress RANDOM_PEER = new PeerAddress("ws://128.0.0.2");
 
   private Lao lao;
   private MessageGeneral createLaoMessage;
@@ -142,17 +145,31 @@ public class LaoHandlerTest {
         laoRepository.getLaoByChannel(LAO_CHANNEL).getModificationId());
   }
 
-  @Test
+  @Test()
   public void testGreetLao() throws DataHandlingException {
     // Create the Greet Lao
     GreetLao greetLao =
-        new GreetLao(
-            lao.getId(),
-            RANDOM_KEY,
-            RANDOM_ADDRESS,
-            RANDOM_PEER
-        );
+        new GreetLao(lao.getId(), RANDOM_KEY, RANDOM_ADDRESS, Arrays.asList(RANDOM_PEER));
 
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, GSON);
 
+    // Call the handler
+    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+
+    // Check that the server repository contains the key of the server
+    assertEquals(serverRepository.getServerByLaoId(lao.getId()).getServerAddress(), RANDOM_ADDRESS);
+    // Check that it contains the key as well
+    assertEquals(serverRepository.getServerByLaoId(lao.getId()).getPublicKey(), RANDOM_KEY);
+
+    // Test for invalid LAO Id
+    GreetLao greetLao_invalid =
+        new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Arrays.asList(RANDOM_PEER));
+    MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, GSON);
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            messageHandler.handleMessage(
+                laoRepository, messageSender, LAO_CHANNEL, message_invalid));
   }
 }
+

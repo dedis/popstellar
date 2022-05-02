@@ -15,8 +15,8 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
@@ -213,7 +213,7 @@ public final class LaoHandler {
               + greetLao.getId()
               + ")");
       throw new IllegalArgumentException(
-          "Current lao doesn't march the lao id frome the greetLao message");
+          "Current lao doesn't march the lao id from the greetLao message");
     }
     Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
 
