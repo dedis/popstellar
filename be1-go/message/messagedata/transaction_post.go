@@ -1,6 +1,6 @@
 package messagedata
 
-//TBC
+// TransactionPost defines a message data
 type TransactionPost struct {
 	Object      string            `json:"object"`
 	Action      string            `json:"action"`
