@@ -9,23 +9,23 @@ type TransactionPost struct {
 
 //Transaction define the input and output account for the transaction
 type Transaction struct {
-	Version  int           `json:"version"`
-	TxIn     []TxInStruct  `json:"txin"`  // min 1
-	TxOut    []TxOutStruct `json:"txout"` //min 1
-	Locktime int           `json:"locktime"`
+	Version  int      `json:"version"`
+	Inputs   []Input  `json:"txin"`  // min 1
+	Outputs  []Output `json:"txout"` //min 1
+	Locktime int      `json:"locktime"`
 }
 
-// TxInStruct define the source from the money used in transaction
-type TxInStruct struct {
-	TxOutHash  string       `json:"txouthash"`
-	TxOutIndex int          `json:"txoutindex"`
-	ScripIn    UnlockScript `json:"script"`
+// Input define the source from the money used in transaction
+type Input struct {
+	Hash   string       `json:"txouthash"`
+	Index  int          `json:"txoutindex"`
+	Script UnlockScript `json:"script"`
 }
 
-// TxOutStruct define the destination from the money used in transaction
-type TxOutStruct struct {
-	Value     int        `json:"value"`
-	ScriptOut LockScript `json:"script"`
+// Output define the destination from the money used in transaction
+type Output struct {
+	Value  int        `json:"value"`
+	Script LockScript `json:"script"`
 }
 
 // LockScript define the locking value for transaction
