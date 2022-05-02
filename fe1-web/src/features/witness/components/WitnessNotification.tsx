@@ -4,16 +4,17 @@ import { Text, View } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
+import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature, MESSAGE_TO_WITNESS_NOTIFICATION_TYPE } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
-import { makeMessageToWitnessSelector, removeMessageToWitness } from '../reducer';
+import { removeMessageToWitness } from '../reducer';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
-    () => makeMessageToWitnessSelector(notification.messageId),
+    () => makeMessageSelector(notification.messageId),
     [notification.messageId],
   );
   const message = useSelector(messageSelector);

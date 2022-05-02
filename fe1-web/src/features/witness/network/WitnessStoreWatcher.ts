@@ -11,7 +11,7 @@ import {
   WitnessConfiguration,
   WitnessFeature,
 } from '../interface';
-import { addMessageToWitness, getMessageToWitness } from '../reducer';
+import { addMessageToWitness, isMessageToWitness } from '../reducer';
 import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
 
@@ -40,7 +40,7 @@ export const afterMessageProcessingHandler =
       return;
     }
 
-    const storedMessage = getMessageToWitness(msg.message_id.valueOf(), getStore().getState());
+    const storedMessage = isMessageToWitness(msg.message_id.valueOf(), getStore().getState());
     if (storedMessage) {
       // this message is already stored in the witness reducer
       // and hence does not have to be stored a second time
@@ -68,7 +68,7 @@ export const afterMessageProcessingHandler =
            break;
          } */
 
-          dispatch(addMessageToWitness(new ExtendedMessage(msg).toState()));
+          dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
           dispatch(
             addNotification({
               laoId: lao.id.valueOf(),

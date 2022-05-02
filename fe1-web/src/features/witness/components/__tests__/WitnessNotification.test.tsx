@@ -11,6 +11,7 @@ import {
   mockLaoIdHash,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { addMessages, messageReducer } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
@@ -38,7 +39,9 @@ configureTestFeatures();
 const timestamp = new Timestamp(1607277600);
 
 // set up mock store
-const mockStore = createStore(combineReducers({ ...notificationReducer, ...witnessReducer }));
+const mockStore = createStore(
+  combineReducers({ ...notificationReducer, ...witnessReducer, ...messageReducer }),
+);
 const mockNotification = {
   id: 0,
   laoId: mockLaoId,
@@ -49,18 +52,17 @@ const mockNotification = {
   messageId: mockMessageId,
 } as WitnessFeature.MessageToWitnessNotification;
 
-mockStore.dispatch(
-  addMessageToWitness(
-    ExtendedMessage.fromMessage(
-      ExtendedMessage.fromData(
-        { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp } as MessageData,
-        mockKeyPair,
-      ),
-      'some channel',
-      'some address',
-    ).toState(),
+const msg = ExtendedMessage.fromMessage(
+  ExtendedMessage.fromData(
+    { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp } as MessageData,
+    mockKeyPair,
   ),
+  'some channel',
+  'some address',
 );
+
+mockStore.dispatch(addMessages(msg.toState()));
+mockStore.dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
 mockStore.dispatch(addNotification(mockNotification));
 
 const contextValue = {

@@ -73,12 +73,16 @@ const notificationSlice = createSlice({
       const { laoId, notificationId } = action.payload;
 
       if (!(laoId in state.byLaoId)) {
-        // no notification has been stored for this lao yet
+        console.warn(
+          `Tried to mark the notification with id ${notificationId} in lao ${laoId} as read but no notifications have been stored`,
+        );
         return;
       }
 
       if (!(notificationId in state.byLaoId[laoId].byId)) {
-        // this message was never stored?
+        console.warn(
+          `Tried to mark the notification with id ${notificationId} as read but this notification id has never been stored`,
+        );
         return;
       }
 
@@ -93,13 +97,19 @@ const notificationSlice = createSlice({
       const { laoId, notificationIds } = action.payload;
 
       if (!(laoId in state.byLaoId)) {
-        // no notification has been stored for this lao yet
+        console.warn(
+          `Tried to discard the notifications with ids ${notificationIds.join(
+            ', ',
+          )} in lao ${laoId} as read but no notifications have been stored`,
+        );
         return;
       }
 
       for (const notificationId of notificationIds) {
         if (!(notificationId in state.byLaoId[laoId].byId)) {
-          // this message was never stored?
+          console.warn(
+            `Tried to discard the notification with id ${notificationId} but this notification id has never been stored`,
+          );
           return;
         }
 
