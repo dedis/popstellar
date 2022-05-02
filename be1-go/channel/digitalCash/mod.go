@@ -211,7 +211,7 @@ func (c *Channel) processTransactionPost(msg message.Message, msgData interface{
 
 	_, ok := msgData.(*messagedata.TransactionPost)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a transaction#post message", msgData)
+		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}
 
 	var transactionData messagedata.TransactionPost
