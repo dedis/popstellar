@@ -28,14 +28,17 @@
         {
             "$ref": "dataSetupElection.json"
         },
-		{
-			"$ref": "dataOpenElection.json"
-		},
+        {
+            "$ref": "dataOpenElection.json"
+        },
         {
             "$ref": "dataOpenRollCall.json"
         },
         {
             "$ref": "dataStateLao.json"
+        },
+        {
+            "$ref": "dataGreetLao.json"
         },
         {
             "$ref": "dataStateMeeting.json"
