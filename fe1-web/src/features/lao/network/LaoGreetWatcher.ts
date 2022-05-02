@@ -3,12 +3,11 @@ import { Store } from 'redux';
 import { getNetworkManager } from 'core/network';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { PublicKey } from 'core/objects';
+import { PublicKey, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
-import { WitnessMessage } from 'features/witness/network/messages';
 
 import { Server } from '../objects/Server';
+import { getAllGreetLaoMessageIds, selectCurrentLao } from '../reducer';
 import { addServer } from '../reducer/ServerReducer';
 import { GreetLao } from './messages/GreetLao';
 
@@ -42,7 +41,6 @@ export const handleLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
 /**
  * Watches the redux store for new message#witness messages for lao#greet messages since they only
  * become valid after they are witnessed by the corresponding frontend
- * @remark Implemented analogous to 'makeMessageStoreWatcher'
  * @param store The redux store to watch
  * @param laoGreetSignatureHandler The function to call when a signature is added to a lao#greet message
  */
@@ -50,53 +48,68 @@ export const makeLaoGreetStoreWatcher = (
   store: Store,
   laoGreetSignatureHandler: (greetLaoMsg: GreetLao, publicKey: PublicKey) => void,
 ) => {
-  let previousValue: string[] | undefined;
-  let currentValue: string[] | undefined;
+  let previousMessageIds: string[] | undefined;
+  let currentMessageIds: string[] | undefined;
+
+  const signaturesByMessageId: { [messageId: string]: WitnessSignatureState[] } = {};
+
   return () => {
     const state = store.getState();
-    const msgState = getMessagesState(state);
-    const newValue = msgState?.unprocessedIds || [];
-    [previousValue, currentValue] = [currentValue, newValue];
+    const lao = selectCurrentLao(state);
+    // we have to be careful with ExtendedMessage.fromState
+    // since some message constructors assume that we are connected to a lao
+    // thus we delay this watcher until we are connected to a lao
+    if (!lao) {
+      return;
+    }
+
+    const messageState = getMessagesState(state);
+    // these are the message ids for which we want to listen to changes
+    // in the witness signatures
+    const newValue = getAllGreetLaoMessageIds(state);
+    [previousMessageIds, currentMessageIds] = [currentMessageIds, newValue];
 
     if (
-      previousValue !== undefined &&
-      currentValue !== undefined &&
-      previousValue.length === currentValue.length &&
-      previousValue.every((value, index) => !currentValue || value === currentValue[index])
+      previousMessageIds !== undefined &&
+      currentMessageIds !== undefined &&
+      previousMessageIds.length === currentMessageIds.length &&
+      previousMessageIds.every(
+        (messageId, index) => !currentMessageIds || messageId === currentMessageIds[index],
+      )
     ) {
       // no change detected, return immediately
       return;
     }
 
-    // load new messages from the store
-    const newMessages = currentValue.map((id: string) =>
-      ExtendedMessage.fromState(msgState.byId[id]),
-    );
-    for (const witnessMessage of newMessages) {
-      // only look at new messages of the type message#witness
-      if (
-        witnessMessage.messageData.object === ObjectType.MESSAGE &&
-        witnessMessage.messageData.action === ActionType.WITNESS
-      ) {
-        const witnessMessageData = witnessMessage.messageData as WitnessMessage;
+    currentMessageIds
+      // filter messages to only get the new message ids
+      .filter((messageId) => !(previousMessageIds || []).includes(messageId))
+      // then store the empty set of witness signatures
+      .forEach((messageId) => {
+        signaturesByMessageId[messageId] = [];
+      });
 
-        // retrieve the corresponding message from the store
-        const witnessedMessage = ExtendedMessage.fromState(
-          msgState.byId[witnessMessageData.message_id.valueOf()],
-        );
+    // next iterate over all lao#greet messages we are keeping track of
+    for (const messageId of Object.keys(signaturesByMessageId)) {
+      // retrieve the set of witness signatures from the store
+      const signatures = messageState.byId[messageId].witness_signatures;
+      // and check whether they are different
+      if (signaturesByMessageId[messageId] !== signatures) {
+        const greetLaoMessage = ExtendedMessage.fromState(messageState.byId[messageId]);
 
+        // retrieve the organizers public key for the corresponding lao
+        const organizerFrontendPublicKey = lao.organizer;
+        // if this is the case, check if the message now includes the signature of the organizer
         if (
-          witnessedMessage.messageData.object === ObjectType.LAO &&
-          witnessedMessage.messageData.action === ActionType.GREET
+          signatures.find(
+            (signature) => signature.witness.valueOf() === organizerFrontendPublicKey.valueOf(),
+          )
         ) {
-          // the newly witnessed message is of type lao#greet. check if the new signature comes from the corresponding frontend
-          const laoGreetMessage = witnessedMessage.messageData as GreetLao;
-          if (witnessMessage.sender.valueOf() === laoGreetMessage.frontend.valueOf()) {
-            // if it is, then we can now treat this lao#greet message as being valid
-            // it is only added to the store if the signature matches which means we do not
-            // have to do this a second time
-            laoGreetSignatureHandler(laoGreetMessage, witnessedMessage.sender);
-          }
+          // if it does, call the callback
+          laoGreetSignatureHandler(greetLaoMessage.messageData as GreetLao, greetLaoMessage.sender);
+        } else {
+          // store the new set of signatures preventing a new check until there
+          signaturesByMessageId[messageId] = signatures;
         }
       }
     }
