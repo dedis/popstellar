@@ -28,20 +28,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
         android:text="@string/allow_camera_text"
-        android:textSize="@dimen/size_body"
-        android:textStyle="bold" />
+        style="@style/explication_text_style" />
 
       <Button
         android:id="@+id/allow_camera_button"
-        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorButton1"
+        android:background="@color/colorPrimaryDark"
         android:text="@string/allow_camera_button"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/size_title" />
+        android:textSize="@dimen/size_section_title" />
 
     </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

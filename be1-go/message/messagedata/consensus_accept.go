@@ -19,6 +19,7 @@ type ConsensusAccept struct {
 	Value ValueAccept `json:"value"`
 }
 
+// ValueAccept defines the accepted value and try of a ConsensusAccept message
 type ValueAccept struct {
 	AcceptedTry   int64 `json:"accepted_try"`
 	AcceptedValue bool  `json:"accepted_value"`
@@ -48,6 +49,7 @@ func (message ConsensusAccept) Verify() error {
 	if message.Value.AcceptedTry < -1 {
 		return xerrors.Errorf("accepted try is %d, should be minimum -1", message.Value.AcceptedTry)
 	}
+
 	return nil
 }
 

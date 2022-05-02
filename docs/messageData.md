@@ -1660,7 +1660,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)"
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)" - the vote_ids need to be sorted alphabetically by message_id
         }
     },
     "additionalProperties": false,

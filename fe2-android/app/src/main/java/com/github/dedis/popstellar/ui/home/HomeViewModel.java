@@ -200,8 +200,7 @@ public class HomeViewModel extends AndroidViewModel
 
                   // Send subscribe and catchup after creating a LAO
                   networkManager.getMessageSender().subscribe(lao.getChannel()).subscribe();
-
-                  openHome();
+                  openLAO(lao.getId());
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -266,6 +265,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public Boolean isWalletSetUp() {
     return mIsWalletSetUp.getValue();
+  }
+
+  public LiveData<Boolean> getIsWalletSetUpEvent(){
+    return mIsWalletSetUp;
   }
 
   public LiveData<SingleEvent<Boolean>> getOpenWalletEvent() {

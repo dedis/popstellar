@@ -17,7 +17,14 @@ Feature: Mock FrontEnd
               """
     * def frontend = call getMultiMsgSocket
     * def frontend_buffer = frontend.getBuffer()
-    * def stopFrontend = function() { frontend.close() }
+    * def stopFrontend =
+              """
+                 function() {
+                  frontend.close()
+                  stopServer();
+                  deleteDB();
+                }
+              """
 
     # Shutdown frontend automatically after the end of a scenario and  feature
     * configure afterScenario = stopFrontend
