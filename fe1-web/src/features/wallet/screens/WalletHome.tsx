@@ -47,22 +47,23 @@ const WalletHome = () => {
   const navigation = useNavigation<any>();
 
   useEffect(() => {
-    if (lao && rollCalls[lao.id.valueOf()]) {
-      Wallet.recoverWalletRollCallTokens(rollCalls, lao)
-        .then((rct) => {
-          if (rct.length > 0) {
-            setTokens(rct);
-            setSelectedTokenIndex(0);
-          }
-        })
-        .catch((e) => {
-          console.debug(e);
-        });
-    } else {
+    if (!lao || !rollCalls[lao.id.valueOf()]) {
       // Clear tokens screen state
       setSelectedTokenIndex(-1);
       setTokens(undefined);
+      return;
     }
+
+    Wallet.recoverWalletRollCallTokens(rollCalls, lao)
+      .then((rct) => {
+        if (rct.length > 0) {
+          setTokens(rct);
+          setSelectedTokenIndex(0);
+        }
+      })
+      .catch((e) => {
+        console.debug(e);
+      });
   }, [rollCalls, isDebug, lao]);
 
   const toggleDebugMode = () => {

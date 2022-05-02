@@ -24,6 +24,7 @@ describe('Wallet home', () => {
     const component = render(<MockNavigator component={WalletHome} />).toJSON();
     expect(component).toMatchSnapshot();
   });
+
   it('renders correctly with a non empty wallet', async () => {
     const mockRCToken = new RollCallToken({
       token: mockPopToken,
@@ -44,6 +45,7 @@ describe('Wallet home', () => {
 
     render(<MockNavigator component={WalletHome} />);
   });
+
   it('enables correctly the debug mode', async () => {
     const mockCreateWalletState = (createDummyWalletState as jest.Mock).mockImplementation(() =>
       Promise.resolve(),
@@ -56,6 +58,7 @@ describe('Wallet home', () => {
       expect(mockCreateWalletState).toHaveBeenCalledTimes(1);
     });
   });
+
   it('disables correctly the debug mode', async () => {
     (createDummyWalletState as jest.Mock).mockImplementation(() => Promise.resolve());
 

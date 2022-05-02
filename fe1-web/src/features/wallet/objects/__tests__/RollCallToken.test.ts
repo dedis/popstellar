@@ -17,15 +17,19 @@ describe('Roll call token object', () => {
         }),
     ).not.toThrow(Error);
   });
+
   it('throws when token is undefined', () => {
     expect(() => new RollCallToken({ token: undefined })).toThrow(Error);
   });
+
   it('throws when laoId is undefined', () => {
     expect(() => new RollCallToken({ token: mockToken })).toThrow(Error);
   });
+
   it('throws when rollCallId is undefined', () => {
     expect(() => new RollCallToken({ token: mockToken, laoId: mockLao.id })).toThrow(Error);
   });
+
   it('throws when rollCallName is undefined', () => {
     expect(
       () => new RollCallToken({ token: mockToken, laoId: mockLao.id, rollCallId: mockRC.id }),
