@@ -397,12 +397,12 @@ the required number of witness signatures.
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*lao#greet*)
 
-This is a message that is sent to clients after they have subscribed to a LAO.
+
 The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
 
 Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
 
-In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional.
+In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional. (For now this check is omitted since the witnessing functionality has not been implemented in all subsystems)
 
 Last but not least, the greeting message contains a list of peers that tells client which other servers it can or should connect to. These severs run by other organizers or witnesses allow the client to send messages to multiple servers which increases the likelihood of sending it to a honest one.
 
