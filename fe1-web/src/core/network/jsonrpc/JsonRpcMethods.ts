@@ -8,4 +8,5 @@ export enum JsonRpcMethod {
   SUBSCRIBE = 'subscribe',
   UNSUBSCRIBE = 'unsubscribe',
   CATCHUP = 'catchup',
+  GREETING = 'greeting',
 }
