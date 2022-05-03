@@ -5,12 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import {
-  mockKeyPair,
-  mockLao,
-  mockPopToken,
-  wrapWithClearMockStorageReducer,
-} from '__tests__/utils';
+import { mockKeyPair, mockLao, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
@@ -32,19 +27,11 @@ const contextValue = {
   } as LaoReactContext,
 };
 
-// set up mock store
-const mockStore = createStore(
-  wrapWithClearMockStorageReducer(combineReducers({ ...laoReducer, ...keyPairReducer })),
-);
-beforeEach(() => {
-  // clear data in the redux store
-  mockStore.dispatch({ type: 'CLEAR_STORAGE' });
-});
-
 const LaoPropertiesScreen = () => <LaoProperties isInitiallyOpen />;
 
 describe('LaoProperties', () => {
   it('renders correctly as organizer', () => {
+    const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
     mockStore.dispatch(connectToLao(mockLao.toState()));
     mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
@@ -59,6 +46,7 @@ describe('LaoProperties', () => {
   });
 
   it('renders correctly as witness', () => {
+    const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
     mockStore.dispatch(
       connectToLao({
         ...mockLao.toState(),
@@ -78,6 +66,7 @@ describe('LaoProperties', () => {
   });
 
   it('renders correctly as attendee', () => {
+    const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
     mockStore.dispatch(connectToLao(mockLao.toState()));
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
