@@ -6,11 +6,12 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey, Signature}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PrivateKey, PublicKey, Signature}
 import ch.epfl.pop.pubsub.graph.handlers.LaoHandler.{dbActor, duration}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
+import java.security.KeyPairGenerator
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
@@ -40,6 +41,11 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
    */
   override final val dbActor: AskableActorRef = dbRef
 
+  /**
+   * Key Generator to generate PublicKey
+   */
+  final val keyGen: KeyPairGenerator = KeyPairGenerator.getInstance("Kyber1024")
+
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
@@ -56,8 +62,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
         val laoId: Hash = rpcMessage.extractLaoId
-        //how to generate the publickey ??
-        val electionKey: KeyElection = KeyElection(laoId, electionId, PublicKey(Base64Data("")))
+        //generation of the key
+        val key: PublicKey = PublicKey(Base64Data(keyGen.generateKeyPair().getPublic.toString))
+        val electionKey: KeyElection = KeyElection(laoId, electionId, key)
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(electionKey).toString)
 
         val askLaoData = dbActor ? DbActor.ReadLaoData(laoChannel)

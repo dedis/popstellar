@@ -70,6 +70,7 @@ case object LaoValidator extends MessageDataContentValidator {
     }
   }
 
+  //unused since we do not receive any GreetLao message yet
   def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "GreetLao", rpcMessage.id)
 
