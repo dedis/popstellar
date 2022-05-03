@@ -114,6 +114,13 @@ const NotificationScreen = () => {
       );
     }
 
+    if (new Set(items.map((i) => i.key)).size !== items.length) {
+      console.debug('items:', items);
+      throw new Error(
+        'The keys of the items passed to the FlatList in NotificationScreen do not have unique keys!',
+      );
+    }
+
     return items;
   }, [unreadNotifications, readNotifications]);
 
