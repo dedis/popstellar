@@ -55,9 +55,45 @@ type NavigationProps = StackScreenProps<
   typeof STRINGS.notification_navigation_tab_notifications
 >;
 
-const NotificationScreen = () => {
+/**
+ * Renders a single item in the list of notifications which can either be
+ * a notification or a heading separating different sets of notifications
+ */
+const NotificationScreenListItem = ({ item }: { item: ListSeparatorItem | NotificationItem }) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
+  if ('id' in item) {
+    // notification
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate<'Notification'>(
+            STRINGS.notification_navigation_tab_single_notification,
+            { notificationId: item.id },
+          )
+        }>
+        <View
+          style={
+            item.isLastItem
+              ? [
+                  NotificationScreenStyles.notificationItem,
+                  NotificationScreenStyles.lastNotificationItem,
+                ]
+              : NotificationScreenStyles.notificationItem
+          }>
+          <Text>{item.title}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+  // separator
+  return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
+};
+
+/**
+ * The notification screen component displaying the list of read and unread notifications
+ */
+const NotificationScreen = () => {
   const laoId = NotificationHooks.useCurrentLaoId();
   const selectUnreadNotifications = useMemo(
     () => makeUnreadNotificationsSelector(laoId.valueOf()),
@@ -151,34 +187,7 @@ const NotificationScreen = () => {
       <FlatList
         data={notificationData}
         keyExtractor={(item) => item.key}
-        renderItem={({ item }) => {
-          if ('id' in item) {
-            // notification
-            return (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate<'Notification'>(
-                    STRINGS.notification_navigation_tab_single_notification,
-                    { notificationId: item.id },
-                  )
-                }>
-                <View
-                  style={
-                    item.isLastItem
-                      ? [
-                          NotificationScreenStyles.notificationItem,
-                          NotificationScreenStyles.lastNotificationItem,
-                        ]
-                      : NotificationScreenStyles.notificationItem
-                  }>
-                  <Text>{item.title}</Text>
-                </View>
-              </TouchableOpacity>
-            );
-          }
-          // separator
-          return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
-        }}
+        renderItem={({ item }) => <NotificationScreenListItem item={item} />}
       />
       <Button title={STRINGS.notification_clear_all} onPress={onClearNotifications} />
     </ScreenWrapper>
