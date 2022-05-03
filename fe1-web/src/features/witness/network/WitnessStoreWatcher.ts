@@ -46,6 +46,15 @@ export const afterMessageProcessingHandler =
     const type = getWitnessRegistryEntryType(msg.messageData);
     const lao = getCurrentLao();
 
+    if (msg.laoId.valueOf() !== lao.id.valueOf()) {
+      console.warn(
+        `Received a message that should be witnessed for lao ${
+          msg.laoId
+        } but the current lao is ${lao.id.valueOf()}`,
+      );
+      return;
+    }
+
     if (type) {
       // we have a wintessing entry for this message type
 
@@ -55,7 +64,14 @@ export const afterMessageProcessingHandler =
             return;
           }
 
-          requestWitnessMessage(msg.channel, msg.message_id);
+          requestWitnessMessage(msg.channel, msg.message_id).catch((e) => {
+            console.error(
+              `Could not witness message with id ${msg.message_id} on channel ${msg.channel}. Error: `,
+              e,
+              'Message',
+              msg,
+            );
+          });
           break;
 
         case WitnessingType.ACTIVE:
@@ -67,7 +83,7 @@ export const afterMessageProcessingHandler =
           dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
           dispatch(
             addNotification({
-              laoId: lao.id.valueOf(),
+              laoId: msg.laoId.valueOf(),
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
               timestamp: Timestamp.EpochNow().valueOf(),
               type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,

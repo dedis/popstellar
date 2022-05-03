@@ -24,6 +24,26 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   const isEnabled = WitnessHooks.useIsEnabled();
   const laoId = WitnessHooks.useCurrentLaoId();
 
+  // if the notification state somehow gets out of sync, remove the corresponding notification
+  useEffect(() => {
+    if (!message) {
+      dispatch(
+        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
+      );
+      navigateToNotificationScreen();
+      console.warn(
+        `There was a notification with id ${notification.id} in the redux store referencing a message id (${notification.messageId}) that is not (no longer?) stored`,
+      );
+    }
+  }, [
+    laoId,
+    navigateToNotificationScreen,
+    discardNotifications,
+    notification.id,
+    notification.messageId,
+    message,
+  ]);
+
   const onWitness = () => {
     if (message) {
       dispatch(
@@ -43,16 +63,6 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
       navigateToNotificationScreen();
     }
   };
-
-  // if the notification state somehow gets out of sync, remove the corresponding notification
-  useEffect(() => {
-    if (!message) {
-      dispatch(
-        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
-      );
-      navigateToNotificationScreen();
-    }
-  }, [laoId, navigateToNotificationScreen, discardNotifications, notification.id, message]);
 
   return (
     <View>
