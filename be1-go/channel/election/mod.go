@@ -37,6 +37,9 @@ type Channel struct {
 
 	// *baseChannel
 
+	// Type of election channel ("open-ballot", "secret-ballot", ...)
+	electionType string
+
 	// Starting time of the election
 	start int64
 
@@ -120,11 +123,12 @@ func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
-		start:      msgData.StartTime,
-		end:        msgData.EndTime,
-		started:    false,
-		terminated: false,
-		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
+		electionType: msgData.Version,
+		start:        msgData.StartTime,
+		end:          msgData.EndTime,
+		started:      false,
+		terminated:   false,
+		questions:    getAllQuestionsForElectionChannel(msgData.Questions),
 
 		attendees: &attendees{
 			store: attendeesMap,

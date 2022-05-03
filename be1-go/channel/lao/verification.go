@@ -278,6 +278,14 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 		return xerrors.Errorf("election name should not be empty")
 	}
 
+	// verify ballot type is correct
+	switch electionSetup.Version {
+	case messagedata.OpenBallot:
+	case messagedata.SecretBallot:
+	default:
+		return xerrors.Errorf("Version should not be %s", electionSetup.Version)
+	}
+
 	// verify created at is positive
 	if electionSetup.CreatedAt < 0 {
 		return xerrors.Errorf("election setup created at is %d, should be minimum 0",
