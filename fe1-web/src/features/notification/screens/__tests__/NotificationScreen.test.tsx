@@ -10,7 +10,11 @@ import {
   NotificationReactContext,
   NOTIFICATION_FEATURE_IDENTIFIER,
 } from 'features/notification/interface/Configuration';
-import { addNotification, notificationReducer } from 'features/notification/reducer';
+import {
+  addNotification,
+  markNotificationAsRead,
+  notificationReducer,
+} from 'features/notification/reducer';
 import { WitnessNotificationType } from 'features/witness/components';
 
 import NotificationScreen from '../NotificationScreen';
@@ -32,6 +36,15 @@ mockStore.dispatch(
     type: 'mock-notification',
   }),
 );
+mockStore.dispatch(
+  addNotification({
+    laoId: mockLaoId,
+    title: 'another notification',
+    timestamp: 1,
+    type: 'mock-notification',
+  }),
+);
+mockStore.dispatch(markNotificationAsRead({ laoId: mockLaoId, notificationId: 0 }));
 
 describe('NotificationScreen', () => {
   it('renders correctly', () => {

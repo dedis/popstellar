@@ -24,7 +24,12 @@ export const NOTIFICATION_REDUCER_PATH = 'notifications';
 
 export interface NotificationReducerState {
   byLaoId: {
-    [laoId: string]: { byId: Record<number, NotificationState>; allIds: number[]; nextId: number };
+    [laoId: string]: {
+      byId: Record<number, NotificationState>;
+      unreadIds: number[];
+      readIds: number[];
+      nextId: number;
+    };
   };
 }
 
@@ -47,7 +52,8 @@ const notificationSlice = createSlice({
         // if not create a new, empty state for that lao
         laoState = {
           byId: {},
-          allIds: [],
+          unreadIds: [],
+          readIds: [],
           nextId: 0,
         };
       }
@@ -60,7 +66,7 @@ const notificationSlice = createSlice({
 
       laoState.nextId += 1;
       laoState.byId[notification.id] = notification;
-      laoState.allIds.push(notification.id);
+      laoState.unreadIds.push(notification.id);
 
       state.byLaoId[action.payload.laoId] = laoState;
     },
@@ -86,7 +92,16 @@ const notificationSlice = createSlice({
         return;
       }
 
+      if (state.byLaoId[laoId].byId[notificationId].hasBeenRead) {
+        console.warn(`The notification with id ${notificationId} was already marked as read`);
+        return;
+      }
+
       state.byLaoId[laoId].byId[notificationId].hasBeenRead = true;
+      state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
+        (id) => id !== notificationId,
+      );
+      state.byLaoId[laoId].readIds.push(notificationId);
     },
 
     // Discards a set of notifications
@@ -114,12 +129,14 @@ const notificationSlice = createSlice({
         }
 
         delete state.byLaoId[laoId].byId[notificationId];
-        // remove the id from allIds
-        state.byLaoId[laoId].allIds.splice(
-          state.byLaoId[laoId].allIds.findIndex((id) => id === notificationId),
-          1,
-        );
       }
+
+      state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
+        (id) => !notificationIds.includes(id),
+      );
+      state.byLaoId[laoId].readIds = state.byLaoId[laoId].readIds.filter(
+        (id) => !notificationIds.includes(id),
+      );
     },
 
     // Discards all notifications
@@ -156,21 +173,15 @@ export const getNotificationState = (state: any): NotificationReducerState =>
  */
 export const makeUnreadNotificationCountSelector = (laoId: string) =>
   createSelector(
-    // First input: a map containing all notifications
-    (state) => getNotificationState(state).byLaoId[laoId]?.byId,
-    // Second input: all notification ids
-    (state) => getNotificationState(state).byLaoId[laoId]?.allIds,
+    // First input: all notification ids
+    (state) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
     // Selector: returns the number of unread notifications
-    (
-      notificationMap: Record<string, NotificationState> | undefined,
-      allIds: number[] | undefined,
-    ): number => {
-      if (!notificationMap || !allIds) {
-        // no notification has been stored yet
+    (unreadIds: number[] | undefined): number => {
+      if (!unreadIds) {
         return 0;
       }
 
-      return allIds.filter((id) => !notificationMap[id].hasBeenRead).length;
+      return unreadIds.length;
     },
   );
 
@@ -179,22 +190,51 @@ export const makeUnreadNotificationCountSelector = (laoId: string) =>
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
-export const makeAllNotificationsSelector = (laoId: string) =>
+export const makeUnreadNotificationsSelector = (laoId: string) =>
   createSelector(
     // First input: a map containing all notifications
     (state) => getNotificationState(state).byLaoId[laoId]?.byId,
-    // Second input: all notification ids
-    (state) => getNotificationState(state).byLaoId[laoId]?.allIds,
+    // Second input: all ids of unread notifications
+    (state) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
     // Selector: returns all notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
-      allIds: number[] | undefined,
+      unreadIds: number[] | undefined,
     ): NotificationState[] => {
-      if (!notificationMap || !allIds) {
+      if (!notificationMap || !unreadIds) {
         return [];
       }
 
-      const notifications = allIds.map((id) => notificationMap[id]);
+      const notifications = unreadIds.map((id) => notificationMap[id]);
+
+      // sort in descending order, i.e. newest/latest first
+      notifications.sort((a, b) => b.timestamp - a.timestamp);
+
+      return notifications;
+    },
+  );
+
+/**
+ * Creates a selector that returns all notifications for a specific lao ordererd with the newest first
+ * @param laoId The lao id the selector should be created for
+ * @returns The selector
+ */
+export const makeReadNotificationsSelector = (laoId: string) =>
+  createSelector(
+    // First input: a map containing all notifications
+    (state) => getNotificationState(state).byLaoId[laoId]?.byId,
+    // Second input: all ids of read notifications
+    (state) => getNotificationState(state).byLaoId[laoId]?.readIds,
+    // Selector: returns all notifications for a specific lao
+    (
+      notificationMap: Record<string, NotificationState> | undefined,
+      readIds: number[] | undefined,
+    ): NotificationState[] => {
+      if (!notificationMap || !readIds) {
+        return [];
+      }
+
+      const notifications = readIds.map((id) => notificationMap[id]);
 
       // sort in descending order, i.e. newest/latest first
       notifications.sort((a, b) => b.timestamp - a.timestamp);

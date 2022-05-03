@@ -20,13 +20,20 @@ import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
-import { discardNotifications, NotificationState, makeAllNotificationsSelector } from '../reducer';
+import {
+  discardNotifications,
+  makeReadNotificationsSelector,
+  makeUnreadNotificationsSelector,
+  NotificationState,
+} from '../reducer';
 
 interface ListSeparatorItem {
+  key: string;
   title: string;
 }
 
 interface NotificationItem extends NotificationState {
+  key: string;
   isLastItem: boolean;
 }
 
@@ -52,45 +59,63 @@ const NotificationScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const laoId = NotificationHooks.useCurrentLaoId();
-  const selectAllNotifications = useMemo(
-    () => makeAllNotificationsSelector(laoId.valueOf()),
+  const selectUnreadNotifications = useMemo(
+    () => makeUnreadNotificationsSelector(laoId.valueOf()),
     [laoId],
   );
-  const notifications = useSelector(selectAllNotifications);
+  const selectReadNotifications = useMemo(
+    () => makeReadNotificationsSelector(laoId.valueOf()),
+    [laoId],
+  );
+  const unreadNotifications = useSelector(selectUnreadNotifications);
+  const readNotifications = useSelector(selectReadNotifications);
+
   const notificationData = useMemo(() => {
-    const read: NotificationItem[] = [];
-    const unread: NotificationItem[] = [];
-    for (const notification of notifications) {
-      if (notification.hasBeenRead) {
-        read.push({ ...notification, isLastItem: false });
-      } else {
-        unread.push({ ...notification, isLastItem: false });
-      }
-    }
+    const read: NotificationItem[] = unreadNotifications.map((n) => ({
+      ...n,
+      key: n.id.toString(),
+      isLastItem: false,
+    }));
+    const unread: NotificationItem[] = readNotifications.map((n) => ({
+      ...n,
+      key: n.id.toString(),
+      isLastItem: false,
+    }));
 
     const items: (ListSeparatorItem | NotificationItem)[] = [];
     if (unread.length > 0) {
       // set isLastItem properties
       unread[unread.length - 1].isLastItem = true;
 
-      items.push({ title: 'Notifications' } as ListSeparatorItem, ...unread);
+      // the key property has to be unique. all notification keys are numbers so
+      // use a string starting with characters for separators
+      items.push(
+        { key: 'seperator:unread', title: 'Notifications' } as ListSeparatorItem,
+        ...unread,
+      );
     }
 
     if (read.length > 0) {
       // set isLastItem properties
       read[read.length - 1].isLastItem = true;
 
-      items.push({ title: 'Read Notifications' } as ListSeparatorItem, ...read);
+      // the key property has to be unique. all notification keys are numbers so
+      // use a string starting with characters for separators
+      items.push(
+        { key: 'seperator:read', title: 'Read Notifications' } as ListSeparatorItem,
+        ...read,
+      );
     }
 
     return items;
-  }, [notifications]);
+  }, [unreadNotifications, readNotifications]);
 
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
   const onClearNotifications = () => {
+    const allNotifications = [...unreadNotifications, ...readNotifications];
     // call custom delete function on all notifications
-    for (const notification of notifications) {
+    for (const notification of allNotifications) {
       const deleteFn = notificationTypes.find((t) => t.isOfType(notification))?.delete;
 
       // if a delete function was provided for this type, then call it
@@ -102,7 +127,7 @@ const NotificationScreen = () => {
     dispatch(
       discardNotifications({
         laoId: laoId.valueOf(),
-        notificationIds: notifications.map((n) => n.id),
+        notificationIds: allNotifications.map((n) => n.id),
       }),
     );
   };
@@ -111,7 +136,7 @@ const NotificationScreen = () => {
     <ScreenWrapper>
       <FlatList
         data={notificationData}
-        keyExtractor={(item) => ('id' in item ? item.id.toString() : item.title)}
+        keyExtractor={(item) => item.key}
         renderItem={({ item }) => {
           if ('id' in item) {
             // notification

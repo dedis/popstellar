@@ -329,15 +329,31 @@ exports[`NotificationScreen renders correctly 1`] = `
                             data={
                               Array [
                                 Object {
+                                  "key": "seperator:unread",
                                   "title": "Notifications",
                                 },
                                 Object {
-                                  "hasBeenRead": false,
+                                  "hasBeenRead": true,
                                   "id": 0,
                                   "isLastItem": true,
+                                  "key": "0",
                                   "laoId": "-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=",
                                   "timestamp": 0,
                                   "title": "a notification",
+                                  "type": "mock-notification",
+                                },
+                                Object {
+                                  "key": "seperator:read",
+                                  "title": "Read Notifications",
+                                },
+                                Object {
+                                  "hasBeenRead": false,
+                                  "id": 1,
+                                  "isLastItem": true,
+                                  "key": "1",
+                                  "laoId": "-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=",
+                                  "timestamp": 1,
+                                  "title": "another notification",
                                   "type": "mock-notification",
                                 },
                               ]
@@ -414,6 +430,65 @@ exports[`NotificationScreen renders correctly 1`] = `
                                   >
                                     <Text>
                                       a notification
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
+                              <View
+                                onLayout={[Function]}
+                                style={null}
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "fontSize": 25,
+                                      "fontWeight": "bold",
+                                      "textAlign": "left",
+                                    }
+                                  }
+                                >
+                                  Read Notifications
+                                </Text>
+                              </View>
+                              <View
+                                onLayout={[Function]}
+                                style={null}
+                              >
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  nativeID="animatedComponent"
+                                  onClick={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    style={
+                                      Array [
+                                        Object {
+                                          "borderBottomColor": "#000",
+                                          "borderBottomWidth": 1,
+                                          "paddingBottom": 16,
+                                          "paddingTop": 16,
+                                        },
+                                        Object {
+                                          "borderBottomWidth": 0,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <Text>
+                                      another notification
                                     </Text>
                                   </View>
                                 </View>
