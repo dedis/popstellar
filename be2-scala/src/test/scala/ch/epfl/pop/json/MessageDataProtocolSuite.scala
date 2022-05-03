@@ -112,6 +112,17 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData shouldEqualTo (expected)
   }
 
+  test("Parser correctly decodes a ResultElection write_in message data") {
+    val example: String = getExampleMessage("messageData/election_result.json")
+    val messageData = ResultElection.buildFromJson(example)
+
+    val result = List(ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), List(ElectionBallotVotes("Yes", 1), ElectionBallotVotes("No", 0))))
+    val expected = ResultElection(result, List.empty)
+
+    messageData shouldBe a[ResultElection]
+    messageData should equal (expected)
+  }
+
   test("Parser correctly encodes/decodes a CashTransaction message data") {
     val example: String = getExampleMessage("messageData/cash/post_transaction.json")
     val messageData = PostTransaction.buildFromJson(example)

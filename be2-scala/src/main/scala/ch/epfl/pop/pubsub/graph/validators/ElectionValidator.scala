@@ -41,7 +41,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   private val HASH_ERROR: Hash = Hash(Base64Data(""))
 
-  override lazy val dbActor: AskableActorRef = dbActorRef // Can I really do that ?? Since it is needed for the functions getSetup, getOpen etc
+  override val dbActor: AskableActorRef = dbActorRef // Can I really do that ?? Since it is needed for the functions getSetup, getOpen etc
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
@@ -166,50 +166,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def getOpenMessage(electionChannel: Channel): Option[OpenElection] = {
-    var result: Option[OpenElection] = None
-    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
-      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-        for (message <- channelData.messages) {
-          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
-            case Some(Success(value)) => value
-            case _ => None
-          }) match {
-            case DbActorReadAck(Some(message)) =>
-              try {
-                result = Some(OpenElection.buildFromJson(message.data.decodeToString()))
-              } catch {
-                case exception: Throwable => print(exception)
-              }
-          }
-        }
-      case _ =>
-    }
-    result
-  }
-
-  private def getEndMessage(electionChannel: Channel): Option[EndElection] = {
-    var result: Option[EndElection] = None
-    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
-      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-        for (message <- channelData.messages) {
-          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
-            case Some(Success(value)) => value
-            case _ => None
-          }) match {
-            case DbActorReadAck(Some(message)) =>
-              try {
-                result = Some(EndElection.buildFromJson(message.data.decodeToString()))
-              } catch {
-                case exception: Throwable => print(exception)
-              }
-          }
-        }
-      case _ =>
-    }
-    result
-  }
-
   //not implemented since the back end does not recieve a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id))
@@ -268,8 +224,15 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  def getSetupMessage(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): SetupElection = {
-    var result: SetupElection = null
+ //Helper funcitons used in the validator of CastVote
+
+  /**
+   *
+   * @param electionChannel the election channel
+   * @return the OpenElection message from the election channel
+   */
+  private def getOpenMessage(electionChannel: Channel): Option[OpenElection] = {
+    var result: Option[OpenElection] = None
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         for (message <- channelData.messages) {
@@ -279,7 +242,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           }) match {
             case DbActorReadAck(Some(message)) =>
               try {
-                result = SetupElection.buildFromJson(message.data.decodeToString())
+                result = Some(OpenElection.buildFromJson(message.data.decodeToString()))
               } catch {
                 case exception: Throwable => print(exception)
               }
@@ -290,43 +253,34 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     result
   }
 
-  def getLastVotes(electionChannel: Channel): List[CastVoteElection] =
+  /**
+   *
+   * @param electionChannel the election channel
+   * @return the OpenElection message from the election channel 
+   */
+  private def getEndMessage(electionChannel: Channel): Option[EndElection] = {
+    var result: Option[EndElection] = None
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-        val messages: List[Hash] = channelData.messages
-        val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
-        for (messageIdHash <- messages) {
-          val dbAnswer =
-            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value match {
-              case Some(Success(value)) => value
-              case _ => None
-            }
-          dbAnswer match {
+        for (message <- channelData.messages) {
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
+            case Some(Success(value)) => value
+            case _ => None
+          }) match {
             case DbActorReadAck(Some(message)) =>
-              val sender = message.sender
-              // FIXME : the message contains the correct base64-encoded json in data, but message.decodedData return None
-              /*message.decodedData match {
-                case Some(castVote: CastVoteElection) =>
-                  if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at))
-                    lastVotes.update(sender, castVote)
-                case _ =>
-                  ()
-              }*/
               try {
-                val castVote: CastVoteElection = CastVoteElection.buildFromJson(message.data.decodeToString())
-                if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at))
-                  lastVotes.update(sender, castVote)
+                result = Some(EndElection.buildFromJson(message.data.decodeToString()))
               } catch {
                 case exception: Throwable => print(exception)
               }
-            case _ =>
           }
         }
-        println(lastVotes)
-        lastVotes.values.toList
-      case _ => Nil
+      case _ =>
     }
+    result
+  }
 
-  private def compareResults(messages: List[Hash], checkHash: Hash): Boolean =
-    Hash(Base64Data(messages.map(_.toString).sorted.foldLeft("")(_ + _))) == checkHash
+  //FIXME: need to recheck implementation of registered_votes
+  /*private def compareResults(messages: List[Hash], checkHash: Hash): Boolean =
+    Hash(Base64Data(messages.map(_.toString).sorted.foldLeft("")(_ + _))) == checkHash*/
 }
