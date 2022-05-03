@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +26,6 @@ import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -40,8 +40,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private EditText electionNameText;
   private Button cancelButton;
   private Button submitButton;
+  private Spinner versionSpinner;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
   private LaoDetailViewModel mLaoDetailViewModel;
+
+  // For election version choice
+  private Version electionVersion;
 
   // Enum of all voting methods, associated to a string desc for protocol and spinner display
   public enum VotingMethods {
@@ -152,6 +156,29 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           addQuestion.setEnabled(true);
         });
 
+    // Create a listener that updates the user's choice for election (by default it's OPEN_BALLOT)
+    // Then it set's up the spinner
+    versionSpinner = mSetupElectionFragBinding.electionSetupModeSpinner;
+    OnItemSelectedListener listener =
+        new OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            switch (position) {
+              case 0:
+                electionVersion = Version.OPEN_BALLOT;
+                break;
+              case 1:
+                electionVersion = Version.SECRET_BALLOT;
+            }
+          }
+
+          @Override
+          public void onNothingSelected(AdapterView<?> parent) {
+            electionVersion = Version.OPEN_BALLOT;
+          }
+        };
+    setUpElectionVersionSpinner(versionSpinner, listener);
+
     mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
     return mSetupElectionFragBinding.getRoot();
@@ -222,13 +249,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           String electionName = electionNameText.getText().toString();
 
-          //For testing purposes for the mean time
-          Version version = Version.OPEN_BALLOT;
-
           Log.d(
               TAG,
               "Creating election with version "
-                  + version
+                  + electionVersion
                   + ", name "
                   + electionName
                   + ", creation time "
@@ -246,7 +270,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ", ballotsOptions "
                   + ballotsOptionsFiltered);
           mLaoDetailViewModel.createNewElection(
-              version,
+              electionVersion,
               electionName,
               creationTimeInSeconds,
               startTimeInSeconds,
@@ -288,7 +312,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
       items.add(v.getStringVersion());
     }
 
-    // Set up the spinner with content
+    // Set up the spinner with voting versions
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, items);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
