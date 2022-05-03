@@ -7,8 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -224,7 +227,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           Log.d(
               TAG,
-              "Creating election with name "
+              "Creating election with version "
+                  + version
+                  + ", name "
                   + electionName
                   + ", creation time "
                   + creationTimeInSeconds
@@ -268,10 +273,26 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         && !getEndTime().isEmpty();
   }
 
-  private void setUpElectionVersionSpinner() {
-    String[] items =
-        Arrays.stream(ElectionSetupFragment.VotingMethods.values())
-            .map(ElectionSetupFragment.VotingMethods::getDesc)
-            .toArray(String[]::new);
+  /**
+   *  Sets up the dropdown menu for election versions: open-ballot and secret-ballot
+   * @param spinner the spinner to modify
+   * @param listener listener to spinner event
+   */
+  private void setUpElectionVersionSpinner(Spinner spinner, AdapterView.OnItemSelectedListener listener) {
+
+    List<Version> versionsList = Version.getAllVersion();
+    List<String> items = new ArrayList<>();
+
+    // Add items to version list
+    for (Version v : versionsList){
+      items.add(v.getStringVersion());
+    }
+
+    // Set up the spinner with content
+    ArrayAdapter<String> adapter =
+        new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, items);
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinner.setAdapter(adapter);
+    spinner.setOnItemSelectedListener(listener);
   }
 }
