@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub.graph
 
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.AskPatternConstants
@@ -19,11 +20,14 @@ object ElectionHelper extends AskPatternConstants {
   /** returns the SetupElection message from the channel
    *
    * @param electionChannel the election channel
-   * @param dbActor the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
+   * @param dbActor         the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    * @return the SetupElection message
    */
-  def getSetupMessage(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): SetupElection = {
-    var result: SetupElection = null
+  def getSetupMessage(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): SetupElection =
+    getAllMessage[SetupElection](electionChannel, dbActor).head._2
+
+  def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
+    var result: List[(Message, T)] = Nil
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         for (message <- channelData.messages) {
@@ -32,10 +36,10 @@ object ElectionHelper extends AskPatternConstants {
             case _ => None
           }) match {
             case DbActorReadAck(Some(message)) =>
-              try {
-                result = SetupElection.buildFromJson(message.data.decodeToString())
-              } catch {
-                case exception: Throwable => print(exception)
+              message.decodedData match {
+                case Some(t: T) =>
+                  result = (message, t) :: result
+                case _ =>
               }
           }
         }
@@ -48,43 +52,16 @@ object ElectionHelper extends AskPatternConstants {
    * Read every castvote in the channel and keep the last per attendee
    *
    * @param electionChannel : the election channel
-   * @param dbActor the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
+   * @param dbActor         the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    * @return the final vote for each attendee that has voted
    */
-  def getLastVotes(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[CastVoteElection] =
-    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
-      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-        val messages: List[Hash] = channelData.messages
-        val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
-        for (messageIdHash <- messages) {
-          val dbAnswer =
-            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value match {
-              case Some(Success(value)) => value
-              case _ => None
-            }
-          dbAnswer match {
-            case DbActorReadAck(Some(message)) =>
-              val sender = message.sender
-              // FIXME : the message contains the correct base64-encoded json in data, but message.decodedData return None
-              /*message.decodedData match {
-                case Some(castVote: CastVoteElection) =>
-                  if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at))
-                    lastVotes.update(sender, castVote)
-                case _ =>
-                  ()
-              }*/
-              try {
-                val castVote: CastVoteElection = CastVoteElection.buildFromJson(message.data.decodeToString())
-                if (!lastVotes.contains(sender) || !(castVote.created_at < lastVotes(sender).created_at))
-                  lastVotes.update(sender, castVote)
-              } catch {
-                case exception: Throwable => print(exception)
-              }
-            case _ =>
-          }
-        }
-        println(lastVotes)
-        lastVotes.values.toList
-      case _ => Nil
-    }
+  def getLastVotes(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[CastVoteElection] = {
+    val votes = getAllMessage[CastVoteElection](electionChannel, dbActor)
+    val attendeeId2lastVote = mutable.Map[PublicKey, CastVoteElection]()
+    for ((message, castvote) <- votes
+         if attendeeId2lastVote.contains(message.sender) &&
+           attendeeId2lastVote(message.sender).created_at < castvote.created_at)
+      attendeeId2lastVote.update(message.sender, castvote)
+    attendeeId2lastVote.values.toList
+  }
 }
