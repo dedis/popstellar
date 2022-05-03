@@ -97,7 +97,9 @@ export const WitnessNotificationType = {
    * @param notification The notification whose type should be checked
    * @returns True if the notification is a witness notification, false otherwise
    */
-  isOfType: (notification: WitnessFeature.Notification) =>
+  isOfType: (
+    notification: WitnessFeature.Notification,
+  ): notification is WitnessFeature.MessageToWitnessNotification =>
     'type' in notification &&
     notification.type === WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
 
