@@ -118,9 +118,6 @@ test("message data: lao", () => {
 test("message data: vote", () => {
     vote_cast_vote = require("../examples/messageData/vote_cast_vote/vote_cast_vote.json");
     expect(vote_cast_vote).toBeValid(messageDataSchema);
-
-    vote_cast_write_in = require("../examples/messageData/vote_cast_write_in.json");
-    expect(vote_cast_write_in).toBeValid(messageDataSchema);
 });
 
 test("message data: roll call", () => {
@@ -146,6 +143,15 @@ test("message data: meeting", () => {
 });
 
 test("message data: election", () => {
+    election_key = require("../examples/messageData/election_key/election_key.json");
+    expect(election_key).toBeValid(messageDataSchema);
+
+    election_setup = require("../examples/messageData/election_setup/election_setup.json");
+    expect(election_setup).toBeValid(messageDataSchema);
+
+    election_setup_secret_ballot = require("../examples/messageData/election_setup/election_setup_secret_ballot.json");
+    expect(election_setup_secret_ballot).toBeValid(messageDataSchema);
+
     election_open = require("../examples/messageData/election_open/election_open.json");
     expect(election_open).toBeValid(messageDataSchema);
 
@@ -155,8 +161,77 @@ test("message data: election", () => {
     election_result = require("../examples/messageData/election_result.json");
     expect(election_result).toBeValid(messageDataSchema);
 
-    election_setup = require("../examples/messageData/election_setup/election_setup.json");
-    expect(election_setup).toBeValid(messageDataSchema);
+    // Failures
+
+    // election#key
+    failure = require("../examples/messageData/election_key/wrong_election_key_additional_property.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_action.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_election.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_election_key.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_key/wrong_election_key_missing_object.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // election#setup
+    failure = require("../examples/messageData/election_setup/bad_election_setup_created_at_negative.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_end_time_before_created_at.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_end_time_negative.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_id_invalid_hash.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_id_not_base64.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_lao_id_invalid_hash.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that apparently is not checked by ajv
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_lao_id_not_base64.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_missing_name.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_name_empty.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_question_empty.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_question_id_invalid_hash.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that apparently is not checked by ajv
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_question_id_not_base64.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_question_voting_method_invalid.json");
+    expect(failure).not.toBeValid(messageDataSchema);
+
+    // this is something that cannot be checked using json schemas
+    // failure = require("../examples/messageData/election_setup/bad_election_setup_start_time_before_created_at.json");
+    // expect(failure).not.toBeValid(messageDataSchema);
+
+    failure = require("../examples/messageData/election_setup/bad_election_setup_start_time_negative.json");
+    expect(failure).not.toBeValid(messageDataSchema);
 });
 
 test("message data: message", () => {
