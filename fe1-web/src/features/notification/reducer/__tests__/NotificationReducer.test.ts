@@ -12,9 +12,9 @@ import {
   NotificationReducerState,
   makeUnreadNotificationCountSelector,
   NOTIFICATION_REDUCER_PATH,
-  getNotification,
   makeUnreadNotificationsSelector,
   makeReadNotificationsSelector,
+  makeNotificationSelector,
 } from '../NotificationReducer';
 
 const n0 = {
@@ -346,10 +346,13 @@ describe('makeReadNotificationsSelector', () => {
   });
 });
 
-describe('getNotification', () => {
+describe('makeNotificationSelector', () => {
   it('returns the correct notification', () => {
     expect(
-      getNotification(mockLaoId, 3, {
+      makeNotificationSelector(
+        mockLaoId,
+        3,
+      )({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
             [mockLaoId]: {
@@ -371,7 +374,10 @@ describe('getNotification', () => {
 
   it('returns undefined if the notification is not in the store', () => {
     expect(
-      getNotification(mockLaoId, 5, {
+      makeNotificationSelector(
+        mockLaoId,
+        5,
+      )({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
             [mockLaoId]: {

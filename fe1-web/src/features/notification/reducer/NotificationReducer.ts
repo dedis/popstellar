@@ -196,7 +196,7 @@ export const makeUnreadNotificationsSelector = (laoId: string) =>
     (state) => getNotificationState(state).byLaoId[laoId]?.byId,
     // Second input: all ids of unread notifications
     (state) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
-    // Selector: returns all notifications for a specific lao
+    // Selector: returns all unread notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
       unreadIds: number[] | undefined,
@@ -225,7 +225,7 @@ export const makeReadNotificationsSelector = (laoId: string) =>
     (state) => getNotificationState(state).byLaoId[laoId]?.byId,
     // Second input: all ids of read notifications
     (state) => getNotificationState(state).byLaoId[laoId]?.readIds,
-    // Selector: returns all notifications for a specific lao
+    // Selector: returns all read notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
       readIds: number[] | undefined,
@@ -245,20 +245,18 @@ export const makeReadNotificationsSelector = (laoId: string) =>
 
 /**
  * Retrives a single notification state by id
- * NOTE: This function does not memoize since there is no computation taking place
  * @param laoId The id of the lao
  * @param notificationId The id of the notification to retrieve
- * @param state The redux state
- * @returns A single notificatio n state
+ * @returns A single notification state
  */
-export const getNotification = (laoId: string, notificationId: number, state: unknown) => {
-  const notificationState = getNotificationState(state);
-  if (notificationState.byLaoId[laoId] && notificationId in notificationState.byLaoId[laoId].byId) {
-    return notificationState.byLaoId[laoId].byId[notificationId];
-  }
-
-  return undefined;
-};
+export const makeNotificationSelector = (laoId: string, notificationId: number) =>
+  createSelector(
+    // First input: a map containing all notifications
+    (state) => getNotificationState(state),
+    // Selector: returns the notification for a specific lao and notification id
+    (notificationState: NotificationReducerState): NotificationState | undefined =>
+      notificationState.byLaoId[laoId]?.byId[notificationId],
+  );
 
 export const notificationReduce = notificationSlice.reducer;
 

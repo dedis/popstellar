@@ -2,14 +2,14 @@ import { useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 import { Text } from 'react-native';
-import { useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
-import { getNotification } from '../reducer';
+import { makeNotificationSelector } from '../reducer';
 
 type NavigationProps = StackScreenProps<
   NotificationStackParamList,
@@ -21,9 +21,14 @@ const SingleNotificationScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const { notificationId } = route.params;
 
-  const store = useStore();
   const laoId = NotificationHooks.useCurrentLaoId();
-  const notification = getNotification(laoId.valueOf(), notificationId, store.getState());
+
+  const notificationSelector = useMemo(
+    () => makeNotificationSelector(laoId.valueOf(), notificationId),
+    [laoId, notificationId],
+  );
+
+  const notification = useSelector(notificationSelector);
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
   // search the notification type component list for a fitting comonent to render
