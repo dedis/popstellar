@@ -10,11 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -22,11 +20,10 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.relex.circleindicator.CircleIndicator3;
 
 @AndroidEntryPoint
@@ -269,5 +266,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         && !getStartTime().isEmpty()
         && !getEndDate().isEmpty()
         && !getEndTime().isEmpty();
+  }
+
+  private void setUpElectionVersionSpinner() {
+    String[] items =
+        Arrays.stream(ElectionSetupFragment.VotingMethods.values())
+            .map(ElectionSetupFragment.VotingMethods::getDesc)
+            .toArray(String[]::new);
   }
 }
