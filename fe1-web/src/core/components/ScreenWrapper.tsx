@@ -9,6 +9,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * Wraps react components in a screen wrapper that adds a scroll view
+ * and thus makes sure that all content can be accessed
+ */
 const ScreenWrapper = ({ children }: IPropTypes) => (
   <ScrollView style={styles.view}>{children}</ScrollView>
 );

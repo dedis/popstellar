@@ -40,9 +40,7 @@ const SingleNotificationScreen = () => {
       {Component && notification ? (
         <Component
           notification={notification}
-          navigateToNotificationScreen={() =>
-            navigation.navigate('NotificationNavigation Notifications')
-          }
+          navigateToNotificationScreen={() => navigation.goBack()}
         />
       ) : (
         <Text>

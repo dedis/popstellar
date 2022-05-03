@@ -18,7 +18,9 @@ const NotificationNavigation = () => {
         component={NotificationScreen}
         options={{
           title: STRINGS.notification_navigation_tab_notifications_title,
-          // show not back button for this screen
+          // show no back button for this screen in the top navigation bar
+          // the back button should only be used from notification detail/single views
+          // to get back to this screen but not to go from this screen "back" to anywhere
           headerLeft: () => null,
         }}
       />
