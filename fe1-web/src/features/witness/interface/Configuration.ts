@@ -58,7 +58,7 @@ export interface WitnessConfiguration {
 /**
  * The type of the context that is provided to react witness components
  */
-export type WintessReactContext = Pick<
+export type WitnessReactContext = Pick<
   WitnessConfiguration,
   | 'enabled'
   | 'useCurrentLaoId'
