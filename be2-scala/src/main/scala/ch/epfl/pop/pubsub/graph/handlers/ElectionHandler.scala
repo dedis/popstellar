@@ -89,13 +89,12 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val electionChannel = rpcMessage.getParamsChannel
         val results = getResults(electionChannel)
-        val witness_signatures = rpcMessage.getParamsMessage match {
+        val witnessSignatures = rpcMessage.getParamsMessage match {
           case Some(it) => it.witness_signatures.map(_.signature)
           case _ => Nil
         }
-        val resultElection: ResultElection = ResultElection(results, witness_signatures)
+        val resultElection: ResultElection = ResultElection(results, witnessSignatures)
         val data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString())
-        // TODO create the signature
         val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
         Await.ready(askLaoData, duration).value match {
           case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
