@@ -41,7 +41,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   private val HASH_ERROR: Hash = Hash(Base64Data(""))
 
-  override val dbActor: AskableActorRef = dbActorRef // Can I really do that ?? Since it is needed for the functions getSetup, getOpen etc
+  override lazy val dbActor: AskableActorRef = dbActorRef // Can I really do that ?? Since it is needed for the functions getSetup, getOpen etc
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
@@ -256,7 +256,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   /**
    *
    * @param electionChannel the election channel
-   * @return the OpenElection message from the election channel 
+   * @return the OpenElection message from the election channel
    */
   private def getEndMessage(electionChannel: Channel): Option[EndElection] = {
     var result: Option[EndElection] = None
