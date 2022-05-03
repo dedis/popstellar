@@ -59,7 +59,7 @@ object ElectionHelper extends AskPatternConstants {
     val votes = getAllMessage[CastVoteElection](electionChannel, dbActor)
     val attendeeId2lastVote = mutable.Map[PublicKey, CastVoteElection]()
     for ((message, castvote) <- votes
-         if attendeeId2lastVote.contains(message.sender) &&
+         if !attendeeId2lastVote.contains(message.sender) ||
            attendeeId2lastVote(message.sender).created_at < castvote.created_at)
       attendeeId2lastVote.update(message.sender, castvote)
     attendeeId2lastVote.values.toList
