@@ -121,6 +121,16 @@ object MessageExample {
     Some(createLaoWrongId)
   )
 
+  private final val createLaoEmptyName: CreateLao = createLaoCorrect.copy(name="")
+  final val MESSAGE_CREATELAO_EMPTY_NAME: Message = new Message(
+    Base64Data.encode(createLaoEmptyName.toJson.toString),
+    organizer,
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    workingWSPairList,
+    Some(createLaoEmptyName)
+  )
+
   //we only care about the decoded data, the rest doesn't need to be right for current testing purposes
   final val MESSAGE_CREATELAO_SIMPLIFIED: Message = new Message(
     Base64Data.encode(CreateLao(Hash(Base64Data("aWQ=")), "LAO", NOT_STALE_TIMESTAMP, PublicKey(Base64Data("a2V5")), List.empty).toJson.toString),
