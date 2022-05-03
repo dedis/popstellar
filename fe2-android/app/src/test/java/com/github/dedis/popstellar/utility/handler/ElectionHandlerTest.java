@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -127,8 +128,9 @@ public class ElectionHandlerTest extends TestCase {
   @Test
   public void testHandleElectionSetup() throws DataHandlingException {
     // Create the setup Election message
-    ElectionSetup electionSetup =
+    ElectionSetup electionSetupOpenBallot =
         new ElectionSetup(
+            Version.OPEN_BALLOT,
             "election 2",
             election.getCreation(),
             election.getStartTimestamp(),
@@ -138,17 +140,17 @@ public class ElectionHandlerTest extends TestCase {
             Collections.singletonList(electionQuestion.getBallotOptions()),
             Collections.singletonList(electionQuestion.getQuestion()),
             lao.getId());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetup, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, GSON);
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
-        laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetup.getId());
+        laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetupOpenBallot.getId());
     assertTrue(electionOpt.isPresent());
     assertEquals(EventState.CREATED, electionOpt.get().getState());
-    assertEquals(electionSetup.getId(), electionOpt.get().getId());
+    assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =

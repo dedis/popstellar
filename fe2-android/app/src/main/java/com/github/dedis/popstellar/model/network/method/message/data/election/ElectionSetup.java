@@ -137,6 +137,7 @@ public class ElectionSetup extends Data {
     }
     ElectionSetup that = (ElectionSetup) o;
     return getCreation() == that.getCreation()
+        && getVersion() == that.getVersion()
         && startTime == that.getStartTime()
         && java.util.Objects.equals(getId(), that.getId())
         && createdAt == that.getCreation()
@@ -163,7 +164,7 @@ public class ElectionSetup extends Data {
         + ", lao='"
         + lao
         + '\''
-        + ", lao='"
+        + ", name='"
         + name
         + '\''
         + ", createdAt="

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
+import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
@@ -220,6 +221,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           }
 
           String electionName = electionNameText.getText().toString();
+
+          //For testing purposes for the mean time
+          Version version = Version.OPEN_BALLOT;
+
           Log.d(
               TAG,
               "Creating election with name "
@@ -239,6 +244,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ", ballotsOptions "
                   + ballotsOptionsFiltered);
           mLaoDetailViewModel.createNewElection(
+              version,
               electionName,
               creationTimeInSeconds,
               startTimeInSeconds,

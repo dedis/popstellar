@@ -2,12 +2,15 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
@@ -31,7 +34,7 @@ public class ElectionSetupTest {
           Arrays.asList("candidate1", "candidate2"), Arrays.asList("Option a", "Option b"));
   private final List<String> question = Arrays.asList("which is the best ?", "who is best ?");
   private final String laoId = "my lao id";
-  private final ElectionSetup electionSetup =
+  private final ElectionSetup openBallotSetup =
       new ElectionSetup(
           version,
           electionSetupName,
@@ -43,47 +46,66 @@ public class ElectionSetupTest {
           ballotOptions,
           question,
           laoId);
-
+  private final ElectionSetup secretBallotSetup =
+      new ElectionSetup(
+          Version.SECRET_BALLOT,
+          electionSetupName,
+          creation,
+          start,
+          end,
+          votingMethod,
+          writeIn,
+          ballotOptions,
+          question,
+          laoId);
+  
+  
   @Test
   public void electionSetupGetterReturnsCorrectId() {
     // Hash('Election'||lao_id||created_at||name)
     String expectedId =
         Hash.hash(
             EventType.ELECTION.getSuffix(),
-            electionSetup.getLao(),
-            Long.toString(electionSetup.getCreation()),
-            electionSetup.getName());
-    assertThat(electionSetup.getId(), is(expectedId));
+            openBallotSetup.getLao(),
+            Long.toString(openBallotSetup.getCreation()),
+            openBallotSetup.getName());
+    assertThat(openBallotSetup.getId(), is(expectedId));
   }
 
   @Test
-  public void electionSetupGetterReturnsCorrectName() {
-    assertThat(electionSetup.getName(), is(electionSetupName));
+  public void getNameTest() {
+    assertThat(openBallotSetup.getName(), is(electionSetupName));
   }
 
   @Test
-  public void electionSetupGetterReturnsCorrectEndTime() {
-    assertThat(electionSetup.getEndTime(), is(end));
+  public void getEndTimeTest() {
+    assertThat(openBallotSetup.getEndTime(), is(end));
   }
 
   @Test
-  public void electionSetupGetterReturnsCorrectLaoId() {
-    assertThat(electionSetup.getLao(), is(laoId));
+  public void getLaoTest() {
+    assertThat(openBallotSetup.getLao(), is(laoId));
   }
 
   @Test
   public void electionSetupOnlyOneQuestion() {
-    assertThat(electionSetup.getQuestions().size(), is(2));
+    assertThat(openBallotSetup.getQuestions().size(), is(2));
   }
 
   @Test
-  public void electionSetupGetterReturnsCorrectObject() {
-    assertThat(electionSetup.getObject(), is(Objects.ELECTION.getObject()));
+  public void getObjectTest() {
+    assertThat(openBallotSetup.getObject(), is(Objects.ELECTION.getObject()));
   }
 
   @Test
-  public void electionSetupGetterReturnsCorrectAction() {
-    assertThat(electionSetup.getAction(), is(Action.SETUP.getAction()));
+  public void getActionTest() {
+    assertThat(openBallotSetup.getAction(), is(Action.SETUP.getAction()));
+  }
+
+  @Test
+  public void getVersionTest(){
+    assertEquals(Version.OPEN_BALLOT.getVersion(), openBallotSetup.getVersion());
+    assertEquals(Version.SECRET_BALLOT.getVersion(), secretBallotSetup.getVersion());
   }
 
   @Test
@@ -220,19 +242,33 @@ public class ElectionSetupTest {
                 question,
                 laoId));
   }
-
-  @Test
-  public void electionSetupGetterReturnsCorrectVersion() {
-    assertThat(electionSetup.getVersion(), is("1.0.0"));
-  }
-
+  
   @Test
   public void electionSetupEqualsTrueForSameInstance() {
-    assertThat(electionSetup.equals(electionSetup), is(true));
+    assertThat(openBallotSetup.equals(openBallotSetup), is(true));
+    assertNotEquals(openBallotSetup, secretBallotSetup);
   }
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(electionSetup);
+    JsonTestUtils.testData(openBallotSetup);
+  }
+
+  @Test
+  public void toStringTest(){
+
+    String setupElectionStringTest =
+        String.format(
+            "ElectionSetup={"
+                + "version='%s', "
+                + "id='%s', "
+                + "lao='%s', "
+                + "name='%s', "
+                + "createdAt=&s,"
+                + "startTime=&s, "
+                + "endTime=&s, "
+                + "questions=&s}",
+          version, Election.generateElectionSetupId(laoId, creation, electionSetupName), laoId, electionSetupName, creation, start, end, Arrays.toString(question.toArray()));
+    assertEquals(setupElectionStringTest, openBallotSetup.toString());
   }
 }
