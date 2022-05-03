@@ -16,7 +16,7 @@ public enum Version {
     this.version = version;
   }
 
-  public String getVersion(){
+  public String getStringVersion() {
     return version;
   }
 }

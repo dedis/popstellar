@@ -13,12 +13,10 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Test;
 
 public class ElectionSetupTest {
 
@@ -104,8 +102,11 @@ public class ElectionSetupTest {
 
   @Test
   public void getVersionTest(){
-    assertEquals(Version.OPEN_BALLOT.getVersion(), openBallotSetup.getVersion());
-    assertEquals(Version.SECRET_BALLOT.getVersion(), secretBallotSetup.getVersion());
+    assertEquals(
+        Version.OPEN_BALLOT.getStringVersion(), openBallotSetup.getVersion().getStringVersion());
+    assertEquals(
+        Version.SECRET_BALLOT.getStringVersion(),
+        secretBallotSetup.getVersion().getStringVersion());
   }
 
   @Test
@@ -256,7 +257,6 @@ public class ElectionSetupTest {
 
   @Test
   public void toStringTest(){
-
     String setupElectionStringTest =
         String.format(
             "ElectionSetup={"
@@ -264,11 +264,18 @@ public class ElectionSetupTest {
                 + "id='%s', "
                 + "lao='%s', "
                 + "name='%s', "
-                + "createdAt=&s,"
-                + "startTime=&s, "
-                + "endTime=&s, "
-                + "questions=&s}",
-          version, Election.generateElectionSetupId(laoId, creation, electionSetupName), laoId, electionSetupName, creation, start, end, Arrays.toString(question.toArray()));
+                + "createdAt=%d, "
+                + "startTime=%d, "
+                + "endTime=%d, "
+                + "questions=%s}",
+            version,
+            Election.generateElectionSetupId(laoId, creation, electionSetupName),
+            laoId,
+            electionSetupName,
+            creation,
+            start,
+            end,
+            Arrays.toString(openBallotSetup.getQuestions().toArray()));
     assertEquals(setupElectionStringTest, openBallotSetup.toString());
   }
 }

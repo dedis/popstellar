@@ -5,7 +5,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -154,9 +153,9 @@ public class ElectionSetup extends Data {
 
   @Override
   public String toString() {
-    return "ElectionSetup{"
+    return "ElectionSetup={"
         + "version='"
-        + version.getVersion()
+        + version
         + '\''
         + ", id='"
         + id
