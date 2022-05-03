@@ -109,17 +109,14 @@ const NotificationScreen = () => {
   // prepare the list of notifications for passing it to a FlatList component
   // by adding properties for styling as well as adding headings in betweeen
   const notificationData = useMemo(() => {
-    const read: NotificationItem[] = unreadNotifications.map((n) => ({
+    const addKey = (n: NotificationState): NotificationItem => ({
       ...n,
       key: n.id.toString(),
       isLastItem: false,
-    }));
+    });
 
-    const unread: NotificationItem[] = readNotifications.map((n) => ({
-      ...n,
-      key: n.id.toString(),
-      isLastItem: false,
-    }));
+    const read: NotificationItem[] = unreadNotifications.map(addKey);
+    const unread: NotificationItem[] = readNotifications.map(addKey);
 
     // these will be the items inside the FlatList component
     const items: (ListSeparatorItem | NotificationItem)[] = [];

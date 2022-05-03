@@ -232,7 +232,7 @@ namespace STRINGS {
     'This is the only backup seed for your PoP tokens - store it securely';
   export const copy_to_clipboard = 'Copy to clipboard';
   export const type_seed_example =
-    'example:  export const  grape  export const sock  export const height  export const they  export const tiny  export const voyage  export const kid  export const young  export const domain  export const trumpet  export const three  export const patrol';
+    'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol';
   export const wallet_synced_info = 'Your digital wallet is synced !';
   export const setup_wallet = 'SETUP WALLET';
   export const back_to_wallet_home = 'BACK TO WALLET HOME';
