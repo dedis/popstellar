@@ -10,6 +10,7 @@ import * as home from './home';
 import * as lao from './lao';
 import * as meeting from './meeting';
 import * as notification from './notification';
+import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
 import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
@@ -63,7 +64,9 @@ export function configureFeatures() {
   // compose features
   const notificationComposition = notification.compose({
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    notificationTypes: [...witnessConfiguration.notificationTypes],
+    notificationTypes: [
+      ...witnessConfiguration.notificationTypes,
+    ] as NotificationCompositionConfiguration['notificationTypes'],
   });
   const homeComposition = home.compose({
     /* functions */

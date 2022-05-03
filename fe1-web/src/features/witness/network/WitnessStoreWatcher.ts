@@ -6,11 +6,7 @@ import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { Timestamp } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
-import {
-  MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
-  WitnessConfiguration,
-  WitnessFeature,
-} from '../interface';
+import { WitnessConfiguration, WitnessFeature } from '../interface';
 import { addMessageToWitness, isMessageToWitness } from '../reducer';
 import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
@@ -74,7 +70,7 @@ export const afterMessageProcessingHandler =
               laoId: lao.id.valueOf(),
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
               timestamp: Timestamp.EpochNow().valueOf(),
-              type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+              type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
               messageId: msg.message_id.valueOf(),
             } as WitnessFeature.MessageToWitnessNotification),
           );

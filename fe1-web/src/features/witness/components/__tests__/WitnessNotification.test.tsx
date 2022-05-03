@@ -22,7 +22,6 @@ import {
   notificationReducer,
 } from 'features/notification/reducer';
 import {
-  MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
   WintessReactContext,
   WitnessFeature,
   WITNESS_FEATURE_IDENTIFIER,
@@ -47,7 +46,7 @@ const mockNotification = {
   laoId: mockLaoId,
   title: 'a notification',
   timestamp: 0,
-  type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+  type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
   messageId: mockMessageId,
 } as WitnessFeature.MessageToWitnessNotification;

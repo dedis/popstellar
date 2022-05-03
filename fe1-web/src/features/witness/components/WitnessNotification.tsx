@@ -8,7 +8,7 @@ import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
 
 import { WitnessHooks } from '../hooks';
-import { WitnessFeature, MESSAGE_TO_WITNESS_NOTIFICATION_TYPE } from '../interface';
+import { WitnessFeature } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
 import { removeMessageToWitness } from '../reducer';
 
@@ -88,7 +88,8 @@ export const WitnessNotificationType = {
    * @returns True if the notification is a witness notification, false otherwise
    */
   isOfType: (notification: WitnessFeature.Notification) =>
-    'type' in notification && notification.type === MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+    'type' in notification &&
+    notification.type === WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
 
   /**
    * Custom cleanup function that removes the message from the witness store
