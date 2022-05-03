@@ -291,6 +291,27 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
   implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
 
+  implicit object KeyElectionFormat extends JsonFormat[KeyElection] {
+    final private val PARAM_LAO: String = "lao"
+    final private val PARAM_ELECTION: String = "election"
+    final private val PARAM_ELECTION_KEY: String = "election_key"
+
+    override def read(json: JsValue): KeyElection = json.asJsObject().getFields(PARAM_LAO, PARAM_ELECTION, PARAM_ELECTION_KEY) match {
+      case Seq(lao@JsString(_), election@JsString(_), electionKey@JsString(_)) => KeyElection(
+        lao.convertTo[Hash],
+        election.convertTo[Hash],
+        electionKey.convertTo[PublicKey]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a LaoData object")
+    }
+
+    override def write(obj: KeyElection): JsValue = JsObject(
+      PARAM_LAO -> obj.election.toJson,
+      PARAM_ELECTION -> obj.election.toJson,
+      PARAM_ELECTION_KEY -> obj.election_key.toJson,
+    )
+  }
+
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))
   implicit val deleteChirpFormat: JsonFormat[DeleteChirp] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteChirp](DeleteChirp.apply, "chirp_id", "timestamp"))

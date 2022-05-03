@@ -18,6 +18,7 @@ object ActionType extends Enumeration {
   val CLOSE: Value = MatchingValue("close")
   // election actions:
   val SETUP: Value = MatchingValue("setup")
+  val KEY: Value = MatchingValue("key")
   val RESULT: Value = MatchingValue("result")
   val END: Value = MatchingValue("end")
   val CAST_VOTE: Value = MatchingValue("cast_vote")
