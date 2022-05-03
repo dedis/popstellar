@@ -9,7 +9,7 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
-import OrganizerEventsNavigation from './OrganizerNavigation';
+import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 

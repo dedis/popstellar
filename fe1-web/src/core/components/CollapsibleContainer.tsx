@@ -20,8 +20,7 @@ const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) 
       <TouchableOpacity onPress={() => setShowChildren(!showChildren)}>
         <View>
           <TextBlock bold text={title || ''} />
-          <Text
-            style={[Typography.baseCentered as TextStyle, CollapsibleContainerStyles.headerIcon]}>
+          <Text style={[Typography.baseCentered, CollapsibleContainerStyles.headerIcon]}>
             {showChildren ? 'v' : '<'}
           </Text>
         </View>

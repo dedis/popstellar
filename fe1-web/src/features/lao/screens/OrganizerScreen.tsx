@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AttendeeEventsScreen from './AttendeeScreen';
+import AttendeeEventsScreen from './AttendeeEventsScreen';
 
 /**
  * OrganizerScreen: lists editable LAO properties and past/ongoing/future events

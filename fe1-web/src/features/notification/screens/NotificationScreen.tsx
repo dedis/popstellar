@@ -87,7 +87,7 @@ const NotificationScreenListItem = ({ item }: { item: ListSeparatorItem | Notifi
     );
   }
   // separator
-  return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
+  return <Text style={Typography.important}>{item.title}</Text>;
 };
 
 /**
