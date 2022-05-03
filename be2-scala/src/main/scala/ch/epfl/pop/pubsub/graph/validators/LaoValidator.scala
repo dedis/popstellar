@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -81,10 +81,20 @@ case object LaoValidator extends MessageDataContentValidator {
 
         val expectedLaoId: Hash = rpcMessage.extractLaoId
 
+        val sender: PublicKey = message.sender
+
         if (expectedLaoId != data.lao) {
           Right(validationError("unexpected id"))
+        } else if (data.peers.size <= 1) {
+          Right(validationError("unexpected number of peers"))
         } else if (validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to write an GreetLao message on wrong type of channel $channel"))
+        } else if (!data.address.startsWith("wss://")) {
+          Right(validationError("invalid address"))
+        } else if (data.peers.exists(!_.startsWith("wss://"))) {
+          Right(validationError("invalid address of peers"))
+        } else if (sender != data.frontend) {
+          Right(validationError("invalid sender"))
         } else {
           Left(rpcMessage)
         }

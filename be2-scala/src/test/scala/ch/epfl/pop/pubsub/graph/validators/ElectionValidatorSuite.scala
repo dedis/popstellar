@@ -128,7 +128,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   //Setup Election
   test("Setting up an election works as intended") {
     val dbActorRef = mockDbWorkingSetup
-    println(dbActorRef)
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_RPC)
     message should equal(Left(SETUP_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
