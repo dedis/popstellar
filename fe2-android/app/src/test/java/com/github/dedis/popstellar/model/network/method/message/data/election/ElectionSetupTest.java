@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ElectionSetupTest {
 
+  private final Version version = Version.OPEN_BALLOT;
   private final String electionSetupName = "new election setup";
   private final long creation = 0;
   private final long start = 0;
@@ -32,6 +33,7 @@ public class ElectionSetupTest {
   private final String laoId = "my lao id";
   private final ElectionSetup electionSetup =
       new ElectionSetup(
+          version,
           electionSetupName,
           creation,
           start,
@@ -90,11 +92,12 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                null, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId));
+                version, null, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId));
     assertThrows(
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 start,
@@ -108,6 +111,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 start,
@@ -121,6 +125,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 start,
@@ -134,6 +139,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 start,
@@ -151,6 +157,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 2,
@@ -169,6 +176,7 @@ public class ElectionSetupTest {
 
     ElectionSetup election1 =
         new ElectionSetup(
+            version,
             electionSetupName,
             creation,
             time - gap,
@@ -187,6 +195,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 -1,
@@ -200,6 +209,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
+                version,
                 electionSetupName,
                 creation,
                 start,
