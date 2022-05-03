@@ -75,7 +75,7 @@ export const afterMessageProcessingHandler =
           break;
 
         case WitnessingType.ACTIVE:
-          // only send witness messages if we are a witness
+          // FIXME: only send witness messages if we are a witness
           /* if (!isLaoWitness()) {
            break;
          } */
