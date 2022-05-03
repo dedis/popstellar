@@ -70,21 +70,27 @@ const NotificationScreen = () => {
   const unreadNotifications = useSelector(selectUnreadNotifications);
   const readNotifications = useSelector(selectReadNotifications);
 
+  // prepare the list of notifications for passing it to a FlatList component
+  // by adding properties for styling as well as adding headings in betweeen
   const notificationData = useMemo(() => {
     const read: NotificationItem[] = unreadNotifications.map((n) => ({
       ...n,
       key: n.id.toString(),
       isLastItem: false,
     }));
+
     const unread: NotificationItem[] = readNotifications.map((n) => ({
       ...n,
       key: n.id.toString(),
       isLastItem: false,
     }));
 
+    // these will be the items inside the FlatList component
     const items: (ListSeparatorItem | NotificationItem)[] = [];
+
+    // add heading before the unread notifications if there are any
     if (unread.length > 0) {
-      // set isLastItem properties
+      // set isLastItem property that allows having different styles
       unread[unread.length - 1].isLastItem = true;
 
       // the key property has to be unique. all notification keys are numbers so
@@ -95,8 +101,9 @@ const NotificationScreen = () => {
       );
     }
 
+    // add heading before the read notifications if there are any
     if (read.length > 0) {
-      // set isLastItem properties
+      // set isLastItem property that allows having different styles
       read[read.length - 1].isLastItem = true;
 
       // the key property has to be unique. all notification keys are numbers so
