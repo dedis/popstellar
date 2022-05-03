@@ -4,7 +4,7 @@ import React from 'react';
 
 import { mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { WintessReactContext, WITNESS_FEATURE_IDENTIFIER } from 'features/witness/interface';
+import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from 'features/witness/interface';
 
 import { WitnessHooks } from '../WitnessHooks';
 
@@ -19,7 +19,7 @@ const contextValue = {
     addNotification,
     discardNotifications,
     markNotificationAsRead,
-  } as WintessReactContext,
+  } as WitnessReactContext,
 };
 
 // setup mock store

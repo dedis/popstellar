@@ -22,7 +22,7 @@ import {
   notificationReducer,
 } from 'features/notification/reducer';
 import {
-  WintessReactContext,
+  WitnessReactContext,
   WitnessFeature,
   WITNESS_FEATURE_IDENTIFIER,
 } from 'features/witness/interface';
@@ -72,7 +72,7 @@ const contextValue = {
     discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),
     markNotificationAsRead: (args) => mockStore.dispatch(markNotificationAsRead(args)),
     useCurrentLao: () => mockLao,
-  } as WintessReactContext,
+  } as WitnessReactContext,
 };
 
 describe('WitnessNotification', () => {

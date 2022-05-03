@@ -2,18 +2,18 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { WintessReactContext, WITNESS_FEATURE_IDENTIFIER } from '../interface/Configuration';
+import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from '../interface/Configuration';
 
 export namespace WitnessHooks {
   /* Hooks passed by dependencies */
 
-  export const useWitnessContext = (): WintessReactContext => {
+  export const useWitnessContext = (): WitnessReactContext => {
     const featureContext = useContext(FeatureContext);
     // assert that the witness context exists
     if (!(WITNESS_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Witness context could not be found!');
     }
-    return featureContext[WITNESS_FEATURE_IDENTIFIER] as WintessReactContext;
+    return featureContext[WITNESS_FEATURE_IDENTIFIER] as WitnessReactContext;
   };
 
   /**

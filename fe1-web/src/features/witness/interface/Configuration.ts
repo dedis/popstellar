@@ -82,7 +82,7 @@ export interface WitnessInterface extends FeatureInterface {
     }>;
   }[];
 
-  context: WintessReactContext;
+  context: WitnessReactContext;
 
   /* reducers */
   reducers: {

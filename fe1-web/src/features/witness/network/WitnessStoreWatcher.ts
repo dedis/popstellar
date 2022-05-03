@@ -56,7 +56,7 @@ export const afterMessageProcessingHandler =
     }
 
     if (type) {
-      // we have a wintessing entry for this message type
+      // we have a witnessing entry for this message type
 
       switch (type) {
         case WitnessingType.PASSIVE:
