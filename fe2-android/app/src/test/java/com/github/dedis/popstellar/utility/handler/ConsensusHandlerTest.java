@@ -36,7 +36,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
@@ -114,13 +113,13 @@ public class ConsensusHandlerTest {
     laoRepository = new LAORepository();
     messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
-    lao = new Lao(LAO_ID);
-    laoRepository.getLaoById().put(LAO_ID, new LAOState(lao));
+    Channel channel = Channel.getLaoChannel(LAO_ID);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
-    messageHandler.handleMessage(laoRepository, messageSender, lao.getChannel(), createLaoMessage);
+    messageHandler.handleMessage(laoRepository, messageSender, channel, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
+    lao = laoRepository.getLaoById().get(LAO_ID).getLao();
   }
 
   /**

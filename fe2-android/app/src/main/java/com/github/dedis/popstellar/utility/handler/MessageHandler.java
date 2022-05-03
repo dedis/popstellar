@@ -51,13 +51,11 @@ public final class MessageHandler {
       MessageGeneral message)
       throws DataHandlingException {
     Log.d(TAG, "handle incoming message");
-
     // Put the message in the state
     laoRepository.getMessageById().put(message.getMessageId(), message);
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
-
     Objects dataObj = Objects.find(data.getObject());
     Action dataAction = Action.find(data.getAction());
 

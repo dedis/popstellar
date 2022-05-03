@@ -32,6 +32,12 @@ export interface WitnessConfiguration {
   useCurrentLaoId: () => Hash | undefined;
 
   /**
+   * Returns the currently active lao id. Should be used outside react components
+   * @returns The current lao or undefined if there is none.
+   */
+  getCurrentLaoId: () => Hash | undefined;
+
+  /**
    * Returns whether the user is witness of the current lao
    */
   isLaoWitness: () => boolean;

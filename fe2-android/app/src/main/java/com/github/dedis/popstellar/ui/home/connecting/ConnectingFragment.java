@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.home;
+package com.github.dedis.popstellar.ui.home.connecting;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,7 +24,7 @@ public final class ConnectingFragment extends Fragment {
   public static final String TAG = ConnectingFragment.class.getSimpleName();
 
   private ConnectingFragmentBinding mConnectingFragBinding;
-  private HomeViewModel mHomeViewModel;
+  private ConnectingViewModel mConnectingViewModel;
 
   /** Create a new instance of the connecting fragment. */
   public static ConnectingFragment newInstance() {
@@ -38,13 +38,13 @@ public final class ConnectingFragment extends Fragment {
     mConnectingFragBinding = ConnectingFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
-    if (activity instanceof HomeActivity) {
-      mHomeViewModel = HomeActivity.obtainViewModel(activity);
+    if (activity instanceof ConnectingActivity) {
+      mConnectingViewModel = ConnectingActivity.obtainViewModel(activity);
     } else {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
 
-    mConnectingFragBinding.setViewModel(mHomeViewModel);
+    mConnectingFragBinding.setViewModel(mConnectingViewModel);
     mConnectingFragBinding.setLifecycleOwner(activity);
 
     return mConnectingFragBinding.getRoot();
@@ -57,7 +57,7 @@ public final class ConnectingFragment extends Fragment {
     setupCancelButton();
 
     // Subscribe to "cancel LAO connect" event
-    mHomeViewModel
+    mConnectingViewModel
         .getCancelConnectEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -77,10 +77,10 @@ public final class ConnectingFragment extends Fragment {
 
   private void setupCancelButton() {
     mConnectingFragBinding.buttonCancelConnecting.setOnClickListener(
-        v -> mHomeViewModel.cancelConnect());
+        v -> mConnectingViewModel.cancelConnect());
   }
 
   private void cancelConnect() {
-    mHomeViewModel.openHome();
+    mConnectingViewModel.openHome();
   }
 }

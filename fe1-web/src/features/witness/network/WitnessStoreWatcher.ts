@@ -3,7 +3,7 @@ import { Store } from 'redux';
 import { KeyPairStore } from 'core/keypair';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { Timestamp } from 'core/objects';
+import { Timestamp, Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { WitnessConfiguration, WitnessFeature } from '../interface';
@@ -112,6 +112,7 @@ export const afterMessageProcessingHandler =
  */
 export const makeWitnessStoreWatcher = (
   store: Store,
+  getCurrentLaoId: () => Hash | undefined,
   afterProcessingHandler: (msg: ExtendedMessage) => void,
 ) => {
   let previousAllIds: string[] = [];
@@ -120,7 +121,16 @@ export const makeWitnessStoreWatcher = (
   let currentAllIds: string[] = [];
   let currentUnprocessedIds: string[] = [];
   return () => {
+    // we have to be careful with ExtendedMessage.fromState
+    // since some message constructors assume that we are connected to a lao
+    // thus we delay this watcher until we are connected to a lao
+    // (sending witness messages would also be difficult under these circumstances)
+    if (!getCurrentLaoId()) {
+      return;
+    }
+
     const state = store.getState();
+
     const msgState = getMessagesState(state);
     const allIds = msgState?.allIds || [];
     previousAllIds = currentAllIds;
@@ -154,7 +164,6 @@ export const makeWitnessStoreWatcher = (
 
       // i.e. all messages that have been processed
       // since the last call of this function
-
       afterProcessingHandler(ExtendedMessage.fromState(msgState.byId[msgId]));
     }
   };

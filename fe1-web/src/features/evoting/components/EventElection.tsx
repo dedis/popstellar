@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo, useState } from 'react';
-import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
+import { SectionList, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 
@@ -138,11 +138,21 @@ const EventElection = (props: IPropTypes) => {
       case ElectionStatus.RESULT:
         return (
           <>
-            <Text style={styles.text}>Election Result</Text>
+            <Text style={styles.text}>Election Results</Text>
             {election.questionResult &&
-              election.questionResult.map((question: QuestionResult) => (
-                <BarChartDisplay data={question.result} key={question.id.valueOf()} />
-              ))}
+              election.questionResult.map((questionResult: QuestionResult) => {
+                const question = election.questions.find((q) => q.id === questionResult.id);
+
+                return question ? (
+                  <View>
+                    <Text style={styles.text}>{question.question}</Text>
+                    <BarChartDisplay
+                      data={questionResult.result}
+                      key={questionResult.id.valueOf()}
+                    />
+                  </View>
+                ) : null;
+              })}
           </>
         );
       default:

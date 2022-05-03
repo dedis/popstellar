@@ -54,6 +54,7 @@ export function configureFeatures() {
     messageRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     addNotification: notificationConfiguration.actionCreators.addNotification,
     markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
