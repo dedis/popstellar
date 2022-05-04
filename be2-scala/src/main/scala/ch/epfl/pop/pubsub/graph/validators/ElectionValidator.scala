@@ -119,9 +119,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val channel: Channel = rpcMessage.getParamsChannel
 
         val electionId: Hash = channel.extractChildChannel
-        val sender: PublicKey = message.sender
-
-        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
         val setupMessage: SetupElection = getSetupMessage(channel, dbActor)
         val questions = setupMessage.questions
@@ -131,7 +128,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (electionId != data.election) {
           Right(validationError("unexpected election id"))
-        } else if (laoId != data.lao) {
+        } else if ((channel.decodeChannelLaoId getOrElse HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
           //  check it the question id exists
         } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
@@ -155,8 +152,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"This election has not started yet"))
         } else if (getEndMessage(channel).isDefined) {
           Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(sender, channel, dbActor)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+        } else if (!validateAttendee(message.sender, channel, dbActor)) {
+          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActor)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
         } else {
