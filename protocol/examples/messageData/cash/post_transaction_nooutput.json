@@ -1,0 +1,19 @@
+{
+    "object": "transaction",
+    "action": "post",
+    "transaction_id": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+    "transaction": {
+	    "Version": 1,
+	    "TxIn": [{
+		    "TxOutHash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+		    "TxOutIndex": 0,
+		    "Script": {
+			    "Type": "P2PKH",
+			    "Pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "Sig": "CAFEBABE"
+		    }
+	    }],
+	    "TxOut": [],
+	    "LockTime": 0
+    }
+}

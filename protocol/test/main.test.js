@@ -177,8 +177,20 @@ test("message data: chirp", () => {
 })
 
 test("message data: cash", () => {
+    
     cash_transaction = require("../examples/messageData/cash/post_transaction.json")
     expect(cash_transaction).toBeValid(messageDataSchema)
+
+    cash_transaction_coinbase = require("../examples/messageData/cash/post_transaction_coinbase.json")
+    expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
+
+    cash_transaction_multipleinandout = require("../examples/messageData/cash/post_transaction_multipleinpandout.json")
+    expect(cash_transaction_multipleinandout).toBeValid(messageDataSchema)
+
+    cash_transaction_nooutput = require("../examples/messageData/cash/post_transaction_nooutput.json")
+    expect(cash_transaction_nooutput).not.toBeValid(messageDataSchema)
+
+    
 })
 
 test("message data: consensus", () => {

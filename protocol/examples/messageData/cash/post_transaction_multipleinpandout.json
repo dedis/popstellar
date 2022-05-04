@@ -1,0 +1,41 @@
+{
+    "object": "transaction",
+    "action": "post",
+    "transaction_id": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "transaction": {
+	    "Version": 1,
+	    "TxIn": [{
+		    "TxOutHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "TxOutIndex": 0,
+		    "Script": {
+			    "Type": "P2PKH",
+			    "Pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "Sig": "CAFEBABE"
+		    }
+          },
+            {
+		    "TxOutHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "TxOutIndex": 0,
+		    "Script": {
+			    "Type": "P2PKH",
+			    "Pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "Sig": "CAFEBABE"
+		    }
+        }],
+	    "TxOut": [{
+		    "Value": 32,
+		    "Script": {
+			    "Type": "P2PKH",
+			    "PubkeyHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+		    }
+	    },
+                 {
+		    "Value": 32,
+		    "Script": {
+			    "Type": "P2PKH",
+			    "PubkeyHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+		    }
+	    }],
+	    "LockTime": 0
+    }
+}

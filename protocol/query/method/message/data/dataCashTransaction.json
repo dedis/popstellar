@@ -62,8 +62,7 @@
               }
             },
             "required": ["TxOutHash", "TxOutIndex", "Script"]
-          },
-          "minItems": 1
+          }
         },
         "TxOut": {
           "type": "array",
