@@ -1,17 +1,19 @@
 import { AnyAction } from 'redux';
 
 import { mockLaoId } from '__tests__/utils';
+import { messageReducerPath, MessageReducerState } from 'core/network/ingestion';
 
 import {
-  addGreetLaoMessage,
-  getAllGreetLaoMessageIds,
+  addUnhandledGreetLaoMessage,
+  getUnhandledGreetLaoMessageIds,
   greetLaoReduce,
   GreetLaoReducerState,
   GREET_LAO_REDUCER_PATH,
+  selectUnhandledGreetLaoWitnessSignaturesByMessageId,
 } from '../GreetLaoReducer';
 
 const emptyState = {
-  byLaoId: {},
+  unhandledIds: [],
 } as GreetLaoReducerState;
 
 const mockMessageId1 = 'someMessageId';
@@ -22,21 +24,17 @@ describe('GreetLaoReducer', () => {
     expect(greetLaoReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
 
-  describe('addGreetLaoMessage', () => {
+  describe('addUnhandledGreetLaoMessage', () => {
     it('should add a lao#greet message id to the store', () => {
       expect(
         greetLaoReduce(
           {
-            byLaoId: {
-              [mockLaoId]: [mockMessageId1],
-            },
+            unhandledIds: [mockMessageId1],
           } as GreetLaoReducerState,
-          addGreetLaoMessage({ laoId: mockLaoId, messageId: mockMessageId2 }),
+          addUnhandledGreetLaoMessage({ messageId: mockMessageId2 }),
         ),
       ).toEqual({
-        byLaoId: {
-          [mockLaoId]: [mockMessageId1, mockMessageId2],
-        },
+        unhandledIds: [mockMessageId1, mockMessageId2],
       } as GreetLaoReducerState);
     });
 
@@ -44,16 +42,12 @@ describe('GreetLaoReducer', () => {
       expect(
         greetLaoReduce(
           {
-            byLaoId: {
-              [mockLaoId]: [mockMessageId1],
-            },
+            unhandledIds: [mockMessageId1],
           } as GreetLaoReducerState,
-          addGreetLaoMessage({ laoId: mockLaoId, messageId: mockMessageId1 }),
+          addUnhandledGreetLaoMessage({ messageId: mockMessageId1 }),
         ),
       ).toEqual({
-        byLaoId: {
-          [mockLaoId]: [mockMessageId1],
-        },
+        unhandledIds: [mockMessageId1],
       } as GreetLaoReducerState);
     });
   });
@@ -61,15 +55,53 @@ describe('GreetLaoReducer', () => {
   describe('getGreetLaoMessageIdsByLao', () => {
     it('should return the correct value', () => {
       expect(
-        getAllGreetLaoMessageIds({
+        getUnhandledGreetLaoMessageIds({
           [GREET_LAO_REDUCER_PATH]: {
-            byLaoId: {
-              [mockLaoId]: [mockMessageId1],
-              someOtherLao: [mockMessageId2],
-            },
+            unhandledIds: [mockMessageId1, mockMessageId2],
           } as GreetLaoReducerState,
         }),
       ).toEqual([mockMessageId1, mockMessageId2]);
+    });
+  });
+
+  describe('selectUnhandledGreetLaoWitnessSignaturesByMessageId', () => {
+    it('should return the correct value', () => {
+      expect(
+        selectUnhandledGreetLaoWitnessSignaturesByMessageId({
+          [GREET_LAO_REDUCER_PATH]: {
+            unhandledIds: [mockMessageId1, mockMessageId2],
+          } as GreetLaoReducerState,
+          [messageReducerPath]: {
+            allIds: [mockMessageId1, mockMessageId2],
+            unprocessedIds: [],
+            byId: {
+              [mockMessageId1]: {
+                message_id: mockMessageId1,
+                data: '',
+                laoId: mockLaoId,
+                receivedAt: 0,
+                receivedFrom: '',
+                sender: '',
+                signature: '',
+                witness_signatures: [{ signature: 'mockSignature', witness: 'mockWitness' }],
+              },
+              [mockMessageId2]: {
+                message_id: mockMessageId2,
+                data: '',
+                laoId: mockLaoId,
+                receivedAt: 0,
+                receivedFrom: '',
+                sender: '',
+                signature: '',
+                witness_signatures: [{ signature: 'mockSignature2', witness: 'mockWitness2' }],
+              },
+            },
+          } as MessageReducerState,
+        }),
+      ).toEqual({
+        [mockMessageId1]: [{ signature: 'mockSignature', witness: 'mockWitness' }],
+        [mockMessageId2]: [{ signature: 'mockSignature2', witness: 'mockWitness2' }],
+      });
     });
   });
 });

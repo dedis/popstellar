@@ -2,7 +2,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { addGreetLaoMessage, connectToLao } from '../reducer';
+import { addUnhandledGreetLaoMessage, connectToLao } from '../reducer';
 import { handleLaoGreet } from './LaoGreetWatcher';
 import { CreateLao } from './messages';
 import { GreetLao } from './messages/GreetLao';
@@ -83,6 +83,13 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
 
   const greetLaoMsg = msg.messageData as GreetLao;
 
+  // add the lao#greet message to the store to tell LaoGreetWatcher to keep an eye on it
+  dispatch(
+    addUnhandledGreetLaoMessage({
+      messageId: msg.message_id.valueOf(),
+    }),
+  );
+
   // only treat the message as being valid when it is signed by the advertised frontend public key
   if (
     !msg.witness_signatures.find((witnessSignature) =>
@@ -96,10 +103,7 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
     // return true;
   }
 
-  // add the lao#greet message to the store to tell LaoGreetWatcher to keep an eye on it
-  dispatch(addGreetLaoMessage({ laoId: msg.laoId.valueOf(), messageId: msg.message_id.valueOf() }));
-
-  handleLaoGreet(greetLaoMsg, msg.sender);
+  handleLaoGreet(msg.message_id, greetLaoMsg, msg.sender);
 
   return true;
 };

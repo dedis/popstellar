@@ -3,15 +3,20 @@ import { Store } from 'redux';
 import { getNetworkManager } from 'core/network';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { PublicKey, WitnessSignatureState } from 'core/objects';
+import { Hash, PublicKey, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { Server } from '../objects/Server';
-import { getAllGreetLaoMessageIds, selectCurrentLao } from '../reducer';
+import {
+  getLaosState,
+  handleGreetLaoMessage,
+  selectCurrentLao,
+  selectUnhandledGreetLaoWitnessSignaturesByMessageId,
+} from '../reducer';
 import { addServer } from '../reducer/ServerReducer';
 import { GreetLao } from './messages/GreetLao';
 
-export const handleLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
+export const handleLaoGreet = (messageId: Hash, greetLaoMsg: GreetLao, publicKey: PublicKey) => {
   dispatch(
     addServer(
       new Server({
@@ -36,6 +41,13 @@ export const handleLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
   for (const peerAddress of greetLaoMsg.peers) {
     networkManager.connect(peerAddress.address);
   }
+
+  // mark the message as handled
+  dispatch(
+    handleGreetLaoMessage({
+      messageId: messageId.valueOf(),
+    }),
+  );
 };
 
 /**
@@ -46,72 +58,75 @@ export const handleLaoGreet = (greetLaoMsg: GreetLao, publicKey: PublicKey) => {
  */
 export const makeLaoGreetStoreWatcher = (
   store: Store,
-  laoGreetSignatureHandler: (greetLaoMsg: GreetLao, publicKey: PublicKey) => void,
+  laoGreetSignatureHandler: (messageId: Hash, greetLaoMsg: GreetLao, publicKey: PublicKey) => void,
 ) => {
-  let previousMessageIds: string[] | undefined;
-  let currentMessageIds: string[] | undefined;
-
-  const signaturesByMessageId: { [messageId: string]: WitnessSignatureState[] } = {};
+  let previousSignaturesByMessageId: { [messageId: string]: WitnessSignatureState[] } = {};
 
   return () => {
     const state = store.getState();
-    const lao = selectCurrentLao(state);
+    const currentLao = selectCurrentLao(state);
     // we have to be careful with ExtendedMessage.fromState
     // since some message constructors assume that we are connected to a lao
     // thus we delay this watcher until we are connected to a lao
-    if (!lao) {
+    if (!currentLao) {
       return;
     }
 
+    // get the witness signatures for all unhandled lao#greet messages
+    const signaturesByMessageId = selectUnhandledGreetLaoWitnessSignaturesByMessageId(state);
+
+    // verify that the selector output has chanched
+    if (signaturesByMessageId === previousSignaturesByMessageId) {
+      // if not, there won't be a new witness signature
+      return;
+    }
+
+    // obtain the message state to retrieve the message data for a given message id
     const messageState = getMessagesState(state);
-    // these are the message ids for which we want to listen to changes
-    // in the witness signatures
-    const newValue = getAllGreetLaoMessageIds(state);
-    [previousMessageIds, currentMessageIds] = [currentMessageIds, newValue];
+    // and the lao state to find the organizers key for a given lao id
+    const laoState = getLaosState(state);
 
-    if (
-      previousMessageIds !== undefined &&
-      currentMessageIds !== undefined &&
-      previousMessageIds.length === currentMessageIds.length &&
-      previousMessageIds.every(
-        (messageId, index) => !currentMessageIds || messageId === currentMessageIds[index],
-      )
-    ) {
-      // no change detected, return immediately
-      return;
-    }
-
-    currentMessageIds
-      // filter messages to only get the new message ids
-      .filter((messageId) => !(previousMessageIds || []).includes(messageId))
-      // then store the empty set of witness signatures
-      .forEach((messageId) => {
-        signaturesByMessageId[messageId] = [];
-      });
-
-    // next iterate over all lao#greet messages we are keeping track of
+    // iterate over all messageIds
     for (const messageId of Object.keys(signaturesByMessageId)) {
-      // retrieve the set of witness signatures from the store
-      const signatures = messageState.byId[messageId].witness_signatures;
-      // and check whether they are different
-      if (signaturesByMessageId[messageId] !== signatures) {
+      // check whether the signatures are different from the ones retrieved the last time
+      if (signaturesByMessageId[messageId] !== previousSignaturesByMessageId[messageId]) {
+        // if it is different, check if the lao organizer's key signed it
+        const signatures = signaturesByMessageId[messageId];
+
+        // for this, retrieve the message from the store
+        if (!(messageId in messageState.byId)) {
+          throw new Error(
+            `The message with the id ${messageId} is stored int the greet lao reducer but could not be found in the message reducer`,
+          );
+        }
         const greetLaoMessage = ExtendedMessage.fromState(messageState.byId[messageId]);
 
-        // retrieve the organizers public key for the corresponding lao
-        const organizerFrontendPublicKey = lao.organizer;
-        // if this is the case, check if the message now includes the signature of the organizer
+        // as well as the key of the organizer of the lao corresponding to the message
+        const laoId = greetLaoMessage.laoId.valueOf();
+        if (!(laoId in laoState.byId)) {
+          throw new Error(
+            `The message with id ${messageId} was received from lao with id ${laoId} but this lao is not stored in the lao reducer`,
+          );
+        }
+        const organizerFrontendPublicKey = laoState.byId[laoId].organizer;
+
+        // check if the *new* set of signatures includes that of the organizer
         if (
           signatures.find(
             (signature) => signature.witness.valueOf() === organizerFrontendPublicKey.valueOf(),
           )
         ) {
           // if it does, call the callback
-          laoGreetSignatureHandler(greetLaoMessage.messageData as GreetLao, greetLaoMessage.sender);
-        } else {
-          // store the new set of signatures preventing a new check until there
-          signaturesByMessageId[messageId] = signatures;
+          laoGreetSignatureHandler(
+            greetLaoMessage.message_id,
+            greetLaoMessage.messageData as GreetLao,
+            greetLaoMessage.sender,
+          );
         }
       }
     }
+
+    // remember the value for the next call to this function
+    previousSignaturesByMessageId = signaturesByMessageId;
   };
 };

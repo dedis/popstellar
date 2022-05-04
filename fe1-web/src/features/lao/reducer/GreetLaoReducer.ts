@@ -3,21 +3,23 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+
+import { getMessagesState } from 'core/network/ingestion';
+import { ExtendedMessageState } from 'core/network/ingestion/ExtendedMessage';
+import { WitnessSignatureState } from 'core/objects';
 
 /**
- * Reducer & associated function implementation to store all ids of lao#greet messages per lao
+ * Reducer & associated function implementation to store all ids of *unhandled* lao#greet messages
  * This allows the LaoGreetWatcher to operate more efficiently
  */
 
 export interface GreetLaoReducerState {
-  byLaoId: {
-    [laoId: string]: string[];
-  };
+  unhandledIds: string[];
 }
 
 const initialState: GreetLaoReducerState = {
-  byLaoId: {},
+  unhandledIds: [],
 };
 
 export const GREET_LAO_REDUCER_PATH = 'greetLaoIds';
@@ -26,24 +28,30 @@ const greetLaoSlice = createSlice({
   name: GREET_LAO_REDUCER_PATH,
   initialState,
   reducers: {
-    addGreetLaoMessage: (
+    addUnhandledGreetLaoMessage: (
       state: Draft<GreetLaoReducerState>,
-      action: PayloadAction<{ laoId: string; messageId: string }>,
+      action: PayloadAction<{ messageId: string }>,
     ) => {
-      const { laoId, messageId } = action.payload;
-      if (laoId in state.byLaoId) {
-        // prevent duplicate entries
-        if (!state.byLaoId[laoId].includes(messageId)) {
-          state.byLaoId[laoId].push(messageId);
-        }
-      } else {
-        state.byLaoId[laoId] = [messageId];
+      const { messageId } = action.payload;
+
+      // prevent duplicate entries
+      if (!state.unhandledIds.includes(messageId)) {
+        state.unhandledIds.push(messageId);
       }
+    },
+    /** Removes a message from the GreetLao unhandledIds */
+    handleGreetLaoMessage: (
+      state: Draft<GreetLaoReducerState>,
+      action: PayloadAction<{ messageId: string }>,
+    ) => {
+      const { messageId } = action.payload;
+
+      state.unhandledIds = state.unhandledIds.filter((id) => id !== messageId);
     },
   },
 });
 
-export const { addGreetLaoMessage } = greetLaoSlice.actions;
+export const { addUnhandledGreetLaoMessage, handleGreetLaoMessage } = greetLaoSlice.actions;
 
 export const greetLaoReduce = greetLaoSlice.reducer;
 
@@ -54,14 +62,34 @@ export default {
 export const getGreetLaoState = (state: any): GreetLaoReducerState => state[GREET_LAO_REDUCER_PATH];
 
 /**
- * A function to directly retrieve the list of all lao#greet message ids
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * A function to directly retrieve the list of all unhandled lao#greet message ids
+ * @remark NOTE: This function does not memoize the result since it just returns part of the store
  * @param state The redux state
  * @returns The list of message ids
  */
-export const getAllGreetLaoMessageIds = (state: any): string[] => {
-  const laoGreetState = getGreetLaoState(state);
-  const laoIds = Object.keys(laoGreetState.byLaoId);
+export const getUnhandledGreetLaoMessageIds = (state: any): string[] =>
+  getGreetLaoState(state)?.unhandledIds || [];
 
-  return laoIds.flatMap((laoId) => laoGreetState.byLaoId[laoId]);
-};
+/**
+ * A selector returning a map from message ids to witness signatues
+ * for all message ids of lao#greet messages that have not been handled yet.
+ */
+export const selectUnhandledGreetLaoWitnessSignaturesByMessageId = createSelector(
+  // First input: all unhandled lao greet message ids
+  (state) => getUnhandledGreetLaoMessageIds(state),
+  // Second input: the map of messageIds to the message state
+  (state) => getMessagesState(state)?.byId || {},
+  // Selector: returns a map from lao#greet message id to witness signature
+  (
+    messageIds: string[],
+    byId: Record<string, ExtendedMessageState>,
+  ): { [messageId: string]: WitnessSignatureState[] } => {
+    const signaturesByMessageId: { [messageId: string]: WitnessSignatureState[] } = {};
+
+    for (const messageId of messageIds) {
+      signaturesByMessageId[messageId] = byId[messageId].witness_signatures;
+    }
+
+    return signaturesByMessageId;
+  },
+);

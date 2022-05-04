@@ -18,16 +18,20 @@ import {
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Channel, ROOT_CHANNEL, Timestamp, WitnessSignature } from 'core/objects';
+import { dispatch } from 'core/redux';
+import { Server } from 'features/lao/objects/Server';
 import {
-  addGreetLaoMessage,
+  addServer,
+  addUnhandledGreetLaoMessage,
   connectToLao,
   greetLaoReducer,
+  handleGreetLaoMessage,
   laoReducer,
   serverReducer,
 } from 'features/lao/reducer';
 import { WitnessMessage } from 'features/witness/network/messages';
 
-import { makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
+import { handleLaoGreet, makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
 import { GreetLao } from '../messages/GreetLao';
 
 const mockHandleLaoGreetSignature = jest.fn();
@@ -44,6 +48,55 @@ const mockStore = createStore(
 beforeEach(() => {
   jest.clearAllMocks();
   mockStore.dispatch(clearAllMessages());
+});
+
+jest.mock('core/network/NetworkManager.ts');
+jest.mock('core/redux', () => {
+  const actualModule = jest.requireActual('core/redux');
+  return {
+    ...actualModule,
+    dispatch: jest.fn().mockImplementation(() => {}),
+  };
+});
+
+describe('handleLaoGreet', () => {
+  it('should add the server and mark the greeting message as handled', () => {
+    const greetLaoMsg = new GreetLao({
+      object: ObjectType.LAO,
+      action: ActionType.GREET,
+      address: mockAddress,
+      lao: mockLaoIdHash,
+      peers: [],
+      frontend: mockPopToken.publicKey,
+    });
+
+    const msg = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(greetLaoMsg, mockKeyPair),
+      mockChannel,
+      mockAddress,
+      t,
+    );
+
+    handleLaoGreet(msg.message_id, greetLaoMsg, msg.sender);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    // the key of the server should have been stored
+    expect(dispatch).toHaveBeenCalledWith(
+      addServer(
+        new Server({
+          laoId: greetLaoMsg.lao,
+          address: greetLaoMsg.address,
+          serverPublicKey: msg.sender,
+          frontendPublicKey: greetLaoMsg.frontend,
+        }).toState(),
+      ),
+    );
+    // and the greeting message should have been marked as handled
+    expect(dispatch).toHaveBeenCalledWith(
+      handleGreetLaoMessage({
+        messageId: msg.message_id.valueOf(),
+      }),
+    );
+  });
 });
 
 describe('makeLaoGreetStoreWatcher', () => {
@@ -156,7 +209,9 @@ describe('makeLaoGreetStoreWatcher', () => {
     mockStore.dispatch(connectToLao(mockLaoState));
     mockStore.dispatch(addMessages([greetLaoMessage.toState(), extendedWitnessMessage.toState()]));
     mockStore.dispatch(
-      addGreetLaoMessage({ laoId: mockLaoId, messageId: greetLaoMessage.message_id.valueOf() }),
+      addUnhandledGreetLaoMessage({
+        messageId: greetLaoMessage.message_id.valueOf(),
+      }),
     );
     mockStore.dispatch(addMessageWitnessSignature(greetLaoMessage.message_id, ws.toState()));
 
