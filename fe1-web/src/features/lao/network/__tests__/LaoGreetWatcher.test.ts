@@ -52,11 +52,7 @@ describe('makeLaoGreetStoreWatcher', () => {
   });
 
   it('laoGreetSignatureHandler is not called when a new lao#greet message is added', () => {
-    const watcher = makeLaoGreetStoreWatcher(
-      mockStore,
-
-      mockHandleLaoGreetSignature,
-    );
+    const watcher = makeLaoGreetStoreWatcher(mockStore, mockHandleLaoGreetSignature);
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
@@ -81,11 +77,7 @@ describe('makeLaoGreetStoreWatcher', () => {
   });
 
   it('laoGreetSignatureHandler is not called when a new lao#greet message is witnessed by somebody other than the frontend', () => {
-    const watcher = makeLaoGreetStoreWatcher(
-      mockStore,
-
-      mockHandleLaoGreetSignature,
-    );
+    const watcher = makeLaoGreetStoreWatcher(mockStore, mockHandleLaoGreetSignature);
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
@@ -123,11 +115,7 @@ describe('makeLaoGreetStoreWatcher', () => {
   });
 
   it('laoGreetSignatureHandler is called when a new lao#greet message is witnessed by the frontend', () => {
-    const watcher = makeLaoGreetStoreWatcher(
-      mockStore,
-
-      mockHandleLaoGreetSignature,
-    );
+    const watcher = makeLaoGreetStoreWatcher(mockStore, mockHandleLaoGreetSignature);
 
     const greetLaoMessage = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
