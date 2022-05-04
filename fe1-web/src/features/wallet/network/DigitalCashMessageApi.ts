@@ -1,9 +1,9 @@
+import { publish } from 'core/network';
 import { channelFromIds, Hash, PopToken, PublicKey } from 'core/objects';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
 
-import { publish } from '../../../core/network';
-import { Lao } from '../../lao/objects';
-import { OpenedLaoStore } from '../../lao/store';
 import { DigitalCashStore } from '../store/DigitalCashStore';
 import {
   concatenateTxData,
@@ -13,6 +13,8 @@ import {
 } from './DigitalCashHelper';
 import { DigitalCashTransaction, TxIn, TxOut } from './DigitalCashTransaction';
 import { PostTransaction } from './messages/PostTransaction';
+
+const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
 
 export function requestSendTransaction(
   from: PopToken,
@@ -24,8 +26,6 @@ export function requestSendTransaction(
   // 1. Find all transactions with the "from" public key (hash) in their txOut
   // 2. Compute the total value of all these txOuts and check that it is bigger than value
   // 3. Create a new transaction with value sent to "to" and the rest of the balance to "from"
-
-  const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
 
   const fromPublicKeyHash = Hash.fromString(from.publicKey.valueOf());
   const toPublicKeyHash = Hash.fromString(to.valueOf());
@@ -99,6 +99,45 @@ export function requestSendTransaction(
     transactionId: hashTransaction(transaction),
     transaction: transaction,
   });
+  const lao: Lao = OpenedLaoStore.get();
+
+  return publish(channelFromIds(lao.id, new Hash('coin')), postTransactionMessage);
+}
+
+export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promise<void> {
+  const toPublicKeyHash = Hash.fromString(to.valueOf());
+
+  const txOutTo = {
+    value: amount,
+    script: {
+      type: STRINGS.script_type,
+      publicKeyHash: toPublicKeyHash,
+    },
+  };
+
+  const txOuts: TxOut[] = [txOutTo];
+
+  // Reconstruct the txIns with the signature
+  const txIns: TxIn[] = [
+    {
+      txOutHash: new Hash(STRINGS.coinbase_hash),
+      txOutIndex: -1,
+      script: {},
+    },
+  ];
+
+  const transaction: DigitalCashTransaction = {
+    version: 1,
+    txsIn: txIns,
+    txsOut: txOuts,
+    lockTime: 0,
+  };
+
+  const postTransactionMessage = new PostTransaction({
+    transactionId: hashTransaction(transaction),
+    transaction: transaction,
+  });
+
   const lao: Lao = OpenedLaoStore.get();
 
   return publish(channelFromIds(lao.id, new Hash('coin')), postTransactionMessage);

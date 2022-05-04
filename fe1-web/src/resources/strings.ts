@@ -238,6 +238,8 @@ const STRINGS = {
 
   /* --- Digital Cash Strings --- */
   script_type: 'Pay-to-Pubkey-Hash',
+  coinbase_hash: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',

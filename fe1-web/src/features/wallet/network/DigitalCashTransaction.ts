@@ -44,7 +44,7 @@ export interface TxInScript {
 export interface TxIn {
   txOutHash: Hash;
   txOutIndex: number;
-  script: TxInScript;
+  script: TxInScript | any; // TODO: Script might be empty if coinbase transaction, how to handle it ?
 }
 export interface TxOutScript {
   type: string;

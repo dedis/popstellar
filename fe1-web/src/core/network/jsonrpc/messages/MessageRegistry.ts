@@ -86,7 +86,7 @@ export class MessageRegistry {
     [k(REACTION, ADD), { signature: POP_TOKEN }],
 
     // Transactions
-    [k(TRANSACTION, POST), { signature: POP_TOKEN }],
+    [k(TRANSACTION, POST), { signature: KEYPAIR }],
   ]);
 
   /**
