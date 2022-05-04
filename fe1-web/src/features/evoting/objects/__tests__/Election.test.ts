@@ -23,6 +23,8 @@ let electionState: ElectionState;
 let QUESTIONS: Question[];
 let REGISTERED_VOTES: RegisteredVote[];
 
+const VERSION = STRINGS.election_version_open_ballot;
+
 const initializeData = () => {
   question1 = {
     id: 'q1',
@@ -58,7 +60,7 @@ const initializeData = () => {
     eventType: ELECTION_EVENT_TYPE,
     lao: 'MyLao',
     name: 'MyElection',
-    version: 'version',
+    version: VERSION,
     createdAt: 1520255600,
     start: 1520255600,
     end: 1520275600,
@@ -75,7 +77,6 @@ const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
-const VERSION = 'version';
 
 beforeAll(() => {
   jest.useFakeTimers('modern');

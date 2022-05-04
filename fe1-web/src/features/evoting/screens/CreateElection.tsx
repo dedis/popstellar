@@ -104,7 +104,7 @@ const CreateElection = ({ route }: any) => {
     requestCreateElection(
       currentLao.id,
       electionName,
-      STRINGS.election_version_identifier,
+      STRINGS.election_version_open_ballot,
       startTime,
       endTime,
       getQuestionObjects(),
