@@ -211,8 +211,6 @@
   <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
-  <string name="digital_cash_amount">LAO COIN</string>
-  <string name="digital_cash_receipt">RECEIPT</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
