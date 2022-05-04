@@ -4,17 +4,12 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 
-import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -30,7 +25,6 @@ public class DigitalCashMain extends AppCompatActivity {
 
     mViewModel = obtainViewModel(this);
 
-    // setupFragment(R.id.fragment_digital_cash_send);
     setupNavigationBar();
   }
 
@@ -69,21 +63,5 @@ public class DigitalCashMain extends AppCompatActivity {
           }
           return true;
         });
-  }
-
-  /**
-   * Set the current fragment in the container of the activity
-   *
-   * @param id of the fragment
-   * @param fragmentSupplier provides the fragment if it is missing
-   */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_digital_cash);
   }
 }
