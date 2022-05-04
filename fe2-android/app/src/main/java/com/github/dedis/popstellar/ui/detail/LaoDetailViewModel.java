@@ -102,6 +102,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
       new MutableLiveData<>();
@@ -109,7 +111,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenRollCallTokenEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
@@ -122,7 +125,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
   private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
@@ -147,8 +151,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
-          new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
@@ -982,9 +984,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
-  /**
-   * Propagates the open election event
-   */
+  /** Propagates the open election event */
+  /** Propagates the open election event */
   public void openElectionEvent() {
     mOpenElectionEvent.postValue(new SingleEvent<>(true));
   }

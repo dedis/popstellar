@@ -39,6 +39,7 @@ import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -61,8 +62,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    if (getIntent().getExtras().get("FRAGMENT_TO_OPEN").equals("LaoDetail")) {
+        (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
+    if (getIntent()
+        .getExtras()
+        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
+        .equals(Constants.LAO_DETAIL_EXTRA)) {
       setupLaoFragment();
     } else {
       setupLaoWalletFragment();
@@ -70,7 +74,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeButton();
     setupIdentityButton();
     setupDigitalCashButton();
-    // Because of space constraints and future changes remove temporaly the social media button
     // setupSocialMediaButton();
     // Subscribe to "open lao detail event"
     mViewModel
@@ -87,10 +90,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeActivity();
     // Subscribe to "open identity" event
     setupIdentityFragment();
-    // Subscribe to " open digital cash " event
-    setupDigitalCashMainActivity();
     // Subscribe to " open social media " event
     // setupSocialMediaActivity();
+    setupDigitalCashMainActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -444,7 +446,7 @@ public class LaoDetailActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 Intent intent = new Intent(this, DigitalCashMain.class);
-                Log.d(TAG, "Trying to open social media");
+                Log.d(TAG, "Trying to open digital cash");
                 startActivity(intent);
               }
             });
