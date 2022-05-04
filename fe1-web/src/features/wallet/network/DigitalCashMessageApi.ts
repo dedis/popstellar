@@ -19,6 +19,8 @@ export function requestSendTransaction(
   to: PublicKey,
   amount: number,
 ): Promise<void> {
+  // TODO: Should check total value, OVERFLOW
+
   // 1. Find all transactions with the "from" public key (hash) in their txOut
   // 2. Compute the total value of all these txOuts and check that it is bigger than value
   // 3. Create a new transaction with value sent to "to" and the rest of the balance to "from"
@@ -99,5 +101,5 @@ export function requestSendTransaction(
   });
   const lao: Lao = OpenedLaoStore.get();
 
-  return publish(channelFromIds(lao.id), postTransactionMessage);
+  return publish(channelFromIds(lao.id, new Hash('coin')), postTransactionMessage);
 }

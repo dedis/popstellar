@@ -7,7 +7,26 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
  * @param transaction to hash
  */
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
-  return Hash.fromString(JSON.stringify(transaction));
+  // Recursively concatenating fields by lexicographic order of their names
+  const dataTxIns = transaction.txsIn.flatMap((txIn) => {
+    return [
+      txIn.script.publicKey.valueOf(),
+      txIn.script.signature.valueOf(),
+      txIn.script.type,
+      txIn.txOutHash.valueOf(),
+      txIn.txOutIndex.toString(),
+    ];
+  });
+  const dataTxOuts = transaction.txsOut.flatMap((txOut) => {
+    return [txOut.script.publicKeyHash.valueOf(), txOut.script.type, txOut.value.toString()];
+  });
+  const data = [transaction.lockTime.toString()]
+    .concat(dataTxIns)
+    .concat(dataTxOuts)
+    .concat([transaction.version.toString()]);
+
+  // Hash will take care of concatenating each fields length
+  return Hash.fromStringArray(...data);
 };
 /**
  * Get the total value out that corresponds to this public key hash from an array of transactions
