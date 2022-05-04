@@ -436,50 +436,50 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   //End Election
   test("Ending an election works as intended") {
-    val dbActorRef = mockDbWorking
-    println(dbActorRef)
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
+    system.log.info("Responding with a Ack")
     message should equal(Left(END_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election with invalid Timestamp fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election without valid PoP token fails") {
-    val dbActorRef = mockDbWrongToken
+    val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election on wrong type of channel fails") {
-    val dbActorRef = mockDbWrongChannel
+    val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election with invalid id fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election with invalid lao id fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_LAO_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Ending an election with wrong sender fails") {
-    val dbActorRef = mockDbWorking
+    val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_OWNER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
