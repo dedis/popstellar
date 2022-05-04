@@ -160,7 +160,15 @@ export class CastVote implements MessageData {
           // convert the set to an array and sort votes in ascending order
           vote: [...selectionOptions]
             .sort((a, b) => a - b)
-            .map((option) => electionKey.encrypt(Buffer.from(option.toString(), 'utf-8'))),
+            // map each number to 2 bytes using big endian
+            .map((option) => {
+              // allocUnsafe is fine, we will overwrite all bytes
+              const buffer = Buffer.allocUnsafe(2);
+              // write 2 bytes using big endian
+              buffer.writeIntBE(option, 0, 2);
+
+              return electionKey.encrypt(buffer);
+            }),
         }))
     );
   }

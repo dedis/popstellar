@@ -175,11 +175,11 @@ describe('castVote', () => {
     expect(castVoteMessage.votes[1].vote[0]).toBeString();
 
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[0].vote[0] as string).toString('utf-8'),
-    ).toEqual('3');
+      keyPair.privateKey.decrypt(castVoteMessage.votes[0].vote[0] as string).readIntBE(0, 2),
+    ).toEqual(3);
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[1].vote[0] as string).toString('utf-8'),
-    ).toEqual('7');
+      keyPair.privateKey.decrypt(castVoteMessage.votes[1].vote[0] as string).readIntBE(0, 2),
+    ).toEqual(7);
 
     expect(publish).toHaveBeenCalledTimes(1);
   });

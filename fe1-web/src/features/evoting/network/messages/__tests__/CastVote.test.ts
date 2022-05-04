@@ -5,7 +5,15 @@ import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
-import { mockElectionId, mockVote1, mockVote2, mockVotes } from 'features/evoting/__tests__/utils';
+import {
+  mockElectionId,
+  mockElectionOpened,
+  mockSecretBallotElectionNotStarted,
+  mockVote1,
+  mockVote2,
+  mockVotes,
+} from 'features/evoting/__tests__/utils';
+import { ElectionKeyPair } from 'features/evoting/objects/ElectionKeyPair';
 
 import { Vote } from '../../../objects';
 import { CastVote } from '../CastVote';
@@ -147,4 +155,85 @@ describe('CastVote', () => {
       expect(msg.action).toEqual(ActionType.CAST_VOTE);
     });
   });
+
+  describe('validateVotes', () => {
+    it('returns true if all fields are defined', () => {
+      expect(() => CastVote.validateVotes([])).not.toThrow();
+      expect(() =>
+        CastVote.validateVotes([{ id: 'someId', question: 'q', vote: [0] }]),
+      ).not.toThrow();
+    });
+
+    it('returns false if some fields are undefined', () => {
+      expect(() =>
+        CastVote.validateVotes([{ id: 'someId', question: 'q', vote: undefined as any }]),
+      ).toThrow(ProtocolError);
+
+      expect(() =>
+        CastVote.validateVotes([{ id: 'someId', question: undefined as any, vote: [0] }]),
+      ).toThrow(ProtocolError);
+
+      expect(() =>
+        CastVote.validateVotes([{ id: undefined as any, question: 'q', vote: [0] }]),
+      ).toThrow(ProtocolError);
+    });
+  });
+
+  describe('selectedBallotsToVotes', () => {
+    const q1SelectedOptions = new Set([0]);
+    const q2SelectedOptions = new Set([1]);
+
+    expect(
+      CastVote.selectedBallotsToVotes(mockElectionOpened, {
+        0: q1SelectedOptions,
+        1: q2SelectedOptions,
+      }),
+    ).toEqual([
+      {
+        id: CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOptions).valueOf(),
+        question: mockElectionOpened.questions[0].id,
+        vote: [...q1SelectedOptions],
+      },
+      {
+        id: CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOptions).valueOf(),
+        question: mockElectionOpened.questions[1].id,
+        vote: [...q2SelectedOptions],
+      },
+    ] as Vote[]);
+  });
+
+  describe('selectedBallotsToEncryptedVotes', () => {
+    const q1SelectedOptions = new Set([0]);
+    const q2SelectedOptions = new Set([1]);
+
+    const keyPair = ElectionKeyPair.generate();
+
+    const encryptedVotes = CastVote.selectedBallotsToEncryptedVotes(
+      mockSecretBallotElectionNotStarted,
+      keyPair.publicKey,
+      {
+        0: q1SelectedOptions,
+        1: q2SelectedOptions,
+      },
+    );
+
+    expect(encryptedVotes.length).toBe(2);
+    expect(encryptedVotes[0]).toHaveProperty(
+      'id',
+      CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOptions).valueOf(),
+    );
+    expect(encryptedVotes[0]).toHaveProperty('question', mockElectionOpened.questions[0].id);
+    expect(encryptedVotes[0].vote.length).toBe(1);
+    expect(keyPair.privateKey.decrypt(encryptedVotes[0].vote[0]).readIntBE(0, 2)).toEqual(0);
+
+    expect(encryptedVotes[1]).toHaveProperty(
+      'id',
+      CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOptions).valueOf(),
+    );
+    expect(encryptedVotes[1]).toHaveProperty('question', mockElectionOpened.questions[1].id);
+    expect(encryptedVotes[1].vote.length).toBe(1);
+    expect(keyPair.privateKey.decrypt(encryptedVotes[1].vote[0]).readIntBE(0, 2)).toEqual(1);
+  });
+
+  describe('computeVoteId', () => {});
 });
