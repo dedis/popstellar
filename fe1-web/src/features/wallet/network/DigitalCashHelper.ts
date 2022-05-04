@@ -9,13 +9,16 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataTxIns = transaction.txsIn.flatMap((txIn) => {
-    return [
-      txIn.script.publicKey.valueOf(),
-      txIn.script.signature.valueOf(),
-      txIn.script.type,
-      txIn.txOutHash.valueOf(),
-      txIn.txOutIndex.toString(),
-    ];
+    if (txIn.script.publicKey) {
+      return [
+        txIn.script.publicKey.valueOf(),
+        txIn.script.signature.valueOf(),
+        txIn.script.type,
+        txIn.txOutHash.valueOf(),
+        txIn.txOutIndex.toString(),
+      ];
+    }
+    return [txIn.txOutHash.valueOf(), txIn.txOutIndex.toString()];
   });
   const dataTxOuts = transaction.txsOut.flatMap((txOut) => {
     return [txOut.script.publicKeyHash.valueOf(), txOut.script.type, txOut.value.toString()];

@@ -239,6 +239,8 @@ const STRINGS = {
   /* --- Digital Cash Strings --- */
   script_type: 'Pay-to-Pubkey-Hash',
   coinbase_hash: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+  cash_send: 'Send',
+  cash_receiver: 'Receiver',
 
 
   /* --- General creation Strings --- */

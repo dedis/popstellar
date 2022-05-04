@@ -8,7 +8,7 @@ export interface DigitalCashTransactionState {
 }
 export interface DigitalCashMessageState {
   transaction: DigitalCashTransactionState;
-  transactionID: string;
+  transactionId: string;
 }
 export interface TxOutState {
   value: number;
@@ -55,7 +55,7 @@ export interface TxOut {
   script: TxOutScript;
 }
 export class DigitalCashMessage {
-  public readonly transactionID: Hash;
+  public readonly transactionId: Hash;
 
   public readonly transaction: DigitalCashTransaction;
 
@@ -68,12 +68,12 @@ export class DigitalCashMessage {
     if (obj.transaction === undefined) {
       throw new Error("Undefined 'transaction' when creating 'DigitalCashMessage'");
     }
-    if (obj.transactionID === undefined) {
+    if (obj.transactionId === undefined) {
       throw new Error("Undefined 'transactionID' when creating 'DigitalCashTransaction'");
     }
 
     this.transaction = obj.transaction;
-    this.transactionID = obj.transactionID;
+    this.transactionId = obj.transactionId;
   }
 
   public static fromState(digitalCashMessageState: DigitalCashMessageState): DigitalCashMessage {
@@ -93,16 +93,18 @@ export class DigitalCashMessage {
           return {
             ...txInState,
             txOutHash: new Hash(txInState.txOutHash),
-            script: {
-              type: txInState.script.type,
-              publicKey: new PublicKey(txInState.script.publicKey),
-              signature: new Signature(txInState.script.signature),
-            },
+            script: txInState.script.type // In the case of a coinbase transaction
+              ? {
+                  type: txInState.script.type,
+                  publicKey: new PublicKey(txInState.script.publicKey),
+                  signature: new Signature(txInState.script.signature),
+                }
+              : {},
           };
         }),
         lockTime: digitalCashMessageState.transaction.lockTime,
       },
-      transactionID: new Hash(digitalCashMessageState.transactionID),
+      transactionId: new Hash(digitalCashMessageState.transactionId),
     });
   }
 
@@ -131,7 +133,7 @@ export class DigitalCashMessage {
           };
         }),
       },
-      transactionID: this.transactionID.valueOf(),
+      transactionId: this.transactionId.valueOf(),
     };
   }
 }

@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle, TextInput } from 'react-native';
+import { Input } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
@@ -13,6 +14,10 @@ import { RollCall } from 'features/rollCall/objects';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
+import {
+  requestCoinbaseTransaction,
+  requestSendTransaction,
+} from '../network/DigitalCashMessageApi';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -40,6 +45,7 @@ const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CAL
  * Wallet UI once the wallet is synced
  */
 const WalletHome = () => {
+  const [sendValue, setSendValue] = useState(0);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
@@ -90,6 +96,24 @@ const WalletHome = () => {
     return <Text style={styles.textBase}>{STRINGS.no_tokens_in_wallet}</Text>;
   };
 
+  const sendField = () => {
+    return (
+      <>
+        <WideButtonView
+          title={STRINGS.cash_send}
+          onPress={() => {
+            requestCoinbaseTransaction(tokens![selectedTokenIndex].token.publicKey, sendValue);
+          }}
+        />
+        <TextInput
+          onChangeText={(t) => {
+            setSendValue(Number.parseInt(t, 10));
+          }}
+        />
+      </>
+    );
+  };
+
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
@@ -118,6 +142,7 @@ const WalletHome = () => {
         title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
         onPress={() => toggleDebugMode()}
       />
+      {tokens && sendField()}
     </View>
   );
 };
