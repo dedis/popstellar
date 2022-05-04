@@ -3,7 +3,7 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
