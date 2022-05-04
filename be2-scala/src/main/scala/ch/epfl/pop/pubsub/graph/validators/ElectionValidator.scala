@@ -45,11 +45,11 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case Some(message: Message) =>
         val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
 
-        val laoId: Hash = rpcMessage.extractLaoId
+        val channel: Channel = rpcMessage.getParamsChannel
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.created_at.toString, data.name)
 
         val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
