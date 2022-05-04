@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { QRCode, TextBlock, WideButtonView } from 'core/components';
+import { QRCode, WideButtonView } from 'core/components';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
 import { makeEventByTypeSelector } from 'features/events/reducer';
@@ -29,6 +30,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   } as ViewStyle,
+  textBase: Typography.base as TextStyle,
+  textImportant: Typography.important as TextStyle,
 });
 
 const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
@@ -79,17 +82,17 @@ const WalletHome = () => {
       const rollCallName = `Roll Call name: ${tokens[selectedTokenIndex].rollCallName.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
-          <TextBlock size={18} text={rollCallName} />
+          <Text style={styles.textBase}>{rollCallName}</Text>
           <QRCode value={tokens[selectedTokenIndex].token.publicKey.valueOf()} visibility />
         </View>
       );
     }
-    return <TextBlock text={STRINGS.no_tokens_in_wallet} />;
+    return <Text style={styles.textBase}>{STRINGS.no_tokens_in_wallet}</Text>;
   };
 
   return (
     <View style={styles.homeContainer}>
-      <TextBlock bold text={STRINGS.wallet_welcome} />
+      <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
       <View style={styles.tokenSelectContainer}>
         {tokens && (
           <RollCallTokensDropDown

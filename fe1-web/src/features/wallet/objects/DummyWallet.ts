@@ -10,7 +10,6 @@ import { Lao, LaoState } from '../../lao/objects';
 import { generateToken } from './Token';
 
 // region Dummy values definition
-// MOCK LAO
 export const mockPublicKey = testKeyPair.publicKey;
 
 export const org = new PublicKey(mockPublicKey);
