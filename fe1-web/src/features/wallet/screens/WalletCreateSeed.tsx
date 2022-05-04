@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
@@ -21,9 +20,12 @@ const styles = StyleSheet.create({
 /**
  * Wallet screen to obtain a new mnemonic seed
  */
-const WalletCreateSeed = ({ navigation }: IPropTypes) => {
+const WalletCreateSeed = () => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
+
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     setSeed(Wallet.generateMnemonicSeed());
@@ -32,7 +34,10 @@ const WalletCreateSeed = ({ navigation }: IPropTypes) => {
   const connectWithSeed = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.navigation_wallet_home_tab);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: STRINGS.navigation_wallet_home_tab }],
+      });
     } catch {
       navigation.navigate(STRINGS.navigation_wallet_error);
     }
@@ -52,12 +57,4 @@ const WalletCreateSeed = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-WalletCreateSeed.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
 export default WalletCreateSeed;

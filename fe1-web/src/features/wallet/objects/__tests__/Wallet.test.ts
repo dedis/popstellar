@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import { mockLao, mockRollCallState, configureTestFeatures } from '__tests__/utils';
 import { Hash } from 'core/objects';
 import { RollCall } from 'features/rollCall/objects';
@@ -39,13 +37,13 @@ describe('Recover wallet roll call tokens function', () => {
 
     const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
     const rct = await recoverWalletRollCallTokens(state, mockLao);
-    expect(rct).to.eql([expected]);
+    expect(rct).toEqual([expected]);
   });
   it('Should return an empty array when no corresponding token', async () => {
     const mockRC = createMockRCWithAttendee(mockRollCallState.attendees[0]);
 
     const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
     const rct = await recoverWalletRollCallTokens(state, mockLao);
-    expect(rct).to.eql([]);
+    expect(rct).toEqual([]);
   });
 });

@@ -231,7 +231,7 @@ const STRINGS = {
   your_tokens_title: 'Your PoP Tokens',
   wallet_error: 'A synchronization error with your wallet occurred',
   no_tokens_in_wallet:
-    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shows here',
+    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here',
   lao_id: 'LAO ID',
   lao_name: 'LAO name',
   roll_call_name: 'Roll Call name',

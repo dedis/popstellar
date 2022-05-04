@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import { mockKeyPair, mockPopToken } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, ProtocolError } from 'core/objects';
+import { Base64UrlData, ProtocolError, Signature } from 'core/objects';
 
 import { WitnessMessage } from '../WitnessMessage';
 
@@ -52,7 +52,7 @@ describe('WitnessMessage', () => {
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
-  it.skip('fromJson should throw an error if signature does not match message_id', () => {
+  it('fromJson should throw an error if signature does not match message_id', () => {
     // precondition
     expect(mockKeyPair.privateKey.valueOf() !== mockPopToken.privateKey.valueOf()).toBeTrue();
 
@@ -62,7 +62,7 @@ describe('WitnessMessage', () => {
         object: ObjectType.MESSAGE,
         action: ActionType.WITNESS,
         message_id: mockMessageId.valueOf(),
-        signature: mockPopToken.privateKey.sign(mockMessageId).valueOf(),
+        signature: new Signature('some invalid signature'),
       });
     }).toThrow(ProtocolError);
   });

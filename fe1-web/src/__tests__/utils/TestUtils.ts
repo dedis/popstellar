@@ -3,7 +3,7 @@ import testKeyPair from 'test_data/keypair.json';
 import { KeyPairRegistry } from 'core/keypair';
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from "core/objects";
+import { Channel, EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
 
@@ -85,12 +85,12 @@ export const messageRegistryInstance = new MessageRegistry();
 export const mockSignatureType = 'some signature';
 
 export const mockMessageRegistry = {
-  getSignatureType: jest.fn().mockImplementation(() => mockSignatureType),
-  buildMessageData: jest.fn().mockImplementation((input) => JSON.stringify(input)),
+  getSignatureType: jest.fn(() => mockSignatureType),
+  buildMessageData: jest.fn((input) => JSON.stringify(input)),
 } as unknown as MessageRegistry;
 
 export const mockKeyPairRegistry = {
-  getSignatureKeyPair: jest.fn().mockImplementation(() => Promise.resolve(mockKeyPair)),
+  getSignatureKeyPair: jest.fn(() => Promise.resolve(mockKeyPair)),
 } as unknown as KeyPairRegistry;
 
 export const mockChannel: Channel = 'some channel';

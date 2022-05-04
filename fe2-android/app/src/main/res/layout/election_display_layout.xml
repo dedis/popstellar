@@ -63,8 +63,7 @@
     <Button
       android:id="@+id/election_action_button"
       android:layout_width="wrap_content"
-      android:layout_height="@dimen/event_buttons_height"
-      android:visibility="@{eventCategory == EventCategory.FUTURE ? View.GONE : View.VISIBLE}" />
+      android:layout_height="@dimen/event_buttons_height"/>
 
     <Button
       android:id="@+id/details_button"

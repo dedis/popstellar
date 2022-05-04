@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -76,8 +76,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
               }
             }
-
-            val laoChannel: Option[Base64Data] = rpcRequest.getParamsChannel.decodeChannelLaoId
+            val laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
             laoChannel match {
               case None => Right(PipelineError(
                 ErrorCodes.SERVER_ERROR.id,
@@ -87,7 +86,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               case Some(_) =>
                 val combined = for {
                   _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
-                  _ <- dbActor ? DbActor.Write(rpcRequest.getParamsChannel, message)
+                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message)
                 } yield ()
 
                 Await.ready(combined, duration).value match {

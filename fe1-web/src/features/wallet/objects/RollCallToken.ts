@@ -1,11 +1,5 @@
-import { Hash, KeyPairState, PopToken } from 'core/objects';
+import { Hash, PopToken } from 'core/objects';
 
-export interface RollCallTokenState {
-  token: KeyPairState;
-  laoId: string;
-  rollCallId: string;
-  rollCallName: string;
-}
 /**
  * A Roll Call Token object, defined by a Pop token, its lao id hash and its Roll Call id hash
  */
@@ -42,23 +36,5 @@ export class RollCallToken {
     this.laoId = obj.laoId;
     this.rollCallId = obj.rollCallId;
     this.rollCallName = obj.rollCallName;
-  }
-
-  public static fromState(rct: RollCallTokenState): RollCallToken {
-    return new RollCallToken({
-      token: PopToken.fromState(rct.token),
-      laoId: new Hash(rct.laoId),
-      rollCallId: new Hash(rct.rollCallId),
-      rollCallName: rct.rollCallName,
-    });
-  }
-
-  public toState(): RollCallTokenState {
-    return {
-      token: this.token.toState(),
-      laoId: this.laoId.valueOf(),
-      rollCallId: this.rollCallId.valueOf(),
-      rollCallName: this.rollCallName,
-    };
   }
 }
