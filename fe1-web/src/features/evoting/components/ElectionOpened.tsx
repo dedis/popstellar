@@ -5,17 +5,20 @@ import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
+import { PublicKey } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import { Election, SelectedBallots } from '../objects';
+import { Election, ElectionVersion, SelectedBallots } from '../objects';
 
-const ElectionOpened = ({ election, questions, isOrganizer, canCastVote }: IPropTypes) => {
+const ElectionOpened = ({ election, questions, isOrganizer, electionKey }: IPropTypes) => {
   const toast = useToast();
 
   const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
   const [hasVoted, setHasVoted] = useState(0);
+
+  const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
 
   const onCastVote = () => {
     castVote(election, selectedBallots)
@@ -88,13 +91,13 @@ const propTypes = {
     }).isRequired,
   ).isRequired,
   isOrganizer: PropTypes.bool,
-  canCastVote: PropTypes.bool,
+  electionKey: PropTypes.instanceOf(PublicKey),
 };
 ElectionOpened.propTypes = propTypes;
 
 ElectionOpened.defaultProps = {
   isOrganizer: false,
-  canCastVote: false,
+  electionKey: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
