@@ -8,13 +8,13 @@ import { NetworkConnection } from './NetworkConnection';
  * Subscribes to a channel and optionally catches up to previously sent messages
  * @param channel The channel to subscribe to
  * @param connections An optional list of network connection if the message should only be sent on a subset of connections
- * @param sendChatchup Whether to send a catchup message after subscribing to the channel. Default value is 'true'
+ * @param sendCatchup Whether to send a catchup message after subscribing to the channel. Default value is 'true'
  * @returns A promise to wait on the subscription (and the optional catchup)
  */
 export async function subscribeToChannel(
   channel: Channel,
   connections?: NetworkConnection[],
-  sendChatchup: boolean = true,
+  sendCatchup: boolean = true,
 ) {
   if (!channel) {
     throw new Error('Could not subscribe to channel without a valid channel');
@@ -26,7 +26,7 @@ export async function subscribeToChannel(
     // Subscribe to the channel
     await subscribe(channel, connections);
 
-    if (sendChatchup) {
+    if (sendCatchup) {
       // Retrieve all previous LAO messages in the form of a generator
       const msgs = await catchup(channel, connections);
 
