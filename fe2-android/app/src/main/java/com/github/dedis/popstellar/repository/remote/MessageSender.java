@@ -4,8 +4,10 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.tinder.scarlet.WebSocket;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
 /**
@@ -60,4 +62,9 @@ public interface MessageSender extends Disposable {
    * @return a {@link Completable} the will complete once the unsubscribe is finished
    */
   Completable unsubscribe(Channel channel);
+
+  /**
+   * @return an Observable of WebSocket events of the underlying connection
+   */
+  Observable<WebSocket.Event> getConnectEvents();
 }
