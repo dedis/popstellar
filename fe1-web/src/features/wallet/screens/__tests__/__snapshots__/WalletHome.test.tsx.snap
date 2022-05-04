@@ -327,7 +327,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         <Text
                           style={
                             Object {
-                              "color": "black",
                               "fontSize": 25,
                               "fontWeight": "bold",
                               "marginHorizontal": 10,
@@ -349,7 +348,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         <Text
                           style={
                             Object {
-                              "color": "black",
                               "fontSize": 25,
                               "marginHorizontal": 10,
                               "textAlign": "center",
