@@ -6,15 +6,10 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.ElectionHelper.{getAllMessage, getSetupMessage}
+import ch.epfl.pop.pubsub.graph.ElectionHelper.{getAllMessage, getLastVotes, getSetupMessage}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadAck
-
-import scala.collection.mutable
-import scala.concurrent.Await
-import scala.util.Success
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -219,7 +214,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"invalid sender $sender"))
         else if (!validateChannelType(ObjectType.ELECTION, channel, dbActor))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!compareResults(getAllMessage[CastVoteElection](channel, dbActor), data.registered_votes))
+        else if (!compareResults(getLastVotes(channel, dbActor), data.registered_votes))
           Right(validationError(s"Incorrect verification hash"))
         else
           Left(rpcMessage)
@@ -228,7 +223,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean =
-    // Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
-    true
+  private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
+    Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
+  }
+  // true
 }

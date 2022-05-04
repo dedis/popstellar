@@ -124,7 +124,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   private def getResults(electionChannel: Channel): List[ElectionQuestionResult] = {
-    val castsVotesElections: List[CastVoteElection] = getLastVotes(electionChannel)
+    val castsVotesElections: List[CastVoteElection] = getLastVotes(electionChannel).map(_._2)
     val question2Ballots = getSetupMessage(electionChannel, dbActor).questions.map(question => question.id -> question.ballot_options).toMap
     // results is a map [Question ID -> [Ballot name -> count]]
     val r = question2Ballots.keys.map(question => question -> question2Ballots(question).map(_ -> 0).toMap).toMap

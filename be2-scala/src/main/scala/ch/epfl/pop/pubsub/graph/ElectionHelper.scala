@@ -55,13 +55,13 @@ object ElectionHelper extends AskPatternConstants {
    * @param dbActor         the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    * @return the final vote for each attendee that has voted
    */
-  def getLastVotes(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[CastVoteElection] = {
+  def getLastVotes(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, CastVoteElection)] = {
     val votes = getAllMessage[CastVoteElection](electionChannel, dbActor)
-    val attendeeId2lastVote = mutable.Map[PublicKey, CastVoteElection]()
+    val attendeeId2lastVote = mutable.Map[PublicKey, (Message, CastVoteElection)]()
     for ((message, castvote) <- votes
          if !attendeeId2lastVote.contains(message.sender) ||
-           attendeeId2lastVote(message.sender).created_at < castvote.created_at)
-      attendeeId2lastVote.update(message.sender, castvote)
+           attendeeId2lastVote(message.sender)._2.created_at < castvote.created_at)
+      attendeeId2lastVote.update(message.sender, (message, castvote))
     attendeeId2lastVote.values.toList
   }
 }
