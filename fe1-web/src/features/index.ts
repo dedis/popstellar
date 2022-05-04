@@ -54,7 +54,7 @@ export function configureFeatures() {
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });
-  const walletConfiguration = wallet.configure(keyPairRegistry);
+  const walletConfiguration = wallet.configure(keyPairRegistry, messageRegistry);
 
   // compose features
 

@@ -2,7 +2,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Hash, ProtocolError } from 'core/objects';
 
 import { hashTransaction } from '../DigitalCashHelper';
-import { DigitalCashTransaction } from '../DigitalCashTransaction';
+import { DigitalCashMessage, DigitalCashTransaction } from "../DigitalCashTransaction";
 
 export class PostTransaction implements MessageData {
   public readonly object: ObjectType = ObjectType.TRANSACTION;
@@ -32,5 +32,17 @@ export class PostTransaction implements MessageData {
       );
     }
     this.transactionId = msg.transactionId;
+  }
+
+  /**
+   * Creates a PostTransaction object from a given object.
+   *
+   * @param obj
+   */
+  public static fromJson(obj: any): PostTransaction {
+    return new PostTransaction({
+      transactionId: new Hash(obj.transactionId),
+      transaction: DigitalCashMessage.fromState(obj).transaction,
+    });
   }
 }
