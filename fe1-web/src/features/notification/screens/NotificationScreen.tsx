@@ -1,15 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
