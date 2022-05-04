@@ -132,6 +132,8 @@ const STRINGS = {
   /* --- Election creation Strings --- */
   election_create_setup: 'Election Setup',
   election_create_name: 'Name*',
+  election_create_version_open_ballot: 'Open Ballot',
+  election_create_version_secret_ballot: 'Secret Ballot',
   election_create_start_time: 'Start time: ',
   election_create_finish_time: 'End time:  ',
   election_create_question: 'Question*',
@@ -141,8 +143,7 @@ const STRINGS = {
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
   election_method_Approval: 'Approval',
-  election_version_open_ballot: 'open-ballot',
-  election_version_secret_ballot: 'secret-ballot',
+  election_wait_for_election_key: 'Waiting for the election key to be broadcasted',
 
   /* --- Event Creation Strings --- */
   modal_event_creation_failed: 'Event creation failed',

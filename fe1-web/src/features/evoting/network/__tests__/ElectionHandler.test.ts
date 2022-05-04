@@ -142,7 +142,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -158,7 +158,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -174,7 +174,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -190,7 +190,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            electionKey: mockKeyPair.publicKey,
+            election_key: mockKeyPair.publicKey,
           } as ElectionKey,
         }),
       ).toBeTrue();

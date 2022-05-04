@@ -33,6 +33,13 @@ export interface EvotingConfiguration {
    */
   useCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Given a lao id, this function returns the public key of the backend
+   * @param laoId The id of the lao
+   * @returns The public key of the lao organizer's backend or undefined if none is known
+   */
+  useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
   /* Event related functions */
 
   /**
@@ -62,7 +69,7 @@ export interface EvotingConfiguration {
   /**
    * Given a lao id, this function returns the public key of the backend
    * @param laoId The id of the lao
-   * @returns The public key of the lao organizer's backend or undefined if none is known
+   * @returns The public key or undefined if none is known
    */
   getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
 }
@@ -75,6 +82,7 @@ export type EvotingReactContext = Pick<
   /* lao */
   | 'useCurrentLao'
   | 'useCurrentLaoId'
+  | 'useLaoOrganizerBackendPublicKey'
   /* events */
   | 'getEventById'
   | 'addEvent'

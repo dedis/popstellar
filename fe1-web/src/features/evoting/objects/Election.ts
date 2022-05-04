@@ -15,10 +15,15 @@ export enum ElectionStatus {
   RESULT = 'result', // When result is available
 }
 
+export enum ElectionVersion {
+  OPEN_BALLOT = 'open-ballot',
+  SECRET_BALLOT = 'secret-ballot',
+}
+
 export interface ElectionState extends EvotingFeature.EventState {
   lao: string;
   name: string;
-  version: string;
+  version: ElectionVersion;
   createdAt: number;
   start: number;
   end: number;
@@ -70,7 +75,7 @@ export class Election {
 
   public readonly name: string;
 
-  public readonly version: string;
+  public readonly version: ElectionVersion;
 
   public readonly createdAt: Timestamp;
 

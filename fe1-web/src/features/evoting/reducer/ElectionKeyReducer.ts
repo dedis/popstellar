@@ -9,7 +9,7 @@ import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/tool
 import { PublicKey } from 'core/objects';
 
 /**
- * Reducer & associated functions to store received election keys
+ * Reducer & associated functions to store received election key
  */
 
 export interface ElectionKeyReducerState {
@@ -72,10 +72,10 @@ export const getElectionKeyState = (state: any): ElectionKeyReducerState =>
 
 /**
  * A function to directly retrieve the election key from the redux store for a election lao id
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark NOTE: This function does not memoize the result. If you need this, use makeElectionKeySelector instead
  * @param electionId The election id
  * @param state The redux state
- * @returns The public key for the given server address or undefined if there is none
+ * @returns The election key for the election id or undefined if there is none
  */
 export const getElectionKeyByElectionId = (
   electionId: string,
@@ -93,7 +93,7 @@ export const getElectionKeyByElectionId = (
 /**
  * Creates a election key selector for a given election id. Can for example be used in useSelector()
  * @param electionId The election id
- * @returns A selector for the election key for the given electio id or undefined if there is none
+ * @returns A selector for the election key for the given election id or undefined if there is none
  */
 export const makeElectionKeySelector = (electionId: string) =>
   createSelector(

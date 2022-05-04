@@ -1,4 +1,4 @@
-import { RemoveMethods } from 'core/types';
+import { OmitMethods } from 'core/types';
 
 import { Hash } from '../../../core/objects/Hash';
 import { PublicKey } from '../../../core/objects/PublicKey';
@@ -42,7 +42,7 @@ export class Server {
    * Constructs a new server instance
    * @param server The properties of the new server instance
    */
-  constructor(server: RemoveMethods<Server>) {
+  constructor(server: OmitMethods<Server>) {
     if (server.laoId === undefined) {
       throw new Error("Undefined 'laoId' when creating 'Server'");
     }

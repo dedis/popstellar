@@ -32,7 +32,7 @@ const sampleElectionKey: Partial<ElectionKey> = {
   object: ObjectType.ELECTION,
   action: ActionType.KEY,
   election: electionId,
-  electionKey: mockKeyPair.publicKey,
+  election_key: mockKeyPair.publicKey,
 };
 
 const ElectionKeyJson: string = `{
@@ -57,7 +57,7 @@ describe('ElectionKey', () => {
       object: ObjectType.ELECTION,
       action: ActionType.KEY,
       election: electionId,
-      electionKey: mockKeyPair.publicKey,
+      election_key: mockKeyPair.publicKey,
     };
     expect(new ElectionKey(temp)).toBeJsonEqual(temp);
   });
@@ -94,7 +94,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: undefined as unknown as Hash,
-          electionKey: mockKeyPair.publicKey,
+          election_key: mockKeyPair.publicKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -103,7 +103,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: electionId,
-          electionKey: undefined as unknown as PublicKey,
+          election_key: undefined as unknown as PublicKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -113,7 +113,7 @@ describe('ElectionKey', () => {
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         election: electionId,
-        electionKey: mockKeyPair.publicKey,
+        election_key: mockKeyPair.publicKey,
       } as MessageDataProperties<ElectionKey>);
 
       expect(msg.object).toEqual(ObjectType.ELECTION);

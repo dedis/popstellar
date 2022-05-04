@@ -19,6 +19,7 @@ import {
   JsonRpcResponse,
   Publish,
   Subscribe,
+  Unsubscribe,
 } from '../jsonrpc';
 import {
   ActionType,
@@ -34,6 +35,7 @@ import {
   getSigningKeyPair,
   publish,
   subscribe,
+  unsubscribe,
 } from '../JsonRpcApi';
 import { SendingStrategy } from '../strategies/ClientMultipleServerStrategy';
 
@@ -114,6 +116,23 @@ describe('subscribe', () => {
     const request = new JsonRpcRequest({
       method: JsonRpcMethod.SUBSCRIBE,
       params: new Subscribe({
+        channel: mockChannel,
+      }),
+      id: AUTO_ASSIGN_ID,
+    });
+
+    expect(mockSendingStrategy).toHaveBeenCalledWith(request, expect.anything());
+    expect(mockSendingStrategy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('unsubscribe', () => {
+  it('correctly builds a JsonRpcRequest and passes it to the network manager', async () => {
+    await unsubscribe(mockChannel);
+
+    const request = new JsonRpcRequest({
+      method: JsonRpcMethod.UNSUBSCRIBE,
+      params: new Unsubscribe({
         channel: mockChannel,
       }),
       id: AUTO_ASSIGN_ID,

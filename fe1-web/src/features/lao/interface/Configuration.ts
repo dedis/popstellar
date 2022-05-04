@@ -92,6 +92,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The current lao id or undefined if there is none
      */
     useCurrentLaoId: () => Hash | undefined;
+
+    /**
+     * Returns the public key of the organizer's backend for a given lao id
+     * @param laoId The lao id for which the key should be retrieved
+     * @returns The public key or undefined if there is none
+     */
+    useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
   };
 
   /* functions */
