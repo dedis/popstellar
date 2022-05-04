@@ -2,6 +2,7 @@ package util.examples.data.builders
 
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.election.{OpenElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.cash._
@@ -143,6 +144,18 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
+        //Election
+        case (ObjectType.ELECTION, ActionType.SETUP) =>
+          messageData = SetupElection.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.ELECTION, ActionType.OPEN) =>
+          messageData = OpenElection.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        //Digital cash
         case (ObjectType.TRANSACTION, ActionType.POST) =>
           messageData = PostTransaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)

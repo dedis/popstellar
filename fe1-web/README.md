@@ -28,6 +28,9 @@ npm start
 - Opening the project on a phone requires to scan the QR code on the bottom left corner of the page and having [Expo Client app](https://expo.io/tools) installed to display the project. Without the app, a phone may be simulated using the emulator/simulator buttons on the packager
 - Opening the project on a browser requires to click on the *run in web browser* button on the packager
 
+## Retrieving the public key
+In order to retrieve the public key that is used by the frontend, open the javascript console of the web browser of your choice. [This stackoverflow answer](https://webmasters.stackexchange.com/a/77337) gives an overview of how to do so in different browsers if you have never done this. Then look for the log entry `Using the public key: XXX`.
+
 ---
 
 

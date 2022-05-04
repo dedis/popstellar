@@ -70,13 +70,15 @@ Here's the annotated directory tree:
 │   │
 │   ├── lao                      # feature dealing with the notion of a LAO, showing the typical feature structure
 │   │   ├── components             # feature components
+│   │   ├── functions              # feature functions
+│   │   ├── hooks                  # feature hooks
+│   │   ├── interface              # defines the dependencies of the feature and the interface it exposes
 │   │   ├── navigation             # navigation within the feature screens
 │   │   ├── network                # network APIs, objects and message parsing for the feature
 │   │   ├── objects                # business objects for the feature
 │   │   ├── reducer                # redux-based state management for the feature
 │   │   ├── screens                # UI screens of the feature
-│   │   ├── store                  # static access to the feature's reducer store (DEPRECATED)
-│   │   └── styles                 # UI styles for the feature (DEPRECATED)
+│   │   └── store                  # static access to the feature's reducer store (DEPRECATED)
 │   │
 │   ├── events                   # feature dealing with events happening in a LAO
 │   │
@@ -343,6 +345,247 @@ which ensures that all constraints defined within the JSON Schema are respected.
 
 Furthermore, each object has specific constraints defined within its constructor. For an example, see
 [CreateRollCall.ts](https://github.com/dedis/popstellar/blob/master/fe1-web/src/features/rollCall/network/messages/CreateRollCall.ts)
+
+## Dependencies between features
+
+### Idea
+
+One may think of the features as being independent packages that are loaded by
+the application. This leads to the question how inter-feature dependencies can
+be handled. For instance there is the lao feature in `src/features/lao` that
+manages the storage of LAO related data such as what the active LAO is. (At the
+time of writing, the application can at a specific point in time only be
+connected to one LAO). If another feature, for example the `evoting` feature,
+needs to know the ID of the active LAO in order to send a message in the correct
+channel, then it is **not** supposed to just import the corresponding function
+directly from the `lao` feature.
+
+Instead we want to use [dependency
+injection](https://en.wikipedia.org/wiki/Dependency_injection) that allows the
+`evoting` feature to make use of said function without directly importing it.
+
+The way this works is by explicitly passing the function to the `evoting`
+feature. More concretely, a feature can expose a `configure` function in
+`src/features/<featureName>/index.ts` that accepts a set of dependencies such as
+a function to retrieve the current lao id.
+
+A simple implementation of this may look like
+
+```typescript
+export const configure = (getCurrentLaoId: () => ID) => {
+  initFeature(getCurrentLaoId);
+}
+```
+
+and more generally
+
+```typescript
+interface MyFeatureConfiguration {
+  getCurrentLaoId: () => ID;
+}
+
+export const configure = (configuration: MyFeatureConfiguration) => {
+  initFeature(configuration);
+}
+```
+
+This leaves the question where we get the function `getCurrentLaoId` from and
+where this `configure` function is called. Here the idea is that each feature
+not only defines its dependencies but also the interface it exposes. For
+instance, the `lao` feature must expose the function `getCurrentLaoId` so that
+the `evoting` feature can make use of it. In order to achieve this, the same
+`configure` function can be used. Instead of returning nothing, each feature can
+return the interface it exposes. More concretely
+
+```typescript
+interface MyFeatureConfiguration {
+  getCurrentLaoId: () => ID;
+}
+
+interface MyFeatureInterface {
+  add: (a: number, b: number) => number;
+}
+
+export const configure = (configuration: MyFeatureConfiguration): MyFeatureInterface => {
+  initFeature(configuration);
+
+  return {
+    add: (a: number, b: number) => a+b
+  };
+}
+```
+
+With this setup we can now answer the second question: how to put all of this
+together. The answer is the file `src/feature/index.ts`. This file imports the
+`index.ts` of each feature and calls `configure` on them. For instance for the
+described scenario with the `lao` and `evoting` feature from before, we would
+have
+
+```typescript
+import * as laoFeature from "./lao/index.ts";
+import * as evotingFeature from "./evoting/index.ts";
+
+export const configureFeatures = () => {
+  const laoInterface = laoFeature.configure();
+  const evotingInterface = laoFeature.configure({
+    getCurrentLaoId: laoInterface.getCurrentLaoId
+  });
+};
+```
+
+As long as there are no circular dependencies, this pattern allows the injection
+of dependencies into features without directly importing any function from a
+different feature. One of the advantages is that testing becomes much easier as
+it is possible to directly pass mock implementations without a complex mock
+setup.
+
+This pattern does not suffice in cases of circular dependencies but fortunately
+there is a very natural way to extend it. For instance if the evoting feature
+exports a navigation component called `EvotingScreen` which should be displayed
+inside the `LaoNavigation`, the previously shown code will no longer work. On
+which feature do we call `.configure()` first? Neither works!
+
+What one can to do instead is to define a second function analogous to
+`configure`, `configure2`! This then allows us to write
+
+```typescript
+import * as laoFeature from "./lao/index.ts";
+import * as evotingFeature from "./evoting/index.ts";
+
+export const configureFeatures = () => {
+  const laoInterface = laoFeature.configure();
+  const evotingInterface = laoFeature.configure({
+    getCurrentLaoId: laoInterface.getCurrentLaoId
+  });
+  const laoInterface2 = laoFeature.configure2({
+    screens: [evotingInterface.EvotingScreen]
+  });
+};
+```
+
+Now `configure2` is not a very good name which is the reason this `configure2`
+in the codebase is at the time of writing called `compose`. This name is not
+much better but at least harder to confuse with `configure`. At the time of
+writing, two functions suffice to solve all of these cases but in the future it
+might be necessary to have a third configuration function. Unless the features
+become very entangled, a small number should suffice. Otherwise it is probably a
+good idea to come up with an alternative pattern.
+
+---
+
+The way this pattern is explained leaves away one detail: How can react
+components access these configuration values. For simple components it is
+possible to have a setup that looks like
+
+```tsx
+const makeMyComponent = (configuration: MyFeatureConfiguration) =>
+  (props: IProps) => {
+    const myText = getMyText(props, configuration);
+
+    return <Text>{myText}</Text>;
+  };
+
+export const configure = (configuration: MyFeatureConfiguration): MyFeatureInterface => {
+  initFeature(configuration);
+
+  return {
+    MyComponent: makeMyComponent(configuration)
+  };
+}
+```
+
+but this quickly gets messy if the `evoting` feature has a second component that wants to render MyComponent as a child:
+
+```tsx
+const makeMyComponent = (configuration: MyFeatureConfiguration) =>
+  (props: IProps) => {
+    const myText = getMyText(props, configuration);
+
+    return <Text>{myText}</Text>;
+  };
+
+const makeMyBetterComponent = (configuration: MyFeatureConfiguration) =>
+  (props: IProps) => {
+    const MyComponent = makeMyComponent(configuration);
+
+    return <View><MyComponent isConfusing={true} /></View>;
+  };
+
+export const configure = (configuration: MyFeatureConfiguration): MyFeatureInterface => {
+  initFeature(configuration);
+
+  return {
+    MyComponent: makeMyBetterComponent(configuration)
+  };
+}
+```
+
+Thus a different option was chosen that makes use of [react
+contexts](https://reactjs.org/docs/context.html) which are a way of passing
+props down to children far down in the component tree without doing so
+explicitly. This is also how redux enables all components wrapped in `<Provider
+store={myStore}/>` to access `myStore` using the
+[hook](https://reactjs.org/docs/hooks-intro.html) `useStore()`;
+
+Concretely `App.tsx` wraps all components using `<FeatureProvider
+value={context} />` where `context` is of the type
+
+```typescript
+{
+  [identifier: string]: unknown
+}
+```
+
+If a given feature exports a context containing some values, these values can
+then later be accessed using the `useContext` hook. The `context`
+property returned from `configureFeatures` in `src/features/index.ts` is passed
+to `App.tsx` and is used as the value of the feature context. Each feature is
+supposed to define and export a unique identifier so that the feature context
+value the looks like
+
+```typescript
+{
+  [laoFeature.identifier]: laoFeature.context,
+  [evoting.identifier]: evoting.context,
+  [myFeature.identifier]: myFeature.context
+}
+```
+
+Hence each feature can then define a `useMyFeatureContext` hook as follows:
+
+```typescript
+export const useMyFeatureContext = (): MyFeatureReactContext => {
+  const featureContext = useContext(FeatureContext);
+  // assert that the feature context exists
+  if (!(MY_FEATURE_IDENTIFIER in featureContext)) {
+    throw new Error('My feature context could not be found!');
+  }
+  return featureContext[MY_FEATURE_IDENTIFIER] as MyFeatureReactContext;
+};
+
+```
+
+that then allows the its values to be accessed in any component like
+
+```typescript
+const MyComponent =>
+  (props: IProps) => {
+    const myFeatureContext = useMyFeatureContext();
+    const myText = getMyText(props, myFeatureContext);
+
+    return <Text>{myText}</Text>;
+  };
+
+```
+
+which is easier to read than the alternative we had before.
+
+### Convention
+
+To make it easier to find mistakes using this pattern, we define it as a
+convention to explicitly define the types of the dependencies and the interface
+each feature exposes. The same goes for the react context where an explicit type
+is required when casting it from unkown in `useMyFeatureContext()`.
 
 ## Testing
 

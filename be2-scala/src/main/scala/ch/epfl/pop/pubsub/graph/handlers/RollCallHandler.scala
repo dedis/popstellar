@@ -104,8 +104,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
               }
             }
-
-            val laoChannel: Option[Base64Data] = rpcRequest.getParamsChannel.decodeChannelLaoId
+            val laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
             laoChannel match {
               case None => Right(PipelineError(
                 ErrorCodes.SERVER_ERROR.id,

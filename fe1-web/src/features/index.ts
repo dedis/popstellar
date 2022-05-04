@@ -46,7 +46,14 @@ export function configureFeatures() {
   const meetingConfiguration = meeting.configure(messageRegistry);
   const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
-  witness.configure(messageRegistry);
+  witness.configure({
+    enabled: false,
+    messageRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    isLaoWitness: laoConfiguration.functions.isLaoWitness,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+  });
   const walletConfiguration = wallet.configure(keyPairRegistry);
 
   // compose features

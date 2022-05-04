@@ -2,11 +2,12 @@ package messagedata
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"popstellar/message/messagedata"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Notify_Add(t *testing.T) {
@@ -29,7 +30,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 	require.Equal(t, "chirp", msg.Object)
 	require.Equal(t, "notify_add", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()
@@ -56,7 +57,7 @@ func Test_Chirp_Notify_Add_Negative_Timestamp(t *testing.T) {
 	require.Equal(t, "chirp", msg.Object)
 	require.Equal(t, "notify_add", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpID)
 	require.Equal(t, int64(-1), msg.Timestamp)
 
 	err = msg.Verify()
@@ -83,7 +84,7 @@ func Test_Chirp_Notify_Add_Not_Base64_Message(t *testing.T) {
 	require.Equal(t, "chirp", msg.Object)
 	require.Equal(t, "notify_add", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
-	require.Equal(t, "@@@", msg.ChirpId)
+	require.Equal(t, "@@@", msg.ChirpID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()
