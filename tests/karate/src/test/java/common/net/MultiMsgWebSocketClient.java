@@ -5,19 +5,21 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
-import com.intuit.karate.graal.JsMap;
-import net.minidev.asm.ConvertDate;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
   private final MessageQueue queue;
   private final Logger logger;
+  private JsonConverter jsonConverter;
+  private final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
+  private final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
     this.logger = logger;
     this.queue = queue;
+    this.jsonConverter =  new JsonConverter();
 
     setTextHandler(m -> true);
   }
@@ -43,12 +45,16 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public void publish(String data, int id, String channel){
-    JsonConverter jsonConverter = new JsonConverter();
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
     this.send(request.toString());
   }
 
-  public String getBackendResponseWithBroadcast(String a){
+  public void setNonAttendeeAsSender(){
+    jsonConverter.setSenderSk(nonAttendeeSkHex);
+    jsonConverter.setSenderPk(nonAttendeePk);
+  }
+
+  public String getBackendResponseWithBroadcast(){
     String broadcast = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
     return result;
