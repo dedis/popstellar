@@ -8,6 +8,8 @@ import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.graal.JsMap;
 import net.minidev.asm.ConvertDate;
 
+import java.util.Random;
+
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
@@ -42,15 +44,18 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return queue;
   }
 
-  public void publish(String data, int id, String channel){
+  public void publish(String data, String channel){
     JsonConverter jsonConverter = new JsonConverter();
+    Random random = new Random();
+    int id = random.nextInt();
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
     this.send(request.toString());
   }
 
-  public String getBackendResponseWithBroadcast(String a){
-    String broadcast = getBuffer().takeTimeout(5000);
-    String result = getBuffer().takeTimeout(5000);
+  public String getBackendResponseWithBroadcast(){
+    String answer1 = getBuffer().takeTimeout(5000);
+    String answer2 = getBuffer().takeTimeout(5000);
+    String result = answer1.contains("result") ? answer1 : answer2;
     return result;
   }
 
@@ -60,7 +65,6 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public boolean receiveNoMoreResponses(){
-    String result_dummy = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
     return result == null;
   }
