@@ -520,6 +520,28 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	require.NoError(t, channel.Publish(messagePublish, nil))
 }
 
+func TestBaseChannel_CoinIsCreated(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	m := message.Message{MessageID: "0"}
+
+	// Create the channel
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+
+	_, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	time.Sleep(time.Millisecond)
+
+	consensusID := "channel0/coin"
+	consensus := fakeHub.channelByID[consensusID]
+	require.NotNil(t, consensus)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
