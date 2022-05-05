@@ -15,15 +15,15 @@ public class ServerTest {
 //    return Karate.run("classpath:be/rollCall/createRollCall.feature");
 //  }
 
-  @Karate.Test
-  Karate testOpenRollCall() {
-    return Karate.run("classpath:be/rollCall/openRollCall.feature");
-  }
-//
 //  @Karate.Test
-//  Karate testCloseRollCall() {
-//    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
+//  Karate testOpenRollCall() {
+//    return Karate.run("classpath:be/rollCall/openRollCall.feature");
 //  }
+//
+  @Karate.Test
+  Karate testCloseRollCall() {
+    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
+  }
 //
 //  @Karate.Test
 //  Karate testElectionSetup(){

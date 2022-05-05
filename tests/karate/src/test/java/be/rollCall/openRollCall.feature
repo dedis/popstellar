@@ -27,7 +27,7 @@ Feature: Roll Call Open
   # containing the same id as the request and a result.
   Scenario: Open a valid Roll Call
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-    And def validCreateRollCall =
+    And def validOpenRollCall =
       """
         {
           "object": "roll_call",
@@ -37,7 +37,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
     And json answer = frontend.getBackendResponseWithBroadcast()
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
@@ -46,7 +46,7 @@ Feature: Roll Call Open
   # was never sent opening a roll call is illegal and we expect an error message from the backend.
   Scenario: Opening a Roll Call that does not exist should return an error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    And def validCreateRollCall =
+    And def validOpenRollCall =
       """
         {
           "object": "roll_call",
@@ -56,7 +56,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -65,7 +65,7 @@ Feature: Roll Call Open
   # we provide an invalid update_id field in the message. We expect an error message in return
   Scenario: Opening a Roll Call with invalid update_id should return an error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-    And def validCreateRollCall =
+    And def validOpenRollCall =
       """
         {
           "object": "roll_call",
@@ -75,7 +75,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -83,7 +83,7 @@ Feature: Roll Call Open
   # Testing idempotency (Not guaranteed by the backend for now, so the test fails)
   Scenario: Opening a Roll Call for which with already received an error should return an error again
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-    And def validCreateRollCall =
+    And def validOpenRollCall =
       """
         {
           "object": "roll_call",
@@ -93,10 +93,10 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
-    And frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     And match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

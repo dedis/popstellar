@@ -50,10 +50,34 @@ Feature: Constants
           return "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk="
         }
       """
+    * def createValidRollCallCloseId =
+    """
+        function(){
+          return "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU="
+        }
+      """
+    * def createValidRollCallCloseUpdateId =
+    """
+        function(){
+          return "IGLB3pipK0p0G5E_wFxedEk4IpyM3L7XIQoFummhj0Y="
+        }
+      """
+    * def createInvalidRollCallCloseUpdateId =
+    """
+        function(){
+          return "lM5Lntpk4Y4SpKjzV2ICYpe4YnMOvWz1eeREB_RVVRg="
+        }
+      """
     * def organizerPk =
       """
         function(){
           return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
+        }
+      """
+    * def attendeePk =
+      """
+        function(){
+          return "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
         }
       """
     * def getLaoIdEmptyName = call createLaoIdEmptyName
@@ -67,7 +91,12 @@ Feature: Constants
     * def getRollCallOpenValidUpdateId = call createValidRollCallOpenUpdateId
     * def getRollCallOpenInvalidUpdateId = call createInvalidRollCallOpenUpdateId
 
+    * def getRollCallCloseValidId = call createValidRollCallCloseId
+    * def getRollCallCloseValidUpdateId = call createValidRollCallCloseUpdateId
+    * def getRollCallCloseInvalidUpdateId = call createInvalidRollCallCloseUpdateId
+
     * def getOrganizer = call organizerPk
+    * def getAttendee = call attendeePk
 
     * def INVALID_ACTION =          {error: {code: -1, description: '#string'}}
     * def INVALID_RESOURCE =        {error: {code: -2, description: '#string'}}
