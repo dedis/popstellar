@@ -55,8 +55,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public String getBackendResponseWithBroadcast(){
-    String broadcast = getBuffer().takeTimeout(5000);
-    String result = getBuffer().takeTimeout(5000);
+    String answer1 = getBuffer().takeTimeout(5000);
+    String answer2 = getBuffer().takeTimeout(5000);
+    String result = answer1.contains("result") ? answer1 : answer2;
     return result;
   }
 
@@ -66,7 +67,6 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public boolean receiveNoMoreResponses(){
-    String result_dummy = getBuffer().takeTimeout(5000);
     String result = getBuffer().takeTimeout(5000);
     return result == null;
   }
