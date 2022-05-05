@@ -2,9 +2,10 @@ package messagedata
 
 //TBC
 type TransactionPost struct {
-	Object      string            `json:"object"`
-	Action      string            `json:"action"`
-	Transaction TransactionStruct `json:"transaction"`
+	Object        string            `json:"object"`
+	Action        string            `json:"action"`
+	TransactionId string            `json:"transaction_id"`
+	Transaction   TransactionStruct `json:"transaction"`
 }
 
 //TBC
