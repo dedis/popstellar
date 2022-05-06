@@ -198,8 +198,6 @@ func Test_SendReaction(t *testing.T) {
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
-	//channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
-
 	// Create the message
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
@@ -235,6 +233,56 @@ func Test_SendReaction(t *testing.T) {
 	message.Params.Channel = digitalCashChannelName
 
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+}
+
+// Tests that the channel throw an error when receiving an incomplete json message
+func Test_SendReaction_MissingData(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var digitalCashChannelName = "/root/" + laoID + "/digitalCash/transaction"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
+	require.True(t, found)
+
+	//load example
+	require.NoError(t, err)
+
+	m := message.Message{
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash("helloworld", "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = digitalCashChannelName
+
+	err = channel.Publish(message, socket.ClientSocket{})
+	require.EqualError(t, err, "failed to verify publish message: failed to "+
+		"verify json schema: failed to validate schema: EOF")
 }
 
 // -----------------------------------------------------------------------------

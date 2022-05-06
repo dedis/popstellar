@@ -1,37 +1,41 @@
 package messagedata
 
-//TBC
+// TransactionPost defines a message data
 type TransactionPost struct {
-	Object        string            `json:"object"`
-	Action        string            `json:"action"`
-	TransactionId string            `json:"transaction_id"`
-	Transaction   TransactionStruct `json:"transaction"`
+	Object        string      `json:"object"`
+	Action        string      `json:"action"`
+	TransactionId string      `json:"transaction_id"`
+	Transaction   Transaction `json:"transaction"`
 }
 
-//TBC
-type TransactionStruct struct {
-	Version  int           `json:"version"`
-	TxIn     []TxInStruct  `json:"txin"`  // min 1
-	TxOut    []TxOutStruct `json:"txout"` //min 1
-	Locktime int           `json:"locktime"`
+//Transaction define the input and output account for the transaction
+type Transaction struct {
+	Version  int      `json:"version"`
+	Inputs   []Input  `json:"txin"`  // min 1
+	Outputs  []Output `json:"txout"` //min 1
+	Locktime int      `json:"locktime"`
 }
 
-type TxInStruct struct {
-	TxOutHash  string       `json:"txouthash"`
-	TxOutIndex int          `json:"txoutindex"`
-	ScripIn    UnlockScript `json:"script"`
+// Input define the source from the money used in transaction
+type Input struct {
+	Hash   string       `json:"txouthash"`
+	Index  int          `json:"txoutindex"`
+	Script UnlockScript `json:"script"`
 }
 
-type TxOutStruct struct {
-	Value     int        `json:"value"`
-	ScriptOut LockScript `json:"script"`
+// Output define the destination from the money used in transaction
+type Output struct {
+	Value  int        `json:"value"`
+	Script LockScript `json:"script"`
 }
 
+// LockScript define the locking value for transaction
 type LockScript struct {
 	Type       string `json:"Type"`
 	PubKeyHash string `json:"PubkeyHash"`
 }
 
+// UnlockScript define the unlocking value for transaction
 type UnlockScript struct {
 	Type   string `json:"Type"`
 	PubKey string `json:"Pubkey"`

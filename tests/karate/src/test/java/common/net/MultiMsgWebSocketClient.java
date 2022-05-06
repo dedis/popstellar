@@ -1,8 +1,14 @@
 package common.net;
 
+import be.utils.JsonConverter;
+import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
+import com.intuit.karate.graal.JsMap;
+import net.minidev.asm.ConvertDate;
+
+import java.util.Random;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
@@ -36,5 +42,30 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
   public MessageBuffer getBuffer() {
     return queue;
+  }
+
+  public void publish(String data, String channel){
+    JsonConverter jsonConverter = new JsonConverter();
+    Random random = new Random();
+    int id = random.nextInt();
+    Json request =  jsonConverter.publishМessageFromData(data, id, channel);
+    this.send(request.toString());
+  }
+
+  public String getBackendResponseWithBroadcast(){
+    String answer1 = getBuffer().takeTimeout(5000);
+    String answer2 = getBuffer().takeTimeout(5000);
+    String result = answer1.contains("result") ? answer1 : answer2;
+    return result;
+  }
+
+  public String getBackendResponseWithoutBroadcast(){
+    String result = getBuffer().takeTimeout(5000);
+    return result;
+  }
+
+  public boolean receiveNoMoreResponses(){
+    String result = getBuffer().takeTimeout(5000);
+    return result == null;
   }
 }

@@ -8,6 +8,7 @@ import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.Constants;
 
 /**
  * Page object of {@link LaoDetailActivity}
@@ -55,14 +56,14 @@ public class LaoDetailPageObject {
   }
 
   public static String laoIdExtra() {
-    return "LAO_ID";
+    return Constants.LAO_ID_EXTRA;
   }
 
   public static String fragmentToOpenExtra() {
-    return "FRAGMENT_TO_OPEN";
+    return Constants.FRAGMENT_TO_OPEN_EXTRA;
   }
 
   public static String laoDetailValue() {
-    return "LaoDetail";
+    return Constants.LAO_DETAIL_EXTRA;
   }
 }

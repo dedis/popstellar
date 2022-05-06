@@ -1,12 +1,19 @@
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
-
+import { WitnessConfiguration, WitnessInterface, WITNESS_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
 
 /**
  * Configures the witness feature
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The witness configuration object
+ * @returns The interface the witness feature exposes
  */
-export function configure(registry: MessageRegistry) {
-  configureNetwork(registry);
+export function configure(configuration: WitnessConfiguration): WitnessInterface {
+  configureNetwork(configuration);
+
+  return {
+    identifier: WITNESS_FEATURE_IDENTIFIER,
+    context: {
+      useCurrentLao: configuration.useCurrentLao,
+    },
+  };
 }

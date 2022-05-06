@@ -88,8 +88,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an "+
-			"digital cash channel: %w", err)
+		return xerrors.Errorf("failed to verify publish message: %v", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -211,7 +210,7 @@ func (c *Channel) processTransactionPost(msg message.Message, msgData interface{
 
 	_, ok := msgData.(*messagedata.TransactionPost)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a transaction#post message", msgData)
+		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}
 
 	var transactionData messagedata.TransactionPost
