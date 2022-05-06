@@ -13,15 +13,15 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
   private final MessageQueue queue;
   private final Logger logger;
-  private JsonConverter jsonConverter;
-  private final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
-  private final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
+  private JsonConverter jsonConverter = new JsonConverter();
+  private static final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
+  private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
+  private int idAssociatedWithSentMessage;
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
     this.logger = logger;
     this.queue = queue;
-    this.jsonConverter =  new JsonConverter();
 
     setTextHandler(m -> true);
   }
@@ -48,14 +48,14 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
 
   public void publish(String data, String channel){
-    JsonConverter jsonConverter = new JsonConverter();
     Random random = new Random();
     int id = random.nextInt();
+    idAssociatedWithSentMessage = id;
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
     this.send(request.toString());
   }
 
-  public void setNonAttendeeAsSender(){
+  public void changeSenderToBeNonAttendee(){
     jsonConverter.setSenderSk(nonAttendeeSkHex);
     jsonConverter.setSenderPk(nonAttendeePk);
   }
@@ -66,11 +66,13 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     String result = answer1.contains("result") ? answer1 : answer2;
     String broadcast = answer1.contains("broadcast") ? answer1 : answer2;
     assert broadcast.contains("broadcast");
+    assert (result.contains("\"id\":" + idAssociatedWithSentMessage));
     return result;
   }
 
   public String getBackendResponseWithoutBroadcast(){
     String result = getBuffer().takeTimeout(5000);
+    assert (result.contains("\"id\":" + idAssociatedWithSentMessage));
     return result;
   }
 

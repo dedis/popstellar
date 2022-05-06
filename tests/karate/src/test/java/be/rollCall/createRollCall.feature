@@ -83,7 +83,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    * frontend.setNonAttendeeAsSender()
+    * frontend.changeSenderToBeNonAttendee()
     When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD

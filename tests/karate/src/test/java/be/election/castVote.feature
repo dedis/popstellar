@@ -175,9 +175,9 @@ Feature: Cast a vote
           ]
         }
       """
-    * frontend.setNonAttendeeAsSender()
+    And frontend.changeSenderToBeNonAttendee()
     When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
-    Then match answer contains VALID_MESSAGE
+    Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
