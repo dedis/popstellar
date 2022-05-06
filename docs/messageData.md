@@ -1369,7 +1369,7 @@ The receiver has to authenticate the message by checking whether it was sent by 
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_request_key/election_request_key.json
+// ../protocol/examples/messageData/election_key/election_key.json
 
 {
     "object": "election",
