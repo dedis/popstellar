@@ -1374,7 +1374,6 @@ The receiver has to authenticate the message by checking whether it was sent by 
 {
     "object": "election",
     "action": "key",
-    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
 }
@@ -1398,15 +1397,11 @@ The receiver has to authenticate the message by checking whether it was sent by 
         "action": {
             "const": "key"
         },
-        "lao": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "ID of the LAO"
-        },
         "election": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "ID of the election"
+            "description": "The election id the new election key is associated with",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
         },
         "election_key": {
             "description": "[Base64String] public key of the election",
@@ -1416,7 +1411,7 @@ The receiver has to authenticate the message by checking whether it was sent by 
         }
     },
     "additionalProperties": false,
-    "required": ["object", "action", "lao", "election", "election_key"]
+    "required": ["object", "action", "election", "election_key"]
 }
 
 ```
