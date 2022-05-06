@@ -83,6 +83,10 @@ case object LaoValidator extends MessageDataContentValidator {
 
         if (expectedLaoId != data.lao) {
           Right(validationError("unexpected id"))
+        } else if (message.sender != data.frontend) {
+          Right(validationError("unexpected publickey"))
+        } else if (!data.address.startsWith("ws://")) {
+          Right(validationError("invalid address"))
         } else if (validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to write an GreetLao message on wrong type of channel $channel"))
         } else {
