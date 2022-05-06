@@ -50,7 +50,11 @@ export const configureNetwork = (config: EvotingConfiguration) => {
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(config.getEventById, config.updateEvent),
+    handleElectionResultMessage(
+      config.getEventById,
+      config.updateEvent,
+      config.getLaoOrganizerBackendPublicKey,
+    ),
     ElectionResult.fromJson,
   );
 };

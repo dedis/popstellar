@@ -276,13 +276,6 @@ export const handleElectionResultMessage =
       console.warn(makeErr('No channel found in message'));
       return false;
     }
-    const electionId = getLastPartOfChannel(msg.channel);
-    const electionResultMessage = msg.messageData as ElectionResult;
-    const election = getEventById(electionId) as Election;
-    if (!election) {
-      console.warn(makeErr('No active election for the result'));
-      return false;
-    }
 
     // for now *ALL* election#result messages *MUST* be sent by the backend of the organizer
     const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
@@ -294,6 +287,14 @@ export const handleElectionResultMessage =
 
     if (organizerBackendPublicKey.valueOf() !== msg.sender.valueOf()) {
       console.warn(makeErr("the senders' public key does not match the organizer backend's"));
+      return false;
+    }
+
+    const electionId = getLastPartOfChannel(msg.channel);
+    const electionResultMessage = msg.messageData as ElectionResult;
+    const election = getEventById(electionId) as Election;
+    if (!election) {
+      console.warn(makeErr('No active election for the result'));
       return false;
     }
 
