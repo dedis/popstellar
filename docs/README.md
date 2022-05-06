@@ -102,6 +102,47 @@ You can then set a title and description to your PR as well as set a label (e.g.
 
 ---
 
+### Working together
+
+You might at some point end up working on feature `X` together with another – or more – teammate(s). Dealing with this situation unprepared *will* lead you down a rabbit hole of painful and seemingly endless merge conflicts. 
+
+In an attempt to avoid as many as these merge conflicts, here's what you should **avoid**:
+- Do not, under any circumstances, copy-paste code snippets between students/branches to make your code compile. You should rather ask your teammate to push his/her changes online, and incorporate them into your work (see below how we suggest you achieve this);
+
+Here's how we suggest you work on feature `X` with two (or more) teammates:
+1. create a branch that is common between both of you. If feature `X` relies on feature `Y` (that is awaiting reviews, i.e. not merged into `master`), then create your common branch originating from `branch-y`. If it is not related to any unmerged branches, then default to a copy of `master`.
+2. create a personal branch for each student that is originating from the common branch. Additionally (arguably optionally), you may decide to never push changes directly to the common branch but instead use PRs from either of your personal branches to the common branch.
+3. when you have a self-contained piece of code working, add it to the common branch (either through PRs or `git merge`). This way, your partner will be able to use it without the need of copy-pastas.
+4. when you need new code that is on the common branch but not yet on your personal branch, simply merge the common branch inside your personal branch
+5. once you are both happy and the feature is fully finished (and thus operational on the common branch), simply create a PR from the common branch to `branch-y` if `branch-y` is not merged yet or `master` if `branch-y` is already merged.
+
+Here's what it could look like with student Pierluca and student Nicolas working together on the common branch `dev-common-pn` that is using features from `branch-y`:
+
+```
+      +----------------------------+
+      |           Master           |
+      +-------------+--------------+
+                    |
+                    |
+      +-------------+--------------+
+      |          branch-y          |
+      +-------------+--------------+
+                    |
+                    |
+      +-------------+--------------+
+      |       dev-common-pn        |
+      +----------------------------+
+           ^ ^                ^
+           | |                | 
+           | |                |
+      +----+-+---+       +----+----+
+      | Pierluca |       | Nicolas |
+      +----------+       +---------+
+```
+
+
+---
+
 ### Other useful commands
 
 - `git cherry-pick` : apply the changes introduced by some existing commits
