@@ -39,11 +39,11 @@ export const handleElectionKeyMessage =
     }
 
     const electionKeyMessage = msg.messageData as ElectionKey;
-    // for now *ALL* election key messages *MUST* be sent by the backend of the organizer
+    // for now *ALL* election#key messages *MUST* be sent by the backend of the organizer
     const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
 
     if (!organizerBackendPublicKey) {
-      console.warn(makeErr("the organizer backend's public key is unkown"));
+      console.warn(makeErr("the organizer backend's public key is unknown"));
       return false;
     }
 
@@ -253,11 +253,13 @@ export const handleElectionEndMessage =
  *
  * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
+ * @param getLaoOrganizerBackendPublicKey - A function returning the public key of the lao organizer's backend
  */
 export const handleElectionResultMessage =
   (
     getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
+    getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey'],
   ) =>
   (msg: ProcessableMessage) => {
     if (
@@ -279,6 +281,19 @@ export const handleElectionResultMessage =
     const election = getEventById(electionId) as Election;
     if (!election) {
       console.warn(makeErr('No active election for the result'));
+      return false;
+    }
+
+    // for now *ALL* election#result messages *MUST* be sent by the backend of the organizer
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+
+    if (!organizerBackendPublicKey) {
+      console.warn(makeErr("the organizer backend's public key is unknown"));
+      return false;
+    }
+
+    if (organizerBackendPublicKey.valueOf() !== msg.sender.valueOf()) {
+      console.warn(makeErr("the senders' public key does not match the organizer backend's"));
       return false;
     }
 
