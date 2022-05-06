@@ -31,7 +31,7 @@ import {
 } from 'features/lao/reducer';
 import { WitnessMessage } from 'features/witness/network/messages';
 
-import { handleLaoGreet, makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
+import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
 import { GreetLao } from '../messages/GreetLao';
 
 const mockHandleLaoGreetSignature = jest.fn();
@@ -77,7 +77,7 @@ describe('handleLaoGreet', () => {
       t,
     );
 
-    handleLaoGreet(msg.message_id, greetLaoMsg, msg.sender);
+    storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
     expect(dispatch).toHaveBeenCalledTimes(2);
     // the key of the server should have been stored
     expect(dispatch).toHaveBeenCalledWith(
