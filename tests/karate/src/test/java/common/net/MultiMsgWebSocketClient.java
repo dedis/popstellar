@@ -6,6 +6,8 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
 
+import java.util.Random;
+
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
@@ -44,7 +46,11 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return queue;
   }
 
-  public void publish(String data, int id, String channel){
+
+  public void publish(String data, String channel){
+    JsonConverter jsonConverter = new JsonConverter();
+    Random random = new Random();
+    int id = random.nextInt();
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
     this.send(request.toString());
   }

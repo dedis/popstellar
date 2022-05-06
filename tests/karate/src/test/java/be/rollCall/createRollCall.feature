@@ -16,7 +16,6 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * def rollCallCreateId = 3
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
@@ -38,7 +37,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithBroadcast()
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
@@ -61,7 +60,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -109,7 +108,7 @@ Feature: Create a Roll Call
         }
       """
     * string rootChannel = "/root"
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, rootChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), rootChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INTERNAL_SERVER_ERROR
     And match frontend.receiveNoMoreResponses() == true
@@ -134,7 +133,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -157,7 +156,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -181,7 +180,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -203,7 +202,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

@@ -14,7 +14,6 @@ Feature: Close a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * def closeRollCallId = 33
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   # Testing if after setting up a valid lao, subscribing to it, sending a catchup
@@ -33,7 +32,7 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), closeRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithBroadcast()
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
@@ -53,7 +52,7 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), closeRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -72,7 +71,7 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), closeRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

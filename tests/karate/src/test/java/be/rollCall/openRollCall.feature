@@ -16,7 +16,6 @@ Feature: Roll Call Open
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * def openRollCallId = 32
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   # This scenario test a valid roll call open message. We first use the features
@@ -37,7 +36,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithBroadcast()
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
@@ -56,7 +55,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -75,7 +74,7 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -93,10 +92,10 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
-    When frontend.publish(JSON.stringify(validOpenRollCall), openRollCallId, laoChannel)
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     And match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

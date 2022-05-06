@@ -9,7 +9,6 @@ Feature: Create a pop LAO
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * def id = 1
     * string channel = "/root"
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2
@@ -25,7 +24,7 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), id, channel)
+    When frontend.publish(JSON.stringify(badLaoReq), channel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -44,7 +43,7 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), id, channel)
+    When frontend.publish(JSON.stringify(badLaoReq), channel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -61,7 +60,7 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), id, channel)
+    When frontend.publish(JSON.stringify(badLaoReq), channel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
@@ -78,7 +77,7 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(laoCreateRequest), id, channel)
+    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
