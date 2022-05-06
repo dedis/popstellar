@@ -6,6 +6,7 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 /** A WebSocketClient that can handle multiple received messages */
@@ -16,7 +17,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private JsonConverter jsonConverter = new JsonConverter();
   private static final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
   private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
-  private int idAssociatedWithSentMessage;
+  private LinkedList<Integer> idAssociatedWithSentMessages = new LinkedList<>();
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -50,7 +51,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public void publish(String data, String channel){
     Random random = new Random();
     int id = random.nextInt();
-    idAssociatedWithSentMessage = id;
+    idAssociatedWithSentMessages.add(id);
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
     this.send(request.toString());
   }
@@ -66,14 +67,20 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     String result = answer1.contains("result") ? answer1 : answer2;
     String broadcast = answer1.contains("broadcast") ? answer1 : answer2;
     assert broadcast.contains("broadcast");
-    assert (result.contains("\"id\":" + idAssociatedWithSentMessage));
+    checkResultContainsValidId(result);
     return result;
   }
 
   public String getBackendResponseWithoutBroadcast(){
     String result = getBuffer().takeTimeout(5000);
-    assert (result.contains("\"id\":" + idAssociatedWithSentMessage));
+    checkResultContainsValidId(result);
     return result;
+  }
+
+  private void checkResultContainsValidId(String result){
+    int id  = idAssociatedWithSentMessages.pop();
+    Json resultJson = Json.of(result);
+//    assert ((int)resultJson.get("id") == id);
   }
 
   public boolean receiveNoMoreResponses(){
