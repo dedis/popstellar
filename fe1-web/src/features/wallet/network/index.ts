@@ -1,5 +1,6 @@
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { handleTransactionPost } from './DigitalCashHandler';
 import { PostTransaction } from './messages/PostTransaction';
 
 /**
@@ -8,5 +9,10 @@ import { PostTransaction } from './messages/PostTransaction';
  * @param registry - The MessageRegistry where we want to add the mappings
  */
 export function configureNetwork(registry: MessageRegistry) {
-  registry.add(ObjectType.TRANSACTION, ActionType.POST, () => true, PostTransaction.fromJson);
+  registry.add(
+    ObjectType.TRANSACTION,
+    ActionType.POST,
+    handleTransactionPost,
+    PostTransaction.fromJson,
+  );
 }

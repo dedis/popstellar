@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle, TextInput } from 'react-native';
-import { Input } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
@@ -16,7 +15,6 @@ import STRINGS from 'resources/strings';
 import { RollCallTokensDropDown } from '../components';
 import {
   requestCoinbaseTransaction,
-  requestSendTransaction,
 } from '../network/DigitalCashMessageApi';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
