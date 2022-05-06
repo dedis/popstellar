@@ -10,6 +10,7 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Has
 import ch.epfl.pop.pubsub.graph.handlers.LaoHandler.{dbActor, duration}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.security.KeyPairGenerator
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -63,8 +64,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val laoId: Hash = rpcMessage.extractLaoId
         //generation of the key
-        val key: PublicKey = PublicKey(Base64Data(keyGen.generateKeyPair().getPublic.toString))
-        val electionKey: KeyElection = KeyElection(laoId, electionId, key)
+        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+        val electionKey: KeyElection = KeyElection(laoId, electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(electionKey).toString)
 
         val askLaoData = dbActor ? DbActor.ReadLaoData(laoChannel)
