@@ -230,6 +230,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = (Button) findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  }
+
   private void setupLaoFragment() {
     setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
