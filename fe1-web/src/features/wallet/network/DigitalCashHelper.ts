@@ -58,7 +58,7 @@ export const getTxsInToSign = (
       .filter((txOut) => txOut.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
       .map((txOut, index) => {
         return {
-          txOutHash: tr.transactionID,
+          txOutHash: tr.transactionId,
           txOutIndex: index,
         };
       }),
