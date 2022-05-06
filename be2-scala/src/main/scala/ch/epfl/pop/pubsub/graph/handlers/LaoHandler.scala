@@ -1,10 +1,13 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import ch.epfl.pop.config.RuntimeEnvironment.appConf
+import ch.epfl.pop.config.ServerConf
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, Signature}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -14,8 +17,11 @@ import scala.util.{Failure, Success}
 
 case object LaoHandler extends MessageHandler {
 
+  val config = ServerConf(appConf)
+
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    rpcMessage.getParamsMessage match {
+    val params: Option[Message] = rpcMessage.getParamsMessage
+    params match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
 
@@ -45,7 +51,12 @@ case object LaoHandler extends MessageHandler {
         } yield ()
 
         Await.ready(combined, duration).value.get match {
-          case Success(_) => Left(rpcMessage)
+          case Success(_) =>
+            //after creating the lao, we need to send a lao#greet message to the frontend
+            val greet: GreetLao = GreetLao(data.id, params.get.sender, f"ws://${config.interface}:${config.port}/${config.path}", List.empty)
+            val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
+            dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
+
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
