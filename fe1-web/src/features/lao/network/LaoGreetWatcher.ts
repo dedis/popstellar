@@ -16,7 +16,17 @@ import {
 import { addServer } from '../reducer/ServerReducer';
 import { GreetLao } from './messages/GreetLao';
 
-export const handleLaoGreet = (messageId: Hash, greetLaoMsg: GreetLao, publicKey: PublicKey) => {
+/**
+ * Stores information about a given backend server based on a lao#greet message and connects to its peers
+ * @param messageId The id of the greeting message
+ * @param greetLaoMsg The GreetLao data of the greeting message
+ * @param publicKey The public key of the message's sender, i.e. the public key of the backend
+ */
+export const storeBackendAndConnectToPeers = (
+  messageId: Hash,
+  greetLaoMsg: GreetLao,
+  publicKey: PublicKey,
+) => {
   dispatch(
     addServer(
       new Server({
@@ -42,7 +52,7 @@ export const handleLaoGreet = (messageId: Hash, greetLaoMsg: GreetLao, publicKey
     networkManager.connect(peerAddress.address);
   }
 
-  // mark the message as handled
+  // mark the lao#greet message as handled
   dispatch(
     handleGreetLaoMessage({
       messageId: messageId.valueOf(),
@@ -54,7 +64,7 @@ export const handleLaoGreet = (messageId: Hash, greetLaoMsg: GreetLao, publicKey
  * Watches the redux store for new message#witness messages for lao#greet messages since they only
  * become valid after they are witnessed by the corresponding frontend
  * @param store The redux store to watch
- * @param laoGreetSignatureHandler The function to call when a signature is added to a lao#greet message
+ * @param laoGreetSignatureHandler The function to call when the lao organizer's signature is added to a lao#greet message
  */
 export const makeLaoGreetStoreWatcher = (
   store: Store,
