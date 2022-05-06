@@ -24,16 +24,16 @@ public class ServerTest {
 //  Karate testCloseRollCall() {
 //    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
 //  }
+//
+//  @Karate.Test
+//  Karate testElectionSetup(){
+//    return Karate.run("classpath:be/election/electionSetup.feature");
+//  }
 
   @Karate.Test
-  Karate testElectionSetup(){
-    return Karate.run("classpath:be/election/electionSetup.feature");
+  Karate testCastVote(){
+    return Karate.run("classpath:be/election/castVote.feature");
   }
-
-//  @Karate.Test
-//  Karate testCastVote(){
-//    return Karate.run("classpath:be/election/castVote.feature");
-//  }
 //
 //  @Karate.Test
 //  Karate testElectionEnd(){

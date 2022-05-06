@@ -64,6 +64,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     String answer1 = getBuffer().takeTimeout(5000);
     String answer2 = getBuffer().takeTimeout(5000);
     String result = answer1.contains("result") ? answer1 : answer2;
+    String broadcast = answer1.contains("broadcast") ? answer1 : answer2;
+    assert broadcast.contains("broadcast");
     return result;
   }
 

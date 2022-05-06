@@ -84,7 +84,7 @@ Feature: Create a Roll Call
         }
       """
     * frontend.setNonAttendeeAsSender()
-    When frontend.publish(JSON.stringify(validCreateRollCall), rollCallCreateId, laoChannel)
+    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponseWithoutBroadcast()
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
