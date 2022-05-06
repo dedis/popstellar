@@ -68,6 +68,18 @@ Feature: Constants
           return "lM5Lntpk4Y4SpKjzV2ICYpe4YnMOvWz1eeREB_RVVRg="
         }
       """
+    * def createValidElectionSetupId =
+    """
+        function(){
+          return "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
+        }
+      """
+    * def createIsThisProjectFunQuestionId=
+    """
+        function(){
+          return "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg="
+        }
+      """
     * def organizerPk =
       """
         function(){
@@ -94,6 +106,9 @@ Feature: Constants
     * def getRollCallCloseValidId = call createValidRollCallCloseId
     * def getRollCallCloseValidUpdateId = call createValidRollCallCloseUpdateId
     * def getRollCallCloseInvalidUpdateId = call createInvalidRollCallCloseUpdateId
+
+    * def getValidElectionSetupId = call createValidElectionSetupId
+    * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
 
     * def getOrganizer = call organizerPk
     * def getAttendee = call attendeePk
