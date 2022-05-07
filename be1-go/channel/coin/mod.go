@@ -220,5 +220,10 @@ func (c *Channel) processTransactionPost(msg message.Message, msgData interface{
 		return xerrors.Errorf("failed to unmarshal transaction data: %v", err)
 	}
 
+	err = c.verifyMessageTransactionPost(transactionData)
+	if err != nil {
+		return xerrors.Errorf("invalid transaction#post message: %v", err)
+	}
+
 	return nil
 }
