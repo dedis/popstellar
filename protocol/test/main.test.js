@@ -190,6 +190,9 @@ test("message data: cash", () => {
     cash_transaction_nooutput = require("../examples/messageData/cash/post_transaction_nooutput.json")
     expect(cash_transaction_nooutput).not.toBeValid(messageDataSchema)
 
+    cash_transaction_wrongid = require("../examples/messageData/cash/post_transaction_wrong_transaction_id.json")
+    expect(cash_transaction_wrongid).not.toBeValid(messageDataSchema)
+
     
 })
 
