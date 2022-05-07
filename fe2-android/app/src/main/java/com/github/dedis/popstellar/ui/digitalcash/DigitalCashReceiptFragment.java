@@ -15,7 +15,9 @@ import com.github.dedis.popstellar.R;
  */
 public class DigitalCashReceiptFragment extends Fragment {
 
-  public DigitalCashReceiptFragment() {}
+  public DigitalCashReceiptFragment() {
+    // not implemented yet
+  }
 
   /**
    * Use this factory method to create a new instance of this fragment using the provided
