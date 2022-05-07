@@ -128,7 +128,7 @@ public class DigitalCashMain extends AppCompatActivity {
             mViewModel.openSend();
           } else if (id == R.id.receive_coin_m) {
             mViewModel.openReceive();
-          } else {
+          } else if (id == R.id.issue_coin) {
             mViewModel.openIssue();
           }
           return true;
@@ -136,29 +136,21 @@ public class DigitalCashMain extends AppCompatActivity {
   }
 
   public void setupFragment(int id) {
-    switch (id) {
-      case R.id.fragment_digital_cash_home:
-        setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
-        break;
-      case R.id.fragment_digital_cash_history:
-        setCurrentFragment(
-            R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
-        break;
-      case R.id.fragment_digital_cash_send:
-        setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
-        break;
-      case R.id.fragment_digital_cash_receive:
-        setCurrentFragment(
-            R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
-        break;
-      case R.id.fragment_digital_cash_issue:
-        setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
-        break;
-      case R.id.fragment_digital_cash_receipt:
-        setCurrentFragment(
-            R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
-        break;
-      default:
+    if (id == R.id.fragment_digital_cash_home) {
+      setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
+    } else if (id == R.id.fragment_digital_cash_history) {
+      setCurrentFragment(
+          R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
+    } else if (id == R.id.fragment_digital_cash_send) {
+      setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
+    } else if (id == R.id.fragment_digital_cash_receive) {
+      setCurrentFragment(
+          R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
+    } else if (id == R.id.fragment_digital_cash_issue) {
+      setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+    } else if (id == R.id.fragment_digital_cash_receipt) {
+      setCurrentFragment(
+          R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
     }
   }
 
