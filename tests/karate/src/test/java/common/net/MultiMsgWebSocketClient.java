@@ -6,7 +6,8 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 /** A WebSocketClient that can handle multiple received messages */
@@ -17,7 +18,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private JsonConverter jsonConverter = new JsonConverter();
   private static final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
   private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
-  private LinkedList<Integer> idAssociatedWithSentMessages = new LinkedList<>();
+  private ArrayList<Integer> idAssociatedWithSentMessages = new ArrayList<>();
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -76,9 +77,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   private void checkResultContainsValidId(String result){
-    int id  = idAssociatedWithSentMessages.pop();
     Json resultJson = Json.of(result);
-    assert ((int)resultJson.get("id") == id);
+    int idResult = resultJson.get("id");
+    assert idAssociatedWithSentMessages.contains(idResult);
+    idAssociatedWithSentMessages.remove((Integer)idResult);
   }
 
   public boolean receiveNoMoreResponses(){
