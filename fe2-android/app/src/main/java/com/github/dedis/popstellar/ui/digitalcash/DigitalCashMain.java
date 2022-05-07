@@ -119,23 +119,17 @@ public class DigitalCashMain extends AppCompatActivity {
     BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
-          switch (item.getItemId()) {
-            case R.id.home_coin:
-              mViewModel.openHome();
-              break;
-            case R.id.history_coin:
-              mViewModel.openHistory();
-              break;
-            case R.id.send_coin_m:
-              mViewModel.openSend();
-              break;
-            case R.id.receive_coin_m:
-              mViewModel.openReceive();
-              break;
-            case R.id.issue_coin:
-              mViewModel.openIssue();
-              break;
-            default:
+          int id = item.getItemId();
+          if (id == R.id.home_coin) {
+            mViewModel.openHome();
+          } else if (id == R.id.history_coin) {
+            mViewModel.openHistory();
+          } else if (id == R.id.send_coin_m) {
+            mViewModel.openSend();
+          } else if (id == R.id.receive_coin_m) {
+            mViewModel.openReceive();
+          } else {
+            mViewModel.openIssue();
           }
           return true;
         });
