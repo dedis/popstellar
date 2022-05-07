@@ -27,10 +27,6 @@ public class DigitalCashIssueFragment extends Fragment {
     return new DigitalCashIssueFragment();
   }
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
 
   @Override
   public View onCreateView(
