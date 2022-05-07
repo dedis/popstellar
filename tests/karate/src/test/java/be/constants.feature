@@ -104,6 +104,18 @@ Feature: Constants
           return "sa3fa23saPso4mas5493fn290sasGl8asm3qalDFGsn42="
         }
       """
+    * def createValidRegisteredVotes =
+      """
+        function(){
+          return "fgz7BlGQVRu_yk69ijz3eTnJEmRIMoode_-nI6abK70="
+        }
+      """
+    * def createInvalidRegisteredVotes =
+      """
+        function(){
+          return "nas8r4aF0wq9ad4isfp4nsfiMFPMPS9sdsF8lsd8sopfd0="
+        }
+      """
     * def organizerPk =
       """
         function(){
@@ -137,6 +149,8 @@ Feature: Constants
     * def getInvalidQuestionId = call createInvalidQuestionId
     * def getIsThisProjectFunVoteId = call createIsThisProjectFunVoteId
     * def getInvalidVoteId = call createInvalidVoteId
+    * def getValidRegisteredVotes = call createValidRegisteredVotes
+    * def getInvalidRegisteredVotes = call createInvalidRegisteredVotes
 
     * def getOrganizer = call organizerPk
     * def getAttendee = call attendeePk
@@ -148,3 +162,4 @@ Feature: Constants
     * def ACCESS_DENIED =           {error: {code: -5, description: '#string'}}
     * def INTERNAL_SERVER_ERROR =   {error: {code: -6, description: '#string'}}
     * def VALID_MESSAGE =           {result: 0}
+    * def ELECTION_RESULTS =        {"object": "election", "action": "result"}

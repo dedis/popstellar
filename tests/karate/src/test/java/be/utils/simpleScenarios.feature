@@ -133,4 +133,5 @@
       * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
       * eval frontend.send(castVote)
+      * def cast_vote_broadcast = frontend_buffer.takeTimeout(timeout)
       * def cast_vote = frontend_buffer.takeTimeout(timeout)

@@ -5,9 +5,9 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
+import io.opencensus.trace.Link;
 
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
@@ -17,7 +17,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private JsonConverter jsonConverter = new JsonConverter();
   private static final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
   private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
-  private LinkedList<Integer> idAssociatedWithSentMessages = new LinkedList<>();
+  private ArrayList<Integer> idAssociatedWithSentMessages = new ArrayList<>();
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -77,10 +77,34 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return result;
   }
 
+  public String getBackendResponseWithBroadcastAndElectionResults(){
+    HashSet<String> allAnswers = new HashSet<>();
+    String result = "";
+    ArrayList<String> broadcasts = new ArrayList<>();
+    for (int i = 0; i < 3; i++){
+      String answer = getBuffer().takeTimeout(5000);
+      if(answer.contains("result")){
+        result = answer;
+      }
+      if (answer.contains("broadcast")){
+        broadcasts.add(answer);
+      }
+    }
+    assert broadcasts.size() == 2;
+    Base64.Decoder decoder = Base64.getDecoder();
+    String base64Data1 = (((LinkedHashMap)((LinkedHashMap)Json.of(broadcasts.get(0)).get("params")).get("message")).get("data").toString());
+    String base64Data2 = (((LinkedHashMap)((LinkedHashMap)Json.of(broadcasts.get(1)).get("params")).get("message")).get("data").toString());
+    String broadcastData1 = new String(decoder.decode(base64Data1.getBytes()));
+    String broadcastData2 = new String(decoder.decode(base64Data2.getBytes()));
+    checkResultContainsValidId(result);
+    return broadcastData1.contains("result") ? broadcastData1 : broadcastData2;
+  }
+
   private void checkResultContainsValidId(String result){
-    int id  = idAssociatedWithSentMessages.pop();
     Json resultJson = Json.of(result);
-//    assert ((int)resultJson.get("id") == id);
+    int idResult = resultJson.get("id");
+    assert idAssociatedWithSentMessages.contains(idResult);
+    idAssociatedWithSentMessages.remove((Integer)idResult);
   }
 
   public boolean receiveNoMoreResponses(){
