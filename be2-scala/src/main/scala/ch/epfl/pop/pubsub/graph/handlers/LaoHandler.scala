@@ -17,7 +17,6 @@ import scala.util.{Failure, Success}
 
 case object LaoHandler extends MessageHandler {
 
-  val config = ServerConf(appConf)
 
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val params: Option[Message] = rpcMessage.getParamsMessage
@@ -29,6 +28,8 @@ case object LaoHandler extends MessageHandler {
         val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
+        val config = ServerConf(appConf)
+        val address: String = f"ws://${config.interface}:${config.port}/${config.path}"
 
         val combined = for {
           // check whether the lao already exists in db
@@ -47,13 +48,13 @@ case object LaoHandler extends MessageHandler {
           // write lao creation message
           _ <- dbActor ? DbActor.Write(laoChannel, message)
           // write lao data
-          _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message)
+          _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
         } yield ()
 
         Await.ready(combined, duration).value.get match {
           case Success(_) =>
             //after creating the lao, we need to send a lao#greet message to the frontend
-            val greet: GreetLao = GreetLao(data.id, params.get.sender, f"ws://${config.interface}:${config.port}/${config.path}", List.empty)
+            val greet: GreetLao = GreetLao(data.id, params.get.sender, address, List.empty)
             val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
             dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
 
@@ -70,33 +71,8 @@ case object LaoHandler extends MessageHandler {
   }
 
   def handleGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    rpcMessage.getParamsMessage match {
-      case Some(message) =>
-        val data: GreetLao = message.decodedData.get.asInstanceOf[GreetLao]
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        val combined = for {
-          _ <- {
-            (dbActor ? DbActor.ChannelExists(channel)).transformWith {
-              case Success(_) => Future { () }
-              case _ => Future { throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db") }
-            }
-          }
-          _ <- dbActor ? DbActor.WriteAndPropagate(channel, message)
-        } yield ()
-
-        Await.ready(combined, duration).value.get match {
-          case Success(_) => Left(rpcMessage)
-          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleGreetLao failed : ${ex.message}", rpcMessage.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleGreetLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-        }
-
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
-        rpcMessage.id
-      ))
-    }
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
