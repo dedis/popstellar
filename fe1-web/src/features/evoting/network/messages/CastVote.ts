@@ -152,13 +152,9 @@ export class CastVote implements MessageData {
     return (
       ballotArray
         // and add an id to all votes as well as the matching question id
-        .map<EncryptedVote>(({ index, selectionOptions }) => ({
-          // generate the vote id
-          id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
-          // find matching question id from the election
-          question: election.questions[index].id,
-          // convert the set to an array and sort votes in ascending order
-          vote: [...selectionOptions]
+        .map<EncryptedVote>(({ index, selectionOptions }) => {
+          // convert the set to an array, sort votes in ascending order and encrypt the indices
+          const encryptedOptionIndices = [...selectionOptions]
             .sort((a, b) => a - b)
             // map each number to 2 bytes using big endian
             .map((option) => {
@@ -168,8 +164,17 @@ export class CastVote implements MessageData {
               buffer.writeIntBE(option, 0, 2);
 
               return electionKey.encrypt(buffer);
-            }),
-        }))
+            });
+
+          return {
+            // generate the vote id based on the **encrypted** option indices
+            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndices).valueOf(),
+            // find matching question id from the election
+            question: election.questions[index].id,
+            // use the encrypted votes
+            vote: encryptedOptionIndices,
+          };
+        })
     );
   }
 
@@ -179,7 +184,7 @@ export class CastVote implements MessageData {
    * HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter
    * @param election The election for which this vote id is generated
    * @param questionIndex The index of the question in the given election, this vote is cast for
-   * @param selectionOptions The selected answers for the given question in the given eeleciton
+   * @param selectionOptions The selected option indices
    */
   public static computeVoteId(
     election: Election,
@@ -196,6 +201,40 @@ export class CastVote implements MessageData {
       [...selectionOptions]
         // sort in ascending order
         .sort((a, b) => a - b)
+        // convert to strings
+        .map((idx) => idx.toString())
+        // concatenate and add delimiter in between strings
+        .join(','),
+    );
+  }
+
+  /**
+   * Generates a vote id for a secret ballot election as described in
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
+   * HashLen('Vote', election_id, question_id, (enc(vote_index(es))|enc(write_in))), concatenate encrypted vote indices - must use delimiter ','
+   * @param election The election for which this vote id is generated
+   * @param questionIndex The index of the question in the given election, this vote is cast for
+   * @param encryptedOptionIndices The encrypted selected option indices
+   */
+  public static computeSecretVoteId(
+    election: Election,
+    questionIndex: number,
+    encryptedOptionIndices: Set<string> | string[],
+  ): Hash {
+    return Hash.fromStringArray(
+      EventTags.VOTE,
+      election.id.toString(),
+      election.questions[questionIndex].id,
+      // Important: A standardized order is required, otherwise the hash cannot be verified
+      // Even more important: A standardized delimiter has to be used to disambiguate [1,0] from [10]
+      [...encryptedOptionIndices]
+        // sort in alphabetical order
+        .sort((a, b) => {
+          if (a === b) {
+            return 0;
+          }
+          return a < b ? -1 : 1;
+        })
         // convert to strings
         .map((idx) => idx.toString())
         // concatenate and add delimiter in between strings

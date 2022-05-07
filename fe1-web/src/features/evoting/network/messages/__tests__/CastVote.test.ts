@@ -218,18 +218,33 @@ describe('CastVote', () => {
     );
 
     expect(encryptedVotes.length).toBe(2);
-    expect(encryptedVotes[0]).toHaveProperty(
+
+    // we should **not** hash the unencrypted vote id, this allows recovering the option index
+    expect(encryptedVotes[0]).not.toHaveProperty(
       'id',
       CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOptions).valueOf(),
     );
+    // but rather the encrypted one!
+    expect(encryptedVotes[0]).toHaveProperty(
+      'id',
+      CastVote.computeSecretVoteId(mockElectionOpened, 0, encryptedVotes[0].vote).valueOf(),
+    );
+
     expect(encryptedVotes[0]).toHaveProperty('question', mockElectionOpened.questions[0].id);
     expect(encryptedVotes[0].vote.length).toBe(1);
     expect(keyPair.privateKey.decrypt(encryptedVotes[0].vote[0]).readIntBE(0, 2)).toEqual(0);
 
-    expect(encryptedVotes[1]).toHaveProperty(
+    // we should **not** hash the unencrypted vote id, this allows recovering the option index
+    expect(encryptedVotes[1]).not.toHaveProperty(
       'id',
       CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOptions).valueOf(),
     );
+    // but rather the encrypted one!
+    expect(encryptedVotes[1]).toHaveProperty(
+      'id',
+      CastVote.computeSecretVoteId(mockElectionOpened, 1, encryptedVotes[1].vote).valueOf(),
+    );
+
     expect(encryptedVotes[1]).toHaveProperty('question', mockElectionOpened.questions[1].id);
     expect(encryptedVotes[1].vote.length).toBe(1);
     expect(keyPair.privateKey.decrypt(encryptedVotes[1].vote[0]).readIntBE(0, 2)).toEqual(1);
