@@ -5,6 +5,7 @@ import (
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
+	"strconv"
 
 	"github.com/rs/zerolog/log"
 	"golang.org/x/xerrors"
@@ -120,6 +121,21 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	// verify created at is positive
 	if castVote.CreatedAt < 0 {
 		return xerrors.Errorf("cast vote created at is %d, should be minimum 0", castVote.CreatedAt)
+	}
+
+	// verify vote_ids are computed correctly
+	for i := 0; i < len(castVote.Votes); i++ {
+		vote := castVote.Votes[i]
+		voteIndices := make([]string, 0)
+		for j := 0; j < len(vote.Vote); j++ {
+			voteIndices = append(voteIndices, strconv.Itoa(vote.Vote[j]))
+		}
+		//TODO: put write in instead of false even if it is false all the time for now
+		voteIndices = append(voteIndices, "false")
+		validVoteID := messagedata.Hash("Vote", castVote.Election, vote.Question, strings.Join(voteIndices,","))
+		if vote.ID != validVoteID {
+			return xerrors.Errorf("cast vote vote id %d, should be %d", vote.ID, validVoteID)
+		}
 	}
 
 	return nil
