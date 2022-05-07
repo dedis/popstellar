@@ -111,15 +111,12 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val channel: Channel = rpcMessage.getParamsChannel
 
-        val electionId: Hash = channel.extractChildChannel
-
-        val setupMessage: SetupElection = getSetupMessage(channel, dbActorRef)
-        val questions = setupMessage.questions
+        val questions = getSetupMessage(channel, dbActorRef).questions
         val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        } else if (electionId != data.election) {
+        } else if (channel.extractChildChannel != data.election) {
           Right(validationError("unexpected election id"))
         } else if ((channel.decodeChannelLaoId getOrElse HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
