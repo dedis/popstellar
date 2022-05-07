@@ -1505,6 +1505,8 @@ For example if the user select the ballot options with indices 5 and 2, then the
 💡 See some examples
 </summary>
 
+A vote in an open ballot election
+
 ```json5
 // ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote.json
 
@@ -1519,6 +1521,31 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
             "vote": [0]
+        }
+    ]
+}
+
+```
+
+A vote in a secret ballot election
+
+```json5
+// ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote_encrypted.json
+
+{
+    "object": "election",
+    "action": "cast_vote",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633098941,
+    "votes": [
+        {
+            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "vote": [
+                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
+                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
+            ]
         }
     ]
 }
@@ -1562,28 +1589,57 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "type": "array",
             "items": {
                 "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "contentEncoding": "base64",
-                        "$comment": "Hash : HashLen('Vote', election_id, question_id, vote_index(es)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                "oneOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in))), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
+                                "type": "array",
+                                "items": {
+                                    "type": "integer",
+                                    "$comment": "index of the option to vote for"
+                                },
+                                "minItems": 1,
+                                "uniqueItems": true
+                            }
+                        }
                     },
-                    "question": {
-                        "type": "string",
-                        "contentEncoding": "base64",
-                        "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
-                    },
-                    "vote": {
-                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "$comment": "vote index"
-                        },
-                        "minItems": 1,
-                        "uniqueItems": true
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))), concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "[Array[String]] index(es) corresponding to the ballot_options",
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "contentEncoding": "base64",
+                                    "$comment": "encrypted index of the option to vote for"
+                                },
+                                "minItems": 1,
+                                "uniqueItems": true
+                            }
+                        }
                     }
-                },
+                ],
                 "required": ["id", "question", "vote"]
             },
             "minItems": 1,
