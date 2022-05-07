@@ -23,15 +23,10 @@ public class DigitalCashSendFragment extends Fragment {
    *
    * @return A new instance of fragment DigitalCashSendFragment.
    */
-  // TODO: Rename and change types and number of parameters
   public static DigitalCashSendFragment newInstance() {
     return new DigitalCashSendFragment();
   }
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
 
   @Override
   public View onCreateView(
