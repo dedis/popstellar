@@ -37,7 +37,7 @@ Feature: Roll Call Open
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
   # First creates a valid lao followed by subscribe and catchup but we don't send a roll call
@@ -56,7 +56,7 @@ Feature: Roll Call Open
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -75,7 +75,7 @@ Feature: Roll Call Open
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -93,10 +93,10 @@ Feature: Roll Call Open
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     And match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 

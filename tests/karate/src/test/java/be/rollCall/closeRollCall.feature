@@ -33,7 +33,7 @@ Feature: Close a Roll Call
         }
       """
     When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -53,7 +53,7 @@ Feature: Close a Roll Call
         }
       """
     When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   # After the usual setup, create a roll cal but never open it. Then trying to send a valid
@@ -72,7 +72,7 @@ Feature: Close a Roll Call
         }
       """
     When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
