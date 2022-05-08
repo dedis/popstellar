@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -26,18 +28,23 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import io.reactivex.Completable;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TransactionHandlerTest {
-  public static final String TAG = ChirpHandlerTest.class.getSimpleName();
+  public static final String TAG = TransactionHandlerTest.class.getSimpleName();
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -108,5 +115,18 @@ public class TransactionHandlerTest {
 
     lao = laoRepository.getLaoById().get(LAO_ID).getLao();
     cashChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
+  }
+
+  @Test
+  public void testHandlePostTransaction() throws DataHandlingException {
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, POST_TRANSACTION, GSON);
+    messageHandler.handleMessage(laoRepository, messageSender, cashChannel, message);
+    Optional<Transaction> transactionOpt = lao.getTransaction();
+    assertTrue(transactionOpt.isPresent());
+    Transaction transaction = transactionOpt.get();
+    assertEquals(VERSION, transaction.getVersion());
+    assertEquals(transaction.getTimestamp(), TIMESTAMP);
+    assertEquals(transaction.getTxIns().get(0).getTxOutHash(), Tx_OUT_HASH);
+    assertEquals(transaction.getTxOuts().get(0).getScript().getType(), TYPE);
   }
 }

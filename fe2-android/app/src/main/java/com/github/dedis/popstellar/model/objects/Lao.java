@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -41,6 +42,7 @@ public final class Lao {
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
+  private final List<Transaction> transactionHistory;
 
   public Lao(String id) {
     if (id == null) {
@@ -60,6 +62,7 @@ public final class Lao {
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
+    this.transactionHistory = new ArrayList<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -147,6 +150,19 @@ public final class Lao {
 
     PublicKey user = chirp.getSender();
     chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
+  }
+
+  // Dummy
+  public void updateTransaction(Transaction transaction) {
+    transactionHistory.add(transaction);
+  }
+
+  public Optional<Transaction> getTransaction() {
+    int el = transactionHistory.size();
+    if (el == 0) {
+      el = 1;
+    }
+    return Optional.ofNullable(transactionHistory.get(el - 1));
   }
 
   public Optional<RollCall> getRollCall(String id) {
