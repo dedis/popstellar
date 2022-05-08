@@ -1,4 +1,3 @@
-import { AnyAction, Reducer } from 'redux';
 import testKeyPair from 'test_data/keypair.json';
 
 import { KeyPairRegistry } from 'core/keypair';
