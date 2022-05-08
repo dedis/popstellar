@@ -32,10 +32,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: Spacing.xs,
   } as ViewStyle,
-  qrScanner: {
-    width: '30%',
-  },
 });
+
+const qrScannerStyles: ViewStyle = {
+  width: '30%',
+};
 
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
@@ -72,16 +73,25 @@ const RollCallOpened = () => {
   );
 
   const addAttendeePopToken = useCallback(
-    (popToken: string) =>
-      updateAttendeePopTokens(new Set<string>([...attendeePopTokens, popToken])),
+    (popToken: string) => {
+      // if the token is already part of attendeePopTokens, do not trigger a state update
+      if (attendeePopTokens.has(popToken)) {
+        return false;
+      }
+
+      updateAttendeePopTokens(
+        // use new Set() to trigger a state change. .add() would not still be the same object
+        (prevAttendeePopTokens) => new Set<string>([...prevAttendeePopTokens, popToken]),
+      );
+      return true;
+    },
     [updateAttendeePopTokens, attendeePopTokens],
   );
 
   const addAttendeePopTokenAndShowToast = (popToken: string, toastMessage: string) => {
     if (tokenMatcher.test(popToken)) {
       // only show a toast if an actual *new* token is added
-      if (!attendeePopTokens.has(popToken)) {
-        addAttendeePopToken(popToken);
+      if (addAttendeePopToken(popToken)) {
         toast.show(toastMessage, {
           type: 'success',
           placement: 'top',
@@ -98,12 +108,12 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = async () => {
-    const screenAttendeesList = Array.from(attendeePopTokens).map(
-      (key: string) => new PublicKey(key),
-    );
-    const attendeesList = rollCall.attendees
-      ? rollCall.attendees.concat(screenAttendeesList)
-      : screenAttendeesList;
+    // get the public key as strings from the existing rollcall
+    const previousAttendees = (rollCall.attendees || []).map((key) => key.valueOf());
+    // add the create a set of all attendees (takes care of deduplication)
+    const allAttendees = new Set([...previousAttendees, ...attendeePopTokens]);
+    // create PublicKey instances from the set of strings
+    const attendeesList = [...allAttendees].map((key: string) => new PublicKey(key));
 
     if (!rollCall.idAlias) {
       throw new Error('Trying to close a roll call that has no idAlias defined');
@@ -128,11 +138,9 @@ const RollCallOpened = () => {
     }
 
     // Add the token of the organizer as soon as we open the roll call
-    if (!rollCall.attendees) {
-      Wallet.generateToken(lao.id, rollCall.id)
-        .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))
-        .catch(handleError);
-    }
+    Wallet.generateToken(lao.id, rollCall.id)
+      .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))
+      .catch(handleError);
   }, [lao, rollCall, addAttendeePopToken, handleError]);
 
   return (
@@ -147,7 +155,7 @@ const RollCallOpened = () => {
             }
           }}
           onError={handleError}
-          style={[styles.qrScanner]}
+          style={qrScannerStyles}
         />
         <Badge value={attendeePopTokens.size} status="success" />
         <WideButtonView title={STRINGS.roll_call_scan_close} onPress={() => onCloseRollCall()} />
