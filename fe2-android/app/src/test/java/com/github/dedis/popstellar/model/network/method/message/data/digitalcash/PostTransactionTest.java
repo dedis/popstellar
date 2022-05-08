@@ -58,6 +58,4 @@ public class PostTransactionTest {
     assertEquals(POST_TRANSACTION.getTransaction(), TRANSACTION);
   }
 
-  @Test
-  public void getTransactionIdTest() {}
 }
