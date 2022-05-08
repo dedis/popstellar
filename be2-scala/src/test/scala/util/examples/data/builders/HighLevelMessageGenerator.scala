@@ -107,6 +107,12 @@ object HighLevelMessageGenerator {
       assume(payload.trim.length != 0 && methodType != null)
 
       (objType, actionType) match {
+        //Lao
+        case (ObjectType.LAO, ActionType.GREET) =>
+          messageData = CreateRollCall.buildFromJson(payload)
+          params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
         //Roll Calls
         case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
           messageData = CreateRollCall.buildFromJson(payload)
