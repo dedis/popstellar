@@ -45,7 +45,7 @@ Feature: Setup an Election
         }
       """
     When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponseWithBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -78,7 +78,7 @@ Feature: Setup an Election
         }
       """
     When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   # Testing if after a successful roll call, sending an election setup message
@@ -109,7 +109,7 @@ Feature: Setup an Election
         }
       """
     When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 #  # Testing if after a successful roll call, sending an election setup message
@@ -140,7 +140,7 @@ Feature: Setup an Election
         }
       """
     When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 #  # Testing if after a successful roll call, sending an election setup message
@@ -171,6 +171,6 @@ Feature: Setup an Election
         }
       """
     When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

@@ -34,7 +34,7 @@ Feature: Terminate an election
         }
       """
     When frontend.publish(JSON.stringify(validElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponseWithBroadcastAndElectionResults()
+    And json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))
     Then match answer contains ELECTION_RESULTS
     And match frontend.receiveNoMoreResponses() == true
    # After having a successful election setup and vote casts, sending an election end
@@ -53,7 +53,7 @@ Feature: Terminate an election
         }
       """
     When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   # After having a successful election setup and vote casts, sending an election end
@@ -72,7 +72,7 @@ Feature: Terminate an election
         }
       """
     When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   # After having a successful election setup and vote casts, sending an election end
@@ -91,6 +91,6 @@ Feature: Terminate an election
         }
       """
     When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
