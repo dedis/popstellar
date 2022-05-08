@@ -1,45 +1,32 @@
-import { Hash, PopToken } from 'core/objects';
-import { getStore } from 'core/redux';
-import { LaoEventType } from 'features/events/objects/LaoEvent';
-import { makeEventByTypeSelector } from 'features/events/reducer';
+import { Lao } from 'features/lao/objects';
 import { RollCall } from 'features/rollCall/objects';
 
+import { RollCallToken } from './RollCallToken';
 import { generateToken } from './Token';
 
 /**
  * Recovers all PoP tokens associated with this wallet.
- *
- * @remarks
- * This is implemented by checking through all known Roll Calls of all known LAOs,
- * generating tokens for them and checking if the token is a verified attendee.
+ * @return Promise<RollCallToken[]>
  */
-export async function recoverWalletPoPTokens(): Promise<Record<string, Record<string, PopToken>>> {
-  const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-  // we're outside a component, we can't useSelector
-  const rollCalls = rollCallSelector(getStore().getState());
-
-  const tokens: Record<string, Record<string, PopToken>> = {};
-
-  let ops: Promise<any>[] = [];
-  for (const [laoId, laoRollCalls] of Object.entries(rollCalls)) {
-    tokens[laoId] = {};
-
-    // for each roll call
-    const newOps = Object.values(laoRollCalls).map(
-      // generate a token
-      (rc) =>
-        generateToken(new Hash(laoId), rc.id).then((token) => {
-          // if it's present in the roll call, add it
-          if (rc.containsToken(token)) {
-            tokens[laoId][rc.id.valueOf()] = token;
-          }
-        }),
-    );
-
-    ops = ops.concat(newOps);
-  }
-
-  await Promise.all(ops);
-
-  return tokens;
+export async function recoverWalletRollCallTokens(
+  rollCalls: Record<string, Record<string, RollCall>>,
+  currentLao: Lao,
+): Promise<RollCallToken[]> {
+  // For all the roll calls of the current lao
+  const tokens = Object.values(rollCalls[currentLao.id.valueOf()]).map((rc) => {
+    // Generate the token corresponding to this roll call
+    return generateToken(currentLao.id, rc.id).then((popToken) => {
+      // If the token participated in the roll call, create a RollCallToken object
+      if (rc.containsToken(popToken)) {
+        return new RollCallToken({
+          token: popToken,
+          laoId: currentLao.id,
+          rollCallId: rc.id,
+          rollCallName: rc.name,
+        });
+      }
+      return undefined;
+    });
+  });
+  return (await Promise.all(tokens)).filter((rct) => rct !== undefined) as RollCallToken[];
 }

@@ -12,7 +12,7 @@ import { black } from '../styles/colors';
  */
 
 const TextBlock = (props: IPropTypes) => {
-  const { text, bold, visibility, color } = props;
+  const { text, bold, visibility, color, size } = props;
 
   if (!visibility) {
     return null;
@@ -23,6 +23,7 @@ const TextBlock = (props: IPropTypes) => {
     text: {
       ...fontStyle,
       color: color,
+      fontSize: size,
     } as TextStyle,
   });
 
@@ -34,6 +35,7 @@ const propTypes = {
   bold: PropTypes.bool,
   visibility: PropTypes.bool,
   color: PropTypes.string,
+  size: PropTypes.number,
 };
 TextBlock.propTypes = propTypes;
 
@@ -41,6 +43,7 @@ TextBlock.defaultProps = {
   bold: false,
   visibility: true,
   color: black,
+  size: 25,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

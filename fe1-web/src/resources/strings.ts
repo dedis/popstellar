@@ -52,11 +52,13 @@ namespace STRINGS {
   export const organizer_navigation_creation_election = 'Create election';
 
   /* --- Wallet Navigation Strings --- */
-  export const navigation_home_tab_wallet = 'Wallet Home';
-  export const navigation_insert_seed_tab_wallet = 'Wallet Setup';
-  export const navigation_show_seed_wallet = 'New Wallet';
-  export const navigation_synced_wallet = 'My Wallet';
+  export const navigation_wallet_home_tab = 'Wallet Home';
+  export const navigation_wallet_setup_tab = 'Wallet Setup';
+  export const navigation_wallet_insert_seed = 'Wallet Recovery';
+  export const navigation_wallet_show_seed = 'New Wallet';
+  export const navigation_wallet_synced = 'My Wallet';
   export const navigation_wallet_error = 'Error';
+  export const navigation_wallet_create_seed = 'Wallet Seed Creation';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
@@ -219,7 +221,9 @@ namespace STRINGS {
   export const wallet_public_key_id = 'Public Encryption Key';
   export const wallet_private_key = 'private';
   export const wallet_public_key = 'public';
-  export const welcome_to_wallet_display = 'Welcome to your wallet !';
+  export const wallet_welcome = 'Welcome to your Digital Wallet';
+  export const wallet_balance = 'Your balance = ';
+  export const wallet_your_pk = 'Your public key = ';
   export const info_to_set_wallet =
     'You may import your seed if you own one or create a new wallet';
   export const caution_information_on_seed =
@@ -235,7 +239,10 @@ namespace STRINGS {
     'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol';
   export const wallet_synced_info = 'Your digital wallet is synced !';
   export const setup_wallet = 'SETUP WALLET';
+  export const save_seed_and_connect = 'SAVE SEED AND CONNECT';
   export const back_to_wallet_home = 'BACK TO WALLET HOME';
+  export const back_to_wallet_setup = 'BACK TO WALLET SETUP';
+  export const connect_with_this_seed = 'CONNECT WITH THIS SEED';
   export const logout_from_wallet = 'LOGOUT';
   export const show_tokens_title = 'SHOW POP TOKENS';
   export const show_public_keys = 'SHOW PUBLIC KEYS';
@@ -245,7 +252,7 @@ namespace STRINGS {
   export const your_tokens_title = 'Your PoP Tokens';
   export const wallet_error = 'A synchronization error with your wallet occurred';
   export const no_tokens_in_wallet =
-    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shows here';
+    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
   export const lao_id = 'LAO ID';
   export const lao_name = 'LAO name';
   export const roll_call_name = 'Roll Call name';
