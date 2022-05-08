@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.election.{OpenElection, Set
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.cash._
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
@@ -107,12 +108,6 @@ object HighLevelMessageGenerator {
       assume(payload.trim.length != 0 && methodType != null)
 
       (objType, actionType) match {
-        //Lao
-        case (ObjectType.LAO, ActionType.GREET) =>
-          messageData = CreateRollCall.buildFromJson(payload)
-          params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
-
         //Roll Calls
         case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
           messageData = CreateRollCall.buildFromJson(payload)
