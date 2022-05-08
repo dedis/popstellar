@@ -73,14 +73,3 @@ export const mockJsonRequest: Partial<JsonRpcRequest> = {
 };
 
 export const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };
-
-export function wrapWithClearMockStorageReducer(reducers: Reducer): Reducer {
-  return (state: any, action: AnyAction) => {
-    let newState = state;
-
-    if (action.type === 'CLEAR_STORAGE') {
-      newState = undefined;
-    }
-    return reducers(newState, action);
-  };
-}

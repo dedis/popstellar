@@ -327,9 +327,9 @@ exports[`SingleNotificationScreen renders correctly 1`] = `
                         <View>
                           <Text>
                             <Text>
-                              No notification type component has been provided to render the following notification:
+                              Unkown notification type &apos
+                              &apos. Please report this as a bug.
                             </Text>
-                            <Text />
                           </Text>
                         </View>
                       </RCTScrollView>

@@ -50,9 +50,8 @@ const SingleNotificationScreen = () => {
       ) : (
         <Text>
           <Text>
-            No notification type component has been provided to render the following notification:
+            Unkown notification type &apos{notification?.type}&apos. Please report this as a bug.
           </Text>
-          <Text>{JSON.stringify(notification)}</Text>
         </Text>
       )}
     </ScreenWrapper>

@@ -167,7 +167,7 @@ export const getNotificationState = (state: any): NotificationReducerState =>
   state[NOTIFICATION_REDUCER_PATH];
 
 /**
- * Creates a selector that returns the number of notifications for a specific lao
+ * Creates a selector that returns the number of unread notifications for a specific lao
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
@@ -186,7 +186,7 @@ export const makeUnreadNotificationCountSelector = (laoId: string) =>
   );
 
 /**
- * Creates a selector that returns all notifications for a specific lao ordererd with the newest first
+ * Creates a selector that returns all unread notifications for a specific lao ordererd with the newest first
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
@@ -215,7 +215,7 @@ export const makeUnreadNotificationsSelector = (laoId: string) =>
   );
 
 /**
- * Creates a selector that returns all notifications for a specific lao ordererd with the newest first
+ * Creates a selector that returns all read notifications for a specific lao ordererd with the newest first
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
