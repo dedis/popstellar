@@ -58,4 +58,9 @@ public class PostTransactionTest {
     assertEquals(POST_TRANSACTION.getTransaction(), TRANSACTION);
   }
 
+  @Test
+  public void getTransactionIdTest() {
+    String expected = "dBGU54vni3deHEebvJC2LcZbm0chV1GrJDGfMlJSLRc=";
+    assertEquals(expected, POST_TRANSACTION.getTransaction_id());
+  }
 }
