@@ -39,6 +39,19 @@ public class TxIn {
   }
 
   @Override
+  public String toString() {
+    return "TxIn{"
+        + "txOutHash='"
+        + txOutHash
+        + '\''
+        + ", txOutIndex="
+        + txOutIndex
+        + ", script="
+        + script
+        + '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
