@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 
 import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
+import PROPS_TYPE from 'resources/Props';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
@@ -75,14 +76,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 };
 
 const propTypes = {
-  notification: PropTypes.shape({
-    // WitnessFeature.MessageToWitnessNotification
-    id: PropTypes.number.isRequired,
-    timestamp: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    messageId: PropTypes.string.isRequired,
-  }).isRequired,
+  notification: PROPS_TYPE.notification.isRequired,
   navigateToNotificationScreen: PropTypes.func.isRequired,
 };
 WitnessNotification.propTypes = propTypes;
