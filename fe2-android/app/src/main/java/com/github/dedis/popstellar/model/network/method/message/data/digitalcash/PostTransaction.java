@@ -51,4 +51,8 @@ public class PostTransaction extends Data {
   public Transaction getTransaction() {
     return transaction;
   }
+
+  public String getTransaction_id() {
+    return transaction_id;
+  }
 }
