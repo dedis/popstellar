@@ -14,6 +14,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.POST;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROMISE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROPOSE;
@@ -30,6 +31,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MESSAGE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.TRANSACTION;
 
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
@@ -40,6 +42,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransaction;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
@@ -133,6 +136,8 @@ public abstract class DataRegistryModule {
         .add(CHIRP, DELETE, DeleteChirp.class, ChirpHandler::handleDeleteChirp)
         .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
 
+    // Digital Cash
+    builder.add(TRANSACTION, POST, PostTransaction.class, null);
     return builder.build();
   }
 }

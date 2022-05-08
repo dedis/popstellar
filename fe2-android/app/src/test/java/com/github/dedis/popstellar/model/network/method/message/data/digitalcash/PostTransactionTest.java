@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
@@ -62,5 +63,10 @@ public class PostTransactionTest {
   public void getTransactionIdTest() {
     String expected = "dBGU54vni3deHEebvJC2LcZbm0chV1GrJDGfMlJSLRc=";
     assertEquals(expected, POST_TRANSACTION.getTransaction_id());
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(POST_TRANSACTION);
   }
 }
