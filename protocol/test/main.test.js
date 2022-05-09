@@ -146,6 +146,7 @@ test("message data: meeting", () => {
 });
 
 test("message data: election", () => {
+
     election_open = require("../examples/messageData/election_open/election_open.json");
     expect(election_open).toBeValid(messageDataSchema);
 
