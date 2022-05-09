@@ -55,6 +55,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
+    System.out.println("-----------------****************************------------------------");
+    System.out.println(request.toString());
+    System.out.println("-----------------****************************------------------------");
     this.send(request.toString());
   }
 
@@ -93,5 +96,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public boolean receiveNoMoreResponses(){
     String result = getBuffer().takeTimeout(5000);
     return result == null;
+  }
+
+  public void setWrongSignature(){
+    jsonConverter.setSignature(nonAttendeePk);
   }
 }

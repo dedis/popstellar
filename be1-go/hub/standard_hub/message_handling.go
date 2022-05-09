@@ -1,6 +1,7 @@
 package standard_hub
 
 import (
+	"crypto/ed25519"
 	"encoding/base64"
 	"encoding/json"
 	jsonrpc "popstellar/message"
@@ -280,6 +281,25 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	signature := publish.Params.Message.Signature
 	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
+	dataBytes, ok := base64.StdEncoding.DecodeString(data)
+	if ok != nil {
+		return publish.ID, xerrors.Errorf("Data is not base 64 encoded")
+	}
+	publicKeySender, ok :=  base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	if ok != nil {
+		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
+		return publish.ID, xerrors.Errorf("Public key is not base 64 encoded " + ok.Error())
+	}
+	signatureBytes, ok :=  base64.URLEncoding.DecodeString(signature)
+	if ok != nil {
+		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
+	}
+	if ed25519.Verify(publicKeySender, dataBytes, signatureBytes){
+		h.log.Info().Msg("SINGATUUUUUUUUUUUUUUUUUUUURE SUCCESS")
+	}else{
+		h.log.Info().Msg("SINGATUUUUUUUUUUUUUUUUUUUURE NOOOOOOT GOOOOOOOOD")
+		return publish.ID, xerrors.Errorf("Signature was not computed correctly", signature)
+	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
