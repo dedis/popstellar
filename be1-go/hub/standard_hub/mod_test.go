@@ -289,7 +289,6 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: Signature was not computed correctly"))
 }
 
-
 func Test_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
