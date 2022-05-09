@@ -1,10 +1,10 @@
 {
     "object": "election",
     "action": "setup",
+    "version": "open-ballot",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
-    "version": "1.0.0",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
