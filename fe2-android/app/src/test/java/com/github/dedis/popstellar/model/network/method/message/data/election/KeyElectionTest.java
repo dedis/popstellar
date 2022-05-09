@@ -3,22 +3,27 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.Election;
 import org.junit.Test;
 
-public class ElectionKeyTest {
+public class KeyElectionTest {
 
   public static String ELEC_ID1 = "1";
   public static String ELEC_ID2 = "2";
   public static String KEY1 = "KEY_1";
   public static String KEY2 = "KEY_2";
-  public static ElectionKey ELEC_KEY1 = new ElectionKey(ELEC_ID1,KEY1);
+  public static KeyElection ELEC_KEY1 = new KeyElection(ELEC_ID1, KEY1);
 
   @Test
   public void getElectionIdTest() {
-    assertEquals(ELEC_ID1, ELEC_KEY1.getElectionKey());
+    assertEquals(ELEC_ID1, ELEC_KEY1.getElectionId());
+  }
+
+  @Test
+  public void getElectionKetTest(){
+    assertEquals(KEY1, ELEC_KEY1.getElectionKey());
   }
 
   @Test
@@ -33,10 +38,10 @@ public class ElectionKeyTest {
 
   @Test
   public void equalsTest() {
-    ElectionKey ELEC_KEY2 = new ElectionKey(ELEC_ID2, KEY2);
+    KeyElection ELEC_KEY2 = new KeyElection(ELEC_ID2, KEY2);
     assertNotEquals(ELEC_KEY1,ELEC_KEY2);
 
-    ElectionKey testElect1 = new ElectionKey(ELEC_ID1, KEY1);
+    KeyElection testElect1 = new KeyElection(ELEC_ID1, KEY1);
     assertEquals(testElect1,ELEC_KEY1);
     assertEquals(ELEC_KEY1, ELEC_KEY1);
     assertNotEquals(ELEC_KEY1, null);
@@ -46,9 +51,13 @@ public class ElectionKeyTest {
   @Test
   public void testToString() {
     String testFormat =
-        "ElectionKey{election='1', election_key='KEY_1'}";
+        "KeyElection{election='1', election_key='KEY_1'}";
     assertEquals(testFormat, ELEC_KEY1.toString());
   }
 
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(ELEC_KEY1);
+  }
 
 }

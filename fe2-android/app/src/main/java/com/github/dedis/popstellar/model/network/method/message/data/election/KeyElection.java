@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * "Match an ElectionKey query. This message is sent by the server"
  */
-public class ElectionKey extends Data {
+public class KeyElection extends Data {
 
   @SerializedName("election")
   private String electionId;
@@ -18,7 +18,7 @@ public class ElectionKey extends Data {
   @SerializedName("election_key")
   private String electionKey;
 
-  public ElectionKey(@NonNull String electionId, @NonNull String electionKey){
+  public KeyElection(@NonNull String electionId, @NonNull String electionKey){
     this.electionId=electionId;
     this.electionKey=electionKey;
   }
@@ -51,7 +51,7 @@ public class ElectionKey extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ElectionKey that = (ElectionKey) o;
+    KeyElection that = (KeyElection) o;
     return electionKey.equals(that.getElectionKey()) && electionId.equals(that.getElectionId());
   }
 
@@ -64,7 +64,7 @@ public class ElectionKey extends Data {
   @Override
   public String toString(){
     return String.format(
-        "ElectionKey{election='%s', election_key='%s'}", electionId, electionKey);
+        "KeyElection{election='%s', election_key='%s'}", electionId, electionKey);
   }
 
 }

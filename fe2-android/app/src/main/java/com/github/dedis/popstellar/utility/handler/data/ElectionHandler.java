@@ -9,7 +9,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
+import com.github.dedis.popstellar.model.network.method.message.data.election.KeyElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -199,7 +199,7 @@ public final class ElectionHandler {
     return message;
   }
 
-  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey)
+  public static void handleElectionKey(HandlerContext context, KeyElection keyElection)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
@@ -208,9 +208,9 @@ public final class ElectionHandler {
     Election election = laoRepository.getElectionByChannel(channel);
 
     if (!election.getElectionKey().equals(null)) {
-      throw new DataHandlingException(electionKey, "Election should not be set mutliple times");
+      throw new DataHandlingException(keyElection, "Election should not be set mutliple times");
     }
-    election.setElectionKey(electionKey.getElectionKey());
+    election.setElectionKey(keyElection.getElectionKey());
     Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }
