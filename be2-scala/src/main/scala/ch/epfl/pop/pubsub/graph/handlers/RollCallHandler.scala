@@ -84,10 +84,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 rpcRequest.id
               ))
               case Some(_) =>
-                val laoData: LaoData = readData(rpcRequest.getParamsChannel)
                 val combined = for {
                   _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
-                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, laoData.address)
+                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message)
                 } yield ()
 
                 Await.ready(combined, duration).value match {
@@ -104,14 +103,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         }
       case error@Right(_) => error
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcRequest.id))
-    }
-  }
-
-  private def readData(channel: Channel): LaoData = {
-    val askLaoData = dbActor ? DbActor.ReadLaoData(channel)
-    Await.ready(askLaoData, duration).value match {
-      case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) => laoData
-      case _ => LaoData()
     }
   }
 

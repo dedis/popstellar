@@ -11,7 +11,6 @@ object ActionType extends Enumeration {
   val CREATE: Value = MatchingValue("create")
   val UPDATE_PROPERTIES: Value = MatchingValue("update_properties")
   val STATE: Value = MatchingValue("state")
-  val GREET: Value = MatchingValue("greet")
   val WITNESS: Value = MatchingValue("witness")
   val OPEN: Value = MatchingValue("open")
   val REOPEN: Value = MatchingValue("reopen")
