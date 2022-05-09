@@ -18,6 +18,7 @@ public class JsonConverter {
   private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
   private String signatureForced =
       "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
   public Json fromMapToJson(Map<String, String> map) {
@@ -57,6 +58,10 @@ public class JsonConverter {
     Json messageData = Json.of(stringData);
     String messageDataBase64 = convertJsonToBase64(messageData);
     String signature = constructSignature(stringData);
+    if(isSignatureForced){
+      signature = signatureForced;
+      isSignatureForced = false;
+    }
     String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
@@ -107,6 +112,7 @@ public class JsonConverter {
    * it by force
    */
   public void setSignature(String newSignature) {
+    isSignatureForced = true;
     this.signatureForced = newSignature;
   }
 
@@ -127,7 +133,7 @@ public class JsonConverter {
       }
       return Base64.getUrlEncoder().encodeToString(digest.digest());
   }
-  
+
   private byte[] getPrivateKeyBytes(){
     byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
 
