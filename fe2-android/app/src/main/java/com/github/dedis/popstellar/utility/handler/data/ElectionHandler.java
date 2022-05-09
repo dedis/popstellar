@@ -52,7 +52,11 @@ public final class ElectionHandler {
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election =
-          new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
+          new Election(
+              lao.getId(),
+              electionSetup.getCreation(),
+              electionSetup.getName(),
+              electionSetup.getVersion());
       election.setChannel(channel.subChannel(election.getId()));
       election.setElectionQuestions(electionSetup.getQuestions());
 

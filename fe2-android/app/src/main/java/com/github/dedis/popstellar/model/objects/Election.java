@@ -4,13 +4,13 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -29,6 +29,7 @@ public class Election extends Event {
   private long end;
   private List<ElectionQuestion> electionQuestions;
   private String electionKey;
+  private final Version electionVersion;
 
   // Map that associates each sender pk to their votes
   private final Map<PublicKey, List<ElectionVote>> voteMap;
@@ -40,7 +41,7 @@ public class Election extends Event {
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
 
-  public Election(String laoId, long creation, String name) {
+  public Election(String laoId, long creation, String name, Version version) {
     this.id = Election.generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
@@ -49,8 +50,8 @@ public class Election extends Event {
     this.voteMap = new HashMap<>();
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
-    //
-    this.electionKey=null;
+    this.electionVersion = version;
+    this.electionKey = null;
   }
 
   public String getId() {
@@ -73,6 +74,10 @@ public class Election extends Event {
       throw new IllegalArgumentException("election name shouldn't be null");
     }
     this.name = name;
+  }
+
+  public Version getElectionVersion() {
+    return electionVersion;
   }
 
   public String getElectionKey() {
