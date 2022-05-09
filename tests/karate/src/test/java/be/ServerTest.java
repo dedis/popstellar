@@ -10,35 +10,35 @@ public class ServerTest {
     return Karate.run("classpath:be/LAO");
   }
 
-//  @Karate.Test
-//  Karate testCreateRollCall() {
-//    return Karate.run("classpath:be/rollCall/createRollCall.feature");
-//  }
-//
-//  @Karate.Test
-//  Karate testOpenRollCall() {
-//    return Karate.run("classpath:be/rollCall/openRollCall.feature");
-//  }
-//
-//  @Karate.Test
-//  Karate testCloseRollCall() {
-//    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
-//  }
-//
-//  @Karate.Test
-//  Karate testElectionSetup(){
-//    return Karate.run("classpath:be/election/electionSetup.feature");
-//  }
-//
-//  @Karate.Test
-//  Karate testCastVote(){
-//    return Karate.run("classpath:be/election/castVote.feature");
-//  }
-//
-//  @Karate.Test
-//  Karate testElectionEnd(){
-//    return Karate.run("classpath:be/election/electionEnd.feature");
-//  }
+  @Karate.Test
+  Karate testCreateRollCall() {
+    return Karate.run("classpath:be/rollCall/createRollCall.feature");
+  }
+
+  @Karate.Test
+  Karate testOpenRollCall() {
+    return Karate.run("classpath:be/rollCall/openRollCall.feature");
+  }
+
+  @Karate.Test
+  Karate testCloseRollCall() {
+    return Karate.run("classpath:be/rollCall/closeRollCall.feature");
+  }
+
+  @Karate.Test
+  Karate testElectionSetup(){
+    return Karate.run("classpath:be/election/electionSetup.feature");
+  }
+
+  @Karate.Test
+  Karate testCastVote(){
+    return Karate.run("classpath:be/election/castVote.feature");
+  }
+
+  @Karate.Test
+  Karate testElectionEnd(){
+    return Karate.run("classpath:be/election/electionEnd.feature");
+  }
 }
 
 
