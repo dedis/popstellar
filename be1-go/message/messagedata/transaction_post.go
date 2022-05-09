@@ -24,7 +24,7 @@ type Input struct {
 
 // Output define the destination from the money used in transaction
 type Output struct {
-	Value  int        `json:"value"`
+	Value  int64      `json:"value"`
 	Script LockScript `json:"script"`
 }
 
