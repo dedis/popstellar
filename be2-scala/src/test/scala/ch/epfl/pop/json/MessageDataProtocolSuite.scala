@@ -126,7 +126,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/cash/post_transaction_max_amount.json")
     val messageData = PostTransaction.buildFromJson(example)
 
-    val expected = PostTransaction(Transaction(Version=1, TxIn=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), TxOut=List(TxOut((1<<54)-1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk=")))))))
+    val expected = PostTransaction(Transaction(Version=1, TxIn=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), TxOut=List(TxOut((1L << 53) - 1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk=")))))))
 
     messageData shouldBe a[PostTransaction]
     messageData should equal (expected)
