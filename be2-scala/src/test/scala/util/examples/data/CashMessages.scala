@@ -17,4 +17,5 @@ object PostTransactionMessages extends CashMessagesTrait {
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "coin")
 
   final val postTransaction: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction.json")()
+  final val postTransactionMaxAmount: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction_max_amount.json")()
 }

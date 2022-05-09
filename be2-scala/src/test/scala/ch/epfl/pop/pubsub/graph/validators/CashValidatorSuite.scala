@@ -41,4 +41,10 @@ class CashValidatorSuite extends TestKit(ActorSystem("cashValidatorTestActorSyst
     message should equal(Left(postTransaction))
   }
 
+  test("Posting a large transaction works as intended") {
+    val postTransaction = postTransactionMaxAmount
+    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    message should equal(Left(postTransaction))
+  }
+
 }
