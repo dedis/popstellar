@@ -54,7 +54,13 @@ export function configureFeatures() {
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });
-  const walletConfiguration = wallet.configure(keyPairRegistry);
+  const walletConfiguration = wallet.configure({
+    keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
+  });
 
   // compose features
 
@@ -176,6 +182,7 @@ export function configureFeatures() {
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
+      [walletConfiguration.identifier]: walletConfiguration.context,
     },
   };
 }

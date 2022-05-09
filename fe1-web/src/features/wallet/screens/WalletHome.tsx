@@ -6,13 +6,11 @@ import { useSelector } from 'react-redux';
 import { QRCode, WideButtonView } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { LaoEventType } from 'features/events/objects';
-import { makeEventByTypeSelector } from 'features/events/reducer';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { RollCall } from 'features/rollCall/objects';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
+import { WalletHooks } from '../hooks';
+import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -34,8 +32,6 @@ const styles = StyleSheet.create({
   textImportant: Typography.important as TextStyle,
 });
 
-const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-
 /**
  * Wallet UI once the wallet is synced
  */
@@ -43,23 +39,30 @@ const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
+
+  const rollCallSelector = WalletHooks.useEventByTypeSelector<WalletFeature.RollCall>(
+    WalletFeature.EventType.ROLL_CALL,
+  );
   const rollCalls = useSelector(rollCallSelector);
-  const lao = useSelector(selectCurrentLao);
+
+  const laoId = WalletHooks.useCurrentLaoId();
 
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
   useEffect(() => {
-    if (!lao || !rollCalls[lao.id.valueOf()]) {
+    if (!laoId || !rollCalls || !rollCalls[laoId.valueOf()]) {
       // Clear tokens screen state
       setSelectedTokenIndex(-1);
       setTokens(undefined);
       return;
     }
 
-    Wallet.recoverWalletRollCallTokens(rollCalls, lao)
+    Wallet.recoverWalletRollCallTokens(rollCalls, laoId)
       .then((rct) => {
+        console.log('recoverWalletRollCallTokens.then', rct);
         if (rct.length > 0) {
+          console.log('call set tokens', rct);
           setTokens(rct);
           setSelectedTokenIndex(0);
         }
@@ -67,7 +70,7 @@ const WalletHome = () => {
       .catch((e) => {
         console.debug(e);
       });
-  }, [rollCalls, isDebug, lao]);
+  }, [rollCalls, isDebug, laoId]);
 
   const toggleDebugMode = () => {
     if (isDebug) {
@@ -77,6 +80,7 @@ const WalletHome = () => {
       createDummyWalletState().then(() => setIsDebug(true));
     }
   };
+
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
       const rollCallName = `Roll Call name: ${tokens[selectedTokenIndex].rollCallName.valueOf()}`;
