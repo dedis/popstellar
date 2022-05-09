@@ -110,7 +110,7 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 }
 
 // Tests that the channel works correctly when it receives a catchup
-func Test_Consensus_Channel_Catchup(t *testing.T) {
+func Test_Coin_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 

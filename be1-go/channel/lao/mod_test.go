@@ -537,9 +537,9 @@ func TestBaseChannel_CoinIsCreated(t *testing.T) {
 
 	time.Sleep(time.Millisecond)
 
-	consensusID := "channel0/coin"
-	consensus := fakeHub.channelByID[consensusID]
-	require.NotNil(t, consensus)
+	coinID := "channel0/coin"
+	coin := fakeHub.channelByID[coinID]
+	require.NotNil(t, coin)
 }
 
 // -----------------------------------------------------------------------------
