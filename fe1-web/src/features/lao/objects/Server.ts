@@ -1,15 +1,23 @@
 import { RemoveMethods } from 'core/types';
 
-import { PublicKey } from './PublicKey';
+import { Hash } from '../../../core/objects/Hash';
+import { PublicKey } from '../../../core/objects/PublicKey';
 
 export type ServerAddress = string;
 
 export interface ServerState {
+  laoId: string;
   address: string;
-  publicKey: string;
+  serverPublicKey: string;
+  frontendPublicKey: string;
 }
 
 export class Server {
+  /**
+   * The lao this server is associated to
+   */
+  laoId: Hash;
+
   /**
    * The canonical address of the server
    */
@@ -18,7 +26,12 @@ export class Server {
   /**
    * The public key of the server that can be used to send encrypted messages
    */
-  publicKey: PublicKey;
+  serverPublicKey: PublicKey;
+
+  /**
+   * The public key of the server that can be used to send encrypted messages
+   */
+  frontendPublicKey: PublicKey;
 
   // NOTE: There is no need to store peers: ServerAddress[] here.
   // As soon as a greeting message arrives, we connect to all peers. The server addresses
@@ -30,15 +43,25 @@ export class Server {
    * @param server The properties of the new server instance
    */
   constructor(server: RemoveMethods<Server>) {
+    if (server.laoId === undefined) {
+      throw new Error("Undefined 'laoId' when creating 'Server'");
+    }
+    this.laoId = server.laoId;
+
     if (server.address === undefined) {
       throw new Error("Undefined 'address' when creating 'Server'");
     }
     this.address = server.address;
 
-    if (server.publicKey === undefined) {
-      throw new Error("Undefined 'publicKey' when creating 'Server'");
+    if (server.serverPublicKey === undefined) {
+      throw new Error("Undefined 'serverPublicKey' when creating 'Server'");
     }
-    this.publicKey = server.publicKey;
+    this.serverPublicKey = server.serverPublicKey;
+
+    if (server.frontendPublicKey === undefined) {
+      throw new Error("Undefined 'frontendPublicKey' when creating 'Server'");
+    }
+    this.frontendPublicKey = server.frontendPublicKey;
   }
 
   /**
@@ -48,8 +71,10 @@ export class Server {
    */
   public static fromState(server: ServerState): Server {
     return new Server({
+      laoId: new Hash(server.laoId),
       address: server.address,
-      publicKey: new PublicKey(server.publicKey),
+      serverPublicKey: new PublicKey(server.serverPublicKey),
+      frontendPublicKey: new PublicKey(server.frontendPublicKey),
     });
   }
 
