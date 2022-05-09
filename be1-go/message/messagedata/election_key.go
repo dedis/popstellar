@@ -4,7 +4,6 @@ package messagedata
 type ElectionKey struct {
 	Object   string `json:"object"`
 	Action   string `json:"action"`
-	Lao      string `json:"lao"`
 	Election string `json:"election"`
 	Key      string `json:"election_key"`
 }
@@ -21,5 +20,5 @@ func (ElectionKey) GetAction() string {
 
 // NewEmpty implements MessageData
 func (ElectionKey) NewEmpty() MessageData {
-	return &ElectionEnd{}
+	return &ElectionKey{}
 }

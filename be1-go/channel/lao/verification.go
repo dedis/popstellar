@@ -325,6 +325,11 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 			electionSetup.EndTime, electionSetup.StartTime)
 	}
 
+	// verify questions is not empty
+	if len(electionSetup.Questions) == 0 {
+		return xerrors.Errorf("number of questions is 0 should be positive")
+	}
+
 	// verify the questions
 	for _, question := range electionSetup.Questions {
 		err := verifyElectionSetupQuestion(question, electionSetup.ID)
