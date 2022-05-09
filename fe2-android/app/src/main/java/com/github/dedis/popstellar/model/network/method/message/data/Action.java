@@ -28,7 +28,8 @@ public enum Action {
   ADD("add"),
   NOTIFY_ADD("notify_add"),
   DELETE("delete"),
-  NOTIFY_DELETE("notify_delete");
+  NOTIFY_DELETE("notify_delete"),
+  KEY("key");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

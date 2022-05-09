@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * "Match an ElectionKey query. This message is sent by the server"
  */
-public class ElectionKey {
+public class ElectionKey extends Data {
 
   @SerializedName("election")
   private String electionId;
@@ -31,6 +34,16 @@ public class ElectionKey {
   }
 
   @Override
+  public String getAction() {
+    return Action.KEY.getAction();
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.ELECTION.getObject();
+  }
+
+  @Override
   public boolean equals(Object o){
     if (this == o) {
       return true;
@@ -51,7 +64,7 @@ public class ElectionKey {
   @Override
   public String toString(){
     return String.format(
-        "OpenElection{election='%s', election_key='%s'}", electionId, electionKey);
+        "ElectionKey{election='%s', election_key='%s'}", electionId, electionKey);
   }
 
 }
