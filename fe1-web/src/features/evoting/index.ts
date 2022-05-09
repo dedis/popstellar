@@ -1,6 +1,7 @@
 import { ElectionEventTypeComponent } from './components';
 import { EvotingConfiguration, EvotingInterface, EVOTING_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
+import { electionKeyReducer } from './reducer';
 import * as screens from './screens';
 
 /**
@@ -35,6 +36,9 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
       getEventById,
       addEvent,
       updateEvent,
+    },
+    reducers: {
+      ...electionKeyReducer,
     },
   };
 };
