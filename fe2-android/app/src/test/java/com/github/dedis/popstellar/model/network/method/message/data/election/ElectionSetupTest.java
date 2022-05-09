@@ -103,10 +103,10 @@ public class ElectionSetupTest {
   @Test
   public void getVersionTest(){
     assertEquals(
-        Version.OPEN_BALLOT.getStringVersion(), openBallotSetup.getVersion().getStringVersion());
+        Version.OPEN_BALLOT.getStringBallotVersion(), openBallotSetup.getVersion().getStringBallotVersion());
     assertEquals(
-        Version.SECRET_BALLOT.getStringVersion(),
-        secretBallotSetup.getVersion().getStringVersion());
+        Version.SECRET_BALLOT.getStringBallotVersion(),
+        secretBallotSetup.getVersion().getStringBallotVersion());
   }
 
   @Test

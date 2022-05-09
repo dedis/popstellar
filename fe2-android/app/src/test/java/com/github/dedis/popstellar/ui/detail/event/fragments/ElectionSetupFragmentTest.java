@@ -541,11 +541,11 @@ public class ElectionSetupFragmentTest {
     versionChoice().perform(click());
     onData(anything()).atPosition(0).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(Version.OPEN_BALLOT.getStringVersion()))));
+        .check(matches(withSpinnerText(containsString(Version.OPEN_BALLOT.getStringBallotVersion()))));
 
     versionChoice().perform(click());
     onData(anything()).atPosition(1).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(Version.SECRET_BALLOT.getStringVersion()))));
+        .check(matches(withSpinnerText(containsString(Version.SECRET_BALLOT.getStringBallotVersion()))));
   }
 }

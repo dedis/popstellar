@@ -89,10 +89,9 @@
         android:background="@android:drawable/btn_dropdown"
         android:clickable="true"
         android:spinnerMode="dropdown"
-        android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/election_setup_spinner_margin_right"
         app:layout_constraintTop_toBottomOf="@+id/election_setup_presentation_title" />
-
 
       <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/election_setup_view_pager2"

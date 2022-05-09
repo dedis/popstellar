@@ -40,7 +40,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private EditText electionNameText;
   private Button cancelButton;
   private Button submitButton;
-  private Spinner versionSpinner;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
   private LaoDetailViewModel mLaoDetailViewModel;
 
@@ -158,20 +157,17 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     // Create a listener that updates the user's choice for election (by default it's OPEN_BALLOT)
     // Then it set's up the spinner
-    versionSpinner = mSetupElectionFragBinding.electionSetupModeSpinner;
+    Spinner versionSpinner = mSetupElectionFragBinding.electionSetupModeSpinner;
     OnItemSelectedListener listener =
         new OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            switch (position) {
-              case 0:
+            if (position == 0) {
                 electionVersion = Version.OPEN_BALLOT;
-                break;
-              case 1:
-                electionVersion = Version.SECRET_BALLOT;
+            } else if (position == 1) {
+              electionVersion = Version.SECRET_BALLOT;
             }
           }
-
           @Override
           public void onNothingSelected(AdapterView<?> parent) {
             electionVersion = Version.OPEN_BALLOT;
@@ -309,7 +305,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     // Add items to version list
     for (Version v : versionsList){
-      items.add(v.getStringVersion());
+      items.add(v.getStringBallotVersion());
     }
 
     // Set up the spinner with voting versions
