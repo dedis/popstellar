@@ -397,7 +397,7 @@ the required number of witness signatures.
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*lao#greet*)
 
-This is a message that is broadcasted by the server on the lao channel after it is created. Clients can then receive this message by sending a [catchup message](./protocol.md#catching-up-on-past-messages-on-a-channel).
+
 The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
 
 Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
