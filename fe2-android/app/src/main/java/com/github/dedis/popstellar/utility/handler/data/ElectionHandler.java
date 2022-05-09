@@ -199,17 +199,18 @@ public final class ElectionHandler {
     return message;
   }
 
-  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey)
-      throws DataHandlingException {
+  /**
+   * Simple way to handle a election key, add the given key to the given election
+   * @param context context
+   * @param electionKey key to add
+   */
+  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionKey: channel " + channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    if (!election.getElectionKey().equals(null)) {
-      throw new DataHandlingException(electionKey, "Election should not be set mutliple times");
-    }
     election.setElectionKey(electionKey.getElectionKey());
     Log.d(TAG, "handleElectionKey: election key has been set ");
   }
