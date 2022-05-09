@@ -1582,7 +1582,6 @@ Array [
       </View>
     </View>
   </View>,
-  ",",
 ]
 `;
 
@@ -2296,7 +2295,6 @@ Array [
   <Text>
     Waiting for the election key to be broadcasted
   </Text>,
-  ",",
 ]
 `;
 
@@ -2403,7 +2401,6 @@ Array [
   >
     Waiting for result
   </Text>,
-  ",",
 ]
 `;
 
