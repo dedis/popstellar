@@ -3,10 +3,16 @@ import { EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
 
-import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../objects/Election';
+import {
+  Election,
+  ElectionStatus,
+  Question,
+  RegisteredVote,
+  Vote,
+  ElectionVersion,
+} from '../objects/Election';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const VERSION = STRINGS.election_version_identifier;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 
 export const mockElectionName = 'An election';
@@ -48,7 +54,7 @@ export const mockQuestionObject1: Question = {
 export const mockQuestionObject2: Question = {
   id: mockQuestionId2.toString(),
   question: mockQuestion2,
-  voting_method: STRINGS.election_method_Approval,
+  voting_method: STRINGS.election_method_Plurality,
   ballot_options: mockBallotOptions,
   write_in: false,
 };
@@ -80,7 +86,7 @@ export const mockElectionNotStarted = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: mockElectionName,
-  version: VERSION,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -92,7 +98,7 @@ export const mockElectionOpened = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: mockElectionName,
-  version: VERSION,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -105,7 +111,7 @@ export const mockElectionTerminated = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: mockElectionName,
-  version: VERSION,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,

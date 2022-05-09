@@ -1,4 +1,5 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { WitnessFeature } from './Feature';
@@ -20,6 +21,12 @@ export interface WitnessConfiguration {
    * @returns The current lao
    */
   getCurrentLao: () => WitnessFeature.Lao;
+
+  /**
+   * Returns the currently active lao id. Should be used outside react components
+   * @returns The current lao or undefined if there is none.
+   */
+  getCurrentLaoId: () => Hash | undefined;
 
   /**
    * Returns whether the user is witness of the current lao

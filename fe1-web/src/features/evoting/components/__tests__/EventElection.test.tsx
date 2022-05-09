@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { combineReducers, createStore } from 'redux';
 
 import {
   mockLao,
@@ -15,10 +17,12 @@ import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import {
   Election,
   ElectionStatus,
+  ElectionVersion,
   Question,
   QuestionResult,
   RegisteredVote,
 } from 'features/evoting/objects';
+import { electionKeyReducer } from 'features/evoting/reducer';
 import STRINGS from 'resources/strings';
 
 import EventElection from '../EventElection';
@@ -59,7 +63,7 @@ const registeredVote: RegisteredVote = {
 };
 
 const questionResult: QuestionResult = {
-  id: '',
+  id: mockQuestionId.toString(),
   result: [
     { ballotOption: mockBallotOptions[0], count: 10 },
     { ballotOption: mockBallotOptions[1], count: 3 },
@@ -70,7 +74,7 @@ const notStartedElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: 'An election',
-  version: STRINGS.election_version_identifier,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -83,7 +87,7 @@ const runningElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: 'An election',
-  version: STRINGS.election_version_identifier,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -96,7 +100,7 @@ const terminatedElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: 'An election',
-  version: STRINGS.election_version_identifier,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -109,7 +113,7 @@ const resultElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: 'An election',
-  version: STRINGS.election_version_identifier,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -123,7 +127,7 @@ const undefinedElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
   name: 'An election',
-  version: STRINGS.election_version_identifier,
+  version: ElectionVersion.OPEN_BALLOT,
   createdAt: TIMESTAMP,
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
@@ -131,6 +135,19 @@ const undefinedElection = new Election({
   electionStatus: 'undefined' as ElectionStatus,
   registeredVotes: [registeredVote],
   questionResult: [questionResult],
+});
+
+const openedSecretBallotElection = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: ElectionVersion.SECRET_BALLOT,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: [question],
+  electionStatus: ElectionStatus.OPENED,
+  registeredVotes: [],
 });
 
 // endregion
@@ -149,22 +166,28 @@ const contextValue = {
   },
 };
 
+const mockStore = createStore(combineReducers(electionKeyReducer));
+
 describe('EventElection', () => {
   describe('Not started election', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={notStartedElection} isOrganizer />,
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={notStartedElection} isOrganizer />,
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={notStartedElection} />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={notStartedElection} />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
@@ -173,18 +196,22 @@ describe('EventElection', () => {
   describe('Running election', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={runningElection} isOrganizer />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={runningElection} isOrganizer />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={runningElection} />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={runningElection} />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
@@ -193,18 +220,22 @@ describe('EventElection', () => {
   describe('Terminated election where the results are not yet available', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={terminatedElection} isOrganizer />,
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={terminatedElection} isOrganizer />,
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={terminatedElection} />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={terminatedElection} />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
@@ -213,18 +244,22 @@ describe('EventElection', () => {
   describe('Finished election where the results are available', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={resultElection} isOrganizer />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={resultElection} isOrganizer />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={resultElection} />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={resultElection} />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
@@ -233,18 +268,46 @@ describe('EventElection', () => {
   describe('Undefined election status', () => {
     it('renders null for an organizer', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={undefinedElection} isOrganizer />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={undefinedElection} isOrganizer />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders null for an attendee', () => {
       const component = render(
-        <FeatureContext.Provider value={contextValue}>
-          <EventElection event={undefinedElection} />
-        </FeatureContext.Provider>,
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={undefinedElection} />
+          </FeatureContext.Provider>
+        </Provider>,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('Secret ballot election', () => {
+    it('renders correctly for an organizer', () => {
+      const component = render(
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={openedSecretBallotElection} isOrganizer />,
+          </FeatureContext.Provider>
+        </Provider>,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('renders correctly for an attendee', () => {
+      const component = render(
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection event={openedSecretBallotElection} />
+          </FeatureContext.Provider>
+        </Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });

@@ -156,8 +156,6 @@ func TestVerify_CastVote(t *testing.T) {
 	t.Run("lao id invalid hash", getTestBadExample("bad_vote_cast_vote_lao_invalid_hash.json"))
 	t.Run("election id invalid hash", getTestBadExample("bad_vote_cast_vote_election_invalid_hash.json"))
 	t.Run("created at negative", getTestBadExample("bad_vote_cast_vote_created_at_negative.json"))
-	t.Run("created at before start", getTestBadExample("bad_vote_cast_vote_created_at_before_start.json"))
-	t.Run("created at after end", getTestBadExample("bad_vote_cast_vote_created_at_after_end.json"))
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {

@@ -31,6 +31,8 @@ export function configureFeatures() {
     /* LAO FEATURE */
     /* lao: functions */
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+    useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
@@ -50,6 +52,7 @@ export function configureFeatures() {
     enabled: false,
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });

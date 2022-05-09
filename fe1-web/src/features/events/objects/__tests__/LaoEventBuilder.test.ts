@@ -4,6 +4,7 @@ import {
   Election,
   ElectionState,
   ElectionStatus,
+  ElectionVersion,
   Question,
   RegisteredVote,
 } from 'features/evoting/objects';
@@ -63,7 +64,7 @@ describe('LaoEventBuilder', () => {
       id: 'electionId',
       lao: 'MyLao',
       name: 'MyElection',
-      version: 'version',
+      version: ElectionVersion.OPEN_BALLOT,
       createdAt: 12345,
       start: 12345,
       end: 16345,
