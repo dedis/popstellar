@@ -32,6 +32,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+// qr-scanner does *not* accept StyleSheet styles since it is *not*
+// a react native component but a web component using proper css
+const qrScannerStyles: ViewStyle = {
+  width: '30%',
+};
+
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {
@@ -130,7 +136,7 @@ const RollCallOpened = () => {
             }
           }}
           onError={handleError}
-          style={{ width: '30%' }}
+          style={qrScannerStyles}
         />
         <Badge value={attendees.size} status="success" />
         <WideButtonView title={STRINGS.roll_call_scan_close} onPress={() => onCloseRollCall()} />
