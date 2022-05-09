@@ -294,10 +294,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
 	}
-	if ed25519.Verify(publicKeySender, dataBytes, signatureBytes){
-		h.log.Info().Msg("SINGATUUUUUUUUUUUUUUUUUUUURE SUCCESS")
-	}else{
-		h.log.Info().Msg("SINGATUUUUUUUUUUUUUUUUUUUURE NOOOOOOT GOOOOOOOOD")
+	if ! ed25519.Verify(publicKeySender, dataBytes, signatureBytes){
 		return publish.ID, xerrors.Errorf("Signature was not computed correctly", signature)
 	}
 
