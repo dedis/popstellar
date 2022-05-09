@@ -151,11 +151,11 @@ func TestVerify_CastVote(t *testing.T) {
 		}
 	}
 
-	t.Run("lao id not base64", getTestBadExample("bad_vote_cast_vote_lao_not_base64.json"))
-	t.Run("election id noy base64", getTestBadExample("bad_vote_cast_vote_election_not_base64.json"))
-	t.Run("lao id invalid hash", getTestBadExample("bad_vote_cast_vote_lao_invalid_hash.json"))
-	t.Run("election id invalid hash", getTestBadExample("bad_vote_cast_vote_election_invalid_hash.json"))
-	t.Run("created at negative", getTestBadExample("bad_vote_cast_vote_created_at_negative.json"))
+	t.Run("lao id not base64", getTestBadExample("wrong_vote_cast_vote_lao_not_base64.json"))
+	t.Run("election id noy base64", getTestBadExample("wrong_vote_cast_vote_election_not_base64.json"))
+	t.Run("lao id invalid hash", getTestBadExample("wrong_vote_cast_vote_lao_invalid_hash.json"))
+	t.Run("election id invalid hash", getTestBadExample("wrong_vote_cast_vote_election_invalid_hash.json"))
+	t.Run("created at negative", getTestBadExample("wrong_vote_cast_vote_created_at_negative.json"))
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {
