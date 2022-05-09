@@ -11,6 +11,7 @@ object ActionType extends Enumeration {
   val CREATE: Value = MatchingValue("create")
   val UPDATE_PROPERTIES: Value = MatchingValue("update_properties")
   val STATE: Value = MatchingValue("state")
+  val GREET: Value = MatchingValue("greet")
   val WITNESS: Value = MatchingValue("witness")
   val OPEN: Value = MatchingValue("open")
   val REOPEN: Value = MatchingValue("reopen")
@@ -20,6 +21,7 @@ object ActionType extends Enumeration {
   val RESULT: Value = MatchingValue("result")
   val END: Value = MatchingValue("end")
   val CAST_VOTE: Value = MatchingValue("cast_vote")
+  val KEY: Value = MatchingValue("key")
   // social media actions:
   val ADD: Value = MatchingValue("add")
   val DELETE: Value = MatchingValue("delete")
