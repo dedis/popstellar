@@ -28,6 +28,7 @@ public class Election extends Event {
   private long start;
   private long end;
   private List<ElectionQuestion> electionQuestions;
+  private String electionKey;
 
   // Map that associates each sender pk to their votes
   private final Map<PublicKey, List<ElectionVote>> voteMap;
@@ -47,6 +48,9 @@ public class Election extends Event {
     this.electionQuestions = new ArrayList<>();
     this.voteMap = new HashMap<>();
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
+    // At the start, the election key is null and is updated later with the handler
+    //
+    this.electionKey=null;
   }
 
   public String getId() {
@@ -69,6 +73,10 @@ public class Election extends Event {
       throw new IllegalArgumentException("election name shouldn't be null");
     }
     this.name = name;
+  }
+
+  public String getElectionKey() {
+    return electionKey;
   }
 
   public long getCreation() {
@@ -142,6 +150,10 @@ public class Election extends Event {
 
   public void setChannel(Channel channel) {
     this.channel = channel;
+  }
+
+  public void setElectionKey(String electionKey){
+    this.electionKey=electionKey;
   }
 
   public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {

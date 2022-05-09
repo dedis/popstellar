@@ -12,7 +12,7 @@
         },
         "version": {
             "type": "string",
-            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
+            "enum": ["open-ballot", "secret-ballot"],
             "$comment": "features/implementation identifier"
         },
         "id": {
