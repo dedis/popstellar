@@ -16,7 +16,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * string cashChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * string cashChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/cash"
 
   Scenario: Valid transaction sent by the organiser
   Scenario: Valid Roll Call
@@ -24,18 +24,24 @@ Feature: Create a Roll Call
     And def validTransaction =
       """
         {
-          "object": "roll_call",
-          "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
-          "proposed_start": 1633099125,
-          "proposed_end": 1633099140,
-          "location": "EPFL",
-          "description": "Food is welcome!"
+            "object": "transaction",
+            "action": "post",
+            "transaction_id": "zxNUqE_8PFK-Yb8LmXWtm4ZX0Mo6QsC3ugtg-9kRf4w=",
+            "transaction": {
+              "Version": 1,
+              "TxIn": [],
+              "TxOut": [{
+                "Value": 32,
+                "Script": {
+                  "Type": "P2PKH",
+                  "PubkeyHash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+                }
+              }],
+              "LockTime": 0
+            }
         }
       """
-    When frontend.publish(JSON.stringify(validTransaction), laoChannel)
+    When frontend.publish(JSON.stringify(validTransaction), cashChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
