@@ -99,7 +99,7 @@ type rollCall struct {
 // NewChannel returns a new initialized LAO channel. It automatically creates
 // its associated consensus channel and register it to the hub.
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
-	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) channel.Channel {
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
 
 	log = log.With().Str("channel", "lao").Logger()
 
@@ -132,7 +132,68 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	newChannel.registry = newChannel.NewLAORegistry()
 
-	return newChannel
+	err := newChannel.createAndSendLAOGreet()
+	if err != nil {
+		err = xerrors.Errorf("failed to send the greeting message: %v", err)
+	}
+
+	return newChannel, err
+}
+
+func (c *Channel) createAndSendLAOGreet() error {
+	// Marshalls the organizer's public key
+	orgPkBuf, err := c.organizerPubKey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
+	}
+
+	msgData := messagedata.LaoGreet{
+		Object:   messagedata.LAOObject,
+		Action:   messagedata.LAOActionGreet,
+		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
+		Address:  fmt.Sprintf("wss://%s", c.hub.GetServerAddress()),
+		Peers:    []messagedata.Peer{},
+	}
+
+	// Marshalls the message data
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the data: %v", err)
+	}
+
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	// Marshalls the server public key
+	pk := c.hub.GetPubKeyServ()
+	skBuf, err := pk.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the server key: %v", err)
+	}
+
+	// Sign the data
+	signatureBuf, err := c.hub.Sign(dataBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
+	laoGreetMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(skBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = c.broadcastToAllClients(laoGreetMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast greeting message: %v", err)
+	}
+
+	c.inbox.StoreMessage(laoGreetMsg)
+
+	return nil
 }
 
 // ---

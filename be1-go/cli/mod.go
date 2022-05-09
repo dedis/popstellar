@@ -65,7 +65,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 	var hubType = hub.HubType(user)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, log.With().Str("role", user).Logger(),
+	h, err := standard_hub.NewHub(point, cliCtx.String("organizer-address"), log.With().Str("role", user).Logger(),
 		lao.NewChannel, hubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)

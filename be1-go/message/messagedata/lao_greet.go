@@ -4,7 +4,6 @@ package messagedata
 type LaoGreet struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	ID     string `json:"id"`
 
 	Frontend string `json:"frontend"`
 	Address  string `json:"address"`
