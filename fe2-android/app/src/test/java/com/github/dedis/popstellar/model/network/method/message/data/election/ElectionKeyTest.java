@@ -22,8 +22,8 @@ public class ElectionKeyTest {
   }
 
   @Test
-  public void getElectionKetTest(){
-    assertEquals(KEY1, ELEC_KEY1.getElectionKey());
+  public void getElectionVoteKeyTest() {
+    assertEquals(KEY1, ELEC_KEY1.getElectionVoteKey());
   }
 
   @Test

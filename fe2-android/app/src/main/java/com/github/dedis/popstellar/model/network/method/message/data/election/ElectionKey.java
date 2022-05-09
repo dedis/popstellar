@@ -16,16 +16,16 @@ public class ElectionKey extends Data {
 
   // Public key of the election for casting encrypted votes
   @SerializedName("election_key")
-  private String electionKey;
+  private String electionVoteKey;
 
-  public ElectionKey(@NonNull String electionId, @NonNull String electionKey){
+  public ElectionKey(@NonNull String electionId, @NonNull String electionVoteKey) {
     this.electionId=electionId;
-    this.electionKey=electionKey;
+    this.electionVoteKey = electionVoteKey;
   }
 
   @NonNull
-  public String getElectionKey(){
-    return electionKey;
+  public String getElectionVoteKey() {
+    return electionVoteKey;
   }
 
   @NonNull
@@ -52,19 +52,20 @@ public class ElectionKey extends Data {
       return false;
     }
     ElectionKey that = (ElectionKey) o;
-    return electionKey.equals(that.getElectionKey()) && electionId.equals(that.getElectionId());
+    return electionVoteKey.equals(that.getElectionVoteKey())
+        && electionId.equals(that.getElectionId());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(electionId, electionKey);
+    return java.util.Objects.hash(electionId, electionVoteKey);
   }
 
   @NonNull
   @Override
   public String toString(){
     return String.format(
-        "ElectionKey{election='%s', election_key='%s'}", electionId, electionKey);
+        "ElectionKey{election='%s', election_key='%s'}", electionId, electionVoteKey);
   }
 
 }

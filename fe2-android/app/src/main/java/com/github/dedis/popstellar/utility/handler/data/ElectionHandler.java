@@ -215,7 +215,7 @@ public final class ElectionHandler {
     Log.d(TAG, "handleElectionKey: channel " + channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    election.setElectionKey(electionKey.getElectionKey());
+    election.setElectionKey(electionKey.getElectionVoteKey());
     Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }
