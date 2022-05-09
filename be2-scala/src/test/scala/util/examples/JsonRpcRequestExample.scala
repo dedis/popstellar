@@ -7,8 +7,6 @@ import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
-import util.examples.Election.KeyElectionExamples.{MESSAGE_KEY_ELECTION_WORKING, MESSAGE_KEY_ELECTION_WRONG_ELECTION_ID, MESSAGE_KEY_ELECTION_WRONG_OWNER}
-import util.examples.Lao.GreetLaoExamples.{MESSAGE_GREET_LAO, MESSAGE_GREET_LAO_WRONG_ADDRESS, MESSAGE_GREET_LAO_WRONG_FRONTEND, MESSAGE_GREET_LAO_WRONG_LAO, MESSAGE_GREET_LAO_WRONG_OWNER}
 import util.examples.MessageExample._
 import util.examples.socialMedia.AddChirpExamples._
 import util.examples.socialMedia.AddReactionExamples._
@@ -48,22 +46,6 @@ object JsonRpcRequestExample {
   final val CREATE_LAO_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongId, id)
   final val CREATE_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongSender, id)
   final val CREATE_LAO_EMPTY_NAME_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoEmptyName, id)
-
-  //for GreetLao testing
-  private final val laoChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId"))
-  private final val paramsWithGreetLao: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO)
-  private final val paramsWithGreetLaoWrongFrontend: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_FRONTEND)
-  private final val paramsWithGreetLaoWrongAddress: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_ADDRESS)
-  private final val paramsWithGreetLaoWrongLao: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_LAO)
-  private final val paramsWithGreetLaoWrongSender: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_OWNER)
-  private final val paramsWithGreetLaoWrongChannel: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_GREET_LAO)
-  final val GREET_LAO_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLao, id)
-  final val GREET_LAO_WRONG_FRONTEND_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongFrontend, id)
-  final val GREET_LAO_WRONG_ADDRESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongAddress, id)
-  final val GREET_LAO_WRONG_LAO_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongLao, id)
-  final val GREET_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongSender, id)
-  final val GREET_LAO_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongChannel, id)
-
 
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)
@@ -124,14 +106,6 @@ object JsonRpcRequestExample {
   final val OPEN_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenElectionWrongId, id)
   final val OPEN_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenElectionWrongLaoId, id)
   final val OPEN_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenElectionWrongOwner, id)
-
-  //For KeyElection testing
-  private final val paramsWithKeyElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WORKING)
-  private final val paramsWithKeyElectionWrongElectionId: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WRONG_ELECTION_ID)
-  private final val paramsWithKeyElectionWrongOwner: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WRONG_OWNER)
-  final val KEY_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElection, id)
-  final val KEY_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongElectionId, id)
-  final val KEY_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongOwner, id)
 
   //For CastVoteElection testing
   private final val paramsWithCastVoteElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_ELECTION_WORKING)

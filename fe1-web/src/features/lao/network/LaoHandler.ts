@@ -2,8 +2,8 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { addUnhandledGreetLaoMessage, connectToLao } from '../reducer';
-import { storeBackendAndConnectToPeers } from './LaoGreetWatcher';
+import { connectToLao } from '../reducer';
+import { handleLaoGreet } from './LaoGreetWatcher';
 import { CreateLao } from './messages';
 import { GreetLao } from './messages/GreetLao';
 
@@ -83,13 +83,6 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
 
   const greetLaoMsg = msg.messageData as GreetLao;
 
-  // add the lao#greet message to the store to tell LaoGreetWatcher to keep an eye on it
-  dispatch(
-    addUnhandledGreetLaoMessage({
-      messageId: msg.message_id.valueOf(),
-    }),
-  );
-
   // only treat the message as being valid when it is signed by the advertised frontend public key
   if (
     !msg.witness_signatures.find((witnessSignature) =>
@@ -99,11 +92,10 @@ export const handleLaoGreetMessage = (msg: ProcessableMessage): boolean => {
     // lao#greet message has not (yet) been signed by the corresponding frontend
     // wait for the signature in LaoGreetWatcher
     // FIXME: for now the witnessing feature is not working and thus we omit this check (2022-04-25, Tyratox)
-    // moreover we decided in the evoting meeting to add this check only later and focus on the other parts for now
     // return true;
   }
 
-  storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
+  handleLaoGreet(greetLaoMsg, msg.sender);
 
   return true;
 };

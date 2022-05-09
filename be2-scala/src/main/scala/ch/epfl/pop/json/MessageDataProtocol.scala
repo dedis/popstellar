@@ -130,39 +130,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val stateLaoFormat: JsonFormat[StateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, Timestamp, PublicKey, List[PublicKey], Hash, List[WitnessSignaturePair], StateLao](StateLao.apply, "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"))
   implicit val updateLaoFormat: JsonFormat[UpdateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, List[PublicKey], UpdateLao](UpdateLao.apply, "id", "name", "last_modified", "witnesses"))
 
-  implicit object GreetLaoFormat extends RootJsonFormat[GreetLao] {
-    final private val PARAM_LAO: String = "lao"
-    final private val PARAM_FRONTEND: String = "frontend"
-    final private val PARAM_ADDRESS: String = "address"
-    final private val PARAM_PEERS: String = "peers"
-
-    override def read(json: JsValue): GreetLao = {
-      val jsonObject: JsObject = json.asJsObject
-      jsonObject.getFields(PARAM_LAO, PARAM_FRONTEND, PARAM_ADDRESS, PARAM_PEERS) match {
-        case Seq(lao@JsString(_), frontend@JsString(_), JsString(address), JsArray(peers)) =>
-          GreetLao(
-            lao.convertTo[Hash],
-            frontend.convertTo[PublicKey],
-            address,
-            peers.map(_.convertTo[String]).toList
-          )
-        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a GreetLao object")
-      }
-    }
-
-    override def write(obj: GreetLao): JsValue = {
-      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
-        PARAM_OBJECT -> JsString(obj._object.toString),
-        PARAM_ACTION -> JsString(obj.action.toString),
-        PARAM_LAO -> obj.lao.toJson,
-        PARAM_FRONTEND -> obj.frontend.toJson,
-        PARAM_ADDRESS -> obj.address.toJson,
-        PARAM_PEERS -> obj.peers.toJson
-      )
-      JsObject(jsObjectContent)
-    }
-  }
-
   implicit object CreateMeetingFormat extends RootJsonFormat[CreateMeeting] {
     final private val PARAM_ID: String = "id"
     final private val PARAM_NAME: String = "name"
@@ -290,29 +257,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
   implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
-
-  implicit object KeyElectionFormat extends JsonFormat[KeyElection] {
-    final private val PARAM_ELECTION_ID: String = "election"
-    final private val PARAM_ELECTION_KEY: String = "election_key"
-
-    override def read(json: JsValue): KeyElection = json.asJsObject().getFields(PARAM_ELECTION_ID, PARAM_ELECTION_KEY) match {
-      case Seq(election@JsString(_), election_key@JsString(_)) => KeyElection(
-        election.convertTo[Hash],
-        election_key.convertTo[PublicKey]
-      )
-      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a KeyElection object")
-    }
-
-    override def write(obj: KeyElection): JsValue = {
-      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
-        PARAM_OBJECT -> JsString(obj._object.toString),
-        PARAM_ACTION -> JsString(obj.action.toString),
-        PARAM_ELECTION_ID -> obj.election.toJson,
-        PARAM_ELECTION_KEY -> obj.election_key.toJson,
-      )
-      JsObject(jsObjectContent)
-    }
-  }
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))

@@ -120,7 +120,7 @@ export class Message {
       );
     }
     msg.witness_signatures.forEach((ws: WitnessSignature) => {
-      if (msg.message_id === undefined || !ws.verify(msg.message_id)) {
+      if (msg.data === undefined || !ws.verify(msg.data)) {
         throw new ProtocolError(
           `Invalid 'witness_signatures' parameter encountered: invalid signature from ${ws.signature}`,
         );

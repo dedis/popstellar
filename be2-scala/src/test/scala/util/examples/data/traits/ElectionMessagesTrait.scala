@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 
 /**
- * Trait to be implemented by ElectionMessages examples
+ * Trait to be implemented by RollCallMessages examples
  */
 trait ElectionMessagesTrait extends ExampleMessagesTrait {
   override val obj: ObjectType = ObjectType.ELECTION

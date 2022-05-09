@@ -8,8 +8,7 @@ import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.LaoDataExample
-import util.examples.data.{KeyElectionMessages, OpenElectionMessages, SetupElectionMessages}
+import util.examples.data.{OpenElectionMessages, SetupElectionMessages}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -48,12 +47,8 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           system.log.info("Responding with a Ack")
 
           sender() ! DbActor.DbActorAck()
-
-        case DbActor.ReadLaoData =>
-          system.log.info("Received a message")
-          system.log.info("Responding with a Ack")
-
-          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK")
@@ -72,11 +67,8 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           system.log.info(s"Received a create setup message")
           system.log.info("Responding with a no")
           sender() ! Status.Failure(DbActorNAckException(1, "no"))
-        case DbActor.ReadLaoData(_) =>
-          system.log.info("Received a message")
-          system.log.info("Responding with a Ack")
-
-          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
@@ -128,26 +120,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val request = OpenElectionMessages.openElection
 
     rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
-
-    system.stop(mockedDB.actorRef)
-  }
-
-  test("KeyElection should succeed if the election already exists") {
-    val mockedDB = mockDbWithAck
-    val rc = new ElectionHandler(mockedDB)
-    val request = KeyElectionMessages.keyElection
-
-    rc.handleKeyElection(request) should equal(Left(request))
-
-    system.stop(mockedDB.actorRef)
-  }
-
-  test("keyElection should fail if the database fails storing the message") {
-    val mockedDB = mockDbWithNack
-    val rc = new ElectionHandler(mockedDB)
-    val request = KeyElectionMessages.keyElection
-
-    rc.handleKeyElection(request) shouldBe an[Right[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

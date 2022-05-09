@@ -13,7 +13,7 @@ import { ExtendedMessage, ExtendedMessageState, markMessageAsProcessed } from '.
  * Reducer & associated function implementation to store all known Messages
  */
 
-export interface MessageReducerState {
+interface MessageReducerState {
   byId: Record<string, ExtendedMessageState>;
   allIds: string[];
   unprocessedIds: string[];
@@ -25,7 +25,7 @@ const initialState: MessageReducerState = {
   unprocessedIds: [],
 };
 
-export const messageReducerPath = 'messages';
+const messageReducerPath = 'messages';
 const messagesSlice = createSlice({
   name: messageReducerPath,
   initialState,

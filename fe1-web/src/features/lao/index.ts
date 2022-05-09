@@ -10,7 +10,8 @@ import {
 } from './interface';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
-import { laoReducer, serverReducer, addLaoServerAddress, greetLaoReducer } from './reducer';
+import { laoReducer, addLaoServerAddress } from './reducer';
+import ServerReducer from './reducer/ServerReducer';
 
 /**
  * Configures the LAO feature
@@ -39,8 +40,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     functions,
     reducers: {
       ...laoReducer,
-      ...serverReducer,
-      ...greetLaoReducer,
+      ...ServerReducer,
     },
   };
 };

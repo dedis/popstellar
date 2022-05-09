@@ -25,6 +25,7 @@ import {
 
 const emptyState = {
   byLaoId: {},
+  backendKeyByFrontendKey: {},
 } as ServerReducerState;
 
 const otherAddress = 'some other address';
@@ -55,10 +56,10 @@ describe('ServerReducer', () => {
               [mockLaoId]: {
                 allAddresses: [otherAddress],
                 byAddress: { [otherAddress]: otherMockServerState },
-                backendKeyByFrontendKey: {
-                  [mockPublicKey]: mockPublicKey2,
-                },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
             },
           } as ServerReducerState,
           addServer(mockServerState),
@@ -68,11 +69,11 @@ describe('ServerReducer', () => {
           [mockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
             byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
-            backendKeyByFrontendKey: {
-              [mockPublicKey]: mockPublicKey2,
-              [mockPublicKey2]: mockPublicKey,
-            },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey]: mockPublicKey2,
+          [mockPublicKey2]: mockPublicKey,
         },
       } as ServerReducerState);
     });
@@ -85,10 +86,10 @@ describe('ServerReducer', () => {
               [mockLaoId]: {
                 allAddresses: [mockAddress],
                 byAddress: { [mockAddress]: mockServerState },
-                backendKeyByFrontendKey: {
-                  [mockPublicKey2]: mockPublicKey,
-                },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           addServer(mockServerState),
@@ -107,11 +108,11 @@ describe('ServerReducer', () => {
               [mockLaoId]: {
                 allAddresses: [otherAddress, mockAddress],
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
-                backendKeyByFrontendKey: {
-                  [mockPublicKey]: mockPublicKey2,
-                  [mockPublicKey2]: mockPublicKey,
-                },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           updateServer({ ...mockServerState, serverPublicKey: mockPublicKey2 }),
@@ -124,11 +125,11 @@ describe('ServerReducer', () => {
               [mockAddress]: { ...mockServerState, serverPublicKey: mockPublicKey2 },
               [otherAddress]: otherMockServerState,
             },
-            backendKeyByFrontendKey: {
-              [mockPublicKey]: mockPublicKey2,
-              [mockPublicKey2]: mockPublicKey2,
-            },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey]: mockPublicKey2,
+          [mockPublicKey2]: mockPublicKey2,
         },
       } as ServerReducerState);
     });
@@ -143,11 +144,11 @@ describe('ServerReducer', () => {
               [mockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
-                backendKeyByFrontendKey: {
-                  [mockPublicKey]: mockPublicKey2,
-                  [mockPublicKey2]: mockPublicKey,
-                },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           removeServer({ laoId: mockLaoId, address: otherAddress }),
@@ -157,10 +158,10 @@ describe('ServerReducer', () => {
           [mockLaoId]: {
             allAddresses: [mockAddress],
             byAddress: { [mockAddress]: mockServerState },
-            backendKeyByFrontendKey: {
-              [mockPublicKey2]: mockPublicKey,
-            },
           },
+        },
+        backendKeyByFrontendKey: {
+          [mockPublicKey2]: mockPublicKey,
         },
       } as ServerReducerState);
     });
@@ -175,11 +176,11 @@ describe('ServerReducer', () => {
               [mockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
                 byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
-                backendKeyByFrontendKey: {
-                  [mockPublicKey]: mockPublicKey2,
-                  [mockPublicKey2]: mockPublicKey,
-                },
               },
+            },
+            backendKeyByFrontendKey: {
+              [mockPublicKey]: mockPublicKey2,
+              [mockPublicKey2]: mockPublicKey,
             },
           } as ServerReducerState,
           clearAllServers(),
@@ -227,15 +228,6 @@ describe('ServerReducer', () => {
     it('should return undefined if there is no server entry for the organizer public key', () => {
       const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
       mockStore.dispatch(connectToLao(mockLaoState));
-      // add the organizers public key but for a *different* lao
-      mockStore.dispatch(
-        addServer({
-          address: mockAddress,
-          laoId: 'someOtherLao',
-          frontendPublicKey: org.valueOf(),
-          serverPublicKey: mockKeyPair.publicKey.valueOf(),
-        }),
-      );
 
       expect(
         makeLaoOrganizerBackendPublicKeySelector(mockLaoId)(mockStore.getState()),
