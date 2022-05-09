@@ -16,7 +16,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/cash"
 
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
@@ -26,15 +26,21 @@ Feature: Create a Roll Call
     And def validCreateRollCall =
       """
         {
-          "object": "roll_call",
-          "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
-          "proposed_start": 1633099125,
-          "proposed_end": 1633099140,
-          "location": "EPFL",
-          "description": "Food is welcome!"
+            "object": "transaction",
+            "action": "post",
+            "transaction_id": "zxNUqE_8PFK-Yb8LmXWtm4ZX0Mo6QsC3ugtg-9kRf4w=",
+            "transaction": {
+              "Version": 1,
+              "TxIn": [],
+              "TxOut": [{
+                "Value": 32,
+                "Script": {
+                  "Type": "P2PKH",
+                  "PubkeyHash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+                }
+              }],
+              "LockTime": 0
+            }
         }
       """
     When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
