@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Wallet error screen renders correctly 1`] = `
+exports[`Wallet create seed screen renders correctly 1`] = `
 <View
   style={
     Object {
@@ -327,17 +327,77 @@ exports[`Wallet error screen renders correctly 1`] = `
                             Object {
                               "color": "black",
                               "fontSize": 25,
+                              "fontWeight": "bold",
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             }
                           }
                         >
-                          A synchronization error with your wallet occurred
+                          This is the only backup seed for your PoP tokens - store it securely
                         </Text>
                         <View
                           style={
                             Object {
-                              "padding": "2rem",
+                              "padding": "1rem",
+                            }
+                          }
+                        />
+                        <View
+                          style={
+                            Object {
+                              "alignContent": "center",
+                              "alignItems": "center",
+                              "flexDirection": "row",
+                              "justifyContent": "center",
+                              "zIndex": 3,
+                            }
+                          }
+                        >
+                          <TextInput
+                            selectTextOnFocus={true}
+                            style={
+                              Object {
+                                "borderWidth": 1,
+                                "fontSize": 25,
+                                "height": 40,
+                                "margin": 12,
+                                "marginHorizontal": 10,
+                                "padding": 10,
+                                "textAlign": "center",
+                                "width": 750,
+                              }
+                            }
+                            value="one two three"
+                          />
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                          >
+                            <Image
+                              source={1}
+                              style={
+                                Object {
+                                  "height": 26,
+                                  "width": 26,
+                                }
+                              }
+                            />
+                          </View>
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "padding": "1rem",
                             }
                           }
                         />
@@ -357,9 +417,62 @@ exports[`Wallet error screen renders correctly 1`] = `
                               }
                             }
                             accessible={true}
-                            collapsable={false}
                             focusable={true}
-                            nativeID="animatedComponent"
+                            onClick={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={
+                              Object {
+                                "opacity": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Array [
+                                  Object {},
+                                ]
+                              }
+                            >
+                              <Text
+                                disabled={false}
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#007AFF",
+                                      "fontSize": 18,
+                                      "margin": 8,
+                                      "textAlign": "center",
+                                    },
+                                  ]
+                                }
+                              >
+                                CONNECT WITH THIS SEED
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "marginHorizontal": 50,
+                              "marginVertical": 10,
+                            }
+                          }
+                        >
+                          <View
+                            accessibilityRole="button"
+                            accessibilityState={
+                              Object {
+                                "disabled": false,
+                              }
+                            }
+                            accessible={true}
+                            focusable={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}

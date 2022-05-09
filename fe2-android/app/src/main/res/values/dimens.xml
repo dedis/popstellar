@@ -8,6 +8,7 @@
   <dimen name="guideline_vertical_tab_connect">0.40</dimen>
   <dimen name="guideline_vertical_tab_wallet">0.60</dimen>
   <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
+  <dimen name="guideline_vertical_tab_digital_cash">0.80</dimen>
 
   <!-- Text -->
   <dimen name="margin_text">28dp</dimen>

@@ -3,14 +3,14 @@ import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 
-import { WalletError } from '../index';
+import { WalletSetup } from '../index';
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
-describe('Wallet error screen', () => {
+describe('Wallet setup screen', () => {
   it('renders correctly', () => {
-    const component = render(<MockNavigator component={WalletError} />).toJSON();
+    const component = render(<MockNavigator component={WalletSetup} />).toJSON();
     expect(component).toMatchSnapshot();
   });
 });
