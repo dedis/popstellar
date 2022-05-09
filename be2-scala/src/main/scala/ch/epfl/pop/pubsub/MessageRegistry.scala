@@ -3,9 +3,9 @@ package ch.epfl.pop.pubsub
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, KeyElection, OpenElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
@@ -60,6 +60,7 @@ object MessageRegistry {
     register.add((ObjectType.LAO, ActionType.CREATE), createSchemaVerifier("dataCreateLao.json"), CreateLao.buildFromJson, LaoValidator.validateCreateLao, LaoHandler.handleCreateLao)
     register.add((ObjectType.LAO, ActionType.STATE), createSchemaVerifier("dataStateLao.json"), StateLao.buildFromJson, LaoValidator.validateStateLao, LaoHandler.handleStateLao)
     register.add((ObjectType.LAO, ActionType.UPDATE_PROPERTIES), createSchemaVerifier("dataUpdateLao.json"), UpdateLao.buildFromJson, LaoValidator.validateUpdateLao, LaoHandler.handleUpdateLao)
+    register.add((ObjectType.LAO, ActionType.GREET), createSchemaVerifier("dataGreetLao.json"), GreetLao.buildFromJson, LaoValidator.validateGreetLao, LaoHandler.handleGreetLao)
 
     // data meeting
     register.add((ObjectType.MEETING, ActionType.CREATE), createSchemaVerifier("dataCreateMeeting.json"), CreateMeeting.buildFromJson, MeetingValidator.validateCreateMeeting, MeetingHandler.handleCreateMeeting)
@@ -77,6 +78,7 @@ object MessageRegistry {
     register.add((ObjectType.ELECTION, ActionType.CAST_VOTE), createSchemaVerifier("dataCastVote.json"), CastVoteElection.buildFromJson, ElectionValidator.validateCastVoteElection, ElectionHandler.handleCastVoteElection)
     register.add((ObjectType.ELECTION, ActionType.RESULT), createSchemaVerifier("dataResultElection.json"), ResultElection.buildFromJson, ElectionValidator.validateResultElection, ElectionHandler.handleResultElection)
     register.add((ObjectType.ELECTION, ActionType.END), createSchemaVerifier("dataEndElection.json"), EndElection.buildFromJson, ElectionValidator.validateEndElection, ElectionHandler.handleEndElection)
+    register.add((ObjectType.ELECTION, ActionType.KEY), createSchemaVerifier("dataKeyElection.json"), KeyElection.buildFromJson, ElectionValidator.validateKeyElection, ElectionHandler.handleKeyElection)
 
     // data witness
     register.add((ObjectType.MESSAGE, ActionType.WITNESS), createSchemaVerifier("dataWitnessMessage.json"), WitnessMessage.buildFromJson, WitnessValidator.validateWitnessMessage, WitnessHandler.handleWitnessMessage)
