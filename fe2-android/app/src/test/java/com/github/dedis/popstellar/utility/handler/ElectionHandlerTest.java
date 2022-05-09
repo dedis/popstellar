@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
@@ -219,5 +220,19 @@ public class ElectionHandlerTest extends TestCase {
       } else {
         assertEquals(state, election.getState());}
     }
+  }
+
+  @Test
+  public void testElectionKey() throws DataHandlingException{
+    // Create the election key message
+    String key = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
+    ElectionKey electionKey = new ElectionKey(election.getId(), key);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionKey, GSON);
+
+    // Call the message handler
+    messageHandler.handleMessage(
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+
+    assertEquals(key, election.getElectionKey());
   }
 }
