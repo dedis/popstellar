@@ -153,6 +153,7 @@ export function configureFeatures() {
     ...socialConfiguration.reducers,
     ...eventsConfiguration.reducers,
     ...walletConfiguration.reducers,
+    ...evotingConfiguration.reducers,
   });
 
   return {

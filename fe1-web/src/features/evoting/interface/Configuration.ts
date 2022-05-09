@@ -1,10 +1,11 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { ElectionKeyReducerState, ELECTION_KEY_REDUCER_PATH } from '../reducer';
 import { EvotingFeature } from './Feature';
 
 export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
@@ -103,4 +104,8 @@ export interface EvotingInterface extends FeatureInterface {
   }[];
 
   context: EvotingReactContext;
+
+  reducers: {
+    [ELECTION_KEY_REDUCER_PATH]: Reducer<ElectionKeyReducerState>;
+  };
 }
