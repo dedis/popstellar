@@ -14,7 +14,7 @@ public class ElectionKey extends Data {
   @SerializedName("election")
   private String electionId;
 
-  // Public key of the election for casting crypted votes
+  // Public key of the election for casting encrypted votes
   @SerializedName("election_key")
   private String electionKey;
 

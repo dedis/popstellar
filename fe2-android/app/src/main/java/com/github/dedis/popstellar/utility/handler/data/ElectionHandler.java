@@ -6,10 +6,10 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -198,5 +197,20 @@ public final class ElectionHandler {
             + "Message ID : "
             + messageId);
     return message;
+  }
+
+  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey)
+      throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleElectionKey: channel " + channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    if (!election.getElectionKey().equals(null)) {
+      throw new DataHandlingException(electionKey, "Election should not be set mutliple times");
+    }
+    election.setElectionKey(electionKey.getElectionKey());
+    Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }
