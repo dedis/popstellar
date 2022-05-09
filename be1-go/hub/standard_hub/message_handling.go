@@ -295,7 +295,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
 	}
 	if !ed25519.Verify(publicKeySender, dataBytes, signatureBytes) {
-		return publish.ID, xerrors.Errorf("Signature was not computed correctly", signature)
+		return publish.ID, xerrors.Errorf("Signature was not computed correctly")
 	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
