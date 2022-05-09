@@ -235,6 +235,63 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
+// Tests that the channel works correctly when it receives a large transaction
+func Test_SendTransactionMaxAmount(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
+	require.True(t, found)
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	//load example
+	file := filepath.Join(relativePath, "cash", "post_transaction_max_amount.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = digitalCashChannelName
+
+	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+}
+
 // Tests that the channel throw an error when receiving an incomplete json message
 func Test_SendReaction_MissingData(t *testing.T) {
 	// Create the hub
