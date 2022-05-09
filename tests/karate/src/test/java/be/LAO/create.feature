@@ -82,21 +82,21 @@ Feature: Create a pop LAO
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
-#  Scenario: Create should fail if signature is invalid
-#    Given def laoCreateRequest =
-#      """
-#        {
-#          "object": "lao",
-#          "action": "create",
-#          "id": '#(getLaoValid)',
-#          "name": "LAO",
-#          "creation": 1633035721,
-#          "organizer": '#(getOrganizer)',
-#          "witnesses": []
-#        }
-#      """
-#    * frontend.setWrongSignature()
-#    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-#    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
-#    Then match answer contains INVALID_MESSAGE_FIELD
-#    And match frontend.receiveNoMoreResponses() == true
+  Scenario: Create should fail if signature is invalid
+    Given def laoCreateRequest =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(getLaoValid)',
+          "name": "LAO",
+          "creation": 1633035721,
+          "organizer": '#(getOrganizer)',
+          "witnesses": []
+        }
+      """
+    * frontend.setWrongSignature()
+    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
