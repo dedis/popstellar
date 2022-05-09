@@ -4,7 +4,7 @@ import { getStore } from 'core/redux';
 
 import { getLaoChannel } from '../functions/lao';
 import { selectCurrentLaoId } from '../reducer';
-import { handleLaoGreet, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
+import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
   handleLaoCreateMessage,
   handleLaoGreetMessage,
@@ -35,7 +35,7 @@ export function configureNetwork(registry: MessageRegistry) {
   // the lao#greet message can become valid after receiving it if the signature is only added
   // afterwards. listen to state changes that add signatures to lao#greet messages
   const store = getStore();
-  store.subscribe(makeLaoGreetStoreWatcher(store, handleLaoGreet));
+  store.subscribe(makeLaoGreetStoreWatcher(store, storeBackendAndConnectToPeers));
 
   // in case of a reconnection, subscribe to and catchup on the LAO channel
   getNetworkManager().addReconnectionHandler(async () => {
