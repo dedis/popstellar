@@ -1,10 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects.{Base64Data, ChannelData, LaoData, PrivateKey, PublicKey}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
-//import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
@@ -77,42 +74,6 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
   }
 
   test("LAO creation fails without ParamsWithMessage") {
-    val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  //GreetLao tests
-  test("LAO greeting works as intended") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_RPC)
-    message should equal(Left(GREET_LAO_RPC))
-  }
-
-  test("LAO greeting fails with wrong lao id") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_LAO_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("LAO greeting fails with wrong frontend") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_FRONTEND_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("LAO greeting fails with wrong address") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_ADDRESS_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("LAO greeting fails with wrong sender") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_SENDER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("LAO greeting fails with wrong channel") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_CHANNEL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("LAO greeting fails without ParamsWithMessage") {
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
   }
