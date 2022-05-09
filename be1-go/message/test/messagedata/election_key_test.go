@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Election_Open(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "election_open", "election_open.json")
+func Test_Election_Key(t *testing.T) {
+	file := filepath.Join(relativeExamplePath, "election_key", "election_key.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -20,22 +20,21 @@ func Test_Election_Open(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)
-	require.Equal(t, "open", action)
+	require.Equal(t, "key", action)
 
-	var msg messagedata.ElectionOpen
+	var msg messagedata.ElectionKey
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", msg.Object)
-	require.Equal(t, "open", msg.Action)
-	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.Lao)
+	require.Equal(t, "key", msg.Action)
 	require.Equal(t, "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=", msg.Election)
-	require.Equal(t, int64(1633099883), msg.OpenedAt)
+	require.Equal(t, "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ", msg.Key)
 }
 
-func Test_Open_New_Empty(t *testing.T) {
-	var msg messagedata.ElectionOpen
+func Test_Key_New_Empty(t *testing.T) {
+	var msg messagedata.ElectionKey
 
 	require.Empty(t, msg.NewEmpty())
 }
