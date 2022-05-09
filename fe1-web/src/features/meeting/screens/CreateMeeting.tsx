@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -17,6 +17,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
+import { Views } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -24,14 +25,27 @@ import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
+const styles = StyleSheet.create({
+  view: {
+    ...Views.base,
+    flexDirection: 'row',
+    zIndex: 3,
+  } as ViewStyle,
+  viewVertical: {
+    ...Views.base,
+    flexDirection: 'column',
+    zIndex: 3,
+  } as ViewStyle,
+  padding: { padding: 5 } as ViewStyle,
+  zIndexInitial: { zIndex: 0 } as ViewStyle,
+});
+
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  */
 
-const CreateMeeting = ({ route }: any) => {
-  const styles = route.params;
-
+const CreateMeeting = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -67,7 +81,7 @@ const CreateMeeting = ({ route }: any) => {
 
     return (
       <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+        <View style={[styles.view, styles.padding]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
           <DatePicker
             selected={startDate}
@@ -76,7 +90,7 @@ const CreateMeeting = ({ route }: any) => {
             }
           />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+        <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
           <DatePicker
             selected={endDate}

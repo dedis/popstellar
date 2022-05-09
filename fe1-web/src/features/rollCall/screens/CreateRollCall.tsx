@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -16,6 +16,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
+import { Views } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -23,14 +24,28 @@ import { requestCreateRollCall } from '../network';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
+const styles = StyleSheet.create({
+  view: {
+    ...Views.base,
+    flexDirection: 'row',
+    zIndex: 3,
+  } as ViewStyle,
+  viewVertical: {
+    ...Views.base,
+    flexDirection: 'column',
+    zIndex: 3,
+  } as ViewStyle,
+  padding: { padding: 5 } as ViewStyle,
+  zIndexInitial: { zIndex: 0 } as ViewStyle,
+});
+
 /**
  * Screen to create a roll-call event
  *
  * TODO Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
-const CreateRollCall = ({ route }: any) => {
-  const styles = route.params;
+const CreateRollCall = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -52,7 +67,7 @@ const CreateRollCall = ({ route }: any) => {
 
     return (
       <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+        <View style={[styles.view, styles.padding]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
             selected={startDate}
@@ -66,7 +81,7 @@ const CreateRollCall = ({ route }: any) => {
             }
           />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+        <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
           <DatePicker
             selected={endDate}
