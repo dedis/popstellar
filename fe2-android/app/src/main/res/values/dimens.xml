@@ -39,7 +39,7 @@
   <dimen name="qr_code_size">200dp</dimen>
 
   <!-- Button -->
-  <dimen name="channel_qr_code_size">200dp</dimen>
+  <dimen name="channel_qr_code_size">250dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
   <dimen name="event_details_width">186dp</dimen>
   <dimen name="event_buttons_width">110dp</dimen>
@@ -48,6 +48,7 @@
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="election_fragment_description_margin">140dp</dimen>
   <dimen name="election_question_height">80dp</dimen>
+  <dimen name="qr_icon_side">30dp</dimen>
 
   <!-- Event -->
   <dimen name="election_question_margin_top">10dp</dimen>

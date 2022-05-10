@@ -39,6 +39,7 @@ import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -50,6 +51,7 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;
+  private BottomNavigationView navbar;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
@@ -60,6 +62,10 @@ public class LaoDetailActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
+
+    navbar = findViewById(R.id.lao_detail_nav_bar);
+    setupNavigationBar();
+
     mViewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
     if (getIntent()
@@ -70,9 +76,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
-    setupHomeButton();
-    setupIdentityButton();
-    setupSocialMediaButton();
+
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -213,26 +217,6 @@ public class LaoDetailActivity extends AppCompatActivity {
                 }
               }
             });
-  }
-
-  public void setupHomeButton() {
-    Button homeButton = (Button) findViewById(R.id.tab_home);
-    homeButton.setOnClickListener(v -> mViewModel.openHome());
-  }
-
-  public void setupIdentityButton() {
-    Button identityButton = (Button) findViewById(R.id.tab_identity);
-    identityButton.setOnClickListener(v -> mViewModel.openIdentity());
-  }
-
-  public void setupSocialMediaButton() {
-    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
-    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
-  }
-
-  public void setupDigitalCashButton() {
-    Button digitalCashButton = (Button) findViewById(R.id.tab_digital_cash);
-    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
   private void setupLaoFragment() {
@@ -433,6 +417,24 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
   }
+
+    public void setupNavigationBar() {
+        navbar.setOnItemSelectedListener(
+                item -> {
+                    int id = item.getItemId();
+                    if (id == R.id.lao_detail_event_list_menu) {
+                        setupLaoFragment();
+                    } else if (id == R.id.lao_detail_identity_menu) {
+                        mViewModel.openIdentity();
+                    } else if (id == R.id.lao_detail_witnessing_menu) {
+                    } else if (id == R.id.lao_detail_digital_cash_menu) {
+                        mViewModel.openDigitalCash();
+                    } else if (id == R.id.lao_detail_social_media_menu) {
+                        mViewModel.openSocialMedia();
+                    }
+                    return true;
+                });
+    }
 
   /**
    * Set the current fragment in the container of the activity

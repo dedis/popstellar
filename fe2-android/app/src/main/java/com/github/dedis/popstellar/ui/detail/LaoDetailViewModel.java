@@ -988,6 +988,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
+
   public void openDigitalCash() {
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
@@ -1022,7 +1023,9 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void toggleShowHideProperties() {
     boolean val = showProperties.getValue();
+    Log.d(TAG, "TOGGLED to " + val);
     showProperties.postValue(!val);
+    mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
   }
 
   public void openEditProperties() {

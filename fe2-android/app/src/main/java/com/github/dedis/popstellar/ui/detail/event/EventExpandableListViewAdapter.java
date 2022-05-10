@@ -247,27 +247,28 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       View convertView,
       ViewGroup parent) {
 
-    Event event = ((Event) getChild(groupPosition, childPosition));
-    EventLayoutBinding layoutEventBinding;
-    if (convertView == null) {
-      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      layoutEventBinding = EventLayoutBinding.inflate(inflater, parent, false);
-    } else {
-      layoutEventBinding = DataBindingUtil.getBinding(convertView);
-    }
-    layoutEventBinding.setEvent(event);
-
-    EventCategory category = (EventCategory) getGroup(groupPosition);
-    switch (event.getType()) {
-      case ELECTION:
-        return setupElectionElement((Election) event, category, layoutEventBinding);
-      case ROLL_CALL:
-        return setupRollCallElement((RollCall) event, layoutEventBinding);
-      default:
-        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
-        layoutEventBinding.executePendingBindings();
-        return layoutEventBinding.getRoot();
-    }
+//    Event event = ((Event) getChild(groupPosition, childPosition));
+//    EventLayoutBinding layoutEventBinding;
+//    if (convertView == null) {
+//      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+//      layoutEventBinding = EventLayoutBinding.inflate(inflater, parent, false);
+//    } else {
+//      layoutEventBinding = DataBindingUtil.getBinding(convertView);
+//    }
+//    layoutEventBinding.setEvent(event);
+//
+//    EventCategory category = (EventCategory) getGroup(groupPosition);
+//    switch (event.getType()) {
+//      case ELECTION:
+//        return setupElectionElement((Election) event, category, layoutEventBinding);
+//      case ROLL_CALL:
+//        return setupRollCallElement((RollCall) event, layoutEventBinding);
+//      default:
+//        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+//        layoutEventBinding.executePendingBindings();
+//        return layoutEventBinding.getRoot();
+//    }
+    return null;
   }
 
   /**
@@ -314,102 +315,102 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private View setupElectionElement(
       Election election, EventCategory category, EventLayoutBinding layoutEventBinding) {
-    ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
-    electionBinding.setElection(election);
-    Date dStart = new java.util.Date(election.getStartTimestampInMillis());
-    String dateStart = DATE_FORMAT.format(dStart);
-    electionBinding.electionStartDate.setText("Start date : " + dateStart);
-    Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
-    String dateEnd = DATE_FORMAT.format(dEnd);
-    electionBinding.electionEndDate.setText("End Date : " + dateEnd);
-    viewModel.setCurrentElection(election);
-    viewModel
-        .getEndElectionEvent()
-        .observe(
-            lifecycleOwner,
-            end -> {
-              electionBinding.electionActionButton.setText(R.string.election_ended);
-              electionBinding.electionActionButton.setEnabled(false);
-            });
-
-    if (category == PRESENT) {
-      // Check that election has been opened (synch with backend, casting enabled only after opened)
-      // Election has to opens automatically when it reaches it's scheduled start time
-      if (election.getState() == CREATED){
-        viewModel.setCurrentElection(election);
-        viewModel.openElection(election);
-      }
-
-      electionBinding.electionActionButton.setText(R.string.cast_vote);
-      electionBinding.electionActionButton.setEnabled(true);
-      electionBinding.electionActionButton.setOnClickListener(
-          clicked -> {
-            viewModel.setCurrentElection(election);
-            viewModel.openCastVotes();
-          });
-    } else if (category == PAST) {
-
-      electionBinding.electionActionButton.setEnabled(true);
-      if (!viewModel.isOrganizer().getValue()) {
-        electionBinding.electionActionButton.setEnabled(false);
-      }
-
-      if (election.getState() == CLOSED) {
-        electionBinding.electionActionButton.setText(R.string.election_ended);
-        electionBinding.electionActionButton.setEnabled(false);
-      } else if (election.getState() == RESULTS_READY) {
-        electionBinding.electionActionButton.setText(R.string.show_results);
-        electionBinding.electionActionButton.setEnabled(true);
-        electionBinding.electionActionButton.setOnClickListener(
-            clicked -> {
-              viewModel.setCurrentElection(election);
-              viewModel.openElectionResults(true);
-            });
-      } else {
-        electionBinding.electionActionButton.setText(R.string.tally_votes);
-        electionBinding.electionActionButton.setOnClickListener(
-            clicked -> {
-              viewModel.setCurrentElection(election);
-              viewModel.endElection(election);
-            });
-      }
-    } else if (category == FUTURE){
-      electionBinding.electionActionButton.setOnClickListener(
-          clicked -> {
-            viewModel.setCurrentElection(election);
-            viewModel.openElection(election);
-          });
-
-      electionBinding.electionActionButton.setText(R.string.start);
-      // Only the organizer can start the vote
-      electionBinding.electionActionButton.setEnabled(viewModel.isOrganizer().getValue());
-      viewModel
-          .getOpenElectionEvent()
-          .observe(
-              lifecycleOwner,
-              open -> {
-                electionBinding.electionActionButton.setText(R.string.refresh_start);
-                electionBinding.electionActionButton.setEnabled(false);
-              });
-    }
-
-    electionBinding.electionEditButton.setOnClickListener(
-      clicked -> {
-        viewModel.setCurrentElection(election);
-        viewModel.openManageElection(true);
-      });
-
-    electionBinding.detailsButton.setOnClickListener(
-        clicked -> {
-          viewModel.setCurrentElection(election);
-          viewModel.openStartElection(true);
-        });
-    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
-
-    electionBinding.setEventCategory(category);
-    electionBinding.setViewModel(viewModel);
-    electionBinding.setLifecycleOwner(lifecycleOwner);
-    electionBinding.executePendingBindings();
+  //  ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
+//    electionBinding.setElection(election);
+//    Date dStart = new java.util.Date(election.getStartTimestampInMillis());
+//    String dateStart = DATE_FORMAT.format(dStart);
+//    electionBinding.electionStartDate.setText("Start date : " + dateStart);
+//    Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
+//    String dateEnd = DATE_FORMAT.format(dEnd);
+//    electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+//    viewModel.setCurrentElection(election);
+//    viewModel
+//        .getEndElectionEvent()
+//        .observe(
+//            lifecycleOwner,
+//            end -> {
+//              electionBinding.electionActionButton.setText(R.string.election_ended);
+//              electionBinding.electionActionButton.setEnabled(false);
+//            });
+//
+//    if (category == PRESENT) {
+//      // Check that election has been opened (synch with backend, casting enabled only after opened)
+//      // Election has to opens automatically when it reaches it's scheduled start time
+//      if (election.getState() == CREATED){
+//        viewModel.setCurrentElection(election);
+//        viewModel.openElection(election);
+//      }
+//
+//      electionBinding.electionActionButton.setText(R.string.cast_vote);
+//      electionBinding.electionActionButton.setEnabled(true);
+//      electionBinding.electionActionButton.setOnClickListener(
+//          clicked -> {
+//            viewModel.setCurrentElection(election);
+//            viewModel.openCastVotes();
+//          });
+//    } else if (category == PAST) {
+//
+//      electionBinding.electionActionButton.setEnabled(true);
+//      if (!viewModel.isOrganizer().getValue()) {
+//        electionBinding.electionActionButton.setEnabled(false);
+//      }
+//
+//      if (election.getState() == CLOSED) {
+//        electionBinding.electionActionButton.setText(R.string.election_ended);
+//        electionBinding.electionActionButton.setEnabled(false);
+//      } else if (election.getState() == RESULTS_READY) {
+//        electionBinding.electionActionButton.setText(R.string.show_results);
+//        electionBinding.electionActionButton.setEnabled(true);
+//        electionBinding.electionActionButton.setOnClickListener(
+//            clicked -> {
+//              viewModel.setCurrentElection(election);
+//              viewModel.openElectionResults(true);
+//            });
+//      } else {
+//        electionBinding.electionActionButton.setText(R.string.tally_votes);
+//        electionBinding.electionActionButton.setOnClickListener(
+//            clicked -> {
+//              viewModel.setCurrentElection(election);
+//              viewModel.endElection(election);
+//            });
+//      }
+//    } else if (category == FUTURE){
+//      electionBinding.electionActionButton.setOnClickListener(
+//          clicked -> {
+//            viewModel.setCurrentElection(election);
+//            viewModel.openElection(election);
+//          });
+//
+//      electionBinding.electionActionButton.setText(R.string.start);
+//      // Only the organizer can start the vote
+//      electionBinding.electionActionButton.setEnabled(viewModel.isOrganizer().getValue());
+//      viewModel
+//          .getOpenElectionEvent()
+//          .observe(
+//              lifecycleOwner,
+//              open -> {
+//                electionBinding.electionActionButton.setText(R.string.refresh_start);
+//                electionBinding.electionActionButton.setEnabled(false);
+//              });
+//    }
+//
+//    electionBinding.electionEditButton.setOnClickListener(
+//      clicked -> {
+//        viewModel.setCurrentElection(election);
+//        viewModel.openManageElection(true);
+//      });
+//
+//    electionBinding.detailsButton.setOnClickListener(
+//        clicked -> {
+//          viewModel.setCurrentElection(election);
+//          viewModel.openStartElection(true);
+//        });
+//    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+//
+//    electionBinding.setEventCategory(category);
+//    electionBinding.setViewModel(viewModel);
+//    electionBinding.setLifecycleOwner(lifecycleOwner);
+//    electionBinding.executePendingBindings();
     return layoutEventBinding.getRoot();
   }
 
@@ -421,42 +422,42 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    * @return the View corresponding to the child at the specified position
    */
   private View setupRollCallElement(RollCall rollCall, EventLayoutBinding layoutEventBinding) {
-    RollCallEventLayoutBinding binding = layoutEventBinding.includeLayoutRollCall;
-
-    binding.rollcallDate.setText(
-        "Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
-    binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
-    binding.rollcallLocation.setText("Location: " + rollCall.getLocation());
-
-    binding.rollcallOpenButton.setVisibility(View.GONE);
-    binding.rollcallReopenButton.setVisibility(View.GONE);
-    binding.rollcallScheduledButton.setVisibility(View.GONE);
-    binding.rollcallEnterButton.setVisibility(View.GONE);
-    binding.rollcallClosedButton.setVisibility(View.GONE);
-
-    boolean isOrganizer = viewModel.isOrganizer().getValue();
-
-    if (isOrganizer && rollCall.getState() == EventState.CREATED) {
-      binding.rollcallOpenButton.setVisibility(View.VISIBLE);
-    } else if (isOrganizer && rollCall.getState() == CLOSED) {
-      binding.rollcallReopenButton.setVisibility(View.VISIBLE);
-    } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
-      binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
-    } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
-      binding.rollcallEnterButton.setVisibility(View.VISIBLE);
-    } else if (!isOrganizer && rollCall.getState() == CLOSED) {
-      binding.rollcallClosedButton.setVisibility(View.VISIBLE);
-    }
-
-    binding.rollcallOpenButton.setOnClickListener(
-        clicked -> viewModel.openRollCall(rollCall.getId()));
-    binding.rollcallReopenButton.setOnClickListener(
-        clicked -> viewModel.openRollCall(rollCall.getId()));
-    binding.rollcallEnterButton.setOnClickListener(
-        clicked -> viewModel.enterRollCall(rollCall.getPersistentId()));
-    binding.setLifecycleOwner(lifecycleOwner);
-
-    binding.executePendingBindings();
+//    RollCallEventLayoutBinding binding = layoutEventBinding.includeLayoutRollCall;
+//
+//    binding.rollcallDate.setText(
+//        "Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
+//    binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
+//    binding.rollcallLocation.setText("Location: " + rollCall.getLocation());
+//
+//    binding.rollcallOpenButton.setVisibility(View.GONE);
+//    binding.rollcallReopenButton.setVisibility(View.GONE);
+//    binding.rollcallScheduledButton.setVisibility(View.GONE);
+//    binding.rollcallEnterButton.setVisibility(View.GONE);
+//    binding.rollcallClosedButton.setVisibility(View.GONE);
+//
+//    boolean isOrganizer = viewModel.isOrganizer().getValue();
+//
+//    if (isOrganizer && rollCall.getState() == EventState.CREATED) {
+//      binding.rollcallOpenButton.setVisibility(View.VISIBLE);
+//    } else if (isOrganizer && rollCall.getState() == CLOSED) {
+//      binding.rollcallReopenButton.setVisibility(View.VISIBLE);
+//    } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
+//      binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
+//    } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
+//      binding.rollcallEnterButton.setVisibility(View.VISIBLE);
+//    } else if (!isOrganizer && rollCall.getState() == CLOSED) {
+//      binding.rollcallClosedButton.setVisibility(View.VISIBLE);
+//    }
+//
+//    binding.rollcallOpenButton.setOnClickListener(
+//        clicked -> viewModel.openRollCall(rollCall.getId()));
+//    binding.rollcallReopenButton.setOnClickListener(
+//        clicked -> viewModel.openRollCall(rollCall.getId()));
+//    binding.rollcallEnterButton.setOnClickListener(
+//        clicked -> viewModel.enterRollCall(rollCall.getPersistentId()));
+//    binding.setLifecycleOwner(lifecycleOwner);
+//
+//    binding.executePendingBindings();
     return layoutEventBinding.getRoot();
   }
 }

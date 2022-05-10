@@ -109,6 +109,7 @@ dependencies {
     // Android others
     implementation "androidx.lifecycle:lifecycle-reactivestreams:2.4.0"
     implementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     // Hilt
     def hilt_version = "2.38.1"
     implementation "com.google.dagger:hilt-android:$hilt_version"

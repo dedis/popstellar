@@ -1,7 +1,7 @@
 <resources>
   <string name="app_name">popstellar</string>
 
-  <!-- Top Tabs -->
+  <!-- bottom nav -->
   <string name="tab_home">Home</string>
   <string name="tab_connect">Connect</string>
   <string name="tab_launch">Launch</string>
@@ -9,7 +9,9 @@
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
   <string name="tab_social_media">Social Media</string>
-  <string name="tab_digital_cash">Coin Transaction</string>
+  <string name="tab_digital_cash">Digital Cash</string>
+  <string name="event_list">Event List</string>
+  <string name="witnessing">Witnessing</string>
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
@@ -33,6 +35,13 @@
   <string name="text_body_launch">(You can change it later.)\n\n</string>
   <string name="text_entry_launch">Organization name</string>
   <string name="text_button_launch">Launch</string>
+
+<!--  Lao Detail-->
+  <string name="add_election">New Election</string>
+  <string name="add_roll_call">New Roll Call</string>
+  <string name="present_header_title">Current</string>
+  <string name="future_header_title">Upcoming</string>
+  <string name="past_header_title">Previous</string>
 
 
   <!-- Abstract Event-->
@@ -269,4 +278,6 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

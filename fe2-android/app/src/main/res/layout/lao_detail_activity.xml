@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/fragment_container_lao_detail"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <include layout="@layout/tab_home" />
-
-  <include
-    layout="@layout/tab_identity"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_container_lao_detail"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toTopOf="@+id/lao_detail_nav_bar"
     app:layout_constraintTop_toTopOf="parent" />
 
-  <include
-    layout="@layout/tab_social_media"
+  <com.google.android.material.bottomnavigation.BottomNavigationView
+    android:id="@+id/lao_detail_nav_bar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
-
-
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:background="?android:attr/windowBackground"
+    app:labelVisibilityMode="labeled"
+    app:menu="@menu/lao_detail_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
