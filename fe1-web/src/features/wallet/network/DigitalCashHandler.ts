@@ -3,9 +3,9 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { PostTransaction } from './messages/PostTransaction';
 
 /**
- * Handle a RollCallOpen message by opening the corresponding roll call.
+ * Handle a PostTransaction message.
  *
- * @param msg - The extended message for opening a roll call
+ * @param msg - The message
  */
 export function handleTransactionPost(msg: ProcessableMessage): boolean {
   if (

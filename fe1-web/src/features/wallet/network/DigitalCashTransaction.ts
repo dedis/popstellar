@@ -1,5 +1,11 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
+/**
+ * TODO: change the naming convention <==> to coordinate with backend
+ * The naming does not follow the usual convention, but as this was not the priority,
+ * we will fix it later
+ */
+
 export interface DigitalCashTransactionState {
   Version: number;
   TxIn: TxInState[];
@@ -44,7 +50,7 @@ export interface TxInScript {
 export interface TxIn {
   TxOutHash: Hash;
   TxOutIndex: number;
-  Script?: TxInScript; // TODO: Script might be empty if coinbase transaction, how to handle it ? ??????
+  Script?: TxInScript;
 }
 export interface TxOutScript {
   Type: string;
@@ -54,6 +60,10 @@ export interface TxOut {
   Value: number;
   Script: TxOutScript;
 }
+
+/**
+ * A digital cash message object
+ */
 export class DigitalCashMessage {
   public readonly transactionId: Hash;
 

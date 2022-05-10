@@ -3,6 +3,8 @@ import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/me
 import { handleTransactionPost } from './DigitalCashHandler';
 import { PostTransaction } from './messages/PostTransaction';
 
+export * from './DigitalCashMessageApi';
+
 /**
  * Configures the network callbacks in a MessageRegistry.
  *

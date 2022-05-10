@@ -4,6 +4,9 @@ import { Hash, ProtocolError } from 'core/objects';
 import { hashTransaction } from '../DigitalCashHelper';
 import { DigitalCashMessage, DigitalCashTransaction } from '../DigitalCashTransaction';
 
+/**
+ * A digital cash POST TRANSACTION message
+ */
 export class PostTransaction implements MessageData {
   public readonly object: ObjectType = ObjectType.TRANSACTION;
 
@@ -23,7 +26,7 @@ export class PostTransaction implements MessageData {
 
     if (!msg.transaction_id) {
       throw new ProtocolError(
-        "Undefined 'transactionId' parameter encountered during 'PostTransaction'",
+        "Undefined 'transaction_id' parameter encountered during 'PostTransaction'",
       );
     }
     if (hashTransaction(msg.transaction).valueOf() !== msg.transaction_id.valueOf()) {

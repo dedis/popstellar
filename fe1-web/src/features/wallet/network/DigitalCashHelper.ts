@@ -9,6 +9,7 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataTxIns = transaction.TxIn.flatMap((txIn) => {
+    // It might be a coinbase transaction
     if (txIn.Script) {
       return [
         txIn.Script.Pubkey.valueOf(),
@@ -46,7 +47,11 @@ export const getTotalValue = (
   );
   return txOuts.reduce((total, current) => total + current.Value, 0);
 };
-
+/**
+ * Constructs a partial TxIn object from transaction messages to take as input
+ * @param pk the public key of the sender
+ * @param transactionMessages the transaction messages used as inputs
+ */
 export const getTxsInToSign = (
   pk: string,
   transactionMessages: DigitalCashMessage[],
@@ -62,7 +67,11 @@ export const getTxsInToSign = (
     }),
   );
 };
-
+/**
+ * Concatenates the partial TxIn and the TxOut in a string to sign over it by following the digital cash specification
+ * @param txsInt
+ * @param txOuts
+ */
 export const concatenateTxData = (txsInt: Omit<TxIn, 'Script'>[], txOuts: TxOut[]) => {
   const txsInDataString = txsInt.reduce(
     (dataString, txIn) => dataString + txIn.TxOutHash.valueOf() + txIn.TxOutHash.toString(),

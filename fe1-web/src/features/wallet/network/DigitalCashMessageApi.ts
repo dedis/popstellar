@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { Base64UrlData, channelFromIds, Hash, PopToken, PublicKey } from "core/objects";
+import { Base64UrlData, channelFromIds, Hash, PopToken, PublicKey } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
@@ -16,16 +16,18 @@ import { PostTransaction } from './messages/PostTransaction';
 
 const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
 
+/**
+ * Requests a digital cash transaction post
+ * @param from the popToken to send it with
+ * @param to the destination public key
+ * @param amount the value of the transaction
+ */
 export function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
 ): Promise<void> {
   // TODO: Should check total value, OVERFLOW
-
-  // 1. Find all transactions with the "from" public key (hash) in their txOut
-  // 2. Compute the total value of all these txOuts and check that it is bigger than value
-  // 3. Create a new transaction with value sent to "to" and the rest of the balance to "from"
 
   const fromPublicKeyHash = Hash.fromString(from.publicKey.valueOf());
   const toPublicKeyHash = Hash.fromString(to.valueOf());
@@ -103,21 +105,27 @@ export function requestSendTransaction(
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
-
+/**
+ * Requests a digital cash coinbase transaction post
+ * There is no need for a sender as any coinbase transaction that is sent by
+ * an organizer on the channel is considered valid
+ *
+ * @param to the destination public key
+ * @param amount the value of the transaction
+ */
 export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promise<void> {
   const toPublicKeyHash = Hash.fromString(to.valueOf());
 
-  const txOutTo = {
-    Value: amount,
-    Script: {
-      Type: STRINGS.script_type,
-      PubkeyHash: toPublicKeyHash,
+  const txOuts: TxOut[] = [
+    {
+      Value: amount,
+      Script: {
+        Type: STRINGS.script_type,
+        PubkeyHash: toPublicKeyHash,
+      },
     },
-  };
+  ];
 
-  const txOuts: TxOut[] = [txOutTo];
-
-  // Reconstruct the txIns with the signature
   const txIns: TxIn[] = [
     {
       TxOutHash: new Hash(STRINGS.coinbase_hash),
