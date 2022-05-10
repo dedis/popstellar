@@ -259,6 +259,30 @@ public class Election extends Event {
         "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
   }
 
+  /**
+   * Generate the id for a vote of dataCastVote.
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
+   *
+   * @param electionId ID of the Election
+   * @param questionId ID of the Election question
+   * @param voteIndex index(es) of the vote
+   * @param writeInEncrypted string representing the write in
+   * @param writeInEnabled boolean representing if write enabled or not
+   * @return the ID of an election question computed as
+   *     Hash('Vote'||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
+   */
+  public static String generateEncryptedElectionVoteId(
+      String electionId,
+      String questionId,
+      List<String> voteIndex,
+      String writeInEncrypted,
+      boolean writeInEnabled) {
+    // HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))),
+    // concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+    return Hash.hash(
+        "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex.toString());
+  }
+
   @Override
   public String toString() {
     return "Election{"

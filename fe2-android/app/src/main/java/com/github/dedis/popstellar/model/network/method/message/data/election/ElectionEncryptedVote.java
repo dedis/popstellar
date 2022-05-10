@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnegative;
 
@@ -22,24 +23,22 @@ public class ElectionEncryptedVote {
   @SerializedName("vote")
   private final List<String> vote;
 
-
-
   /**
    * Constructs an encrypted vote object
    * @param questionId question ID ( SHA256('Question'||election_id||question))
    * @param voteArray Array[String]] index(es) corresponding to the ballot_options
-   * @param encrytedWriteInEnabled
-   * @param encrytedWriteIn string corresponding to the write_in
+   * @param encryptedWriteIn string representing the write in
+   * @param encryptedWriteIn boolean asserting if write in mode is present
    */
   public ElectionEncryptedVote(
-      @NonNull String questionId,
+      @NonNull String electionId,
       @NonNull List<String> voteArray,
-      @NonNull String encrytedWriteInEnabled,
-      @NonNull String encrytedWriteIn) {
+      @NonNull String encryptedWriteIn,
+      @NonNull Boolean writeInEnabled,
+      @NonNull String questionId) {
 
     this.questionId=questionId;
-    //TO CHANGE
-    this.id = "d";
+    this.id = Election.generateEncryptedElectionVoteId(electionId, questionId, voteArray, encryptedWriteIn, writeInEnabled);
     this.vote = voteArray;
   }
 
@@ -63,6 +62,19 @@ public class ElectionEncryptedVote {
     return java.util.Objects.hash(getId(), getVote(), getQuestionId());
   }
 
-
+  @Override
+  public String toString(){
+    return "ElectionVote={"
+        + "id='"
+        + id
+        + '\''
+        + ", questionId='"
+        + '\''
+        + questionId
+        + ", vote="
+        + Arrays.toString(vote.toArray())
+        + '\''
+        + '}';
+  }
 
 }

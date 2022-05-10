@@ -16,12 +16,9 @@ public class ElectionVote {
   @SerializedName(value = "question")
   private final String questionId; // id of the question
 
-  private final List<Integer> vote; // list of indexes for the votes
-  private final boolean
-      writeInEnabled; // represents a boolean to know whether write_in is allowed or not
-
-  @SerializedName(value = "write_in")
-  private final String writeIn; // If write in is enabled this represents the writeIn string
+  // represents a boolean to know whether write_in is allowed or not
+  // list of indexes for the votes
+  private final List<Integer> vote;
 
   /**
    * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
@@ -40,9 +37,7 @@ public class ElectionVote {
       String electionId) {
 
     this.questionId = questionId;
-    this.writeInEnabled = writeInEnabled;
     this.vote = writeInEnabled ? null : vote;
-    this.writeIn = writeInEnabled ? writeIn : null;
     this.id =
         Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
   }
@@ -53,10 +48,6 @@ public class ElectionVote {
 
   public String getQuestionId() {
     return questionId;
-  }
-
-  public String getWriteIn() {
-    return writeIn;
   }
 
   public List<Integer> getVotes() {
@@ -73,14 +64,13 @@ public class ElectionVote {
     }
     ElectionVote that = (ElectionVote) o;
     return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
-        && java.util.Objects.equals(getWriteIn(), that.getWriteIn())
         && java.util.Objects.equals(getId(), that.getId())
         && java.util.Objects.equals(getVotes(), that.getVotes());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getId(), getVotes(), getWriteIn(), getQuestionId());
+    return java.util.Objects.hash(getId(), getVotes(), getQuestionId());
   }
 
   @Override
@@ -94,10 +84,6 @@ public class ElectionVote {
         + '\''
         + ", vote="
         + Arrays.toString(vote.toArray())
-        + ", writeInEnabled="
-        + writeInEnabled
-        + ", writeIn='"
-        + writeIn
         + '\''
         + '}';
   }
