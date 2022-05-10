@@ -295,7 +295,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
 	}
-	if schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes) != nil{
+	if schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes) != nil {
 		return publish.ID, xerrors.Errorf("Signature was not computed correctly")
 	}
 
