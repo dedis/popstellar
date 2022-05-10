@@ -32,6 +32,7 @@ export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Hash will take care of concatenating each fields length
   return Hash.fromStringArray(...data);
 };
+
 /**
  * Get the total value out that corresponds to this public key hash from an array of transactions
  * @param pkHash the public key hash
@@ -47,6 +48,7 @@ export const getTotalValue = (
   );
   return txOuts.reduce((total, current) => total + current.Value, 0);
 };
+
 /**
  * Constructs a partial TxIn object from transaction messages to take as input
  * @param pk the public key of the sender
@@ -67,6 +69,7 @@ export const getTxsInToSign = (
     }),
   );
 };
+
 /**
  * Concatenates the partial TxIn and the TxOut in a string to sign over it by following the digital cash specification
  * @param txsInt

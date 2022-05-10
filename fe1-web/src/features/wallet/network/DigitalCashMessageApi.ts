@@ -105,6 +105,7 @@ export function requestSendTransaction(
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
+
 /**
  * Requests a digital cash coinbase transaction post
  * There is no need for a sender as any coinbase transaction that is sent by
