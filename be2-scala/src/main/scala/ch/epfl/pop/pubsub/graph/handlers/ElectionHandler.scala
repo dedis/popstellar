@@ -61,7 +61,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
         val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
         val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-          dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+        dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
 
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
