@@ -1,58 +1,58 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface DigitalCashTransactionState {
-  version: number;
-  txsIn: TxInState[];
-  txsOut: TxOutState[];
-  lockTime: number;
+  Version: number;
+  TxIn: TxInState[];
+  TxOut: TxOutState[];
+  LockTime: number;
 }
 export interface DigitalCashMessageState {
   transaction: DigitalCashTransactionState;
   transactionId: string;
 }
 export interface TxOutState {
-  value: number;
-  script: TxOutScriptState;
+  Value: number;
+  Script: TxOutScriptState;
 }
 export interface TxInScriptState {
-  type: string;
-  publicKey: string;
-  signature: string;
+  Type: string;
+  Pubkey: string;
+  Sig: string;
 }
 
 export interface TxInState {
-  txOutHash: string;
-  txOutIndex: number;
-  script: TxInScriptState;
+  TxOutHash: string;
+  TxOutIndex: number;
+  Script: TxInScriptState;
 }
 export interface TxOutScriptState {
-  type: string;
-  publicKeyHash: string;
+  Type: string;
+  PubkeyHash: string;
 }
 
 export interface DigitalCashTransaction {
-  version: number;
-  txsIn: TxIn[];
-  txsOut: TxOut[];
-  lockTime: number;
+  Version: number;
+  TxIn: TxIn[];
+  TxOut: TxOut[];
+  LockTime: number;
 }
 export interface TxInScript {
-  type: string;
-  publicKey: PublicKey;
-  signature: Signature;
+  Type: string;
+  Pubkey: PublicKey;
+  Sig: Signature;
 }
 export interface TxIn {
-  txOutHash: Hash;
-  txOutIndex: number;
-  script: TxInScript | any; // TODO: Script might be empty if coinbase transaction, how to handle it ?
+  TxOutHash: Hash;
+  TxOutIndex: number;
+  Script: TxInScript | any; // TODO: Script might be empty if coinbase transaction, how to handle it ? ??????
 }
 export interface TxOutScript {
-  type: string;
-  publicKeyHash: Hash;
+  Type: string;
+  PubkeyHash: Hash;
 }
 export interface TxOut {
-  value: number;
-  script: TxOutScript;
+  Value: number;
+  Script: TxOutScript;
 }
 export class DigitalCashMessage {
   public readonly transactionId: Hash;
@@ -62,14 +62,14 @@ export class DigitalCashMessage {
   constructor(obj: Partial<DigitalCashMessage>) {
     if (obj === undefined || obj === null) {
       throw new Error(
-        'Error encountered while creating a DigitalCashTransaction object: undefined/null parameters',
+        'Error encountered while creating a DigitalCashMessage object: undefined/null parameters',
       );
     }
     if (obj.transaction === undefined) {
       throw new Error("Undefined 'transaction' when creating 'DigitalCashMessage'");
     }
     if (obj.transactionId === undefined) {
-      throw new Error("Undefined 'transactionID' when creating 'DigitalCashTransaction'");
+      throw new Error("Undefined 'transactionID' when creating 'DigitalCashMessage'");
     }
 
     this.transaction = obj.transaction;
@@ -79,30 +79,30 @@ export class DigitalCashMessage {
   public static fromState(digitalCashMessageState: DigitalCashMessageState): DigitalCashMessage {
     return new DigitalCashMessage({
       transaction: {
-        version: digitalCashMessageState.transaction.version,
-        txsOut: digitalCashMessageState.transaction.txsOut.map((txOutState) => {
+        Version: digitalCashMessageState.transaction.Version,
+        TxOut: digitalCashMessageState.transaction.TxOut.map((txOutState) => {
           return {
             ...txOutState,
-            script: {
-              type: txOutState.script.type,
-              publicKeyHash: new Hash(txOutState.script.publicKeyHash),
+            Script: {
+              Type: txOutState.Script.Type,
+              PubkeyHash: new Hash(txOutState.Script.PubkeyHash),
             },
           };
         }),
-        txsIn: digitalCashMessageState.transaction.txsIn.map((txInState) => {
+        TxIn: digitalCashMessageState.transaction.TxIn.map((txInState) => {
           return {
             ...txInState,
-            txOutHash: new Hash(txInState.txOutHash),
-            script: txInState.script.type // In the case of a coinbase transaction
+            TxOutHash: new Hash(txInState.TxOutHash),
+            Script: txInState.Script.Type // In the case of a coinbase transaction
               ? {
-                  type: txInState.script.type,
-                  publicKey: new PublicKey(txInState.script.publicKey),
-                  signature: new Signature(txInState.script.signature),
+                  Type: txInState.Script.Type,
+                  Pubkey: new PublicKey(txInState.Script.Pubkey),
+                  Sig: new Signature(txInState.Script.Sig),
                 }
               : {},
           };
         }),
-        lockTime: digitalCashMessageState.transaction.lockTime,
+        LockTime: digitalCashMessageState.transaction.LockTime,
       },
       transactionId: new Hash(digitalCashMessageState.transactionId),
     });
@@ -112,23 +112,23 @@ export class DigitalCashMessage {
     return {
       transaction: {
         ...this.transaction,
-        txsOut: this.transaction.txsOut.map((txOut) => {
+        TxOut: this.transaction.TxOut.map((txOut) => {
           return {
             ...txOut,
-            script: {
-              type: txOut.script.type,
-              publicKeyHash: txOut.script.publicKeyHash.valueOf(),
+            Script: {
+              Type: txOut.Script.Type,
+              PubkeyHash: txOut.Script.PubkeyHash.valueOf(),
             },
           };
         }),
-        txsIn: this.transaction.txsIn.map((txIn) => {
+        TxIn: this.transaction.TxIn.map((txIn) => {
           return {
             ...txIn,
-            txOutHash: txIn.txOutHash.valueOf(),
-            script: {
-              type: txIn.script.type,
-              publicKey: txIn.script.publicKey.valueOf(),
-              signature: txIn.script.signature.valueOf(),
+            TxOutHash: txIn.TxOutHash.valueOf(),
+            Script: {
+              Type: txIn.Script.Type,
+              Pubkey: txIn.Script.Pubkey.valueOf(),
+              Sig: txIn.Script.Sig.valueOf(),
             },
           };
         }),

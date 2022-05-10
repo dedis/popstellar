@@ -9,7 +9,7 @@ export class PostTransaction implements MessageData {
 
   public readonly action: ActionType = ActionType.POST;
 
-  public readonly transactionId: Hash;
+  public readonly transaction_id: Hash;
 
   public readonly transaction: DigitalCashTransaction;
 
@@ -21,17 +21,17 @@ export class PostTransaction implements MessageData {
     }
     this.transaction = msg.transaction;
 
-    if (!msg.transactionId) {
+    if (!msg.transaction_id) {
       throw new ProtocolError(
         "Undefined 'transactionId' parameter encountered during 'PostTransaction'",
       );
     }
-    if (hashTransaction(msg.transaction).valueOf() !== msg.transactionId.valueOf()) {
+    if (hashTransaction(msg.transaction).valueOf() !== msg.transaction_id.valueOf()) {
       throw new ProtocolError(
         'Invalid transaction hash encountered: the computed hash does not correspond to the received hash',
       );
     }
-    this.transactionId = msg.transactionId;
+    this.transaction_id = msg.transaction_id;
   }
 
   /**
@@ -42,7 +42,7 @@ export class PostTransaction implements MessageData {
   public static fromJson(obj: any): PostTransaction {
     const message = DigitalCashMessage.fromState(obj);
     return new PostTransaction({
-      transactionId: message.transactionId,
+      transaction_id: message.transactionId,
       transaction: message.transaction,
     });
   }

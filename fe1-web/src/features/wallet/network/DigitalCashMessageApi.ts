@@ -45,10 +45,10 @@ export function requestSendTransaction(
   }
 
   const txOutTo = {
-    value: amount,
-    script: {
-      type: STRINGS.script_type,
-      publicKeyHash: toPublicKeyHash,
+    Value: amount,
+    Script: {
+      Type: STRINGS.script_type,
+      PubkeyHash: toPublicKeyHash,
     },
   };
 
@@ -58,16 +58,16 @@ export function requestSendTransaction(
     // Send the rest of the value back to the owner, so that the entire balance
     // is always in only one TxOut
     const txOutFrom: TxOut = {
-      value: totalValueOut - amount,
-      script: {
-        type: STRINGS.script_type,
-        publicKeyHash: fromPublicKeyHash,
+      Value: totalValueOut - amount,
+      Script: {
+        Type: STRINGS.script_type,
+        PubkeyHash: fromPublicKeyHash,
       },
     };
     txOuts.push(txOutFrom);
   }
 
-  const txIns: Omit<TxIn, 'script'>[] = getTxsInToSign(from.publicKey.valueOf(), messages);
+  const txIns: Omit<TxIn, 'Script'>[] = getTxsInToSign(from.publicKey.valueOf(), messages);
   // Now we need to define each objects because we need some string representation of everything to hash on
 
   // Concatenate the data to sign
@@ -80,23 +80,23 @@ export function requestSendTransaction(
   const finalTxIns: TxIn[] = txIns.map((txIn) => {
     return {
       ...txIn,
-      script: {
-        type: STRINGS.script_type,
-        publicKey: from.publicKey,
-        signature: signature,
+      Script: {
+        Type: STRINGS.script_type,
+        Pubkey: from.publicKey,
+        Sig: signature,
       },
     };
   });
 
   const transaction: DigitalCashTransaction = {
-    version: 1,
-    txsIn: finalTxIns,
-    txsOut: txOuts,
-    lockTime: 0,
+    Version: 1,
+    TxIn: finalTxIns,
+    TxOut: txOuts,
+    LockTime: 0,
   };
 
   const postTransactionMessage = new PostTransaction({
-    transactionId: hashTransaction(transaction),
+    transaction_id: hashTransaction(transaction),
     transaction: transaction,
   });
   const lao: Lao = OpenedLaoStore.get();
@@ -108,10 +108,10 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
   const toPublicKeyHash = Hash.fromString(to.valueOf());
 
   const txOutTo = {
-    value: amount,
-    script: {
-      type: STRINGS.script_type,
-      publicKeyHash: toPublicKeyHash,
+    Value: amount,
+    Script: {
+      Type: STRINGS.script_type,
+      PubkeyHash: toPublicKeyHash,
     },
   };
 
@@ -120,21 +120,21 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
   // Reconstruct the txIns with the signature
   const txIns: TxIn[] = [
     {
-      txOutHash: new Hash(STRINGS.coinbase_hash),
-      txOutIndex: -1,
-      script: {},
+      TxOutHash: new Hash(STRINGS.coinbase_hash),
+      TxOutIndex: -1,
+      Script: {},
     },
   ];
 
   const transaction: DigitalCashTransaction = {
-    version: 1,
-    txsIn: txIns,
-    txsOut: txOuts,
-    lockTime: 0,
+    Version: 1,
+    TxIn: txIns,
+    TxOut: txOuts,
+    LockTime: 0,
   };
 
   const postTransactionMessage = new PostTransaction({
-    transactionId: hashTransaction(transaction),
+    transaction_id: hashTransaction(transaction),
     transaction: transaction,
   });
 
