@@ -131,7 +131,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val results = mutable.HashMap[Hash, Map[String, Int]]() ++ r
     for (castVoteElection <- castsVotesElections;
          voteElection <- castVoteElection.votes) {
-      val question = voteElection.question //.asInstanceOf[ElectionQuestion]
+      val question = voteElection.question
       val ballots = question2Ballots(question)
       val ballot = voteElection.vote match {
         case Some(List(index)) => ballots.toArray.apply(index)
