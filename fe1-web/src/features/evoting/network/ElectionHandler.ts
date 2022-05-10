@@ -5,13 +5,62 @@ import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionStatus, RegisteredVote } from '../objects';
+import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
+import { addElectionKey } from '../reducer/ElectionKeyReducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
+import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
 
 /**
  * Handlers for all election related messages coming from the network.
  */
+
+/**
+ * Returns a function that handles an ElectionKey message
+ * It does so by storing the election key in the redux store
+ */
+export const handleElectionKeyMessage =
+  (getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey']) =>
+  (msg: ProcessableMessage) => {
+    if (
+      msg.messageData.object !== ObjectType.ELECTION ||
+      msg.messageData.action !== ActionType.KEY
+    ) {
+      console.warn('handleElectionKeyMessage was called to process an unsupported message', msg);
+      return false;
+    }
+
+    const makeErr = (err: string) => `election/key was not processed: ${err}`;
+
+    // obtain the lao id from the channel
+    if (!msg.channel) {
+      console.warn(makeErr('No channel found in message'));
+      return false;
+    }
+
+    const electionKeyMessage = msg.messageData as ElectionKey;
+    // for now *ALL* election key messages *MUST* be sent by the backend of the organizer
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+
+    if (!organizerBackendPublicKey) {
+      console.warn(makeErr("the organizer backend's public key is unkown"));
+      return false;
+    }
+
+    if (organizerBackendPublicKey.valueOf() !== msg.sender.valueOf()) {
+      console.warn(makeErr("the senders' public key does not match the organizer backend's"));
+      return false;
+    }
+
+    dispatch(
+      addElectionKey({
+        electionId: electionKeyMessage.election.valueOf(),
+        electionKey: electionKeyMessage.election_key.valueOf(),
+      }),
+    );
+
+    return true;
+  };
 
 /**
  * Returns a function that handles an ElectionSetup message by setting up the election in the current Lao.
@@ -32,11 +81,24 @@ export const handleElectionSetupMessage =
     const elecMsg = msg.messageData as SetupElection;
     elecMsg.validate(msg.laoId);
 
+    // check if the election version is supported by the frontend
+    if (
+      ![ElectionVersion.OPEN_BALLOT, ElectionVersion.SECRET_BALLOT].includes(
+        elecMsg.version as ElectionVersion,
+      )
+    ) {
+      console.warn(
+        'handleElectionSetupMessage was called to process an unsupported election version',
+        msg,
+      );
+      return false;
+    }
+
     const election = new Election({
       lao: elecMsg.lao,
       id: elecMsg.id,
       name: elecMsg.name,
-      version: elecMsg.version,
+      version: elecMsg.version as ElectionVersion,
       createdAt: elecMsg.created_at,
       start: elecMsg.start_time,
       end: elecMsg.end_time,

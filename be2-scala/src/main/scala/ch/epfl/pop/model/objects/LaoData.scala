@@ -18,25 +18,23 @@ import com.google.crypto.tink.subtle.Ed25519Sign
  * @param privateKey : the LAO's own private key, used to sign messages
  * @param publicKey  : the LAO's own public key, used to sign messages
  * @param witnesses  : the LAO's list of witnesses
- * @param address : the canonical address of the Server
  */
 final case class LaoData(
                           owner: PublicKey,
                           attendees: List[PublicKey],
                           privateKey: PrivateKey,
                           publicKey: PublicKey,
-                          witnesses: List[PublicKey],
-                          address: String
+                          witnesses: List[PublicKey]
                         ) {
   def toJsonString: String = {
     val that: LaoData = this // tricks the compiler into inferring the right type
     that.toJson.toString
   }
 
-  def updateWith(message: Message, address: String): LaoData = {
+  def updateWith(message: Message): LaoData = {
     message.decodedData.fold(this) {
-      case call: CloseRollCall => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, address)
-      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses, address)
+      case call: CloseRollCall => LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
+      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses)
       case _ => this
     }
   }
@@ -51,14 +49,14 @@ object LaoData extends Parsable {
              publicKey: PublicKey,
              witnesses: List[PublicKey]
            ): LaoData = {
-    new LaoData(owner, attendees, privateKey, publicKey, witnesses, "")
+    new LaoData(owner, attendees, privateKey, publicKey, witnesses)
   }
 
   // to simplify the use of updateWith during a CreateLao process, the keypair is generated here
   // in the same way as it would be elsewhere
   def apply(): LaoData = {
     val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty, "")
+    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty)
   }
 
   override def buildFromJson(payload: String): LaoData = payload.parseJson.asJsObject.convertTo[LaoData] // doesn't decode data

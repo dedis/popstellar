@@ -1,172 +1,54 @@
 import PropTypes from 'prop-types';
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { SectionList, StyleSheet, Text, TextStyle, View } from 'react-native';
-import { Badge } from 'react-native-elements';
-import { useToast } from 'react-native-toast-notifications';
+import React, { FunctionComponent, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
-import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import { Spacing, Typography } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
-import STRINGS from 'resources/strings';
-
-import { EvotingHooks } from '../hooks';
-import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
-import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
-import BarChartDisplay from './BarChartDisplay';
+import { Election, ElectionStatus } from '../objects';
+import { makeElectionKeySelector } from '../reducer';
+import ElectionNotStarted from './ElectionNotStarted';
+import ElectionOpened from './ElectionOpened';
+import ElectionResult from './ElectionResult';
+import ElectionTerminated from './ElectionTerminated';
 
 /**
  * Component used to display a Election event in the LAO event list
  */
 
-const styles = StyleSheet.create({
-  text: {
-    ...Typography.base,
-  } as TextStyle,
-  textOptions: {
-    marginHorizontal: Spacing.s,
-    fontSize: 16,
-    textAlign: 'center',
-  } as TextStyle,
-  textQuestions: {
-    ...Typography.base,
-    fontSize: 20,
-  } as TextStyle,
-});
-
 const EventElection = (props: IPropTypes) => {
   const { event: election, isOrganizer } = props;
-  const laoId = EvotingHooks.useCurrentLaoId();
 
-  const toast = useToast();
+  const electionKeySelector = useMemo(
+    () => makeElectionKeySelector(election.id.valueOf()),
+    [election.id],
+  );
+  const electionKey = useSelector(electionKeySelector);
+
   const questions = useMemo(
     () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
     [election.questions],
   );
-  const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
-  const [hasVoted, setHasVoted] = useState(0);
 
-  const onCastVote = () => {
-    castVote(laoId, election, selectedBallots)
-      .then(() => setHasVoted((prev) => prev + 1))
-      .catch((err) => {
-        console.error('Could not cast Vote, error:', err);
-        toast.show(`Could not cast Vote, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
-  const onOpenElection = () => {
-    console.log('Opening Election');
-    openElection(laoId, election)
-      .then(() => console.log('Election Opened'))
-      .catch((err) => {
-        console.error('Could not open election, error:', err);
-        toast.show(`Could not open election, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
-  const onTerminateElection = () => {
-    console.log('Terminating Election');
-    terminateElection(laoId, election)
-      .then(() => console.log('Election Terminated'))
-      .catch((err) => {
-        console.error('Could not terminate election, error:', err);
-        toast.show(`Could not terminate election, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
-  // Here we use the election object form the redux store in order to see the electionStatus
-  // update when an  incoming electionEnd or electionResult message comes
-  // (in handler/ElectionHandler.ts)
-  const getElectionDisplay = (status: ElectionStatus) => {
-    switch (status) {
-      case ElectionStatus.NOT_STARTED:
-        return (
-          <>
-            <SectionList
-              sections={questions}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={styles.textQuestions}>{title}</Text>
-              )}
-              renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-            />
-            {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
-          </>
-        );
-      case ElectionStatus.OPENED:
-        return (
-          <>
-            {questions.map((q, idx) => (
-              <CheckboxList
-                key={q.title + idx.toString()}
-                title={q.title}
-                values={q.data}
-                onChange={(values: number[]) =>
-                  setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
-                }
-              />
-            ))}
-            <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
-            <Badge value={hasVoted} status="success" />
-            {isOrganizer && (
-              <WideButtonView
-                title="Terminate Election / Tally Votes"
-                onPress={onTerminateElection}
-              />
-            )}
-          </>
-        );
-      case ElectionStatus.TERMINATED:
-        return (
-          <>
-            <Text style={styles.text}>Election Terminated</Text>
-            <Text style={styles.text}>Waiting for result</Text>
-          </>
-        );
-      case ElectionStatus.RESULT:
-        return (
-          <>
-            <Text style={styles.text}>Election Results</Text>
-            {election.questionResult &&
-              election.questionResult.map((questionResult: QuestionResult) => {
-                const question = election.questions.find((q) => q.id === questionResult.id);
-
-                return question ? (
-                  <View>
-                    <Text style={styles.text}>{question.question}</Text>
-                    <BarChartDisplay
-                      data={questionResult.result}
-                      key={questionResult.id.valueOf()}
-                    />
-                  </View>
-                ) : null;
-              })}
-          </>
-        );
-      default:
-        console.warn('Election Status was undefined in Election display', election);
-        return null;
-    }
-  };
-
-  return (
-    <>
-      <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      {getElectionDisplay(election.electionStatus)}
-    </>
-  );
+  switch (election.electionStatus) {
+    case ElectionStatus.NOT_STARTED:
+      return (
+        <ElectionNotStarted election={election} questions={questions} isOrganizer={isOrganizer} />
+      );
+    case ElectionStatus.OPENED:
+      return (
+        <ElectionOpened
+          election={election}
+          questions={questions}
+          isOrganizer={isOrganizer}
+          electionKey={electionKey}
+        />
+      );
+    case ElectionStatus.TERMINATED:
+      return <ElectionTerminated election={election} />;
+    case ElectionStatus.RESULT:
+      return <ElectionResult election={election} />;
+    default:
+      console.warn('Election Status was undefined in Election display', election);
+      return null;
+  }
 };
 
 const propTypes = {

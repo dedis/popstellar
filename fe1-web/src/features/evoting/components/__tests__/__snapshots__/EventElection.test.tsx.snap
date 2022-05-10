@@ -37,7 +37,7 @@ Array [
       }
     }
   >
-    Election Results
+    Election Result
   </Text>,
   <View>
     <Text
@@ -698,7 +698,7 @@ Array [
       }
     }
   >
-    Election Results
+    Election Result
   </Text>,
   <View>
     <Text
@@ -2247,6 +2247,75 @@ Array [
 ]
 `;
 
+exports[`EventElection Secret ballot election renders correctly for an attendee 1`] = `
+Array [
+  <View>
+    <Text
+      style={
+        Object {
+          "marginHorizontal": 10,
+        }
+      }
+    >
+      Start: 
+      <time
+        dateTime="2020-12-31T23:00:00.000Z"
+        title="2020-12-31 23:00"
+      >
+        1 year ago
+      </time>
+      
+
+      End: 
+      <time
+        dateTime="2021-01-01T23:00:00.000Z"
+        title="2021-01-01 23:00"
+      >
+        1 year ago
+      </time>
+    </Text>
+  </View>,
+  <Text>
+    Waiting for the election key to be broadcasted
+  </Text>,
+]
+`;
+
+exports[`EventElection Secret ballot election renders correctly for an organizer 1`] = `
+Array [
+  <View>
+    <Text
+      style={
+        Object {
+          "marginHorizontal": 10,
+        }
+      }
+    >
+      Start: 
+      <time
+        dateTime="2020-12-31T23:00:00.000Z"
+        title="2020-12-31 23:00"
+      >
+        1 year ago
+      </time>
+      
+
+      End: 
+      <time
+        dateTime="2021-01-01T23:00:00.000Z"
+        title="2021-01-01 23:00"
+      >
+        1 year ago
+      </time>
+    </Text>
+  </View>,
+  <Text>
+    Waiting for the election key to be broadcasted
+  </Text>,
+  ",",
+]
+`;
+
 exports[`EventElection Terminated election where the results are not yet available renders correctly for an attendee 1`] = `
 Array [
   <View>
@@ -2354,60 +2423,6 @@ Array [
 ]
 `;
 
-exports[`EventElection Undefined election status renders null for an attendee 1`] = `
-<View>
-  <Text
-    style={
-      Object {
-        "marginHorizontal": 10,
-      }
-    }
-  >
-    Start: 
-    <time
-      dateTime="2020-12-31T23:00:00.000Z"
-      title="2020-12-31 23:00"
-    >
-      1 year ago
-    </time>
-    
+exports[`EventElection Undefined election status renders null for an attendee 1`] = `null`;
 
-    End: 
-    <time
-      dateTime="2021-01-01T23:00:00.000Z"
-      title="2021-01-01 23:00"
-    >
-      1 year ago
-    </time>
-  </Text>
-</View>
-`;
-
-exports[`EventElection Undefined election status renders null for an organizer 1`] = `
-<View>
-  <Text
-    style={
-      Object {
-        "marginHorizontal": 10,
-      }
-    }
-  >
-    Start: 
-    <time
-      dateTime="2020-12-31T23:00:00.000Z"
-      title="2020-12-31 23:00"
-    >
-      1 year ago
-    </time>
-    
-
-    End: 
-    <time
-      dateTime="2021-01-01T23:00:00.000Z"
-      title="2021-01-01 23:00"
-    >
-      1 year ago
-    </time>
-  </Text>
-</View>
-`;
+exports[`EventElection Undefined election status renders null for an organizer 1`] = `null`;
