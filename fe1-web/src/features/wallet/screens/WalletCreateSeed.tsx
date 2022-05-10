@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 /**
  * Wallet screen to obtain a new mnemonic seed
  */
-const WalletShowSeed = () => {
+const WalletCreateSeed = () => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
 
@@ -31,18 +31,30 @@ const WalletShowSeed = () => {
     setSeed(Wallet.generateMnemonicSeed());
   }, []);
 
+  const connectWithSeed = async () => {
+    try {
+      await Wallet.importMnemonic(seed);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: STRINGS.navigation_wallet_home_tab }],
+      });
+    } catch {
+      navigation.navigate(STRINGS.navigation_wallet_error);
+    }
+  };
+
   return (
     <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.show_seed_info} />
       <View style={styles.smallPadding} />
       <CopiableTextInput text={seed} />
       <View style={styles.smallPadding} />
+      <WideButtonView title={STRINGS.connect_with_this_seed} onPress={() => connectWithSeed()} />
       <WideButtonView
-        title={STRINGS.back_to_wallet_home}
-        onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+        title={STRINGS.back_to_wallet_setup}
+        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
       />
     </View>
   );
 };
-
-export default WalletShowSeed;
+export default WalletCreateSeed;

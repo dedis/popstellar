@@ -102,6 +102,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
       new MutableLiveData<>();
@@ -109,7 +111,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenRollCallTokenEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
@@ -122,7 +125,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
   private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
@@ -262,11 +266,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /**
-   * Opens the election and publish opening message
-   * triggers OpenElection event on success or logs appropriate error
+   * Opens the election and publish opening message triggers OpenElection event on success or logs
+   * appropriate error
+   *
    * @param e election to be opened
    */
-  public void openElection(Election e){
+  public void openElection(Election e) {
 
     Log.d(TAG, "opening election with name : " + e.getName());
     Lao lao = getCurrentLaoValue();
@@ -279,8 +284,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     String laoId = lao.getId();
 
     // The time will have to be modified on the backend
-    OpenElection openElection =
-        new OpenElection(laoId, e.getId(), e.getStartTimestamp());
+    OpenElection openElection = new OpenElection(laoId, e.getId(), e.getStartTimestamp());
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
@@ -785,6 +789,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenSocialMediaEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
+  }
+
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
     return mChooseNewLaoEventTypeEvent;
   }
@@ -980,9 +988,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
-  /**
-   * Propagates the open election event
-   */
+  public void openDigitalCash() {
+    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
+  }
+
+  /** Propagates the open election event */
   public void openElectionEvent() {
     mOpenElectionEvent.postValue(new SingleEvent<>(true));
   }
@@ -1182,7 +1192,6 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
                   boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
-                  Log.d(TAG, "isOrganizer: " + isOrganizer);
                   mIsOrganizer.setValue(isOrganizer);
                 }));
   }
@@ -1195,9 +1204,11 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openCameraPermission() {
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
+      mOpenRollCallEvent.setValue(
+          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
     } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
+      mOpenAddWitness.setValue(
+          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
     }
   }
 
