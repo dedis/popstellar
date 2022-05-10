@@ -30,7 +30,7 @@ case object LaoHandler extends MessageHandler {
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         //we get access to the canonical address of the server
         val config = ServerConf(appConf)
-        val address: String = f"ws://${config.interface}:${config.port}/${config.path}"
+        val address: Option[String] = Option(f"ws://${config.interface}:${config.port}/${config.path}")
 
         val combined = for {
           // check whether the lao already exists in db
@@ -55,7 +55,7 @@ case object LaoHandler extends MessageHandler {
         Await.ready(combined, duration).value.get match {
           case Success(_) =>
             //after creating the lao, we need to send a lao#greet message to the frontend
-            val greet: GreetLao = GreetLao(data.id, params.get.sender, address, List.empty)
+            val greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
             val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
             dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
 
