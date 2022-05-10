@@ -101,7 +101,7 @@ export function requestSendTransaction(
   });
   const lao: Lao = OpenedLaoStore.get();
 
-  return publish(channelFromIds(lao.id, new Hash('coin')), postTransactionMessage);
+  return publish(channelFromIds(lao.id), postTransactionMessage);
 }
 
 export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promise<void> {
@@ -139,5 +139,5 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
 
   const lao: Lao = OpenedLaoStore.get();
 
-  return publish(channelFromIds(lao.id, new Hash('coin')), postTransactionMessage);
+  return publish(channelFromIds(lao.id), postTransactionMessage);
 }

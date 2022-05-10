@@ -16,6 +16,6 @@ export function handleTransactionPost(msg: ProcessableMessage): boolean {
     return false;
   }
   const tx = msg.messageData as PostTransaction;
-  console.log(`Handler: Received transaction with id: ${tx.transactionId.valueOf()}`);
+  console.log(`Handler: Received transaction with id: ${tx.transaction_id.valueOf()}`);
   return true;
 }

@@ -40,7 +40,11 @@ export class PostTransaction implements MessageData {
    * @param obj
    */
   public static fromJson(obj: any): PostTransaction {
-    const message = DigitalCashMessage.fromState(obj);
+    const messageObj = {
+      ...obj,
+      transactionId: obj.transaction_id,
+    };
+    const message = DigitalCashMessage.fromState(messageObj);
     return new PostTransaction({
       transaction_id: message.transactionId,
       transaction: message.transaction,
