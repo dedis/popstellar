@@ -1,9 +1,10 @@
 package standard_hub
 
 import (
-	"crypto/ed25519"
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -281,7 +282,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	signature := publish.Params.Message.Signature
 	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
-	dataBytes, ok := base64.StdEncoding.DecodeString(data)
+	dataBytes, ok := base64.URLEncoding.DecodeString(data)
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Data is not base 64 encoded")
 	}
@@ -294,7 +295,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
 	}
-	if !ed25519.Verify(publicKeySender, dataBytes, signatureBytes) {
+	if schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes) != nil{
 		return publish.ID, xerrors.Errorf("Signature was not computed correctly")
 	}
 
