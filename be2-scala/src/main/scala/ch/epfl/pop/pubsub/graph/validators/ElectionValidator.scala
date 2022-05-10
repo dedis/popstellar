@@ -101,6 +101,17 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+  private def allVoteHaveValidIndex(votes:List[VoteElection], q2ballots:Map[Hash, List[String]]) =
+    votes.forall(
+      voteElection => {
+        val vote = voteElection.vote match {
+          case Some(v :: _) => v
+          case _ => -1
+        }
+        // check if the ballot is available
+        vote < q2ballots(voteElection.question).size
+      }
+    )
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
@@ -123,16 +134,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           //  check it the question id exists
         } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
           Right(validationError(s"Incorrect parameter questionId"))
-        } else if (!data.votes.forall(
-          voteElection => {
-            val vote = voteElection.vote match {
-              case Some(v :: _) => v
-              case _ => -1
-            }
-            // check if the ballot is available
-            vote < q2Ballots(voteElection.question).size
-          }
-        )) {
+        } else if (!allVoteHaveValidIndex(data.votes, q2Ballots)) {
           Right(validationError(s"Incorrect parameter ballot"))
           // check for question id duplication
         } else if (data.votes.map(_.question).distinct.length != data.votes.length) {
