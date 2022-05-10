@@ -9,7 +9,7 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataTxIns = transaction.TxIn.flatMap((txIn) => {
-    if (txIn.Script.Pubkey) {
+    if (txIn.Script) {
       return [
         txIn.Script.Pubkey.valueOf(),
         txIn.Script.Sig.valueOf(),

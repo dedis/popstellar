@@ -122,7 +122,6 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
     {
       TxOutHash: new Hash(STRINGS.coinbase_hash),
       TxOutIndex: -1,
-      Script: {},
     },
   ];
 

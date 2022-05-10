@@ -23,7 +23,7 @@ export interface TxInScriptState {
 export interface TxInState {
   TxOutHash: string;
   TxOutIndex: number;
-  Script: TxInScriptState;
+  Script?: TxInScriptState;
 }
 export interface TxOutScriptState {
   Type: string;
@@ -44,7 +44,7 @@ export interface TxInScript {
 export interface TxIn {
   TxOutHash: Hash;
   TxOutIndex: number;
-  Script: TxInScript | any; // TODO: Script might be empty if coinbase transaction, how to handle it ? ??????
+  Script?: TxInScript; // TODO: Script might be empty if coinbase transaction, how to handle it ? ??????
 }
 export interface TxOutScript {
   Type: string;
@@ -93,13 +93,13 @@ export class DigitalCashMessage {
           return {
             ...txInState,
             TxOutHash: new Hash(txInState.TxOutHash),
-            Script: txInState.Script.Type // In the case of a coinbase transaction
+            Script: txInState.Script // In the case of a coinbase transaction
               ? {
                   Type: txInState.Script.Type,
                   Pubkey: new PublicKey(txInState.Script.Pubkey),
                   Sig: new Signature(txInState.Script.Sig),
                 }
-              : {},
+              : undefined,
           };
         }),
         LockTime: digitalCashMessageState.transaction.LockTime,
@@ -125,11 +125,13 @@ export class DigitalCashMessage {
           return {
             ...txIn,
             TxOutHash: txIn.TxOutHash.valueOf(),
-            Script: {
-              Type: txIn.Script.Type,
-              Pubkey: txIn.Script.Pubkey.valueOf(),
-              Sig: txIn.Script.Sig.valueOf(),
-            },
+            Script: txIn.Script
+              ? {
+                  Type: txIn.Script.Type,
+                  Pubkey: txIn.Script.Pubkey.valueOf(),
+                  Sig: txIn.Script.Sig.valueOf(),
+                }
+              : undefined,
           };
         }),
       },
