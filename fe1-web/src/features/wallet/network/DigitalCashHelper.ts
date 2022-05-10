@@ -72,7 +72,10 @@ export const concatenateTxData = (txsInt: Omit<TxIn, 'script'>[], txOuts: TxOut[
   );
   return txOuts.reduce(
     (dataString, txOut) =>
-      dataString + txOut.value.toString() + Base64UrlData.encode(JSON.stringify(txOut.script)),
+      dataString +
+      txOut.value.toString() +
+      txOut.script.type +
+      txOut.script.publicKeyHash.valueOf(),
     txsInDataString,
   );
 };

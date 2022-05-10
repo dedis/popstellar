@@ -70,7 +70,7 @@ export function requestSendTransaction(
   const txIns: Omit<TxIn, 'script'>[] = getTxsInToSign(from.publicKey.valueOf(), messages);
   // Now we need to define each objects because we need some string representation of everything to hash on
 
-  // Concatenate the data to dign
+  // Concatenate the data to sign
   const dataString = concatenateTxData(txIns, txOuts);
 
   // Sign with the popToken
