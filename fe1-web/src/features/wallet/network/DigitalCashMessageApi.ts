@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { channelFromIds, Hash, PopToken, PublicKey } from 'core/objects';
+import { Base64UrlData, channelFromIds, Hash, PopToken, PublicKey } from "core/objects";
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
@@ -74,7 +74,7 @@ export function requestSendTransaction(
   const dataString = concatenateTxData(txIns, txOuts);
 
   // Sign with the popToken
-  const signature = from.privateKey.signUtf8(dataString);
+  const signature = from.privateKey.sign(Base64UrlData.encode(dataString));
 
   // Reconstruct the txIns with the signature
   const finalTxIns: TxIn[] = txIns.map((txIn) => {
