@@ -1627,7 +1627,7 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[String]] index(es) corresponding to the ballot_options",
+                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
                                 "type": "array",
                                 "items": {
                                     "type": "string",
