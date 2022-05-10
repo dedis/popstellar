@@ -18,10 +18,10 @@ describe('GreetLao', () => {
         frontend: mockKeyPair.publicKey,
       });
 
-      expect(g.address).toBe(mockAddress);
-      expect(g.lao).toBe(mockLaoIdHash);
-      expect(g.peers).toBe(peers);
-      expect(g.frontend).toBe(mockKeyPair.publicKey);
+      expect(g.address).toEqual(mockAddress);
+      expect(g.lao).toEqual(mockLaoIdHash);
+      expect(g.peers).toEqual(peers);
+      expect(g.frontend).toEqual(mockKeyPair.publicKey);
     });
 
     it('throw an error if the address is undefined', () => {
