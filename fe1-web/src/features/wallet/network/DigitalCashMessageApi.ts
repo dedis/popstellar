@@ -127,16 +127,9 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
     },
   ];
 
-  const txIns: TxIn[] = [
-    {
-      TxOutHash: new Hash(STRINGS.coinbase_hash),
-      TxOutIndex: -1,
-    },
-  ];
-
   const transaction: DigitalCashTransaction = {
     Version: 1,
-    TxIn: txIns,
+    TxIn: [],
     TxOut: txOuts,
     LockTime: 0,
   };

@@ -9,17 +9,13 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataTxIns = transaction.TxIn.flatMap((txIn) => {
-    // It might be a coinbase transaction
-    if (txIn.Script) {
-      return [
-        txIn.Script.Pubkey.valueOf(),
-        txIn.Script.Sig.valueOf(),
-        txIn.Script.Type,
-        txIn.TxOutHash.valueOf(),
-        txIn.TxOutHash.toString(),
-      ];
-    }
-    return [txIn.TxOutHash.valueOf(), txIn.TxOutIndex.toString()];
+    return [
+      txIn.Script.Pubkey.valueOf(),
+      txIn.Script.Sig.valueOf(),
+      txIn.Script.Type,
+      txIn.TxOutHash.valueOf(),
+      txIn.TxOutHash.toString(),
+    ];
   });
   const dataTxOuts = transaction.TxOut.flatMap((txOut) => {
     return [txOut.Script.PubkeyHash.valueOf(), txOut.Script.Type, txOut.Value.toString()];
