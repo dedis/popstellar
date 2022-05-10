@@ -1,6 +1,5 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.FSM.Failure
 import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
