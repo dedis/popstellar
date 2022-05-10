@@ -108,6 +108,7 @@ export class MessageRegistry {
   handleMessage(msg: ProcessableMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
+
     return messageEntry.handle!(msg);
   }
 

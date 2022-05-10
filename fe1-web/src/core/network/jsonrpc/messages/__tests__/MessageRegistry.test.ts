@@ -34,6 +34,7 @@ getMock.mockImplementation(() => Lao.fromState(laoState));
 
 let registry: MessageRegistry;
 beforeEach(() => {
+  // setup fresh message registry for each test
   registry = configureTestFeatures();
   configureMessages(registry);
 });
@@ -50,11 +51,11 @@ describe('MessageRegistry', () => {
     const message = Message.fromData(messageData, mockPopToken);
     const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
 
-    const mockHandle = jest.fn();
+    const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 
-    registry.handleMessage(extMsg);
+    expect(registry.handleMessage(extMsg)).toBeTrue();
 
     expect(mockHandle).toHaveBeenCalledTimes(1);
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
