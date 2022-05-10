@@ -8,7 +8,6 @@ import akka.util.Timeout
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.ChannelExists
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.CreateRollCallMessages
 
