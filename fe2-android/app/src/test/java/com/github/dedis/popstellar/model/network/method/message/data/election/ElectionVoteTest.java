@@ -35,15 +35,15 @@ public class ElectionVoteTest {
         Hash.hash(
             "Vote", electionId, electionVote1.getQuestionId(), electionVote1.getVotes().toString());
     assertThat(electionVote1.getId(), is(expectedId));
-    assertNull(electionVote1.getWriteIn());
   }
 
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectId() {
-    // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
+    // WriteIn enabled so id is Hash('Vote'||election_id||question_id)
+    // Hash code shouldn't change with new protocol specifications
     String expectedId =
-        Hash.hash("Vote", electionId, electionVote2.getQuestionId(), electionVote2.getWriteIn());
-    assertThat(electionVote2.getId(), is(expectedId));
+        Hash.hash("Vote", electionId, electionVote2.getQuestionId());
+    assertThat(electionVote2.getId().equals(expectedId), is(false));
     assertNull(electionVote2.getVotes());
   }
 
@@ -54,15 +54,8 @@ public class ElectionVoteTest {
 
   @Test
   public void attributesIsNull() {
-    assertNull(electionVote1.getWriteIn());
     assertNull(electionVote2.getVotes());
     assertNotNull(electionVote1.getVotes());
-    assertNotNull(electionVote2.getWriteIn());
-  }
-
-  @Test
-  public void electionVoteGetterReturnsCorrectWriteIn() {
-    assertThat(electionVote2.getWriteIn(), is(writeIn));
   }
 
   @Test

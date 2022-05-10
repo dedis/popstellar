@@ -246,10 +246,10 @@ public class Election extends Event {
    * @return the ID of an election question computed as
    *     Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
    */
-  public static String generateElectionVoteId(
+  public static <E> String generateElectionVoteId(
       String electionId,
       String questionId,
-      List<Integer> voteIndex,
+      List<E> voteIndex,
       String writeIn,
       boolean writeInEnabled) {
     // If write_in is enabled the id is formed with the write_in string

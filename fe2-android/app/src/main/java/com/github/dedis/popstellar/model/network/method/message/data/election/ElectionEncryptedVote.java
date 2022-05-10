@@ -10,8 +10,8 @@ import javax.annotation.Nonnegative;
 public class ElectionEncryptedVote {
 
 
-  // Id of the object ElectionVote : Hash(“Vote”||election_id|| ||
-  // question_id||(encrypted_vote_index(es)|encrypted_write_in))
+  // Id of the object ElectionVote :
+  // Hash(“Vote”||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
   @SerializedName("id")
   private final String id;
 
