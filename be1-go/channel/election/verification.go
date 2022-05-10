@@ -2,6 +2,7 @@ package election
 
 import (
 	"encoding/base64"
+	"fmt"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
@@ -122,6 +123,22 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		return xerrors.Errorf("cast vote created at is %d, should be minimum 0", castVote.CreatedAt)
 	}
 
+	for i, vote := range castVote.Votes {
+		qs, ok := c.questions[vote.Question]
+		if !ok {
+			return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
+		}
+
+		sort.Ints(vote.Vote)
+		sortedIndex := arrayToString(vote.Vote, ",")
+
+		hash := messagedata.Hash("Vote", electionID, string(qs.id), sortedIndex)
+
+		if vote.ID != hash {
+			return xerrors.Errorf("vote ID of vote %d is %s should be %s", i, vote.ID, hash)
+		}
+	}
+
 	return nil
 }
 
@@ -235,4 +252,8 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	}
 
 	return nil
+}
+
+func arrayToString(a []int, delim string) string {
+	return strings.Trim(strings.Replace(fmt.Sprint(a), " ", delim, -1), "[]")
 }
