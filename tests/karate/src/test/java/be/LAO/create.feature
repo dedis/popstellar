@@ -25,7 +25,7 @@ Feature: Create a pop LAO
         }
       """
     When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -44,7 +44,7 @@ Feature: Create a pop LAO
         }
       """
     When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   Scenario: Create Lao with invalid id hash should fail with an error response
@@ -61,7 +61,7 @@ Feature: Create a pop LAO
         }
       """
     When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
   Scenario: Create should succeed with a valid creation request
@@ -78,6 +78,6 @@ Feature: Create a pop LAO
         }
       """
     When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-    And json answer = frontend.getBackendResponseWithoutBroadcast()
+    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
