@@ -286,15 +286,18 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Data is not base 64 encoded")
 	}
+	
 	publicKeySender, ok := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if ok != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
 		return publish.ID, xerrors.Errorf("Public key is not base 64 encoded " + ok.Error())
 	}
+	
 	signatureBytes, ok := base64.URLEncoding.DecodeString(signature)
 	if ok != nil {
 		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
 	}
+	
 	if schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes) != nil {
 		return publish.ID, xerrors.Errorf("Signature was not computed correctly")
 	}
