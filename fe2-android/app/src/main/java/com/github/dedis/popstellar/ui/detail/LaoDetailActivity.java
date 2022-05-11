@@ -7,10 +7,12 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -65,6 +67,8 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     navbar = findViewById(R.id.lao_detail_nav_bar);
     setupNavigationBar();
+
+    setupBackButton();
 
     mViewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
@@ -219,6 +223,29 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+    if (menuItem.getItemId() == android.R.id.home) {
+      Fragment fragment =
+          getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
+      if (fragment instanceof LaoDetailFragment) {
+        openHome();
+      } else {
+        setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+      }
+      return true;
+    }
+    return super.onOptionsItemSelected(menuItem);
+  }
+
+  private void setupBackButton() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+  }
+
   private void setupLaoFragment() {
     setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
@@ -231,11 +258,15 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                Intent intent = new Intent(this, HomeActivity.class);
-                setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-                finish();
+                openHome();
               }
             });
+  }
+
+  private void openHome() {
+    Intent intent = new Intent(this, HomeActivity.class);
+    setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+    finish();
   }
 
   private void setupIdentityFragment() {
@@ -418,23 +449,23 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
-    public void setupNavigationBar() {
-        navbar.setOnItemSelectedListener(
-                item -> {
-                    int id = item.getItemId();
-                    if (id == R.id.lao_detail_event_list_menu) {
-                        setupLaoFragment();
-                    } else if (id == R.id.lao_detail_identity_menu) {
-                        mViewModel.openIdentity();
-                    } else if (id == R.id.lao_detail_witnessing_menu) {
-                    } else if (id == R.id.lao_detail_digital_cash_menu) {
-                        mViewModel.openDigitalCash();
-                    } else if (id == R.id.lao_detail_social_media_menu) {
-                        mViewModel.openSocialMedia();
-                    }
-                    return true;
-                });
-    }
+  public void setupNavigationBar() {
+    navbar.setOnItemSelectedListener(
+        item -> {
+          int id = item.getItemId();
+          if (id == R.id.lao_detail_event_list_menu) {
+            setupLaoFragment();
+          } else if (id == R.id.lao_detail_identity_menu) {
+            mViewModel.openIdentity();
+          } else if (id == R.id.lao_detail_witnessing_menu) {
+          } else if (id == R.id.lao_detail_digital_cash_menu) {
+            mViewModel.openDigitalCash();
+          } else if (id == R.id.lao_detail_social_media_menu) {
+            mViewModel.openSocialMedia();
+          }
+          return true;
+        });
+  }
 
   /**
    * Set the current fragment in the container of the activity

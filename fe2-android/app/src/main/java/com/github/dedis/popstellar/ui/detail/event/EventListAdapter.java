@@ -4,7 +4,6 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -304,7 +303,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       headerTitle = itemView.findViewById(R.id.event_header_title);
       expandIcon = itemView.findViewById(R.id.expand_icon);
       headerLayout = itemView.findViewById(R.id.header_layout);
-      int position = ;
+      int position = getAdapterPosition();
       Log.d(TAG, "position is " + position);
       Log.d(TAG, "layout position is " + getLayoutPosition());
       EventCategory eventCategory = getHeaderCategory(position);
