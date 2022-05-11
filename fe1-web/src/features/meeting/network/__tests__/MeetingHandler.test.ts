@@ -104,15 +104,18 @@ describe('MeetingHandler', () => {
         handleMeetingCreateMessage(mockAddEvent)({
           ...mockMessageData,
           laoId: undefined,
-          messageData: new CreateMeeting({
-            id: mockMeeting.id,
-            name: mockMeeting.name,
-            creation: mockMeeting.creation,
-            location: mockMeeting.location,
-            start: mockMeeting.start,
-            end: mockMeeting.end,
-            extra: mockMeeting.extra,
-          }),
+          messageData: new CreateMeeting(
+            {
+              id: mockMeeting.id,
+              name: mockMeeting.name,
+              creation: mockMeeting.creation,
+              location: mockMeeting.location,
+              start: mockMeeting.start,
+              end: mockMeeting.end,
+              extra: mockMeeting.extra,
+            },
+            mockLaoIdHash,
+          ),
         } as ProcessableMessage),
       ).toBeFalse();
     });
@@ -121,15 +124,18 @@ describe('MeetingHandler', () => {
       expect(
         handleMeetingCreateMessage(mockAddEvent)({
           ...mockMessageData,
-          messageData: new CreateMeeting({
-            id: mockMeeting.id,
-            name: mockMeeting.name,
-            creation: mockMeeting.creation,
-            location: mockMeeting.location,
-            start: mockMeeting.start,
-            end: mockMeeting.end,
-            extra: mockMeeting.extra,
-          }),
+          messageData: new CreateMeeting(
+            {
+              id: mockMeeting.id,
+              name: mockMeeting.name,
+              creation: mockMeeting.creation,
+              location: mockMeeting.location,
+              start: mockMeeting.start,
+              end: mockMeeting.end,
+              extra: mockMeeting.extra,
+            },
+            mockLaoIdHash,
+          ),
         } as ProcessableMessage),
       ).toBeTrue();
 

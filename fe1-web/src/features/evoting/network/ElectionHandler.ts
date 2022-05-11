@@ -31,7 +31,6 @@ export const handleElectionSetupMessage =
     }
 
     const elecMsg = msg.messageData as SetupElection;
-    elecMsg.validate(msg.laoId);
 
     const election = new Election({
       lao: elecMsg.lao,

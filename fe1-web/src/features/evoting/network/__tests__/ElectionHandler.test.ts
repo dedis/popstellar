@@ -131,16 +131,19 @@ describe('ElectionHandler', () => {
         handleElectionSetupMessage(addEvent)({
           ...mockMessageData,
           laoId: undefined,
-          messageData: new SetupElection({
-            lao: mockLaoIdHash,
-            id: mockElectionNotStarted.id,
-            name: mockElectionNotStarted.name,
-            version: mockElectionNotStarted.version,
-            created_at: mockElectionNotStarted.createdAt,
-            start_time: mockElectionNotStarted.start,
-            end_time: mockElectionNotStarted.end,
-            questions: mockElectionNotStarted.questions,
-          }),
+          messageData: new SetupElection(
+            {
+              lao: mockLaoIdHash,
+              id: mockElectionNotStarted.id,
+              name: mockElectionNotStarted.name,
+              version: mockElectionNotStarted.version,
+              created_at: mockElectionNotStarted.createdAt,
+              start_time: mockElectionNotStarted.start,
+              end_time: mockElectionNotStarted.end,
+              questions: mockElectionNotStarted.questions,
+            },
+            mockLaoIdHash,
+          ),
         }),
       ).toBeFalse();
     });
@@ -160,16 +163,19 @@ describe('ElectionHandler', () => {
       expect(
         handleElectionSetupMessage(addEvent)({
           ...mockMessageData,
-          messageData: new SetupElection({
-            lao: mockLaoIdHash,
-            id: mockElectionNotStarted.id,
-            name: mockElectionNotStarted.name,
-            version: mockElectionNotStarted.version,
-            created_at: mockElectionNotStarted.createdAt,
-            start_time: mockElectionNotStarted.start,
-            end_time: mockElectionNotStarted.end,
-            questions: mockElectionNotStarted.questions,
-          }),
+          messageData: new SetupElection(
+            {
+              lao: mockLaoIdHash,
+              id: mockElectionNotStarted.id,
+              name: mockElectionNotStarted.name,
+              version: mockElectionNotStarted.version,
+              created_at: mockElectionNotStarted.createdAt,
+              start_time: mockElectionNotStarted.start,
+              end_time: mockElectionNotStarted.end,
+              questions: mockElectionNotStarted.questions,
+            },
+            mockLaoIdHash,
+          ),
         }),
       ).toBeTrue();
 

@@ -44,7 +44,7 @@ export class CloseRollCall implements MessageData {
     if (!expectedId.equals(msg.update_id)) {
       throw new ProtocolError(
         "Invalid 'update_id' parameter encountered during 'CloseRollCall':" +
-          ' re-computing the value yields a different result(' +
+          ' re-computing the value yields a different result (' +
           `(expected: '${expectedId}', actual: '${msg.update_id}')`,
       );
     }
