@@ -1,6 +1,7 @@
 import {
   Base64UrlData,
   Channel,
+  getLaoIdFromChannel,
   Hash,
   KeyPair,
   ProtocolError,
@@ -72,7 +73,7 @@ export class Message {
   public readonly witness_signatures: WitnessSignature[];
 
   // Not part of the protocol, but convenient for processing of the message
-  public readonly channel?: Channel;
+  public readonly channel: Channel;
 
   // ECMAScript private field, not string-ified by JSON
   readonly #messageData: MessageData;
@@ -80,6 +81,10 @@ export class Message {
   // Public getter that makes messageData appear public
   public get messageData() {
     return this.#messageData;
+  }
+
+  get laoId(): Hash {
+    return getLaoIdFromChannel(this.channel);
   }
 
   constructor(msg: Partial<Message>) {
@@ -132,16 +137,17 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
-    if (msg.channel) {
-      this.channel = msg.channel;
+    if (!msg.channel) {
+      throw new Error("Undefined 'channel' parameter encountered during 'Message' creation");
     }
+    this.channel = msg.channel;
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = messageRegistry.buildMessageData(dataObj);
+    this.#messageData = messageRegistry.buildMessageData(dataObj, this.laoId);
   }
 
-  public static fromJson(obj: any, channel?: Channel): Message {
+  public static fromJson(obj: any, channel: Channel): Message {
     return new Message({
       data: new Base64UrlData(obj.data.toString()),
       sender: new PublicKey(obj.sender.toString()),
@@ -161,12 +167,14 @@ export class Message {
    *
    * @param data - The MessageData to be signed and hashed
    * @param senderKeyPair - The key pair of the sender
+   * @param channel The channel the message was received on
    * @param witnessSignatures- The signatures of the witnesses
    * @returns - The created message
    */
   public static fromData(
     data: MessageData,
     senderKeyPair: KeyPair,
+    channel: Channel,
     witnessSignatures?: WitnessSignature[],
   ): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
@@ -179,6 +187,7 @@ export class Message {
       signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
+      channel,
     });
   }
 }

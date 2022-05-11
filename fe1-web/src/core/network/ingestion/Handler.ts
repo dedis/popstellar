@@ -54,13 +54,7 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
   if (req.request.method === JsonRpcMethod.BROADCAST) {
     const broadcastParams = req.request.params as Broadcast;
 
-    storeMessage(
-      ExtendedMessage.fromMessage(
-        broadcastParams.message,
-        broadcastParams.channel,
-        req.receivedFrom,
-      ),
-    );
+    storeMessage(ExtendedMessage.fromMessage(broadcastParams.message, req.receivedFrom));
   } else {
     console.warn('A request was received but it is currently unsupported:', req);
   }

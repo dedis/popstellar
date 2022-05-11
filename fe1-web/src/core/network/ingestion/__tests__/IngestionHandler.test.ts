@@ -1,4 +1,4 @@
-import { mockKeyPair, mockMessageRegistry } from '__tests__/utils';
+import { mockChannel, mockKeyPair, mockMessageRegistry } from '__tests__/utils';
 import {
   Broadcast,
   ExtendedJsonRpcRequest,
@@ -29,7 +29,6 @@ jest.mock('core/redux', () => {
 });
 
 const mockAddress = 'some address';
-const mockChannel = 'some channel';
 const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: ActionType.OPEN };
 
 // these can only be instantiated after mocking the message registry
@@ -41,7 +40,7 @@ let extendedRequest: ExtendedJsonRpcRequest;
 
 beforeAll(() => {
   configureMessages(mockMessageRegistry);
-  mockMessage = Message.fromData(mockMessageData, mockKeyPair);
+  mockMessage = Message.fromData(mockMessageData, mockKeyPair, mockChannel);
   mockJsonRequest = {
     jsonrpc: 'some data',
     method: JsonRpcMethod.BROADCAST,
@@ -53,9 +52,7 @@ beforeAll(() => {
 describe('handleExtendedRpcRequests', () => {
   it('dispatches the correct redux action', () => {
     handleExtendedRpcRequests(extendedRequest);
-    const obj: any = addMessages(
-      ExtendedMessage.fromMessage(mockMessage, mockChannel, mockAddress).toState(),
-    );
+    const obj: any = addMessages(ExtendedMessage.fromMessage(mockMessage, mockAddress).toState());
 
     expect(dispatch).toHaveBeenCalledWith({
       ...obj,

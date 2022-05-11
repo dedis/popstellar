@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
-import { configureTestFeatures } from '__tests__/utils';
+import { configureTestFeatures, mockChannel } from '__tests__/utils';
 import { Base64UrlData, Hash, PrivateKey, PublicKey, ROOT_CHANNEL } from 'core/objects';
 import { CreateLao } from 'features/lao/network/messages';
 import { Lao } from 'features/lao/objects';
@@ -139,13 +139,14 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
   };
 
   it('using a sub-channel', () => {
-    const chan = '/root/bGFvX2lk';
-    const msg = embeddedMessage(sampleCreateLaoDataString, chan);
-    verify(msg, chan);
+    const msg = embeddedMessage(sampleCreateLaoDataString, mockChannel);
+    verify(msg, mockChannel);
   });
 
-  it(`using '${ROOT_CHANNEL}' channel`, () => {
+  // at the moment no messages are sent on the root channel
+  // and building a message should fail
+  it(`using '${ROOT_CHANNEL}' channel should not work`, () => {
     const msg = embeddedMessage(sampleCreateLaoDataString, ROOT_CHANNEL, 23);
-    verify(msg, ROOT_CHANNEL);
+    expect(() => verify(msg, ROOT_CHANNEL)).toThrow();
   });
 });

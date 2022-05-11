@@ -1,7 +1,6 @@
 import {
   Base64UrlData,
   Channel,
-  getLaoIdFromChannel,
   Hash,
   PublicKey,
   Signature,
@@ -43,9 +42,6 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
 
   public processedAt?: Timestamp;
 
-  // The channel on which the message was received
-  public channel: Channel;
-
   constructor(msg: Partial<ExtendedMessage>) {
     super(msg);
 
@@ -58,26 +54,15 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
     this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
     this.receivedFrom = msg.receivedFrom;
     this.processedAt = msg.processedAt;
-    this.channel =
-      msg.channel ||
-      (() => {
-        throw new Error('channel not defined');
-      })();
-  }
-
-  get laoId(): Hash {
-    return getLaoIdFromChannel(this.channel);
   }
 
   public static fromMessage(
     msg: Message,
-    ch: Channel,
     receivedFrom: string,
     receivedAt?: Timestamp,
   ): ExtendedMessage {
     return new ExtendedMessage({
       ...msg,
-      channel: ch,
       receivedAt: receivedAt || Timestamp.EpochNow(),
       receivedFrom,
     });

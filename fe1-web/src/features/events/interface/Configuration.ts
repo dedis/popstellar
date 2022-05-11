@@ -30,6 +30,17 @@ export interface EventsInterface extends FeatureInterface {
     makeEventByTypeSelector: <T extends LaoEvent>(
       eventType: string,
     ) => (state: unknown) => Record<string, Record<string, T>>;
+
+    /**
+     * Creates a selector to return a specific event for given lao and event ids
+     * @param laoId The id of the lao to select the event from
+     * @param eventId The id of the event to return
+     * @returns The selector
+     */
+    makeEventSelector: (
+      laoId: Hash | string,
+      eventId: Hash | string,
+    ) => (state: unknown) => LaoEvent | undefined;
   };
 
   components: {

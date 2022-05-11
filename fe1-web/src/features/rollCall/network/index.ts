@@ -1,5 +1,6 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { RollCallConfiguration } from '../interface';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import {
   handleRollCallCloseMessage,
@@ -13,31 +14,36 @@ export * from './RollCallMessageApi';
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the rollcall feature
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (configuration: RollCallConfiguration) => {
+  configuration.messageRegistry.add(
     ObjectType.ROLL_CALL,
     ActionType.CREATE,
-    handleRollCallCreateMessage,
+    handleRollCallCreateMessage(configuration.addEvent),
     CreateRollCall.fromJson,
   );
-  registry.add(
+  configuration.messageRegistry.add(
     ObjectType.ROLL_CALL,
     ActionType.OPEN,
-    handleRollCallOpenMessage,
+    handleRollCallOpenMessage(configuration.getEventById, configuration.updateEvent),
     OpenRollCall.fromJson,
   );
-  registry.add(
+  configuration.messageRegistry.add(
     ObjectType.ROLL_CALL,
     ActionType.CLOSE,
-    handleRollCallCloseMessage,
+    handleRollCallCloseMessage(
+      configuration.getEventById,
+      configuration.updateEvent,
+      configuration.generateToken,
+      configuration.setLaoLastRollCall,
+    ),
     CloseRollCall.fromJson,
   );
-  registry.add(
+  configuration.messageRegistry.add(
     ObjectType.ROLL_CALL,
     ActionType.REOPEN,
-    handleRollCallReopenMessage,
+    handleRollCallReopenMessage(configuration.getEventById, configuration.updateEvent),
     ReopenRollCall.fromJson,
   );
-}
+};

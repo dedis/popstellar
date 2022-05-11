@@ -43,6 +43,7 @@ export function configureFeatures() {
     /* other dependencies */
     messageRegistry,
   });
+
   const meetingConfiguration = meeting.configure({
     messageRegistry,
     addEvent: eventsConfiguration.actionCreators.addEvent,
@@ -51,8 +52,30 @@ export function configureFeatures() {
     getLaoById: laoConfiguration.functions.getLaoById,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
-  const rollCallConfiguration = rollCall.configure(messageRegistry);
+
+  const walletConfiguration = wallet.configure({
+    keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
+  });
+
+  const rollCallConfiguration = rollCall.configure({
+    messageRegistry,
+    addEvent: eventsConfiguration.actionCreators.addEvent,
+    updateEvent: eventsConfiguration.actionCreators.updateEvent,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventSelector: eventsConfiguration.functions.makeEventSelector,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    generateToken: walletConfiguration.functions.generateToken,
+    hasSeed: walletConfiguration.functions.hasSeed,
+  });
+
   const socialConfiguration = social.configure(messageRegistry);
+
   witness.configure({
     enabled: false,
     messageRegistry,
@@ -60,13 +83,6 @@ export function configureFeatures() {
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
-  });
-  const walletConfiguration = wallet.configure({
-    keyPairRegistry,
-    getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    getEventById: eventsConfiguration.functions.getEventById,
-    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
   });
 
   // compose features
