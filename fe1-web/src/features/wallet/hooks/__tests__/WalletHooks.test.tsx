@@ -28,7 +28,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('E-Voting hooks', () => {
+describe('Wallet hooks', () => {
   describe('WalletHooks.useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });
