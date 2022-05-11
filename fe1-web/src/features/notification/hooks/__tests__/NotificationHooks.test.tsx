@@ -35,7 +35,7 @@ const wrapper =
     );
 
 describe('NotificationHooks', () => {
-  describe('NotificationHooks.useNotificationTypes', () => {
+  describe('useNotificationTypes', () => {
     it('should return the notification types', () => {
       const { result } = renderHook(() => NotificationHooks.useNotificationTypes(), {
         wrapper: wrapper(mockStore),

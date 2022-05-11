@@ -326,10 +326,8 @@ exports[`SingleNotificationScreen renders correctly 1`] = `
                       >
                         <View>
                           <Text>
-                            <Text>
-                              Unkown notification type &apos
-                              &apos. Please report this as a bug.
-                            </Text>
+                            Unkown notification type &apos
+                            &apos. Please report this as a bug.
                           </Text>
                         </View>
                       </RCTScrollView>

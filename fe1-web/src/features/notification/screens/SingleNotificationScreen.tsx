@@ -49,9 +49,7 @@ const SingleNotificationScreen = () => {
         />
       ) : (
         <Text>
-          <Text>
-            Unkown notification type &apos{notification?.type}&apos. Please report this as a bug.
-          </Text>
+          Unkown notification type &apos{notification?.type}&apos. Please report this as a bug.
         </Text>
       )}
     </ScreenWrapper>
