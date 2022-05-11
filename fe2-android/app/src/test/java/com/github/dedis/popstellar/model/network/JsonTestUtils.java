@@ -32,6 +32,7 @@ public class JsonTestUtils {
    * @throws AssertionError if the converted data is not equals to data
    */
   public static void testData(Data data) throws JsonParseException {
+
     String json = GSON.toJson(data, Data.class);
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, json);
     assertEquals(data, GSON.fromJson(json, Data.class));

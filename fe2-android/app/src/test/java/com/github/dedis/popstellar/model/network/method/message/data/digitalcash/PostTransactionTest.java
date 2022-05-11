@@ -2,9 +2,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 
 import static org.junit.Assert.assertEquals;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.google.gson.Gson;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
 
 import org.junit.Test;
 
@@ -65,8 +69,16 @@ public class PostTransactionTest {
     assertEquals(expected, POST_TRANSACTION.getTransaction_id());
   }
 
+  private static final JsonSchemaFactory FACTORY =
+      JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(POST_TRANSACTION);
+    Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+    String json = GSON.toJson(POST_TRANSACTION, PostTransaction.class);
+    // JsonUtils.verifyJson("resource:/protocol/query/method/message/data/",json);
+    PostTransaction res = GSON.fromJson(json, PostTransaction.class);
+    System.out.println("done");
+    assertEquals(POST_TRANSACTION, res);
   }
 }

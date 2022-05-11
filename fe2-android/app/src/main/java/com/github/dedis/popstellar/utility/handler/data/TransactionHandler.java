@@ -4,7 +4,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 
 /** Transaction messages handler class */
@@ -25,8 +24,6 @@ public class TransactionHandler {
       HandlerContext context, PostTransaction postTransaction) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
-    PublicKey senderPk = context.getSenderPk();
-
     Lao lao = laoRepository.getLaoByChannel(channel);
     Transaction transaction =
         new Transaction(
