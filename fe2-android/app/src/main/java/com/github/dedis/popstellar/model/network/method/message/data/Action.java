@@ -12,7 +12,6 @@ public enum Action {
   SETUP("setup"),
   UPDATE("update_properties"),
   STATE("state"),
-  GREET("greet"),
   WITNESS("witness"),
   OPEN("open"),
   REOPEN("reopen"),
