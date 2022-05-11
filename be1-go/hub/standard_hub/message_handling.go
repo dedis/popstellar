@@ -285,18 +285,18 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	dataBytes, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
+		return publish.ID, xerrors.Errorf("failed to decode data string: %v", err)
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
+		return publish.ID, xerrors.Errorf("failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
+		return publish.ID, xerrors.Errorf("failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
