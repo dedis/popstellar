@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -17,28 +17,13 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
-import { Views } from 'core/styles';
+import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
-
-const styles = StyleSheet.create({
-  view: {
-    ...Views.base,
-    flexDirection: 'row',
-    zIndex: 3,
-  } as ViewStyle,
-  viewVertical: {
-    ...Views.base,
-    flexDirection: 'column',
-    zIndex: 3,
-  } as ViewStyle,
-  padding: { padding: 5 } as ViewStyle,
-  zIndexInitial: { zIndex: 0 } as ViewStyle,
-});
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
