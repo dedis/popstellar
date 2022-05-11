@@ -110,6 +110,15 @@ describe('RollCallHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleRollCallCreateMessage(jest.fn())({
+          ...createMockMsg(ActionType.CREATE, rollCallStateCreated),
+          laoId: undefined,
+        }),
+      ).toBeFalse();
+    });
+
     it('should create a correct RollCall object from msgData', async () => {
       const usedMockMsg = createMockMsg(ActionType.CREATE, rollCallStateCreated);
 
@@ -142,6 +151,15 @@ describe('RollCallHandler', () => {
           jest.fn(),
           jest.fn(),
         )(createMockMsg(ActionType.ADD, rollCallStateOpened)),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleRollCallOpenMessage(
+          jest.fn(),
+          jest.fn(),
+        )({ ...createMockMsg(ActionType.OPEN, rollCallStateOpened), laoId: undefined }),
       ).toBeFalse();
     });
 
@@ -191,6 +209,17 @@ describe('RollCallHandler', () => {
           jest.fn(),
           jest.fn(),
         )(createMockMsg(ActionType.ADD, rollCallStateClosed)),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleRollCallCloseMessage(
+          jest.fn(),
+          jest.fn(),
+          jest.fn(),
+          jest.fn(),
+        )({ ...createMockMsg(ActionType.CLOSE, rollCallStateClosed), laoId: undefined }),
       ).toBeFalse();
     });
 

@@ -5,6 +5,7 @@ import {
   configureTestFeatures,
   mockKeyPair,
   mockLao,
+  mockLaoId,
   mockLaoIdHash,
   mockPopToken,
   mockReduxAction,
@@ -17,6 +18,7 @@ import {
   channelFromIds,
   getLastPartOfChannel,
   Hash,
+  ROOT_CHANNEL,
   Signature,
   Timestamp,
 } from 'core/objects';
@@ -53,7 +55,7 @@ const mockMessageData = {
   data: Base64UrlData.encode('some data'),
   sender: mockKeyPair.publicKey,
   signature: Base64UrlData.encode('some data') as Signature,
-  channel: `some channel/${mockElectionId.valueOf()}`,
+  channel: `${ROOT_CHANNEL}/${mockLaoId}/${mockElectionId.valueOf()}`,
   message_id: Hash.fromString('some string'),
   witness_signatures: [],
 };
@@ -107,6 +109,7 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "setup"', () => {
       const addEvent = jest.fn();
 
@@ -117,6 +120,27 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.ADD,
           },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      const addEvent = jest.fn();
+
+      expect(
+        handleElectionSetupMessage(addEvent)({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new SetupElection({
+            lao: mockLaoIdHash,
+            id: mockElectionNotStarted.id,
+            name: mockElectionNotStarted.name,
+            version: mockElectionNotStarted.version,
+            created_at: mockElectionNotStarted.createdAt,
+            start_time: mockElectionNotStarted.start,
+            end_time: mockElectionNotStarted.end,
+            questions: mockElectionNotStarted.questions,
+          }),
         }),
       ).toBeFalse();
     });
@@ -188,6 +212,7 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "open"', () => {
       expect(
         handleElectionOpenMessage(
@@ -199,6 +224,23 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.ADD,
           },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleElectionOpenMessage(
+          jest.fn(),
+          jest.fn(),
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new OpenElection({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            opened_at: TIMESTAMP,
+          }),
         }),
       ).toBeFalse();
     });
@@ -281,6 +323,7 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "cast_vote"', () => {
       expect(
         handleCastVoteMessage(
@@ -293,6 +336,25 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.ADD,
           },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleCastVoteMessage(
+          getMockLao,
+          jest.fn(),
+          jest.fn(),
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new CastVote({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            created_at: TIMESTAMP,
+            votes: [mockVote1, mockVote2],
+          }),
         }),
       ).toBeFalse();
     });
@@ -456,6 +518,7 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "end"', () => {
       expect(
         handleElectionEndMessage(
@@ -467,6 +530,24 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.ADD,
           },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleElectionEndMessage(
+          jest.fn(),
+          jest.fn(),
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new EndElection({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            created_at: TIMESTAMP,
+            registered_votes: mockRegistedVotesHash,
+          }),
         }),
       ).toBeFalse();
     });
