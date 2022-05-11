@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
       android:id="@+id/event_card_view"
       android:layout_width="match_parent"
-      android:layout_height="40dp"
+      android:layout_height="60dp"
       android:clickable="true"
       android:foreground="?android:attr/selectableItemBackground"
       app:cardElevation="@dimen/card_view_elevation"

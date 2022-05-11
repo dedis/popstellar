@@ -48,7 +48,7 @@
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="election_fragment_description_margin">140dp</dimen>
   <dimen name="election_question_height">80dp</dimen>
-  <dimen name="qr_icon_side">30dp</dimen>
+  <dimen name="qr_icon_side">45dp</dimen>
 
   <!-- Event -->
   <dimen name="election_question_margin_top">10dp</dimen>
