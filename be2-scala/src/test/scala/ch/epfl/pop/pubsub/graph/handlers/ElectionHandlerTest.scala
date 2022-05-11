@@ -49,7 +49,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
 
           sender() ! DbActor.DbActorAck()
 
-        case DbActor.ReadLaoData =>
+        case DbActor.ReadLaoData(_) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
 

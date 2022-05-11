@@ -57,7 +57,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
-        //generating pair of key, to send then the publickey to the frontend
+        //generating a key pair, to send then the public key to the frontend
         val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
         val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
