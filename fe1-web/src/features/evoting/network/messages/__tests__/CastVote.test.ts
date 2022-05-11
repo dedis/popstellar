@@ -209,6 +209,24 @@ describe('CastVote', () => {
   });
 
   describe('selectedBallotsToEncryptedVotes', () => {
+    it('should throw an error if an option index is too big', () => {
+      const q1SelectedOptions = new Set([2 ** (2 * 8)]);
+      const q2SelectedOptions = new Set([1]);
+
+      const keyPair = ElectionKeyPair.generate();
+
+      expect(() =>
+        CastVote.selectedBallotsToEncryptedVotes(
+          mockSecretBallotElectionNotStarted,
+          keyPair.publicKey,
+          {
+            0: q1SelectedOptions,
+            1: q2SelectedOptions,
+          },
+        ),
+      ).toThrow('not supported');
+    });
+
     it('should converted the selected ballots to encrypted votes', () => {
       const q1SelectedOptions = new Set([0]);
       const q2SelectedOptions = new Set([1]);
