@@ -119,7 +119,7 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
     verify(msg, mockChannel);
   });
 
-  it(`using '${ROOT_CHANNEL}' channel should not work`, () => {
+  it(`using '${ROOT_CHANNEL}' channel`, () => {
     const msg = embeddedMessage(sampleCreateLaoDataString, ROOT_CHANNEL, 23);
     verify(msg, ROOT_CHANNEL);
   });
