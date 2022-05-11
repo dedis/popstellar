@@ -83,7 +83,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
         if (expectedLaoId != data.lao) {
           Right(validationError("unexpected id"))
-        } else if (data.frontend !=  message.sender) {
+        } else if (data.frontend != message.sender) {
           Right(validationError("unexpected frontend"))
         } else if (!data.address.startsWith("ws://")) {
           Right(validationError("invalid address"))

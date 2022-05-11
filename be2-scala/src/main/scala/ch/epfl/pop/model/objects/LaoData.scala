@@ -33,14 +33,20 @@ final case class LaoData(
     that.toJson.toString
   }
 
-  def updateWith(message: Message, address: String): LaoData = {
+  def updateWith(message: Message, adr: Option[String]): LaoData = {
     message.decodedData.fold(this) {
-      case call: CloseRollCall => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, address)
-      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses, address)
+      case call: CloseRollCall => adr match {
+        case Some(str) => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, str)
+        case _ => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, address)
+      }
+
+      case lao: CreateLao => adr match {
+        case Some(str) => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses, str)
+        case _ => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses, address)
+      }
       case _ => this
     }
   }
-
 }
 
 object LaoData extends Parsable {
