@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.model.objects.Server;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import org.junit.Before;
 import org.junit.Test;

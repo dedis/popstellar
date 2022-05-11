@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import com.github.dedis.popstellar.model.objects.Server;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
