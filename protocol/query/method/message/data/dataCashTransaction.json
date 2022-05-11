@@ -65,7 +65,7 @@
           },
           "minItems": 1
         },
-        "output": {
+        "outputs": {
           "type": "array",
           "description": "[Array[Objects]] array of outputs from this transactions",
           "items": {
@@ -102,7 +102,7 @@
           "description": "Timestamp"
         }
       },
-      "required": ["version", "input", "output", "locktime"]
+      "required": ["version", "inputs", "outputs", "locktime"]
     }
   },
   "required": ["object", "action", "transaction_id", "transaction"]
