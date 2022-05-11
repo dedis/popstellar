@@ -118,12 +118,6 @@ test("message data: lao", () => {
 test("message data: vote", () => {
     vote_cast_vote = require("../examples/messageData/vote_cast_vote/vote_cast_vote.json");
     expect(vote_cast_vote).toBeValid(messageDataSchema);
-
-    vote_cast_vote_encrypted = require("../examples/messageData/vote_cast_vote/vote_cast_vote_encrypted.json");
-    expect(vote_cast_vote_encrypted).toBeValid(messageDataSchema);
-
-    failure = require("../examples/messageData/vote_cast_vote/wrong_vote_cast_vote_mixed_encrypted.json");
-    expect(failure).not.toBeValid(messageDataSchema);
 });
 
 test("message data: roll call", () => {

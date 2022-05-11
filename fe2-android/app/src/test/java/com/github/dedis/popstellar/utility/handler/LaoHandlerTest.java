@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
@@ -22,7 +21,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -53,7 +51,6 @@ public class LaoHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
-  private ServerRepository serverRepository;
 
   private Lao lao;
   private MessageGeneral createLaoMessage;
@@ -69,9 +66,7 @@ public class LaoHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    serverRepository = new ServerRepository();
-    messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());

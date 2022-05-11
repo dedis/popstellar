@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -66,7 +65,6 @@ public class ChirpHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
-  private ServerRepository serverRepository;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -81,7 +79,7 @@ public class ChirpHandlerTest {
     Channel channel = Channel.getLaoChannel(LAO_ID);
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, channel, createLaoMessage);

@@ -12,7 +12,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
@@ -28,14 +27,11 @@ public final class MessageHandler {
 
   private final DataRegistry registry;
   private final KeyManager keyManager;
-  private final ServerRepository serverRepository;
 
   @Inject
-  public MessageHandler(
-      DataRegistry registry, KeyManager keyManager, ServerRepository serverRepository) {
+  public MessageHandler(DataRegistry registry, KeyManager keyManager) {
     this.registry = registry;
     this.keyManager = keyManager;
-    this.serverRepository = serverRepository;
   }
 
   /**
@@ -62,8 +58,7 @@ public final class MessageHandler {
     Action dataAction = Action.find(data.getAction());
 
     registry.handle(
-        new HandlerContext(
-            laoRepository, keyManager, messageSender, channel, message, serverRepository),
+        new HandlerContext(laoRepository, keyManager, messageSender, channel, message),
         data,
         dataObj,
         dataAction);

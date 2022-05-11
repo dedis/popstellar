@@ -11,7 +11,6 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.KEY;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.GREET;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
@@ -87,8 +86,7 @@ public abstract class DataRegistryModule {
     builder
         .add(LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao)
         .add(LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao)
-        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao)
-        .add(LAO, GREET, GreetLao.class, LaoHandler::handleGreetLao);
+        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao);
 
     // Meeting
     builder
