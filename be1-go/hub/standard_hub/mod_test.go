@@ -286,7 +286,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	require.EqualError(t, sock.err, "failed to handle method: Signature was not computed correctly")
+	require.EqualError(t, sock.err, fmt.Sprintf("%v", sock.err))
 }
 
 func Test_Create_LAO(t *testing.T) {

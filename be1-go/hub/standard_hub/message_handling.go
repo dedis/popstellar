@@ -282,24 +282,26 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	signature := publish.Params.Message.Signature
 	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
-	dataBytes, ok := base64.URLEncoding.DecodeString(data)
-	if ok != nil {
-		return publish.ID, xerrors.Errorf("Data is not base 64 encoded")
+
+	dataBytes, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
 	}
-	
-	publicKeySender, ok := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
-	if ok != nil {
+
+	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, xerrors.Errorf("Public key is not base 64 encoded " + ok.Error())
+		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
 	}
-	
-	signatureBytes, ok := base64.URLEncoding.DecodeString(signature)
-	if ok != nil {
-		return publish.ID, xerrors.Errorf("Signature is not base 64 encoded")
+
+	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode string: %v", err)
 	}
-	
-	if schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes) != nil {
-		return publish.ID, xerrors.Errorf("Signature was not computed correctly")
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
