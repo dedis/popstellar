@@ -23,7 +23,7 @@
           "type": "integer",
           "description": "The version of the transaction inputs"
         },
-        "inputs": { //tx_in
+        "inputs": {
           "type": "array",
           "description": "[Array[Objects]] array of output transactions to use as inputs",
           "items": {
