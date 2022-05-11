@@ -96,8 +96,8 @@ describe('getElectionKeyByElectionId', () => {
             someOtherId: 'someOtherElectionKey',
           },
         } as ElectionKeyReducerState,
-      })?.equals(mockElectionKey),
-    ).toBeTrue();
+      }),
+    ).toEqual(mockElectionKey);
   });
 
   it('returns the undefined if no key is found for a given election id', () => {
@@ -123,8 +123,8 @@ describe('makeElectionKeySelector', () => {
             someOtherId: 'someOtherElectionKey',
           },
         } as ElectionKeyReducerState,
-      })?.equals(mockElectionKey),
-    ).toBeTrue();
+      }),
+    ).toEqual(mockElectionKey);
   });
 
   it('returns the undefined if no key is found for a given election id', () => {
