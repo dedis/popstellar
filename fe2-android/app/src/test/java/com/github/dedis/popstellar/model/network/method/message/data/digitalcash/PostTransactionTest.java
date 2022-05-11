@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -75,8 +77,9 @@ public class PostTransactionTest {
   @Test
   public void jsonValidationTest() {
     Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-    String json = GSON.toJson(POST_TRANSACTION, PostTransaction.class);
-    // JsonUtils.verifyJson("resource:/protocol/query/method/message/data/",json);
+    String json = GSON.toJson(POST_TRANSACTION, Data.class);
+
+    JsonUtils.verifyJson("protocol/query/method/message/data/dataCashTransaction.json", json);
     PostTransaction res = GSON.fromJson(json, PostTransaction.class);
     System.out.println("done");
     assertEquals(POST_TRANSACTION, res);

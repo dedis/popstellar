@@ -9,7 +9,7 @@ public class ScriptTxIn {
   @SerializedName("Type")
   private final String type; // The script describing the unlock mechanism
 
-  @SerializedName("PubKey")
+  @SerializedName("Pubkey")
   private final String pub_key_recipient; // The recipient’s public key
 
   @SerializedName("Sig")
