@@ -227,6 +227,7 @@ describe('CastVote', () => {
       expect(encryptedVotes.length).toBe(2);
 
       // we should **not** hash the unencrypted vote id, this allows recovering the option index
+      // by computing the hashes for all combinations and then comapring them
       expect(encryptedVotes[0]).not.toHaveProperty(
         'id',
         CastVote.computeVoteId(mockSecretBallotElectionNotStarted, 0, q1SelectedOptions).valueOf(),
