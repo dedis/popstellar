@@ -73,7 +73,13 @@ export class CloseRollCall implements MessageData {
    * @param obj The parsed json data
    * @param laoId The id of the lao this roll call belongs to
    */
-  public static fromJson(obj: any, laoId: Hash): CloseRollCall {
+  public static fromJson(obj: any, laoId?: Hash): CloseRollCall {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'ReopenRollCall' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.CLOSE, obj);
 
     if (errors !== null) {

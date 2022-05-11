@@ -20,7 +20,8 @@ export const handleMeetingCreateMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.MEETING ||
-      msg.messageData.action !== ActionType.CREATE
+      msg.messageData.action !== ActionType.CREATE ||
+      !msg.laoId
     ) {
       console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
       return false;
@@ -59,7 +60,8 @@ export const handleMeetingStateMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.MEETING ||
-      msg.messageData.action !== ActionType.STATE
+      msg.messageData.action !== ActionType.STATE ||
+      !msg.laoId
     ) {
       console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
       return false;

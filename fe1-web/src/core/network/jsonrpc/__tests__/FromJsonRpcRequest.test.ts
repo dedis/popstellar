@@ -6,8 +6,6 @@ import keyPair from 'test_data/keypair.json';
 import { configureTestFeatures, mockChannel } from '__tests__/utils';
 import { Base64UrlData, Hash, PrivateKey, PublicKey, ROOT_CHANNEL } from 'core/objects';
 import { CreateLao } from 'features/lao/network/messages';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { JsonRpcMethod, JsonRpcRequest } from '../index';
 import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';
@@ -43,14 +41,7 @@ function checkRpcParams(obj: any, channel: string): void {
 
 function checkMessage(obj: any, ch: string): void {
   expect(obj).toBeObject();
-  expect(obj).toContainAllKeys([
-    'data',
-    'sender',
-    'signature',
-    'message_id',
-    'witness_signatures',
-    'channel',
-  ]);
+  expect(obj).toContainAllKeys(['data', 'sender', 'signature', 'message_id', 'witness_signatures']);
 
   expect(obj.data).toBeBase64Url();
 
@@ -109,21 +100,6 @@ function embeddedMessage(data: string, channel: string, id: number = 0): string 
 describe('FromJsonRpcRequest should successfully create objects from Json', () => {
   beforeAll(() => {
     configureTestFeatures();
-
-    const sampleLao: Lao = new Lao({
-      name: sampleCreateLaoData.name,
-      id: Hash.fromStringArray(
-        sampleCreateLaoData.organizer.toString(),
-        sampleCreateLaoData.creation.toString(),
-        sampleCreateLaoData.name,
-      ),
-      creation: sampleCreateLaoData.creation,
-      last_modified: sampleCreateLaoData.creation,
-      organizer: sampleCreateLaoData.organizer,
-      witnesses: sampleCreateLaoData.witnesses,
-    });
-
-    OpenedLaoStore.store(sampleLao);
   });
 
   const verify = (jsonString: string, channel: string) => {
@@ -147,6 +123,6 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
   // and building a message should fail
   it(`using '${ROOT_CHANNEL}' channel should not work`, () => {
     const msg = embeddedMessage(sampleCreateLaoDataString, ROOT_CHANNEL, 23);
-    expect(() => verify(msg, ROOT_CHANNEL)).toThrow();
+    verify(msg, ROOT_CHANNEL);
   });
 });

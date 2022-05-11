@@ -4,7 +4,7 @@ import { ActionType, MessageData, ObjectType, SignatureType } from './MessageDat
 import { ProcessableMessage } from './ProcessableMessage';
 
 type HandleFunction = (msg: ProcessableMessage) => boolean;
-type BuildFunction = (data: MessageData, laoId: Hash) => MessageData;
+type BuildFunction = (data: MessageData, laoId?: Hash) => MessageData;
 
 const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
 const {
@@ -119,7 +119,7 @@ export class MessageRegistry {
    * @param laoId - The id of the lao this message was received from
    * @returns MessageData - The built message
    */
-  buildMessageData(data: unknown, laoId: Hash): MessageData {
+  buildMessageData(data: unknown, laoId?: Hash): MessageData {
     if (!MessageRegistry.isMessageData(data)) {
       throw new ProtocolError(`Data (${data}) is not a valid MessageData`);
     }

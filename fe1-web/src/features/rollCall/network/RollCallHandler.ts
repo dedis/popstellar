@@ -17,7 +17,8 @@ export const handleRollCallCreateMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CREATE
+      msg.messageData.action !== ActionType.CREATE ||
+      !msg.laoId
     ) {
       console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
       return false;
@@ -54,7 +55,8 @@ export const handleRollCallOpenMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.OPEN
+      msg.messageData.action !== ActionType.OPEN ||
+      !msg.laoId
     ) {
       console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
       return false;
@@ -98,11 +100,14 @@ export const handleRollCallCloseMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CLOSE
+      msg.messageData.action !== ActionType.CLOSE ||
+      !msg.laoId
     ) {
       console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
       return false;
     }
+
+    const { laoId } = msg;
 
     const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
@@ -127,23 +132,21 @@ export const handleRollCallCloseMessage =
     // ... and update the Lao state to point to the latest roll call, if we have a token in it.
     dispatch(async (aDispatch: AsyncDispatch) => {
       try {
-        const token = await generateToken(msg.laoId, rc.id);
+        const token = await generateToken(laoId, rc.id);
         const hasToken = rc.containsToken(token);
-        aDispatch(setLaoLastRollCall(msg.laoId, rc.id, hasToken));
+        aDispatch(setLaoLastRollCall(laoId, rc.id, hasToken));
 
         // If we had a token in this roll call, we subscribe to our own social media channel
         if (token && hasToken) {
-          await subscribeToChannel(getUserSocialChannel(msg.laoId, token.publicKey)).catch(
-            (err) => {
-              console.error(
-                `Could not subscribe to our own social channel ${token.publicKey}, error:`,
-                err,
-              );
-            },
-          );
+          await subscribeToChannel(getUserSocialChannel(laoId, token.publicKey)).catch((err) => {
+            console.error(
+              `Could not subscribe to our own social channel ${token.publicKey}, error:`,
+              err,
+            );
+          });
         }
         // everyone is automatically subscribed to the reaction channel after the roll call
-        await subscribeToChannel(getReactionChannel(msg.laoId)).catch((err) => {
+        await subscribeToChannel(getReactionChannel(laoId)).catch((err) => {
           console.error('Could not subscribe to reaction channel, error:', err);
         });
       } catch (err) {
@@ -168,7 +171,8 @@ export const handleRollCallReopenMessage =
   (msg: ProcessableMessage) => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.REOPEN
+      msg.messageData.action !== ActionType.REOPEN ||
+      !msg.laoId
     ) {
       console.warn('handleRollCallReopenMessage was called to process an unsupported message', msg);
       return false;

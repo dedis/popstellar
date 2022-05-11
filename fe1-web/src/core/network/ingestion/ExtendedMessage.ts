@@ -15,7 +15,7 @@ export interface ExtendedMessageState {
   receivedAt: number;
   receivedFrom: string;
   processedAt?: number;
-  channel?: Channel;
+  channel: Channel;
   laoId: string;
 
   data: string;
@@ -42,8 +42,8 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
 
   public processedAt?: Timestamp;
 
-  constructor(msg: Partial<ExtendedMessage>) {
-    super(msg);
+  constructor(msg: Partial<ExtendedMessage>, channel: Channel) {
+    super(msg, channel);
 
     if (!msg.receivedFrom) {
       throw new Error(
@@ -61,37 +61,43 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
     receivedFrom: string,
     receivedAt?: Timestamp,
   ): ExtendedMessage {
-    return new ExtendedMessage({
-      ...msg,
-      receivedAt: receivedAt || Timestamp.EpochNow(),
-      receivedFrom,
-    });
+    return new ExtendedMessage(
+      {
+        ...msg,
+        receivedAt: receivedAt || Timestamp.EpochNow(),
+        receivedFrom,
+      },
+      msg.channel,
+    );
   }
 
   public static fromState(state: ExtendedMessageState): ExtendedMessage {
-    return new ExtendedMessage({
-      // message fields:
-      data: new Base64UrlData(state.data),
-      sender: new PublicKey(state.sender),
-      signature: new Signature(state.signature),
-      message_id: new Hash(state.message_id),
-      witness_signatures: state.witness_signatures.map(
-        (ws: any) =>
-          new WitnessSignature({
-            witness: new PublicKey(ws.witness),
-            signature: new Signature(ws.signature),
-          }),
-      ),
+    return new ExtendedMessage(
+      {
+        // message fields:
+        data: new Base64UrlData(state.data),
+        sender: new PublicKey(state.sender),
+        signature: new Signature(state.signature),
+        message_id: new Hash(state.message_id),
+        witness_signatures: state.witness_signatures.map(
+          (ws: any) =>
+            new WitnessSignature({
+              witness: new PublicKey(ws.witness),
+              signature: new Signature(ws.signature),
+            }),
+        ),
 
-      // extended fields:
-      receivedAt: state.receivedAt ? new Timestamp(state.receivedAt) : undefined,
-      receivedFrom: state.receivedFrom,
-      processedAt: state.processedAt ? new Timestamp(state.processedAt) : undefined,
-      channel: state.channel,
-    });
+        // extended fields:
+        receivedAt: state.receivedAt ? new Timestamp(state.receivedAt) : undefined,
+        receivedFrom: state.receivedFrom,
+        processedAt: state.processedAt ? new Timestamp(state.processedAt) : undefined,
+      },
+      state.channel,
+    );
   }
 
   public toState(): ExtendedMessageState {
-    return JSON.parse(JSON.stringify(this));
+    // include inherited ECMAScript private field 'channel'
+    return JSON.parse(JSON.stringify({ ...this, channel: this.channel }));
   }
 }

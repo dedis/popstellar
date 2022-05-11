@@ -71,7 +71,13 @@ export class OpenRollCall implements MessageData {
    * @param obj The parsed json data
    * @param laoId The id of the lao this roll call is in
    */
-  public static fromJson(obj: any, laoId: Hash): OpenRollCall {
+  public static fromJson(obj: any, laoId?: Hash): OpenRollCall {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'ReopenRollCall' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.OPEN, obj);
 
     if (errors !== null) {

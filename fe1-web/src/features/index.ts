@@ -206,6 +206,7 @@ export function configureFeatures() {
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletConfiguration.context,
+      [rollCallConfiguration.identifier]: rollCallConfiguration.context,
     },
   };
 }

@@ -72,9 +72,6 @@ export class Message {
 
   public readonly witness_signatures: WitnessSignature[];
 
-  // Not part of the protocol, but convenient for processing of the message
-  public readonly channel: Channel;
-
   // ECMAScript private field, not string-ified by JSON
   readonly #messageData: MessageData;
 
@@ -83,11 +80,24 @@ export class Message {
     return this.#messageData;
   }
 
-  get laoId(): Hash {
-    return getLaoIdFromChannel(this.channel);
+  // Not part of the protocol, but convenient for processing of the message
+  // ECMAScript private field, not string-ified by JSON
+  readonly #channel: Channel;
+
+  // Public getter that makes channel appear public
+  public get channel() {
+    return this.#channel;
   }
 
-  constructor(msg: Partial<Message>) {
+  get laoId(): Hash | undefined {
+    try {
+      return getLaoIdFromChannel(this.channel);
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  constructor(msg: Partial<Message>, channel: Channel) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
     }
@@ -137,10 +147,10 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
-    if (!msg.channel) {
+    if (!channel) {
       throw new Error("Undefined 'channel' parameter encountered during 'Message' creation");
     }
-    this.channel = msg.channel;
+    this.#channel = channel;
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
@@ -148,16 +158,18 @@ export class Message {
   }
 
   public static fromJson(obj: any, channel: Channel): Message {
-    return new Message({
-      data: new Base64UrlData(obj.data.toString()),
-      sender: new PublicKey(obj.sender.toString()),
-      signature: new Signature(obj.signature.toString()),
-      message_id: new Hash(obj.message_id.toString()),
-      witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
-        WitnessSignature.fromJson(ws),
-      ),
-      channel: channel,
-    });
+    return new Message(
+      {
+        data: new Base64UrlData(obj.data.toString()),
+        sender: new PublicKey(obj.sender.toString()),
+        signature: new Signature(obj.signature.toString()),
+        message_id: new Hash(obj.message_id.toString()),
+        witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
+          WitnessSignature.fromJson(ws),
+        ),
+      },
+      channel,
+    );
   }
 
   /**
@@ -181,13 +193,15 @@ export class Message {
     const { publicKey, privateKey } = senderKeyPair;
     const signature = privateKey.sign(encodedDataJson);
 
-    return new Message({
-      data: encodedDataJson,
-      sender: publicKey,
-      signature: signature,
-      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
+    return new Message(
+      {
+        data: encodedDataJson,
+        sender: publicKey,
+        signature: signature,
+        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+        witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
+      },
       channel,
-    });
+    );
   }
 }

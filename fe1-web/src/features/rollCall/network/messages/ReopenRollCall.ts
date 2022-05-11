@@ -16,7 +16,13 @@ export class ReopenRollCall extends OpenRollCall {
    * @param obj The parsed json data
    * @param laoId The id of the lao this roll call belongs to
    */
-  public static fromJson(obj: any, laoId: Hash): ReopenRollCall {
+  public static fromJson(obj: any, laoId?: Hash): ReopenRollCall {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'ReopenRollCall' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.REOPEN, obj);
 
     if (errors !== null) {

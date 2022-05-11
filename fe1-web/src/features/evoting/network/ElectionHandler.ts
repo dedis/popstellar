@@ -23,7 +23,8 @@ export const handleElectionSetupMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
-      msg.messageData.action !== ActionType.SETUP
+      msg.messageData.action !== ActionType.SETUP ||
+      !msg.laoId
     ) {
       console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
       return false;
@@ -70,7 +71,8 @@ export const handleElectionOpenMessage =
     console.log('Handling Election open message');
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
-      msg.messageData.action !== ActionType.OPEN
+      msg.messageData.action !== ActionType.OPEN ||
+      !msg.laoId
     ) {
       console.warn('handleElectionOpenMessage was called to process an unsupported message', msg);
       return false;
@@ -106,7 +108,8 @@ export const handleCastVoteMessage =
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
-      msg.messageData.action !== ActionType.CAST_VOTE
+      msg.messageData.action !== ActionType.CAST_VOTE ||
+      !msg.laoId
     ) {
       console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
       return false;
@@ -166,7 +169,8 @@ export const handleElectionEndMessage =
     console.log('Handling Election end message');
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
-      msg.messageData.action !== ActionType.END
+      msg.messageData.action !== ActionType.END ||
+      !msg.laoId
     ) {
       console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
       return false;
@@ -200,7 +204,8 @@ export const handleElectionResultMessage =
   (msg: ProcessableMessage) => {
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
-      msg.messageData.action !== ActionType.RESULT
+      msg.messageData.action !== ActionType.RESULT ||
+      !msg.laoId
     ) {
       console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
       return false;
