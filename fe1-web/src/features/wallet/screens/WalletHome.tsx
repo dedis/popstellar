@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle, TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
@@ -13,6 +14,7 @@ import { RollCall } from 'features/rollCall/objects';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
+import RoundIconButton from '../components/RoundIconButton';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -29,6 +31,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 30,
     marginBottom: 20,
+  } as ViewStyle,
+  mainButtonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    minWidth: '50%',
+    margin: 'auto',
+    marginTop: 20,
   } as ViewStyle,
   textBase: Typography.base as TextStyle,
   textImportant: Typography.important as TextStyle,
@@ -103,6 +113,11 @@ const WalletHome = () => {
         )}
       </View>
       {tokenInfos()}
+      <View style={styles.mainButtonsContainer}>
+        <RoundIconButton name="send" onClick={() => {}} />
+        <RoundIconButton name="search" onClick={() => {}} />
+        <RoundIconButton name="history" onClick={() => {}} />
+      </View>
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
