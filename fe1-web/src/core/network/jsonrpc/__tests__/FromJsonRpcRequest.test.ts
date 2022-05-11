@@ -119,8 +119,6 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
     verify(msg, mockChannel);
   });
 
-  // at the moment no messages are sent on the root channel
-  // and building a message should fail
   it(`using '${ROOT_CHANNEL}' channel should not work`, () => {
     const msg = embeddedMessage(sampleCreateLaoDataString, ROOT_CHANNEL, 23);
     verify(msg, ROOT_CHANNEL);
