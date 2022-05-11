@@ -132,10 +132,10 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		sort.Ints(vote.Vote)
 		sortedIndex := arrayToString(vote.Vote, ",")
 
-		hash := messagedata.Hash("Vote", electionID, string(qs.id), sortedIndex)
+		hash := messagedata.Hash("Vote", electionID, string(qs.ID), sortedIndex)
 
 		if vote.ID != hash {
-			return xerrors.Errorf("vote ID of vote %d is %s should be %s", i, vote.ID, hash)
+			return xerrors.Errorf("vote ID of vote %d is incorrect", i)
 		}
 	}
 
