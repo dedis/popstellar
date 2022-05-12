@@ -19,7 +19,7 @@
       "type": "object",
       "description": "The transaction object",
       "properties": {
-        "Version": {
+        "version": {
           "type": "integer",
           "description": "The version of the transaction inputs"
         },
