@@ -1,64 +1,57 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
-/**
- * TODO: change the naming convention <==> to coordinate with backend
- * The naming does not follow the usual convention, but as this was not the priority,
- * we will fix it later
- */
-
 export interface DigitalCashTransactionState {
   version: number;
-  txsIn: TxInState[];
-  txsOut: TxOutState[];
+  inputs: InputState[];
+  outputs: OutputState[];
   lockTime: number;
 }
 export interface DigitalCashMessageState {
   transaction: DigitalCashTransactionState;
   transactionId: string;
 }
-export interface TxOutState {
+export interface OutputState {
   value: number;
-  script: TxOutScriptState;
+  script: OutputScriptState;
 }
-export interface TxInScriptState {
+export interface InputScriptState {
   type: string;
   publicKey: string;
   signature: string;
 }
-
-export interface TxInState {
-  txOutHash: string;
-  txOutIndex: number;
-  script: TxInScriptState;
+export interface InputState {
+  txOutHash: string | undefined;
+  txOutIndex: number | undefined;
+  script: InputScriptState;
 }
-export interface TxOutScriptState {
+export interface OutputScriptState {
   type: string;
   publicKeyHash: string;
 }
 
 export interface DigitalCashTransaction {
   version: number;
-  txsIn: TxIn[];
-  txsOut: TxOut[];
+  inputs: Input[];
+  outputs: Output[];
   lockTime: number;
 }
-export interface TxInScript {
+export interface InputScript {
   type: string;
   publicKey: PublicKey;
   signature: Signature;
 }
-export interface TxIn {
-  txOutHash: Hash;
-  txOutIndex: number;
-  script: TxInScript | any; // TODO: Script might be empty if coinbase transaction, how to handle it ?
+export interface Input {
+  txOutHash?: Hash | undefined;
+  txOutIndex?: number | undefined;
+  script: InputScript;
 }
-export interface TxOutScript {
+export interface OutputScript {
   type: string;
   publicKeyHash: Hash;
 }
-export interface TxOut {
+export interface Output {
   value: number;
-  script: TxOutScript;
+  script: OutputScript;
 }
 
 /**
@@ -90,26 +83,24 @@ export class DigitalCashMessage {
     return new DigitalCashMessage({
       transaction: {
         version: digitalCashMessageState.transaction.version,
-        txsOut: digitalCashMessageState.transaction.txsOut.map((txOutState) => {
+        outputs: digitalCashMessageState.transaction.outputs.map((outputState) => {
           return {
-            ...txOutState,
+            ...outputState,
             script: {
-              type: txOutState.script.type,
-              publicKeyHash: new Hash(txOutState.script.publicKeyHash),
+              type: outputState.script.type,
+              publicKeyHash: new Hash(outputState.script.publicKeyHash),
             },
           };
         }),
-        txsIn: digitalCashMessageState.transaction.txsIn.map((txInState) => {
+        inputs: digitalCashMessageState.transaction.inputs.map((inputState) => {
           return {
-            ...txInState,
-            txOutHash: new Hash(txInState.txOutHash),
-            script: txInState.script.type // In the case of a coinbase transaction
-              ? {
-                  type: txInState.script.type,
-                  publicKey: new PublicKey(txInState.script.publicKey),
-                  signature: new Signature(txInState.script.signature),
-                }
-              : {},
+            txOutIndex: inputState.txOutIndex,
+            txOutHash: inputState.txOutHash ? new Hash(inputState.txOutHash) : undefined,
+            script: {
+              type: inputState.script.type,
+              publicKey: new PublicKey(inputState.script.publicKey),
+              signature: new Signature(inputState.script.signature),
+            },
           };
         }),
         lockTime: digitalCashMessageState.transaction.lockTime,
@@ -122,23 +113,23 @@ export class DigitalCashMessage {
     return {
       transaction: {
         ...this.transaction,
-        txsOut: this.transaction.txsOut.map((txOut) => {
+        outputs: this.transaction.outputs.map((output) => {
           return {
-            ...txOut,
+            ...output,
             script: {
-              type: txOut.script.type,
-              publicKeyHash: txOut.script.publicKeyHash.valueOf(),
+              type: output.script.type,
+              publicKeyHash: output.script.publicKeyHash.valueOf(),
             },
           };
         }),
-        txsIn: this.transaction.txsIn.map((txIn) => {
+        inputs: this.transaction.inputs.map((input) => {
           return {
-            ...txIn,
-            txOutHash: txIn.txOutHash.valueOf(),
+            txOutIndex: input.txOutIndex,
+            txOutHash: input.txOutHash?.valueOf(),
             script: {
-              type: txIn.script.type,
-              publicKey: txIn.script.publicKey.valueOf(),
-              signature: txIn.script.signature.valueOf(),
+              type: input.script.type,
+              publicKey: input.script.publicKey.valueOf(),
+              signature: input.script.signature.valueOf(),
             },
           };
         }),

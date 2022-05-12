@@ -12,8 +12,8 @@ export * from './DigitalCashMessageApi';
  */
 export function configureNetwork(registry: MessageRegistry) {
   registry.add(
-    ObjectType.TRANSACTION,
-    ActionType.POST,
+    ObjectType.COIN,
+    ActionType.POST_TRANSACTION,
     handleTransactionPost,
     PostTransaction.fromJson,
   );

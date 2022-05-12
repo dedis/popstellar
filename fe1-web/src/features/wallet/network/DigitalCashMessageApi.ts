@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { Base64UrlData, channelFromIds, Hash, PopToken, PublicKey } from 'core/objects';
+import { Base64UrlData, channelFromIds, Hash, KeyPair, PopToken, PublicKey } from "core/objects";
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
@@ -8,10 +8,10 @@ import { DigitalCashStore } from '../store/DigitalCashStore';
 import {
   concatenateTxData,
   getTotalValue,
-  getTxsInToSign,
+  getInputsInToSign,
   hashTransaction,
 } from './DigitalCashHelper';
-import { DigitalCashTransaction, TxIn, TxOut } from './DigitalCashTransaction';
+import { DigitalCashTransaction, Input, Output } from './DigitalCashTransaction';
 import { PostTransaction } from './messages/PostTransaction';
 
 const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
@@ -46,7 +46,7 @@ export function requestSendTransaction(
     return Promise.resolve();
   }
 
-  const txOutTo = {
+  const outputTo = {
     value: amount,
     script: {
       type: STRINGS.script_type,
@@ -54,34 +54,34 @@ export function requestSendTransaction(
     },
   };
 
-  const txOuts: TxOut[] = [txOutTo];
+  const outputs: Output[] = [outputTo];
 
   if (totalValueOut > amount) {
     // Send the rest of the value back to the owner, so that the entire balance
     // is always in only one TxOut
-    const txOutFrom: TxOut = {
+    const outputFrom: Output = {
       value: totalValueOut - amount,
       script: {
         type: STRINGS.script_type,
         publicKeyHash: fromPublicKeyHash,
       },
     };
-    txOuts.push(txOutFrom);
+    outputs.push(outputFrom);
   }
 
-  const txIns: Omit<TxIn, 'script'>[] = getTxsInToSign(from.publicKey.valueOf(), messages);
+  const inputs: Omit<Input, 'script'>[] = getInputsInToSign(from.publicKey.valueOf(), messages);
   // Now we need to define each objects because we need some string representation of everything to hash on
 
   // Concatenate the data to sign
-  const dataString = concatenateTxData(txIns, txOuts);
+  const dataString = concatenateTxData(outputs, inputs);
 
   // Sign with the popToken
   const signature = from.privateKey.sign(Base64UrlData.encode(dataString));
 
   // Reconstruct the txIns with the signature
-  const finalTxIns: TxIn[] = txIns.map((txIn) => {
+  const finalInputs: Input[] = inputs.map((input) => {
     return {
-      ...txIn,
+      ...input,
       script: {
         type: STRINGS.script_type,
         publicKey: from.publicKey,
@@ -92,13 +92,13 @@ export function requestSendTransaction(
 
   const transaction: DigitalCashTransaction = {
     version: 1,
-    txsIn: finalTxIns,
-    txsOut: txOuts,
+    inputs: finalInputs,
+    outputs: outputs,
     lockTime: 0,
   };
 
   const postTransactionMessage = new PostTransaction({
-    transactionId: hashTransaction(transaction),
+    transaction_id: hashTransaction(transaction),
     transaction: transaction,
   });
   const lao: Lao = OpenedLaoStore.get();
@@ -108,16 +108,19 @@ export function requestSendTransaction(
 
 /**
  * Requests a digital cash coinbase transaction post
- * There is no need for a sender as any coinbase transaction that is sent by
- * an organizer on the channel is considered valid
  *
+ * @param organizerKP the keypair of the organizer
  * @param to the destination public key
  * @param amount the value of the transaction
  */
-export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promise<void> {
+export function requestCoinbaseTransaction(
+  organizerKP: KeyPair,
+  to: PublicKey,
+  amount: number,
+): Promise<void> {
   const toPublicKeyHash = Hash.fromString(to.valueOf());
 
-  const txOutTo = {
+  const outputTo = {
     value: amount,
     script: {
       type: STRINGS.script_type,
@@ -125,26 +128,34 @@ export function requestCoinbaseTransaction(to: PublicKey, amount: number): Promi
     },
   };
 
-  const txOuts: TxOut[] = [txOutTo];
+  const outputs: Output[] = [outputTo];
 
-  // Reconstruct the txIns with the signature
-  const txIns: TxIn[] = [
+  // Concatenate the data to sign
+  const dataString = concatenateTxData(outputs);
+
+  // Sign with the popToken
+  const signature = organizerKP.privateKey.sign(Base64UrlData.encode(dataString));
+
+  // Reconstruct the inputs with the signature of the organizer
+  const inputs: Input[] = [
     {
-      txOutHash: new Hash(STRINGS.coinbase_hash),
-      txOutIndex: -1,
-      script: {},
+      script: {
+        type: STRINGS.script_type,
+        publicKey: organizerKP.publicKey,
+        signature: signature,
+      },
     },
   ];
 
   const transaction: DigitalCashTransaction = {
     version: 1,
-    txsIn: txIns,
-    txsOut: txOuts,
+    inputs: inputs,
+    outputs: outputs,
     lockTime: 0,
   };
 
   const postTransactionMessage = new PostTransaction({
-    transactionId: hashTransaction(transaction),
+    transaction_id: hashTransaction(transaction),
     transaction: transaction,
   });
 

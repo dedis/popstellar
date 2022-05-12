@@ -1,6 +1,11 @@
 import { Hash } from 'core/objects';
 
-import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './DigitalCashTransaction';
+import {
+  DigitalCashMessage,
+  DigitalCashTransaction,
+  Output,
+  Input,
+} from './DigitalCashTransaction';
 
 /**
  * Hash a transaction to get its id
@@ -8,24 +13,24 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
  */
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
-  const dataTxIns = transaction.txsIn.flatMap((txIn) => {
-    if (txIn.script.publicKey) {
+  const dataInputs = transaction.inputs.flatMap((input) => {
+    if (input.txOutHash && input.txOutIndex) { // Might be a coinbase transaction
       return [
-        txIn.script.publicKey.valueOf(),
-        txIn.script.signature.valueOf(),
-        txIn.script.type,
-        txIn.txOutHash.valueOf(),
-        txIn.txOutIndex.toString(),
+        input.script.publicKey.valueOf(),
+        input.script.signature.valueOf(),
+        input.script.type,
+        input.txOutHash.valueOf(),
+        input.txOutIndex.toString(),
       ];
     }
-    return [txIn.txOutHash.valueOf(), txIn.txOutIndex.toString()];
+    return [input.script.publicKey.valueOf(), input.script.signature.valueOf(), input.script.type];
   });
-  const dataTxOuts = transaction.txsOut.flatMap((txOut) => {
-    return [txOut.script.publicKeyHash.valueOf(), txOut.script.type, txOut.value.toString()];
+  const dataOutputs = transaction.outputs.flatMap((output) => {
+    return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
   });
   const data = [transaction.lockTime.toString()]
-    .concat(dataTxIns)
-    .concat(dataTxOuts)
+    .concat(dataInputs)
+    .concat(dataOutputs)
     .concat([transaction.version.toString()]);
 
   // Hash will take care of concatenating each fields length
@@ -42,27 +47,27 @@ export const getTotalValue = (
   pkHash: string | Hash,
   transactionMessages: DigitalCashMessage[],
 ): number => {
-  const txOuts = transactionMessages.flatMap((tr) =>
-    tr.transaction.txsOut.filter(
-      (txOut) => txOut.script.publicKeyHash.valueOf() === pkHash.valueOf(),
+  const outputs = transactionMessages.flatMap((tr) =>
+    tr.transaction.outputs.filter(
+      (output) => output.script.publicKeyHash.valueOf() === pkHash.valueOf(),
     ),
   );
-  return txOuts.reduce((total, current) => total + current.value, 0);
+  return outputs.reduce((total, current) => total + current.value, 0);
 };
 
 /**
- * Constructs a partial TxIn object from transaction messages to take as input
+ * Constructs a partial Input object from transaction messages to take as input
  * @param pk the public key of the sender
  * @param transactionMessages the transaction messages used as inputs
  */
-export const getTxsInToSign = (
+export const getInputsInToSign = (
   pk: string,
   transactionMessages: DigitalCashMessage[],
-): Omit<TxIn, 'script'>[] => {
+): Omit<Input, 'script'>[] => {
   return transactionMessages.flatMap((tr) =>
-    tr.transaction.txsOut
-      .filter((txOut) => txOut.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
-      .map((txOut, index) => {
+    tr.transaction.outputs
+      .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
+      .map((output, index) => {
         return {
           txOutHash: tr.transactionId,
           txOutIndex: index,
@@ -72,21 +77,24 @@ export const getTxsInToSign = (
 };
 
 /**
- * Concatenates the partial TxIn and the TxOut in a string to sign over it by following the digital cash specification
- * @param txsInt
- * @param txOuts
+ * Concatenates the partial inputs and the outputs in a string to sign over it by following the digital cash specification
+ * @param inputs left empty if this is a coinbase transaction
+ * @param outputs
  */
-export const concatenateTxData = (txsInt: Omit<TxIn, 'script'>[], txOuts: TxOut[]) => {
-  const txsInDataString = txsInt.reduce(
-    (dataString, txIn) => dataString + txIn.txOutHash.valueOf() + txIn.txOutIndex.toString(),
-    '',
-  );
-  return txOuts.reduce(
-    (dataString, txOut) =>
+export const concatenateTxData = (outputs: Output[], inputs: Omit<Input, 'script'>[] = []) => {
+  let inputsDataString = '';
+  if (inputs.length > 0) {
+    inputsDataString = inputs.reduce(
+      (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
+      '',
+    );
+  }
+  return outputs.reduce(
+    (dataString, output) =>
       dataString +
-      txOut.value.toString() +
-      txOut.script.type +
-      txOut.script.publicKeyHash.valueOf(),
-    txsInDataString,
+      output.value.toString() +
+      output.script.type +
+      output.script.publicKeyHash.valueOf(),
+    inputsDataString,
   );
 };
