@@ -7,7 +7,6 @@ import { Hash, PublicKey, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { LaoServer } from '../objects/LaoServer';
-
 import {
   getLaosState,
   handleGreetLaoMessage,
