@@ -10,6 +10,7 @@ import {
   handleElectionSetupMessage,
 } from './ElectionHandler';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
+import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
 
 /**
@@ -21,7 +22,7 @@ export const configureNetwork = (config: EvotingConfiguration) => {
     ObjectType.ELECTION,
     ActionType.KEY,
     handleElectionKeyMessage(config.getLaoOrganizerBackendPublicKey),
-    ElectionResult.fromJson,
+    ElectionKey.fromJson,
   );
   config.messageRegistry.add(
     ObjectType.ELECTION,
