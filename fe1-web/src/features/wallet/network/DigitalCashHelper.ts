@@ -8,22 +8,25 @@ import { DigitalCashMessage, DigitalCashTransaction, TxIn, TxOut } from './Digit
  */
 export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
-  const dataTxIns = transaction.TxIn.flatMap((txIn) => {
-    return [
-      txIn.Script.Pubkey.valueOf(),
-      txIn.Script.Sig.valueOf(),
-      txIn.Script.Type,
-      txIn.TxOutHash.valueOf(),
-      txIn.TxOutHash.toString(),
-    ];
+  const dataTxIns = transaction.txsIn.flatMap((txIn) => {
+    if (txIn.script.publicKey) {
+      return [
+        txIn.script.publicKey.valueOf(),
+        txIn.script.signature.valueOf(),
+        txIn.script.type,
+        txIn.txOutHash.valueOf(),
+        txIn.txOutIndex.toString(),
+      ];
+    }
+    return [txIn.txOutHash.valueOf(), txIn.txOutIndex.toString()];
   });
-  const dataTxOuts = transaction.TxOut.flatMap((txOut) => {
-    return [txOut.Script.PubkeyHash.valueOf(), txOut.Script.Type, txOut.Value.toString()];
+  const dataTxOuts = transaction.txsOut.flatMap((txOut) => {
+    return [txOut.script.publicKeyHash.valueOf(), txOut.script.type, txOut.value.toString()];
   });
-  const data = [transaction.LockTime.toString()]
+  const data = [transaction.lockTime.toString()]
     .concat(dataTxIns)
     .concat(dataTxOuts)
-    .concat([transaction.Version.toString()]);
+    .concat([transaction.version.toString()]);
 
   // Hash will take care of concatenating each fields length
   return Hash.fromStringArray(...data);
@@ -40,9 +43,11 @@ export const getTotalValue = (
   transactionMessages: DigitalCashMessage[],
 ): number => {
   const txOuts = transactionMessages.flatMap((tr) =>
-    tr.transaction.TxOut.filter((txOut) => txOut.Script.PubkeyHash.valueOf() === pkHash.valueOf()),
+    tr.transaction.txsOut.filter(
+      (txOut) => txOut.script.publicKeyHash.valueOf() === pkHash.valueOf(),
+    ),
   );
-  return txOuts.reduce((total, current) => total + current.Value, 0);
+  return txOuts.reduce((total, current) => total + current.value, 0);
 };
 
 /**
@@ -53,16 +58,16 @@ export const getTotalValue = (
 export const getTxsInToSign = (
   pk: string,
   transactionMessages: DigitalCashMessage[],
-): Omit<TxIn, 'Script'>[] => {
+): Omit<TxIn, 'script'>[] => {
   return transactionMessages.flatMap((tr) =>
-    tr.transaction.TxOut.filter(
-      (txOut) => txOut.Script.PubkeyHash.valueOf() === Hash.fromString(pk).valueOf(),
-    ).map((txOut, index) => {
-      return {
-        TxOutHash: tr.transactionId,
-        TxOutIndex: index,
-      };
-    }),
+    tr.transaction.txsOut
+      .filter((txOut) => txOut.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
+      .map((txOut, index) => {
+        return {
+          txOutHash: tr.transactionId,
+          txOutIndex: index,
+        };
+      }),
   );
 };
 
@@ -71,14 +76,17 @@ export const getTxsInToSign = (
  * @param txsInt
  * @param txOuts
  */
-export const concatenateTxData = (txsInt: Omit<TxIn, 'Script'>[], txOuts: TxOut[]) => {
+export const concatenateTxData = (txsInt: Omit<TxIn, 'script'>[], txOuts: TxOut[]) => {
   const txsInDataString = txsInt.reduce(
-    (dataString, txIn) => dataString + txIn.TxOutHash.valueOf() + txIn.TxOutHash.toString(),
+    (dataString, txIn) => dataString + txIn.txOutHash.valueOf() + txIn.txOutIndex.toString(),
     '',
   );
   return txOuts.reduce(
     (dataString, txOut) =>
-      dataString + txOut.Value.toString() + txOut.Script.Type + txOut.Script.PubkeyHash.valueOf(),
+      dataString +
+      txOut.value.toString() +
+      txOut.script.type +
+      txOut.script.publicKeyHash.valueOf(),
     txsInDataString,
   );
 };
