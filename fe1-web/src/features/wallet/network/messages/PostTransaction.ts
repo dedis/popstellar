@@ -2,7 +2,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Hash, ProtocolError } from 'core/objects';
 
 import { hashTransaction } from '../DigitalCashHelper';
-import { DigitalCashMessage, DigitalCashTransactionState } from "../DigitalCashTransaction";
+import { DigitalCashMessage, DigitalCashTransactionState } from '../DigitalCashTransaction';
 
 /**
  * A digital cash POST TRANSACTION message

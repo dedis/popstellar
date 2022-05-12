@@ -1,59 +1,27 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
+import { TransactionInput, TransactionInputState } from '../objects/transaction/TransactionInput';
+import {
+  TransactionOutput,
+  TransactionOutputState,
+} from '../objects/transaction/TransactionOutput';
+
 export interface DigitalCashTransactionState {
   version: number;
-  inputs: InputState[];
-  outputs: OutputState[];
+  inputs: TransactionInputState[];
+  outputs: TransactionOutputState[];
   lockTime: number;
 }
 export interface DigitalCashMessageState {
   transaction: DigitalCashTransactionState;
   transactionId: string;
 }
-export interface OutputState {
-  value: number;
-  script: OutputScriptState;
-}
-export interface InputScriptState {
-  type: string;
-  publicKey: string;
-  signature: string;
-}
-export interface InputState {
-  txOutHash: string | undefined;
-  txOutIndex: number | undefined;
-  script: InputScriptState;
-}
-export interface OutputScriptState {
-  type: string;
-  publicKeyHash: string;
-}
-
 export interface DigitalCashTransaction {
   version: number;
-  inputs: Input[];
-  outputs: Output[];
+  inputs: TransactionInput[];
+  outputs: TransactionOutput[];
   lockTime: number;
 }
-export interface InputScript {
-  type: string;
-  publicKey: PublicKey;
-  signature: Signature;
-}
-export interface Input {
-  txOutHash?: Hash | undefined;
-  txOutIndex?: number | undefined;
-  script: InputScript;
-}
-export interface OutputScript {
-  type: string;
-  publicKeyHash: Hash;
-}
-export interface Output {
-  value: number;
-  script: OutputScript;
-}
-
 /**
  * A digital cash message object
  */
