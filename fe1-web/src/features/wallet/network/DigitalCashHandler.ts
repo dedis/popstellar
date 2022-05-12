@@ -9,8 +9,8 @@ import { PostTransaction } from './messages/PostTransaction';
  */
 export function handleTransactionPost(msg: ProcessableMessage): boolean {
   if (
-    msg.messageData.object !== ObjectType.TRANSACTION ||
-    msg.messageData.action !== ActionType.POST
+    msg.messageData.object !== ObjectType.COIN ||
+    msg.messageData.action !== ActionType.POST_TRANSACTION
   ) {
     console.warn('handleTransactionPost was called to process an unsupported message', msg);
     return false;

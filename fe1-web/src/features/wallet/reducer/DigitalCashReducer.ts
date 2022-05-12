@@ -7,16 +7,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import { DigitalCashMessage, DigitalCashTransaction } from '../network/DigitalCashTransaction';
+import {
+  DigitalCashMessage,
+  DigitalCashMessageState,
+  DigitalCashTransactionState,
+} from '../network/DigitalCashTransaction';
 
 interface DigitalCashReducerState {
-  transactionMessages: DigitalCashMessage[];
-  transactionsByHash: Record<string, DigitalCashTransaction>;
+  transactionMessages: DigitalCashMessageState[];
+  transactionsByHash: Record<string, DigitalCashTransactionState>;
   /**
    * A mapping between public key hashes and a set of the transactions which contain this hash
    * in one or more of their TxOuts
    */
-  transactionsMessagesByPubHash: Record<string, Set<DigitalCashMessage>>;
+  transactionsMessagesByPubHash: Record<string, Set<DigitalCashMessageState>>;
 }
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
@@ -45,7 +49,7 @@ const digitalCashSlice = createSlice({
       prepare(
         laoId: Hash | string,
         rollCallId: Hash | string,
-        transactionMessage: DigitalCashMessage,
+        transactionMessage: DigitalCashMessageState,
       ): any {
         return {
           payload: {
@@ -60,7 +64,7 @@ const digitalCashSlice = createSlice({
         action: PayloadAction<{
           laoId: string;
           rollCallId: string;
-          transactionMessage: DigitalCashMessage;
+          transactionMessage: DigitalCashMessageState;
         }>,
       ) {
         const { laoId, rollCallId, transactionMessage } = action.payload;
@@ -81,12 +85,12 @@ const digitalCashSlice = createSlice({
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
 
-        rollCallState.transactionsByHash[transactionMessage.transactionId.valueOf()] =
+        rollCallState.transactionsByHash[transactionMessage.transactionId] =
           transactionMessage.transaction;
         rollCallState.transactionMessages.push(transactionMessage);
 
-        transactionMessage.transaction.txsOut.forEach((txOut) => {
-          rollCallState.transactionsMessagesByPubHash[txOut.script.publicKeyHash.valueOf()].add(
+        transactionMessage.transaction.outputs.forEach((output) => {
+          rollCallState.transactionsMessagesByPubHash[output.script.publicKeyHash].add(
             transactionMessage,
           );
         });

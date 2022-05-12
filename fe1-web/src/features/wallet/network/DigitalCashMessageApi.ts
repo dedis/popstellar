@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { Base64UrlData, channelFromIds, Hash, KeyPair, PopToken, PublicKey } from "core/objects";
+import { Base64UrlData, channelFromIds, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';

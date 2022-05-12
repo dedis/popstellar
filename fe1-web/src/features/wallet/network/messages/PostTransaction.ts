@@ -2,19 +2,19 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Hash, ProtocolError } from 'core/objects';
 
 import { hashTransaction } from '../DigitalCashHelper';
-import { DigitalCashMessage, DigitalCashTransaction } from '../DigitalCashTransaction';
+import { DigitalCashMessage, DigitalCashTransactionState } from "../DigitalCashTransaction";
 
 /**
  * A digital cash POST TRANSACTION message
  */
 export class PostTransaction implements MessageData {
-  public readonly object: ObjectType = ObjectType.TRANSACTION;
+  public readonly object: ObjectType = ObjectType.COIN;
 
-  public readonly action: ActionType = ActionType.POST;
+  public readonly action: ActionType = ActionType.POST_TRANSACTION;
 
   public readonly transaction_id: Hash;
 
-  public readonly transaction: DigitalCashTransaction;
+  public readonly transaction: DigitalCashTransactionState;
 
   constructor(msg: Partial<PostTransaction>) {
     if (!msg.transaction) {
