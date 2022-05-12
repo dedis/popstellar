@@ -5,10 +5,10 @@
   "type": "object",
   "properties": {
     "object": {
-      "const": "transaction"
+      "const": "coin"
     },
     "action": {
-      "const": "post"
+      "const": "post_transaction"
     },
 	"transaction_id": {
         "type": "string",
@@ -17,54 +17,55 @@
     },
     "transaction": {
       "type": "object",
-      "description": "the transaction object",
+      "description": "The transaction object",
       "properties": {
         "Version": {
           "type": "integer",
           "description": "The version of the transaction inputs"
         },
-        "TxIn": {
+        "inputs": {
           "type": "array",
           "description": "[Array[Objects]] array of output transactions to use as inputs",
           "items": {
             "type": "object",
             "description": "Object representing a transaction output to use as an input for this transaction",
             "properties": {
-              "TxOutHash": {
+              "tx_out_hash": {
                 "type": "string",
                 "contentEncoding": "base64",
                 "description": "Previous (to-be-used) transaction hash"
               },
-              "TxOutIndex": {
+              "tx_out_index": {
                 "type": "integer",
-                "description": "index of the previous to-be-used transaction"
+                "description": "Index of the previous to-be-used transaction"
               },
-              "Script": {
+              "script": {
                 "type": "object",
                 "description": "The script describing the unlock mechanism",
                 "properties": {
-                  "Type": {
+                  "type": {
                     "type": "string",
                     "description": "Type of script"
                   },
-                  "Pubkey": {
+                  "pubkey": {
                     "type": "string",
                     "contentEncoding": "base64",
                     "description": "The recipient’s public key"
                   },
-                  "Sig": {
+                  "sig": {
                     "type": "string",
                     "contentEncoding": "base64",
                     "description": "Signature on all txins and txouts using the recipient's private key"
                   }
                 },
-                "required": ["Type", "Pubkey", "Sig"]
+                "required": ["type", "pubkey", "sig"]
               }
             },
-            "required": ["TxOutHash", "TxOutIndex", "Script"]
-          }
+            "required": ["tx_out_hash", "tx_out_index", "script"]
+          },
+          "minItems": 1
         },
-        "TxOut": {
+        "outputs": {
           "type": "array",
           "description": "[Array[Objects]] array of outputs from this transactions",
           "items": {
@@ -73,35 +74,35 @@
             "properties": {
               "Value": {
                 "type": "integer",
-                "description": "the value of the output transaction, expressed in miniLAOs"
+                "description": "The value of the output transaction, expressed in miniLAOs"
               },
-              "Script": {
+              "script": {
                 "type": "object",
                 "description": "The script describing the TxOut unlock mechanism",
                 "properties": {
-                  "Type": {
+                  "type": {
                     "type": "string",
                     "description": "Type of script"
                   },
-                  "PubkeyHash": {
+                  "pubkey_hash": {
                     "type": "string",
                     "contentEncoding": "base64",
                     "description": "Hash of the recipient’s public key"
                   }
                 },
-                "required": ["Type", "PubkeyHash"]
+                "required": ["type", "pubkey_hash"]
               }
             },
-            "required": ["Value", "Script"]
+            "required": ["value", "script"]
           },
           "minItems": 1
         },
-        "LockTime": {
+        "locktime": {
           "type": "integer",
           "description": "Timestamp"
         }
       },
-      "required": ["Version", "TxIn", "TxOut", "LockTime"]
+      "required": ["version", "inputs", "outputs", "locktime"]
     }
   },
   "required": ["object", "action", "transaction_id", "transaction"]
