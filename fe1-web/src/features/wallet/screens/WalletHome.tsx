@@ -1,6 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle, Text, TextStyle, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
@@ -50,6 +58,7 @@ const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CAL
  * Wallet UI once the wallet is synced
  */
 const WalletHome = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
@@ -114,10 +123,19 @@ const WalletHome = () => {
       </View>
       {tokenInfos()}
       <View style={styles.mainButtonsContainer}>
-        <RoundIconButton name="send" onClick={() => {}} />
+        <RoundIconButton name="send" onClick={() => {setModalVisible(true)}} />
         <RoundIconButton name="search" onClick={() => {}} />
         <RoundIconButton name="history" onClick={() => {}} />
       </View>
+      <Modal
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <Text>Hello World!</Text>
+      </Modal>
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
