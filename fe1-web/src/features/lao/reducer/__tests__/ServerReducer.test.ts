@@ -9,7 +9,7 @@ import {
   mockPublicKey2,
   org,
 } from '__tests__/utils';
-import { ServerState } from 'features/lao/objects/Server';
+import { ServerState } from 'features/lao/objects/LaoServer';
 
 import { laoReducer, serverReducer } from '../index';
 import { connectToLao } from '../LaoReducer';

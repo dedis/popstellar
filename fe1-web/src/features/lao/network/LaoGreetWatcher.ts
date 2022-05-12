@@ -6,7 +6,8 @@ import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { Hash, PublicKey, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
 
-import { Server } from '../objects/Server';
+import { LaoServer } from '../objects/LaoServer';
+
 import {
   getLaosState,
   handleGreetLaoMessage,
@@ -29,7 +30,7 @@ export const storeBackendAndConnectToPeers = (
 ) => {
   dispatch(
     addServer(
-      new Server({
+      new LaoServer({
         laoId: greetLaoMsg.lao,
         address: greetLaoMsg.address,
         serverPublicKey: publicKey,
@@ -85,7 +86,7 @@ export const makeLaoGreetStoreWatcher = (
     // get the witness signatures for all unhandled lao#greet messages
     const signaturesByMessageId = selectUnhandledGreetLaoWitnessSignaturesByMessageId(state);
 
-    // verify that the selector output has chanched
+    // verify that the selector output has changed
     if (signaturesByMessageId === previousSignaturesByMessageId) {
       // if not, there won't be a new witness signature
       return;
