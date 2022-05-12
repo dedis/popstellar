@@ -1,0 +1,41 @@
+{
+    "object": "coin",
+    "action": "post_transaction",
+    "transaction_id": "yt_gNVNKNmJrN0CUuWsVW9ESCvs0SM1K2EkWUT-l7SI=",
+    "transaction": {
+	    "version": 1,
+	    "inputs": [{
+		    "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "tx_out_index": 0,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "sig": "CAFEBABE"
+		    }
+          },
+            {
+		    "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "tx_out_index": 0,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "sig": "CAFEBABE"
+		    }
+        }],
+	    "outputs": [{
+		    "value": 32,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+		    }
+	    },
+                 {
+		    "value": 32,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+		    }
+	    }],
+	    "lock_time": 0
+    }
+}
