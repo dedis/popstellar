@@ -124,9 +124,6 @@ test("message data: vote", () => {
 
     failure = require("../examples/messageData/vote_cast_vote/wrong_vote_cast_vote_mixed_encrypted.json");
     expect(failure).not.toBeValid(messageDataSchema);
-  
-    vote_cast_write_in = require("../examples/messageData/vote_cast_write_in.json");
-    expect(vote_cast_write_in).toBeValid(messageDataSchema);
 });
 
 test("message data: roll call", () => {
