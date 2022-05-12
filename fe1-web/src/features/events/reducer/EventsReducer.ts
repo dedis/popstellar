@@ -6,7 +6,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey } from 'core/objects';
-import { getLaosState } from 'features/lao/reducer/LaoReducer';
 import { RollCall } from 'features/rollCall/objects';
 
 import { eventFromState, LaoEvent, LaoEventState } from '../objects';
@@ -172,66 +171,63 @@ export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventsSlic
 export const getEventsState = (state: any): EventLaoReducerState => state[EVENT_REDUCER_PATH];
 
 /**
- * Creates a list of all events.
+ * Creates a selector that returns a list of all events for a given lao id
+ * @param laoId The id of the lao the events should be retrieved for
  */
-export const selectEventsList = createSelector(
-  // First input: Get all events across all LAOs
-  (state) => getEventsState(state),
-  // Second input: get the current LAO id,
-  (state) => getLaosState(state).currentId,
-  // Selector: returns an array of EventStates -- should it return an array of Event objects?
-  (eventMap: EventLaoReducerState, laoId: string | undefined): LaoEvent[] => {
-    if (!laoId || !(laoId in eventMap.byLaoId)) {
-      return [];
-    }
-
-    return eventMap.byLaoId[laoId].allIds
-      .map((id): LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
-      .filter((e) => !!e) as LaoEvent[];
-    // need to assert that it is an Event[] because of TypeScript limitations as described here:
-    // https://github.com/microsoft/TypeScript/issues/16069
-  },
-);
-
-/**
- * Creates a map from event id to event id alias.
- */
-export const selectEventsAliasMap = createSelector(
-  // First input: Get all events across all LAOs
-  (state) => getEventsState(state),
-  // Second input: get the current LAO id,
-  (state) => getLaosState(state).currentId,
-  // Selector: returns a map of ids -> LaoEvents' ids
-  (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, string> => {
-    if (!laoId || !(laoId in eventMap.byLaoId)) {
-      return {};
-    }
-
-    return eventMap.byLaoId[laoId].idAlias;
-  },
-);
-
-/**
- * Returns a map from event id to LaoEvent within a Lao.
- *
- * @param laoId - The id of the Lao
- */
-export const makeEventsMap = (laoId: string | undefined = undefined) =>
+export const makeEventListSelector = (laoId: string) =>
   createSelector(
     // First input: Get all events across all LAOs
     (state) => getEventsState(state),
-    // Second input: get the current LAO id,
-    (state) => laoId || getLaosState(state).currentId,
+    // Selector: returns an array of EventStates -- should it return an array of Event objects?
+    (eventMap: EventLaoReducerState): LaoEvent[] => {
+      if (!(laoId in eventMap.byLaoId)) {
+        return [];
+      }
+
+      return eventMap.byLaoId[laoId].allIds
+        .map((id): LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
+        .filter((e) => !!e) as LaoEvent[];
+      // need to assert that it is an Event[] because of TypeScript limitations as described here:
+      // https://github.com/microsoft/TypeScript/issues/16069
+    },
+  );
+
+/**
+ * Creates a selector for a map from event id to event id alias.
+ * @param laoId The id of the lao the selector should be created for
+ */
+export const makeEventAliasMapSelector = (laoId: string) =>
+  createSelector(
+    // First input: Get all events across all LAOs
+    (state) => getEventsState(state),
+    // Selector: returns a map of ids -> LaoEvents' ids
+    (eventMap: EventLaoReducerState): Record<string, string> => {
+      if (!(laoId in eventMap.byLaoId)) {
+        return {};
+      }
+
+      return eventMap.byLaoId[laoId].idAlias;
+    },
+  );
+
+/**
+ * Returns a selector for a map from event id to LaoEvent within a Lao.
+ * @param laoId - The id of the Lao the selector should be created for
+ */
+export const makeEventMapSelector = (laoId: string) =>
+  createSelector(
+    // First input: Get all events across all LAOs
+    (state) => getEventsState(state),
     // Selector: returns a map of ids -> LaoEvents
-    (eventMap: EventLaoReducerState, id: string | undefined): Record<string, LaoEvent> => {
-      if (!id || !eventMap || !(id in eventMap.byLaoId)) {
+    (eventMap: EventLaoReducerState): Record<string, LaoEvent> => {
+      if (!eventMap || !(laoId in eventMap.byLaoId)) {
         return {};
       }
 
       const dictObj: Record<string, LaoEvent> = {};
 
-      eventMap.byLaoId[id].allIds.forEach((evtId) => {
-        const e = eventFromState(eventMap.byLaoId[id].byId[evtId]);
+      eventMap.byLaoId[laoId].allIds.forEach((evtId) => {
+        const e = eventFromState(eventMap.byLaoId[laoId].byId[evtId]);
         if (e) {
           dictObj[evtId] = e;
         }
@@ -240,13 +236,6 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
       return dictObj;
     },
   );
-
-/**
- * Shorthand selector for widely used variant of makeEventsMap()
- * Selects the event map associated with the currently active lao
- * @returns The event map for the current lao
- */
-export const selectCurrentLaoEventsMap = makeEventsMap();
 
 /**
  * Gets a specific event within a Lao.

@@ -1,6 +1,7 @@
 import { RollCallEventTypeComponent } from './components';
 import { RollCallConfiguration, RollCallInterface, ROLLCALL_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
+import { rollCallReducer } from './reducer';
 import * as screens from './screens';
 
 /**
@@ -20,6 +21,9 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
       generateToken: configuration.generateToken,
       hasSeed: configuration.hasSeed,
       makeEventSelector: configuration.makeEventSelector,
+    },
+    reducers: {
+      ...rollCallReducer,
     },
   };
 }

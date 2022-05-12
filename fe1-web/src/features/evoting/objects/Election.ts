@@ -15,7 +15,9 @@ export enum ElectionStatus {
   RESULT = 'result', // When result is available
 }
 
-export interface ElectionState extends EvotingFeature.EventState {
+export interface ElectionState {
+  id: string;
+  idAlias?: string;
   lao: string;
   name: string;
   version: string;

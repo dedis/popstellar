@@ -7,24 +7,8 @@ export namespace MeetingFeature {
     witnesses: PublicKey[];
   }
 
-  export interface EventState {
-    eventType: string;
-
-    id: string;
-    idAlias?: string;
-
-    name: string;
-
-    start: number;
-    end?: number;
-  }
-
   export interface Event {
     id: Hash;
     name: string;
   }
-
-  /* export enum EventType {
-    MEETING = 'MEETING',
-  } */
 }

@@ -181,6 +181,9 @@ export function configureFeatures() {
     ...socialConfiguration.reducers,
     ...eventsConfiguration.reducers,
     ...walletConfiguration.reducers,
+    ...meetingConfiguration.reducers,
+    ...rollCallConfiguration.reducers,
+    ...evotingConfiguration.reducers,
   });
 
   return {

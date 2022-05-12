@@ -1,14 +1,15 @@
 import { Hash, Timestamp } from 'core/objects';
 
-import { MeetingFeature } from '../interface';
-
 /**
  * Object to represent a meeting.
  */
 
 export const EventTypeMeeting = 'MEETING';
 
-export interface MeetingState extends MeetingFeature.EventState {
+export interface MeetingState {
+  id: string;
+  start: number;
+  end?: number;
   name: string;
   location: string;
   creation: number;

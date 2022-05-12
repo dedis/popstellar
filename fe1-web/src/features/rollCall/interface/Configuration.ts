@@ -1,10 +1,11 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
 import { RollCallFeature } from './Feature';
 
 export const ROLLCALL_FEATURE_IDENTIFIER = 'rollCall';
@@ -109,4 +110,8 @@ export interface RollCallInterface extends FeatureInterface {
   }[];
 
   context: RollCallReactContext;
+
+  reducers: {
+    [ROLLCALL_REDUCER_PATH]: Reducer<RollCallReducerState>;
+  };
 }

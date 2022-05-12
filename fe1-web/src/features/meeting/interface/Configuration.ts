@@ -1,10 +1,11 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { MeetingReducerState } from '../reducer';
 import { MeetingFeature } from './Feature';
 
 export const MEETING_FEATURE_IDENTIFIER = 'meeting';
@@ -72,4 +73,8 @@ export interface MeetingInterface extends FeatureInterface {
   }[];
 
   context: MeetingReactContext;
+
+  reducers: {
+    [MEETING_FEATURE_IDENTIFIER]: Reducer<MeetingReducerState>;
+  };
 }

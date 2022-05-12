@@ -1,7 +1,5 @@
 import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 
-import { RollCallFeature } from '../interface';
-
 /**
  * Object to represent a roll call.
  */
@@ -15,8 +13,12 @@ export enum RollCallStatus {
   REOPENED,
 }
 
-export interface RollCallState extends RollCallFeature.EventState {
+export interface RollCallState {
+  id: string;
+  idAlias?: string;
   name: string;
+  start: number;
+  end?: number;
   location: string;
   description?: string;
   creation: number;
