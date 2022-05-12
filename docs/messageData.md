@@ -1168,7 +1168,7 @@ By sending the election/setup message to the organizer’s server’s channel
 (“/root/lao-channel”), the main channel of the election will be created with the identifier id, i.e. `/root/<lao_id>/<election_id>`.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
 
-An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively.
+An election can either be open or secret ballot and the `version` property has to be set to `OPEN_BALLOT` or `SECRET_BALLOT`, respectively.
 
 In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
@@ -1183,7 +1183,7 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
-    "version": "open-ballot",
+    "version": "OPEN_BALLOT",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
@@ -1216,7 +1216,7 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
-    "version": "secret-ballot",
+    "version": "SECRET_BALLOT",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
@@ -1255,7 +1255,7 @@ In the future elections may allow write-in or support different voting methods b
         },
         "version": {
             "type": "string",
-            "enum": ["open-ballot", "secret-ballot"],
+            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
             "$comment": "features/implementation identifier"
         },
         "id": {
