@@ -178,19 +178,19 @@ test("message data: chirp", () => {
 
 test("message data: cash", () => {
     
-    cash_transaction = require("../examples/messageData/cash/post_transaction.json")
+    cash_transaction = require("../examples/messageData/coin/post_transaction.json")
     expect(cash_transaction).toBeValid(messageDataSchema)
 
-    cash_transaction_coinbase = require("../examples/messageData/cash/post_transaction_coinbase.json")
-    expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
+    //cash_transaction_coinbase = require("../examples/messageData/coin/post_transaction_coinbase.json")
+    //expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
 
-    cash_transaction_multipleinandout = require("../examples/messageData/cash/post_transaction_multipleinpandout.json")
+    cash_transaction_multipleinandout = require("../examples/messageData/coin/post_transaction_multipleinpandout.json")
     expect(cash_transaction_multipleinandout).toBeValid(messageDataSchema)
 
-    cash_transaction_nooutput = require("../examples/messageData/cash/post_transaction_nooutput.json")
+    cash_transaction_nooutput = require("../examples/messageData/coin/post_transaction_nooutput.json")
     expect(cash_transaction_nooutput).not.toBeValid(messageDataSchema)
 
-    cash_transaction_wrongid = require("../examples/messageData/cash/post_transaction_wrong_transaction_id.json")
+    cash_transaction_wrongid = require("../examples/messageData/coin/post_transaction_wrong_transaction_id.json")
     expect(cash_transaction_wrongid).toBeValid(messageDataSchema)
 
     
