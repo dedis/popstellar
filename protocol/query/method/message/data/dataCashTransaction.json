@@ -97,7 +97,7 @@
           },
           "minItems": 1
         },
-        "locktime": {
+        "lock_time": {
           "type": "integer",
           "description": "Timestamp"
         }
