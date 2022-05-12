@@ -1168,7 +1168,7 @@ By sending the election/setup message to the organizer’s server’s channel
 (“/root/lao-channel”), the main channel of the election will be created with the identifier id, i.e. `/root/<lao_id>/<election_id>`.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
 
-An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively. If it is a secret ballot election, then the message must additionally contain the public key of the election that was previously obtained from a [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message.
+An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively.
 
 In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
