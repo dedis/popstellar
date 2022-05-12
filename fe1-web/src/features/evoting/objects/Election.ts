@@ -16,8 +16,8 @@ export enum ElectionStatus {
 }
 
 export enum ElectionVersion {
-  OPEN_BALLOT = 'open-ballot',
-  SECRET_BALLOT = 'secret-ballot',
+  OPEN_BALLOT = 'OPEN_BALLOT',
+  SECRET_BALLOT = 'SECRET_BALLOT',
 }
 
 export interface ElectionState extends EvotingFeature.EventState {
