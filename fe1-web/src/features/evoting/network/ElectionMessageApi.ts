@@ -1,7 +1,15 @@
 import { publish } from 'core/network';
 import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
 
-import { Election, ElectionVersion, Question, SelectedBallots } from '../objects';
+import {
+  Election,
+  ElectionVersion,
+  EncryptedVote,
+  Question,
+  SelectedBallots,
+  Vote,
+} from '../objects';
+import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 import { CastVote, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
@@ -74,17 +82,35 @@ export function openElection(election: Election): Promise<void> {
  * Sends a query to cast a vote during an election.
  *
  * @param election - The election for which the vote should be casted
+ * @param electionKey - The public key of the election or undefined if there is none
  * @param selectedBallots - The votes to be added, a map from question index to the set of selected answer indices
  */
-export function castVote(election: Election, selectedBallots: SelectedBallots): Promise<void> {
+export function castVote(
+  election: Election,
+  electionKey: ElectionPublicKey | undefined,
+  selectedBallots: SelectedBallots,
+): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
+
+  let votes: Vote[] | EncryptedVote[] = [];
+  if (election.version === ElectionVersion.OPEN_BALLOT) {
+    votes = CastVote.selectedBallotsToVotes(election, selectedBallots);
+  } else if (election.version === ElectionVersion.SECRET_BALLOT) {
+    if (!electionKey) {
+      throw new Error(
+        'castVote() was called on a secret ballot election without providing an encryption key',
+      );
+    }
+    votes = CastVote.selectedBallotsToEncryptedVotes(election, electionKey, selectedBallots);
+  } else {
+    throw new Error(`castVote() was called using an unkwown election version ${election.version}`);
+  }
 
   const message = new CastVote({
     lao: election.lao,
     election: election.id,
     created_at: time,
-    // Convert object to array
-    votes: CastVote.selectedBallotsToVotes(election, selectedBallots),
+    votes,
   });
 
   // publish on the LAO channel specific to this election

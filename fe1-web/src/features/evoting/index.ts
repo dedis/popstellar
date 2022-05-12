@@ -42,5 +42,8 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
       addEvent,
       updateEvent,
     },
+    reducers: {
+      ...electionKeyReducer,
+    },
   };
 };
