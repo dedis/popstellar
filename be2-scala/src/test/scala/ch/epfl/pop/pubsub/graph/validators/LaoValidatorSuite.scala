@@ -2,7 +2,6 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
-//import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
@@ -78,6 +77,4 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
   }
-
-
 }

@@ -398,12 +398,12 @@ the required number of witness signatures.
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*lao#greet*)
 
-This is a message that is sent to clients after they have subscribed to a LAO.
+This is a message that is broadcasted by the server on the lao channel after it is created. Clients can then receive this message by sending a [catchup message](./protocol.md#catching-up-on-past-messages-on-a-channel).
 The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
 
 Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
 
-In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional.
+In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional. (For now this check is omitted since the witnessing functionality has not been implemented in all subsystems)
 
 Last but not least, the greeting message contains a list of peers that tells client which other servers it can or should connect to. These severs run by other organizers or witnesses allow the client to send messages to multiple servers which increases the likelihood of sending it to a honest one.
 
@@ -1374,7 +1374,6 @@ The receiver has to authenticate the message by checking whether it was sent by 
 {
     "object": "election",
     "action": "key",
-    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
 }
@@ -1398,15 +1397,11 @@ The receiver has to authenticate the message by checking whether it was sent by 
         "action": {
             "const": "key"
         },
-        "lao": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "ID of the LAO"
-        },
         "election": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "ID of the election"
+            "description": "The election id the new election key is associated with",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
         },
         "election_key": {
             "description": "[Base64String] public key of the election",
@@ -1416,7 +1411,7 @@ The receiver has to authenticate the message by checking whether it was sent by 
         }
     },
     "additionalProperties": false,
-    "required": ["object", "action", "lao", "election", "election_key"]
+    "required": ["object", "action", "election", "election_key"]
 }
 
 ```
@@ -1510,6 +1505,8 @@ For example if the user select the ballot options with indices 5 and 2, then the
 💡 See some examples
 </summary>
 
+A vote in an open ballot election
+
 ```json5
 // ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote.json
 
@@ -1524,6 +1521,31 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
             "vote": [0]
+        }
+    ]
+}
+
+```
+
+A vote in a secret ballot election
+
+```json5
+// ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote_encrypted.json
+
+{
+    "object": "election",
+    "action": "cast_vote",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633098941,
+    "votes": [
+        {
+            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "vote": [
+                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
+                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
+            ]
         }
     ]
 }
@@ -1567,28 +1589,57 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "type": "array",
             "items": {
                 "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "contentEncoding": "base64",
-                        "$comment": "Hash : HashLen('Vote', election_id, question_id, vote_index(es)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                "oneOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in))), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
+                                "type": "array",
+                                "items": {
+                                    "type": "integer",
+                                    "$comment": "index of the option to vote for"
+                                },
+                                "minItems": 1,
+                                "uniqueItems": true
+                            }
+                        }
                     },
-                    "question": {
-                        "type": "string",
-                        "contentEncoding": "base64",
-                        "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
-                    },
-                    "vote": {
-                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "$comment": "vote index"
-                        },
-                        "minItems": 1,
-                        "uniqueItems": true
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))), concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "contentEncoding": "base64",
+                                    "$comment": "encrypted index of the option to vote for"
+                                },
+                                "minItems": 1,
+                                "uniqueItems": true
+                            }
+                        }
                     }
-                },
+                ],
                 "required": ["id", "question", "vote"]
             },
             "minItems": 1,
@@ -1660,7 +1711,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)" - the vote_ids need to be sorted alphabetically by message_id
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered alphabetically by message_id; the multiple vote_ids in a election#cast_vote message should stay the same as in the original message"
         }
     },
     "additionalProperties": false,

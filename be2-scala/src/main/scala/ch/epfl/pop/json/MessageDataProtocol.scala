@@ -258,6 +258,29 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
   implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
 
+  implicit object KeyElectionFormat extends JsonFormat[KeyElection] {
+    final private val PARAM_ELECTION_ID: String = "election"
+    final private val PARAM_ELECTION_KEY: String = "election_key"
+
+    override def read(json: JsValue): KeyElection = json.asJsObject().getFields(PARAM_ELECTION_ID, PARAM_ELECTION_KEY) match {
+      case Seq(election@JsString(_), election_key@JsString(_)) => KeyElection(
+        election.convertTo[Hash],
+        election_key.convertTo[PublicKey]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a KeyElection object")
+    }
+
+    override def write(obj: KeyElection): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
+        PARAM_ELECTION_ID -> obj.election.toJson,
+        PARAM_ELECTION_KEY -> obj.election_key.toJson,
+      )
+      JsObject(jsObjectContent)
+    }
+  }
+
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))
   implicit val deleteChirpFormat: JsonFormat[DeleteChirp] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteChirp](DeleteChirp.apply, "chirp_id", "timestamp"))

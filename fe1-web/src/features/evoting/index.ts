@@ -27,6 +27,11 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
     identifier: EVOTING_FEATURE_IDENTIFIER,
     screens,
     eventTypeComponents: [ElectionEventTypeComponent],
+
+    reducers: {
+      ...electionKeyReducer,
+    },
+
     context: {
       /* lao */
       useCurrentLao,

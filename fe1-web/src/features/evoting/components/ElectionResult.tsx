@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { TimeDisplay } from 'core/components';
 import { Typography } from 'core/styles';
@@ -20,9 +20,16 @@ const ElectionResult = ({ election }: IPropTypes) => {
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
       <Text style={styles.text}>Election Result</Text>
       {election.questionResult &&
-        election.questionResult.map((question: QuestionResult) => (
-          <BarChartDisplay data={question.result} key={question.id.valueOf()} />
-        ))}
+        election.questionResult.map((questionResult: QuestionResult) => {
+          const question = election.questions.find((q) => q.id === questionResult.id);
+
+          return question ? (
+            <View>
+              <Text style={styles.text}>{question.question}</Text>
+              <BarChartDisplay data={questionResult.result} key={questionResult.id.valueOf()} />
+            </View>
+          ) : null;
+        })}
     </>
   );
 };

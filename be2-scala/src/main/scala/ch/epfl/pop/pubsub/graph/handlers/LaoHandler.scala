@@ -1,5 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import ch.epfl.pop.config.RuntimeEnvironment.appConf
+import ch.epfl.pop.config.ServerConf
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -14,8 +16,10 @@ import scala.util.{Failure, Success}
 
 case object LaoHandler extends MessageHandler {
 
+
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    rpcMessage.getParamsMessage match {
+    val params: Option[Message] = rpcMessage.getParamsMessage
+    params match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
 
