@@ -10,8 +10,8 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.GREET;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.KEY;
-
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;

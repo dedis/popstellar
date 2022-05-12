@@ -62,4 +62,7 @@ public final class HandlerContext {
     return message.getSender();
   }
 
+  public ServerRepository getServerRepository() {
+    return serverRepository;
+  }
 }
