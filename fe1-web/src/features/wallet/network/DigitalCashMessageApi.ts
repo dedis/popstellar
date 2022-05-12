@@ -10,7 +10,7 @@ import {
   getInputsInToSign,
   hashTransaction,
 } from '../objects/transaction/DigitalCashHelper';
-import { TransactionState } from '../objects/transaction/Transaction';
+import { Transaction, TransactionState } from '../objects/transaction/Transaction';
 import { TransactionInputState } from '../objects/transaction/TransactionInput';
 import { TransactionOutputState } from '../objects/transaction/TransactionOutput';
 import { DigitalCashStore } from '../store/DigitalCashStore';
@@ -104,7 +104,7 @@ export function requestSendTransaction(
 
   const postTransactionMessage = new PostTransaction({
     transaction_id: hashTransaction(transaction),
-    transaction: transaction,
+    transaction: Transaction.fromState(transaction).toJSON(),
   });
   const lao: Lao = OpenedLaoStore.get();
 
@@ -163,7 +163,7 @@ export function requestCoinbaseTransaction(
 
   const postTransactionMessage = new PostTransaction({
     transaction_id: hashTransaction(transaction),
-    transaction: transaction,
+    transaction: Transaction.fromState(transaction).toJSON(),
   });
 
   const lao: Lao = OpenedLaoStore.get();

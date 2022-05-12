@@ -2,7 +2,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Hash, ProtocolError } from 'core/objects';
 
 import { hashTransaction } from '../../objects/transaction/DigitalCashHelper';
-import { Transaction, TransactionState } from '../../objects/transaction/Transaction';
+import { Transaction, TransactionJSON } from '../../objects/transaction/Transaction';
 
 /**
  * A digital cash POST TRANSACTION message
@@ -14,7 +14,7 @@ export class PostTransaction implements MessageData {
 
   public readonly transaction_id: Hash;
 
-  public readonly transaction: TransactionState;
+  public readonly transaction: TransactionJSON;
 
   constructor(msg: Partial<PostTransaction>) {
     if (!msg.transaction) {
@@ -29,7 +29,10 @@ export class PostTransaction implements MessageData {
         "Undefined 'transaction_id' parameter encountered during 'PostTransaction'",
       );
     }
-    if (hashTransaction(msg.transaction).valueOf() !== msg.transaction_id.valueOf()) {
+    if (
+      hashTransaction(Transaction.fromJSON(msg.transaction).toState()).valueOf() !==
+      msg.transaction_id.valueOf()
+    ) {
       throw new ProtocolError(
         'Invalid transaction hash encountered: the computed hash does not correspond to the received hash',
       );
@@ -43,9 +46,6 @@ export class PostTransaction implements MessageData {
    * @param obj
    */
   public static fromJSON(obj: any): PostTransaction {
-    return new PostTransaction({
-      transaction_id: obj.transaction_id,
-      transaction: Transaction.fromJSON(obj.transaction).toState(),
-    });
+    return new PostTransaction(obj);
   }
 }

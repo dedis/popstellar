@@ -51,7 +51,7 @@ export const getTotalValue = (pkHash: string | Hash, transactions: TransactionSt
 /**
  * Constructs a partial Input object from transaction messages to take as input
  * @param pk the public key of the sender
- * @param transactionMessages the transaction messages used as inputs
+ * @param transactions the transaction messages used as inputs
  */
 export const getInputsInToSign = (
   pk: string,

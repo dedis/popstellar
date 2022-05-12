@@ -15,6 +15,6 @@ export function configureNetwork(registry: MessageRegistry) {
     ObjectType.COIN,
     ActionType.POST_TRANSACTION,
     handleTransactionPost,
-    PostTransaction.fromJson,
+    PostTransaction.fromJSON,
   );
 }
