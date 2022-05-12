@@ -1,8 +1,8 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface TransactionInputJSON {
-  tx_out_hash: string | undefined;
-  tx_out_index: number | undefined;
+  tx_out_hash?: string;
+  tx_out_index?: number;
   script: TransactionInputScriptJSON;
 }
 export interface TransactionInputScriptJSON {
@@ -72,6 +72,18 @@ export class TransactionInput {
     });
   }
 
+  public toState(): TransactionInputState {
+    return {
+      txOutHash: this.txOutHash ? this.txOutHash.valueOf() : undefined,
+      txOutIndex: this.txOutIndex,
+      script: {
+        ...this.script,
+        publicKey: this.script.publicKey.valueOf(),
+        signature: this.script.signature.valueOf(),
+      },
+    };
+  }
+
   public static fromJSON(json: TransactionInputJSON) {
     return new TransactionInput({
       txOutHash: json.tx_out_hash ? new Hash(json.tx_out_hash) : undefined,
@@ -82,5 +94,21 @@ export class TransactionInput {
         signature: new Signature(json.script.sig),
       },
     });
+  }
+
+  public toJSON(): TransactionInputJSON {
+    const script = {
+      type: this.script.type,
+      pubkey: this.script.publicKey.valueOf(),
+      sig: this.script.signature.valueOf(),
+    };
+    if (!this.txOutHash && !this.txOutIndex) {
+      return { script: script };
+    }
+    return {
+      tx_out_hash: this.txOutHash!.valueOf(),
+      tx_out_index: this.txOutIndex,
+      script: script,
+    };
   }
 }

@@ -10,12 +10,12 @@ import { Hash } from 'core/objects';
 import {
   DigitalCashMessage,
   DigitalCashMessageState,
-  DigitalCashTransactionState,
-} from '../network/DigitalCashTransaction';
+  TransactionState,
+} from '../objects/transaction/Transaction';
 
 interface DigitalCashReducerState {
   transactionMessages: DigitalCashMessageState[];
-  transactionsByHash: Record<string, DigitalCashTransactionState>;
+  transactionsByHash: Record<string, TransactionState>;
   /**
    * A mapping between public key hashes and a set of the transactions which contain this hash
    * in one or more of their TxOuts

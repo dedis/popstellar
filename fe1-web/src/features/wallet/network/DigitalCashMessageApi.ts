@@ -4,14 +4,16 @@ import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
 
-import { DigitalCashStore } from '../store/DigitalCashStore';
 import {
   concatenateTxData,
   getTotalValue,
   getInputsInToSign,
   hashTransaction,
-} from './DigitalCashHelper';
-import { DigitalCashTransaction, Input, Output } from './DigitalCashTransaction';
+} from '../objects/transaction/DigitalCashHelper';
+import { TransactionState } from '../objects/transaction/Transaction';
+import { TransactionInputState } from '../objects/transaction/TransactionInput';
+import { TransactionOutputState } from '../objects/transaction/TransactionOutput';
+import { DigitalCashStore } from '../store/DigitalCashStore';
 import { PostTransaction } from './messages/PostTransaction';
 
 const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
@@ -50,26 +52,29 @@ export function requestSendTransaction(
     value: amount,
     script: {
       type: STRINGS.script_type,
-      publicKeyHash: toPublicKeyHash,
+      publicKeyHash: toPublicKeyHash.valueOf(),
     },
   };
 
-  const outputs: Output[] = [outputTo];
+  const outputs: TransactionOutputState[] = [outputTo];
 
   if (totalValueOut > amount) {
     // Send the rest of the value back to the owner, so that the entire balance
     // is always in only one TxOut
-    const outputFrom: Output = {
+    const outputFrom: TransactionOutputState = {
       value: totalValueOut - amount,
       script: {
         type: STRINGS.script_type,
-        publicKeyHash: fromPublicKeyHash,
+        publicKeyHash: fromPublicKeyHash.valueOf(),
       },
     };
     outputs.push(outputFrom);
   }
 
-  const inputs: Omit<Input, 'script'>[] = getInputsInToSign(from.publicKey.valueOf(), messages);
+  const inputs: Omit<TransactionInputState, 'script'>[] = getInputsInToSign(
+    from.publicKey.valueOf(),
+    messages,
+  );
   // Now we need to define each objects because we need some string representation of everything to hash on
 
   // Concatenate the data to sign
@@ -79,18 +84,18 @@ export function requestSendTransaction(
   const signature = from.privateKey.sign(Base64UrlData.encode(dataString));
 
   // Reconstruct the txIns with the signature
-  const finalInputs: Input[] = inputs.map((input) => {
+  const finalInputs: TransactionInputState[] = inputs.map((input) => {
     return {
       ...input,
       script: {
         type: STRINGS.script_type,
-        publicKey: from.publicKey,
-        signature: signature,
+        publicKey: from.publicKey.valueOf(),
+        signature: signature.valueOf(),
       },
     };
   });
 
-  const transaction: DigitalCashTransaction = {
+  const transaction: TransactionState = {
     version: 1,
     inputs: finalInputs,
     outputs: outputs,
@@ -124,11 +129,11 @@ export function requestCoinbaseTransaction(
     value: amount,
     script: {
       type: STRINGS.script_type,
-      publicKeyHash: toPublicKeyHash,
+      publicKeyHash: toPublicKeyHash.valueOf(),
     },
   };
 
-  const outputs: Output[] = [outputTo];
+  const outputs: TransactionOutputState[] = [outputTo];
 
   // Concatenate the data to sign
   const dataString = concatenateTxData(outputs);
@@ -137,17 +142,19 @@ export function requestCoinbaseTransaction(
   const signature = organizerKP.privateKey.sign(Base64UrlData.encode(dataString));
 
   // Reconstruct the inputs with the signature of the organizer
-  const inputs: Input[] = [
+  const inputs: TransactionInputState[] = [
     {
+      txOutIndex: undefined,
+      txOutHash: undefined,
       script: {
         type: STRINGS.script_type,
-        publicKey: organizerKP.publicKey,
-        signature: signature,
+        publicKey: organizerKP.publicKey.valueOf(),
+        signature: signature.valueOf(),
       },
     },
   ];
 
-  const transaction: DigitalCashTransaction = {
+  const transaction: TransactionState = {
     version: 1,
     inputs: inputs,
     outputs: outputs,

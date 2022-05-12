@@ -55,6 +55,16 @@ export class TransactionOutput {
     });
   }
 
+  public toState(): TransactionOutputState {
+    return {
+      ...this,
+      script: {
+        ...this.script,
+        publicKeyHash: this.script.publicKeyHash.valueOf(),
+      },
+    };
+  }
+
   public static fromJSON(json: TransactionOutputJSON) {
     return new TransactionOutput({
       ...json,
@@ -63,5 +73,15 @@ export class TransactionOutput {
         publicKeyHash: new Hash(json.script.pubkey_hash),
       },
     });
+  }
+
+  public toJSON(): TransactionOutputJSON {
+    return {
+      ...this,
+      script: {
+        type: this.script.type,
+        pubkey_hash: this.script.publicKeyHash.valueOf(),
+      },
+    };
   }
 }

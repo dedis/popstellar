@@ -1,25 +1,23 @@
 import { Hash } from 'core/objects';
 
-import {
-  DigitalCashMessage,
-  DigitalCashTransaction,
-  Output,
-  Input,
-} from './DigitalCashTransaction';
+import { TransactionState } from './Transaction';
+import { TransactionInputState } from './TransactionInput';
+import { TransactionOutputState } from './TransactionOutput';
 
 /**
  * Hash a transaction to get its id
  * @param transaction to hash
  */
-export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
+export const hashTransaction = (transaction: TransactionState): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataInputs = transaction.inputs.flatMap((input) => {
-    if (input.txOutHash && input.txOutIndex) { // Might be a coinbase transaction
+    if (input.txOutHash && input.txOutIndex) {
+      // Might be a coinbase transaction
       return [
-        input.script.publicKey.valueOf(),
-        input.script.signature.valueOf(),
+        input.script.publicKey,
+        input.script.signature,
         input.script.type,
-        input.txOutHash.valueOf(),
+        input.txOutHash,
         input.txOutIndex.toString(),
       ];
     }
@@ -43,14 +41,9 @@ export const hashTransaction = (transaction: DigitalCashTransaction): Hash => {
  * @param transactionMessages the transaction messages from which the amount out
  * @return the total value out
  */
-export const getTotalValue = (
-  pkHash: string | Hash,
-  transactionMessages: DigitalCashMessage[],
-): number => {
-  const outputs = transactionMessages.flatMap((tr) =>
-    tr.transaction.outputs.filter(
-      (output) => output.script.publicKeyHash.valueOf() === pkHash.valueOf(),
-    ),
+export const getTotalValue = (pkHash: string | Hash, transactions: TransactionState[]): number => {
+  const outputs = transactions.flatMap((tr) =>
+    tr.outputs.filter((output) => output.script.publicKeyHash.valueOf() === pkHash.valueOf()),
   );
   return outputs.reduce((total, current) => total + current.value, 0);
 };
@@ -62,14 +55,14 @@ export const getTotalValue = (
  */
 export const getInputsInToSign = (
   pk: string,
-  transactionMessages: DigitalCashMessage[],
-): Omit<Input, 'script'>[] => {
-  return transactionMessages.flatMap((tr) =>
-    tr.transaction.outputs
+  transactions: TransactionState[],
+): Omit<TransactionInputState, 'script'>[] => {
+  return transactions.flatMap((tr) =>
+    tr.outputs
       .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
       .map((output, index) => {
         return {
-          txOutHash: tr.transactionId,
+          txOutHash: hashTransaction(tr).valueOf(),
           txOutIndex: index,
         };
       }),
@@ -81,7 +74,10 @@ export const getInputsInToSign = (
  * @param inputs left empty if this is a coinbase transaction
  * @param outputs
  */
-export const concatenateTxData = (outputs: Output[], inputs: Omit<Input, 'script'>[] = []) => {
+export const concatenateTxData = (
+  outputs: TransactionOutputState[],
+  inputs: Omit<TransactionInputState, 'script'>[] = [],
+) => {
   let inputsDataString = '';
   if (inputs.length > 0) {
     inputsDataString = inputs.reduce(

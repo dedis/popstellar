@@ -1,8 +1,8 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError } from 'core/objects';
 
-import { hashTransaction } from '../DigitalCashHelper';
-import { DigitalCashMessage, DigitalCashTransactionState } from '../DigitalCashTransaction';
+import { hashTransaction } from '../../objects/transaction/DigitalCashHelper';
+import { Transaction, TransactionState } from '../../objects/transaction/Transaction';
 
 /**
  * A digital cash POST TRANSACTION message
@@ -14,7 +14,7 @@ export class PostTransaction implements MessageData {
 
   public readonly transaction_id: Hash;
 
-  public readonly transaction: DigitalCashTransactionState;
+  public readonly transaction: TransactionState;
 
   constructor(msg: Partial<PostTransaction>) {
     if (!msg.transaction) {
@@ -42,15 +42,10 @@ export class PostTransaction implements MessageData {
    *
    * @param obj
    */
-  public static fromJson(obj: any): PostTransaction {
-    const messageObj = {
-      ...obj,
-      transactionId: obj.transaction_id,
-    };
-    const message = DigitalCashMessage.fromState(messageObj);
+  public static fromJSON(obj: any): PostTransaction {
     return new PostTransaction({
-      transaction_id: message.transactionId,
-      transaction: message.transaction,
+      transaction_id: obj.transaction_id,
+      transaction: Transaction.fromJSON(obj.transaction).toState(),
     });
   }
 }
