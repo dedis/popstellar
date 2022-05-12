@@ -1,5 +1,5 @@
 import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
-import { EventTags, Hash, Timestamp } from 'core/objects';
+import { Base64UrlData, EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
 
@@ -11,6 +11,7 @@ import {
   Vote,
   ElectionVersion,
 } from '../objects/Election';
+import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
@@ -94,6 +95,18 @@ export const mockElectionNotStarted = new Election({
   electionStatus: ElectionStatus.NOT_STARTED,
 });
 
+export const mockSecretBallotElectionNotStarted = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: mockElectionName,
+  version: ElectionVersion.SECRET_BALLOT,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
+  electionStatus: ElectionStatus.NOT_STARTED,
+});
+
 export const mockElectionOpened = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
@@ -160,3 +173,10 @@ export const mockElectionResultQuestions: ElectionResult['questions'] = [
     ],
   },
 ];
+
+export const mockElectionKeyString = 'ZWQucG9pbnRQX88KbADoKklwztS2Bz5R4SOvbEN2BhimKRBMYK0X4g==';
+export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyString);
+export const mockElectionKey = new ElectionPublicKey(mockElectionKeyString);
+
+export const mockElectionPrivateKeyString = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+export const mockEncodedElectionPrivateKey = new Base64UrlData(mockElectionPrivateKeyString);

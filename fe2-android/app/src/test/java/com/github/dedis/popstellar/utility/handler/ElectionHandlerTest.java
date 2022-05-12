@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -67,6 +68,7 @@ public class ElectionHandlerTest extends TestCase {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
+  private ServerRepository serverRepository;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -81,7 +83,7 @@ public class ElectionHandlerTest extends TestCase {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());

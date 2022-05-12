@@ -652,6 +652,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           getEventByIdDummy,
           updateEventDummy,
+          jest.fn(),
         )({
           ...mockMessageData,
           messageData: {
@@ -667,6 +668,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           getEventByIdDummy,
           updateEventDummy,
+          jest.fn(),
         )({
           ...mockMessageData,
           messageData: {
@@ -682,6 +684,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           getEventByIdDummy,
           updateEventDummy,
+          jest.fn(),
         )({
           ...mockMessageData,
           channel: '',
@@ -693,11 +696,54 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
-    it('should return false if the election has not previously been stored', () => {
+    it("should return false if the organizer backend's public key is unkown", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => undefined);
+
       expect(
         handleElectionResultMessage(
           getEventByIdDummy,
           updateEventDummy,
+          mockGetLaoOrganizerBackendPublicKey,
+        )({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.RESULT,
+            election: mockElectionId.valueOf(),
+            created_at: TIMESTAMP,
+          } as MessageData,
+        }),
+      ).toBeFalse();
+    });
+
+    it("should return false if the organizer backend's public key does not match the sender's", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockPopToken.publicKey);
+
+      expect(
+        handleElectionResultMessage(
+          getEventByIdDummy,
+          updateEventDummy,
+          mockGetLaoOrganizerBackendPublicKey,
+        )({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.RESULT,
+            election: mockElectionId.valueOf(),
+            created_at: TIMESTAMP,
+          } as MessageData,
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the election has not previously been stored', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockKeyPair.publicKey);
+
+      expect(
+        handleElectionResultMessage(
+          getEventByIdDummy,
+          updateEventDummy,
+          mockGetLaoOrganizerBackendPublicKey,
         )({
           ...mockMessageData,
           messageData: {
@@ -711,6 +757,8 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status and store results', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockKeyPair.publicKey);
+
       let storedElection = mockElectionTerminated.toState();
 
       const getEventById = jest.fn(() => Election.fromState(storedElection));
@@ -727,6 +775,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           getEventById,
           updateEvent,
+          mockGetLaoOrganizerBackendPublicKey,
         )({
           ...mockMessageData,
           messageData: new ElectionResult({

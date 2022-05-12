@@ -521,7 +521,7 @@ func (c *Channel) createAndSendElectionKey() error {
 
 	msgData := messagedata.ElectionKey{
 		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionResult,
+		Action:   messagedata.ElectionActionKey,
 		Election: c.getElectionID(),
 		Key:      base64.URLEncoding.EncodeToString(ekBuf),
 	}

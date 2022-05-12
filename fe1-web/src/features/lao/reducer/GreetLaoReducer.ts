@@ -63,7 +63,7 @@ export const getGreetLaoState = (state: any): GreetLaoReducerState => state[GREE
 
 /**
  * A function to directly retrieve the list of all unhandled lao#greet message ids
- * @remark NOTE: This function does not memoize the result since it just returns part of the store
+ * @remark This function does not memoize the result since it just returns part of the store
  * @param state The redux state
  * @returns The list of message ids
  */
@@ -71,7 +71,7 @@ export const getUnhandledGreetLaoMessageIds = (state: any): string[] =>
   getGreetLaoState(state)?.unhandledIds || [];
 
 /**
- * A selector returning a map from message ids to witness signatues
+ * A selector returning a map from message ids to witness signatures
  * for all message ids of lao#greet messages that have not been handled yet.
  */
 export const selectUnhandledGreetLaoWitnessSignaturesByMessageId = createSelector(
