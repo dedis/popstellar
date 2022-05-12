@@ -72,7 +72,7 @@
             "type": "object",
             "description": "Object representing an output of this transaction",
             "properties": {
-              "Value": {
+              "value": {
                 "type": "integer",
                 "description": "The value of the output transaction, expressed in miniLAOs"
               },
