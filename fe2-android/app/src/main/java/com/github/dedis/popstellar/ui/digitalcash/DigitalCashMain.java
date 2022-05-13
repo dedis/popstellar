@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 
 import androidx.annotation.IdRes;
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashMain extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
+  public static final String TAG = DigitalCashMain.class.getSimpleName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "@string/digital_cash_home_fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_home);
@@ -49,6 +52,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "@string/digital_cash_history_fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_history);
@@ -61,6 +65,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "@string/digital_cash_send_fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_send);
@@ -73,6 +78,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "@string/digital_cash_receive_fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_receive);
@@ -87,6 +93,8 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
+
+                Log.d(TAG, "@string/digital_cash_issue_fragment");
                 setupFragment(R.id.fragment_digital_cash_issue);
               }
             });
@@ -97,6 +105,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "@string/digital_cash_receipt_fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_receipt);
