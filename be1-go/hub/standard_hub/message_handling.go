@@ -23,7 +23,8 @@ const publishError = "failed to publish: %v"
 func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err := xerrors.Errorf("failed to decode message data: %v", err)
+		err := answer.NewErrorf(-4, "failed to decode message data: %v", err)
+
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -31,7 +32,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
+		err := answer.NewErrorf(-4, "failed to validate message against json schema: %v", err)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -39,14 +40,14 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		err := xerrors.Errorf("failed to get object#action: %v", err)
+		err := answer.NewErrorf(-4, "failed to get object#action: %v", err)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, "+
+		err := answer.NewErrorf(-4, "only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		sock.SendError(&publish.ID, err)
 		return err
