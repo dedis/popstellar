@@ -22,6 +22,9 @@ export interface TransactionOutputScript {
   publicKeyHash: Hash;
 }
 
+/**
+ * An output for a coin transaction object
+ */
 export class TransactionOutput {
   public readonly value: number;
 

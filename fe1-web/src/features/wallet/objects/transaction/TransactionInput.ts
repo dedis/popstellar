@@ -28,6 +28,9 @@ export interface TransactionInputScript {
   signature: Signature;
 }
 
+/**
+ * An input for a coin transaction object
+ */
 export class TransactionInput {
   public readonly txOutHash: Hash;
 

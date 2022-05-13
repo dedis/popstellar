@@ -1,6 +1,6 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 
-import { PostTransaction } from './messages/PostTransaction';
+import { PostTransaction } from './messages';
 
 /**
  * Handle a PostTransaction message.

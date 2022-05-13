@@ -1,8 +1,8 @@
 import { Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
-import { getDigitalCashState } from '../reducer/DigitalCashReducer';
-import { TransactionState } from '../objects/transaction/Transaction';
+import { TransactionState } from '../objects/transaction';
+import { getDigitalCashState } from '../reducer';
 
 export namespace DigitalCashStore {
   export function getTransactionsByPublicKey(pk: string): TransactionState[] {

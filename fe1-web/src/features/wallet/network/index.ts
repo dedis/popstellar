@@ -1,7 +1,7 @@
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { handleTransactionPost } from './DigitalCashHandler';
-import { PostTransaction } from './messages/PostTransaction';
+import { PostTransaction } from './messages';
 
 export * from './DigitalCashMessageApi';
 

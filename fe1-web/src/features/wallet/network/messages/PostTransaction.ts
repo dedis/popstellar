@@ -1,8 +1,7 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError } from 'core/objects';
 
-import { hashTransaction } from '../../objects/transaction/DigitalCashHelper';
-import { Transaction, TransactionJSON } from '../../objects/transaction/Transaction';
+import { hashTransaction, Transaction, TransactionJSON } from '../../objects/transaction';
 
 /**
  * A digital cash POST TRANSACTION message
@@ -30,8 +29,9 @@ export class PostTransaction implements MessageData {
       );
     }
     if (
-      hashTransaction(Transaction.fromJSON(msg.transaction).toState()).valueOf() !==
-      msg.transaction_id.valueOf()
+      hashTransaction(
+        Transaction.fromJSON(msg.transaction, msg.transaction_id.valueOf()).toState(),
+      ).valueOf() !== msg.transaction_id.valueOf()
     ) {
       throw new ProtocolError(
         'Invalid transaction hash encountered: the computed hash does not correspond to the received hash',

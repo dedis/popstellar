@@ -9,12 +9,13 @@ import {
   getTotalValue,
   getInputsInToSign,
   hashTransaction,
-} from '../objects/transaction/DigitalCashHelper';
-import { Transaction, TransactionState } from '../objects/transaction/Transaction';
-import { TransactionInputState } from '../objects/transaction/TransactionInput';
-import { TransactionOutputState } from '../objects/transaction/TransactionOutput';
-import { DigitalCashStore } from '../store/DigitalCashStore';
-import { PostTransaction } from './messages/PostTransaction';
+  Transaction,
+  TransactionState,
+  TransactionInputState,
+  TransactionOutputState,
+} from '../objects/transaction';
+import { DigitalCashStore } from '../store';
+import { PostTransaction } from './messages';
 
 const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
 
@@ -115,6 +116,8 @@ export function requestSendTransaction(
   });
   const lao: Lao = OpenedLaoStore.get();
 
+  console.log(`Sending a transaction with id: ${transactionId.valueOf()}`);
+
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
 
@@ -181,6 +184,8 @@ export function requestCoinbaseTransaction(
   });
 
   const lao: Lao = OpenedLaoStore.get();
+
+  console.log(`Sending a coinbase transaction with id: ${transactionId.valueOf()}`);
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }

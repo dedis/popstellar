@@ -23,7 +23,7 @@ export interface TransactionState {
 }
 
 /**
- * A cash message object
+ * A coin transaction object
  */
 export class Transaction {
   public readonly version: number;

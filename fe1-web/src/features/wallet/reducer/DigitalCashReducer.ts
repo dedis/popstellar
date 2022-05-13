@@ -42,7 +42,7 @@ const digitalCashSlice = createSlice({
      * We are trusting information of the transaction object, we do not verify any hashes
      */
     addTransaction: {
-      prepare( // TODO: prepare the transaction id
+      prepare(
         laoId: Hash | string,
         rollCallId: Hash | string,
         transactionMessage: TransactionState,
