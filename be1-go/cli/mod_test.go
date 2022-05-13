@@ -23,7 +23,7 @@ func TestConnectToSocket(t *testing.T) {
 	require.NoError(t, err)
 	oh.Start()
 
-	witnessSrv := network.NewServer(oh, 9001, socket.WitnessSocketType, log)
+	witnessSrv := network.NewServer(oh, "localhost", 9001, socket.WitnessSocketType, log)
 	witnessSrv.Start()
 	<-witnessSrv.Started
 
