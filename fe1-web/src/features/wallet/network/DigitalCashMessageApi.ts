@@ -79,7 +79,7 @@ export function requestSendTransaction(
   // Now we need to define each objects because we need some string representation of everything to hash on
 
   // Concatenate the data to sign
-  const dataString = concatenateTxData(outputs, inputs);
+  const dataString = concatenateTxData(inputs, outputs);
 
   // Sign with the popToken
   const signature = from.privateKey.sign(Base64UrlData.encode(dataString));
@@ -145,28 +145,30 @@ export function requestCoinbaseTransaction(
 
   const outputs: TransactionOutputState[] = [outputTo];
 
+  const input: Omit<TransactionInputState, 'script'> = {
+    txOutHash: STRINGS.coinbase_hash,
+    txOutIndex: 0,
+  };
+
   // Concatenate the data to sign
-  const dataString = concatenateTxData(outputs);
+  const dataString = concatenateTxData([input], outputs);
 
   // Sign with the popToken
   const signature = organizerKP.privateKey.sign(Base64UrlData.encode(dataString));
 
   // Reconstruct the inputs with the signature of the organizer
-  const inputs: TransactionInputState[] = [
-    {
-      txOutHash: STRINGS.coinbase_hash,
-      txOutIndex: 0,
-      script: {
-        type: STRINGS.script_type,
-        publicKey: organizerKP.publicKey.valueOf(),
-        signature: signature.valueOf(),
-      },
+  const finalInput: TransactionInputState = {
+    ...input,
+    script: {
+      type: STRINGS.script_type,
+      publicKey: organizerKP.publicKey.valueOf(),
+      signature: signature.valueOf(),
     },
-  ];
+  };
 
   const draftTransaction: Omit<TransactionState, 'transactionId'> = {
     version: 1,
-    inputs: inputs,
+    inputs: [finalInput],
     outputs: outputs,
     lockTime: 0,
   };

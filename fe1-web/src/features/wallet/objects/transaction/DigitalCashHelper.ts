@@ -11,17 +11,13 @@ import { TransactionOutputState } from './TransactionOutput';
 export const hashTransaction = (transaction: Omit<TransactionState, 'transactionId'>): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataInputs = transaction.inputs.flatMap((input) => {
-    if (input.txOutHash && input.txOutIndex) {
-      // Might be a coinbase transaction
-      return [
-        input.script.publicKey,
-        input.script.signature,
-        input.script.type,
-        input.txOutHash,
-        input.txOutIndex.toString(),
-      ];
-    }
-    return [input.script.publicKey.valueOf(), input.script.signature.valueOf(), input.script.type];
+    return [
+      input.script.publicKey,
+      input.script.signature,
+      input.script.type,
+      input.txOutHash,
+      input.txOutIndex.toString(),
+    ];
   });
   const dataOutputs = transaction.outputs.flatMap((output) => {
     return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
@@ -38,7 +34,7 @@ export const hashTransaction = (transaction: Omit<TransactionState, 'transaction
 /**
  * Get the total value out that corresponds to this public key hash from an array of transactions
  * @param pkHash the public key hash
- * @param transactionMessages the transaction messages from which the amount out
+ * @param transactions the transaction messages from which the amount out
  * @return the total value out
  */
 export const getTotalValue = (pkHash: string | Hash, transactions: TransactionState[]): number => {
@@ -71,20 +67,17 @@ export const getInputsInToSign = (
 
 /**
  * Concatenates the partial inputs and the outputs in a string to sign over it by following the digital cash specification
- * @param inputs left empty if this is a coinbase transaction
+ * @param inputs
  * @param outputs
  */
 export const concatenateTxData = (
+  inputs: Omit<TransactionInputState, 'script'>[],
   outputs: TransactionOutputState[],
-  inputs: Omit<TransactionInputState, 'script'>[] = [],
 ) => {
-  let inputsDataString = '';
-  if (inputs.length > 0) {
-    inputsDataString = inputs.reduce(
-      (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
-      '',
-    );
-  }
+  const inputsDataString = inputs.reduce(
+    (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
+    '',
+  );
   return outputs.reduce(
     (dataString, output) =>
       dataString +
