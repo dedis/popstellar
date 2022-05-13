@@ -99,12 +99,14 @@ export const makeMeetingSelector = (meetingId: string) =>
  * @param state The redux state
  * @returns The constructed meeting or undefined if the id is not found
  */
-export const getMeetingById = (meetingId: string, state: unknown) => {
+export const getMeetingById = (meetingId: Hash | string, state: unknown) => {
+  const meetingIdString = meetingId.valueOf();
+
   const meetingById = getMeetingState(state).byId;
 
-  if (!(meetingId in meetingById)) {
+  if (!(meetingIdString in meetingById)) {
     return undefined;
   }
 
-  return Meeting.fromState(meetingById[meetingId]);
+  return Meeting.fromState(meetingById[meetingIdString]);
 };

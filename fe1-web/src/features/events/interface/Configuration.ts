@@ -4,7 +4,7 @@ import { AnyAction, Reducer } from 'redux';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { LaoEvent, EventState } from '../objects';
+import { EventState } from '../objects';
 import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
 export const EVENTS_FEATURE_IDENTIFIER = 'events';
@@ -19,7 +19,7 @@ export interface EventsInterface extends FeatureInterface {
      * @param id The event id
      * @returns The event or undefined if none was found
      */
-    getEventById: (id: Hash) => LaoEvent | undefined;
+    getEventById: (id: Hash) => EventState | undefined;
 
     /**
      * Creates a selector for a two-level map from laoIds to eventIds to events
@@ -27,7 +27,7 @@ export interface EventsInterface extends FeatureInterface {
      * @param eventType The type of the events that should be returned
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
-    makeEventByTypeSelector: <T extends LaoEvent>(
+    makeEventByTypeSelector: <T extends EventState>(
       eventType: string,
     ) => (state: unknown) => Record<string, Record<string, T>>;
 
@@ -40,7 +40,7 @@ export interface EventsInterface extends FeatureInterface {
     makeEventSelector: (
       laoId: Hash | string,
       eventId: Hash | string,
-    ) => (state: unknown) => LaoEvent | undefined;
+    ) => (state: unknown) => EventState | undefined;
   };
 
   components: {
@@ -52,8 +52,36 @@ export interface EventsInterface extends FeatureInterface {
   };
 
   actionCreators: {
-    addEvent: (laoId: string | Hash, event: EventState) => AnyAction;
-    updateEvent: (laoId: string | Hash, event: EventState) => AnyAction;
+    /**
+     * Creates a redux action for adding an event to the event store
+     * @param laoId - The lao id where to add the event
+     * @param eventType - The type of the event
+     * @param id - The id of the event
+     * @param idAlias - An optional alias id of the event
+     * @returns A redux action causing the state change
+     */
+    addEvent: (
+      laoId: Hash | string,
+      eventType: string,
+      id: Hash | string,
+      idAlias?: Hash | string | undefined,
+    ) => AnyAction;
+
+    /**
+     * Creates a redux action for update the stored event state
+     * @param laoId - The lao id where to add the event
+     * @param eventType - The type of the event
+     * @param id - The id of the event
+     * @param idAlias - An optional alias id of the event
+     * @returns A redux action causing the state change
+     */
+    updateEvent: (
+      laoId: Hash | string,
+      eventType: string,
+      id: Hash | string,
+      idAlias?: Hash | string | undefined,
+    ) => AnyAction;
+
     removeEvent: (laoId: string | Hash, eventId: string | Hash) => AnyAction;
     clearAllEvents: () => AnyAction;
   };

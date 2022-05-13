@@ -1,9 +1,9 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
-import { dispatch } from 'core/redux';
+import { Hash } from 'core/objects';
 
 import { MeetingConfiguration } from '../interface';
-import { Meeting } from '../objects';
+import { Meeting, MeetingState } from '../objects';
 import { CreateMeeting, StateMeeting } from './messages';
 
 /**
@@ -12,11 +12,10 @@ import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
- *
- * @param addEvent - An action creator to add a lao event
+ * @param addMeeting - A function to add a meeting
  */
 export const handleMeetingCreateMessage =
-  (addEvent: MeetingConfiguration['addEvent']) =>
+  (addMeeting: (laoId: Hash | string, meetingState: MeetingState) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.MEETING ||
@@ -27,19 +26,19 @@ export const handleMeetingCreateMessage =
       return false;
     }
 
-    const mtgMsg = msg.messageData as CreateMeeting;
+    const meetingMessage = msg.messageData as CreateMeeting;
 
     const meeting = new Meeting({
-      id: mtgMsg.id,
-      name: mtgMsg.name,
-      location: mtgMsg.location,
-      creation: mtgMsg.creation,
-      start: mtgMsg.start,
-      end: mtgMsg.end ? mtgMsg.end : undefined,
-      extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
+      id: meetingMessage.id,
+      name: meetingMessage.name,
+      location: meetingMessage.location,
+      creation: meetingMessage.creation,
+      start: meetingMessage.start,
+      end: meetingMessage.end ? meetingMessage.end : undefined,
+      extra: meetingMessage.extra ? { ...meetingMessage.extra } : {},
     });
 
-    dispatch(addEvent(msg.laoId, meeting.toState()));
+    addMeeting(msg.laoId, meeting.toState());
     return true;
   };
 
@@ -47,14 +46,14 @@ export const handleMeetingCreateMessage =
  * Handles a MeetingState message by updating the state of the meeting.
  *
  * @param getLaoById - A function to get laos by their id
- * @param getEventById - A function to get events by their id
- * @param getEventById - An action creator to update lao events
+ * @param getMeetingById - A function to get a meeting by its id
+ * @param updateMeeting - An function to update a meeting
  */
 export const handleMeetingStateMessage =
   (
     getLaoById: MeetingConfiguration['getLaoById'],
-    getEventById: MeetingConfiguration['getEventById'],
-    updateEvent: MeetingConfiguration['updateEvent'],
+    getMeetingById: (meetingId: Hash | string) => Meeting | undefined,
+    updateMeeting: (laoId: Hash | string, meetingState: MeetingState) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -74,14 +73,14 @@ export const handleMeetingStateMessage =
       return false;
     }
 
-    const mtgMsg = msg.messageData as StateMeeting;
-    if (!hasWitnessSignatureQuorum(mtgMsg.modification_signatures, lao)) {
+    const meetingMessage = msg.messageData as StateMeeting;
+    if (!hasWitnessSignatureQuorum(meetingMessage.modification_signatures, lao)) {
       console.warn(makeErr('witness quorum was not reached'));
       return false;
     }
 
     // FIXME: use meeting reducer
-    const oldMeeting = getEventById(mtgMsg.id) as Meeting;
+    const oldMeeting = getMeetingById(meetingMessage.id) as Meeting;
     if (!oldMeeting) {
       console.warn(makeErr("no known meeting matching the 'id' field"));
       return false;
@@ -89,16 +88,16 @@ export const handleMeetingStateMessage =
 
     const meeting = new Meeting({
       ...oldMeeting,
-      lastModified: mtgMsg.last_modified,
-      location: mtgMsg.location,
-      start: mtgMsg.start,
-      end: mtgMsg.end,
+      lastModified: meetingMessage.last_modified,
+      location: meetingMessage.location,
+      start: meetingMessage.start,
+      end: meetingMessage.end,
       extra: {
         ...oldMeeting.extra,
-        ...mtgMsg.extra,
+        ...meetingMessage.extra,
       },
     });
 
-    dispatch(updateEvent(msg.laoId, meeting.toState()));
+    updateMeeting(msg.laoId, meeting.toState());
     return true;
   };

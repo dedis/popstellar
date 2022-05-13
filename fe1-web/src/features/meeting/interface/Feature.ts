@@ -7,8 +7,9 @@ export namespace MeetingFeature {
     witnesses: PublicKey[];
   }
 
-  export interface Event {
-    id: Hash;
-    name: string;
+  export interface EventState {
+    eventType: string;
+    id: string;
+    idAlias?: string;
   }
 }

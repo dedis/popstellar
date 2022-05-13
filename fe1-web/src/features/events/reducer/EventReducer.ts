@@ -106,7 +106,7 @@ const eventSlice = createSlice({
         laoId: Hash | string,
         eventType: string,
         id: Hash | string,
-        idAlias: Hash | string | undefined,
+        idAlias?: Hash | string | undefined,
       ) {
         return {
           payload: {
@@ -249,21 +249,27 @@ export const makeEventMapSelector = (laoId: string) =>
  * @param laoId - The id of the Lao
  * @param eventId - The id of the event
  */
-export const makeEventSelector = (laoId: string, eventId: string) => {
+export const makeEventSelector = (
+  laoId: Hash | string | undefined,
+  eventId: Hash | string | undefined,
+) => {
+  const laoIdString = laoId?.valueOf();
+  const eventIdString = eventId?.valueOf();
+
   return createSelector(
     // First input: Get all events across all LAOs
     (state) => getEventState(state),
     // Selector: returns the state of a given event
     (eventMap: EventReducerState): EventState | undefined => {
-      if (!(laoId in eventMap.byLaoId)) {
-        throw new Error(`Tried to retrive an event for inexistent lao with id ${laoId}`);
+      if (!laoIdString || !(laoIdString in eventMap.byLaoId)) {
+        throw new Error(`Tried to retrive an event for inexistent lao with id ${laoIdString}`);
       }
 
-      if (!(eventId in eventMap.byLaoId[laoId].byId)) {
+      if (!eventIdString || !(eventIdString in eventMap.byLaoId[laoIdString].byId)) {
         return undefined;
       }
 
-      return eventMap.byLaoId[laoId].byId[eventId];
+      return eventMap.byLaoId[laoIdString].byId[eventIdString];
     },
   );
 };

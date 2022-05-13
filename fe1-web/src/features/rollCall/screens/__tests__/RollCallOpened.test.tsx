@@ -6,11 +6,12 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash, mockPopToken, mockRollCallState } from '__tests__/utils/TestUtils';
+import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
-import { eventsReducer } from 'features/events/reducer';
+import { eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
 import { RollCall } from 'features/rollCall/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
@@ -58,7 +59,7 @@ const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    makeEventSelector: () => () => mockRollCall,
+    makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,

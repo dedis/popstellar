@@ -4,12 +4,14 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { mockLao, mockLaoIdHash, mockRollCallState } from '__tests__/utils';
+import { mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { addEvent, eventsReducer, makeEventSelector } from 'features/events/reducer';
+import { addEvent, eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
-import { mockLaoId } from 'features/wallet/objects/DummyWallet';
+import { RollCall } from 'features/rollCall/objects';
+import { addRollCall } from 'features/rollCall/reducer';
 
 import { RollCallHooks } from '../index';
 
@@ -19,7 +21,7 @@ const mockHasSeed = jest.fn();
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    makeEventSelector,
+    makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: mockHasSeed,
   } as RollCallReactContext,
@@ -27,7 +29,10 @@ const contextValue = {
 
 const mockStore = createStore(combineReducers({ ...laoReducer, ...eventsReducer }));
 mockStore.dispatch(connectToLao(mockLao.toState()));
-mockStore.dispatch(addEvent(mockLaoId, mockRollCallState));
+mockStore.dispatch(
+  addEvent(mockLaoId, RollCall.EVENT_TYPE, mockRollCallState.id, mockRollCallState.idAlias),
+);
+mockStore.dispatch(addRollCall(mockRollCallState));
 
 const wrapper = ({ children }: { children: React.ReactChildren }) => (
   <Provider store={mockStore}>
@@ -40,35 +45,6 @@ describe('RollCallHooks', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => RollCallHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
-    });
-  });
-
-  describe('RollCallHook.useEventSelector', () => {
-    it('should return the undefined if there is no entry for the given lao id', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector('someInexistentLao', mockRollCallState.id),
-        { wrapper },
-      );
-      expect(result.current).toBeUndefined();
-    });
-
-    it('should return the undefined if there is no event for the given id', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector(mockLaoId, 'someInexistentEventId'),
-        { wrapper },
-      );
-      expect(result.current).toBeUndefined();
-    });
-
-    it('should return the event if there is an event for the given ids', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector(mockLaoId, mockRollCallState.id),
-        {
-          wrapper,
-        },
-      );
-      // the 'end' field
-      expect(result.current?.toState()).toEqual(mockRollCallState);
     });
   });
 

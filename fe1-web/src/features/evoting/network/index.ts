@@ -1,6 +1,10 @@
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
+import { dispatch, getStore } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
+import { Election, ElectionState } from '../objects';
+import { addElection, getElectionById, updateElection } from '../reducer';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
@@ -13,37 +17,55 @@ import { OpenElection } from './messages/OpenElection';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
- * @param config - An evoting config object
+ * @param configuration - An evoting config object
  */
-export const configureNetwork = (config: EvotingConfiguration) => {
-  config.messageRegistry.add(
+export const configureNetwork = (configuration: EvotingConfiguration) => {
+  // getElectionById bound to the global state
+  const boundGetElectionById = (electionId: Hash | string) =>
+    getElectionById(electionId, getStore().getState());
+
+  const addElectionEvent = (laoId: Hash | string, electionState: ElectionState) => {
+    dispatch(
+      configuration.addEvent(laoId, Election.EVENT_TYPE, electionState.id, electionState.idAlias),
+    );
+    dispatch(addElection(electionState));
+  };
+
+  const updateElectionEvent = (laoId: Hash | string, electionState: ElectionState) => {
+    dispatch(
+      configuration.addEvent(laoId, Election.EVENT_TYPE, electionState.id, electionState.idAlias),
+    );
+    dispatch(updateElection(electionState));
+  };
+
+  configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.SETUP,
-    handleElectionSetupMessage(config.addEvent),
+    handleElectionSetupMessage(addElectionEvent),
     SetupElection.fromJson,
   );
-  config.messageRegistry.add(
+  configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.OPEN,
-    handleElectionOpenMessage(config.getEventById, config.updateEvent),
+    handleElectionOpenMessage(boundGetElectionById, updateElectionEvent),
     OpenElection.fromJson,
   );
-  config.messageRegistry.add(
+  configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.CAST_VOTE,
-    handleCastVoteMessage(config.getCurrentLao, config.getEventById, config.updateEvent),
+    handleCastVoteMessage(configuration.getCurrentLao, boundGetElectionById, updateElectionEvent),
     CastVote.fromJson,
   );
-  config.messageRegistry.add(
+  configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.END,
-    handleElectionEndMessage(config.getEventById, config.updateEvent),
+    handleElectionEndMessage(boundGetElectionById, updateElectionEvent),
     EndElection.fromJson,
   );
-  config.messageRegistry.add(
+  configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(config.getEventById, config.updateEvent),
+    handleElectionResultMessage(boundGetElectionById, updateElectionEvent),
     ElectionResult.fromJson,
   );
 };

@@ -3,18 +3,8 @@ import testKeyPair from 'test_data/keypair.json';
 import { KeyPairRegistry } from 'core/keypair';
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import {
-  Channel,
-  EventTags,
-  Hash,
-  KeyPair,
-  PopToken,
-  PublicKey,
-  ROOT_CHANNEL,
-  Timestamp,
-} from 'core/objects';
+import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
-import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
@@ -53,43 +43,6 @@ export const mockLaoState: LaoState = {
   server_addresses: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
-
-// MOCK ROLL CALL
-const mockRCName = 'myRollCall';
-const mockRCLocation = 'location';
-const mockRCTimestampStart = new Timestamp(1620255600);
-const mockRCTimestampEnd = new Timestamp(1620357600);
-const mockRCAttendees = ['attendee1', 'attendee2'];
-
-const mockRCIdAliasHash = Hash.fromStringArray(
-  EventTags.ROLL_CALL,
-  mockLaoId,
-  mockRCTimestampStart.toString(),
-  mockRCName,
-);
-
-const mockRCIdHash = Hash.fromStringArray(
-  EventTags.ROLL_CALL,
-  mockLaoId,
-  mockRCIdAliasHash.valueOf(),
-  mockRCName,
-);
-
-export const mockRollCallState = {
-  id: mockRCIdHash.valueOf(),
-  idAlias: mockRCIdAliasHash.valueOf(),
-  eventType: RollCall.EVENT_TYPE,
-  start: mockRCTimestampStart.valueOf(),
-  end: mockRCTimestampEnd.valueOf(),
-  name: mockRCName,
-  location: mockRCLocation,
-  creation: mockRCTimestampStart.valueOf(),
-  proposedStart: mockRCTimestampStart.valueOf(),
-  proposedEnd: mockRCTimestampEnd.valueOf(),
-  status: RollCallStatus.CLOSED,
-  attendees: mockRCAttendees,
-};
-export const mockRC = RollCall.fromState(mockRollCallState);
 
 export const defaultMessageDataFields = ['object', 'action'];
 

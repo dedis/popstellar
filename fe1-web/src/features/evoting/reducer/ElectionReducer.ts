@@ -99,12 +99,13 @@ export const makeElectionSelector = (electionId: string) =>
  * @param state The redux state
  * @returns The constructed election or undefined if the id is not found
  */
-export const getElectionById = (electionId: string, state: unknown) => {
+export const getElectionById = (electionId: Hash | string, state: unknown) => {
+  const electionIdString = electionId.valueOf();
   const electionById = getElectionState(state).byId;
 
-  if (!(electionId in electionById)) {
+  if (!(electionIdString in electionById)) {
     return undefined;
   }
 
-  return Election.fromState(electionById[electionId]);
+  return Election.fromState(electionById[electionIdString]);
 };

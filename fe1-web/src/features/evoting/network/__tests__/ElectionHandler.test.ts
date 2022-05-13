@@ -34,7 +34,6 @@ import {
   mockVote2,
 } from 'features/evoting/__tests__/utils';
 
-import { EvotingConfiguration } from '../../interface';
 import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
@@ -60,9 +59,9 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
-const getMockLao: EvotingConfiguration['getCurrentLao'] = () => mockLao;
-const getEventByIdDummy: EvotingConfiguration['getEventById'] = () => undefined;
-const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
+const mockGetCurrentLao = jest.fn(() => mockLao);
+const mockGetEventById = jest.fn();
+const mockUpdateEvent = jest.fn();
 
 // mock channelFromIds and subscribeToChannel (spyOn does not work)
 const mockChannelId = 'someChannelId';
@@ -207,8 +206,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -222,8 +221,8 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "open"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -254,8 +253,8 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -317,9 +316,9 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetCurrentLao,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -333,9 +332,9 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "cast_vote"', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetCurrentLao,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -349,7 +348,7 @@ describe('ElectionHandler', () => {
     it('should return false if the message is not received on a lao channel', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
+          mockGetCurrentLao,
           jest.fn(),
           jest.fn(),
         )({
@@ -371,9 +370,9 @@ describe('ElectionHandler', () => {
 
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetCurrentLao,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -392,9 +391,9 @@ describe('ElectionHandler', () => {
 
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetCurrentLao,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -432,7 +431,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleCastVoteMessage(
-          getMockLao,
+          mockGetCurrentLao,
           getEventById,
           updateEvent,
         )({
@@ -474,7 +473,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleCastVoteMessage(
-          getMockLao,
+          mockGetCurrentLao,
           getEventById,
           updateEvent,
         )({
@@ -513,8 +512,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -528,8 +527,8 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "end"', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -561,8 +560,8 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -625,8 +624,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -640,8 +639,8 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "result"', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -655,8 +654,8 @@ describe('ElectionHandler', () => {
     it('should return false if the message data does not contain a channel', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           channel: '',
@@ -671,8 +670,8 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {

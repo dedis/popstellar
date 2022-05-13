@@ -2,9 +2,10 @@ import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
 
-import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from '../interface';
+import { RollCallFeature, RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from '../interface';
+import { RollCall } from '../objects';
+import { makeRollCallByIdSelector } from '../reducer';
 
 export namespace RollCallHooks {
   export const useRollCallContext = (): RollCallReactContext => {
@@ -31,20 +32,6 @@ export namespace RollCallHooks {
   };
 
   /**
-   * Gets an event for a given lao and event id
-   * @returns The selected event
-   */
-  export const useEventSelector = (laoId: string | Hash, eventId: string | Hash) => {
-    const { makeEventSelector } = useRollCallContext();
-    const selector = useMemo(
-      () => makeEventSelector(laoId, eventId),
-      [makeEventSelector, laoId, eventId],
-    );
-
-    return useSelector(selector);
-  };
-
-  /**
    * Gets the generateToken function
    */
   export const useGenerateToken = () => useRollCallContext().generateToken;
@@ -53,4 +40,49 @@ export namespace RollCallHooks {
    * Gets the hasSeed function
    */
   export const useHasSeed = () => useRollCallContext().hasSeed;
+
+  export const useRollCallsByLaoId = (): {
+    [laoId: string]: { [rollCallId: string]: RollCall };
+  } => {
+    const { makeEventByTypeSelector } = useRollCallContext();
+    const eventStatesByLaoIdSelector = useMemo(
+      () =>
+        makeEventByTypeSelector(RollCall.EVENT_TYPE) as (
+          state: unknown,
+        ) => Record<string, Record<string, RollCallFeature.EventState>>,
+      [makeEventByTypeSelector],
+    );
+
+    const eventStatesByLaoId = useSelector(eventStatesByLaoIdSelector);
+
+    // retrieve all event ids from the 2 level map
+    const allEventIds = useMemo(
+      () => Object.values(eventStatesByLaoId).flatMap(Object.keys),
+      [eventStatesByLaoId],
+    );
+
+    // retrieve all corresponding roll calls
+    const rollCallByIdSelector = useMemo(
+      () => makeRollCallByIdSelector(allEventIds),
+      [allEventIds],
+    );
+    const rollCallById = useSelector(rollCallByIdSelector);
+
+    // create a map from laoIds to a map from rollcall id to roll call instances
+    return useMemo(() => {
+      const map: {
+        [laoId: string]: { [rollCallId: string]: RollCall };
+      } = {};
+
+      for (const laoId of Object.keys(eventStatesByLaoId)) {
+        map[laoId] = {};
+
+        for (const rollCallId of Object.keys(eventStatesByLaoId[laoId])) {
+          map[laoId][rollCallId] = rollCallById[rollCallId];
+        }
+      }
+
+      return map;
+    }, [eventStatesByLaoId, rollCallById]);
+  };
 }

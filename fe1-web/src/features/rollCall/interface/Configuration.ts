@@ -5,6 +5,7 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { RollCall } from '../objects';
 import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
 import { RollCallFeature } from './Feature';
 
@@ -41,17 +42,32 @@ export interface RollCallConfiguration {
   /**
    * Creates a redux action for adding an event to the event store
    * @param laoId - The lao id where to add the event
-   * @param eventState - The event to add to the store
+   * @param eventType - The type of the event
+   * @param id - The id of the event
+   * @param idAlias - An optional alias id of the event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: string | Hash, eventState: RollCallFeature.EventState) => AnyAction;
+  addEvent: (
+    laoId: Hash | string,
+    eventType: string,
+    id: Hash | string,
+    idAlias?: Hash | string | undefined,
+  ) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
-   * @param laoId - The lao id where to update the event
-   * @param eventState - The update event state
+   * @param laoId - The lao id where to add the event
+   * @param eventType - The type of the event
+   * @param id - The id of the event
+   * @param idAlias - An optional alias id of the event
+   * @returns A redux action causing the state change
    */
-  updateEvent: (laoId: string | Hash, eventState: RollCallFeature.EventState) => AnyAction;
+  updateEvent: (
+    laoId: Hash | string,
+    eventType: string,
+    id: Hash | string,
+    idAlias?: Hash | string | undefined,
+  ) => AnyAction;
 
   /**
    * Given the redux state and an event id, this function looks in the active
@@ -60,18 +76,17 @@ export interface RollCallConfiguration {
    * @param id - The id of the event
    * @returns The event or undefined if none was found
    */
-  getEventById: (id: Hash) => RollCallFeature.Event | undefined;
+  getEventById: (id: Hash) => RollCallFeature.EventState | undefined;
 
   /**
-   * Creates a selector to return a specific event for given lao and event ids
-   * @param laoId The id of the lao to select the event from
-   * @param eventId The id of the event to return
-   * @returns The selector
+   * Creates a selector for a two-level map from laoIds to eventIds to events
+   * where all returned events have type 'eventType'
+   * @param eventType The type of the events that should be returned
+   * @returns A selector for a map from laoIds to a map of eventIds to events
    */
-  makeEventSelector: (
-    laoId: Hash | string,
-    eventId: Hash | string,
-  ) => (state: unknown) => RollCallFeature.Event | undefined;
+  makeEventByTypeSelector: (
+    eventType: string,
+  ) => (state: unknown) => Record<string, Record<string, RollCallFeature.EventState>>;
 
   /**
    * Deterministically generates a pop token from given lao and rollCall ids
@@ -92,7 +107,7 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  'useCurrentLaoId' | 'makeEventSelector' | 'generateToken' | 'hasSeed'
+  'useCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
 >;
 
 /**
@@ -108,6 +123,18 @@ export interface RollCallInterface extends FeatureInterface {
     isOfType: (event: unknown) => boolean;
     Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
   }[];
+
+  functions: {
+    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+  };
+
+  hooks: {
+    useRollCallsByLaoId: () => {
+      [laoId: string]: {
+        [rollCallId: string]: RollCall;
+      };
+    };
+  };
 
   context: RollCallReactContext;
 

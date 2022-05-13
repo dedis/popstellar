@@ -1,19 +1,18 @@
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { getReactionChannel, getUserSocialChannel } from 'core/objects';
+import { getReactionChannel, getUserSocialChannel, Hash } from 'core/objects';
 import { AsyncDispatch, dispatch } from 'core/redux';
 
 import { RollCallConfiguration } from '../interface';
-import { RollCall, RollCallStatus } from '../objects';
+import { RollCall, RollCallState, RollCallStatus } from '../objects';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 /**
  * Handles a RollCallCreate message by creating a roll call in the current Lao.
- *
- * @param addEvent - An action creator to add a new lao event
+ * @param addRollCall - A function to add a new roll call
  */
 export const handleRollCallCreateMessage =
-  (addEvent: RollCallConfiguration['addEvent']) =>
+  (addRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
@@ -26,7 +25,7 @@ export const handleRollCallCreateMessage =
 
     const rcMsgData = msg.messageData as CreateRollCall;
 
-    const rc = new RollCall({
+    const rollCall = new RollCall({
       id: rcMsgData.id,
       name: rcMsgData.name,
       location: rcMsgData.location,
@@ -37,20 +36,19 @@ export const handleRollCallCreateMessage =
       status: RollCallStatus.CREATED,
     });
 
-    dispatch(addEvent(msg.laoId, rc.toState()));
+    addRollCall(msg.laoId, rollCall.toState());
     return true;
   };
 
 /**
  * Handle a RollCallOpen message by opening the corresponding roll call.
- *
- * @param getEventById - A function to get an event by its id
- * @param updateEvent - An action creator to update a lao event
+ * @param getRollCallById - A function to get a roll call by its id
+ * @param updateRollCall - An function to update a roll call
  */
 export const handleRollCallOpenMessage =
   (
-    getEventById: RollCallConfiguration['getEventById'],
-    updateEvent: RollCallConfiguration['updateEvent'],
+    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -65,35 +63,34 @@ export const handleRollCallOpenMessage =
     const makeErr = (err: string) => `roll_call/open was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as OpenRollCall;
-    const oldRC = getEventById(rcMsgData.opens) as RollCall;
+    const oldRC = getRollCallById(rcMsgData.opens);
     if (!oldRC) {
       console.warn(makeErr("no known roll call matching the 'opens' field"));
       return false;
     }
 
-    const rc = new RollCall({
+    const rollCall = new RollCall({
       ...oldRC,
       idAlias: rcMsgData.update_id,
       openedAt: rcMsgData.opened_at,
       status: RollCallStatus.OPENED,
     });
 
-    dispatch(updateEvent(msg.laoId, rc.toState()));
+    updateRollCall(msg.laoId, rollCall.toState());
     return true;
   };
 
 /**
  * Handles a RollCallClose message by closing the corresponding roll call.
- *
- * @param getEventById - A function to get an event by its id
- * @param updateEvent - An action creator to update a lao event
+ * @param getRollCallById - A function to get a roll call by its id
+ * @param updateRollCall - An function to update a roll call
  * @param generateToken - A function to generate a pop token
  * @param setLaoLastRollCall - An action creator to set the last (tokenized) roll call for a given lao
  */
 export const handleRollCallCloseMessage =
   (
-    getEventById: RollCallConfiguration['getEventById'],
-    updateEvent: RollCallConfiguration['updateEvent'],
+    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
     generateToken: RollCallConfiguration['generateToken'],
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
   ) =>
@@ -112,13 +109,13 @@ export const handleRollCallCloseMessage =
     const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as CloseRollCall;
-    const oldRC = getEventById(rcMsgData.closes) as RollCall;
+    const oldRC = getRollCallById(rcMsgData.closes);
     if (!oldRC) {
       console.warn(makeErr("no known roll call matching the 'closes' field"));
       return false;
     }
 
-    const rc = new RollCall({
+    const rollCall = new RollCall({
       ...oldRC,
       idAlias: rcMsgData.update_id,
       closedAt: rcMsgData.closed_at,
@@ -126,15 +123,14 @@ export const handleRollCallCloseMessage =
       attendees: rcMsgData.attendees,
     });
 
-    // We can now dispatch an updated (closed) roll call, containing the attendees' public keys.
-    dispatch(updateEvent(msg.laoId, rc.toState()));
+    updateRollCall(msg.laoId, rollCall.toState());
 
     // ... and update the Lao state to point to the latest roll call, if we have a token in it.
     dispatch(async (aDispatch: AsyncDispatch) => {
       try {
-        const token = await generateToken(laoId, rc.id);
-        const hasToken = rc.containsToken(token);
-        aDispatch(setLaoLastRollCall(laoId, rc.id, hasToken));
+        const token = await generateToken(laoId, rollCall.id);
+        const hasToken = rollCall.containsToken(token);
+        aDispatch(setLaoLastRollCall(laoId, rollCall.id, hasToken));
 
         // If we had a token in this roll call, we subscribe to our own social media channel
         if (token && hasToken) {
@@ -160,13 +156,13 @@ export const handleRollCallCloseMessage =
 /**
  * Handles a RollCallReopen message by reopening the corresponding roll call.
  *
- * @param getEventById - A function to get an event by its id
- * @param updateEvent - An action creator to update a lao event
+ * @param getRollCallById - A function to get a roll call by its id
+ * @param updateRollCall - An function to update a roll call
  */
 export const handleRollCallReopenMessage =
   (
-    getEventById: RollCallConfiguration['getEventById'],
-    updateEvent: RollCallConfiguration['updateEvent'],
+    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
   ) =>
   (msg: ProcessableMessage) => {
     if (
@@ -181,7 +177,7 @@ export const handleRollCallReopenMessage =
     const makeErr = (err: string) => `roll_call/reopen was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as ReopenRollCall;
-    const oldRC = getEventById(rcMsgData.opens) as RollCall;
+    const oldRC = getRollCallById(rcMsgData.opens);
     if (!oldRC) {
       console.warn(makeErr("no known roll call matching the 'opens' field"));
       return false;
@@ -191,13 +187,13 @@ export const handleRollCallReopenMessage =
       return false;
     }
 
-    const rc = new RollCall({
+    const rollCall = new RollCall({
       ...oldRC,
       idAlias: rcMsgData.update_id,
       openedAt: rcMsgData.opened_at,
       status: RollCallStatus.REOPENED,
     });
 
-    dispatch(updateEvent(msg.laoId, rc.toState()));
+    updateRollCall(msg.laoId, rollCall.toState());
     return true;
   };

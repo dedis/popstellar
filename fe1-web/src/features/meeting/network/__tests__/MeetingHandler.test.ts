@@ -1,8 +1,6 @@
 import { mockChannel, mockKeyPair, mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, EventTags, Hash, Signature, Timestamp } from 'core/objects';
-import { dispatch } from 'core/redux';
-import { MeetingFeature } from 'features/meeting/interface';
 import { Meeting } from 'features/meeting/objects';
 
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from '../MeetingHandler';
@@ -22,16 +20,8 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
-const mockAddEvent = jest.fn((laoId: string | Hash, meeting: MeetingFeature.EventState) => ({
-  type: 'add-event',
-  laoId: laoId.valueOf(),
-  meeting,
-}));
-const mockUpdateEvent = jest.fn((laoId: string | Hash, meeting: MeetingFeature.EventState) => ({
-  type: 'update-event',
-  laoId: laoId.valueOf(),
-  meeting,
-}));
+const mockAddEvent = jest.fn();
+const mockUpdateEvent = jest.fn();
 
 const mockMeetingName = 'a meeting';
 const mockMeetingId = Hash.fromStringArray(
@@ -139,8 +129,8 @@ describe('MeetingHandler', () => {
         } as ProcessableMessage),
       ).toBeTrue();
 
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith(mockAddEvent(mockLaoId, mockMeeting.toState()));
+      expect(mockAddEvent).toHaveBeenCalledTimes(1);
+      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoIdHash, mockMeeting.toState());
     });
   });
 
@@ -243,8 +233,8 @@ describe('MeetingHandler', () => {
         } as ProcessableMessage),
       ).toBeTrue();
 
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith(mockUpdateEvent(mockLaoId, mockNewMeeting.toState()));
+      expect(mockUpdateEvent).toHaveBeenCalledTimes(1);
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockLaoIdHash, mockNewMeeting.toState());
     });
   });
 });

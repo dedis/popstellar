@@ -1,6 +1,6 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockAddress, mockPopToken } from '__tests__/utils';
+import { mockAddress, mockChannel, mockPopToken } from '__tests__/utils';
 import {
   ActionType,
   MessageData,
@@ -67,7 +67,7 @@ const createMockMsg = (type: ActionType, rollCallState: any): ProcessableMessage
     laoId: ID,
     receivedAt: TIMESTAMP_START,
     receivedFrom: mockAddress,
-    channel: 'undefined',
+    channel: mockChannel,
     data: Base64UrlData.encode(''),
     sender: ID,
     signature: new Signature(''),

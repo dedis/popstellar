@@ -10,7 +10,7 @@ import {
   makeRollCallSelector,
   removeRollCall,
   updateRollCall,
-  makeRollCallAttendeesList,
+  makeRollCallAttendeesListSelector,
 } from '../RollCallReducer';
 
 const mockRollCallState: RollCallState = mockRollCall.toState();
@@ -147,7 +147,7 @@ describe('RollCallReducer', () => {
   describe('makeRollCallAttendeesList', () => {
     it('should return the attendee list', () => {
       expect(
-        makeRollCallAttendeesList(mockRollCallState.id)({
+        makeRollCallAttendeesListSelector(mockRollCallState.id)({
           [ROLLCALL_REDUCER_PATH]: {
             byId: { [mockRollCallState.id]: mockRollCallState },
             allIds: [mockRollCallState.id],

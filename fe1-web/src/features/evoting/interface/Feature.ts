@@ -8,22 +8,8 @@ export namespace EvotingFeature {
   }
 
   export interface EventState {
-    readonly eventType: string;
-
-    readonly id: string;
-
-    readonly idAlias?: string;
-
-    readonly name: string;
-
-    readonly start: number;
-
-    readonly end?: number;
-  }
-
-  export interface Event {
-    readonly id: Hash;
-
-    toState(): EventState;
+    eventType: string;
+    id: string;
+    idAlias?: string;
   }
 }

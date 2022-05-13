@@ -6,6 +6,7 @@
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey } from 'core/objects';
+import { isDefined } from 'core/types';
 
 import { RollCall, RollCallState } from '../objects';
 
@@ -75,38 +76,69 @@ export default {
 
 /**
  * Creates a selector that retrieves an rollcall by its id
- * @param rollcallId The if of the rollcall / event to retrieve
+ * @param rollCallId The if of the rollcall / event to retrieve
  * @returns The selector
  */
-export const makeRollCallSelector = (rollcallId: string) =>
-  createSelector(
+export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
+  const rollCallIdString = rollCallId?.valueOf();
+
+  return createSelector(
     // First input: map from ids to rollcalls
     (state) => getRollCallState(state).byId,
     // Selector: returns the selected rollcall
     (rollcallById: Record<string, RollCallState>): RollCall | undefined => {
-      if (!(rollcallId in rollcallById)) {
+      if (!rollCallIdString || !(rollCallIdString in rollcallById)) {
         return undefined;
       }
 
-      return RollCall.fromState(rollcallById[rollcallId]);
+      return RollCall.fromState(rollcallById[rollCallIdString]);
+    },
+  );
+};
+
+/**
+ * Creates a selector that retrieves a map from rollcall id to roll calls for a list of given roll call ids
+ * @param rollCallIds The id of the rollcalls to retrieve
+ * @returns The selector
+ */
+export const makeRollCallByIdSelector = (rollCallIds: string[]) =>
+  createSelector(
+    // First input: map from ids to rollcalls
+    (state) => getRollCallState(state).byId,
+    // Selector: returns the selected rollcall
+    (rollCallById: Record<string, RollCallState>): Record<string, RollCall> => {
+      return (
+        rollCallIds
+          // create a roll call instance for all given ids
+          .map((id) => (id in rollCallById ? RollCall.fromState(rollCallById[id]) : undefined))
+          // filter out undefined values
+          .filter(isDefined)
+          // create a map from it
+          .reduce<Record<string, RollCall>>((map, rollCall) => {
+            map[rollCall.id.valueOf()] = rollCall;
+            return map;
+          }, {})
+      );
     },
   );
 
 /**
  * Retrieves an rollcall by its id from the redux store
  * @remark This function does not memoize its result, use 'makeRollCallSelector' in react components
- * @param rollcallId The if of the rollcall / event to retrieve
+ * @param rollCallId The id of the rollcall / event to retrieve
  * @param state The redux state
  * @returns The constructed rollcall or undefined if the id is not found
  */
-export const getRollCallById = (rollcallId: string, state: unknown) => {
+export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
+  const rollCallIdString = rollCallId.valueOf();
+
   const rollcallById = getRollCallState(state).byId;
 
-  if (!(rollcallId in rollcallById)) {
+  if (!(rollCallIdString in rollcallById)) {
     return undefined;
   }
 
-  return RollCall.fromState(rollcallById[rollcallId]);
+  return RollCall.fromState(rollcallById[rollCallIdString]);
 };
 
 /**
@@ -114,17 +146,19 @@ export const getRollCallById = (rollcallId: string, state: unknown) => {
  *
  * @param rollCallId - The id of the roll call
  */
-export const makeRollCallAttendeesList = (rollCallId: string) => {
+export const makeRollCallAttendeesListSelector = (rollCallId: Hash | string | undefined) => {
+  const rollCallIdString = rollCallId?.valueOf();
+
   return createSelector(
     // First input: Get all events across all LAOs
     (state) => getRollCallState(state),
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: RollCallReducerState): PublicKey[] => {
-      if (!(rollCallId in eventMap.byId)) {
+      if (!rollCallIdString || !(rollCallIdString in eventMap.byId)) {
         return [];
       }
 
-      const rollCall = RollCall.fromState(eventMap.byId[rollCallId]);
+      const rollCall = RollCall.fromState(eventMap.byId[rollCallIdString]);
       if (!rollCall) {
         return [];
       }

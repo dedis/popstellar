@@ -7,8 +7,6 @@ import { Views } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { LaoEventType } from '../objects';
-
 /**
  * Navigation panels to help manoeuvre through events creation.
  */

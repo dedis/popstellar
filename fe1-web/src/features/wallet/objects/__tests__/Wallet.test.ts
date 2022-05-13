@@ -1,5 +1,6 @@
-import { mockLao, mockRollCallState, configureTestFeatures } from '__tests__/utils';
+import { mockLao, configureTestFeatures } from '__tests__/utils';
 import { Hash } from 'core/objects';
+import { mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCall } from 'features/rollCall/objects';
 
 import { RollCallToken } from '../RollCallToken';

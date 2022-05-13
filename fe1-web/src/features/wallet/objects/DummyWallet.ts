@@ -5,25 +5,26 @@ import { dispatch } from 'core/redux';
 import { addEvent, removeEvent } from 'features/events/reducer';
 import { connectToLao, disconnectFromLao, removeLao } from 'features/lao/reducer';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { addRollCall } from 'features/rollCall/reducer';
 
 import { Lao, LaoState } from '../../lao/objects';
 import { generateToken } from './Token';
 
 // region Dummy values definition
-export const mockPublicKey = testKeyPair.publicKey;
+const mockPublicKey = testKeyPair.publicKey;
 
-export const org = new PublicKey(mockPublicKey);
+const org = new PublicKey(mockPublicKey);
 
-export const mockLaoName = 'MyLao';
-export const mockLaoCreationTime = new Timestamp(1600000000);
-export const mockLaoIdHash: Hash = Hash.fromStringArray(
+const mockLaoName = 'MyLao';
+const mockLaoCreationTime = new Timestamp(1600000000);
+const mockLaoIdHash: Hash = Hash.fromStringArray(
   org.toString(),
   mockLaoCreationTime.toString(),
   mockLaoName,
 );
-export const mockLaoId: string = mockLaoIdHash.toString();
+const mockLaoId: string = mockLaoIdHash.toString();
 
-export const mockLaoState: LaoState = {
+const mockLaoState: LaoState = {
   id: mockLaoId,
   name: mockLaoName,
   creation: mockLaoCreationTime.valueOf(),
@@ -32,7 +33,7 @@ export const mockLaoState: LaoState = {
   witnesses: [],
   server_addresses: [],
 };
-export const mockLao = Lao.fromState(mockLaoState);
+const mockLao = Lao.fromState(mockLaoState);
 
 // MOCK ROLL CALL
 const mockRCName = 'myRollCall';
@@ -48,7 +49,7 @@ const mockRCIdHash = Hash.fromStringArray(
   mockRCName,
 );
 
-export const mockRollCallState: any = {
+const mockRollCallState: any = {
   id: mockRCIdHash.valueOf(),
   eventType: RollCall.EVENT_TYPE,
   start: mockRCTimestampStart.valueOf(),
@@ -100,8 +101,11 @@ export async function createDummyWalletState() {
     tokenMockRC1.publicKey.valueOf(),
   ]);
   dispatch(connectToLao(mockLao.toState()));
-  dispatch(addEvent(mockLao.id, mockRollCall0.toState()));
-  dispatch(addEvent(mockLao.id, mockRollCall1.toState()));
+  dispatch(addEvent(mockLao.id, RollCall.EVENT_TYPE, mockRollCall0.id, mockRollCall0.idAlias));
+  dispatch(addRollCall(mockRollCall0.toState()));
+
+  dispatch(addEvent(mockLao.id, RollCall.EVENT_TYPE, mockRollCall0.id, mockRollCall0.idAlias));
+  dispatch(addRollCall(mockRollCall1.toState()));
   console.debug('Dispatched mock events');
 }
 /*

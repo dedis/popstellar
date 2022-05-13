@@ -1,5 +1,5 @@
 import { mockKeyPair, mockLaoIdHash, mockPopToken } from '__tests__/utils';
-import { Hash, Timestamp } from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { CreateRollCall, OpenRollCall } from '../network/messages';
 import { RollCall, RollCallState, RollCallStatus } from '../objects';
@@ -29,7 +29,9 @@ export const mockRollCall = new RollCall({
   attendees: mockRollCallAttendees,
 });
 
-export const mockRollCallState = mockRollCall.toState();
+export const mockRollCallState = mockRollCall.toState() as RollCallState & {
+  attendees: PublicKey[];
+};
 
 const mockRollCall2Location = 'on pluto';
 
