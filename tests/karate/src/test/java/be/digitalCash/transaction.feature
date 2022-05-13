@@ -16,11 +16,41 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
+    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     * string cashChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin"
 
   Scenario: Valid transaction sent by the organiser
   Scenario: Valid Roll Call
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def subscribe =
+            """
+          JSON.stringify(
+              {
+              "method": "subscribe",
+              "id": 233,
+              "params": {
+                  "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+              },
+              "jsonrpc": "2.0"
+          })
+        """
+    * frontend.send(subscribe)
+    * def subs = frontend_buffer.takeTimeout(timeout)
+    * karate.log("subscribe message received : " + subs)
+    * def catchup =
+      """
+          JSON.stringify(
+              {
+              "method": "catchup",
+              "id": 533,
+              "params": {
+                  "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+              },
+              "jsonrpc": "2.0"
+          })
+      """
+    * frontend.send(catchup)
+    * def catchup_response = frontend_buffer.takeTimeout(timeout)
     And def validTransaction =
       """
         {
