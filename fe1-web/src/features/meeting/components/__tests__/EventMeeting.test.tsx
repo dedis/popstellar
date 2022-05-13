@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
-import { EventTypeMeeting, Meeting } from '../../objects/Meeting';
+import { Meeting } from '../../objects/Meeting';
 import EventMeeting from '../EventMeeting';
 
 const meeting = Meeting.fromState({
-  eventType: EventTypeMeeting,
+  eventType: Meeting.EVENT_TYPE,
   id: '1234',
   name: 'MyMeeting',
   location: 'Lausanne',

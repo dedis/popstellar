@@ -10,6 +10,7 @@ import {
   makeRollCallSelector,
   removeRollCall,
   updateRollCall,
+  makeRollCallAttendeesList,
 } from '../RollCallReducer';
 
 const mockRollCallState: RollCallState = mockRollCall.toState();
@@ -140,6 +141,19 @@ describe('RollCallReducer', () => {
         } as RollCallReducerState,
       });
       expect(rollcall).toBeUndefined();
+    });
+  });
+
+  describe('makeRollCallAttendeesList', () => {
+    it('should return the attendee list', () => {
+      expect(
+        makeRollCallAttendeesList(mockRollCallState.id)({
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: { [mockRollCallState.id]: mockRollCallState },
+            allIds: [mockRollCallState.id],
+          } as RollCallReducerState,
+        }),
+      ).toEqual(mockRollCall.attendees);
     });
   });
 });

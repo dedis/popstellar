@@ -4,7 +4,7 @@ import { EventTags, Hash, PublicKey, Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { addEvent, removeEvent } from 'features/events/reducer';
 import { connectToLao, disconnectFromLao, removeLao } from 'features/lao/reducer';
-import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 import { Lao, LaoState } from '../../lao/objects';
 import { generateToken } from './Token';
@@ -50,7 +50,7 @@ const mockRCIdHash = Hash.fromStringArray(
 
 export const mockRollCallState: any = {
   id: mockRCIdHash.valueOf(),
-  eventType: EventTypeRollCall,
+  eventType: RollCall.EVENT_TYPE,
   start: mockRCTimestampStart.valueOf(),
   name: mockRCName,
   location: mockRCLocation,

@@ -4,8 +4,6 @@ import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
  * Object to represent a roll call.
  */
 
-export const EventTypeRollCall = 'ROLL_CALL';
-
 export enum RollCallStatus {
   CREATED,
   OPENED,
@@ -31,6 +29,8 @@ export interface RollCallState {
 }
 
 export class RollCall {
+  public static EVENT_TYPE = 'ROLL_CALL';
+
   public readonly id: Hash;
 
   public readonly idAlias?: Hash;
@@ -142,7 +142,6 @@ export class RollCall {
       ...obj,
       start: this.start.valueOf(),
       end: this.end.valueOf(),
-      eventType: EventTypeRollCall,
     };
   }
 

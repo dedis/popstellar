@@ -2,7 +2,7 @@ import 'jest-extended';
 
 import { Hash, PopToken, PrivateKey, PublicKey, Timestamp } from 'core/objects';
 
-import { EventTypeRollCall, RollCall, RollCallStatus } from '../RollCall';
+import { RollCall, RollCallStatus } from '../RollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -19,7 +19,7 @@ describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
-      eventType: EventTypeRollCall,
+      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -31,7 +31,7 @@ describe('RollCall object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      eventType: EventTypeRollCall,
+      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -50,7 +50,7 @@ describe('RollCall object', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: EventTypeRollCall,
+      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -65,7 +65,7 @@ describe('RollCall object', () => {
     const expected = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: EventTypeRollCall,
+      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,

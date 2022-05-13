@@ -16,7 +16,7 @@ import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
-import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
+import { RollCall, RollCallStatus } from '../../objects';
 import EventRollCall from '../EventRollCall';
 
 const ID = new Hash('rollCallId');
@@ -29,7 +29,7 @@ const ATTENDEES = ['attendee1', 'attendee2'];
 const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
   return {
     id: ID.valueOf(),
-    eventType: EventTypeRollCall,
+    eventType: RollCall.EVENT_TYPE,
     start: TIMESTAMP_START.valueOf(),
     name: NAME,
     location: LOCATION,

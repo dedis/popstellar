@@ -4,8 +4,6 @@ import { Hash, Timestamp } from 'core/objects';
  * Object to represent a meeting.
  */
 
-export const EventTypeMeeting = 'MEETING';
-
 export interface MeetingState {
   id: string;
   start: number;
@@ -18,6 +16,8 @@ export interface MeetingState {
 }
 
 export class Meeting {
+  public static EVENT_TYPE = 'MEETING';
+
   public readonly id: Hash;
 
   public readonly name: string;
@@ -88,10 +88,6 @@ export class Meeting {
    * Creates a MeetingState from the current Meeting object.
    */
   public toState(): MeetingState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      eventType: EventTypeMeeting,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 }

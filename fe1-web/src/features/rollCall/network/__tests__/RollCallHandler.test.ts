@@ -8,7 +8,7 @@ import {
   ProcessableMessage,
 } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
-import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 import {
   handleRollCallCloseMessage,
@@ -31,7 +31,7 @@ const TIMESTAMP_END = new Timestamp(1620357600);
 const ATTENDEES = ['attendee1', 'attendee2'];
 const rollCallStateCreated: any = {
   id: ID.valueOf(),
-  eventType: EventTypeRollCall,
+  eventType: RollCall.EVENT_TYPE,
   start: TIMESTAMP_START.valueOf(),
   name: NAME,
   location: LOCATION,

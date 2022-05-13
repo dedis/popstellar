@@ -1,2 +1,2 @@
-export * from './LaoEvent';
+export * from './Event';
 export * from './LaoEventBuilder';

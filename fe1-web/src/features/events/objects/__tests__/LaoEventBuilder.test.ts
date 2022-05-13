@@ -11,7 +11,7 @@ import { Meeting, MeetingState } from 'features/meeting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
 import STRINGS from 'resources/strings';
 
-import { LaoEventState, LaoEventType } from '../LaoEvent';
+import { EventState, LaoEventType } from '../Event';
 import { eventFromState } from '../LaoEventBuilder';
 
 describe('LaoEventBuilder', () => {
@@ -75,7 +75,7 @@ describe('LaoEventBuilder', () => {
   });
 
   it('returns undefined for an event type that does not exist', () => {
-    const eventState: LaoEventState = {
+    const eventState: EventState = {
       eventType: '' as LaoEventType,
       name: 'my Event',
       id: 'eventId',

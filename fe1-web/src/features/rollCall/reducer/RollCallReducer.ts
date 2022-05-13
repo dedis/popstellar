@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 
 import { RollCall, RollCallState } from '../objects';
 
@@ -107,4 +107,28 @@ export const getRollCallById = (rollcallId: string, state: unknown) => {
   }
 
   return RollCall.fromState(rollcallById[rollcallId]);
+};
+
+/**
+ * Returns the list of attendees of a roll call.
+ *
+ * @param rollCallId - The id of the roll call
+ */
+export const makeRollCallAttendeesList = (rollCallId: string) => {
+  return createSelector(
+    // First input: Get all events across all LAOs
+    (state) => getRollCallState(state),
+    // Selector: returns a map of ids -> LaoEvents
+    (eventMap: RollCallReducerState): PublicKey[] => {
+      if (!(rollCallId in eventMap.byId)) {
+        return [];
+      }
+
+      const rollCall = RollCall.fromState(eventMap.byId[rollCallId]);
+      if (!rollCall) {
+        return [];
+      }
+      return rollCall.attendees || [];
+    },
+  );
 };

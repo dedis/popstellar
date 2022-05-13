@@ -14,7 +14,7 @@ import {
   Timestamp,
 } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
-import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
@@ -78,7 +78,7 @@ const mockRCIdHash = Hash.fromStringArray(
 export const mockRollCallState = {
   id: mockRCIdHash.valueOf(),
   idAlias: mockRCIdAliasHash.valueOf(),
-  eventType: EventTypeRollCall,
+  eventType: RollCall.EVENT_TYPE,
   start: mockRCTimestampStart.valueOf(),
   end: mockRCTimestampEnd.valueOf(),
   name: mockRCName,

@@ -1,8 +1,8 @@
 import { mockKeyPair, mockLaoIdHash, mockPopToken } from '__tests__/utils';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 
-import { CreateRollCall } from '../network/messages';
-import { RollCall, RollCallStatus } from '../objects';
+import { CreateRollCall, OpenRollCall } from '../network/messages';
+import { RollCall, RollCallState, RollCallStatus } from '../objects';
 
 // MOCK ROLL CALL
 const mockRollCallName = 'myRollCall';
@@ -52,3 +52,31 @@ export const mockRollCall2 = new RollCall({
 });
 
 export const mockRollCallState2 = mockRollCall2.toState();
+
+const mockRollCallWithAliasOpenedAt = new Timestamp(1620357600);
+
+/**
+ * An "updated" roll call where 'mockRollCall' is the roll call that was updated
+ */
+export const mockRollCallWithAlias = new RollCall({
+  id: mockRollCall.id,
+  idAlias: OpenRollCall.computeOpenRollCallId(
+    mockLaoIdHash,
+    mockRollCall.id,
+    mockRollCallWithAliasOpenedAt,
+  ),
+  start: mockRollCallTimestampStart,
+  end: mockRollCallTimestampEnd,
+  name: mockRollCallName,
+  location: mockRollCallLocation,
+  creation: mockRollCallTimestampCreation,
+  proposedStart: mockRollCallTimestampStart,
+  proposedEnd: mockRollCallTimestampEnd,
+  status: RollCallStatus.OPENED,
+  attendees: mockRollCallAttendees,
+  openedAt: mockRollCallWithAliasOpenedAt,
+}) as RollCall & { idAlias: Hash };
+
+export const mockRollCallWithAliasState = mockRollCallWithAlias.toState() as RollCallState & {
+  idAlias: string;
+};

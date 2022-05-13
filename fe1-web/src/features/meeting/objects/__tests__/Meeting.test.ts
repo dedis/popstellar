@@ -2,7 +2,7 @@ import 'jest-extended';
 
 import { Hash, Timestamp } from 'core/objects';
 
-import { EventTypeMeeting, Meeting } from '../Meeting';
+import { Meeting } from '../Meeting';
 
 const ID = new Hash('meetingId');
 const TIMESTAMP = new Timestamp(1620255600);
@@ -13,7 +13,7 @@ describe('Meeting object', () => {
   it('does a state round trip correctly with extra and last_modified', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: EventTypeMeeting,
+      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -28,7 +28,7 @@ describe('Meeting object', () => {
   it('does a state round trip correctly without extra and last_modified', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: EventTypeMeeting,
+      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -36,7 +36,7 @@ describe('Meeting object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      eventType: EventTypeMeeting,
+      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -51,7 +51,7 @@ describe('Meeting object', () => {
   it('does a state round trip correctly with end', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: EventTypeMeeting,
+      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,

@@ -4,8 +4,8 @@ import { AnyAction, Reducer } from 'redux';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { LaoEvent, LaoEventState } from '../objects';
-import { EventLaoReducerState, EVENT_REDUCER_PATH } from '../reducer';
+import { LaoEvent, EventState } from '../objects';
+import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
 export const EVENTS_FEATURE_IDENTIFIER = 'events';
 
@@ -52,14 +52,14 @@ export interface EventsInterface extends FeatureInterface {
   };
 
   actionCreators: {
-    addEvent: (laoId: string | Hash, event: LaoEventState) => AnyAction;
-    updateEvent: (laoId: string | Hash, event: LaoEventState) => AnyAction;
+    addEvent: (laoId: string | Hash, event: EventState) => AnyAction;
+    updateEvent: (laoId: string | Hash, event: EventState) => AnyAction;
     removeEvent: (laoId: string | Hash, eventId: string | Hash) => AnyAction;
     clearAllEvents: () => AnyAction;
   };
 
   reducers: {
-    [EVENT_REDUCER_PATH]: Reducer<EventLaoReducerState>;
+    [EVENT_REDUCER_PATH]: Reducer<EventReducerState>;
   };
 }
 
