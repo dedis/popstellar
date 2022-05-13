@@ -21,7 +21,7 @@ Feature: Create a Roll Call
 
   Scenario: Valid transaction sent by the organiser
   Scenario: Valid Roll Call
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
     * def subscribe =
             """
           JSON.stringify(
