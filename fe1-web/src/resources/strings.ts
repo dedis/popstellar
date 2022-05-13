@@ -242,7 +242,6 @@ const STRINGS = {
   cash_send: 'Send',
   cash_receiver: 'Receiver',
 
-
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
   add_option: 'Add option',

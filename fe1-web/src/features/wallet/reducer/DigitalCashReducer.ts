@@ -81,8 +81,7 @@ const digitalCashSlice = createSlice({
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
 
-        rollCallState.transactionsByHash[transactionMessage.transactionId] =
-          transactionMessage;
+        rollCallState.transactionsByHash[transactionMessage.transactionId] = transactionMessage;
         rollCallState.transactions.push(transactionMessage);
 
         transactionMessage.outputs.forEach((output) => {
