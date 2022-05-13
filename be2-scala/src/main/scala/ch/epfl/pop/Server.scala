@@ -1,7 +1,6 @@
 package ch.epfl.pop
 
 import java.util.concurrent.TimeUnit
-
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
@@ -15,18 +14,26 @@ import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
-
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
-object Server {
+import java.security.KeyPairGenerator
+import com.swiftcryptollc.crypto.provider.KyberJCE
+import java.security.Security
 
+object Server {
   /*
    * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
-
+    Security.setProperty("crypto.policy", "unlimited")
+    Security.addProvider(new KyberJCE)
+    val keyGen = KeyPairGenerator.getInstance("Kyber1024")
+    val aliceKeyPair = keyGen.generateKeyPair
+    val pub = aliceKeyPair.getPublic.toString
+    val priv = aliceKeyPair.getPrivate.toString
+    println(s"public:$pub\nprivate:$priv")
     /* Get configuration object for akka actor/http*/
     val appConf = RuntimeEnvironment.appConf
 
