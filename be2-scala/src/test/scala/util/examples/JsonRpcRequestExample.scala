@@ -47,6 +47,10 @@ object JsonRpcRequestExample {
   final val CREATE_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongSender, id)
   final val CREATE_LAO_EMPTY_NAME_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoEmptyName, id)
 
+  // for StateLao testing
+  private final val paramsWithStateLao: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL, MESSAGE_STATELAO_WORKING)
+  final val STATE_LAO_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateLao, id)
+
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)
   private final val wrongSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + Base64Data.encode("channel"))

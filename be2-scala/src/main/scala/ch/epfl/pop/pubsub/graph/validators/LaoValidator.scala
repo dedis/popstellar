@@ -31,8 +31,14 @@ case object LaoValidator extends MessageDataContentValidator {
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
         } else if (data.organizer != message.sender) {
+          System.out.println("-------------------------------------------")
+          System.out.println("Entered wrong sender branch")
+          System.out.println("-------------------------------------------")
           Right(validationError("unexpected organizer public key"))
         } else if (channel != Channel.ROOT_CHANNEL) {
+          System.out.println("-------------------------------------------")
+          System.out.println("Entered non root channel branch")
+          System.out.println("-------------------------------------------")
           Right(validationError(s"trying to send a CreateLao message on a channel $channel other than ${Channel.ROOT_CHANNEL}"))
         } else if (data.name == "") {
           Right(validationError(s"LAO name must not be empty"))

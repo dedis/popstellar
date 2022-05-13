@@ -150,6 +150,15 @@ object MessageExample {
     Some(CreateLao(Hash(Base64Data("aWQy")), "LAO2", Timestamp(0), PublicKey(Base64Data("a2V5Mg==")), List.empty))
   )
 
+//  private final val stateLaoCorrect: StateLao = StateLao(idWorking, name, creationWorking, organizer, workingWitnessList)
+  final val MESSAGE_STATELAO_WORKING : Message = new Message(
+    Base64Data("ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJzdGF0ZSIsCiAgICAiaWQiOiAiZnpKU1pqS2YtMmNiWEg3a2RzOUg4Tk9SdXVGSVJMa2V2SmxON3FRZW1qbz0iLAogICAgIm5hbWUiOiAiTEFPIiwKICAgICJjcmVhdGlvbiI6IDE2MzMwOTgyMzQsCiAgICAibGFzdF9tb2RpZmllZCI6IDE2MzMwOTkxNDAsCiAgICAib3JnYW5pemVyIjogIko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09IiwKICAgICJ3aXRuZXNzZXMiOiBbIk01WnljaEVpNXJ3bTIyRmp3ak51bGpMMXFNSldEMnNFN29YOWZjSE5NRFU9Il0sCiAgICAibW9kaWZpY2F0aW9uX2lkIjogImZ6SlNaaktmLTJjYlhIN2tkczlIOE5PUnV1RklSTGtldkpsTjdxUWVtam89IiwKICAgICJtb2RpZmljYXRpb25fc2lnbmF0dXJlcyI6IFsKICAgIHsKICAgICAgIndpdG5lc3MiOiAiTTVaeWNoRWk1cndtMjJGandqTnVsakwxcU1KV0Qyc0U3b1g5ZmNITk1EVT0iLAogICAgICAic2lnbmF0dXJlIjogIlhYWCIKICAgIH0KICAgIF0KICB9"),
+    organizer,
+    Signature(Base64Data("ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJzdGF0ZSIsCiAgICAiaWQiOiAiZnpKU1pqS2YtMmNiWEg3a2RzOUg4Tk9SdXVGSVJMa2V2SmxON3FRZW1qbz0iLAogICAgIm5hbWUiOiAiTEFPIiwKICAgICJjcmVhdGlvbiI6IDE2MzMwOTgyMzQsCiAgICAibGFzdF9tb2RpZmllZCI6IDE2MzMwOTkxNDAsCiAgICAib3JnYW5pemVyIjogIko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09IiwKICAgICJ3aXRuZXNzZXMiOiBbIk01WnljaEVpNXJ3bTIyRmp3ak51bGpMMXFNSldEMnNFN29YOWZjSE5NRFU9Il0sCiAgICAibW9kaWZpY2F0aW9uX2lkIjogImZ6SlNaaktmLTJjYlhIN2tkczlIOE5PUnV1RklSTGtldkpsTjdxUWVtam89IiwKICAgICJtb2RpZmljYXRpb25fc2lnbmF0dXJlcyI6IFsKICAgIHsKICAgICAgIndpdG5lc3MiOiAiTTVaeWNoRWk1cndtMjJGandqTnVsakwxcU1KV0Qyc0U3b1g5ZmNITk1EVT0iLAogICAgICAic2lnbmF0dXJlIjogIlhYWCIKICAgIH0KICAgIF0KICB9")),
+    Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
+    List.empty,
+    Some(createLaoCorrect)
+  )
 
   final val MESSAGE_CLOSEROLLCALL: Message = new Message(
     Base64Data.encode(CloseRollCall(Hash(Base64Data("")), Hash(Base64Data("")), Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))).toJson.toString),

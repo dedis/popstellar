@@ -79,5 +79,10 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     message shouldBe a[Right[_, PipelineError]]
   }
 
+  test("LAO state works as intended"){
+    val message : GraphMessage = LaoValidator.validateStateLao(STATE_LAO_RPC)
+    message should equal(Left(STATE_LAO_RPC))
+  }
+
 
 }
