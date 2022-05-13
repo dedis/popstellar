@@ -78,10 +78,8 @@ public class PostTransactionTest {
   public void jsonValidationTest() {
     Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
     String json = GSON.toJson(POST_TRANSACTION, Data.class);
-
     JsonUtils.verifyJson("protocol/query/method/message/data/dataCashTransaction.json", json);
     PostTransaction res = GSON.fromJson(json, PostTransaction.class);
-    System.out.println("done");
     assertEquals(POST_TRANSACTION, res);
   }
 }
