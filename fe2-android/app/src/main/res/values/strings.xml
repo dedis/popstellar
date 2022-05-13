@@ -213,6 +213,13 @@
   <string name="digital_cash_home">HOME</string>
   <string name="digital_cash_receipt">RECEIPT</string>
 
+  <!-- Digital Cash - Log Messages -->
+  <string name="digital_cash_home_fragment">Open digital cash home Fragment</string>
+  <string name="digital_cash_issue_fragment">Open digital cash issue Fragment</string>
+  <string name="digital_cash_history_fragment">Open digital cash history Fragment</string>
+  <string name="digital_cash_send_fragment">Open digital cash send Fragment</string>
+  <string name="digital_cash_receive_fragment">Open digital cash receive Fragment</string>
+
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
   <string name="message_signed">MESSAGE SIGNED</string>
