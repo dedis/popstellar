@@ -7,20 +7,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import {
-  DigitalCashMessage,
-  DigitalCashMessageState,
-  TransactionState,
-} from '../objects/transaction/Transaction';
+import { TransactionState } from '../objects/transaction/Transaction';
 
 interface DigitalCashReducerState {
-  transactionMessages: DigitalCashMessageState[];
+  transactions: TransactionState[];
   transactionsByHash: Record<string, TransactionState>;
   /**
    * A mapping between public key hashes and a set of the transactions which contain this hash
    * in one or more of their TxOuts
    */
-  transactionsMessagesByPubHash: Record<string, Set<DigitalCashMessageState>>;
+  transactionsByPubHash: Record<string, Set<TransactionState>>;
 }
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
@@ -46,10 +42,10 @@ const digitalCashSlice = createSlice({
      * We are trusting information of the transaction object, we do not verify any hashes
      */
     addTransaction: {
-      prepare(
+      prepare( // TODO: prepare the transaction id
         laoId: Hash | string,
         rollCallId: Hash | string,
-        transactionMessage: DigitalCashMessageState,
+        transactionMessage: TransactionState,
       ): any {
         return {
           payload: {
@@ -64,7 +60,7 @@ const digitalCashSlice = createSlice({
         action: PayloadAction<{
           laoId: string;
           rollCallId: string;
-          transactionMessage: DigitalCashMessageState;
+          transactionMessage: TransactionState;
         }>,
       ) {
         const { laoId, rollCallId, transactionMessage } = action.payload;
@@ -77,22 +73,20 @@ const digitalCashSlice = createSlice({
 
         if (!(rollCallId in state.byLaoId[laoId])) {
           state.byLaoId[laoId].byRCId[rollCallId] = {
-            transactionMessages: [],
+            transactions: [],
             transactionsByHash: {},
-            transactionsMessagesByPubHash: {},
+            transactionsByPubHash: {},
           };
         }
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
 
         rollCallState.transactionsByHash[transactionMessage.transactionId] =
-          transactionMessage.transaction;
-        rollCallState.transactionMessages.push(transactionMessage);
+          transactionMessage;
+        rollCallState.transactions.push(transactionMessage);
 
-        transactionMessage.transaction.outputs.forEach((output) => {
-          rollCallState.transactionsMessagesByPubHash[output.script.publicKeyHash].add(
-            transactionMessage,
-          );
+        transactionMessage.outputs.forEach((output) => {
+          rollCallState.transactionsByPubHash[output.script.publicKeyHash].add(transactionMessage);
         });
       },
     },

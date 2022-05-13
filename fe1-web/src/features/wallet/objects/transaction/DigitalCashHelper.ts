@@ -8,7 +8,7 @@ import { TransactionOutputState } from './TransactionOutput';
  * Hash a transaction to get its id
  * @param transaction to hash
  */
-export const hashTransaction = (transaction: TransactionState): Hash => {
+export const hashTransaction = (transaction: Omit<TransactionState, 'transactionId'>): Hash => {
   // Recursively concatenating fields by lexicographic order of their names
   const dataInputs = transaction.inputs.flatMap((input) => {
     if (input.txOutHash && input.txOutIndex) {
@@ -26,8 +26,8 @@ export const hashTransaction = (transaction: TransactionState): Hash => {
   const dataOutputs = transaction.outputs.flatMap((output) => {
     return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
   });
-  const data = [transaction.lockTime.toString()]
-    .concat(dataInputs)
+  const data = dataInputs
+    .concat([transaction.lockTime.toString()])
     .concat(dataOutputs)
     .concat([transaction.version.toString()]);
 

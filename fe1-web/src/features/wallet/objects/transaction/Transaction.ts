@@ -1,8 +1,6 @@
-import {
-  TransactionInput,
-  TransactionInputJSON,
-  TransactionInputState,
-} from './TransactionInput';
+import { Hash } from 'core/objects';
+
+import { TransactionInput, TransactionInputJSON, TransactionInputState } from './TransactionInput';
 import {
   TransactionOutput,
   TransactionOutputJSON,
@@ -21,6 +19,7 @@ export interface TransactionState {
   inputs: TransactionInputState[];
   outputs: TransactionOutputState[];
   lockTime: number;
+  transactionId: string;
 }
 
 /**
@@ -34,6 +33,8 @@ export class Transaction {
   public readonly outputs: TransactionOutput[];
 
   public readonly lockTime: number;
+
+  public readonly transactionId: Hash;
 
   constructor(obj: Partial<Transaction>) {
     if (obj === undefined || obj === null) {
@@ -54,6 +55,11 @@ export class Transaction {
       throw new Error("Undefined 'lockTime' when creating 'Transaction'");
     }
 
+    if (obj.transactionId === undefined) {
+      throw new Error("Undefined 'transactionId' when creating 'Transaction'");
+    }
+
+    this.transactionId = obj.transactionId;
     this.version = obj.version;
     this.inputs = obj.inputs;
     this.outputs = obj.outputs;
@@ -64,9 +70,8 @@ export class Transaction {
     return new Transaction({
       ...transactionState,
       inputs: transactionState.inputs.map((input) => TransactionInput.fromState(input)),
-      outputs: transactionState.outputs.map((output) =>
-        TransactionOutput.fromState(output),
-      ),
+      outputs: transactionState.outputs.map((output) => TransactionOutput.fromState(output)),
+      transactionId: new Hash(transactionState.transactionId),
     });
   }
 
@@ -75,15 +80,17 @@ export class Transaction {
       ...this,
       inputs: this.inputs.map((input) => input.toState()),
       outputs: this.outputs.map((output) => output.toState()),
+      transactionId: this.transactionId.valueOf(),
     };
   }
 
-  public static fromJSON(transactionJSON: TransactionJSON) {
+  public static fromJSON(transactionJSON: TransactionJSON, transactionId: string) {
     return new Transaction({
       version: transactionJSON.version,
       inputs: transactionJSON.inputs.map((input) => TransactionInput.fromJSON(input)),
       outputs: transactionJSON.outputs.map((output) => TransactionOutput.fromJSON(output)),
       lockTime: transactionJSON.lock_time,
+      transactionId: new Hash(transactionId),
     });
   }
 

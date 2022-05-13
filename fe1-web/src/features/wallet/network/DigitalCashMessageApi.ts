@@ -34,14 +34,14 @@ export function requestSendTransaction(
   const fromPublicKeyHash = Hash.fromString(from.publicKey.valueOf());
   const toPublicKeyHash = Hash.fromString(to.valueOf());
 
-  const messages = DigitalCashStore.getTransactionsByPublicKey(from.publicKey.valueOf());
+  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(from.publicKey.valueOf());
 
-  if (!messages) {
+  if (!transactionStates) {
     console.warn(makeErr('no transaction out were found for this public key'));
     return Promise.resolve();
   }
 
-  const totalValueOut = getTotalValue(fromPublicKeyHash, messages);
+  const totalValueOut = getTotalValue(fromPublicKeyHash, transactionStates);
 
   if (amount < 0 || amount > totalValueOut) {
     console.warn(makeErr('balance is not sufficient to send this amount'));
@@ -73,7 +73,7 @@ export function requestSendTransaction(
 
   const inputs: Omit<TransactionInputState, 'script'>[] = getInputsInToSign(
     from.publicKey.valueOf(),
-    messages,
+    transactionStates,
   );
   // Now we need to define each objects because we need some string representation of everything to hash on
 
@@ -95,16 +95,23 @@ export function requestSendTransaction(
     };
   });
 
-  const transaction: TransactionState = {
+  const draftTransaction: Omit<TransactionState, 'transactionId'> = {
     version: 1,
     inputs: finalInputs,
     outputs: outputs,
     lockTime: 0,
   };
 
+  const transactionId = hashTransaction(draftTransaction);
+
+  const finalTransaction: TransactionState = {
+    ...draftTransaction,
+    transactionId: transactionId.valueOf(),
+  };
+
   const postTransactionMessage = new PostTransaction({
-    transaction_id: hashTransaction(transaction),
-    transaction: Transaction.fromState(transaction).toJSON(),
+    transaction_id: transactionId,
+    transaction: Transaction.fromState(finalTransaction).toJSON(),
   });
   const lao: Lao = OpenedLaoStore.get();
 
@@ -144,8 +151,8 @@ export function requestCoinbaseTransaction(
   // Reconstruct the inputs with the signature of the organizer
   const inputs: TransactionInputState[] = [
     {
-      txOutIndex: undefined,
-      txOutHash: undefined,
+      txOutHash: STRINGS.coinbase_hash,
+      txOutIndex: 0,
       script: {
         type: STRINGS.script_type,
         publicKey: organizerKP.publicKey.valueOf(),
@@ -154,16 +161,23 @@ export function requestCoinbaseTransaction(
     },
   ];
 
-  const transaction: TransactionState = {
+  const draftTransaction: Omit<TransactionState, 'transactionId'> = {
     version: 1,
     inputs: inputs,
     outputs: outputs,
     lockTime: 0,
   };
 
+  const transactionId = hashTransaction(draftTransaction);
+
+  const finalTransaction: TransactionState = {
+    ...draftTransaction,
+    transactionId: transactionId.valueOf(),
+  };
+
   const postTransactionMessage = new PostTransaction({
-    transaction_id: hashTransaction(transaction),
-    transaction: Transaction.fromState(transaction).toJSON(),
+    transaction_id: transactionId,
+    transaction: Transaction.fromState(finalTransaction).toJSON(),
   });
 
   const lao: Lao = OpenedLaoStore.get();

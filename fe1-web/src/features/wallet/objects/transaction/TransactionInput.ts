@@ -1,8 +1,8 @@
 import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface TransactionInputJSON {
-  tx_out_hash?: string;
-  tx_out_index?: number;
+  tx_out_hash: string;
+  tx_out_index: number;
   script: TransactionInputScriptJSON;
 }
 export interface TransactionInputScriptJSON {
@@ -17,8 +17,8 @@ export interface TransactionInputScriptState {
   signature: string;
 }
 export interface TransactionInputState {
-  txOutHash: string | undefined;
-  txOutIndex: number | undefined;
+  txOutHash: string;
+  txOutIndex: number;
   script: TransactionInputScriptState;
 }
 
@@ -29,9 +29,9 @@ export interface TransactionInputScript {
 }
 
 export class TransactionInput {
-  public readonly txOutHash: Hash | undefined;
+  public readonly txOutHash: Hash;
 
-  public readonly txOutIndex: number | undefined;
+  public readonly txOutIndex: number;
 
   public readonly script: TransactionInputScript;
 
@@ -43,16 +43,14 @@ export class TransactionInput {
     }
 
     if (obj.txOutHash === undefined) {
-      if (obj.txOutIndex !== undefined) {
-        throw new Error("Undefined 'txOutHash' when creating 'TransactionInput'");
-      }
-    } else {
-      this.txOutHash = obj.txOutHash;
-      if (obj.txOutIndex === undefined) {
-        throw new Error("Undefined 'txOutIndex' when creating 'TransactionInput'");
-      }
-      this.txOutIndex = obj.txOutIndex;
+      throw new Error("Undefined 'txOutHash' when creating 'TransactionInput'");
     }
+    this.txOutHash = obj.txOutHash;
+
+    if (obj.txOutIndex === undefined) {
+      throw new Error("Undefined 'txOutIndex' when creating 'TransactionInput'");
+    }
+    this.txOutIndex = obj.txOutIndex;
 
     if (obj.script === undefined) {
       throw new Error("Undefined 'script' when creating 'TransactionInput'");
@@ -63,7 +61,7 @@ export class TransactionInput {
   public static fromState(state: TransactionInputState) {
     return new TransactionInput({
       ...state,
-      txOutHash: state.txOutHash ? new Hash(state.txOutHash) : undefined,
+      txOutHash: new Hash(state.txOutHash),
       script: {
         ...state.script,
         publicKey: new PublicKey(state.script.publicKey),
@@ -74,7 +72,7 @@ export class TransactionInput {
 
   public toState(): TransactionInputState {
     return {
-      txOutHash: this.txOutHash ? this.txOutHash.valueOf() : undefined,
+      txOutHash: this.txOutHash.valueOf(),
       txOutIndex: this.txOutIndex,
       script: {
         ...this.script,
@@ -97,18 +95,14 @@ export class TransactionInput {
   }
 
   public toJSON(): TransactionInputJSON {
-    const script = {
-      type: this.script.type,
-      pubkey: this.script.publicKey.valueOf(),
-      sig: this.script.signature.valueOf(),
-    };
-    if (!this.txOutHash && !this.txOutIndex) {
-      return { script: script };
-    }
     return {
       tx_out_hash: this.txOutHash!.valueOf(),
       tx_out_index: this.txOutIndex,
-      script: script,
+      script: {
+        type: this.script.type,
+        pubkey: this.script.publicKey.valueOf(),
+        sig: this.script.signature.valueOf(),
+      },
     };
   }
 }
