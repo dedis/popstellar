@@ -4,6 +4,7 @@ import { StyleSheet, View, ViewStyle, Text, TextStyle, TextInput } from 'react-n
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
+import { KeyPairStore } from 'core/keypair';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
@@ -13,9 +14,7 @@ import { RollCall } from 'features/rollCall/objects';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
-import {
-  requestCoinbaseTransaction,
-} from '../network/DigitalCashMessageApi';
+import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -100,7 +99,11 @@ const WalletHome = () => {
         <WideButtonView
           title={STRINGS.cash_send}
           onPress={() => {
-            requestCoinbaseTransaction(tokens![selectedTokenIndex].token.publicKey, sendValue);
+            requestCoinbaseTransaction(
+              KeyPairStore.get(),
+              tokens![selectedTokenIndex].token.publicKey,
+              sendValue,
+            );
           }}
         />
         <TextInput
