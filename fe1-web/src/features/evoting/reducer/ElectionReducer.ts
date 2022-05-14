@@ -78,19 +78,22 @@ export default {
  * @param electionId The if of the election / event to retrieve
  * @returns The selector
  */
-export const makeElectionSelector = (electionId: string) =>
-  createSelector(
+export const makeElectionSelector = (electionId: Hash | string) => {
+  const electionIdString = electionId.valueOf();
+
+  return createSelector(
     // First input: a map of ids to elections
     (state) => getElectionState(state).byId,
     // Selector: returns the selected election
     (electionById: Record<string, ElectionState>): Election | undefined => {
-      if (!(electionId in electionById)) {
+      if (!(electionIdString in electionById)) {
         return undefined;
       }
 
-      return Election.fromState(electionById[electionId]);
+      return Election.fromState(electionById[electionIdString]);
     },
   );
+};
 
 /**
  * Retrieves an election by its id from the redux store

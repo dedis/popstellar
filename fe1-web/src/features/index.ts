@@ -114,10 +114,10 @@ export function configureFeatures() {
   });
 
   const eventsComposition = events.compose({
-    eventTypeComponents: [
-      ...meetingConfiguration.eventTypeComponents,
-      ...rollCallConfiguration.eventTypeComponents,
-      ...evotingConfiguration.eventTypeComponents,
+    eventTypes: [
+      ...meetingConfiguration.eventTypes,
+      ...rollCallConfiguration.eventTypes,
+      ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
   });

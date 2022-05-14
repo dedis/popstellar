@@ -3,7 +3,7 @@ import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { RollCallConfiguration } from '../interface';
-import { RollCall, RollCallState } from '../objects';
+import { RollCall } from '../objects';
 import { addRollCall, getRollCallById, updateRollCall } from '../reducer';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import {
@@ -25,16 +25,32 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
   const boundGetRollCallById = (rollCallId: Hash | string) =>
     getRollCallById(rollCallId, getStore().getState());
 
-  const addRollCallEvent = (laoId: Hash | string, rollCallState: RollCallState) => {
+  const addRollCallEvent = (laoId: Hash | string, rollCall: RollCall) => {
+    const rollCallState = rollCall.toState();
+
     dispatch(
-      configuration.addEvent(laoId, RollCall.EVENT_TYPE, rollCallState.id, rollCallState.idAlias),
+      configuration.addEvent(laoId, {
+        eventType: RollCall.EVENT_TYPE,
+        id: rollCallState.id,
+        idAlias: rollCallState.idAlias,
+        start: rollCall.start.valueOf(),
+        end: rollCall.end.valueOf(),
+      }),
     );
     dispatch(addRollCall(rollCallState));
   };
 
-  const updateRollCallEvent = (laoId: Hash | string, rollCallState: RollCallState) => {
+  const updateRollCallEvent = (rollCall: RollCall) => {
+    const rollCallState = rollCall.toState();
+
     dispatch(
-      configuration.addEvent(laoId, RollCall.EVENT_TYPE, rollCallState.id, rollCallState.idAlias),
+      configuration.updateEvent({
+        eventType: RollCall.EVENT_TYPE,
+        id: rollCallState.id,
+        idAlias: rollCallState.idAlias,
+        start: rollCall.start.valueOf(),
+        end: rollCall.end.valueOf(),
+      }),
     );
     dispatch(updateRollCall(rollCallState));
   };

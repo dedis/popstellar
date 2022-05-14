@@ -10,8 +10,9 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
-import { addRollCall, updateRollCall } from 'features/rollCall/reducer';
+import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
@@ -58,13 +59,19 @@ jest.mock('features/rollCall/network', () => {
 
 // set up mock store
 const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventsReducer, ...walletReducer }),
+  combineReducers({ ...laoReducer, ...eventsReducer, ...rollCallReducer, ...walletReducer }),
 );
 mockStore.dispatch(connectToLao(mockLao.toState()));
 const mockRollCallState = mockRollCallCreated.toState();
 
 mockStore.dispatch(
-  addEvent(mockLaoId, RollCall.EVENT_TYPE, mockRollCallState.id, mockRollCallState.idAlias),
+  addEvent(mockLaoId, {
+    eventType: RollCall.EVENT_TYPE,
+    id: mockRollCallState.id,
+    idAlias: mockRollCallState.idAlias,
+    start: mockRollCall.start.valueOf(),
+    end: mockRollCall.end.valueOf(),
+  }),
 );
 mockStore.dispatch(addRollCall(mockRollCallState));
 
@@ -85,7 +92,14 @@ describe('EventRollCall', () => {
   it('should correctly render', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer={false} />;
+    const Screen = () => (
+      <EventRollCall
+        eventId={mockRollCallCreated.id.valueOf()}
+        start={mockRollCallCreated.start.valueOf()}
+        end={mockRollCallCreated.end.valueOf()}
+        isOrganizer={false}
+      />
+    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -100,7 +114,14 @@ describe('EventRollCall', () => {
   it('should call requestOpenRollCall when the open button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer />;
+    const Screen = () => (
+      <EventRollCall
+        eventId={mockRollCallCreated.id.valueOf()}
+        start={mockRollCallCreated.start.valueOf()}
+        end={mockRollCallCreated.end.valueOf()}
+        isOrganizer
+      />
+    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -117,7 +138,14 @@ describe('EventRollCall', () => {
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallClosed} isOrganizer />;
+    const Screen = () => (
+      <EventRollCall
+        eventId={mockRollCallClosed.id.valueOf()}
+        start={mockRollCallClosed.start.valueOf()}
+        end={mockRollCallClosed.end.valueOf()}
+        isOrganizer
+      />
+    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -134,7 +162,14 @@ describe('EventRollCall', () => {
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallOpened} isOrganizer />;
+    const Screen = () => (
+      <EventRollCall
+        eventId={mockRollCallOpened.id.valueOf()}
+        isOrganizer
+        start={mockRollCallOpened.start.valueOf()}
+        end={mockRollCallOpened.end.valueOf()}
+      />
+    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>

@@ -11,42 +11,45 @@ import { EventState } from '../objects';
 
 /**
  * This is the root state for the Events Reducer
+ * We can store all events together since the event ids are hashes that include the laoId.
+ * Assuming the hash function is collision resistent, the event ids for different laos will be different
+ * (We rely for more important things on the collision resistance, so it is safe to do this here as well)
  */
 export interface EventReducerState {
-  /**
-   * byLaoId associates a given LAO ID with the full representation of its events
-   */
+  // only store the list of the eventIds per lao so that they can be retrieved by lao
   byLaoId: {
     [laoId: string]: {
       /**
        * allIds stores the list of all known event IDs
        */
       allIds: string[];
-
-      /**
-       * idAlias stores the ID aliases.
-       *
-       * @remarks
-       *
-       * If a new message (with a new_id) changes the state of an event (with old_id),
-       * this map associates new_id -> old_id.
-       * This ensures that we can keep only one event in memory, with its up-to-date state,
-       * but future messages can refer to new_id as needed.
-       */
-      idAlias: Record<string, string>;
-
-      /**
-       * byId maps an event ID to the event state itself
-       */
-      byId: Record<string, EventState>;
     };
   };
+
+  /**
+   * idAlias stores the ID aliases.
+   *
+   * @remarks
+   *
+   * If a new message (with a new_id) changes the state of an event (with old_id),
+   * this map associates new_id -> old_id.
+   * This ensures that we can keep only one event in memory, with its up-to-date state,
+   * but future messages can refer to new_id as needed.
+   */
+  idAlias: Record<string, string>;
+
+  /**
+   * byId maps an event ID to the event state itself
+   */
+  byId: Record<string, EventState>;
 }
 
 export const EVENT_REDUCER_PATH = 'event';
 
 const initialState: EventReducerState = {
   byLaoId: {},
+  byId: {},
+  idAlias: {},
 };
 
 const eventSlice = createSlice({
@@ -55,92 +58,59 @@ const eventSlice = createSlice({
   reducers: {
     // Add a Event to the list of known Events
     addEvent: {
-      prepare(
-        laoId: Hash | string,
-        eventType: string,
-        id: Hash | string,
-        idAlias: Hash | string | undefined,
-      ) {
+      prepare(laoId: Hash | string, event: EventState) {
         return {
           payload: {
             laoId: laoId.valueOf(),
-            event: { eventType, id: id.valueOf(), idAlias: idAlias?.valueOf() } as EventState,
+            event,
           },
         };
       },
-      reducer(
-        state,
-        action: PayloadAction<{
-          laoId: string;
-          event: EventState;
-        }>,
-      ) {
+      reducer(state, action: PayloadAction<{ laoId: string; event: EventState }>) {
         const { laoId, event } = action.payload;
 
-        // Lao not initialized, create it in the event state tree
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
-            byId: {},
             allIds: [],
-            idAlias: {},
           };
         }
 
-        if (event.id in state.byLaoId[laoId].byId) {
+        if (event.id in state.byId) {
           throw new Error(
             `Tried to store event with id ${event.id} but there already exists one with the same id`,
           );
         }
 
-        state.byLaoId[laoId].byId[event.id] = event;
         state.byLaoId[laoId].allIds.push(event.id);
+        state.byId[event.id] = event;
         if (event.idAlias) {
-          state.byLaoId[laoId].idAlias[event.idAlias] = event.id;
+          state.idAlias[event.idAlias] = event.id;
         }
       },
     },
 
     // Update an Event in the list of known Events
     updateEvent: {
-      prepare(
-        laoId: Hash | string,
-        eventType: string,
-        id: Hash | string,
-        idAlias?: Hash | string | undefined,
-      ) {
+      prepare(event: EventState) {
         return {
-          payload: {
-            laoId: laoId.valueOf(),
-            event: { eventType, id: id.valueOf(), idAlias: idAlias?.valueOf() } as EventState,
-          },
+          payload: event,
         };
       },
-      reducer(
-        state,
-        action: PayloadAction<{
-          laoId: string;
-          event: EventState;
-        }>,
-      ) {
-        const { laoId, event } = action.payload;
+      reducer(state, action: PayloadAction<EventState>) {
+        const event = action.payload;
 
-        // Lao not initialized, return
-        if (!(laoId in state.byLaoId)) {
-          throw new Error(`Tried to update event in inexistent lao with id ${laoId}`);
-        }
-
-        if (!(event.id in state.byLaoId[laoId].byId)) {
+        if (!(event.id in state.byId)) {
           throw new Error(`Tried to update inexistent event with id ${event.id}`);
         }
 
-        const oldAlias = state.byLaoId[laoId].byId[event.id].idAlias;
+        const oldAlias = state.byId[event.id].idAlias;
         if (oldAlias) {
-          delete state.byLaoId[laoId].idAlias[oldAlias];
+          delete state.idAlias[oldAlias];
         }
 
-        state.byLaoId[laoId].byId[event.id] = event;
+        state.byId[event.id] = event;
         if (event.idAlias) {
-          state.byLaoId[laoId].idAlias[event.idAlias] = event.id;
+          state.idAlias[event.idAlias] = event.id;
         }
       },
     },
@@ -159,21 +129,20 @@ const eventSlice = createSlice({
       ) {
         const { laoId, eventId } = action.payload;
 
-        // Lao not initialized, return
         if (!(laoId in state.byLaoId)) {
-          throw new Error(`Tried to remove event in inexistent lao with id ${laoId}`);
+          throw new Error(`Tried to remove event from inexistent lao with id ${laoId}`);
         }
 
-        if (!(eventId in state.byLaoId[laoId].byId)) {
-          throw new Error(`Tried to update inexistent event with id ${eventId}`);
+        if (!(eventId in state.byId)) {
+          throw new Error(`Tried to remove inexistent event with id ${eventId}`);
         }
 
-        const alias = state.byLaoId[laoId].byId[eventId].idAlias;
+        const alias = state.byId[eventId].idAlias;
         if (alias) {
-          delete state.byLaoId[laoId].idAlias[alias];
+          delete state.idAlias[alias];
         }
 
-        delete state.byLaoId[laoId].byId[eventId];
+        delete state.byId[eventId];
         state.byLaoId[laoId].allIds = state.byLaoId[laoId].allIds.filter((e) => e !== eventId);
       },
     },
@@ -181,6 +150,8 @@ const eventSlice = createSlice({
     // Empty the list of known Events ("reset")
     clearAllEvents: (state) => {
       state.byLaoId = {};
+      state.byId = {};
+      state.idAlias = {};
     },
   },
 });
@@ -203,75 +174,67 @@ export const makeEventListSelector = (laoId: string) =>
         throw new Error(`Tried to retrive event list for inexistent lao with id ${laoId}`);
       }
 
-      return eventMap.byLaoId[laoId].allIds.map((id) => eventMap.byLaoId[laoId].byId[id]);
+      return eventMap.byLaoId[laoId].allIds.map((id) => eventMap.byId[id]);
     },
   );
 
 /**
- * Creates a selector for a map from event id to event id alias.
- * @param laoId The id of the lao the selector should be created for
- */
-export const makeEventAliasMapSelector = (laoId: string) =>
-  createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state),
-    // Selector: returns a map of alias ids to event ids
-    (eventMap: EventReducerState): Record<string, string> => {
-      if (!(laoId in eventMap.byLaoId)) {
-        throw new Error(`Tried to retrive event alias map for inexistent lao with id ${laoId}`);
-      }
-
-      return eventMap.byLaoId[laoId].idAlias;
-    },
-  );
-
-/**
- * Returns a selector for a map from event id to events within a lao.
- * @param laoId - The id of the Lao the selector should be created for
- */
-export const makeEventMapSelector = (laoId: string) =>
-  createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state),
-    // Selector: returns a map of ids to event states
-    (eventMap: EventReducerState): Record<string, EventState> => {
-      if (!(laoId in eventMap.byLaoId)) {
-        throw new Error(`Tried to retrive event map for inexistent lao with id ${laoId}`);
-      }
-
-      return eventMap.byLaoId[laoId].byId;
-    },
-  );
-
-/**
- * Gets a specific event within a Lao.
- *
- * @param laoId - The id of the Lao
+ * Creates a selector that returns a specific event
  * @param eventId - The id of the event
+ * @returns The selector
  */
-export const makeEventSelector = (
-  laoId: Hash | string | undefined,
-  eventId: Hash | string | undefined,
-) => {
-  const laoIdString = laoId?.valueOf();
-  const eventIdString = eventId?.valueOf();
+export const makeEventSelector = (eventId: Hash | string | undefined) => {
+  const eventIdString = eventId?.valueOf() || 'undefined';
 
   return createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state),
+    // First input: Get all events for a given lao
+    (state) => getEventState(state).byId,
+    // Second input: Alias for the given event id
+    (state) => getEventState(state).idAlias[eventIdString],
     // Selector: returns the state of a given event
-    (eventMap: EventReducerState): EventState | undefined => {
-      if (!laoIdString || !(laoIdString in eventMap.byLaoId)) {
-        throw new Error(`Tried to retrive an event for inexistent lao with id ${laoIdString}`);
+    (eventsById, idAlias: string | undefined): EventState | undefined => {
+      if (idAlias) {
+        if (!(idAlias in eventsById)) {
+          return undefined;
+        }
+
+        return eventsById[idAlias];
       }
 
-      if (!eventIdString || !(eventIdString in eventMap.byLaoId[laoIdString].byId)) {
+      if (!eventIdString || !(eventIdString in eventsById)) {
         return undefined;
       }
 
-      return eventMap.byLaoId[laoIdString].byId[eventIdString];
+      return eventsById[eventIdString];
     },
   );
+};
+
+/**
+ * Gets a specific event within a lao
+ * @param eventId - The id of the event
+ * @param state - The redux state
+ * @returns The event
+ */
+export const getEvent = (eventId: Hash | string | undefined, state: unknown) => {
+  const eventIdString = eventId?.valueOf() || 'undefined';
+  const eventState = getEventState(state);
+  const eventsById = eventState.byId;
+  const idAlias = eventState.idAlias[eventIdString];
+
+  if (idAlias) {
+    if (!(idAlias in eventsById)) {
+      return undefined;
+    }
+
+    return eventsById[idAlias];
+  }
+
+  if (!eventIdString || !(eventIdString in eventsById.byId)) {
+    return undefined;
+  }
+
+  return eventsById[eventIdString];
 };
 
 /**
@@ -289,7 +252,7 @@ export const makeEventByTypeSelector = (eventType: string) =>
 
       Object.entries(eventMap.byLaoId).forEach(([laoId, eventList]) => {
         eventByLao[laoId] = eventList.allIds
-          .map((i) => eventList.byId[i])
+          .map((i) => eventMap.byId[i])
           .filter((e): e is EventState => e !== undefined && e.eventType === eventType)
           .reduce((eventById, e) => {
             eventById[e.id.valueOf()] = e;

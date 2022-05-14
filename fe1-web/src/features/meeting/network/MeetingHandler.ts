@@ -3,7 +3,7 @@ import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
 import { Hash } from 'core/objects';
 
 import { MeetingConfiguration } from '../interface';
-import { Meeting, MeetingState } from '../objects';
+import { Meeting } from '../objects';
 import { CreateMeeting, StateMeeting } from './messages';
 
 /**
@@ -15,7 +15,7 @@ import { CreateMeeting, StateMeeting } from './messages';
  * @param addMeeting - A function to add a meeting
  */
 export const handleMeetingCreateMessage =
-  (addMeeting: (laoId: Hash | string, meetingState: MeetingState) => void) =>
+  (addMeeting: (laoId: Hash | string, meeting: Meeting) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.MEETING ||
@@ -38,7 +38,7 @@ export const handleMeetingCreateMessage =
       extra: meetingMessage.extra ? { ...meetingMessage.extra } : {},
     });
 
-    addMeeting(msg.laoId, meeting.toState());
+    addMeeting(msg.laoId, meeting);
     return true;
   };
 
@@ -53,7 +53,7 @@ export const handleMeetingStateMessage =
   (
     getLaoById: MeetingConfiguration['getLaoById'],
     getMeetingById: (meetingId: Hash | string) => Meeting | undefined,
-    updateMeeting: (laoId: Hash | string, meetingState: MeetingState) => void,
+    updateMeeting: (meeting: Meeting) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -98,6 +98,6 @@ export const handleMeetingStateMessage =
       },
     });
 
-    updateMeeting(msg.laoId, meeting.toState());
+    updateMeeting(meeting);
     return true;
   };

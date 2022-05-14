@@ -15,8 +15,6 @@ export interface RollCallState {
   id: string;
   idAlias?: string;
   name: string;
-  start: number;
-  end?: number;
   location: string;
   description?: string;
   creation: number;

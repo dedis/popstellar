@@ -39,32 +39,17 @@ export interface EvotingConfiguration {
   /**
    * Creates a redux action for adding an event to the event store
    * @param laoId - The lao id where to add the event
-   * @param eventType - The type of the event
-   * @param id - The id of the event
-   * @param idAlias - An optional alias id of the event
+   * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (
-    laoId: Hash | string,
-    eventType: string,
-    id: Hash | string,
-    idAlias?: Hash | string | undefined,
-  ) => AnyAction;
+  addEvent: (laoId: Hash | string, event: EvotingFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
-   * @param laoId - The lao id where to add the event
-   * @param eventType - The type of the event
-   * @param id - The id of the event
-   * @param idAlias - An optional alias id of the event
+   * @param event - The event
    * @returns A redux action causing the state change
    */
-  updateEvent: (
-    laoId: Hash | string,
-    eventType: string,
-    id: Hash | string,
-    idAlias?: Hash | string | undefined,
-  ) => AnyAction;
+  updateEvent: (event: EvotingFeature.EventState) => AnyAction;
 
   /**
    * Given the redux state and an event id, this function looks in the active
@@ -98,9 +83,17 @@ export interface EvotingInterface extends FeatureInterface {
     CreateElection: React.ComponentType<any>;
   };
 
-  eventTypeComponents: {
-    isOfType: (event: unknown) => boolean;
-    Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
+  eventTypes: {
+    eventType: string;
+    navigationNames: {
+      createEvent: string;
+    };
+    Component: React.ComponentType<{
+      eventId: string;
+      start: number;
+      end: number | null | undefined;
+      isOrganizer: boolean | null | undefined;
+    }>;
   }[];
 
   context: EvotingReactContext;

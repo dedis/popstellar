@@ -83,7 +83,6 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: Election.EVENT_TYPE,
       lao: mockLaoName,
       name: NAME,
       version: VERSION,

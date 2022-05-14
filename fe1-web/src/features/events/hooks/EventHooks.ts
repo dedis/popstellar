@@ -4,7 +4,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 
 import { EventsReactContext, EVENTS_FEATURE_IDENTIFIER } from '../interface';
 
-export namespace EventsHooks {
+export namespace EventHooks {
   export const useEventsContext = (): EventsReactContext => {
     const featureContext = useContext(FeatureContext);
     // assert that the evoting context exists
@@ -24,5 +24,5 @@ export namespace EventsHooks {
    * Gets the list of registrered event type components
    * @returns The list of registered event type components
    */
-  export const useEventTypeComponents = () => useEventsContext().eventTypeComponents;
+  export const useEventTypes = () => useEventsContext().eventTypes;
 }

@@ -11,5 +11,8 @@ export namespace RollCallFeature {
     eventType: string;
     id: string;
     idAlias?: string;
+
+    start: number;
+    end?: number;
   }
 }

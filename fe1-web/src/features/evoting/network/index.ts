@@ -3,7 +3,7 @@ import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionState } from '../objects';
+import { Election } from '../objects';
 import { addElection, getElectionById, updateElection } from '../reducer';
 import {
   handleCastVoteMessage,
@@ -24,16 +24,30 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
   const boundGetElectionById = (electionId: Hash | string) =>
     getElectionById(electionId, getStore().getState());
 
-  const addElectionEvent = (laoId: Hash | string, electionState: ElectionState) => {
+  const addElectionEvent = (laoId: Hash | string, election: Election) => {
+    const electionState = election.toState();
+
     dispatch(
-      configuration.addEvent(laoId, Election.EVENT_TYPE, electionState.id, electionState.idAlias),
+      configuration.addEvent(laoId, {
+        eventType: Election.EVENT_TYPE,
+        id: electionState.id,
+        start: electionState.start,
+        end: electionState.start,
+      }),
     );
     dispatch(addElection(electionState));
   };
 
-  const updateElectionEvent = (laoId: Hash | string, electionState: ElectionState) => {
+  const updateElectionEvent = (election: Election) => {
+    const electionState = election.toState();
+
     dispatch(
-      configuration.addEvent(laoId, Election.EVENT_TYPE, electionState.id, electionState.idAlias),
+      configuration.updateEvent({
+        eventType: Election.EVENT_TYPE,
+        id: electionState.id,
+        start: electionState.start,
+        end: electionState.start,
+      }),
     );
     dispatch(updateElection(electionState));
   };

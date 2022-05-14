@@ -101,10 +101,26 @@ export async function createDummyWalletState() {
     tokenMockRC1.publicKey.valueOf(),
   ]);
   dispatch(connectToLao(mockLao.toState()));
-  dispatch(addEvent(mockLao.id, RollCall.EVENT_TYPE, mockRollCall0.id, mockRollCall0.idAlias));
+  dispatch(
+    addEvent(mockLao.id, {
+      eventType: RollCall.EVENT_TYPE,
+      id: mockRollCall0.id.valueOf(),
+      idAlias: mockRollCall0.idAlias?.valueOf(),
+      start: mockRollCall0.proposedStart.valueOf(),
+      end: mockRollCall0.proposedEnd.valueOf(),
+    }),
+  );
   dispatch(addRollCall(mockRollCall0.toState()));
 
-  dispatch(addEvent(mockLao.id, RollCall.EVENT_TYPE, mockRollCall0.id, mockRollCall0.idAlias));
+  dispatch(
+    addEvent(mockLao.id, {
+      eventType: RollCall.EVENT_TYPE,
+      id: mockRollCall0.id.valueOf(),
+      idAlias: mockRollCall0.idAlias?.valueOf(),
+      start: mockRollCall0.proposedStart.valueOf(),
+      end: mockRollCall0.proposedEnd.valueOf(),
+    }),
+  );
   dispatch(addRollCall(mockRollCall1.toState()));
   console.debug('Dispatched mock events');
 }

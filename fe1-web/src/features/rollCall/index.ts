@@ -1,4 +1,4 @@
-import { RollCallEventTypeComponent } from './components';
+import { RollCallEventType } from './components';
 import * as functions from './functions';
 import { RollCallHooks } from './hooks';
 import { RollCallConfiguration, RollCallInterface, ROLLCALL_FEATURE_IDENTIFIER } from './interface';
@@ -16,7 +16,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
 
   return {
     identifier: ROLLCALL_FEATURE_IDENTIFIER,
-    eventTypeComponents: [RollCallEventTypeComponent],
+    eventTypes: [RollCallEventType],
     screens,
     functions,
     hooks: {

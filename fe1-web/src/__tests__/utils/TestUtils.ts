@@ -31,6 +31,7 @@ export const mockLaoIdHash: Hash = Hash.fromStringArray(
   mockLaoCreationTime.toString(),
   mockLaoName,
 );
+
 export const mockLaoId: string = mockLaoIdHash.toString();
 
 export const mockLaoState: LaoState = {

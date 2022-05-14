@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, FunctionComponent } from 'react';
+import React, { useEffect, useState, FunctionComponent, useMemo } from 'react';
 import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
@@ -11,12 +12,20 @@ import STRINGS from 'resources/strings';
 import { RollCallHooks } from '../hooks';
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
+import { makeRollCallSelector } from '../reducer';
 
 /**
  * Component used to display a RollCall event in the LAO event list
  */
 const EventRollCall = (props: IPropTypes) => {
-  const { event: rollCall, isOrganizer } = props;
+  const { eventId: rollCallId, isOrganizer, start, end } = props;
+
+  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const rollCall = useSelector(selectRollCall);
+
+  if (!rollCall) {
+    throw new Error(`Could not find a roll call with id ${rollCallId}`);
+  }
 
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
@@ -155,23 +164,31 @@ const EventRollCall = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  event: PropTypes.instanceOf(RollCall).isRequired,
+  eventId: PropTypes.string.isRequired,
   isOrganizer: PropTypes.bool,
+  start: PropTypes.number.isRequired,
+  end: PropTypes.number,
 };
 EventRollCall.propTypes = propTypes;
 
 EventRollCall.defaultProps = {
   isOrganizer: false,
+  end: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventRollCall;
 
-export const RollCallEventTypeComponent = {
-  isOfType: (event: unknown) => event instanceof RollCall,
+export const RollCallEventType = {
+  eventType: RollCall.EVENT_TYPE,
+  navigationNames: {
+    createEvent: STRINGS.organizer_navigation_creation_roll_call,
+  },
   Component: EventRollCall as FunctionComponent<{
-    event: unknown;
+    eventId: string;
     isOrganizer: boolean | null | undefined;
+    start: number;
+    end: number | null | undefined;
   }>,
 };

@@ -19,7 +19,6 @@ describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
-      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -31,7 +30,6 @@ describe('RollCall object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -50,7 +48,6 @@ describe('RollCall object', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -65,7 +62,6 @@ describe('RollCall object', () => {
     const expected = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: RollCall.EVENT_TYPE,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,

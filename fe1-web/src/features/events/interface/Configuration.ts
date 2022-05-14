@@ -27,9 +27,9 @@ export interface EventsInterface extends FeatureInterface {
      * @param eventType The type of the events that should be returned
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
-    makeEventByTypeSelector: <T extends EventState>(
+    makeEventByTypeSelector: (
       eventType: string,
-    ) => (state: unknown) => Record<string, Record<string, T>>;
+    ) => (state: unknown) => Record<string, Record<string, EventState>>;
 
     /**
      * Creates a selector to return a specific event for given lao and event ids
@@ -55,32 +55,17 @@ export interface EventsInterface extends FeatureInterface {
     /**
      * Creates a redux action for adding an event to the event store
      * @param laoId - The lao id where to add the event
-     * @param eventType - The type of the event
-     * @param id - The id of the event
-     * @param idAlias - An optional alias id of the event
+     * @param event - The the event
      * @returns A redux action causing the state change
      */
-    addEvent: (
-      laoId: Hash | string,
-      eventType: string,
-      id: Hash | string,
-      idAlias?: Hash | string | undefined,
-    ) => AnyAction;
+    addEvent: (laoId: Hash | string, event: EventState) => AnyAction;
 
     /**
      * Creates a redux action for update the stored event state
-     * @param laoId - The lao id where to add the event
-     * @param eventType - The type of the event
-     * @param id - The id of the event
-     * @param idAlias - An optional alias id of the event
+     * @param event - The event
      * @returns A redux action causing the state change
      */
-    updateEvent: (
-      laoId: Hash | string,
-      eventType: string,
-      id: Hash | string,
-      idAlias?: Hash | string | undefined,
-    ) => AnyAction;
+    updateEvent: (event: EventState) => AnyAction;
 
     removeEvent: (laoId: string | Hash, eventId: string | Hash) => AnyAction;
     clearAllEvents: () => AnyAction;
@@ -98,9 +83,17 @@ export interface EventsCompositionConfiguration {
    */
   useIsLaoOrganizer: () => boolean;
 
-  eventTypeComponents: {
-    isOfType: (event: unknown) => boolean;
-    Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
+  eventTypes: {
+    eventType: string;
+    navigationNames: {
+      createEvent: string;
+    };
+    Component: React.ComponentType<{
+      eventId: string;
+      start: number;
+      end: number | null | undefined;
+      isOrganizer: boolean | null | undefined;
+    }>;
   }[];
 }
 
@@ -112,7 +105,7 @@ export type EventsReactContext = Pick<
   /* lao */
   | 'useIsLaoOrganizer'
   /* other */
-  | 'eventTypeComponents'
+  | 'eventTypes'
 >;
 
 export interface EventsCompositionInterface extends FeatureInterface {

@@ -4,9 +4,10 @@
 
 // Serializable Event (using primitive types)
 export interface EventState {
-  readonly eventType: string;
+  eventType: string;
+  id: string;
+  idAlias?: string;
 
-  readonly id: string;
-
-  readonly idAlias?: string;
+  start: number;
+  end?: number;
 }

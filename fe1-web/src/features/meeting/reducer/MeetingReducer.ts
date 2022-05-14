@@ -78,19 +78,22 @@ export default {
  * @param meetingId The if of the meeting / event to retrieve
  * @returns The selector
  */
-export const makeMeetingSelector = (meetingId: string) =>
-  createSelector(
+export const makeMeetingSelector = (meetingId: Hash | string) => {
+  const meetingIdString = meetingId.valueOf();
+
+  return createSelector(
     // First input: map from ids to meetings
     (state) => getMeetingState(state).byId,
     // Selector: returns the selected meeting
     (meetingById: Record<string, MeetingState>): Meeting | undefined => {
-      if (!(meetingId in meetingById)) {
+      if (!(meetingIdString in meetingById)) {
         return undefined;
       }
 
-      return Meeting.fromState(meetingById[meetingId]);
+      return Meeting.fromState(meetingById[meetingIdString]);
     },
   );
+};
 
 /**
  * Retrieves an meeting by its id from the redux store

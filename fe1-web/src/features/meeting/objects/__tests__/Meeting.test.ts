@@ -13,7 +13,6 @@ describe('Meeting object', () => {
   it('does a state round trip correctly with extra and last_modified', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -28,7 +27,6 @@ describe('Meeting object', () => {
   it('does a state round trip correctly without extra and last_modified', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -36,7 +34,6 @@ describe('Meeting object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -51,7 +48,6 @@ describe('Meeting object', () => {
   it('does a state round trip correctly with end', () => {
     const meetingState: any = {
       id: ID.valueOf(),
-      eventType: Meeting.EVENT_TYPE,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,

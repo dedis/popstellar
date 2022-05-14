@@ -19,7 +19,6 @@ import {
 
 jest.mock('core/network/JsonRpcApi');
 jest.mock('core/redux');
-jest.mock('features/events/network/EventHandlerUtils');
 jest.mock('features/lao/reducer');
 
 // region Mock Values Initialization region
@@ -62,7 +61,13 @@ const mockRollCallCreated = RollCall.fromState(rollCallStateCreated);
 const mockRollCallOpened = RollCall.fromState(rollCallStateOpened);
 const mockRollCallReopened = RollCall.fromState(rollCallStateReopened);
 
-const createMockMsg = (type: ActionType, rollCallState: any): ProcessableMessage => {
+const createMockMsg = (
+  type: ActionType,
+  rollCallState: any,
+  objectType?: ObjectType,
+): ProcessableMessage => {
+  const rollCall = RollCall.fromState(rollCallState) as any;
+
   return {
     laoId: ID,
     receivedAt: TIMESTAMP_START,
@@ -74,14 +79,14 @@ const createMockMsg = (type: ActionType, rollCallState: any): ProcessableMessage
     message_id: ID,
     witness_signatures: [],
     messageData: {
-      object: ObjectType.ROLL_CALL,
+      object: objectType || ObjectType.ROLL_CALL,
       action: type,
-      ...rollCallState,
-      proposed_start: rollCallState.proposedStart,
-      proposed_end: rollCallState.proposedEnd,
-      opened_at: rollCallState?.openedAt,
-      update_id: rollCallState?.idAlias,
-      closed_at: rollCallState?.closedAt,
+      ...rollCall,
+      proposed_start: rollCall.proposedStart,
+      proposed_end: rollCall.proposedEnd,
+      opened_at: rollCall?.openedAt,
+      update_id: rollCall?.idAlias,
+      closed_at: rollCall?.closedAt,
     },
   };
 };
@@ -96,10 +101,13 @@ describe('RollCallHandler', () => {
     it('should return false for wrong object types', () => {
       expect(
         handleRollCallCreateMessage(jest.fn())(
-          createMockMsg(ActionType.CREATE, {
-            ...rollCallStateCreated,
-            object: ObjectType.CHIRP,
-          } as MessageData),
+          createMockMsg(
+            ActionType.CREATE,
+            {
+              ...rollCallStateCreated,
+            } as MessageData,
+            ObjectType.CHIRP,
+          ),
         ),
       ).toBeFalse();
     });
@@ -126,7 +134,7 @@ describe('RollCallHandler', () => {
 
       expect(handleRollCallCreateMessage(mockAddEvent)(usedMockMsg)).toBeTrue();
 
-      expect(mockAddEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallCreated.toState());
+      expect(mockAddEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallCreated);
     });
   });
 
@@ -137,10 +145,13 @@ describe('RollCallHandler', () => {
           jest.fn(),
           jest.fn(),
         )(
-          createMockMsg(ActionType.CREATE, {
-            ...rollCallStateOpened,
-            object: ObjectType.CHIRP,
-          } as MessageData),
+          createMockMsg(
+            ActionType.CREATE,
+            {
+              ...rollCallStateOpened,
+            } as MessageData,
+            ObjectType.CHIRP,
+          ),
         ),
       ).toBeFalse();
     });
@@ -175,12 +186,12 @@ describe('RollCallHandler', () => {
     it('should create a correct RollCall object from msgData', async () => {
       const usedMockMsg = createMockMsg(ActionType.OPEN, rollCallStateOpened);
 
-      const mockGetEventById = jest.fn(() => mockRollCallCreated);
+      const mockGetEventById = jest.fn(() => RollCall.fromState(mockRollCallCreated.toState()));
       const mockUpdateEvent = jest.fn();
 
       expect(handleRollCallOpenMessage(mockGetEventById, mockUpdateEvent)(usedMockMsg)).toBeTrue();
 
-      expect(mockUpdateEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallOpened.toState());
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockRollCallOpened);
     });
   });
 
@@ -193,10 +204,13 @@ describe('RollCallHandler', () => {
           jest.fn(),
           jest.fn(),
         )(
-          createMockMsg(ActionType.CREATE, {
-            ...rollCallStateClosed,
-            object: ObjectType.CHIRP,
-          } as MessageData),
+          createMockMsg(
+            ActionType.CREATE,
+            {
+              ...rollCallStateClosed,
+            } as MessageData,
+            ObjectType.CHIRP,
+          ),
         ),
       ).toBeFalse();
     });
@@ -237,7 +251,7 @@ describe('RollCallHandler', () => {
     it('should create a correct RollCall object from msgData in handleRollCallCloseMessage', async () => {
       const usedMockMsg = createMockMsg(ActionType.CLOSE, rollCallStateClosed);
 
-      const mockGetEventById = jest.fn(() => mockRollCallOpened);
+      const mockGetEventById = jest.fn(() => RollCall.fromState(mockRollCallOpened.toState()));
       const mockUpdateEvent = jest.fn();
       const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
       const mockSetLaoLastRollCall = jest.fn();
@@ -251,7 +265,7 @@ describe('RollCallHandler', () => {
         )(usedMockMsg),
       ).toBeTrue();
 
-      expect(mockUpdateEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallClosed.toState());
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockRollCallClosed);
     });
   });
 
@@ -262,10 +276,13 @@ describe('RollCallHandler', () => {
           jest.fn(),
           jest.fn(),
         )(
-          createMockMsg(ActionType.CREATE, {
-            ...rollCallStateClosed,
-            object: ObjectType.CHIRP,
-          } as MessageData),
+          createMockMsg(
+            ActionType.CREATE,
+            {
+              ...rollCallStateClosed,
+            } as MessageData,
+            ObjectType.CHIRP,
+          ),
         ),
       ).toBeFalse();
     });
@@ -300,17 +317,14 @@ describe('RollCallHandler', () => {
     it('should create a correct RollCall object from msgData', async () => {
       const usedMockMsg = createMockMsg(ActionType.REOPEN, rollCallStateReopened);
 
-      const mockGetEventById = jest.fn(() => mockRollCallClosed);
+      const mockGetEventById = jest.fn(() => RollCall.fromState(mockRollCallClosed.toState()));
       const mockUpdateEvent = jest.fn();
 
       expect(
         handleRollCallReopenMessage(mockGetEventById, mockUpdateEvent)(usedMockMsg),
       ).toBeTrue();
 
-      expect(mockUpdateEvent).toHaveBeenCalledWith(
-        usedMockMsg.laoId,
-        mockRollCallReopened.toState(),
-      );
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockRollCallReopened);
     });
   });
 });

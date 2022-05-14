@@ -19,10 +19,8 @@ import {
   eventReduce,
   EventReducerState,
   EVENT_REDUCER_PATH,
-  makeEventAliasMapSelector,
   makeEventByTypeSelector,
   makeEventListSelector,
-  makeEventMapSelector,
   makeEventSelector,
   removeEvent,
   updateEvent,
@@ -32,6 +30,8 @@ describe('EventReducer', () => {
   it('should return the initial state', () => {
     expect(eventReduce(undefined, {} as AnyAction)).toEqual({
       byLaoId: {},
+      byId: {},
+      idAlias: {},
     } as EventReducerState);
   });
 
@@ -42,33 +42,36 @@ describe('EventReducer', () => {
           byLaoId: {
             [mockLaoId]: {
               allIds: [],
-              byId: {},
-              idAlias: {},
             },
           },
+          byId: {},
+          idAlias: {},
         } as EventReducerState,
-        addEvent(
-          mockLaoId,
-          RollCall.EVENT_TYPE,
-          mockRollCallWithAlias.id,
-          mockRollCallWithAlias.idAlias,
-        ),
+        addEvent(mockLaoId, {
+          eventType: RollCall.EVENT_TYPE,
+          id: mockRollCallWithAliasState.id,
+          idAlias: mockRollCallWithAliasState.idAlias,
+          start: mockRollCallWithAlias.start.valueOf(),
+          end: mockRollCallWithAlias.end.valueOf(),
+        }),
       ),
     ).toEqual({
       byLaoId: {
         [mockLaoId]: {
           allIds: [mockRollCallWithAliasState.id],
-          byId: {
-            [mockRollCallWithAliasState.id]: {
-              eventType: RollCall.EVENT_TYPE,
-              id: mockRollCallWithAliasState.id,
-              idAlias: mockRollCallWithAliasState.idAlias,
-            },
-          },
-          idAlias: {
-            [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
-          },
         },
+      },
+      byId: {
+        [mockRollCallWithAliasState.id]: {
+          eventType: RollCall.EVENT_TYPE,
+          id: mockRollCallWithAliasState.id,
+          idAlias: mockRollCallWithAliasState.idAlias,
+          start: mockRollCallWithAlias.start.valueOf(),
+          end: mockRollCallWithAlias.end.valueOf(),
+        },
+      },
+      idAlias: {
+        [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
       },
     } as EventReducerState);
   });
@@ -80,39 +83,42 @@ describe('EventReducer', () => {
           byLaoId: {
             [mockLaoId]: {
               allIds: [mockRollCallState.id],
-              byId: {
-                [mockRollCallState.id]: {
-                  eventType: RollCall.EVENT_TYPE,
-                  id: mockRollCallState.id,
-                  idAlias: undefined,
-                },
-              },
-              idAlias: {},
             },
           },
+          byId: {
+            [mockRollCallState.id]: {
+              eventType: RollCall.EVENT_TYPE,
+              id: mockRollCallState.id,
+              idAlias: undefined,
+            },
+          },
+          idAlias: {},
         } as EventReducerState,
-        updateEvent(
-          mockLaoId,
-          RollCall.EVENT_TYPE,
-          mockRollCallWithAliasState.id,
-          mockRollCallWithAliasState.idAlias,
-        ),
+        updateEvent({
+          eventType: RollCall.EVENT_TYPE,
+          id: mockRollCallWithAliasState.id,
+          idAlias: mockRollCallWithAliasState.idAlias,
+          start: mockRollCallWithAlias.start.valueOf(),
+          end: mockRollCallWithAlias.end.valueOf(),
+        }),
       ),
     ).toEqual({
       byLaoId: {
         [mockLaoId]: {
           allIds: [mockRollCallState.id],
-          byId: {
-            [mockRollCallState.id]: {
-              eventType: RollCall.EVENT_TYPE,
-              id: mockRollCallState.id,
-              idAlias: mockRollCallWithAliasState.idAlias,
-            },
-          },
-          idAlias: {
-            [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-          },
         },
+      },
+      byId: {
+        [mockRollCallState.id]: {
+          eventType: RollCall.EVENT_TYPE,
+          id: mockRollCallState.id,
+          idAlias: mockRollCallWithAliasState.idAlias,
+          start: mockRollCallWithAlias.start.valueOf(),
+          end: mockRollCallWithAlias.end.valueOf(),
+        },
+      },
+      idAlias: {
+        [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
       },
     } as EventReducerState);
   });
@@ -124,17 +130,17 @@ describe('EventReducer', () => {
           byLaoId: {
             [mockLaoId]: {
               allIds: [mockRollCallState.id],
-              byId: {
-                [mockRollCallState.id]: {
-                  eventType: RollCall.EVENT_TYPE,
-                  id: mockRollCallState.id,
-                  idAlias: mockRollCallWithAliasState.idAlias,
-                },
-              },
-              idAlias: {
-                [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-              },
             },
+          },
+          byId: {
+            [mockRollCallState.id]: {
+              eventType: RollCall.EVENT_TYPE,
+              id: mockRollCallState.id,
+              idAlias: mockRollCallWithAliasState.idAlias,
+            },
+          },
+          idAlias: {
+            [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
           },
         } as EventReducerState,
         removeEvent(mockLaoId, mockRollCallState.id),
@@ -143,10 +149,10 @@ describe('EventReducer', () => {
       byLaoId: {
         [mockLaoId]: {
           allIds: [],
-          byId: {},
-          idAlias: {},
         },
       },
+      byId: {},
+      idAlias: {},
     } as EventReducerState);
   });
 
@@ -157,27 +163,29 @@ describe('EventReducer', () => {
           byLaoId: {
             [mockLaoId]: {
               allIds: [mockRollCallState.id, mockRollCallState2.id],
-              byId: {
-                [mockRollCallState.id]: {
-                  eventType: RollCall.EVENT_TYPE,
-                  id: mockRollCallState.id,
-                  idAlias: mockRollCallWithAliasState.idAlias,
-                },
-                [mockRollCallState2.id]: {
-                  eventType: RollCall.EVENT_TYPE,
-                  id: mockRollCallState2.id,
-                },
-              },
-              idAlias: {
-                [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-              },
             },
+          },
+          byId: {
+            [mockRollCallState.id]: {
+              eventType: RollCall.EVENT_TYPE,
+              id: mockRollCallState.id,
+              idAlias: mockRollCallWithAliasState.idAlias,
+            },
+            [mockRollCallState2.id]: {
+              eventType: RollCall.EVENT_TYPE,
+              id: mockRollCallState2.id,
+            },
+          },
+          idAlias: {
+            [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
           },
         } as EventReducerState,
         clearAllEvents(),
       ),
     ).toEqual({
       byLaoId: {},
+      byId: {},
+      idAlias: {},
     } as EventReducerState);
   });
 });
@@ -187,31 +195,31 @@ const filledState = {
     byLaoId: {
       [mockLaoId]: {
         allIds: [mockRollCallState.id],
-        byId: {
-          [mockRollCallState.id]: {
-            eventType: RollCall.EVENT_TYPE,
-            id: mockRollCallState.id,
-            idAlias: mockRollCallWithAliasState.idAlias,
-          },
-        },
-        idAlias: {
-          [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-        },
       },
       someOtherId: {
-        allIds: [mockRollCallState2.id, mockElectionNotStarted.id.valueOf()],
-        byId: {
-          [mockRollCallState2.id]: {
-            eventType: RollCall.EVENT_TYPE,
-            id: mockRollCallState2.id,
-          },
-          [mockElectionNotStarted.id.valueOf()]: {
-            eventType: Election.EVENT_TYPE,
-            id: mockElectionNotStarted.id.valueOf(),
-          },
-        },
-        idAlias: {},
+        allIds: ['otherId', mockElectionNotStarted.id.valueOf()],
       },
+    },
+    byId: {
+      [mockRollCallWithAliasState.id]: {
+        eventType: RollCall.EVENT_TYPE,
+        id: mockRollCallWithAliasState.id,
+        idAlias: mockRollCallWithAliasState.idAlias,
+        start: mockRollCallWithAlias.start.valueOf(),
+        end: mockRollCallWithAlias.end.valueOf(),
+      },
+      otherId: {
+        eventType: RollCall.EVENT_TYPE,
+        id: 'otherId',
+        start: 0,
+      },
+      [mockElectionNotStarted.id.valueOf()]: {
+        eventType: Election.EVENT_TYPE,
+        id: mockElectionNotStarted.id.valueOf(),
+      },
+    },
+    idAlias: {
+      [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
     },
   } as EventReducerState,
 };
@@ -223,6 +231,8 @@ describe('makeEventListSelector', () => {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallState.id,
         idAlias: mockRollCallWithAliasState.idAlias,
+        start: mockRollCallWithAlias.start.valueOf(),
+        end: mockRollCallWithAlias.end.valueOf(),
       },
     ]);
   });
@@ -232,53 +242,25 @@ describe('makeEventListSelector', () => {
   });
 });
 
-describe('makeEventAliasMapSelector', () => {
-  it('should return the correct value', () => {
-    expect(makeEventAliasMapSelector(mockLaoId)(filledState)).toEqual({
-      [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-    });
-  });
-
-  it('should throw an error if the given laoId is not stored', () => {
-    expect(() =>
-      makeEventAliasMapSelector(mockLaoId)({ byLaoId: {} } as EventReducerState),
-    ).toThrow();
-  });
-});
-
-describe('makeEventMapSelector', () => {
-  it('should return the correct value', () => {
-    expect(makeEventMapSelector(mockLaoId)(filledState)).toEqual({
-      [mockRollCallState.id]: {
-        eventType: RollCall.EVENT_TYPE,
-        id: mockRollCallState.id,
-        idAlias: mockRollCallWithAliasState.idAlias,
-      },
-    });
-  });
-
-  it('should throw an error if the given laoId is not stored', () => {
-    expect(() => makeEventMapSelector(mockLaoId)({ byLaoId: {} } as EventReducerState)).toThrow();
-  });
-});
-
 describe('makeEventSelector', () => {
   it('should return the correct value', () => {
-    expect(makeEventSelector(mockLaoId, mockRollCallState.id)(filledState)).toEqual({
+    expect(makeEventSelector(mockRollCallState.id)(filledState)).toEqual({
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCallState.id,
       idAlias: mockRollCallWithAliasState.idAlias,
+      start: mockRollCallWithAlias.start.valueOf(),
+      end: mockRollCallWithAlias.end.valueOf(),
     });
   });
 
   it('should throw an error if the given laoId is not stored', () => {
     expect(() =>
-      makeEventSelector(mockLaoId, mockRollCallState.id)({ byLaoId: {} } as EventReducerState),
+      makeEventSelector(mockRollCallState.id)({ byLaoId: {} } as EventReducerState),
     ).toThrow();
   });
 
   it('should return undefined if the lao does not have an event with the provided id', () => {
-    expect(makeEventSelector(mockLaoId, 'some id')(filledState)).toBeUndefined();
+    expect(makeEventSelector('some id')(filledState)).toBeUndefined();
   });
 });
 
@@ -286,16 +268,19 @@ describe('makeEventByTypeSelector', () => {
   it('should return the correct value', () => {
     expect(makeEventByTypeSelector(RollCall.EVENT_TYPE)(filledState)).toEqual({
       [mockLaoId]: {
-        [mockRollCallState.id]: {
+        [mockRollCallWithAliasState.id]: {
           eventType: RollCall.EVENT_TYPE,
-          id: mockRollCallState.id,
+          id: mockRollCallWithAliasState.id,
           idAlias: mockRollCallWithAliasState.idAlias,
+          start: mockRollCallWithAlias.start.valueOf(),
+          end: mockRollCallWithAlias.end.valueOf(),
         },
       },
       someOtherId: {
-        [mockRollCallState2.id]: {
+        otherId: {
           eventType: RollCall.EVENT_TYPE,
-          id: mockRollCallState2.id,
+          id: 'otherId',
+          start: 0,
         },
       },
     });

@@ -4,7 +4,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { channelFromIds, getLastPartOfChannel, Hash } from 'core/objects';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../objects';
+import { Election, ElectionStatus, RegisteredVote } from '../objects';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
@@ -17,7 +17,7 @@ import { OpenElection } from './messages/OpenElection';
  * @param addElection - A function to add a new election
  */
 export const handleElectionSetupMessage =
-  (addElection: (laoId: Hash | string, electionState: ElectionState) => void) =>
+  (addElection: (laoId: Hash | string, election: Election) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
@@ -49,7 +49,7 @@ export const handleElectionSetupMessage =
       console.error('Could not subscribe to Election channel, error:', err);
     });
 
-    addElection(msg.laoId, election.toState());
+    addElection(msg.laoId, election);
     return true;
   };
 
@@ -61,7 +61,7 @@ export const handleElectionSetupMessage =
 export const handleElectionOpenMessage =
   (
     getElectionById: (electionId: Hash | string) => Election | undefined,
-    updateElection: (laoId: Hash | string, electionState: ElectionState) => void,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     console.log('Handling Election open message');
@@ -84,7 +84,7 @@ export const handleElectionOpenMessage =
 
     // Change election status here such that it will change the election display in the event list
     election.electionStatus = ElectionStatus.OPENED;
-    updateElection(msg.laoId, election.toState());
+    updateElection(election);
     return true;
   };
 
@@ -98,7 +98,7 @@ export const handleCastVoteMessage =
   (
     getCurrentLao: EvotingConfiguration['getCurrentLao'],
     getElectionById: (electionId: Hash | string) => Election | undefined,
-    updateElection: (laoId: Hash | string, electionState: ElectionState) => void,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -145,7 +145,7 @@ export const handleCastVoteMessage =
     } else {
       election.registeredVotes = [...election.registeredVotes, currentVote];
     }
-    updateElection(msg.laoId, election.toState());
+    updateElection(election);
     return true;
   };
 
@@ -157,7 +157,7 @@ export const handleCastVoteMessage =
 export const handleElectionEndMessage =
   (
     getElectionById: (electionId: Hash | string) => Election | undefined,
-    updateElection: (laoId: Hash | string, electionState: ElectionState) => void,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage) => {
     console.log('Handling Election end message');
@@ -180,7 +180,7 @@ export const handleElectionEndMessage =
 
     // Change election status here such that it will change the election display in the event list
     election.electionStatus = ElectionStatus.TERMINATED;
-    updateElection(msg.laoId, election.toState());
+    updateElection(election);
     return true;
   };
 
@@ -192,7 +192,7 @@ export const handleElectionEndMessage =
 export const handleElectionResultMessage =
   (
     getElectionById: (electionId: Hash | string) => Election | undefined,
-    updateElection: (laoId: Hash | string, electionState: ElectionState) => void,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage) => {
     if (
@@ -224,6 +224,6 @@ export const handleElectionResultMessage =
     }));
 
     election.electionStatus = ElectionStatus.RESULT;
-    updateElection(msg.laoId, election.toState());
+    updateElection(election);
     return true;
   };

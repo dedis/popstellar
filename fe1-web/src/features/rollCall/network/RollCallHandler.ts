@@ -4,7 +4,7 @@ import { getReactionChannel, getUserSocialChannel, Hash } from 'core/objects';
 import { AsyncDispatch, dispatch } from 'core/redux';
 
 import { RollCallConfiguration } from '../interface';
-import { RollCall, RollCallState, RollCallStatus } from '../objects';
+import { RollCall, RollCallStatus } from '../objects';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 /**
@@ -12,7 +12,7 @@ import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './m
  * @param addRollCall - A function to add a new roll call
  */
 export const handleRollCallCreateMessage =
-  (addRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void) =>
+  (addRollCall: (laoId: Hash | string, rollCall: RollCall) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
@@ -36,7 +36,7 @@ export const handleRollCallCreateMessage =
       status: RollCallStatus.CREATED,
     });
 
-    addRollCall(msg.laoId, rollCall.toState());
+    addRollCall(msg.laoId, rollCall);
     return true;
   };
 
@@ -48,7 +48,7 @@ export const handleRollCallCreateMessage =
 export const handleRollCallOpenMessage =
   (
     getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
-    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
+    updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -76,7 +76,7 @@ export const handleRollCallOpenMessage =
       status: RollCallStatus.OPENED,
     });
 
-    updateRollCall(msg.laoId, rollCall.toState());
+    updateRollCall(rollCall);
     return true;
   };
 
@@ -90,7 +90,7 @@ export const handleRollCallOpenMessage =
 export const handleRollCallCloseMessage =
   (
     getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
-    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
+    updateRollCall: (rollCall: RollCall) => void,
     generateToken: RollCallConfiguration['generateToken'],
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
   ) =>
@@ -123,7 +123,7 @@ export const handleRollCallCloseMessage =
       attendees: rcMsgData.attendees,
     });
 
-    updateRollCall(msg.laoId, rollCall.toState());
+    updateRollCall(rollCall);
 
     // ... and update the Lao state to point to the latest roll call, if we have a token in it.
     dispatch(async (aDispatch: AsyncDispatch) => {
@@ -162,7 +162,7 @@ export const handleRollCallCloseMessage =
 export const handleRollCallReopenMessage =
   (
     getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
-    updateRollCall: (laoId: Hash | string, rollCallState: RollCallState) => void,
+    updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage) => {
     if (
@@ -194,6 +194,6 @@ export const handleRollCallReopenMessage =
       status: RollCallStatus.REOPENED,
     });
 
-    updateRollCall(msg.laoId, rollCall.toState());
+    updateRollCall(rollCall);
     return true;
   };

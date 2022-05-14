@@ -3,7 +3,7 @@ import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { MeetingConfiguration } from '../interface';
-import { Meeting, MeetingState } from '../objects';
+import { Meeting } from '../objects';
 import { addMeeting, getMeetingById, updateMeeting } from '../reducer';
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from './MeetingHandler';
 import { CreateMeeting, StateMeeting } from './messages';
@@ -18,13 +18,31 @@ export const configureNetwork = (configuration: MeetingConfiguration) => {
   const boundGetMeetingById = (meetingId: Hash | string) =>
     getMeetingById(meetingId, getStore().getState());
 
-  const addMeetingEvent = (laoId: Hash | string, meetingState: MeetingState) => {
-    dispatch(configuration.addEvent(laoId, Meeting.EVENT_TYPE, meetingState.id));
+  const addMeetingEvent = (laoId: Hash | string, meeting: Meeting) => {
+    const meetingState = meeting.toState();
+
+    dispatch(
+      configuration.addEvent(laoId, {
+        eventType: Meeting.EVENT_TYPE,
+        id: meetingState.id,
+        start: meetingState.start,
+        end: meetingState.end,
+      }),
+    );
     dispatch(addMeeting(meetingState));
   };
 
-  const updateMeetingEvent = (laoId: Hash | string, meetingState: MeetingState) => {
-    dispatch(configuration.addEvent(laoId, Meeting.EVENT_TYPE, meetingState.id));
+  const updateMeetingEvent = (meeting: Meeting) => {
+    const meetingState = meeting.toState();
+
+    dispatch(
+      configuration.updateEvent({
+        eventType: Meeting.EVENT_TYPE,
+        id: meetingState.id,
+        start: meetingState.start,
+        end: meetingState.end,
+      }),
+    );
     dispatch(updateMeeting(meetingState));
   };
 

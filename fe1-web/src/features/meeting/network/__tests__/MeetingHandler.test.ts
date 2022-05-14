@@ -130,7 +130,7 @@ describe('MeetingHandler', () => {
       ).toBeTrue();
 
       expect(mockAddEvent).toHaveBeenCalledTimes(1);
-      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoIdHash, mockMeeting.toState());
+      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoIdHash, mockMeeting);
     });
   });
 
@@ -234,7 +234,7 @@ describe('MeetingHandler', () => {
       ).toBeTrue();
 
       expect(mockUpdateEvent).toHaveBeenCalledTimes(1);
-      expect(mockUpdateEvent).toHaveBeenCalledWith(mockLaoIdHash, mockNewMeeting.toState());
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockNewMeeting);
     });
   });
 });
