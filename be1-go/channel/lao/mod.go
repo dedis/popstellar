@@ -117,9 +117,11 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	coinPath := fmt.Sprintf("%s/coin", channelID)
-	coinCh := coin.NewChannel(coinPath, hub, log)
-	hub.NotifyNewChannel(coinPath, coinCh, socket)
+	/*
+		coinPath := fmt.Sprintf("%s/coin", channelID)
+		coinCh := coin.NewChannel(coinPath, hub, log)
+		hub.NotifyNewChannel(coinPath, coinCh, socket)
+	*/
 
 	newChannel := &Channel{
 		channelID:       channelID,
@@ -447,6 +449,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		}
 	}
 
+	c.createCoinChannel(senderSocket, c.log)
+
 	return nil
 }
 
@@ -605,6 +609,14 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
+}
+
+// createCoinChannel creates a coin channel to handle digital cash project
+func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
+	channelID := c.channelID
+	coinPath := fmt.Sprintf("%s/coin", channelID)
+	coinCh := coin.NewChannel(coinPath, c.hub, log)
+	c.hub.NotifyNewChannel(coinPath, coinCh, socket)
 }
 
 // createElection creates an election in the LAO.

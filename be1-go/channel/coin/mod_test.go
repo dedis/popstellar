@@ -338,15 +338,15 @@ func Test_SendTransactionWrongId(t *testing.T) {
 
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
-	//Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=dBGU54vni3deHEebvJC2LcZbm0chV1GrJDGfMlJSLRc=
+	//Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
 	err = channel.Publish(message, socket.ClientSocket{})
 	require.EqualError(t, err, "failed to handle a publish message:"+
 		" failed to process message:"+
-		" failed to process action 'transaction#post':"+
-		" invalid transaction#post message:"+
+		" failed to process action 'coin#post_transaction':"+
+		" invalid Coin#PostTransaction message:"+
 		" Transaction Id is not valid,"+
 		" value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=,"+
-		" computed=dBGU54vni3deHEebvJC2LcZbm0chV1GrJDGfMlJSLRc=")
+		" computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
 }
 
 // Tests that the channel works correctly when it receives a transaction

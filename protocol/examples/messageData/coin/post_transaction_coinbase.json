@@ -1,10 +1,10 @@
 {
     "object": "coin",
     "action": "post_transaction",
-    "transaction_id": "zxNUqE_8PFK-Yb8LmXWtm4ZX0Mo6QsC3ugtg-9kRf4w=",
+    "transaction_id": "ifmcRwMQWiXyshJwsb7Aojw2G15kKUVGlOhQN_2DNB4=",
     "transaction": {
-	    "Version": 1,
-	    "TxIn": [{
+	    "version": 1,
+	    "inputs": [{
 		    "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 		    "tx_out_index": 0,
 		    "script": {
@@ -13,13 +13,13 @@
 			    "sig": "CAFEBABE"
 		    }
 	    }],
-	    "TxOut": [{
-		    "Value": 32,
-		    "Script": {
-			    "Type": "P2PKH",
-			    "PubkeyHash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+	    "outputs": [{
+		    "value": 32,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
 		    }
 	    }],
-	    "LockTime": 0
+	    "lock_time": 0
     }
 }
