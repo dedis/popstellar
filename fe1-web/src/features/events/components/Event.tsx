@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { ParagraphBlock } from 'core/components';
 import { Spacing } from 'core/styles';
-import { selectIsLaoOrganizer } from 'features/lao/reducer';
 
 import { EventHooks } from '../hooks';
 import eventViewStyles from '../styles/eventViewStyles';
@@ -17,7 +15,7 @@ import eventViewStyles from '../styles/eventViewStyles';
 const Event = (props: IPropTypes) => {
   const { eventId, eventType } = props;
 
-  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isOrganizer = EventHooks.useIsLaoOrganizer();
   const eventTypes = EventHooks.useEventTypes();
 
   const Component = useMemo(() => {
