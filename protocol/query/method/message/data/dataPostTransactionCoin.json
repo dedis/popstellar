@@ -61,7 +61,7 @@
                 "required": ["type", "pubkey", "sig"]
               }
             },
-            "required": ["script"]
+            "required": ["tx_out_hash", "tx_out_index", "script"]
           },
           "minItems": 1
         },

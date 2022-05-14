@@ -4,7 +4,15 @@
     "transaction_id": "zxNUqE_8PFK-Yb8LmXWtm4ZX0Mo6QsC3ugtg-9kRf4w=",
     "transaction": {
 	    "Version": 1,
-	    "TxIn": [],
+	    "TxIn": [{
+		    "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "tx_out_index": 0,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "sig": "CAFEBABE"
+		    }
+	    }],
 	    "TxOut": [{
 		    "Value": 32,
 		    "Script": {

@@ -203,7 +203,7 @@ func Test_SendTransaction(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -241,7 +241,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	var digitalCashChannelName = "/root/" + laoID + "/digitalCash/transaction"
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
 
 	keypair := generateKeyPair(t)
 
@@ -310,7 +310,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_wrong_transaction_id.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_wrong_transaction_id.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -374,7 +374,7 @@ func Test_SendTransactionMultInpAndOut(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_multipleinpandout.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_multipleinpandout.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -431,7 +431,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_coinbase.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_coinbase.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 

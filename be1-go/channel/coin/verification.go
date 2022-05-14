@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.TransactionPost) error {
+func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.PostTransaction) error {
 	c.log.Info().Msgf("verifying transaction#post message transaction_id validity %s",
 		transactionPost.TransactionId)
 
@@ -14,7 +14,7 @@ func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.Trans
 
 	version := strconv.Itoa(transactionPost.Transaction.Version)
 
-	var transactionIdBefHash = []string{locktime}
+	var transactionIdBefHash []string
 
 	for _, inp := range transactionPost.Transaction.Inputs {
 		pubKey := inp.Script.PubKey
@@ -33,6 +33,8 @@ func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.Trans
 		transactionIdBefHash = append(transactionIdBefHash, index)
 	}
 
+	transactionIdBefHash = append(transactionIdBefHash, locktime)
+
 	for _, out := range transactionPost.Transaction.Outputs {
 		pubKey := out.Script.PubKeyHash
 		transactionIdBefHash = append(transactionIdBefHash, pubKey)
@@ -45,6 +47,7 @@ func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.Trans
 	}
 
 	transactionIdBefHash = append(transactionIdBefHash, version)
+
 	computedTransactionId := messagedata.Hash(transactionIdBefHash...)
 
 	if transactionPost.TransactionId != computedTransactionId {

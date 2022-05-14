@@ -1,7 +1,7 @@
 package messagedata
 
 // TransactionPost defines a message data
-type TransactionPost struct {
+type PostTransaction struct {
 	Object        string      `json:"object"`
 	Action        string      `json:"action"`
 	TransactionId string      `json:"transaction_id"`
@@ -11,15 +11,15 @@ type TransactionPost struct {
 //Transaction define the input and output account for the transaction
 type Transaction struct {
 	Version  int      `json:"version"`
-	Inputs   []Input  `json:"txin"`  // min 1
-	Outputs  []Output `json:"txout"` //min 1
-	Locktime int      `json:"locktime"`
+	Inputs   []Input  `json:"inputs"`  // min 1
+	Outputs  []Output `json:"outputs"` //min 1
+	Locktime int      `json:"lock_time"`
 }
 
 // Input define the source from the money used in transaction
 type Input struct {
-	Hash   string       `json:"txouthash"`
-	Index  int          `json:"txoutindex"`
+	Hash   string       `json:"tx_out_hash"`
+	Index  int          `json:"tx_out_index"`
 	Script UnlockScript `json:"script"`
 }
 
@@ -31,28 +31,28 @@ type Output struct {
 
 // LockScript define the locking value for transaction
 type LockScript struct {
-	Type       string `json:"Type"`
-	PubKeyHash string `json:"PubkeyHash"`
+	Type       string `json:"type"`
+	PubKeyHash string `json:"pubkey_hash"`
 }
 
 // UnlockScript define the unlocking value for transaction
 type UnlockScript struct {
-	Type   string `json:"Type"`
-	PubKey string `json:"Pubkey"`
-	Sig    string `json:"Sig"`
+	Type   string `json:"type"`
+	PubKey string `json:"pubkey"`
+	Sig    string `json:"sig"`
 }
 
 // GetObject implements MessageData
-func (TransactionPost) GetObject() string {
-	return TransactionObject
+func (PostTransaction) GetObject() string {
+	return CoinObject
 }
 
 // GetAction implements MessageData
-func (TransactionPost) GetAction() string {
-	return TransactionActionPost
+func (PostTransaction) GetAction() string {
+	return CoinActionPostTransaction
 }
 
 // NewEmpty implements MessageData
-func (TransactionPost) NewEmpty() MessageData {
-	return &TransactionPost{}
+func (PostTransaction) NewEmpty() MessageData {
+	return &PostTransaction{}
 }

@@ -148,7 +148,7 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.TransactionPost{}, c.processTransactionPost)
+	registry.Register(messagedata.PostTransaction{}, c.processTransactionPost)
 
 	return registry
 }
@@ -208,12 +208,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 func (c *Channel) processTransactionPost(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.TransactionPost)
+	_, ok := msgData.(*messagedata.PostTransaction)
 	if !ok {
 		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}
 
-	var transactionData messagedata.TransactionPost
+	var transactionData messagedata.PostTransaction
 
 	err := msg.UnmarshalData(&transactionData)
 	if err != nil {
@@ -222,7 +222,7 @@ func (c *Channel) processTransactionPost(msg message.Message, msgData interface{
 
 	err = c.verifyMessageTransactionPost(transactionData)
 	if err != nil {
-		return xerrors.Errorf("invalid transaction#post message: %v", err)
+		return xerrors.Errorf("invalid Coin#PostTransaction message: %v", err)
 	}
 
 	return nil
