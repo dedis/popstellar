@@ -111,9 +111,7 @@ const EventList = () => {
     <SectionList
       sections={data}
       keyExtractor={(item) => item.id.valueOf()}
-      renderItem={({ item }) => (
-        <Event eventId={item.id} start={item.start} end={item.end} eventType={item.eventType} />
-      )}
+      renderItem={({ item }) => <Event eventId={item.id} eventType={item.eventType} />}
       renderSectionHeader={({ section: { title } }) => renderSectionHeader(title)}
     />
   );

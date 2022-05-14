@@ -13,7 +13,7 @@ import { makeMeetingSelector } from '../reducer';
  */
 
 const EventMeeting = (props: IPropTypes) => {
-  const { eventId: meetingId, start, end } = props;
+  const { eventId: meetingId } = props;
 
   const selectMeeting = useMemo(() => makeMeetingSelector(meetingId), [meetingId]);
   const meeting = useSelector(selectMeeting);
@@ -33,13 +33,8 @@ const EventMeeting = (props: IPropTypes) => {
 
 const propTypes = {
   eventId: PropTypes.string.isRequired,
-  start: PropTypes.number.isRequired,
-  end: PropTypes.number,
 };
 EventMeeting.propTypes = propTypes;
-EventMeeting.defaultProps = {
-  end: undefined,
-};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
@@ -53,7 +48,5 @@ export const MeetingEventType = {
   Component: EventMeeting as FunctionComponent<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
-    start: number;
-    end: number | null | undefined;
   }>,
 };

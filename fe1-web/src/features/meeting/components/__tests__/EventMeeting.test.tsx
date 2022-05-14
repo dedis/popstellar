@@ -40,11 +40,7 @@ describe('EventMeeting', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <EventMeeting
-            eventId={mockMeeting.id.valueOf()}
-            start={mockMeeting.start.valueOf()}
-            end={mockMeeting.end?.valueOf()}
-          />
+          <EventMeeting eventId={mockMeeting.id.valueOf()} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

@@ -93,12 +93,7 @@ describe('EventRollCall', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
     const Screen = () => (
-      <EventRollCall
-        eventId={mockRollCallCreated.id.valueOf()}
-        start={mockRollCallCreated.start.valueOf()}
-        end={mockRollCallCreated.end.valueOf()}
-        isOrganizer={false}
-      />
+      <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer={false} />
     );
     const obj = render(
       <Provider store={mockStore}>
@@ -114,14 +109,7 @@ describe('EventRollCall', () => {
   it('should call requestOpenRollCall when the open button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => (
-      <EventRollCall
-        eventId={mockRollCallCreated.id.valueOf()}
-        start={mockRollCallCreated.start.valueOf()}
-        end={mockRollCallCreated.end.valueOf()}
-        isOrganizer
-      />
-    );
+    const Screen = () => <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -138,14 +126,7 @@ describe('EventRollCall', () => {
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
 
-    const Screen = () => (
-      <EventRollCall
-        eventId={mockRollCallClosed.id.valueOf()}
-        start={mockRollCallClosed.start.valueOf()}
-        end={mockRollCallClosed.end.valueOf()}
-        isOrganizer
-      />
-    );
+    const Screen = () => <EventRollCall eventId={mockRollCallClosed.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -162,14 +143,7 @@ describe('EventRollCall', () => {
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
 
-    const Screen = () => (
-      <EventRollCall
-        eventId={mockRollCallOpened.id.valueOf()}
-        isOrganizer
-        start={mockRollCallOpened.start.valueOf()}
-        end={mockRollCallOpened.end.valueOf()}
-      />
-    );
+    const Screen = () => <EventRollCall eventId={mockRollCallOpened.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>

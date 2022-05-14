@@ -18,7 +18,7 @@ import { makeRollCallSelector } from '../reducer';
  * Component used to display a RollCall event in the LAO event list
  */
 const EventRollCall = (props: IPropTypes) => {
-  const { eventId: rollCallId, isOrganizer, start, end } = props;
+  const { eventId: rollCallId, isOrganizer } = props;
 
   const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
   const rollCall = useSelector(selectRollCall);
@@ -166,14 +166,11 @@ const EventRollCall = (props: IPropTypes) => {
 const propTypes = {
   eventId: PropTypes.string.isRequired,
   isOrganizer: PropTypes.bool,
-  start: PropTypes.number.isRequired,
-  end: PropTypes.number,
 };
 EventRollCall.propTypes = propTypes;
 
 EventRollCall.defaultProps = {
   isOrganizer: false,
-  end: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
@@ -188,7 +185,5 @@ export const RollCallEventType = {
   Component: EventRollCall as FunctionComponent<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
-    start: number;
-    end: number | null | undefined;
   }>,
 };

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { eventId: electionId, start, end, isOrganizer } = props;
+  const { eventId: electionId, isOrganizer } = props;
 
   const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
   const election = useSelector(selectElection);
@@ -182,13 +182,10 @@ const EventElection = (props: IPropTypes) => {
 const propTypes = {
   eventId: PropTypes.string.isRequired,
   isOrganizer: PropTypes.bool,
-  start: PropTypes.number.isRequired,
-  end: PropTypes.number,
 };
 EventElection.propTypes = propTypes;
 EventElection.defaultProps = {
   isOrganizer: false,
-  end: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
@@ -203,7 +200,5 @@ export const ElectionEventType = {
   Component: EventElection as FunctionComponent<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
-    start: number;
-    end: number | null | undefined;
   }>,
 };

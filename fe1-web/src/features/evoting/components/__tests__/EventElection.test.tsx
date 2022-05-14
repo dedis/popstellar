@@ -62,12 +62,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionNotStarted.id.valueOf()}
-              start={mockElectionNotStarted.start.valueOf()}
-              end={mockElectionNotStarted.end.valueOf()}
-              isOrganizer
-            />
+            <EventElection eventId={mockElectionNotStarted.id.valueOf()} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -78,11 +73,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionNotStarted.id.valueOf()}
-              start={mockElectionNotStarted.start.valueOf()}
-              end={mockElectionNotStarted.end.valueOf()}
-            />
+            <EventElection eventId={mockElectionNotStarted.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -99,12 +90,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionOpened.id.valueOf()}
-              start={mockElectionOpened.start.valueOf()}
-              end={mockElectionOpened.end.valueOf()}
-              isOrganizer
-            />
+            <EventElection eventId={mockElectionOpened.id.valueOf()} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -115,11 +101,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionOpened.id.valueOf()}
-              start={mockElectionOpened.start.valueOf()}
-              end={mockElectionOpened.end.valueOf()}
-            />
+            <EventElection eventId={mockElectionOpened.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -136,12 +118,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionTerminated.id.valueOf()}
-              start={mockElectionTerminated.start.valueOf()}
-              end={mockElectionTerminated.end.valueOf()}
-              isOrganizer
-            />
+            <EventElection eventId={mockElectionTerminated.id.valueOf()} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -152,11 +129,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionTerminated.id.valueOf()}
-              start={mockElectionTerminated.start.valueOf()}
-              end={mockElectionTerminated.end.valueOf()}
-            />
+            <EventElection eventId={mockElectionTerminated.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -173,12 +146,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionResults.id.valueOf()}
-              start={mockElectionResults.start.valueOf()}
-              end={mockElectionResults.end.valueOf()}
-              isOrganizer
-            />
+            <EventElection eventId={mockElectionResults.id.valueOf()} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -210,12 +178,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={undefinedElection.id.valueOf()}
-              start={undefinedElection.start.valueOf()}
-              end={undefinedElection.end.valueOf()}
-              isOrganizer
-            />
+            <EventElection eventId={undefinedElection.id.valueOf()} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -226,11 +189,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={undefinedElection.id.valueOf()}
-              start={undefinedElection.start.valueOf()}
-              end={undefinedElection.end.valueOf()}
-            />
+            <EventElection eventId={undefinedElection.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();

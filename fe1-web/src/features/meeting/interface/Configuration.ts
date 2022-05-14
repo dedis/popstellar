@@ -75,8 +75,6 @@ export interface MeetingInterface extends FeatureInterface {
     };
     Component: React.ComponentType<{
       eventId: string;
-      start: number;
-      end: number | null | undefined;
       isOrganizer: boolean | null | undefined;
     }>;
   }[];

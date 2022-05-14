@@ -15,7 +15,7 @@ import eventViewStyles from '../styles/eventViewStyles';
  * otherwise display its name and in all cases its nested events
  */
 const Event = (props: IPropTypes) => {
-  const { eventId, eventType, start, end } = props;
+  const { eventId, eventType } = props;
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const eventTypes = EventHooks.useEventTypes();
@@ -27,7 +27,7 @@ const Event = (props: IPropTypes) => {
   return (
     <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
       {Component ? (
-        <Component eventId={eventId} start={start} end={end} isOrganizer={isOrganizer} />
+        <Component eventId={eventId} isOrganizer={isOrganizer} />
       ) : (
         <ParagraphBlock text={`${eventType} (default event => no mapping in Event.tsx)`} />
       )}
@@ -38,14 +38,8 @@ const Event = (props: IPropTypes) => {
 const propTypes = {
   eventId: PropTypes.string.isRequired,
   eventType: PropTypes.string.isRequired,
-  start: PropTypes.number.isRequired,
-  end: PropTypes.number,
 };
 Event.propTypes = propTypes;
-
-Event.defaultProps = {
-  end: undefined,
-};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

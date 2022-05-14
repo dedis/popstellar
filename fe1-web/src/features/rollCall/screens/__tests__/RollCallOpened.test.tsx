@@ -12,7 +12,6 @@ import { PublicKey } from 'core/objects';
 import { eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 import {
-  mockRollCallState,
   mockRollCallWithAlias,
   mockRollCallWithAliasState,
 } from 'features/rollCall/__tests__/utils';
