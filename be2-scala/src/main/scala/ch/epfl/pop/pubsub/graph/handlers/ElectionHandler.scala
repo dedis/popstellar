@@ -46,22 +46,21 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val message: Message = rpcMessage.getParamsMessage.get
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
-
+    val keyPair = KeyPair()
     //need to write and propagate the election message
     val combined = for {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
+      _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
     } yield ()
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
         //generating pair of key, to send then the publickey to the frontend
-        val keyPair = KeyPair()
         val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
         dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
-
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }

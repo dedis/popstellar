@@ -48,7 +48,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   def parseHeader(data: String): Try[(ObjectType, ActionType)] =
     Try {
       data.parseJson.asJsObject.getFields(PARAM_OBJECT, PARAM_ACTION) match {
-        case Seq(objectString @ JsString(_), actionString @ JsString(_)) =>
+        case Seq(objectString@JsString(_), actionString@JsString(_)) =>
           (objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
         case _ => throw new IllegalArgumentException("parseHeader: header fields not found")
       }
@@ -60,9 +60,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   private def annotateHeader[T <: MessageData](fmt: RootJsonFormat[T]): RootJsonFormat[T] =
     new RootJsonFormat[T] {
       val inner = fmt
+
       override def read(json: JsValue): T = inner.read(json)
+
       override def write(obj: T): JsValue = inner.write(obj) match {
-        case JsObject(fields) => JsObject(fields.updated(PARAM_OBJECT,obj._object.toJson).updated(PARAM_ACTION,obj.action.toJson))
+        case JsObject(fields) => JsObject(fields.updated(PARAM_OBJECT, obj._object.toJson).updated(PARAM_ACTION, obj.action.toJson))
         case _ => throw new IllegalArgumentException("annotateHeader: inner format must produce an object")
       }
     }
@@ -291,6 +293,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, PostTransaction](PostTransaction.apply, "transaction")
 
+
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
     final private val PARAM_MESSAGES: String = "messages"
@@ -310,6 +313,27 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   }
 
+  implicit object ElectionDataFormat extends JsonFormat[ElectionData] {
+    final private val PARAM_ELECTION_ID: String = "electionId"
+    final private val PARAM_PRIVATE_KEY: String = "privateKey"
+    final private val PARAM_PUBLIC_KEY: String = "publicKey"
+
+    override def read(json: JsValue): ElectionData = json.asJsObject().getFields(PARAM_ELECTION_ID, PARAM_PRIVATE_KEY, PARAM_PUBLIC_KEY) match {
+      case Seq(electionId@JsString(_), privateKey@JsString(_), publicKey@JsString(_)) => ElectionData(
+        electionId.convertTo[Hash],
+        KeyPair(privateKey.convertTo[PrivateKey], publicKey.convertTo[PublicKey])
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a ChannelData object")
+    }
+
+    override def write(obj: ElectionData): JsValue = JsObject(
+      PARAM_ELECTION_ID -> obj.electionId.toJson,
+      PARAM_PRIVATE_KEY -> obj.keyPair.privateKey.toJson,
+      PARAM_PUBLIC_KEY -> obj.keyPair.publicKey.toJson
+    )
+
+  }
+
   implicit object LaoDataFormat extends JsonFormat[LaoData] {
     final private val PARAM_OWNER: String = "owner"
     final private val PARAM_ATTENDEES: String = "attendees"
@@ -321,8 +345,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       case Seq(owner@JsString(_), JsArray(attendees), privateKey@JsString(_), publicKey@JsString(_), JsArray(witnesses)) => LaoData(
         owner.convertTo[PublicKey],
         attendees.map(_.convertTo[PublicKey]).toList,
-        privateKey.convertTo[PrivateKey],
-        publicKey.convertTo[PublicKey],
+        KeyPair(privateKey.convertTo[PrivateKey], publicKey.convertTo[PublicKey]),
         witnesses.map(_.convertTo[PublicKey]).toList
       )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a LaoData object")
@@ -331,8 +354,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def write(obj: LaoData): JsValue = JsObject(
       PARAM_OWNER -> obj.owner.toJson,
       PARAM_ATTENDEES -> obj.attendees.toJson,
-      PARAM_PRIVATE_KEY -> obj.privateKey.toJson,
-      PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
+      PARAM_PRIVATE_KEY -> obj.keyPair.privateKey.toJson,
+      PARAM_PUBLIC_KEY -> obj.keyPair.publicKey.toJson,
       PARAM_WITNESSES -> obj.witnesses.toJson
     )
   }

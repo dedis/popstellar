@@ -12,18 +12,17 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 
 //a pair of byte arrays works better as keypair than the actual keypair object, since Ed25519Sign.Keypair isn't directly convertible to json with spray
 //FIXME: the private key should be stored in a secure way in the future
+
 /**
- * @param owner      : the LAO owner's public key, with which the signed messages can be authenticated
- * @param attendees  : list of the last roll call attendees
- * @param privateKey : the LAO's own private key, used to sign messages
- * @param publicKey  : the LAO's own public key, used to sign messages
- * @param witnesses  : the LAO's list of witnesses
+ * @param owner     : the LAO owner's public key, with which the signed messages can be authenticated
+ * @param attendees : list of the last roll call attendees
+ * @param keyPair   : the LAO's own keypair, used to sign messages
+ * @param witnesses : the LAO's list of witnesses
  */
 final case class LaoData(
                           owner: PublicKey,
                           attendees: List[PublicKey],
-                          privateKey: PrivateKey,
-                          publicKey: PublicKey,
+                          keyPair: KeyPair,
                           witnesses: List[PublicKey]
                         ) {
   def toJsonString: String = {
@@ -33,8 +32,8 @@ final case class LaoData(
 
   def updateWith(message: Message): LaoData = {
     message.decodedData.fold(this) {
-      case call: CloseRollCall => LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
-      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses)
+      case call: CloseRollCall => LaoData(owner, call.attendees, keyPair, witnesses)
+      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, keyPair, lao.witnesses)
       case _ => this
     }
   }
@@ -45,19 +44,16 @@ object LaoData extends Parsable {
   def apply(
              owner: PublicKey,
              attendees: List[PublicKey],
-             privateKey: PrivateKey,
-             publicKey: PublicKey,
+             keyPair: KeyPair,
              witnesses: List[PublicKey]
-           ): LaoData = {
-    new LaoData(owner, attendees, privateKey, publicKey, witnesses)
-  }
+           ): LaoData =
+    new LaoData(owner, attendees, keyPair, witnesses)
+
 
   // to simplify the use of updateWith during a CreateLao process, the keypair is generated here
   // in the same way as it would be elsewhere
-  def apply(): LaoData = {
-    val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty)
-  }
+  def apply(): LaoData =
+    LaoData(null, List.empty, KeyPair(), List.empty)
 
   override def buildFromJson(payload: String): LaoData = payload.parseJson.asJsObject.convertTo[LaoData] // doesn't decode data
 
