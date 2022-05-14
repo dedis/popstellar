@@ -11,7 +11,11 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
 import { eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
-import { mockRollCallState } from 'features/rollCall/__tests__/utils';
+import {
+  mockRollCallState,
+  mockRollCallWithAlias,
+  mockRollCallWithAliasState,
+} from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
 import { RollCall } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
@@ -46,8 +50,8 @@ jest.mock('react-native-toast-notifications', () => ({
 
 (mockRequestCloseRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
 
-const mockRollCall = RollCall.fromState({ ...mockRollCallState, attendees: [] });
-const rollCallID = mockRollCall.id.valueOf();
+const mockRollCall = RollCall.fromState({ ...mockRollCallWithAliasState, attendees: [] });
+const rollCallID = mockRollCallWithAlias.id.valueOf();
 
 // set up mock store
 const mockStore = createStore(
