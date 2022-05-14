@@ -27,6 +27,7 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
   const addElectionEvent = (laoId: Hash | string, election: Election) => {
     const electionState = election.toState();
 
+    dispatch(addElection(electionState));
     dispatch(
       configuration.addEvent(laoId, {
         eventType: Election.EVENT_TYPE,
@@ -35,12 +36,12 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         end: electionState.start,
       }),
     );
-    dispatch(addElection(electionState));
   };
 
   const updateElectionEvent = (election: Election) => {
     const electionState = election.toState();
 
+    dispatch(updateElection(electionState));
     dispatch(
       configuration.updateEvent({
         eventType: Election.EVENT_TYPE,
@@ -49,7 +50,6 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         end: electionState.start,
       }),
     );
-    dispatch(updateElection(electionState));
   };
 
   configuration.messageRegistry.add(

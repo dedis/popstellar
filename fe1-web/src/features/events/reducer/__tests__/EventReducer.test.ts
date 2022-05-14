@@ -31,7 +31,6 @@ describe('EventReducer', () => {
     expect(eventReduce(undefined, {} as AnyAction)).toEqual({
       byLaoId: {},
       byId: {},
-      idAlias: {},
     } as EventReducerState);
   });
 
@@ -45,7 +44,6 @@ describe('EventReducer', () => {
             },
           },
           byId: {},
-          idAlias: {},
         } as EventReducerState,
         addEvent(mockLaoId, {
           eventType: RollCall.EVENT_TYPE,
@@ -70,9 +68,6 @@ describe('EventReducer', () => {
           end: mockRollCallWithAlias.end.valueOf(),
         },
       },
-      idAlias: {
-        [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
-      },
     } as EventReducerState);
   });
 
@@ -92,7 +87,6 @@ describe('EventReducer', () => {
               idAlias: undefined,
             },
           },
-          idAlias: {},
         } as EventReducerState,
         updateEvent({
           eventType: RollCall.EVENT_TYPE,
@@ -117,9 +111,6 @@ describe('EventReducer', () => {
           end: mockRollCallWithAlias.end.valueOf(),
         },
       },
-      idAlias: {
-        [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-      },
     } as EventReducerState);
   });
 
@@ -139,9 +130,6 @@ describe('EventReducer', () => {
               idAlias: mockRollCallWithAliasState.idAlias,
             },
           },
-          idAlias: {
-            [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-          },
         } as EventReducerState,
         removeEvent(mockLaoId, mockRollCallState.id),
       ),
@@ -152,7 +140,6 @@ describe('EventReducer', () => {
         },
       },
       byId: {},
-      idAlias: {},
     } as EventReducerState);
   });
 
@@ -176,16 +163,12 @@ describe('EventReducer', () => {
               id: mockRollCallState2.id,
             },
           },
-          idAlias: {
-            [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-          },
         } as EventReducerState,
         clearAllEvents(),
       ),
     ).toEqual({
       byLaoId: {},
       byId: {},
-      idAlias: {},
     } as EventReducerState);
   });
 });
@@ -218,9 +201,6 @@ const filledState = {
         id: mockElectionNotStarted.id.valueOf(),
       },
     },
-    idAlias: {
-      [mockRollCallWithAliasState.idAlias]: mockRollCallState.id,
-    },
   } as EventReducerState,
 };
 
@@ -237,8 +217,12 @@ describe('makeEventListSelector', () => {
     ]);
   });
 
-  it('should throw an error if the given laoId is not stored', () => {
-    expect(() => makeEventListSelector(mockLaoId)({ byLaoId: {} } as EventReducerState)).toThrow();
+  it('should return an empty list if the given laoId is not stored', () => {
+    expect(
+      makeEventListSelector(mockLaoId)({
+        [EVENT_REDUCER_PATH]: { byLaoId: {} } as EventReducerState,
+      }),
+    ).toEqual([]);
   });
 });
 

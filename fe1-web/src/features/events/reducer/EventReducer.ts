@@ -27,18 +27,6 @@ export interface EventReducerState {
   };
 
   /**
-   * idAlias stores the ID aliases.
-   *
-   * @remarks
-   *
-   * If a new message (with a new_id) changes the state of an event (with old_id),
-   * this map associates new_id -> old_id.
-   * This ensures that we can keep only one event in memory, with its up-to-date state,
-   * but future messages can refer to new_id as needed.
-   */
-  idAlias: Record<string, string>;
-
-  /**
    * byId maps an event ID to the event state itself
    */
   byId: Record<string, EventState>;
@@ -49,7 +37,6 @@ export const EVENT_REDUCER_PATH = 'event';
 const initialState: EventReducerState = {
   byLaoId: {},
   byId: {},
-  idAlias: {},
 };
 
 const eventSlice = createSlice({
@@ -83,9 +70,6 @@ const eventSlice = createSlice({
 
         state.byLaoId[laoId].allIds.push(event.id);
         state.byId[event.id] = event;
-        if (event.idAlias) {
-          state.idAlias[event.idAlias] = event.id;
-        }
       },
     },
 
@@ -103,15 +87,7 @@ const eventSlice = createSlice({
           throw new Error(`Tried to update inexistent event with id ${event.id}`);
         }
 
-        const oldAlias = state.byId[event.id].idAlias;
-        if (oldAlias) {
-          delete state.idAlias[oldAlias];
-        }
-
         state.byId[event.id] = event;
-        if (event.idAlias) {
-          state.idAlias[event.idAlias] = event.id;
-        }
       },
     },
 
@@ -137,11 +113,6 @@ const eventSlice = createSlice({
           throw new Error(`Tried to remove inexistent event with id ${eventId}`);
         }
 
-        const alias = state.byId[eventId].idAlias;
-        if (alias) {
-          delete state.idAlias[alias];
-        }
-
         delete state.byId[eventId];
         state.byLaoId[laoId].allIds = state.byLaoId[laoId].allIds.filter((e) => e !== eventId);
       },
@@ -151,7 +122,6 @@ const eventSlice = createSlice({
     clearAllEvents: (state) => {
       state.byLaoId = {};
       state.byId = {};
-      state.idAlias = {};
     },
   },
 });
@@ -167,14 +137,16 @@ export const getEventState = (state: any): EventReducerState => state[EVENT_REDU
 export const makeEventListSelector = (laoId: string) =>
   createSelector(
     // First input: Get all events across all LAOs
-    (state) => getEventState(state),
+    (state) => getEventState(state).byLaoId[laoId]?.allIds,
+    // First input: Get all events across all LAOs
+    (state) => getEventState(state).byId,
     // Selector: returns an array of EventStates -- should it return an array of Event objects?
-    (eventMap: EventReducerState): EventState[] => {
-      if (!(laoId in eventMap.byLaoId)) {
-        throw new Error(`Tried to retrive event list for inexistent lao with id ${laoId}`);
+    (allIds: string[] | undefined, byId): EventState[] => {
+      if (!allIds) {
+        return [];
       }
 
-      return eventMap.byLaoId[laoId].allIds.map((id) => eventMap.byId[id]);
+      return allIds.map((id) => byId[id]);
     },
   );
 
@@ -189,18 +161,8 @@ export const makeEventSelector = (eventId: Hash | string | undefined) => {
   return createSelector(
     // First input: Get all events for a given lao
     (state) => getEventState(state).byId,
-    // Second input: Alias for the given event id
-    (state) => getEventState(state).idAlias[eventIdString],
     // Selector: returns the state of a given event
-    (eventsById, idAlias: string | undefined): EventState | undefined => {
-      if (idAlias) {
-        if (!(idAlias in eventsById)) {
-          return undefined;
-        }
-
-        return eventsById[idAlias];
-      }
-
+    (eventsById): EventState | undefined => {
       if (!eventIdString || !(eventIdString in eventsById)) {
         return undefined;
       }
@@ -220,15 +182,6 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
   const eventIdString = eventId?.valueOf() || 'undefined';
   const eventState = getEventState(state);
   const eventsById = eventState.byId;
-  const idAlias = eventState.idAlias[eventIdString];
-
-  if (idAlias) {
-    if (!(idAlias in eventsById)) {
-      return undefined;
-    }
-
-    return eventsById[idAlias];
-  }
 
   if (!eventIdString || !(eventIdString in eventsById.byId)) {
     return undefined;

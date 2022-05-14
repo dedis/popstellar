@@ -17,11 +17,22 @@ import { RollCall, RollCallState } from '../objects';
 export interface RollCallReducerState {
   byId: Record<string, RollCallState>;
   allIds: string[];
+
+  /**
+   * idAlias stores the ID aliases.
+   * @remarks
+   * If a new message (with a new_id) changes the state of an event (with old_id),
+   * this map associates new_id -> old_id.
+   * This ensures that we can keep only one event in memory, with its up-to-date state,
+   * but future messages can refer to new_id as needed.
+   */
+  idAlias: Record<string, string>;
 }
 
 const initialState: RollCallReducerState = {
   byId: {},
   allIds: [],
+  idAlias: {},
 };
 
 export const ROLLCALL_REDUCER_PATH = 'rollcall';
@@ -39,6 +50,9 @@ const rollcallSlice = createSlice({
 
       state.allIds.push(newRollCall.id);
       state.byId[newRollCall.id] = newRollCall;
+      if (newRollCall.idAlias) {
+        state.idAlias[newRollCall.idAlias] = newRollCall.id;
+      }
     },
 
     updateRollCall: (state: Draft<RollCallReducerState>, action: PayloadAction<RollCallState>) => {
@@ -48,7 +62,15 @@ const rollcallSlice = createSlice({
         throw new Error(`Tried to update inexistent rollcall with id ${updatedRollCall.id}`);
       }
 
+      const oldAlias = state.byId[updatedRollCall.id].idAlias;
+      if (oldAlias) {
+        delete state.idAlias[oldAlias];
+      }
+
       state.byId[updatedRollCall.id] = updatedRollCall;
+      if (updatedRollCall.idAlias) {
+        state.idAlias[updatedRollCall.idAlias] = updatedRollCall.id;
+      }
     },
 
     removeRollCall: (state, action: PayloadAction<Hash | string>) => {
@@ -56,6 +78,11 @@ const rollcallSlice = createSlice({
 
       if (!(rollcallId in state.byId)) {
         throw new Error(`Tried to delete inexistent rollcall with id ${rollcallId}`);
+      }
+
+      const alias = state.byId[rollcallId].idAlias;
+      if (alias) {
+        delete state.idAlias[alias];
       }
 
       delete state.byId[rollcallId];
@@ -80,13 +107,26 @@ export default {
  * @returns The selector
  */
 export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
-  const rollCallIdString = rollCallId?.valueOf();
+  const rollCallIdString = rollCallId?.valueOf() || 'undefined';
 
   return createSelector(
     // First input: map from ids to rollcalls
     (state) => getRollCallState(state).byId,
+    // Second input: Alias for the given event id
+    (state) => getRollCallState(state).idAlias[rollCallIdString],
     // Selector: returns the selected rollcall
-    (rollcallById: Record<string, RollCallState>): RollCall | undefined => {
+    (
+      rollcallById: Record<string, RollCallState>,
+      idAlias: string | undefined,
+    ): RollCall | undefined => {
+      if (idAlias) {
+        if (!(idAlias in rollcallById)) {
+          return undefined;
+        }
+
+        return RollCall.fromState(rollcallById[idAlias]);
+      }
+
       if (!rollCallIdString || !(rollCallIdString in rollcallById)) {
         return undefined;
       }
@@ -133,6 +173,15 @@ export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
   const rollCallIdString = rollCallId.valueOf();
 
   const rollcallById = getRollCallState(state).byId;
+  const idAlias = getRollCallState(state).idAlias[rollCallIdString];
+
+  if (idAlias) {
+    if (!(idAlias in rollcallById)) {
+      return undefined;
+    }
+
+    return RollCall.fromState(rollcallById[idAlias]);
+  }
 
   if (!(rollCallIdString in rollcallById)) {
     return undefined;

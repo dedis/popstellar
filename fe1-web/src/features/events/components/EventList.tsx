@@ -57,8 +57,13 @@ const categorizeEventsByTime = (time: number, events: EventState[]) => {
  * Nested events should be in the children value of the parent event.
  */
 const EventList = () => {
-  const laoId = '';
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId), [laoId]);
+  const laoId = EventHooks.useCurrentLaoId();
+
+  if (!laoId) {
+    throw new Error('Cannot show an event list if you are not connected to a lao!');
+  }
+
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
   const events = useSelector(eventListSelector);
   const [pastEvents, currentEvents, futureEvents] = categorizeEventsByTime(
     Timestamp.EpochNow().valueOf(),

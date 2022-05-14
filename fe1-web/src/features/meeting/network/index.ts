@@ -21,6 +21,7 @@ export const configureNetwork = (configuration: MeetingConfiguration) => {
   const addMeetingEvent = (laoId: Hash | string, meeting: Meeting) => {
     const meetingState = meeting.toState();
 
+    dispatch(addMeeting(meetingState));
     dispatch(
       configuration.addEvent(laoId, {
         eventType: Meeting.EVENT_TYPE,
@@ -29,12 +30,12 @@ export const configureNetwork = (configuration: MeetingConfiguration) => {
         end: meetingState.end,
       }),
     );
-    dispatch(addMeeting(meetingState));
   };
 
   const updateMeetingEvent = (meeting: Meeting) => {
     const meetingState = meeting.toState();
 
+    dispatch(updateMeeting(meetingState));
     dispatch(
       configuration.updateEvent({
         eventType: Meeting.EVENT_TYPE,
@@ -43,7 +44,6 @@ export const configureNetwork = (configuration: MeetingConfiguration) => {
         end: meetingState.end,
       }),
     );
-    dispatch(updateMeeting(meetingState));
   };
 
   configuration.messageRegistry.add(

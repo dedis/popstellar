@@ -15,6 +15,11 @@ export namespace EventHooks {
   };
 
   /**
+   * Gets the current lao id
+   */
+  export const useCurrentLaoId = () => useEventsContext().useCurrentLaoId();
+
+  /**
    * Gets whether the current user is organizer of the current lao
    * @returns Whether the current user is organizer of the current lao
    */

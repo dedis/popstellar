@@ -34,6 +34,7 @@ export function compose(config: EventsCompositionConfiguration): EventsCompositi
   return {
     identifier: EVENTS_FEATURE_IDENTIFIER,
     context: {
+      useCurrentLaoId: config.useCurrentLaoId,
       useIsLaoOrganizer: config.useIsLaoOrganizer,
       eventTypes: config.eventTypes,
     },

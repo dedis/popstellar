@@ -120,6 +120,7 @@ export function configureFeatures() {
       ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
 
   const laoComposition = lao.compose({

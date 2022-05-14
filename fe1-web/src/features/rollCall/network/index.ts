@@ -28,6 +28,7 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
   const addRollCallEvent = (laoId: Hash | string, rollCall: RollCall) => {
     const rollCallState = rollCall.toState();
 
+    dispatch(addRollCall(rollCallState));
     dispatch(
       configuration.addEvent(laoId, {
         eventType: RollCall.EVENT_TYPE,
@@ -37,12 +38,12 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         end: rollCall.end.valueOf(),
       }),
     );
-    dispatch(addRollCall(rollCallState));
   };
 
   const updateRollCallEvent = (rollCall: RollCall) => {
     const rollCallState = rollCall.toState();
 
+    dispatch(updateRollCall(rollCallState));
     dispatch(
       configuration.updateEvent({
         eventType: RollCall.EVENT_TYPE,
@@ -52,7 +53,6 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         end: rollCall.end.valueOf(),
       }),
     );
-    dispatch(updateRollCall(rollCallState));
   };
 
   configuration.messageRegistry.add(
