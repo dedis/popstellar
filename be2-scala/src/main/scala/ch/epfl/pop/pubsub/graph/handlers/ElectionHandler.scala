@@ -53,7 +53,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
       _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
-    } yield ()
+      electionData <- dbActor ? DbActor.ReadElectionData(electionId)
+    }
+    yield electionData
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>

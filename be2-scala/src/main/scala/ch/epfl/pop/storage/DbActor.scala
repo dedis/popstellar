@@ -76,8 +76,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readElectionData(electionId: Hash): ElectionData = {
-    val channel = Channel(s"$ROOT_CHANNEL_PREFIX/private/${electionId.toString}")
-    Try(storage.read(channel.toString)) match {
+    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex) => throw ex
@@ -142,7 +141,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def createElectionData(electionId: Hash, keyPair: KeyPair): Unit = {
-    val channel = Channel(s"$ROOT_CHANNEL_PREFIX/private/${electionId.toString}")
+    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
