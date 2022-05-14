@@ -157,11 +157,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection
-              eventId={mockElectionResults.id.valueOf()}
-              start={mockElectionResults.start.valueOf()}
-              end={mockElectionResults.end.valueOf()}
-            />
+            <EventElection eventId={mockElectionResults.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
