@@ -13,7 +13,6 @@ export enum ElectionStatus {
 
 export interface ElectionState {
   id: string;
-  idAlias?: string;
   lao: string;
   name: string;
   version: string;

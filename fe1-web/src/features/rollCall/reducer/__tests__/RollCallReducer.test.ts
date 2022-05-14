@@ -21,6 +21,7 @@ describe('RollCallReducer', () => {
     expect(rollcallReduce(undefined, {} as AnyAction)).toEqual({
       byId: {},
       allIds: [],
+      idAlias: {},
     } as RollCallReducerState);
   });
 
@@ -31,6 +32,7 @@ describe('RollCallReducer', () => {
           {
             byId: {},
             allIds: [],
+            idAlias: {},
           } as RollCallReducerState,
           addRollCall(mockRollCallState),
         ),
@@ -39,6 +41,7 @@ describe('RollCallReducer', () => {
           [mockRollCallState.id]: mockRollCallState,
         },
         allIds: [mockRollCallState.id],
+        idAlias: {},
       } as RollCallReducerState);
     });
 
@@ -50,6 +53,7 @@ describe('RollCallReducer', () => {
               [mockRollCallState.id]: mockRollCallState,
             },
             allIds: [mockRollCallState.id],
+            idAlias: {},
           } as RollCallReducerState,
           addRollCall(mockRollCallState),
         ),
@@ -66,6 +70,7 @@ describe('RollCallReducer', () => {
               [mockRollCallState.id]: mockRollCallState,
             },
             allIds: [mockRollCallState.id],
+            idAlias: {},
           } as RollCallReducerState,
           updateRollCall(mockRollCallState2),
         ),
@@ -74,6 +79,7 @@ describe('RollCallReducer', () => {
           [mockRollCallState.id]: mockRollCallState2,
         },
         allIds: [mockRollCallState.id],
+        idAlias: {},
       } as RollCallReducerState);
     });
 
@@ -83,6 +89,7 @@ describe('RollCallReducer', () => {
           {
             byId: {},
             allIds: [],
+            idAlias: {},
           } as RollCallReducerState,
           updateRollCall(mockRollCallState),
         ),
@@ -99,12 +106,14 @@ describe('RollCallReducer', () => {
               [mockRollCallState.id]: mockRollCallState,
             },
             allIds: [mockRollCallState.id],
+            idAlias: {},
           } as RollCallReducerState,
           removeRollCall(mockRollCallState.id),
         ),
       ).toEqual({
         byId: {},
         allIds: [],
+        idAlias: {},
       } as RollCallReducerState);
     });
 
@@ -114,6 +123,7 @@ describe('RollCallReducer', () => {
           {
             byId: {},
             allIds: [],
+            idAlias: {},
           } as RollCallReducerState,
           removeRollCall(mockRollCallState.id),
         ),
@@ -127,6 +137,7 @@ describe('RollCallReducer', () => {
         [ROLLCALL_REDUCER_PATH]: {
           byId: { [mockRollCallState.id]: mockRollCallState },
           allIds: [mockRollCallState.id],
+          idAlias: {},
         } as RollCallReducerState,
       });
       expect(rollcall).toBeInstanceOf(RollCall);
@@ -138,6 +149,7 @@ describe('RollCallReducer', () => {
         [ROLLCALL_REDUCER_PATH]: {
           byId: {},
           allIds: [],
+          idAlias: {},
         } as RollCallReducerState,
       });
       expect(rollcall).toBeUndefined();
@@ -151,6 +163,7 @@ describe('RollCallReducer', () => {
           [ROLLCALL_REDUCER_PATH]: {
             byId: { [mockRollCallState.id]: mockRollCallState },
             allIds: [mockRollCallState.id],
+            idAlias: {},
           } as RollCallReducerState,
         }),
       ).toEqual(mockRollCall.attendees);

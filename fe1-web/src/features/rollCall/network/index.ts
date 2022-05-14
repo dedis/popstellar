@@ -33,7 +33,6 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
       configuration.addEvent(laoId, {
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
-        idAlias: rollCallState.idAlias,
         start: rollCall.start.valueOf(),
         end: rollCall.end.valueOf(),
       }),
@@ -48,7 +47,6 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
       configuration.updateEvent({
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
-        idAlias: rollCallState.idAlias,
         start: rollCall.start.valueOf(),
         end: rollCall.end.valueOf(),
       }),

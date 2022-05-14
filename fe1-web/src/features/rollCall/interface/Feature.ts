@@ -10,7 +10,6 @@ export namespace RollCallFeature {
   export interface EventState {
     eventType: string;
     id: string;
-    idAlias?: string;
 
     start: number;
     end?: number;

@@ -105,7 +105,6 @@ export async function createDummyWalletState() {
     addEvent(mockLao.id, {
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCall0.id.valueOf(),
-      idAlias: mockRollCall0.idAlias?.valueOf(),
       start: mockRollCall0.proposedStart.valueOf(),
       end: mockRollCall0.proposedEnd.valueOf(),
     }),
@@ -116,7 +115,7 @@ export async function createDummyWalletState() {
     addEvent(mockLao.id, {
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCall0.id.valueOf(),
-      idAlias: mockRollCall0.idAlias?.valueOf(),
+
       start: mockRollCall0.proposedStart.valueOf(),
       end: mockRollCall0.proposedEnd.valueOf(),
     }),

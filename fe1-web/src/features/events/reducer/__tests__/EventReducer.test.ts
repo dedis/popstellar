@@ -48,7 +48,6 @@ describe('EventReducer', () => {
         addEvent(mockLaoId, {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
-          idAlias: mockRollCallWithAliasState.idAlias,
           start: mockRollCallWithAlias.start.valueOf(),
           end: mockRollCallWithAlias.end.valueOf(),
         }),
@@ -63,7 +62,6 @@ describe('EventReducer', () => {
         [mockRollCallWithAliasState.id]: {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
-          idAlias: mockRollCallWithAliasState.idAlias,
           start: mockRollCallWithAlias.start.valueOf(),
           end: mockRollCallWithAlias.end.valueOf(),
         },
@@ -84,14 +82,12 @@ describe('EventReducer', () => {
             [mockRollCallState.id]: {
               eventType: RollCall.EVENT_TYPE,
               id: mockRollCallState.id,
-              idAlias: undefined,
             },
           },
         } as EventReducerState,
         updateEvent({
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
-          idAlias: mockRollCallWithAliasState.idAlias,
           start: mockRollCallWithAlias.start.valueOf(),
           end: mockRollCallWithAlias.end.valueOf(),
         }),
@@ -106,7 +102,6 @@ describe('EventReducer', () => {
         [mockRollCallState.id]: {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallState.id,
-          idAlias: mockRollCallWithAliasState.idAlias,
           start: mockRollCallWithAlias.start.valueOf(),
           end: mockRollCallWithAlias.end.valueOf(),
         },
@@ -127,7 +122,6 @@ describe('EventReducer', () => {
             [mockRollCallState.id]: {
               eventType: RollCall.EVENT_TYPE,
               id: mockRollCallState.id,
-              idAlias: mockRollCallWithAliasState.idAlias,
             },
           },
         } as EventReducerState,
@@ -156,7 +150,6 @@ describe('EventReducer', () => {
             [mockRollCallState.id]: {
               eventType: RollCall.EVENT_TYPE,
               id: mockRollCallState.id,
-              idAlias: mockRollCallWithAliasState.idAlias,
             },
             [mockRollCallState2.id]: {
               eventType: RollCall.EVENT_TYPE,
@@ -187,7 +180,6 @@ const filledState = {
       [mockRollCallWithAliasState.id]: {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallWithAliasState.id,
-        idAlias: mockRollCallWithAliasState.idAlias,
         start: mockRollCallWithAlias.start.valueOf(),
         end: mockRollCallWithAlias.end.valueOf(),
       },
@@ -210,7 +202,6 @@ describe('makeEventListSelector', () => {
       {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallState.id,
-        idAlias: mockRollCallWithAliasState.idAlias,
         start: mockRollCallWithAlias.start.valueOf(),
         end: mockRollCallWithAlias.end.valueOf(),
       },
@@ -231,7 +222,6 @@ describe('makeEventSelector', () => {
     expect(makeEventSelector(mockRollCallState.id)(filledState)).toEqual({
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCallState.id,
-      idAlias: mockRollCallWithAliasState.idAlias,
       start: mockRollCallWithAlias.start.valueOf(),
       end: mockRollCallWithAlias.end.valueOf(),
     });
@@ -255,7 +245,6 @@ describe('makeEventByTypeSelector', () => {
         [mockRollCallWithAliasState.id]: {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
-          idAlias: mockRollCallWithAliasState.idAlias,
           start: mockRollCallWithAlias.start.valueOf(),
           end: mockRollCallWithAlias.end.valueOf(),
         },

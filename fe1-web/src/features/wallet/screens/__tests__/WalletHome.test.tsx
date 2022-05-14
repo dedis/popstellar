@@ -116,7 +116,6 @@ describe('Wallet home', () => {
       addEvent(mockLaoId, {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallState.id,
-        idAlias: mockRollCallState.idAlias,
         start: mockRollCallState.proposedStart,
         end: mockRollCallState.proposedEnd,
       }),
