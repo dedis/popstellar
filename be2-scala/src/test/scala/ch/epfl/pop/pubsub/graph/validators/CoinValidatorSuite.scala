@@ -17,12 +17,12 @@ import util.examples.data.PostTransactionMessages._
 
 import scala.reflect.io.Directory
 
-class CashValidatorSuite extends TestKit(ActorSystem("cashValidatorTestActorSystem"))
+class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSystem"))
   with FunSuiteLike
   with ImplicitSender
   with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
-  final val DB_TEST_FOLDER: String = "databaseCashTest"
+  final val DB_TEST_FOLDER: String = "databaseCoinTest"
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
@@ -37,25 +37,25 @@ class CashValidatorSuite extends TestKit(ActorSystem("cashValidatorTestActorSyst
   }
 
   test("Posting a transaction works as intended") {
-    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
     message should equal(Left(postTransaction))
   }
 
   test("Posting a large transaction works as intended") {
     val postTransaction = postTransactionMaxAmount
-    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
     message should equal(Left(postTransaction))
   }
 
   test("Posting a transaction with a zero amount succeeds") {
     val postTransaction = postTransactionZeroAmount
-    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
     message should equal(Left(postTransaction))
   }
 
   test("Posting a transaction with an incorrect ID does not work") {
     val postTransaction = postTransactionWrongTransactionId
-    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
     message should matchPattern { case Right(_) => }
   }
 

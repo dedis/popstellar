@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
-import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
@@ -91,7 +91,7 @@ object MessageRegistry {
     register.add((ObjectType.REACTION, ActionType.DELETE), createSchemaVerifier("dataDeleteReaction.json"), DeleteReaction.buildFromJson, SocialMediaValidator.validateDeleteReaction, SocialMediaHandler.handleDeleteReaction)
 
     // data digital cash
-    register.add((ObjectType.TRANSACTION, ActionType.POST), createSchemaVerifier("dataCashTransaction.json"), PostTransaction.buildFromJson, CashValidator.validatePostTransaction, CashHandler.handlePostTransaction)
+    register.add((ObjectType.TRANSACTION, ActionType.POST), createSchemaVerifier("dataPostTransactionCoin.json"), PostTransaction.buildFromJson, CoinValidator.validatePostTransaction, CoinHandler.handlePostTransaction)
 
     new MessageRegistry(register.get)
   }

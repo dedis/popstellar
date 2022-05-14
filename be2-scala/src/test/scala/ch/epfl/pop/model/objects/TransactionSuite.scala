@@ -4,7 +4,7 @@ import org.scalatest.{FunSuite, Matchers}
 import util.examples.data.PostTransactionMessages
 import ch.epfl.pop.model.objects.Transaction
 import scala.collection.immutable.SortedMap
-import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 
 class TransactionSuite extends FunSuite with Matchers {
   test("transaction_id computes the correct hash") {

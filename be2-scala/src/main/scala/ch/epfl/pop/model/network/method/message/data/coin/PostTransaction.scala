@@ -1,4 +1,4 @@
-package ch.epfl.pop.model.network.method.message.data.cash
+package ch.epfl.pop.model.network.method.message.data.coin
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable

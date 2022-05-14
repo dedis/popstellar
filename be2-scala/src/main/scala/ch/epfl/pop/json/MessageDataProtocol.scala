@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.cash._
+import ch.epfl.pop.model.network.method.message.data.coin._
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
