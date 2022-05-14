@@ -1,12 +1,12 @@
 import React from 'react';
 
-import AttendeeScreen from './AttendeeScreen';
+import AttendeeEventsScreen from './AttendeeEventsScreen';
 
 /**
  * OrganizerScreen: lists editable LAO properties and past/ongoing/future events
  *
  * Currently just a simple clone of the AttendeeScreen screen
  */
-const OrganizerScreen = () => <AttendeeScreen />;
+const OrganizerScreen = () => <AttendeeEventsScreen />;
 
 export default OrganizerScreen;

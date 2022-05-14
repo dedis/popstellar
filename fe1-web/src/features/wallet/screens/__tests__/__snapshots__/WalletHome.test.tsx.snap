@@ -329,8 +329,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             Object {
                               "fontSize": 25,
                               "fontWeight": "bold",
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
                             }
                           }
                         >
@@ -349,8 +348,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                           style={
                             Object {
                               "fontSize": 25,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
                             }
                           }
                         >

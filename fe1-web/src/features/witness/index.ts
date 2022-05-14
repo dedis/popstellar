@@ -1,5 +1,7 @@
+import { WitnessNotificationType } from './components';
 import { WitnessConfiguration, WitnessInterface, WITNESS_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
+import { witnessReducer } from './reducer';
 
 /**
  * Configures the witness feature
@@ -12,8 +14,18 @@ export function configure(configuration: WitnessConfiguration): WitnessInterface
 
   return {
     identifier: WITNESS_FEATURE_IDENTIFIER,
+
+    notificationTypes: [WitnessNotificationType],
+
     context: {
-      useCurrentLao: configuration.useCurrentLao,
+      enabled: configuration.enabled,
+      useCurrentLaoId: configuration.useCurrentLaoId,
+      addNotification: configuration.addNotification,
+      discardNotifications: configuration.discardNotifications,
+      markNotificationAsRead: configuration.markNotificationAsRead,
+    },
+    reducers: {
+      ...witnessReducer,
     },
   };
 }
