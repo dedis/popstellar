@@ -3,15 +3,23 @@
     "action": "post_transaction",
     "transaction_id": "zxNUqE_8PFK-Yb8LmXWtm4ZX0Mo6QsC3ugtg-9kRf4w=",
     "transaction": {
-	    "Version": 1,
-	    "TxIn": [],
-	    "TxOut": [{
-		    "Value": 32,
-		    "Script": {
-			    "Type": "P2PKH",
-			    "PubkeyHash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
-		    }
-	    }],
-	    "LockTime": 0
-    }
+	    "version": 1,
+	    "inputs": [{
+		    "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		    "tx_out_index": 0,  
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+			    "sig": "CAFEBABE"
+			}
+		}],
+	    "outputs": [{
+		    "value": 32,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+			}
+		}],
+	    "lock_time": 0
+	}
 }

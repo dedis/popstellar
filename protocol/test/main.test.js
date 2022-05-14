@@ -181,8 +181,8 @@ test("message data: cash", () => {
     cash_transaction = require("../examples/messageData/coin/post_transaction.json")
     expect(cash_transaction).toBeValid(messageDataSchema)
 
-    //cash_transaction_coinbase = require("../examples/messageData/coin/post_transaction_coinbase.json")
-    //expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
+    cash_transaction_coinbase = require("../examples/messageData/coin/post_transaction_coinbase.json")
+    expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
 
     cash_transaction_multipleinandout = require("../examples/messageData/coin/post_transaction_multipleinpandout.json")
     expect(cash_transaction_multipleinandout).toBeValid(messageDataSchema)
