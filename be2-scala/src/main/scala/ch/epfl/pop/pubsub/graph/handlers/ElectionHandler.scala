@@ -6,10 +6,9 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -58,10 +57,10 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
         //generating pair of key, to send then the publickey to the frontend
-        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-        val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
+        val keyPair = KeyPair()
+        val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
         val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-          dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+        dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
 
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
@@ -91,7 +90,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.result(ask, duration)
   }
 
-   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
