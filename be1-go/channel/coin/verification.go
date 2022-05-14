@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-func (c *Channel) verifyMessageTransactionPost(transactionPost messagedata.PostTransaction) error {
-	c.log.Info().Msgf("verifying transaction#post message transaction_id validity %s",
+func (c *Channel) verifyMessagePostTransaction(transactionPost messagedata.PostTransaction) error {
+	c.log.Info().Msgf("verifying coin#postTransaction message transaction_id validity %s",
 		transactionPost.TransactionId)
 
 	locktime := strconv.Itoa(transactionPost.Transaction.Locktime)

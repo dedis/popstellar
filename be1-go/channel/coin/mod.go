@@ -148,7 +148,7 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.PostTransaction{}, c.processTransactionPost)
+	registry.Register(messagedata.PostTransaction{}, c.processPostTransaction)
 
 	return registry
 }
@@ -204,8 +204,8 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// processTransactionPost handles a message object.
-func (c *Channel) processTransactionPost(msg message.Message, msgData interface{},
+// processPostTransaction handles a message object.
+func (c *Channel) processPostTransaction(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.PostTransaction)
@@ -220,9 +220,9 @@ func (c *Channel) processTransactionPost(msg message.Message, msgData interface{
 		return xerrors.Errorf("failed to unmarshal transaction data: %v", err)
 	}
 
-	err = c.verifyMessageTransactionPost(transactionData)
+	err = c.verifyMessagePostTransaction(transactionData)
 	if err != nil {
-		return xerrors.Errorf("invalid Coin#PostTransaction message: %v", err)
+		return xerrors.Errorf("invalid coin#postTransaction message: %v", err)
 	}
 
 	return nil
