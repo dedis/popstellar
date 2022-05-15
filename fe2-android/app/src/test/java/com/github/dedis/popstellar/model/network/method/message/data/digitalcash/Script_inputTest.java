@@ -13,13 +13,13 @@ public class Script_inputTest {
   private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
 
   @Test
-  public void testGetSig() {
-    assertEquals(SIG, SCRIPTTXIN.get_sig());
+  public void testGetType() {
+    assertEquals(TYPE, SCRIPTTXIN.get_type());
   }
 
   @Test
-  public void testGetType() {
-    assertEquals(TYPE, SCRIPTTXIN.get_type());
+  public void testGetSig() {
+    assertEquals(SIG, SCRIPTTXIN.get_sig());
   }
 
   @Test
