@@ -135,12 +135,7 @@ export class RollCall {
    * Creates a RollCallState object from the current RollCall object.
    */
   public toState(): RollCallState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      start: this.start.valueOf(),
-      end: this.end.valueOf(),
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 
   /**
