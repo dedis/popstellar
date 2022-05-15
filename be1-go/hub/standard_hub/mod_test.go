@@ -214,7 +214,7 @@ func Test_Create_LAO(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
