@@ -19,7 +19,7 @@ func Test_Lao_Greet(t *testing.T) {
 	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
-	require.Equal(t, "lao", object) 
+	require.Equal(t, "lao", object)
 	require.Equal(t, "greet", action)
 
 	var msg messagedata.LaoGreet
