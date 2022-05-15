@@ -5,6 +5,7 @@ import { combineReducers, createStore } from 'redux';
 
 import {
   configureTestFeatures,
+  mockChannel,
   mockKeyPair,
   mockLao,
   mockLaoId,
@@ -55,9 +56,10 @@ const msg = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
     { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp } as MessageData,
     mockKeyPair,
+    mockChannel,
   ),
-  'some channel',
   'some address',
+  mockChannel,
 );
 
 mockStore.dispatch(addMessages(msg.toState()));

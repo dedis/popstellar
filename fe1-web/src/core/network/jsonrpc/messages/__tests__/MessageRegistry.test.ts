@@ -35,7 +35,7 @@ describe('MessageRegistry', () => {
 
   it('should work correctly for handling message', async () => {
     const message = Message.fromData(messageData, mockPopToken, mockChannel);
-    const extMsg = ExtendedMessage.fromMessage(message, 'some address');
+    const extMsg = ExtendedMessage.fromMessage(message, 'some address', mockChannel);
 
     const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();

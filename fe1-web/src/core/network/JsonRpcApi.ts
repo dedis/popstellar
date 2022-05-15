@@ -92,7 +92,7 @@ function* messageGenerator(msgs: ReceivedMessage[], channel: Channel) {
   for (const m of msgs) {
     const message = Message.fromJson(m.message, channel);
 
-    yield ExtendedMessage.fromMessage(message, m.receivedFrom);
+    yield ExtendedMessage.fromMessage(message, m.receivedFrom, channel);
   }
 }
 

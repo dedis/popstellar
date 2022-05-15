@@ -44,7 +44,7 @@ const createExtendedMessage = () => {
     timestamp: new Timestamp(1607277600),
   });
   const message = Message.fromData(messageData, keyPair, mockChannel);
-  return ExtendedMessage.fromMessage(message, 'some address');
+  return ExtendedMessage.fromMessage(message, 'some address', mockChannel);
 };
 
 beforeAll(configureTestFeatures);

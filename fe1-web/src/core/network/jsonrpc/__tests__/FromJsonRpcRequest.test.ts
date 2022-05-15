@@ -39,7 +39,7 @@ function checkRpcParams(obj: any, channel: string): void {
   expect(obj.message).toBeObject();
 }
 
-function checkMessage(obj: any, ch: string): void {
+function checkMessage(obj: any): void {
   expect(obj).toBeObject();
   expect(obj).toContainAllKeys(['data', 'sender', 'signature', 'message_id', 'witness_signatures']);
 
@@ -57,8 +57,6 @@ function checkMessage(obj: any, ch: string): void {
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
   expect(obj.witness_signatures).toBeKeySignatureArray('publicKey', 'signature');
-
-  expect(obj.channel).toEqual(ch);
 }
 
 const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
@@ -108,7 +106,7 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
     checkRpcParams(query.params, channel);
 
     const msg = (query.params as JsonRpcParamsWithMessage).message;
-    checkMessage(msg, channel);
+    checkMessage(msg);
 
     const msgData = JSON.parse(msg.data.decode());
     expect(msgData).toBeJsonEqual(msg.messageData);
