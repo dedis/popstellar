@@ -210,12 +210,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(string(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
