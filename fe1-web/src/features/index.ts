@@ -9,6 +9,8 @@ import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
 import * as meeting from './meeting';
+import * as notification from './notification';
+import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
 import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
@@ -19,6 +21,7 @@ export function configureFeatures() {
   const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
+  const notificationConfiguration = notification.configure();
   const eventsConfiguration = events.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
   const connectConfiguration = connect.configure({
@@ -75,18 +78,25 @@ export function configureFeatures() {
   });
 
   const socialConfiguration = social.configure(messageRegistry);
-
-  witness.configure({
+  const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
-    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    addNotification: notificationConfiguration.actionCreators.addNotification,
+    markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
+    discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
 
   // compose features
-
+  const notificationComposition = notification.compose({
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    notificationTypes: [
+      ...witnessConfiguration.notificationTypes,
+    ] as NotificationCompositionConfiguration['notificationTypes'],
+  });
   const homeComposition = home.compose({
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
@@ -137,6 +147,12 @@ export function configureFeatures() {
         order: 0,
       },
       {
+        id: STRINGS.organization_navigation_tab_notifications,
+        Component: notificationConfiguration.navigation.NotificationNavigation,
+        order: 70000,
+        Badge: notificationConfiguration.components.NotificationBadge,
+      },
+      {
         id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
         order: 99999999,
@@ -177,10 +193,12 @@ export function configureFeatures() {
 
   // setup all reducers
   addReducers({
+    ...notificationConfiguration.reducers,
     ...laoConfiguration.reducers,
     ...socialConfiguration.reducers,
     ...eventsConfiguration.reducers,
     ...walletConfiguration.reducers,
+    ...witnessConfiguration.reducers,
   });
 
   return {
@@ -194,12 +212,13 @@ export function configureFeatures() {
           component: homeComposition.navigation.MainNavigation,
         },
         {
-          id: STRINGS.app_navigation_tab_user,
+          id: STRINGS.app_navigation_tab_lao,
           component: laoComposition.navigation.LaoNavigation,
         },
       ],
     },
     context: {
+      [notificationComposition.identifier]: notificationComposition.context,
       [connectConfiguration.identifier]: connectConfiguration.context,
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
@@ -207,6 +226,7 @@ export function configureFeatures() {
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletConfiguration.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
+      [witnessConfiguration.identifier]: witnessConfiguration.context,
     },
   };
 }

@@ -23,8 +23,4 @@ export namespace MeetingFeature {
     id: Hash;
     name: string;
   }
-
-  /* export enum EventType {
-    MEETING = 'MEETING',
-  } */
 }

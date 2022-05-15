@@ -60,9 +60,7 @@ const WalletHome = () => {
 
     Wallet.recoverWalletRollCallTokens(rollCalls, laoId)
       .then((rct) => {
-        console.log('recoverWalletRollCallTokens.then', rct);
         if (rct.length > 0) {
-          console.log('call set tokens', rct);
           setTokens(rct);
           setSelectedTokenIndex(0);
         }
