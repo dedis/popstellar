@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export namespace LaoFeature {
   export interface Screen {
@@ -14,6 +14,9 @@ export namespace LaoFeature {
      * e.g. -9999999999, -1000, -10, 0, 100, ... etc.
      */
     order: number;
+
+    Badge?: () => ReactNode;
+    Icon?: () => ReactNode;
   }
 
   export interface LaoConnection {

@@ -25,7 +25,7 @@ const Identity = () => {
   const buildBasicTextInput = (placeholder: string): JSX.Element => (
     <TextInput
       style={[
-        { ...Typography.base, marginBottom: Spacing.xs } as TextStyle,
+        { ...Typography.baseCentered, marginBottom: Spacing.xs } as TextStyle,
         { color: toggleAnonymity ? Colors.gray : Colors.black },
       ]}
       key={`input-${placeholder}`}
