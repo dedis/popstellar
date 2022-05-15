@@ -23,9 +23,9 @@ type ElectionSetup struct {
 
 const (
 	// OpenBallot is a type of election
-	OpenBallot = "open-ballot"
+	OpenBallot = "OPEN_BALLOT"
 	// SecretBallot is a type of election
-	SecretBallot = "secret-ballot"
+	SecretBallot = "SECRET_BALLOT"
 )
 
 // ElectionSetupQuestion defines a question of an election setup
