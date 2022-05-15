@@ -42,3 +42,10 @@ func Test_Greet_New_Empty(t *testing.T) {
 
 	require.Empty(t, msg.NewEmpty())
 }
+
+func Test_Greet_Getters(t *testing.T) {
+	var msg messagedata.LaoGreet
+
+	require.Equal(t, "lao", msg.GetObject())
+	require.Equal(t, "greet", msg.GetAction())
+}
