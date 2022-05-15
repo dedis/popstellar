@@ -1,9 +1,8 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { Hash, ProtocolError, PublicKey } from 'core/objects';
-import { ServerAddress } from 'features/lao/objects/Server';
+import { ServerAddress } from 'features/lao/objects/LaoServer';
 
-/** Data received to track the state of a lao */
 export class GreetLao implements MessageData {
   public readonly object: ObjectType = ObjectType.LAO;
 

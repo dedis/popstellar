@@ -9,26 +9,26 @@ import {
 } from '__tests__/utils';
 import { PublicKey } from 'core/objects/PublicKey';
 
-import { Server } from '../Server';
+import { LaoServer } from '../LaoServer';
 
 describe('Server', () => {
   describe('constructor', () => {
     it('correctly constructs a server object', () => {
-      const s = new Server({
+      const s = new LaoServer({
         laoId: mockLaoIdHash,
         address: mockAddress,
         serverPublicKey: mockKeyPair.publicKey,
         frontendPublicKey: mockPopToken.publicKey,
       });
 
-      expect(s.laoId.valueOf()).toBe(mockLaoId);
-      expect(s.address).toBe(mockAddress);
-      expect(s.serverPublicKey).toBe(mockKeyPair.publicKey);
+      expect(s.laoId.valueOf()).toEqual(mockLaoId);
+      expect(s.address).toEqual(mockAddress);
+      expect(s.serverPublicKey).toEqual(mockKeyPair.publicKey);
     });
 
-    it('throws an error of the address is undefined', () => {
+    it('throws an error if the address is undefined', () => {
       const fn = () =>
-        new Server({
+        new LaoServer({
           laoId: mockLaoIdHash,
           address: undefined as unknown as string,
           serverPublicKey: mockKeyPair.publicKey,
@@ -38,9 +38,9 @@ describe('Server', () => {
       expect(fn).toThrow(Error);
     });
 
-    it('throws an error of the server public key is undefined', () => {
+    it('throws an error if the server public key is undefined', () => {
       const fn = () =>
-        new Server({
+        new LaoServer({
           laoId: mockLaoIdHash,
           address: mockAddress,
           serverPublicKey: undefined as unknown as PublicKey,
@@ -50,9 +50,9 @@ describe('Server', () => {
       expect(fn).toThrow(Error);
     });
 
-    it('throws an error of the frontend key is undefined', () => {
+    it('throws an error if the frontend key is undefined', () => {
       const fn = () =>
-        new Server({
+        new LaoServer({
           laoId: mockLaoIdHash,
           address: mockAddress,
           serverPublicKey: mockKeyPair.publicKey,
@@ -65,7 +65,7 @@ describe('Server', () => {
 
   describe('fromState', () => {
     it('correctly constructs a server object from a server state', () => {
-      const s = Server.fromState({
+      const s = LaoServer.fromState({
         laoId: mockLaoId,
         address: mockAddress,
         serverPublicKey: mockPublicKey,
@@ -80,7 +80,7 @@ describe('Server', () => {
 
   describe('toState', () => {
     it('correctly constructs a server state object from a server instance', () => {
-      const s = new Server({
+      const s = new LaoServer({
         laoId: mockLaoIdHash,
         address: mockAddress,
         serverPublicKey: mockKeyPair.publicKey,

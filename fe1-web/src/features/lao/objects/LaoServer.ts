@@ -1,7 +1,6 @@
+import { Hash } from 'core/objects/Hash';
+import { PublicKey } from 'core/objects/PublicKey';
 import { RemoveMethods } from 'core/types';
-
-import { Hash } from '../../../core/objects/Hash';
-import { PublicKey } from '../../../core/objects/PublicKey';
 
 export type ServerAddress = string;
 
@@ -12,7 +11,7 @@ export interface ServerState {
   frontendPublicKey: string;
 }
 
-export class Server {
+export class LaoServer {
   /**
    * The lao this server is associated to
    */
@@ -42,7 +41,7 @@ export class Server {
    * Constructs a new server instance
    * @param server The properties of the new server instance
    */
-  constructor(server: RemoveMethods<Server>) {
+  constructor(server: RemoveMethods<LaoServer>) {
     if (server.laoId === undefined) {
       throw new Error("Undefined 'laoId' when creating 'Server'");
     }
@@ -69,8 +68,8 @@ export class Server {
    * @param server The serialized server data
    * @returns A deserialized server instance
    */
-  public static fromState(server: ServerState): Server {
-    return new Server({
+  public static fromState(server: ServerState): LaoServer {
+    return new LaoServer({
       laoId: new Hash(server.laoId),
       address: server.address,
       serverPublicKey: new PublicKey(server.serverPublicKey),
