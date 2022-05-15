@@ -56,7 +56,7 @@ public class Script_input {
 
   @Override
   public String toString() {
-    return "ScriptTxIn{"
+    return "script{"
         + "type='"
         + type
         + '\''

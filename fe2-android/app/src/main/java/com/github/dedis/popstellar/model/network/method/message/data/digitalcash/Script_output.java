@@ -44,6 +44,6 @@ public class Script_output {
 
   @Override
   public String toString() {
-    return "ScriptTxOut{" + "type='" + type + '\'' + ", pubkey_hash='" + pub_key_hash + '\'' + '}';
+    return "script{" + "type='" + type + '\'' + ", pubkey_hash='" + pub_key_hash + '\'' + '}';
   }
 }
