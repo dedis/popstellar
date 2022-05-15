@@ -109,7 +109,6 @@ export const handleRollCallCloseMessage =
     const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as CloseRollCall;
-    console.log('getRollCallById(rcMsgData.closes)', rcMsgData.closes);
     const oldRC = getRollCallById(rcMsgData.closes);
     if (!oldRC) {
       console.warn(makeErr("no known roll call matching the 'closes' field"));
