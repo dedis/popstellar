@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -19,6 +19,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { EventTags, Hash, Timestamp } from 'core/objects';
+import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -44,11 +45,6 @@ const EMPTY_QUESTION: NewQuestion = {
 };
 
 const MIN_BALLOT_OPTIONS = 2;
-
-const styles = StyleSheet.create({
-  padding: { padding: 5 } as ViewStyle,
-  zIndexInitial: { zIndex: 0 } as ViewStyle,
-});
 
 /**
  * Some helper functions
@@ -113,9 +109,7 @@ const createElection = (
  * UI to create an Election Event
  */
 
-const CreateElection = ({ route }: any) => {
-  const routeStyles = route.params;
-
+const CreateElection = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -184,8 +178,8 @@ const CreateElection = ({ route }: any) => {
         // the date picker for the web
         // see archive branches for date picker used for native apps
         Platform.OS === 'web' && (
-          <View style={routeStyles.viewVertical}>
-            <View style={[routeStyles.view, styles.padding]}>
+          <View style={styles.viewVertical}>
+            <View style={[styles.view, styles.padding]}>
               <ParagraphBlock text={STRINGS.election_create_start_time} />
               <DatePicker
                 selected={startTime.toDate()}
@@ -194,7 +188,7 @@ const CreateElection = ({ route }: any) => {
                 }
               />
             </View>
-            <View style={[routeStyles.view, styles.padding, styles.zIndexInitial]}>
+            <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
               <ParagraphBlock text={STRINGS.election_create_finish_time} />
               <DatePicker
                 selected={endTime.toDate()}
@@ -229,7 +223,7 @@ const CreateElection = ({ route }: any) => {
         ))
       }
 
-      <View style={[routeStyles.view, styles.zIndexInitial]}>
+      <View style={[styles.view, styles.zIndexInitial]}>
         <WideButtonView
           title="Add Question"
           onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}
