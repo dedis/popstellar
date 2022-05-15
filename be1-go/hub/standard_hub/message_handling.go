@@ -3,6 +3,8 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -280,6 +282,27 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	signature := publish.Params.Message.Signature
 	messageID := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
+
+	dataBytes, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode data string: %v", err)
+	}
+
+	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	if err != nil {
+		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
+		return publish.ID, xerrors.Errorf("failed to decode public key string: %v", err)
+	}
+
+	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode signature string: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to verify signature : %v", err)
+	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
