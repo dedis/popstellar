@@ -13,6 +13,7 @@ export namespace MeetingHooks {
     }
     return featureContext[MEETING_FEATURE_IDENTIFIER] as MeetingReactContext;
   };
+
   /**
    * Gets the current lao id
    * @returns The current lao id
