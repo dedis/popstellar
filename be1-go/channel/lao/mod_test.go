@@ -534,6 +534,35 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	require.NoError(t, channel.Publish(messagePublish, nil))
 }
 
+func TestLAOChannel_Sends_Greeting(t *testing.T) {
+	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
+
+	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+
+	greetMsg := catchupAnswer[1]
+
+	data := messagedata.LaoGreet{}.NewEmpty()
+
+	err = greetMsg.UnmarshalData(data)
+	require.NoError(t, err)
+
+	dataGreet, ok := data.(*messagedata.LaoGreet)
+	require.True(t, ok)
+
+	require.Equal(t, messagedata.LAOObject, dataGreet.Object)
+	require.Equal(t, messagedata.LAOActionGreet, dataGreet.Action)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", dataGreet.LaoID)
+	require.Equal(t, publicKey64, dataGreet.Frontend)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 

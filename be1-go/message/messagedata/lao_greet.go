@@ -2,9 +2,9 @@ package messagedata
 
 // LaoGreet defines a message data
 type LaoGreet struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	LaoID    string `json:"lao"`
 	Frontend string `json:"frontend"`
 	Address  string `json:"address"`
 	Peers    []Peer `json:"peers"`

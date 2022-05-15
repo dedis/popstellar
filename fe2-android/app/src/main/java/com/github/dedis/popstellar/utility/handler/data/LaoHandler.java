@@ -1,22 +1,25 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
+import com.github.dedis.popstellar.model.objects.Server;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,12 +39,17 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
+  @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Lao lao = new Lao(createLao.getId());
+
+    // Adding the newly created LAO to the repository
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
+    laoRepository.setAllLaoSubject();
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
@@ -52,7 +60,13 @@ public final class LaoHandler {
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      context.getMessageSender().subscribe(lao.getChannel().subChannel("consensus")).subscribe();
+      context
+          .getMessageSender()
+          .subscribe(lao.getChannel().subChannel("consensus"))
+          .subscribe( // For now if we receive an error, we assume that it is because the server
+              // running is the scala one which does not implement consensus
+              () -> Log.d(TAG, "subscription to consensus channel was a success"),
+              error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
     }
     laoRepository.updateNodes(channel);
   }
@@ -180,5 +194,36 @@ public final class LaoHandler {
             + "New Witness ID : "
             + tempList.get(tempList.size() - 1));
     return message;
+  }
+
+  public static void handleGreetLao(HandlerContext context, GreetLao greetLao) {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
+    Lao lao = laoRepository.getLaoByChannel(channel);
+
+    // Check the correctness of the LAO id
+    if (!lao.getId().equals(greetLao.getId())) {
+      Log.d(
+          TAG,
+          "Current lao id "
+              + lao.getId()
+              + " doesn't match the lao id from greetLao message ("
+              + greetLao.getId()
+              + ")");
+      throw new IllegalArgumentException(
+          "Current lao doesn't march the lao id from the greetLao message");
+    }
+    Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
+
+    Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
+
+    Log.d(TAG, "Adding the server to the repository for lao id : " + lao.getId());
+    ServerRepository serverRepository = context.getServerRepository();
+    serverRepository.addServer(greetLao.getId(), server);
+
+    // In the future, implement automatic connection to all the peers contained in the peers
+    // message
   }
 }
