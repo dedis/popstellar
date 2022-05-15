@@ -19,7 +19,6 @@ describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
-      start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
@@ -30,14 +29,12 @@ describe('RollCall object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
-      end: TIMESTAMP_END.valueOf(),
       attendees: ATTENDEES,
     };
     const rollCall = RollCall.fromState(rollCallState);
@@ -48,7 +45,6 @@ describe('RollCall object', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
@@ -62,14 +58,12 @@ describe('RollCall object', () => {
     const expected = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
-      end: TIMESTAMP_END.valueOf(),
       attendees: ATTENDEES,
     };
     const rollCall = RollCall.fromState(rollCallState);
@@ -160,7 +154,6 @@ describe('RollCall object', () => {
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
-          start: TIMESTAMP_START,
           name: NAME,
           creation: TIMESTAMP_START,
           proposedStart: TIMESTAMP_START,
@@ -174,7 +167,6 @@ describe('RollCall object', () => {
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
-          start: TIMESTAMP_START,
           name: NAME,
           location: LOCATION,
           proposedStart: TIMESTAMP_START,
@@ -188,7 +180,6 @@ describe('RollCall object', () => {
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
-          start: TIMESTAMP_START,
           name: NAME,
           location: LOCATION,
           creation: TIMESTAMP_START,
@@ -202,7 +193,6 @@ describe('RollCall object', () => {
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
-          start: TIMESTAMP_START,
           name: NAME,
           location: LOCATION,
           creation: TIMESTAMP_START,
