@@ -16,7 +16,7 @@ import { Typography, Views } from '../styles';
 
 const styles = StyleSheet.create({
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
   } as TextStyle,
   view: {
     ...Views.base,

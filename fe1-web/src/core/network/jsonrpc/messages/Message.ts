@@ -80,23 +80,6 @@ export class Message {
     return this.#messageData;
   }
 
-  // Not part of the protocol, but convenient for processing of the message
-  // ECMAScript private field, not string-ified by JSON
-  readonly #channel: Channel;
-
-  // Public getter that makes channel appear public
-  public get channel() {
-    return this.#channel;
-  }
-
-  get laoId(): Hash | undefined {
-    try {
-      return getLaoIdFromChannel(this.channel);
-    } catch (e) {
-      return undefined;
-    }
-  }
-
   constructor(msg: Partial<Message>, channel: Channel) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
@@ -147,14 +130,16 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
-    if (!channel) {
-      throw new Error("Undefined 'channel' parameter encountered during 'Message' creation");
-    }
-    this.#channel = channel;
-
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = messageRegistry.buildMessageData(dataObj, this.laoId);
+
+    let laoId: Hash | undefined;
+    try {
+      laoId = getLaoIdFromChannel(channel);
+    } catch {
+      laoId = undefined;
+    }
+    this.#messageData = messageRegistry.buildMessageData(dataObj, laoId);
   }
 
   public static fromJson(obj: any, channel: Channel): Message {
@@ -179,8 +164,8 @@ export class Message {
    *
    * @param data - The MessageData to be signed and hashed
    * @param senderKeyPair - The key pair of the sender
-   * @param channel The channel the message was received on
-   * @param witnessSignatures- The signatures of the witnesses
+   * @param channel - The channel the message was received on
+   * @param witnessSignatures - The signatures of the witnesses
    * @returns - The created message
    */
   public static fromData(

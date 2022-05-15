@@ -22,7 +22,7 @@ import BarChartDisplay from './BarChartDisplay';
 
 const styles = StyleSheet.create({
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
   } as TextStyle,
   textOptions: {
     marginHorizontal: Spacing.s,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   } as TextStyle,
   textQuestions: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     fontSize: 20,
   } as TextStyle,
 });

@@ -94,4 +94,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     String result = getBuffer().takeTimeout(5000);
     return result == null;
   }
+
+  public void setWrongSignature(){
+    jsonConverter.setSignature(nonAttendeePk);
+  }
 }

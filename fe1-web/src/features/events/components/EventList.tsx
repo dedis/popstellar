@@ -20,12 +20,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   } as ViewStyle,
   buttonMatcher: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     paddingLeft: Spacing.m,
     opacity: 0,
   } as TextStyle,
   expandButton: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     paddingRight: Spacing.m,
   } as TextStyle,
 });

@@ -55,6 +55,7 @@ describe('makeWitnessStoreWatcher', () => {
         mockChannel,
       ),
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -77,6 +78,7 @@ describe('makeWitnessStoreWatcher', () => {
         mockChannel,
       ),
       mockAddress,
+      mockChannel,
       t,
     );
 

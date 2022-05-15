@@ -52,7 +52,9 @@ beforeAll(() => {
 describe('handleExtendedRpcRequests', () => {
   it('dispatches the correct redux action', () => {
     handleExtendedRpcRequests(extendedRequest);
-    const obj: any = addMessages(ExtendedMessage.fromMessage(mockMessage, mockAddress).toState());
+    const obj: any = addMessages(
+      ExtendedMessage.fromMessage(mockMessage, mockAddress, mockChannel).toState(),
+    );
 
     expect(dispatch).toHaveBeenCalledWith({
       ...obj,

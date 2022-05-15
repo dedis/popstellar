@@ -148,7 +148,7 @@ describe('catchup', () => {
       throw new Error('The generator should contain at least one message');
     }
 
-    const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockAddress);
+    const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockAddress, mockChannel);
 
     // the receivedAt value is allowed differ
     expect({ ...value, receivedAt: 0 }).toBeJsonEqual({ ...expected, receivedAt: 0 });
