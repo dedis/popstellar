@@ -29,26 +29,25 @@ const WalletSetSeed = () => {
       await Wallet.importMnemonic(seed);
       navigation.reset({
         index: 0,
-        routes: [{ name: STRINGS.navigation_synced_wallet }],
+        routes: [{ name: STRINGS.navigation_wallet_home_tab }],
       });
-    } catch (e) {
-      console.error(e);
+    } catch {
       navigation.navigate(STRINGS.navigation_wallet_error);
     }
   };
 
   return (
-    <View style={containerStyles.centeredY}>
+    <View style={containerStyles.centeredXY}>
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine
         placeholder={STRINGS.type_seed_example}
         onChangeText={(input: string) => setSeed(input)}
       />
       <View style={styles.smallPadding} />
-      <WideButtonView title={STRINGS.setup_wallet} onPress={() => initWallet()} />
+      <WideButtonView title={STRINGS.save_seed_and_connect} onPress={() => initWallet()} />
       <WideButtonView
-        title={STRINGS.back_to_wallet_home}
-        onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+        title={STRINGS.back_to_wallet_setup}
+        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
       />
     </View>
   );

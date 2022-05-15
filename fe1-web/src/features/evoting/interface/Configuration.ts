@@ -105,6 +105,7 @@ export interface EvotingInterface extends FeatureInterface {
 
   context: EvotingReactContext;
 
+  /* reducers */
   reducers: {
     [ELECTION_KEY_REDUCER_PATH]: Reducer<ElectionKeyReducerState>;
   };

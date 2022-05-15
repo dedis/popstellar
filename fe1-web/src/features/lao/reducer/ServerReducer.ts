@@ -7,7 +7,7 @@ import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/tool
 
 import { PublicKey } from 'core/objects';
 
-import { Server, ServerAddress, ServerState } from '../objects/Server';
+import { LaoServer, ServerAddress, ServerState } from '../objects/LaoServer';
 import { getLaosState, LaoReducerState } from './LaoReducer';
 
 /**
@@ -21,16 +21,15 @@ export interface ServerReducerState {
         [address: ServerAddress]: ServerState;
       };
       allAddresses: ServerAddress[];
+      backendKeyByFrontendKey: {
+        [frontendKey: string]: string;
+      };
     };
-  };
-  backendKeyByFrontendKey: {
-    [frontendKey: string]: string;
   };
 }
 
 const initialState: ServerReducerState = {
   byLaoId: {},
-  backendKeyByFrontendKey: {},
 };
 
 export const SERVER_REDUCER_PATH = 'servers';
@@ -42,9 +41,14 @@ const serverSlice = createSlice({
     addServer: (state: Draft<ServerReducerState>, action: PayloadAction<ServerState>) => {
       const server = action.payload;
 
-      let laoState: ServerReducerState['byLaoId']['string'] = {
-        byAddress: {},
-        allAddresses: [],
+      let laoState = {
+        byAddress: {} as {
+          [address: ServerAddress]: ServerState;
+        },
+        allAddresses: [] as string[],
+        backendKeyByFrontendKey: {} as {
+          [frontendKey: string]: string;
+        },
       };
 
       if (server.laoId in state.byLaoId) {
@@ -60,8 +64,8 @@ const serverSlice = createSlice({
       laoState.byAddress[server.address] = server;
       laoState.allAddresses.push(server.address);
 
+      laoState.backendKeyByFrontendKey[server.frontendPublicKey] = server.serverPublicKey;
       state.byLaoId[server.laoId] = laoState;
-      state.backendKeyByFrontendKey[server.frontendPublicKey] = server.serverPublicKey;
     },
 
     updateServer: (state: Draft<ServerReducerState>, action: PayloadAction<ServerState>) => {
@@ -76,7 +80,7 @@ const serverSlice = createSlice({
       }
 
       // delete old frontend-backend key mapping entry
-      delete state.backendKeyByFrontendKey[
+      delete state.byLaoId[updatedServer.laoId].backendKeyByFrontendKey[
         state.byLaoId[updatedServer.laoId].byAddress[updatedServer.address].frontendPublicKey
       ];
 
@@ -84,7 +88,7 @@ const serverSlice = createSlice({
       state.byLaoId[updatedServer.laoId].byAddress[updatedServer.address] = updatedServer;
 
       // add new frontend-backend key mapping entry
-      state.backendKeyByFrontendKey[updatedServer.frontendPublicKey] =
+      state.byLaoId[updatedServer.laoId].backendKeyByFrontendKey[updatedServer.frontendPublicKey] =
         updatedServer.serverPublicKey;
     },
 
@@ -97,7 +101,7 @@ const serverSlice = createSlice({
 
       if (serverAddress in state.byLaoId[laoId].byAddress) {
         // delete the frontend-backend key mapping entry
-        delete state.backendKeyByFrontendKey[
+        delete state.byLaoId[laoId].backendKeyByFrontendKey[
           state.byLaoId[laoId].byAddress[serverAddress].frontendPublicKey
         ];
 
@@ -111,7 +115,6 @@ const serverSlice = createSlice({
 
     clearAllServers: (state) => {
       state.byLaoId = {};
-      state.backendKeyByFrontendKey = {};
     },
   },
 });
@@ -128,7 +131,7 @@ export const getServerState = (state: any): ServerReducerState => state[SERVER_R
 
 /**
  * A function to directly retrieve the public key from the redux store for a given lao id and server address
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark This function does not memoize the result. If you need this, use makeServerSelector instead
  * @param laoId The lao id
  * @param address The server address
  * @param state The redux state
@@ -162,14 +165,16 @@ export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
     // Selector: returns the server object associated to the given address
     (serverState: ServerReducerState, laoState: LaoReducerState): PublicKey | undefined => {
       // if there is no current lao, return undefined
-      if (!(laoId in laoState.byId)) {
+      if (!(laoId in laoState.byId) || !(laoId in serverState.byLaoId)) {
         return undefined;
       }
 
       const currentLaoState = laoState.byId[laoId];
 
-      if (currentLaoState.organizer in serverState.backendKeyByFrontendKey) {
-        return new PublicKey(serverState.backendKeyByFrontendKey[currentLaoState.organizer]);
+      if (currentLaoState.organizer in serverState.byLaoId[laoId].backendKeyByFrontendKey) {
+        return new PublicKey(
+          serverState.byLaoId[laoId].backendKeyByFrontendKey[currentLaoState.organizer],
+        );
       }
 
       return undefined;
@@ -187,9 +192,9 @@ export const makeServerSelector = (laoId: string, address: ServerAddress) =>
     // First input: map of lao ids to servers
     (state) => getServerState(state).byLaoId,
     // Selector: returns the server object associated to the given address
-    (byLaoId: ServerReducerState['byLaoId']): Server | undefined => {
+    (byLaoId: ServerReducerState['byLaoId']): LaoServer | undefined => {
       if (laoId in byLaoId && address in byLaoId[laoId].byAddress) {
-        return Server.fromState(byLaoId[laoId].byAddress[address]);
+        return LaoServer.fromState(byLaoId[laoId].byAddress[address]);
       }
 
       return undefined;

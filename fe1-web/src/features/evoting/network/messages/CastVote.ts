@@ -7,6 +7,9 @@ import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 import { Election, ElectionVersion, EncryptedVote, SelectedBallots, Vote } from '../../objects';
 
+// we are using a 2 byte unsigned number to represent the option index
+const MAX_OPTION_INDEX = 2 ** (2 /* #bytes */ * 8); /* bits in a byte */
+
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
@@ -158,6 +161,12 @@ export class CastVote implements MessageData {
             .sort((a, b) => a - b)
             // map each number to 2 bytes using big endian
             .map((option) => {
+              if (option >= MAX_OPTION_INDEX) {
+                throw new Error(
+                  `The selected option index ${option} is greater than ${MAX_OPTION_INDEX}. This is not supported`,
+                );
+              }
+
               // allocUnsafe is fine, we will overwrite all bytes
               const buffer = Buffer.allocUnsafe(2);
               // write 2 bytes using big endian

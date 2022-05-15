@@ -21,10 +21,11 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
 	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
-	ElectionActionSetup  = "setup"
 
 	LAOObject       = "lao"
 	LAOActionCreate = "create"
@@ -57,6 +58,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
+	TransactionObject     = "transaction"
+	TransactionActionPost = "post"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"

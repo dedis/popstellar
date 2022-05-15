@@ -1,3 +1,6 @@
+import 'jest-extended';
+import '__tests__/utils/matchers';
+
 import { curve } from '@dedis/kyber';
 import Ed25519Scalar from '@dedis/kyber/curve/edwards25519/scalar';
 
@@ -17,16 +20,16 @@ describe('ElectionPrivateKey', () => {
   });
 
   describe('toString()', () => {
-    it('does not throw an error', () => {
+    it('converts the key to a string', () => {
       const key = new ElectionPrivateKey(mockEncodedElectionPrivateKey);
-      expect(() => key.toString()).not.toThrow();
+      expect(key.toString()).toBeString();
     });
   });
 
   describe('toBase64()', () => {
-    it('does not throw an error', () => {
+    it('converts the key to a base64 string', () => {
       const key = new ElectionPrivateKey(mockEncodedElectionPrivateKey);
-      expect(() => key.toBase64()).not.toThrow();
+      expect(key.toBase64()).toBeBase64Url();
     });
   });
 

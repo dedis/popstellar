@@ -1,6 +1,12 @@
 import { combineReducers, createStore } from 'redux';
 
-import { configureTestFeatures, mockAddress, mockChannel, mockKeyPair } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockAddress,
+  mockChannel,
+  mockKeyPair,
+  mockLaoIdHash,
+} from '__tests__/utils';
 import {
   addMessages,
   clearAllMessages,
@@ -30,11 +36,17 @@ beforeEach(() => {
 
 describe('makeWitnessStoreWatcher', () => {
   it('returns a listener function', () => {
-    expect(makeWitnessStoreWatcher(mockStore, mockAfterProcessingHandler)).toBeFunction();
+    expect(
+      makeWitnessStoreWatcher(mockStore, () => mockLaoIdHash, mockAfterProcessingHandler),
+    ).toBeFunction();
   });
 
   it('afterProcessingHandler is not called when a new message is added', () => {
-    const watcher = makeWitnessStoreWatcher(mockStore, mockAfterProcessingHandler);
+    const watcher = makeWitnessStoreWatcher(
+      mockStore,
+      () => mockLaoIdHash,
+      mockAfterProcessingHandler,
+    );
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
@@ -52,7 +64,11 @@ describe('makeWitnessStoreWatcher', () => {
   });
 
   it('afterProcessingHandler is called when a message has been processed', () => {
-    const watcher = makeWitnessStoreWatcher(mockStore, mockAfterProcessingHandler);
+    const watcher = makeWitnessStoreWatcher(
+      mockStore,
+      () => mockLaoIdHash,
+      mockAfterProcessingHandler,
+    );
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(

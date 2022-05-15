@@ -15,15 +15,7 @@ import containerStyles from '../styles/stylesheets/containerStyles';
  *  - Default selected option (not required, if not specified then first in the array is chosen)
  */
 
-const DropdownSelector = (
-  props: ExtendType<
-    IPropTypes,
-    {
-      // make the type for 'onChange' more concrete than the inferred type
-      onChange: (itemValue: string | null, itemIndex: number) => void;
-    }
-  >,
-) => {
+const DropdownSelector = (props: IPropTypes) => {
   const { selected, onChange, options } = props;
 
   return (
@@ -54,6 +46,12 @@ DropdownSelector.defaultProps = {
   selected: undefined,
 };
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+type IPropTypes = ExtendType<
+  PropTypes.InferProps<typeof propTypes>,
+  {
+    // make the type for 'onChange' more concrete than the inferred type
+    onChange: (itemValue: string | null, itemIndex: number) => void;
+  }
+>;
 
 export default DropdownSelector;

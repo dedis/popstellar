@@ -27,6 +27,7 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
     identifier: EVOTING_FEATURE_IDENTIFIER,
     screens,
     eventTypeComponents: [ElectionEventTypeComponent],
+
     context: {
       /* lao */
       useCurrentLao,
@@ -37,6 +38,7 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
       addEvent,
       updateEvent,
     },
+
     reducers: {
       ...electionKeyReducer,
     },
