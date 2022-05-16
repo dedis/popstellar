@@ -49,6 +49,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
+        val questions: List[ElectionQuestion] = data.questions
+
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (!validateTimestampOrder(data.created_at, data.start_time)) {
@@ -57,6 +59,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
+        } else if (!validateQuestionId(questions, data.id)) {
+          Right(validationError("unexpected question ids"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
@@ -121,7 +125,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
 
         val channel: Channel = rpcMessage.getParamsChannel
-
         val questions = getSetupMessage(channel, dbActorRef).questions
         val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
 
@@ -139,6 +142,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           // check for question id duplication
         } else if (data.votes.map(_.question).distinct.length != data.votes.length) {
           Right(validationError(s"The castvote contains twice the same question id"))
+        } else if (!validateVoteId(data.votes, data.election)) {
+          Right(validationError("unexpected vote ids"))
           // check open and end constraints
         } else if (getOpenMessage(channel).isEmpty) {
           Right(validationError(s"This election has not started yet"))
@@ -213,4 +218,17 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
     Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
   }
+
+  private def validateVoteId(votes: List[VoteElection], election_id: Hash): Boolean = {
+    votes.forall(v => v.id == Hash.fromStrings("Vote", election_id.toString, v.question.toString, v.vote.get.head.toString))
+  }
+
+  /**
+   *
+   * @param questions list of questions
+   * @param election_id the id of the election
+   * @return true iff the question ids are valid wrt. Hash("Question", election_id, question)
+   */
+  private def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
+    questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
 }

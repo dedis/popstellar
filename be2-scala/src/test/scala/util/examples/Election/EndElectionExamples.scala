@@ -5,6 +5,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.EndElection
 import ch.epfl.pop.model.objects._
 import spray.json._
+import util.examples.Election.CastVoteElectionExamples.VOTE_ID
 
 
 object EndElectionExamples {
@@ -16,7 +17,7 @@ object EndElectionExamples {
   final val ID: Hash = Hash(Base64Data.encode("election"))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
-  final val REGISTERED_VOTES: Hash = Hash.fromStrings("KNRSAzia1ngjKZPwBpHQIYssS33VBl3eP5LWDUikAh4=")
+  final val REGISTERED_VOTES: Hash = Hash.fromStrings(VOTE_ID.toString)
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
