@@ -23,6 +23,12 @@ export const getCurrentLao = () => {
 };
 
 /**
+ * Returns the current lao and throws an error if there is none
+ * @returns The current lao
+ */
+export const getLaoById = (laoId: string) => getLaoByIdFromState(laoId, getStore().getState());
+
+/**
  * Returns the current lao id or undefined if there is none
  * @returns The current lao id
  */

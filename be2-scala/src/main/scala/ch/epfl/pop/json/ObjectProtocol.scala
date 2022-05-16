@@ -99,7 +99,7 @@ object ObjectProtocol extends DefaultJsonProtocol {
   implicit val unlockScriptFormat: JsonFormat[UnlockScript] = jsonFormat[String, PublicKey, Base64Data, UnlockScript](UnlockScript.apply, "Type", "Pubkey", "Sig")
 
   implicit val txInFormat: JsonFormat[TxIn] = jsonFormat[Hash, Int, UnlockScript, TxIn](TxIn.apply, "TxOutHash", "TxOutIndex", "Script")
-  implicit val txOutFormat: JsonFormat[TxOut] = jsonFormat[Int, LockScript, TxOut](TxOut.apply, "Value", "Script")
+  implicit val txOutFormat: JsonFormat[TxOut] = jsonFormat[Long, LockScript, TxOut](TxOut.apply, "Value", "Script")
 
   implicit val transactionFormat: JsonFormat[Transaction] = jsonFormat[Int, List[TxIn], List[TxOut], Transaction](Transaction.apply, "Version", "TxIn", "TxOut")
 }

@@ -20,6 +20,7 @@ import { Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { MeetingHooks } from '../hooks';
 import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
@@ -35,6 +36,7 @@ const CreateMeeting = ({ route }: any) => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
+  const laoId = MeetingHooks.useCurrentLaoId();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -47,7 +49,7 @@ const CreateMeeting = ({ route }: any) => {
   const confirmButtonVisibility: boolean = meetingName !== '';
 
   const createMeeting = () => {
-    requestCreateMeeting(meetingName, startTime, location, endTime)
+    requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

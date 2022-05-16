@@ -3,7 +3,7 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, WitnessSignatureState } from 'core/objects';
 
@@ -26,6 +26,7 @@ const initialState: MessageReducerState = {
 };
 
 export const messageReducerPath = 'messages';
+
 const messagesSlice = createSlice({
   name: messageReducerPath,
   initialState,
@@ -127,6 +128,25 @@ export function getMessage(
   const id = messageId.valueOf();
   return id in state.byId ? ExtendedMessage.fromState(state.byId[id]) : undefined;
 }
+
+/**
+ * Creates a redux-toolkit selector that memoizes the result if the input do not change
+ * Intended for the use in combination with useSelector()
+ * @param messageId The id of the message
+ * @returns A redux selector
+ */
+export const makeMessageSelector = (messageId: string) =>
+  createSelector(
+    // First input: map of message ids to messages
+    (state) => getMessagesState(state).byId,
+    (byId: Record<string, ExtendedMessageState>): ExtendedMessage | undefined => {
+      if (messageId in byId) {
+        return ExtendedMessage.fromState(byId[messageId]);
+      }
+
+      return undefined;
+    },
+  );
 
 export const messageReduce = messagesSlice.reducer;
 
