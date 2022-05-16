@@ -19,13 +19,12 @@ import (
 
 const publishError = "failed to publish: %v"
 
-// handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to decode message data: %v", err)
 
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -33,7 +32,6 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to validate message against json schema: %v", err)
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -41,7 +39,6 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to get object#action: %v", err)
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -49,7 +46,6 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
 		err := answer.NewErrorf(-4, "only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -58,20 +54,18 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	err = publish.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
-		h.log.Err(err).Msg("invalid lao#create message")
-		sock.SendError(&publish.ID, err)
+		h.log.Err(err).Msg("invalid lao#create message "+ err.Error())
+		return err
 	}
 
 	err = h.createLao(publish.Params.Message, laoCreate, sock)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 

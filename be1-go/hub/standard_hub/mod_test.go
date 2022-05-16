@@ -1,7 +1,6 @@
 package standard_hub
 
 import (
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -53,20 +52,15 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(wrongKeypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Witnesses: []string{},
 	}
 
@@ -138,20 +132,15 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Witnesses: []string{},
 	}
 
@@ -221,20 +210,15 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Witnesses: []string{},
 	}
 
@@ -303,20 +287,15 @@ func Test_Create_LAO(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Witnesses: []string{},
 	}
 
