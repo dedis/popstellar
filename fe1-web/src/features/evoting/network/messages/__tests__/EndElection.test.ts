@@ -155,10 +155,19 @@ describe('EndElection', () => {
   });
 
   describe('computeRegisteredVotesHash', () => {
-    // It seems a bit silly to test this function apart from it not returning an error as
-    // we would simply write the same code here again?
-    const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
-    expect(fn).not.toThrow();
-    expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
+    it('return the correct result', () => {
+      // It seems a bit silly to test this function apart from it not returning an error as
+      // we would simply write the same code here again?
+      const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
+      expect(fn).not.toThrow();
+      expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
+    });
+
+    it('does not mutate the election', () => {
+      const frozenElection = Object.freeze({ ...mockElectionOpened });
+      Object.freeze(frozenElection.registeredVotes);
+
+      expect(() => EndElection.computeRegisteredVotesHash(frozenElection)).not.toThrow();
+    });
   });
 });
