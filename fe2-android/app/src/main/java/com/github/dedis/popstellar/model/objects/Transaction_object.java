@@ -88,6 +88,9 @@ public class Transaction_object {
   }
 
   // function that say if it was a coin base transaction
+  public boolean is_this_coin_base_transaction() {
+    return false;
+  }
 
   // function that given a transaction check if the value send are alright
   // check also of the lock_time is after
