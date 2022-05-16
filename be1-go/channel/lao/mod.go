@@ -117,12 +117,6 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	/*
-		coinPath := fmt.Sprintf("%s/coin", channelID)
-		coinCh := coin.NewChannel(coinPath, hub, log)
-		hub.NotifyNewChannel(coinPath, coinCh, socket)
-	*/
-
 	newChannel := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
