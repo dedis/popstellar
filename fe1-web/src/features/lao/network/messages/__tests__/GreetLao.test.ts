@@ -4,7 +4,7 @@ import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
 import { GreetLao } from '../GreetLao';
 
-const otherAddress = 'wss://some-other-address.com';
+const otherAddress = 'wss://some-other-address.com:8000/';
 
 describe('GreetLao', () => {
   describe('constructor', () => {
