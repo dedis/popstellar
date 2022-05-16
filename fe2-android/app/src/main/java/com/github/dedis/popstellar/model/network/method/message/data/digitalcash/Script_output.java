@@ -9,7 +9,7 @@ public class Script_output {
   @SerializedName("type")
   private final String type; // Type of script
 
-  @SerializedName("pubkey_Hash")
+  @SerializedName("pubkey_hash")
   private final String pub_key_hash; // Hash of the recipient’s public key
 
   /**
