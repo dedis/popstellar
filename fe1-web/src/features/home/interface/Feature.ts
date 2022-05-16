@@ -1,3 +1,6 @@
+import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
+import { EventListenerCallback } from '@react-navigation/core';
+
 export namespace HomeFeature {
   export interface LaoState {
     id: string;
@@ -10,9 +13,12 @@ export namespace HomeFeature {
   export interface Screen {
     id: string;
     title?: string;
+
     Component: React.ComponentType<unknown>;
+
     tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
-    headerRight?: () => React.ReactNode;
+
+    tabPress?: EventListenerCallback<BottomTabNavigationEventMap, 'tabPress'>;
 
     /**
      * This number is here to order the screens.

@@ -1,5 +1,6 @@
 import * as functions from './functions';
 import { HomeCompositionConfiguration, HomeInterface, HOME_FEATURE_IDENTIFIER } from './interface';
+import { ConnectNavigationScreen } from './navigation/ConnectNavigation';
 import { MainNavigationScreen } from './navigation/MainNavigation';
 import * as screens from './screens';
 
@@ -9,7 +10,7 @@ import * as screens from './screens';
 export function compose(config: HomeCompositionConfiguration): HomeInterface {
   return {
     identifier: HOME_FEATURE_IDENTIFIER,
-    appScreens: [MainNavigationScreen],
+    appScreens: [MainNavigationScreen, ConnectNavigationScreen],
     screens,
     functions,
     context: {

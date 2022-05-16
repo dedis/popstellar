@@ -1,17 +1,33 @@
 import { useNavigation } from '@react-navigation/core';
+import { BarCodeScanningResult } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
-import QrReader from 'react-qr-reader';
 
 import { WideButtonView } from 'core/components';
+import Camera from 'core/components/Camera';
+import CloseIcon from 'core/components/icons/CloseIcon';
+import CreateIcon from 'core/components/icons/CreateIcon';
+import SettingsIcon from 'core/components/icons/SettingsIcon';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { Colors } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  manualConnection: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+});
 
 /**
  * Starts a QR code scan
@@ -20,29 +36,29 @@ const ConnectOpenScan = () => {
   // FIXME: route should use proper type
   const navigation = useNavigation<any>();
 
-  // this is needed as otherwise the camera will stay turned on
-  const [showScanner, setShowScanner] = useState(false);
-  // re-enable scanner on focus events
-  useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
-      // The screen is focused, set QrWasScanned to false (i.e. allow scanner to be reused)
-      setShowScanner(true);
-    });
-  }, [navigation]);
-
   const toast = useToast();
 
   const laoId = HomeHooks.useCurrentLaoId();
 
-  const handleError = (err: string) => {
-    console.error(err);
-    toast.show(err, {
-      type: 'danger',
-      placement: 'top',
-      duration: FOUR_SECONDS,
+  // this is needed as otherwise the camera will stay turned on
+  const [showScanner, setShowScanner] = useState(false);
+
+  // re-enable scanner on focus events
+  useEffect(() => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
+      // The screen is now focused, set showScanner to true
+      setShowScanner(true);
     });
-  };
+  }, [navigation]);
+  // disable scanner on blur events
+  useEffect(() => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('blur', () => {
+      // The screen is no longer focused, set showScanner to false (i.e. allow scanner to be reused)
+      setShowScanner(false);
+    });
+  }, [navigation]);
 
   const handleScan = (data: string | null) => {
     if (!data) {
@@ -81,28 +97,22 @@ const ConnectOpenScan = () => {
     }
   };
 
-  const onCancel = () => {
-    setShowScanner(false);
-    navigation.goBack();
-  };
-
-  return showScanner ? (
-    <ScreenWrapper>
-      <View style={containerStyles.centeredXY}>
-        <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '100%' }} />
-        <WideButtonView title={STRINGS.general_button_cancel} onPress={onCancel} />
-        <WideButtonView
-          title={STRINGS.connect_connecting_validate}
-          onPress={() => {
-            navigation.navigate(STRINGS.connect_confirm_title);
-          }}
-        />
+  return (
+    <Camera showCamera={showScanner} handleScan={handleScan}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <CloseIcon color={Colors.primary} size={25} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
+          <CreateIcon color={Colors.primary} size={25} />
+        </TouchableOpacity>
       </View>
-    </ScreenWrapper>
-  ) : (
-    <ScreenWrapper>
-      <View style={containerStyles.centeredY} />
-    </ScreenWrapper>
+      <View style={styles.manualConnection}>
+        <TouchableOpacity onPress={() => navigation.navigate(STRINGS.connect_confirm_title)}>
+          <SettingsIcon color={Colors.primary} size={25} />
+        </TouchableOpacity>
+      </View>
+    </Camera>
   );
 };
 

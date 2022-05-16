@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
+import { AppScreen } from 'core/navigation/AppNavigation';
 import STRINGS from 'resources/strings';
 
 import { ConnectConfirm, ConnectOpenScan, Launch } from '../screens';
@@ -19,3 +20,9 @@ export default function ConnectNavigation() {
     </Stack.Navigator>
   );
 }
+
+export const ConnectNavigationScreen: AppScreen = {
+  id: STRINGS.navigation_tab_connect,
+  title: STRINGS.navigation_tab_connect,
+  component: ConnectNavigation,
+};

@@ -1,9 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/core';
 import React, { useMemo } from 'react';
-import { TouchableOpacity } from 'react-native';
 
-import CreateIcon from 'core/components/icons/CreateIcon';
 import HomeIcon from 'core/components/icons/HomeIcon';
 import ScanIcon from 'core/components/icons/ScanIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
@@ -21,18 +19,10 @@ import ConnectNavigation from './ConnectNavigation';
  */
 const HomeNavigator = createBottomTabNavigator();
 
-const ConnectHeaderRight = () => {
+const MainNavigation = () => {
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
 
-  return (
-    <TouchableOpacity onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
-      <CreateIcon color={Colors.primary} size={25} focused={false} />
-    </TouchableOpacity>
-  );
-};
-
-const MainNavigation = () => {
   const navigationScreens = HomeHooks.useMainNavigationScreens();
 
   const screens: HomeFeature.Screen[] = useMemo(() => {
@@ -47,15 +37,20 @@ const MainNavigation = () => {
         order: -99999999,
       } as HomeFeature.Screen,
       {
-        id: STRINGS.navigation_tab_connect,
+        id: `mock_${STRINGS.navigation_tab_connect}`,
+        title: STRINGS.navigation_tab_connect,
         Component: ConnectNavigation,
+        tabPress: (e) => {
+          // prevent navigation
+          e.preventDefault();
+          navigation.navigate(STRINGS.navigation_tab_connect);
+        },
         tabBarIcon: ScanIcon,
         order: -10000,
-        headerRight: ConnectHeaderRight,
       } as HomeFeature.Screen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [navigationScreens]);
+  }, [navigation, navigationScreens]);
 
   return (
     <HomeNavigator.Navigator
@@ -71,15 +66,15 @@ const MainNavigation = () => {
         },
         headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component, tabBarIcon, headerRight }) => (
+      {screens.map(({ id, title, Component, tabBarIcon, tabPress }) => (
         <HomeNavigator.Screen
           key={id}
           name={id}
           component={Component}
+          listeners={{ tabPress }}
           options={{
             title: title || id,
             tabBarIcon,
-            headerRight,
           }}
         />
       ))}
