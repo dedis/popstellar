@@ -135,7 +135,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	err := newChannel.createAndSendLAOGreet()
 	if err != nil {
-		err = xerrors.Errorf("failed to send the greeting message: %v", err)
+		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}
 
 	return newChannel, err
