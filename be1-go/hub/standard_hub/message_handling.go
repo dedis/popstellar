@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -14,13 +13,15 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+
 	"golang.org/x/xerrors"
 )
 
 const publishError = "failed to publish: %v"
 
-// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
-func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish method.Publish) error {
+// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
+func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
@@ -80,7 +81,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 }
 
 // handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
-func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket,
+func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	broadcast method.Broadcast) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
@@ -249,7 +250,7 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {
-		err := h.handleRootChannelPublishMesssage(socket, publish)
+		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
 			return xerrors.Errorf(rootChannelErr, err)
 		}
@@ -319,7 +320,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	if publish.Params.Channel == rootChannel {
-		err := h.handleRootChannelPublishMesssage(socket, publish)
+		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
 			return publish.ID, xerrors.Errorf(rootChannelErr, err)
 		}
@@ -371,7 +372,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	}
 
 	if broadcast.Params.Channel == rootChannel {
-		err := h.handleRootChannelBroadcastMesssage(socket, broadcast)
+		err := h.handleRootChannelBroadcastMessage(socket, broadcast)
 		if err != nil {
 			return xerrors.Errorf(rootChannelErr, err)
 		}
