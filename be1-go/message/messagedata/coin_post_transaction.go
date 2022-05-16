@@ -8,7 +8,7 @@ type PostTransaction struct {
 	Transaction   Transaction `json:"transaction"`
 }
 
-//Transaction define the input and output account for the transaction
+// Transaction define the input and output account for the transaction
 type Transaction struct {
 	Version  int      `json:"version"`
 	Inputs   []Input  `json:"inputs"`  // min 1
