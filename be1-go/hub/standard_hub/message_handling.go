@@ -59,7 +59,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 
 	err = laoCreate.Verify()
 	if err != nil {
-		h.log.Err(err).Msg("invalid lao#create message "+ err.Error())
+		h.log.Err(err).Msg("invalid lao#create message " + err.Error())
 		return err
 	}
 
