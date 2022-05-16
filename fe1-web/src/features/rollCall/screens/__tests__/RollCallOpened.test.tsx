@@ -9,7 +9,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
-import { eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
+import { eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 import {
   mockRollCallWithAlias,
@@ -54,7 +54,7 @@ const rollCallID = mockRollCallWithAlias.id.valueOf();
 
 // set up mock store
 const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventsReducer, ...rollCallReducer, ...walletReducer }),
+  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
 );
 mockStore.dispatch(connectToLao(mockLao.toState()));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));

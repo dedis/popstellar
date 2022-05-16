@@ -1,2 +1,2 @@
-export { default as eventsReducer } from './EventReducer';
+export { default as eventReducer } from './EventReducer';
 export * from './EventReducer';

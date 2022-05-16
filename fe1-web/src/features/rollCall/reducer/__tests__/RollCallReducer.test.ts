@@ -1,6 +1,6 @@
 import { AnyAction } from 'redux';
 
-import { mockRollCall, mockRollCall2 } from '../../__tests__/utils';
+import { mockRollCall, mockRollCall2, mockRollCallWithAliasState } from '../../__tests__/utils';
 import { RollCall, RollCallState } from '../../objects';
 import {
   addRollCall,
@@ -11,6 +11,8 @@ import {
   removeRollCall,
   updateRollCall,
   makeRollCallAttendeesListSelector,
+  makeRollCallByIdSelector,
+  getRollCallById,
 } from '../RollCallReducer';
 
 const mockRollCallState: RollCallState = mockRollCall.toState();
@@ -103,12 +105,12 @@ describe('RollCallReducer', () => {
         rollcallReduce(
           {
             byId: {
-              [mockRollCallState.id]: mockRollCallState,
+              [mockRollCallWithAliasState.id]: mockRollCallWithAliasState,
             },
-            allIds: [mockRollCallState.id],
-            idAlias: {},
+            allIds: [mockRollCallWithAliasState.id],
+            idAlias: { [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id },
           } as RollCallReducerState,
-          removeRollCall(mockRollCallState.id),
+          removeRollCall(mockRollCallWithAliasState.id),
         ),
       ).toEqual({
         byId: {},
@@ -144,6 +146,20 @@ describe('RollCallReducer', () => {
       expect(rollcall?.toState()).toEqual(mockRollCallState);
     });
 
+    it('returns the constructed rollcall given an alias id', () => {
+      const rollcall = makeRollCallSelector(mockRollCallWithAliasState.idAlias)({
+        [ROLLCALL_REDUCER_PATH]: {
+          byId: { [mockRollCallWithAliasState.id]: mockRollCallWithAliasState },
+          allIds: [mockRollCallWithAliasState.id],
+          idAlias: {
+            [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
+          },
+        } as RollCallReducerState,
+      });
+      expect(rollcall).toBeInstanceOf(RollCall);
+      expect(rollcall?.toState()).toEqual(mockRollCallWithAliasState);
+    });
+
     it('returns undefined if the id of the rollcall is not in the store', () => {
       const rollcall = makeRollCallSelector(mockRollCallState.id)({
         [ROLLCALL_REDUCER_PATH]: {
@@ -153,6 +169,91 @@ describe('RollCallReducer', () => {
         } as RollCallReducerState,
       });
       expect(rollcall).toBeUndefined();
+    });
+
+    it('throws an error if there is an alias id stored but no rollcall for the corresponding id', () => {
+      expect(() =>
+        makeRollCallSelector(mockRollCallWithAliasState.idAlias)({
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            idAlias: {
+              [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
+            },
+          } as RollCallReducerState,
+        }),
+      ).toThrow();
+    });
+  });
+
+  describe('makeRollCallByIdSelector', () => {
+    it('returns the constructed rollcall', () => {
+      const rollcallMap = makeRollCallByIdSelector([mockRollCallState.id, 'someId'])({
+        [ROLLCALL_REDUCER_PATH]: {
+          byId: { [mockRollCallState.id]: mockRollCallState },
+          allIds: [mockRollCallState.id],
+          idAlias: {},
+        } as RollCallReducerState,
+      });
+
+      expect(rollcallMap).toHaveProperty(mockRollCallState.id);
+      expect(rollcallMap).not.toHaveProperty('someId');
+
+      expect(rollcallMap[mockRollCallState.id]).toBeInstanceOf(RollCall);
+      expect(rollcallMap[mockRollCallState.id]?.toState()).toEqual(mockRollCallState);
+    });
+  });
+
+  describe('getRollCallById', () => {
+    it('returns the constructed rollcall', () => {
+      const rollcall = getRollCallById(mockRollCallState.id, {
+        [ROLLCALL_REDUCER_PATH]: {
+          byId: { [mockRollCallState.id]: mockRollCallState },
+          allIds: [mockRollCallState.id],
+          idAlias: {},
+        } as RollCallReducerState,
+      });
+      expect(rollcall).toBeInstanceOf(RollCall);
+      expect(rollcall?.toState()).toEqual(mockRollCallState);
+    });
+
+    it('returns the constructed rollcall given an alias id', () => {
+      const rollcall = getRollCallById(mockRollCallWithAliasState.idAlias, {
+        [ROLLCALL_REDUCER_PATH]: {
+          byId: { [mockRollCallWithAliasState.id]: mockRollCallWithAliasState },
+          allIds: [mockRollCallWithAliasState.id],
+          idAlias: {
+            [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
+          },
+        } as RollCallReducerState,
+      });
+      expect(rollcall).toBeInstanceOf(RollCall);
+      expect(rollcall?.toState()).toEqual(mockRollCallWithAliasState);
+    });
+
+    it('returns undefined if the id of the rollcall is not in the store', () => {
+      const rollcall = getRollCallById(mockRollCallState.id, {
+        [ROLLCALL_REDUCER_PATH]: {
+          byId: {},
+          allIds: [],
+          idAlias: {},
+        } as RollCallReducerState,
+      });
+      expect(rollcall).toBeUndefined();
+    });
+
+    it('throws an error if there is an alias id stored but no rollcall for the corresponding id', () => {
+      expect(() =>
+        getRollCallById(mockRollCallWithAliasState.idAlias, {
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            idAlias: {
+              [mockRollCallWithAliasState.idAlias]: mockRollCallWithAliasState.id,
+            },
+          } as RollCallReducerState,
+        }),
+      ).toThrow();
     });
   });
 
@@ -167,6 +268,42 @@ describe('RollCallReducer', () => {
           } as RollCallReducerState,
         }),
       ).toEqual(mockRollCall.attendees);
+    });
+
+    it('should return an empty list if the attendee list is undefined', () => {
+      expect(
+        makeRollCallAttendeesListSelector(mockRollCallState.id)({
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: { [mockRollCallState.id]: { ...mockRollCallState, attendees: undefined } },
+            allIds: [mockRollCallState.id],
+            idAlias: {},
+          } as RollCallReducerState,
+        }),
+      ).toEqual([]);
+    });
+
+    it('should return an empty list, given undefined', () => {
+      expect(
+        makeRollCallAttendeesListSelector(undefined)({
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: { [mockRollCallState.id]: mockRollCallState },
+            allIds: [mockRollCallState.id],
+            idAlias: {},
+          } as RollCallReducerState,
+        }),
+      ).toEqual([]);
+    });
+
+    it('should return an empty list, given an invalid id', () => {
+      expect(
+        makeRollCallAttendeesListSelector('someId')({
+          [ROLLCALL_REDUCER_PATH]: {
+            byId: { [mockRollCallState.id]: mockRollCallState },
+            allIds: [mockRollCallState.id],
+            idAlias: {},
+          } as RollCallReducerState,
+        }),
+      ).toEqual([]);
     });
   });
 });

@@ -7,12 +7,12 @@ import FeatureInterface from 'core/objects/FeatureInterface';
 import { EventState } from '../objects';
 import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
-export const EVENTS_FEATURE_IDENTIFIER = 'events';
+export const EVENT_FEATURE_IDENTIFIER = 'event';
 
 /**
  * The interface the events feature exposes
  */
-export interface EventsInterface extends FeatureInterface {
+export interface EventInterface extends FeatureInterface {
   functions: {
     /**
      * Gets an event by its id
@@ -76,7 +76,7 @@ export interface EventsInterface extends FeatureInterface {
   };
 }
 
-export interface EventsCompositionConfiguration {
+export interface EventCompositionConfiguration {
   /**
    * A hook returning the current lao id
    * @returns The current lao id
@@ -104,8 +104,8 @@ export interface EventsCompositionConfiguration {
 /**
  * The type of the context that is provided to react components
  */
-export type EventsReactContext = Pick<
-  EventsCompositionConfiguration,
+export type EventReactContext = Pick<
+  EventCompositionConfiguration,
   /* lao */
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
@@ -113,7 +113,7 @@ export type EventsReactContext = Pick<
   | 'eventTypes'
 >;
 
-export interface EventsCompositionInterface extends FeatureInterface {
+export interface EventCompositionInterface extends FeatureInterface {
   /* context */
-  context: EventsReactContext;
+  context: EventReactContext;
 }

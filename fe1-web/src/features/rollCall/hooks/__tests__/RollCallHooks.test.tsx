@@ -6,7 +6,7 @@ import { combineReducers, createStore } from 'redux';
 
 import { mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { addEvent, eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
@@ -27,7 +27,7 @@ const contextValue = {
   } as RollCallReactContext,
 };
 
-const mockStore = createStore(combineReducers({ ...laoReducer, ...eventsReducer }));
+const mockStore = createStore(combineReducers({ ...laoReducer, ...eventReducer }));
 mockStore.dispatch(connectToLao(mockLao.toState()));
 mockStore.dispatch(
   addEvent(mockLaoId, {

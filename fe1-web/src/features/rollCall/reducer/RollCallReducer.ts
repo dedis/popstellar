@@ -121,7 +121,9 @@ export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
     ): RollCall | undefined => {
       if (idAlias) {
         if (!(idAlias in rollcallById)) {
-          return undefined;
+          throw new Error(
+            `Found alias mapping ${rollCallIdString} to ${idAlias} but no roll call with id ${idAlias} is stored`,
+          );
         }
 
         return RollCall.fromState(rollcallById[idAlias]);
@@ -177,7 +179,9 @@ export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
 
   if (idAlias) {
     if (!(idAlias in rollcallById)) {
-      return undefined;
+      throw new Error(
+        `Found alias mapping ${rollCallIdString} to ${idAlias} but no roll call with id ${idAlias} is stored`,
+      );
     }
 
     return RollCall.fromState(rollcallById[idAlias]);
@@ -208,9 +212,7 @@ export const makeRollCallAttendeesListSelector = (rollCallId: Hash | string | un
       }
 
       const rollCall = RollCall.fromState(eventMap.byId[rollCallIdString]);
-      if (!rollCall) {
-        return [];
-      }
+
       return rollCall.attendees || [];
     },
   );

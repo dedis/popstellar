@@ -8,7 +8,7 @@ import { mockLao, mockLaoId, mockLaoIdHash, mockPopToken } from '__tests__/utils
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
-import { addEvent, eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCallHooks } from 'features/rollCall/hooks';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
@@ -86,7 +86,7 @@ beforeEach(() => {
 describe('Wallet home', () => {
   it('renders correctly with an empty wallet', () => {
     const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventsReducer }),
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
     const component = render(
@@ -101,7 +101,7 @@ describe('Wallet home', () => {
 
   it('renders correctly with a non empty wallet', async () => {
     const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventsReducer }),
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
     const mockRCToken = new RollCallToken({
@@ -146,7 +146,7 @@ describe('Wallet home', () => {
 
   it('enables correctly the debug mode', async () => {
     const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventsReducer }),
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
     const mockCreateWalletState = (createDummyWalletState as jest.Mock).mockImplementation(() =>
@@ -169,7 +169,7 @@ describe('Wallet home', () => {
 
   it('disables correctly the debug mode', async () => {
     const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventsReducer }),
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
     (createDummyWalletState as jest.Mock).mockImplementation(() => Promise.resolve());

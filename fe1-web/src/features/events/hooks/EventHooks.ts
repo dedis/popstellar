@@ -2,16 +2,16 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { EventsReactContext, EVENTS_FEATURE_IDENTIFIER } from '../interface';
+import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from '../interface';
 
 export namespace EventHooks {
-  export const useEventsContext = (): EventsReactContext => {
+  export const useEventsContext = (): EventReactContext => {
     const featureContext = useContext(FeatureContext);
     // assert that the evoting context exists
-    if (!(EVENTS_FEATURE_IDENTIFIER in featureContext)) {
+    if (!(EVENT_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Events context could not be found!');
     }
-    return featureContext[EVENTS_FEATURE_IDENTIFIER] as EventsReactContext;
+    return featureContext[EVENT_FEATURE_IDENTIFIER] as EventReactContext;
   };
 
   /**
