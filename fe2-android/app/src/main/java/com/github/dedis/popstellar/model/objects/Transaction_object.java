@@ -10,7 +10,7 @@ public class Transaction_object {
   // private final List<Input_object> inputs;
 
   // outputs
-  // private final List<Output> outputs;
+  // private final List<Output_object> outputs;
 
   // lock_time
   // private final long lock_time;
@@ -24,6 +24,7 @@ public class Transaction_object {
   // function that say if it was a coin base transaction
 
   // function that given a transaction check if the value send are alright
+  // check also of the lock_time is after
 
   // function that given a list of attendees check if the transaction send is correct
 }
