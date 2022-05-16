@@ -1,13 +1,12 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
-import ch.epfl.dedis.lib.crypto.Ed25519Pair
 import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, KeyPair, PrivateKey, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, KeyPair}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -60,10 +59,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         //generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
         data.version match {
-          case "OPEN-BALLOT" => Left(rpcMessage)
-          case "SECRET-BALLOT" =>
-            val keyGen = new Ed25519Pair()
-            val keyPair = KeyPair(PrivateKey(Base64Data(keyGen.scalar.toString)), PublicKey(Base64Data(keyGen.point.toString)))
+          case "OPEN_BALLOT" => Left(rpcMessage)
+          case "SECRET_BALLOT" =>
+            val keyPair = KeyPair()
             val elecCombined = for {
               _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
               electionData <- dbActor ? DbActor.ReadElectionData(electionId)
