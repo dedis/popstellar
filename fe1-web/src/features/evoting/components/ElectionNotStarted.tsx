@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   } as TextStyle,
   textQuestions: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     fontSize: 20,
   } as TextStyle,
 });

@@ -417,7 +417,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     style={
                                       Array [
                                         Object {
-                                          "borderBottomColor": "#000",
+                                          "borderBottomColor": "black",
                                           "borderBottomWidth": 1,
                                           "paddingBottom": 16,
                                           "paddingTop": 16,
@@ -476,7 +476,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     style={
                                       Array [
                                         Object {
-                                          "borderBottomColor": "#000",
+                                          "borderBottomColor": "black",
                                           "borderBottomWidth": 1,
                                           "paddingBottom": 16,
                                           "paddingTop": 16,
