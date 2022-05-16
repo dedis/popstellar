@@ -1,22 +1,22 @@
 import { TextStyle } from 'react-native';
 
-export const base = {
+export const base: TextStyle = {
   textAlign: 'left',
   fontSize: 25,
-} as TextStyle;
+};
 
-export const important = {
+export const important: TextStyle = {
   ...base,
   fontWeight: 'bold',
-} as TextStyle;
+};
 
-export const baseCentered = {
+export const baseCentered: TextStyle = {
   ...base,
   textAlign: 'center',
   marginHorizontal: 10,
-} as TextStyle;
+};
 
-export const importantCentered = {
+export const importantCentered: TextStyle = {
   ...baseCentered,
   fontWeight: 'bold',
-} as TextStyle;
+};
