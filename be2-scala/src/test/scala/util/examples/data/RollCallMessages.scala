@@ -24,7 +24,7 @@ object CreateRollCallMessages extends RollCallMessagesTrait {
 
 object OpenRollCallMessages extends RollCallMessagesTrait {
 
-  override val action: ActionType = ActionType.CREATE
+  override val action: ActionType = ActionType.OPEN
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "open_roll_call_channel")
 
@@ -41,7 +41,7 @@ object CloseRollCallMessages extends RollCallMessagesTrait {
 
   final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_close.json")()
 
-  //TODO: Generate other Clsoe RollCall messages
+  //TODO: Generate other Close RollCall messages
 }
 
 object ReopenRollCallMessages extends RollCallMessagesTrait {
@@ -52,7 +52,7 @@ object ReopenRollCallMessages extends RollCallMessagesTrait {
 
   final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("reopen_call_close.json")()
 
-  //TODO: Generate other Clsoe RollCall messages
+  //TODO: Generate other Close RollCall messages
 }
 
 object RollCallCustomBuilders {

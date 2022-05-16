@@ -8,6 +8,7 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
 import util.examples.Election.EndElectionExamples._
 import util.examples.MessageExample._
+import util.examples.RollCall.CreateRollCallExamples._
 import util.examples.socialMedia.AddChirpExamples._
 import util.examples.socialMedia.AddReactionExamples._
 import util.examples.socialMedia.DeleteChirpExamples._
@@ -46,6 +47,19 @@ object JsonRpcRequestExample {
   final val CREATE_LAO_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongId, id)
   final val CREATE_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongSender, id)
   final val CREATE_LAO_EMPTY_NAME_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoEmptyName, id)
+
+  // for CreateRollCall testing
+  private final val rollCallChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId"))
+  private final val paramsWithCreateRollCall: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CREATE_ROLL_CALL_WORKING)
+  private final val paramsWithCreateRollCallWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CREATE_ROLL_CALL_WRONG_TIMESTAMP)
+  private final val paramsWithCreateRollCallWrongTimestampOrder: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CREATE_ROLL_CALL_WRONG_TIMESTAMP_ORDER)
+  private final val paramsWithCreateRollCallWrongId: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CREATE_ROLL_CALL_WRONG_ID)
+  private final val paramsWithCreateRollCallWrongSender: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CREATE_ROLL_CALL_WRONG_SENDER)
+  final val CREATE_ROLL_CALL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCall, id)
+  final val CREATE_ROLL_CALL_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongTimestamp, id)
+  final val CREATE_ROLL_CALL_WRONG_TIMESTAMP_ORDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongTimestampOrder, id)
+  final val CREATE_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongId, id)
+  final val CREATE_ROLL_CALL_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongSender, id)
 
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)
