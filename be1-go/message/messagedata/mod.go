@@ -31,6 +31,7 @@ const (
 	LAOActionCreate = "create"
 	LAOActionState  = "state"
 	LAOActionUpdate = "update_properties"
+	LAOActionGreet  = "greet"
 
 	MeetingObject       = "meeting"
 	MeetingActionCreate = "create"
