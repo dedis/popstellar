@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"os"
 	"path/filepath"
@@ -347,6 +348,78 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	})
 
 	require.EqualError(t, sock.err, fmt.Sprintf("%v", sock.err))
+}
+
+func Test_Create_Invalid_Json_Schema(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	type N0thing struct {
+		Object string `json:"object"`
+		Action string `json:"action"`
+		Not    string `json:"not"`
+	}
+
+	data := N0thing{
+		Object: "lao",
+		Action: "nothing",
+		Not:    "no",
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	expectedSignature := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         expectedSignature,
+		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	assert.Contains(t, sock.err.Error(), "failed to validate message against json schema", "error message %s", "formatted")
 }
 
 func Test_Create_LAO(t *testing.T) {
