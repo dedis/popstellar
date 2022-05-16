@@ -287,3 +287,10 @@ func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 }
+
+func Test_Array_To_String(t *testing.T) {
+	a := []int{0, 1, 3, 5, 7, 9, 0}
+
+	require.Equal(t, "0,1,3,5,7,9,0", arrayToString(a, ","))
+	require.Equal(t, "0.1.3.5.7.9.0", arrayToString(a, "."))
+}
