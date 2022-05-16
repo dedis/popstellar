@@ -6,6 +6,7 @@ import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import { mockElectionOpened, mockElectionResultHash } from 'features/evoting/__tests__/utils';
+import { Election } from 'features/evoting/objects';
 
 import { EndElection } from '../EndElection';
 
@@ -167,7 +168,9 @@ describe('EndElection', () => {
       const frozenElection = Object.freeze({ ...mockElectionOpened });
       Object.freeze(frozenElection.registeredVotes);
 
-      expect(() => EndElection.computeRegisteredVotesHash(frozenElection)).not.toThrow();
+      expect(() =>
+        EndElection.computeRegisteredVotesHash(frozenElection as Election),
+      ).not.toThrow();
     });
   });
 });
