@@ -1,7 +1,5 @@
 package ch.epfl.pop
 
-import java.util.concurrent.TimeUnit
-
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
@@ -16,17 +14,16 @@ import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
 object Server {
-
   /*
    * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
-
     /* Get configuration object for akka actor/http*/
     val appConf = RuntimeEnvironment.appConf
 

@@ -32,7 +32,7 @@ trait MessageHandler extends AskPatternConstants {
       }
     )
 
-    val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
+    val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel)
     askWrite.transformWith {
       case Success(_) => Future(Left(rpcRequest))
       case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
@@ -73,9 +73,9 @@ trait MessageHandler extends AskPatternConstants {
 
     Await.ready(askLaoData, duration).value match {
       case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
-        val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
+        val broadcastSignature: Signature = laoData.keyPair.privateKey.signData(broadcastData)
         val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-        val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+        val broadcastMessage: Message = Message(broadcastData, laoData.keyPair.publicKey, broadcastSignature, broadcastId, List.empty)
 
         val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
         Await.ready(askWritePropagate, duration).value.get match {
