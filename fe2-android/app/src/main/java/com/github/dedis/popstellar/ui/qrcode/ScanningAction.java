@@ -27,4 +27,5 @@ public enum ScanningAction {
       return "Add Participants to the LAO";
     }
   }
+  // SEND A LAO COIN
 }

@@ -96,4 +96,15 @@ public class Transaction_object {
   // check also of the lock_time is after
 
   // function that given a list of attendees check if the transaction send is correct
+
+  // function that sum two transaction for a given PublicKey
+  public int transaction_add(List<Transaction_object> transaction_object_list, PublicKey receiver) {
+    // transaction_object_list
+
+    // get the hash of the public key
+
+    // check that all the transaction have a output for the given public key
+
+    return 0;
+  }
 }
