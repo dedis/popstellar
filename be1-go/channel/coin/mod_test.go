@@ -260,7 +260,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_max_amount.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_max_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -317,7 +317,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_overflow_amount.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_overflow_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -374,7 +374,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_zero_amount.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_zero_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -431,7 +431,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 		"examples", "messageData")
 
 	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_negative_amount.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_negative_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
