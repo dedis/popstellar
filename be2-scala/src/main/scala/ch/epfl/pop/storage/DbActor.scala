@@ -29,7 +29,7 @@ final case class DbActor(
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
   @throws [DbActorNAckException]
-  private def write(channel: Channel, message: Message): Unit = {
+  private def write(channel: Channel, message: Message, privateKey: PrivateKey): Unit = {
     // determine data object type. Assumption: all payloads carry header fields.
     val (_object, action) = MessageDataProtocol.parseHeader(message.data.decodeToString()).get
 
@@ -39,7 +39,7 @@ final case class DbActor(
     this.synchronized {
       val channelData: ChannelData = readChannelData(channel)
       storage.write(
-        (channel.toString, channelData.addMessage(message.message_id).toJsonString),
+        (channel.toString, channelData.update(message.message_id, privateKey).toJsonString),
         (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
       )
     }
@@ -182,9 +182,9 @@ final case class DbActor(
 
 
   override def receive: Receive = LoggingReceive {
-    case Write(channel, message) =>
+    case Write(channel, message, privateKey) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
-      Try(write(channel, message)) match {
+      Try(write(channel, message, privateKey)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -281,7 +281,7 @@ object DbActor {
    * @param channel the channel where the message should be published
    * @param message the message to write in the database
    */
-  final case class Write(channel: Channel, message: Message) extends Event
+  final case class Write(channel: Channel, message: Message, privateKey: PrivateKey) extends Event
 
 
   /**

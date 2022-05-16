@@ -45,7 +45,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
-    val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
+    val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
+    val electionId: Hash = data.id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     //need to write and propagate the election message
@@ -57,12 +58,17 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
-        //generating a key pair, to send then the public key to the frontend
-        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-        val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
-        val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-        dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
-
+        //generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
+        data.version match {
+          case "OPEN-BALLOT" => Left(rpcMessage)
+          case "SECRET-BALLOT" =>
+            //FIXME: need to find a way to write in the ElectionChannelData
+            val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+            val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
+            val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
+            //we need to store the private key
+            dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+        }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }

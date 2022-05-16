@@ -294,6 +294,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
     final private val PARAM_MESSAGES: String = "messages"
+    final private val PARAM_PRIVATE_KEY: String = "privateKey"
 
     override def read(json: JsValue): ChannelData = json.asJsObject().getFields(PARAM_CHANNEL_TYPE, PARAM_MESSAGES) match {
       case Seq(channelType@JsString(_), JsArray(messages)) => ChannelData(
@@ -309,6 +310,22 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     )
 
   }
+
+  implicit object ElectionChannelDataFormat extends JsonFormat[ElectionChannelData] {
+    final private val PARAM_PRIVATE_KEY: String = "privateKey"
+
+    override def read(json: JsValue): ElectionChannelData = json.asJsObject().getFields(PARAM_PRIVATE_KEY) match {
+      case Seq(privateKey@JsString(_)) => ElectionChannelData(
+        privateKey.convertTo[PrivateKey]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a ElectionChannelData object")
+    }
+
+    override def write(obj: ElectionChannelData): JsValue = JsObject(
+      PARAM_PRIVATE_KEY -> obj.privateKey.toJson
+    )
+  }
+
 
   implicit object LaoDataFormat extends JsonFormat[LaoData] {
     final private val PARAM_OWNER: String = "owner"
