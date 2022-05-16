@@ -46,7 +46,14 @@ export function configureFeatures() {
     /* other dependencies */
     messageRegistry,
   });
-  const meetingConfiguration = meeting.configure(messageRegistry);
+  const meetingConfiguration = meeting.configure({
+    messageRegistry,
+    addEvent: eventsConfiguration.actionCreators.addEvent,
+    updateEvent: eventsConfiguration.actionCreators.updateEvent,
+    getEventById: eventsConfiguration.functions.getEventById,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+  });
   const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
   const witnessConfiguration = witness.configure({

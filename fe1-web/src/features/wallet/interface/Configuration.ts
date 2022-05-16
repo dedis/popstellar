@@ -40,10 +40,10 @@ export interface WalletConfiguration {
   getEventById: (id: Hash) => WalletFeature.Event | undefined;
 
   /**
-   * Creates a two-level map from laoIds to eventIds to events
+   * Creates a selector for a two-level map from laoIds to eventIds to events
    * where all returned events have type 'eventType'
    * @param eventType The type of the events that should be returned
-   * @returns A map from laoIds to a map of eventIds to events
+   * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
     eventType: string,
