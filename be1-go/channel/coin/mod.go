@@ -208,19 +208,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 func (c *Channel) processPostTransaction(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.PostTransaction)
+	data, ok := msgData.(*messagedata.PostTransaction)
 	if !ok {
 		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}
 
-	var transactionData messagedata.PostTransaction
-
-	err := msg.UnmarshalData(&transactionData)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal transaction data: %v", err)
-	}
-
-	err = c.verifyMessagePostTransaction(transactionData)
+	err := data.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid coin#postTransaction message: %v", err)
 	}

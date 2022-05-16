@@ -607,8 +607,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 
 // createCoinChannel creates a coin channel to handle digital cash project
 func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
-	channelID := c.channelID
-	coinPath := fmt.Sprintf("%s/coin", channelID)
+	coinPath := fmt.Sprintf("%s/coin", c.channelID)
 	coinCh := coin.NewChannel(coinPath, c.hub, log)
 	c.hub.NotifyNewChannel(coinPath, coinCh, socket)
 }

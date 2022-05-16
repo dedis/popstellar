@@ -202,7 +202,7 @@ func Test_SendTransaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -259,7 +259,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_max_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -316,7 +316,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_overflow_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -373,7 +373,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_zero_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -430,7 +430,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_negative_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -483,7 +483,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
-	//load example
+	// load example
 	require.NoError(t, err)
 
 	m := message.Message{
@@ -537,7 +537,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_wrong_transaction_id.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -566,15 +566,16 @@ func Test_SendTransactionWrongId(t *testing.T) {
 
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
-	//Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
+
+	// Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
 	err = channel.Publish(message, socket.ClientSocket{})
 	require.EqualError(t, err, "failed to handle a publish message:"+
 		" failed to process message:"+
 		" failed to process action 'coin#post_transaction':"+
 		" invalid coin#postTransaction message:"+
-		" Transaction Id is not valid,"+
-		" value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=,"+
-		" computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
+		" transaction id is not valid:"+
+		" 0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc= !="+
+		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
 }
 
 // Tests that the channel works correctly when it receives a transaction
@@ -601,7 +602,7 @@ func Test_SendTransactionMultInpAndOut(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_multipleinpandout.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -658,7 +659,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
+	// load example
 	file := filepath.Join(relativePath, "coin", "post_transaction_coinbase.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
