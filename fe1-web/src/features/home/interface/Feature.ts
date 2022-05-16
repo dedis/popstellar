@@ -11,6 +11,8 @@ export namespace HomeFeature {
     id: string;
     title?: string;
     Component: React.ComponentType<unknown>;
+    tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
+    headerRight?: () => React.ReactNode;
 
     /**
      * This number is here to order the screens.

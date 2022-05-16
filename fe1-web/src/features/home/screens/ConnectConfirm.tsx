@@ -4,6 +4,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Spacing } from 'core/styles';
@@ -11,7 +12,7 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { ConnectHooks } from '../hooks';
+import { HomeHooks } from '../hooks';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     flex: 8,
     justifyContent: 'center',
     borderWidth: 1,
-    margin: Spacing.xs,
+    margin: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -54,7 +55,7 @@ const ConnectConfirm = () => {
   const [laoId, setLaoId] = useState(laoIdIn);
 
   const toast = useToast();
-  const getLaoChannel = ConnectHooks.useGetLaoChannel();
+  const getLaoChannel = HomeHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
     const connection = connectTo(serverUrl);
@@ -85,8 +86,8 @@ const ConnectConfirm = () => {
   };
 
   return (
-    <View style={containerStyles.flex}>
-      <View style={styles.viewCenter}>
+    <ScreenWrapper>
+      <View style={containerStyles.flex}>
         <TextBlock text={STRINGS.connect_confirm_description} />
         <TextInputLine
           placeholder={STRINGS.connect_server_uri}
@@ -98,13 +99,10 @@ const ConnectConfirm = () => {
           onChangeText={(input: string) => setLaoId(input)}
           defaultValue={laoId}
         />
+        <WideButtonView title={STRINGS.general_button_confirm} onPress={() => onButtonConfirm()} />
+        <WideButtonView title={STRINGS.general_button_cancel} onPress={() => navigation.goBack()} />
       </View>
-      <WideButtonView title={STRINGS.general_button_confirm} onPress={() => onButtonConfirm()} />
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={() => navigation.navigate(STRINGS.connect_unapproved_title)}
-      />
-    </View>
+    </ScreenWrapper>
   );
 };
 

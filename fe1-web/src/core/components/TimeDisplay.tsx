@@ -15,7 +15,7 @@ import { Spacing } from '../styles';
 
 const styles = StyleSheet.create({
   textStandard: {
-    marginHorizontal: Spacing.xs,
+    marginHorizontal: Spacing.x1,
   } as TextStyle,
 });
 const TimeDisplay = (props: IPropTypes) => {

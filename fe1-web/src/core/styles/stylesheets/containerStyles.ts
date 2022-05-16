@@ -24,8 +24,8 @@ const containerStyles = StyleSheet.create({
   centerWithMargin: {
     flex: 1,
     alignItems: 'center',
-    marginHorizontal: Spacing.xl,
-    marginVertical: Spacing.xs,
+    marginHorizontal: Spacing.x5,
+    marginVertical: Spacing.x1,
   },
 });
 

@@ -1,8 +1,9 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 
+import { Colors, Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
@@ -11,7 +12,7 @@ import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
 import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
-const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
+const OrganizationTopTabNavigator = createBottomTabNavigator();
 
 /**
  * Navigation when connected to a lao
@@ -69,10 +70,17 @@ const LaoNavigation: React.FC = () => {
 
   return (
     <OrganizationTopTabNavigator.Navigator
-      style={styles.navigator}
       initialRouteName={STRINGS.organization_navigation_tab_events}
       screenOptions={{
-        swipeEnabled: false,
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.inactive,
+        headerLeftContainerStyle: {
+          paddingLeft: Spacing.horizontalContentSpacing,
+        },
+        headerRightContainerStyle: {
+          paddingRight: Spacing.horizontalContentSpacing,
+        },
+        headerTitleAlign: 'center',
       }}>
       {screens.map(({ id, title, Component, Badge, Icon }) => (
         <OrganizationTopTabNavigator.Screen
@@ -81,7 +89,7 @@ const LaoNavigation: React.FC = () => {
           component={Component}
           options={{
             title: title || id,
-            tabBarBadge: Badge,
+            headerRight: Badge,
             tabBarIcon: Icon,
           }}
         />

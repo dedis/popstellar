@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
   textInput: {
     ...Typography.baseCentered,
     borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
+    marginVertical: Spacing.x2,
   } as TextStyle,
 });
 

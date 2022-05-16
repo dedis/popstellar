@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
@@ -57,32 +58,35 @@ const Launch = () => {
   const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   return (
-    <View style={containerStyles.flex}>
-      <View style={styles.viewTop}>
-        <TextBlock text={STRINGS.launch_description} />
-        <TextInputLine
-          placeholder={STRINGS.launch_organization_name}
-          onChangeText={(input: string) => setInputLaoName(input)}
-          defaultValue={inputLaoName}
-        />
-        <TextInputLine
-          placeholder={STRINGS.launch_address}
-          onChangeText={(input: string) => setInputAddress(input)}
-          defaultValue={inputAddress}
-        />
+    <ScreenWrapper>
+      <View style={containerStyles.flex}>
+        <View style={styles.viewTop}>
+          <TextBlock text={STRINGS.launch_description} />
+          <TextInputLine
+            placeholder={STRINGS.launch_organization_name}
+            onChangeText={(input: string) => setInputLaoName(input)}
+            defaultValue={inputLaoName}
+          />
+          <TextInputLine
+            placeholder={STRINGS.launch_address}
+            onChangeText={(input: string) => setInputAddress(input)}
+            defaultValue={inputAddress}
+          />
+        </View>
+        <View style={styles.viewBottom}>
+          <WideButtonView
+            title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
+            onPress={() => onButtonLaunchPress(inputLaoName)}
+          />
+          <WideButtonView
+            title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
+            onPress={connectToTestLao}
+          />
+          <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
+          <WideButtonView title="Cancel" onPress={() => navigation.goBack()} />
+        </View>
       </View>
-      <View style={styles.viewBottom}>
-        <WideButtonView
-          title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
-          onPress={() => onButtonLaunchPress(inputLaoName)}
-        />
-        <WideButtonView
-          title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
-          onPress={connectToTestLao}
-        />
-        <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
-      </View>
-    </View>
+    </ScreenWrapper>
   );
 };
 

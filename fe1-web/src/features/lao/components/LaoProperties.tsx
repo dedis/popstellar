@@ -15,10 +15,10 @@ const laoPropertiesStyles = StyleSheet.create({
   default: {
     borderWidth: 1,
     borderRadius: 5,
-    padding: Spacing.xs,
-    marginHorizontal: Spacing.s,
-    marginTop: Spacing.xs,
-    marginBottom: Spacing.xs,
+    padding: Spacing.x1,
+    marginHorizontal: Spacing.x2,
+    marginTop: Spacing.x1,
+    marginBottom: Spacing.x1,
   },
 });
 

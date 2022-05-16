@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Spacing } from '../styles';
+import { Colors, Spacing } from '../styles';
 
 const styles = StyleSheet.create({
   wideButtonView: {
-    marginHorizontal: Spacing.xl,
-    marginVertical: Spacing.xs,
+    marginVertical: Spacing.x1,
   } as ViewStyle,
+  button: {} as ViewStyle,
 });
 
 const WideButtonView = (props: IPropTypes) => {
@@ -16,7 +16,7 @@ const WideButtonView = (props: IPropTypes) => {
 
   return (
     <View style={styles.wideButtonView}>
-      <Button title={title} onPress={onPress} disabled={!!disabled} />
+      <Button title={title} onPress={onPress} disabled={!!disabled} color={Colors.primary} />
     </View>
   );
 };

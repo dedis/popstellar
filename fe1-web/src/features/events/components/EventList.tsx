@@ -21,12 +21,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   buttonMatcher: {
     ...Typography.baseCentered,
-    paddingLeft: Spacing.m,
+    paddingLeft: Spacing.x3,
     opacity: 0,
   } as TextStyle,
   expandButton: {
     ...Typography.baseCentered,
-    paddingRight: Spacing.m,
+    paddingRight: Spacing.x3,
   } as TextStyle,
 });
 

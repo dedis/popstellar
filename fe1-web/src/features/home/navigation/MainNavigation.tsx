@@ -1,29 +1,36 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/core';
 import React, { useMemo } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
+import CreateIcon from 'core/components/icons/CreateIcon';
+import HomeIcon from 'core/components/icons/HomeIcon';
+import ScanIcon from 'core/components/icons/ScanIcon';
+import { AppScreen } from 'core/navigation/AppNavigation';
+import { Colors, Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { HomeFeature } from '../interface';
-import { Home, Launch } from '../screens';
+import { Home } from '../screens';
+import ConnectNavigation from './ConnectNavigation';
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
  * and Wallet components.
  */
-const HomeTopTabNavigator = createMaterialTopTabNavigator();
+const HomeNavigator = createBottomTabNavigator();
 
-const styles = StyleSheet.create({
-  navigator: {
-    ...Platform.select({
-      web: {
-        width: '100vw',
-      },
-      default: {},
-    }),
-  },
-});
+const ConnectHeaderRight = () => {
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
+      <CreateIcon color={Colors.primary} size={25} focused={false} />
+    </TouchableOpacity>
+  );
+};
 
 const MainNavigation = () => {
   const navigationScreens = HomeHooks.useMainNavigationScreens();
@@ -36,36 +43,54 @@ const MainNavigation = () => {
         id: STRINGS.navigation_tab_home,
         title: STRINGS.navigation_tab_home,
         Component: Home,
+        tabBarIcon: HomeIcon,
         order: -99999999,
       } as HomeFeature.Screen,
-      // add launch screen to the navigation
       {
-        id: STRINGS.navigation_tab_launch,
-        title: STRINGS.navigation_tab_launch,
-        Component: Launch,
-        order: -1000,
+        id: STRINGS.navigation_tab_connect,
+        Component: ConnectNavigation,
+        tabBarIcon: ScanIcon,
+        order: -10000,
+        headerRight: ConnectHeaderRight,
       } as HomeFeature.Screen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
   }, [navigationScreens]);
 
   return (
-    <HomeTopTabNavigator.Navigator
-      style={styles.navigator}
+    <HomeNavigator.Navigator
       initialRouteName={STRINGS.navigation_tab_home}
       screenOptions={{
-        swipeEnabled: false,
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.inactive,
+        headerLeftContainerStyle: {
+          paddingLeft: Spacing.horizontalContentSpacing,
+        },
+        headerRightContainerStyle: {
+          paddingRight: Spacing.horizontalContentSpacing,
+        },
+        headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component }) => (
-        <HomeTopTabNavigator.Screen
+      {screens.map(({ id, title, Component, tabBarIcon, headerRight }) => (
+        <HomeNavigator.Screen
           key={id}
           name={id}
           component={Component}
-          options={{ title: title || id }}
+          options={{
+            title: title || id,
+            tabBarIcon,
+            headerRight,
+          }}
         />
       ))}
-    </HomeTopTabNavigator.Navigator>
+    </HomeNavigator.Navigator>
   );
 };
 
 export default MainNavigation;
+
+export const MainNavigationScreen: AppScreen = {
+  id: STRINGS.app_navigation_tab_home,
+  title: STRINGS.app_navigation_tab_home,
+  component: MainNavigation,
+};

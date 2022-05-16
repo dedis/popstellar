@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnyAction } from 'redux';
 
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -11,12 +12,31 @@ export const HOME_FEATURE_IDENTIFIER = 'home';
 export interface HomeCompositionConfiguration {
   /* lao */
 
+  /**
+   * A function for getting a LAOs channel by its id
+   * @param laoId The id of the lao whose channel should be returned
+   * @returns The channel related to the passed lao id or undefined it the lao id is invalid
+   */
+  getLaoChannel(laoId: string): Channel | undefined;
+
+  /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  useCurrentLaoId: () => Hash | undefined;
+
   /* functions */
   requestCreateLao: (laoName: string) => Promise<Channel>;
   connectToTestLao: () => void;
 
   /* action creators */
-  addLaoServerAddress: (laoId: Hash, address: string) => AnyAction;
+  /**
+   * A function for adding a lao server address
+   * @param laoId The lao id
+   * @param address The address that should be added
+   * @returns A redux action
+   */
+  addLaoServerAddress: (laoId: Hash | string, address: string) => AnyAction;
 
   /* hooks */
 
@@ -53,18 +73,27 @@ export type HomeReactContext = Pick<
   | 'useLaoList'
   | 'LaoList'
   | 'mainNavigationScreens'
+  | 'getLaoChannel'
+  | 'useCurrentLaoId'
 >;
 
 /**
  * The interface the home feature exposes
  */
 export interface HomeInterface extends FeatureInterface {
-  navigation: {
-    MainNavigation: React.ComponentType<any>;
+  appScreens: AppScreen[];
+  functions: {
+    /**
+     * Given the lao server address and the lao id, this computes the data
+     * that is encoded in a QR code that can be used to connect to a LAO
+     * @param server The server address
+     * @param laoId The lao id
+     * @returns The encoded data
+     */
+    encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
   };
   screens: {
     Home: React.ComponentType<any>;
-    Launch: React.ComponentType<any>;
   };
   context: HomeReactContext;
 }

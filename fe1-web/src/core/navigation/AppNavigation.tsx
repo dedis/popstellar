@@ -55,4 +55,6 @@ AppNavigation.defaultProps = {};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
+export type AppScreen = IPropTypes['screens']['0'];
+
 export default AppNavigation;

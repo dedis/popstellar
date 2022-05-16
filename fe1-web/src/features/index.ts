@@ -1,9 +1,9 @@
+import WalletIcon from 'core/components/icons/WalletIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
 import STRINGS from '../resources/strings';
-import * as connect from './connect';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
@@ -26,11 +26,6 @@ export function configureFeatures() {
 
   const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
-  const connectConfiguration = connect.configure({
-    addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
-    getLaoChannel: laoConfiguration.functions.getLaoChannel,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-  });
 
   const evotingConfiguration = evoting.configure({
     /* LAO FEATURE */
@@ -104,20 +99,20 @@ export function configureFeatures() {
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
+    getLaoChannel: laoConfiguration.functions.getLaoChannel,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    /* components */
     LaoList: laoConfiguration.components.LaoList,
+    /* screens */
     mainNavigationScreens: [
-      {
-        id: STRINGS.navigation_tab_connect,
-        Component: connectConfiguration.navigation.ConnectNavigation,
-        order: -10000,
-      },
       {
         id: STRINGS.navigation_tab_wallet,
         Component: walletComposition.navigation.WalletNavigation,
+        tabBarIcon: WalletIcon,
         order: 99999999,
       },
     ],
@@ -137,7 +132,7 @@ export function configureFeatures() {
     /* events */
     EventList: eventConfiguration.components.EventList,
     /* connect */
-    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionForQRCode,
+    encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
       {
@@ -215,10 +210,7 @@ export function configureFeatures() {
 
     navigationOpts: {
       screens: [
-        {
-          id: STRINGS.app_navigation_tab_home,
-          component: homeComposition.navigation.MainNavigation,
-        },
+        ...homeComposition.appScreens,
         {
           id: STRINGS.app_navigation_tab_lao,
           component: laoComposition.navigation.LaoNavigation,
@@ -227,7 +219,6 @@ export function configureFeatures() {
     },
     context: {
       [notificationComposition.identifier]: notificationComposition.context,
-      [connectConfiguration.identifier]: connectConfiguration.context,
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,

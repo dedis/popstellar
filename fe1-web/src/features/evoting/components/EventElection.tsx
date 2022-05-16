@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     ...Typography.baseCentered,
   } as TextStyle,
   textOptions: {
-    marginHorizontal: Spacing.s,
+    marginHorizontal: Spacing.x2,
     fontSize: 16,
     textAlign: 'center',
   } as TextStyle,

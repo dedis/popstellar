@@ -7,7 +7,7 @@ import { combineReducers, createStore, Store } from 'redux';
 import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
-import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
+import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 

@@ -1,5 +1,9 @@
-export const xs = 10;
-export const s = 20;
-export const m = 30;
-export const l = 40;
-export const xl = 50;
+const spacingUnit = 16;
+
+export const x1 = spacingUnit;
+export const x2 = 2 * spacingUnit;
+export const x3 = 3 * spacingUnit;
+export const x4 = 4 * spacingUnit;
+export const x5 = 5 * spacingUnit;
+
+export const horizontalContentSpacing = x3;

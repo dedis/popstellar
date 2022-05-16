@@ -89,10 +89,6 @@ namespace STRINGS {
   /* --- Connect Strings --- */
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
-  export const connect_button_camera = 'Enable Camera Access';
-
-  // Unapproved Connect Strings
-  export const connect_unapproved_title = 'Unapproved';
 
   // Scanning Connect Strings
   export const connect_scanning_title = 'Scanning';

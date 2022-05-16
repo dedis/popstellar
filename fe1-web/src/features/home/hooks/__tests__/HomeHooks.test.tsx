@@ -4,7 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { mockLao } from '__tests__/utils';
+import { mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
@@ -14,6 +14,7 @@ import { HomeHooks } from '../index';
 
 const requestCreateLao = jest.fn();
 const addLaoServerAddress = jest.fn();
+const getLaoChannel = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const mainNavigationScreens: HomeFeature.Screen[] = [
@@ -28,6 +29,8 @@ const contextValue = {
     useLaoList: LaoHooks.useLaoList,
     LaoList,
     mainNavigationScreens,
+    getLaoChannel,
+    useCurrentLaoId: LaoHooks.useCurrentLaoId
   } as HomeReactContext,
 };
 
@@ -81,6 +84,20 @@ describe('Home hooks', () => {
     it('should return the main navigation screens', () => {
       const { result } = renderHook(() => HomeHooks.useMainNavigationScreens(), { wrapper });
       expect(result.current).toEqual(mainNavigationScreens);
+    });
+  });
+
+  describe('HomeHooks.useCurrentLaoId', () => {
+    it('should return the the current lao id', () => {
+      const { result } = renderHook(() => HomeHooks.useCurrentLaoId(), { wrapper });
+      expect(result.current?.valueOf()).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('HomeHooks.useGetLaoChannel', () => {
+    it('should return the function for getting a channel by lao id', () => {
+      const { result } = renderHook(() => HomeHooks.useGetLaoChannel(), { wrapper });
+      expect(result.current).toEqual(getLaoChannel);
     });
   });
 });

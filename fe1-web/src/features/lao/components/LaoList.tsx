@@ -10,7 +10,7 @@ import LaoItem from './LaoItem';
 
 const styles = StyleSheet.create({
   flatList: {
-    marginTop: Spacing.s,
+    marginTop: Spacing.x2,
   },
 });
 

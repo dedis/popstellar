@@ -7,7 +7,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { configureTestFeatures, mockLao } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { dispatch } from 'core/redux';
-import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
+import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 

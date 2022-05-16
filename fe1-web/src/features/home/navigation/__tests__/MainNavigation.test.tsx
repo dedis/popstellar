@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { Home } from 'features/home/screens';
@@ -11,7 +11,7 @@ import MainNavigation from '../MainNavigation';
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
-    requestCreateLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve(mockChannel),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
     useLaoList: () => [],
@@ -20,6 +20,8 @@ const contextValue = {
       { id: 'home', title: 'Home', order: 0, Component: Home },
       { id: 'home2', order: -3, Component: Home },
     ],
+    getLaoChannel: () => mockChannel,
+    useCurrentLaoId: () => mockLaoIdHash,
   } as HomeReactContext,
 };
 

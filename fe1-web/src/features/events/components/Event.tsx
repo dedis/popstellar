@@ -23,7 +23,7 @@ const Event = (props: IPropTypes) => {
   }, [eventType, eventTypes]);
 
   return (
-    <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
+    <View style={[eventViewStyles.default, { marginTop: Spacing.x2 }]}>
       {Component ? (
         <Component eventId={eventId} isOrganizer={isOrganizer} />
       ) : (

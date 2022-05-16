@@ -6,7 +6,7 @@ import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textStandard: {
-    marginHorizontal: Spacing.xs,
+    marginHorizontal: Spacing.x1,
   } as TextStyle,
   textBold: {
     ...Typography.importantCentered,

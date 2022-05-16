@@ -5,11 +5,12 @@ import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
 import { WideButtonView } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { ConnectHooks } from '../hooks';
+import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
 
 /**
@@ -18,9 +19,6 @@ import { ConnectToLao } from '../objects';
 const ConnectOpenScan = () => {
   // FIXME: route should use proper type
   const navigation = useNavigation<any>();
-
-  // Remove the user to go back to the ConnectEnableCamera as he has already given
-  // his permission to use the camera
 
   // this is needed as otherwise the camera will stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -35,7 +33,7 @@ const ConnectOpenScan = () => {
 
   const toast = useToast();
 
-  const laoId = ConnectHooks.useCurrentLaoId();
+  const laoId = HomeHooks.useCurrentLaoId();
 
   const handleError = (err: string) => {
     console.error(err);
@@ -85,25 +83,26 @@ const ConnectOpenScan = () => {
 
   const onCancel = () => {
     setShowScanner(false);
-
-    // if we have an active lao, this was an additional connection and thus we navigate (back)
-    // to the organization user screen
-    if (laoId) {
-      navigation.navigate(STRINGS.app_navigation_tab_lao, {
-        screen: STRINGS.organization_navigation_tab_user,
-      });
-    } else {
-      navigation.navigate(STRINGS.connect_unapproved_title);
-    }
+    navigation.goBack();
   };
 
   return showScanner ? (
-    <View style={containerStyles.centeredXY}>
-      <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
-      <WideButtonView title={STRINGS.general_button_cancel} onPress={onCancel} />
-    </View>
+    <ScreenWrapper>
+      <View style={containerStyles.centeredXY}>
+        <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '100%' }} />
+        <WideButtonView title={STRINGS.general_button_cancel} onPress={onCancel} />
+        <WideButtonView
+          title={STRINGS.connect_connecting_validate}
+          onPress={() => {
+            navigation.navigate(STRINGS.connect_confirm_title);
+          }}
+        />
+      </View>
+    </ScreenWrapper>
   ) : (
-    <View style={containerStyles.centeredY} />
+    <ScreenWrapper>
+      <View style={containerStyles.centeredY} />
+    </ScreenWrapper>
   );
 };
 

@@ -15,7 +15,7 @@ import { Lao } from '../objects';
  */
 const styles = StyleSheet.create({
   view: {
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.x1,
   } as ViewStyle,
   text: {
     ...Typography.baseCentered,
@@ -29,9 +29,12 @@ const LaoItem = ({ lao }: IPropTypes) => {
   const navigation = useNavigation<any>();
 
   const handlePress = () => {
-    navigation.navigate(STRINGS.connect_confirm_title, {
-      laoIdIn: lao.id.valueOf(),
-      url: lao.server_addresses[0],
+    navigation.navigate(STRINGS.navigation_tab_connect, {
+      screen: STRINGS.connect_confirm_title,
+      params: {
+        laoIdIn: lao.id.valueOf(),
+        url: lao.server_addresses[0],
+      },
     });
   };
 

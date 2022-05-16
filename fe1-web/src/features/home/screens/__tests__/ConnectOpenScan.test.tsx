@@ -4,23 +4,25 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import {
-  ConnectReactContext,
-  CONNECT_FEATURE_IDENTIFIER,
-} from 'features/connect/interface/Configuration';
+import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import ConnectOpenScan from '../ConnectOpenScan';
 
 const contextValue = {
-  [CONNECT_FEATURE_IDENTIFIER]: {
+  [HOME_FEATURE_IDENTIFIER]: {
     addLaoServerAddress: () => mockReduxAction,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
-    getLaoChannel: () => 'a channel',
-  } as ConnectReactContext,
+    getLaoChannel: () => mockChannel,
+    LaoList: () => null,
+    connectToTestLao: () => {},
+    mainNavigationScreens: [],
+    requestCreateLao: () => Promise.resolve(mockChannel),
+    useLaoList: () => [],
+  } as HomeReactContext,
 };
 
 const mockStore = createStore(combineReducers(laoReducer));
