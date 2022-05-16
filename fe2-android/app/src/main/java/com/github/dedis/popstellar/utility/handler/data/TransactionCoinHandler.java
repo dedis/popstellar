@@ -24,6 +24,8 @@ public class TransactionCoinHandler {
     Channel channel = context.getChannel();
     Lao lao = laoRepository.getLaoByChannel(channel);
 
+    // update all transaction
+
     // lao update the history
 
     // lao update the last transaction per public key

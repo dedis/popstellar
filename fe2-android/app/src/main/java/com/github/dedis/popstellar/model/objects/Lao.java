@@ -41,6 +41,13 @@ public final class Lao {
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
+  // Some useful map for the digital cash
+  // TODO : SHOULD IT BE IN ROLL CALL
+  private Map<String, PublicKey> pub_keyByHash;
+  // Map for the history
+  private Map<PublicKey, List<Transaction_object>> transaction_historyByUser;
+  // Map for the the public_key last transaction
+  private Map<PublicKey, Transaction_object> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -60,6 +67,10 @@ public final class Lao {
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
+    // initialize the maps :
+    this.transaction_historyByUser = new HashMap<>();
+    this.transactionByUser = new HashMap<>();
+    this.pub_keyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -147,6 +158,19 @@ public final class Lao {
 
     PublicKey user = chirp.getSender();
     chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
+  }
+
+  // add a function that update all the transaction
+  public void updateTransactionMaps(Transaction_object transaction_object) {
+    if (transaction_object == null) {
+      throw new IllegalArgumentException("The transaction is null");
+    }
+    // Change the transaction per public key in transacionperUser
+    // for the sender and the receiver
+
+    // Add the transaction in the history
+    // for the sender and the receiver
+
   }
 
   public Optional<RollCall> getRollCall(String id) {
