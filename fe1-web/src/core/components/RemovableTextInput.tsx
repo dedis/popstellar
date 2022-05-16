@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   } as ViewStyle,
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     borderBottomWidth: 2,
     marginVertical: Spacing.s,
     marginHorizontal: Spacing.xl,

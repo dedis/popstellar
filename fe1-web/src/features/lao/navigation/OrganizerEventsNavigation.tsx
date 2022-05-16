@@ -15,7 +15,7 @@ import { OrganizerScreen } from '../screens';
 
 const Stack = createStackNavigator();
 
-export default function OrganizerNavigation() {
+export default function OrganizerEventsNavigation() {
   const screens = LaoHooks.useOrganizerNavigationScreens();
 
   // sort screens by order before rendering them

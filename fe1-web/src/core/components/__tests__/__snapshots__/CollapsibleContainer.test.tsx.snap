@@ -60,7 +60,7 @@ exports[`CollapsibleContainer container can be opened 1`] = `
 </View>
 `;
 
-exports[`CollapsibleContainer renders correctly 1`] = `
+exports[`CollapsibleContainer renders correctly when closed 1`] = `
 <View>
   <View
     accessible={true}
@@ -113,5 +113,67 @@ exports[`CollapsibleContainer renders correctly 1`] = `
       </Text>
     </View>
   </View>
+</View>
+`;
+
+exports[`CollapsibleContainer renders correctly when opened 1`] = `
+<View>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    nativeID="animatedComponent"
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "opacity": 1,
+      }
+    }
+  >
+    <View>
+      <Text
+        style={
+          Object {
+            "color": "black",
+            "fontSize": 25,
+            "fontWeight": "bold",
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
+        }
+      >
+        A collapsible container
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "fontSize": 25,
+              "marginHorizontal": 10,
+              "textAlign": "center",
+            },
+            Object {
+              "position": "absolute",
+              "right": 0,
+            },
+          ]
+        }
+      >
+        v
+      </Text>
+    </View>
+  </View>
+  <Text>
+    a first child
+  </Text>
+  <Text>
+    a second child
+  </Text>
 </View>
 `;

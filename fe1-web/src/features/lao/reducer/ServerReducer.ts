@@ -7,7 +7,7 @@ import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/tool
 
 import { PublicKey } from 'core/objects';
 
-import { Server, ServerAddress, ServerState } from '../objects/Server';
+import { LaoServer, ServerAddress, ServerState } from '../objects/LaoServer';
 import { getLaosState } from './LaoReducer';
 
 /**
@@ -41,10 +41,14 @@ const serverSlice = createSlice({
     addServer: (state: Draft<ServerReducerState>, action: PayloadAction<ServerState>) => {
       const server = action.payload;
 
-      let laoState: ServerReducerState['byLaoId']['string'] = {
-        byAddress: {},
-        allAddresses: [],
-        backendKeyByFrontendKey: {},
+      let laoState = {
+        byAddress: {} as {
+          [address: ServerAddress]: ServerState;
+        },
+        allAddresses: [] as string[],
+        backendKeyByFrontendKey: {} as {
+          [frontendKey: string]: string;
+        },
       };
 
       if (server.laoId in state.byLaoId) {
@@ -127,7 +131,7 @@ export const getServerState = (state: any): ServerReducerState => state[SERVER_R
 
 /**
  * A function to directly retrieve the public key from the redux store for a given lao id and server address
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark This function does not memoize the result. If you need this, use makeServerSelector instead
  * @param laoId The lao id
  * @param address The server address
  * @param state The redux state
@@ -149,7 +153,7 @@ export const getServerPublicKeyByAddress = (
 
 /**
  * A function to directly retrieve the public key of the lao organizer's backend
- * @remark NOTE: This function does not memoize the result. If you need this, use makeServerSelector instead
+ * @remark This function does not memoize the result. If you need this, use makeServerSelector instead
  * @param laoId The lao id
  * @param state The redux state
  * @returns The public key of the lao organizer's backend and undefined if there is none
@@ -188,9 +192,9 @@ export const makeServerSelector = (laoId: string, address: ServerAddress) =>
     // First input: map of lao ids to servers
     (state) => getServerState(state).byLaoId,
     // Selector: returns the server object associated to the given address
-    (byLaoId: ServerReducerState['byLaoId']): Server | undefined => {
+    (byLaoId: ServerReducerState['byLaoId']): LaoServer | undefined => {
       if (laoId in byLaoId && address in byLaoId[laoId].byAddress) {
-        return Server.fromState(byLaoId[laoId].byAddress[address]);
+        return LaoServer.fromState(byLaoId[laoId].byAddress[address]);
       }
 
       return undefined;
