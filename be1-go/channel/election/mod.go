@@ -40,7 +40,7 @@ type Channel struct {
 
 	// *baseChannel
 
-	// Type of election channel ("open-ballot", "secret-ballot", ...)
+	// Type of election channel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
 	electionType string
 
 	// Keys of the election if secret ballot, nil otherwise
@@ -521,7 +521,7 @@ func (c *Channel) createAndSendElectionKey() error {
 
 	msgData := messagedata.ElectionKey{
 		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionResult,
+		Action:   messagedata.ElectionActionKey,
 		Election: c.getElectionID(),
 		Key:      base64.URLEncoding.EncodeToString(ekBuf),
 	}

@@ -1,27 +1,34 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import { PublicKey } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionVersion, SelectedBallots } from '../objects';
+import { makeElectionKeySelector } from '../reducer';
 
-const ElectionOpened = ({ election, questions, isOrganizer, electionKey }: IPropTypes) => {
+const ElectionOpened = ({ election, questions, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
   const [hasVoted, setHasVoted] = useState(0);
 
+  const electionKeySelector = useMemo(
+    () => makeElectionKeySelector(election.id.valueOf()),
+    [election.id],
+  );
+  const electionKey = useSelector(electionKeySelector);
+
   const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
 
   const onCastVote = () => {
-    castVote(election, selectedBallots)
+    castVote(election, electionKey || undefined, selectedBallots)
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
@@ -91,13 +98,11 @@ const propTypes = {
     }).isRequired,
   ).isRequired,
   isOrganizer: PropTypes.bool,
-  electionKey: PropTypes.instanceOf(PublicKey),
 };
 ElectionOpened.propTypes = propTypes;
 
 ElectionOpened.defaultProps = {
   isOrganizer: false,
-  electionKey: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

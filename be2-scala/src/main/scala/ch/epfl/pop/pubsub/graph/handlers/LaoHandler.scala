@@ -1,10 +1,13 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import ch.epfl.pop.config.RuntimeEnvironment.appConf
+import ch.epfl.pop.config.ServerConf
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -25,6 +28,9 @@ case object LaoHandler extends MessageHandler {
         val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
+        //we get access to the canonical address of the server
+        val config = ServerConf(appConf)
+        val address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.path}")
 
         val combined = for {
           // check whether the lao already exists in db
@@ -43,11 +49,16 @@ case object LaoHandler extends MessageHandler {
           // write lao creation message
           _ <- dbActor ? DbActor.Write(laoChannel, message)
           // write lao data
-          _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message)
+          _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
         } yield ()
 
         Await.ready(combined, duration).value.get match {
-          case Success(_) => Left(rpcMessage)
+          case Success(_) =>
+            //after creating the lao, we need to send a lao#greet message to the frontend
+            val greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
+            val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
+            dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
+
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
@@ -58,6 +69,11 @@ case object LaoHandler extends MessageHandler {
         rpcMessage.id
       ))
     }
+  }
+
+  def handleGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

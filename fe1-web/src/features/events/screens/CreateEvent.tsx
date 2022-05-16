@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 
 import { TextBlock, WideButtonView } from 'core/components';
-import { Views } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -13,19 +12,6 @@ import { LaoEventType } from '../objects';
  * Navigation panels to help manoeuvre through events creation.
  */
 
-const styleEvents = StyleSheet.create({
-  view: {
-    ...Views.base,
-    flexDirection: 'row',
-    zIndex: 3,
-  } as ViewStyle,
-  viewVertical: {
-    ...Views.base,
-    flexDirection: 'column',
-    zIndex: 3,
-  } as ViewStyle,
-});
-
 const CreateEvent = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
@@ -33,15 +19,15 @@ const CreateEvent = () => {
   const navigateToPanel = (type: string) => {
     switch (type) {
       case LaoEventType.MEETING:
-        navigation.navigate(STRINGS.organizer_navigation_creation_meeting, styleEvents);
+        navigation.navigate(STRINGS.organizer_navigation_creation_meeting);
         break;
 
       case LaoEventType.ROLL_CALL:
-        navigation.navigate(STRINGS.organizer_navigation_creation_roll_call, styleEvents);
+        navigation.navigate(STRINGS.organizer_navigation_creation_roll_call);
         break;
 
       case LaoEventType.ELECTION:
-        navigation.navigate(STRINGS.organizer_navigation_creation_election, styleEvents);
+        navigation.navigate(STRINGS.organizer_navigation_creation_election);
         break;
 
       default:

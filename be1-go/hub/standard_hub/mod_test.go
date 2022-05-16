@@ -29,7 +29,7 @@ import (
 func Test_Add_Server_Socket(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{id: "fakeID"}
@@ -46,7 +46,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -131,7 +131,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -207,6 +207,88 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
+func Test_Create_LAO_Bad_Signature(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	h := sha256.New()
+	h.Write(keypair.publicBuf)
+	h.Write([]byte(fmt.Sprintf("%d", now)))
+	h.Write([]byte(name))
+
+	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	expectedSignature := base64.URLEncoding.EncodeToString(signature)
+	badSignatureBase64 := dataBase64
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         badSignatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.EqualError(t, sock.err, fmt.Sprintf("%v", sock.err))
+}
+
 func Test_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -214,7 +296,7 @@ func Test_Create_LAO(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -307,7 +389,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "/root"
@@ -382,7 +464,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 func Test_Handle_Server_Catchup(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	serverCatchup := method.Catchup{
@@ -426,7 +508,7 @@ func Test_Handle_Answer(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	result := struct {
@@ -537,7 +619,7 @@ func Test_Handle_Publish(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -616,7 +698,7 @@ func Test_Handle_Broadcast(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -693,7 +775,7 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	name := "LAO X"
@@ -783,7 +865,7 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	name := "LAO X"
@@ -860,7 +942,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -923,7 +1005,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -997,7 +1079,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 		msgs: fakeMessages,
 	}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1059,7 +1141,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 func Test_Get_Server_Number(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	sock1 := &fakeSocket{id: "fakeID1"}
@@ -1079,7 +1161,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1175,12 +1257,12 @@ type fakeChannelFac struct {
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
-	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
+	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
 
 	c.chanID = channelID
 	c.msg = msg
 	c.log = log
-	return c.c
+	return c.c, nil
 }
 
 // fakeChannel is a fake implementation of a channel

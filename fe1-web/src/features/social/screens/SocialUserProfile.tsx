@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { BackButton, ProfileIcon, TextBlock } from 'core/components';
@@ -10,7 +10,9 @@ import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
-const styles = socialMediaProfileStyles;
+const styles = StyleSheet.create({
+  userInnerView: { marginBottom: 15 } as ViewStyle,
+});
 
 /**
  * UI for the profile of a user.
@@ -26,9 +28,9 @@ const SocialUserProfile = ({ route }: any) => {
   );
 
   const displayNoUser = () => (
-    <View style={styles.viewCenter}>
-      <View style={styles.topView}>
-        <View style={{ marginBottom: 15 }}>
+    <View style={socialMediaProfileStyles.viewCenter}>
+      <View style={socialMediaProfileStyles.topView}>
+        <View style={styles.userInnerView}>
           <BackButton
             navigationTabName={STRINGS.social_media_navigation_tab_search}
             testID="backButtonUserProfile"
@@ -40,23 +42,23 @@ const SocialUserProfile = ({ route }: any) => {
   );
 
   const displayUser = () => (
-    <View style={styles.viewCenter}>
-      <View style={styles.topView}>
-        <View style={{ marginBottom: 15 }}>
+    <View style={socialMediaProfileStyles.viewCenter}>
+      <View style={socialMediaProfileStyles.topView}>
+        <View style={styles.userInnerView}>
           <BackButton
             navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
             testID="backButtonUserProfile"
           />
         </View>
         <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
-        <View style={styles.textView}>
-          <Text style={styles.profileText}>{userPublicKey.valueOf()}</Text>
+        <View style={socialMediaProfileStyles.textView}>
+          <Text style={socialMediaProfileStyles.profileText}>{userPublicKey.valueOf()}</Text>
           <Text>{`${userChirpList.length} ${
             userChirpList.length === 1 ? 'chirp' : 'chirps'
           }`}</Text>
         </View>
       </View>
-      <View style={styles.userFeed}>
+      <View style={socialMediaProfileStyles.userFeed}>
         <FlatList
           data={userChirpList}
           renderItem={renderChirpState}

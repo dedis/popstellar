@@ -399,6 +399,7 @@ the required number of witness signatures.
 **Mid Level** > **High level** (*lao#greet*)
 
 This is a message that is broadcasted by the server on the lao channel after it is created. Clients can then receive this message by sending a [catchup message](./protocol.md#catching-up-on-past-messages-on-a-channel).
+
 The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
 
 Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
@@ -1167,7 +1168,7 @@ By sending the election/setup message to the organizer’s server’s channel
 (“/root/lao-channel”), the main channel of the election will be created with the identifier id, i.e. `/root/<lao_id>/<election_id>`.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
 
-An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively. If it is a secret ballot election, then the message must additionally contain the public key of the election that was previously obtained from a [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message.
+An election can either be open or secret ballot and the `version` property has to be set to `OPEN_BALLOT` or `SECRET_BALLOT`, respectively.
 
 In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
@@ -1182,7 +1183,7 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
-    "version": "open-ballot",
+    "version": "OPEN_BALLOT",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
@@ -1215,7 +1216,7 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
-    "version": "secret-ballot",
+    "version": "SECRET_BALLOT",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
@@ -1254,7 +1255,7 @@ In the future elections may allow write-in or support different voting methods b
         },
         "version": {
             "type": "string",
-            "enum": ["open-ballot", "secret-ballot"],
+            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
             "$comment": "features/implementation identifier"
         },
         "id": {
@@ -1369,7 +1370,7 @@ The receiver has to authenticate the message by checking whether it was sent by 
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_request_key/election_request_key.json
+// ../protocol/examples/messageData/election_key/election_key.json
 
 {
     "object": "election",
@@ -1627,7 +1628,7 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[String]] index(es) corresponding to the ballot_options",
+                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
                                 "type": "array",
                                 "items": {
                                     "type": "string",
@@ -1711,7 +1712,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)" - the vote_ids need to be sorted alphabetically by message_id
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered alphabetically by message_id; the multiple vote_ids in a election#cast_vote message should stay the same as in the original message"
         }
     },
     "additionalProperties": false,

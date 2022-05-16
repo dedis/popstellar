@@ -16,6 +16,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
+import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -29,8 +30,7 @@ const DEFAULT_ROLL_CALL_DURATION = 3600;
  * TODO Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
-const CreateRollCall = ({ route }: any) => {
-  const styles = route.params;
+const CreateRollCall = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -52,7 +52,7 @@ const CreateRollCall = ({ route }: any) => {
 
     return (
       <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+        <View style={[styles.view, styles.padding]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
             selected={startDate}
@@ -66,7 +66,7 @@ const CreateRollCall = ({ route }: any) => {
             }
           />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+        <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
           <DatePicker
             selected={endDate}

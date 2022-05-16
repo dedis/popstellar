@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
@@ -11,6 +11,12 @@ import STRINGS from 'resources/strings';
 
 import { ConnectHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
+
+// qr-scanner does *not* accept StyleSheet styles since it is *not*
+// a react native component but a web component using proper css
+const qrScannerStyles: ViewStyle = {
+  width: '30%',
+};
 
 /**
  * Starts a QR code scan
@@ -89,7 +95,7 @@ const ConnectOpenScan = () => {
     // if we have an active lao, this was an additional connection and thus we navigate (back)
     // to the organization user screen
     if (laoId) {
-      navigation.navigate(STRINGS.app_navigation_tab_user, {
+      navigation.navigate(STRINGS.app_navigation_tab_lao, {
         screen: STRINGS.organization_navigation_tab_user,
       });
     } else {
@@ -99,7 +105,7 @@ const ConnectOpenScan = () => {
 
   return showScanner ? (
     <View style={containerStyles.centeredXY}>
-      <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
+      <QrReader delay={300} onError={handleError} onScan={handleScan} style={qrScannerStyles} />
       <WideButtonView title={STRINGS.general_button_cancel} onPress={onCancel} />
     </View>
   ) : (

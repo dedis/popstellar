@@ -71,7 +71,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val messageData = SetupElection.buildFromJson(example)
 
     val question = ElectionQuestion(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), "Is this project fun?", "Plurality", "Yes" :: "No" :: Nil, write_in = false)
-    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", "open-ballot", Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
+    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", "OPEN_BALLOT", Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
 
     messageData shouldBe a[SetupElection]
     messageData should equal(expected)

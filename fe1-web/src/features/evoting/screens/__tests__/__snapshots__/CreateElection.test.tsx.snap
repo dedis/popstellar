@@ -361,13 +361,13 @@ exports[`CreateElection renders correctly 1`] = `
                                     "label": "Open Ballot",
                                     "testID": undefined,
                                     "textColor": undefined,
-                                    "value": "open-ballot",
+                                    "value": "OPEN_BALLOT",
                                   },
                                   Object {
                                     "label": "Secret Ballot",
                                     "testID": undefined,
                                     "textColor": undefined,
-                                    "value": "secret-ballot",
+                                    "value": "SECRET_BALLOT",
                                   },
                                 ]
                               }
@@ -456,7 +456,13 @@ exports[`CreateElection renders correctly 1`] = `
                           <View
                             style={
                               Array [
-                                undefined,
+                                Object {
+                                  "alignContent": "center",
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                  "zIndex": 3,
+                                },
                                 Object {
                                   "zIndex": 0,
                                 },
