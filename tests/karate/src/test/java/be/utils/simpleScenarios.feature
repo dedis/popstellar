@@ -91,12 +91,41 @@
 
     @name=election_setup
     Scenario: Sets up a valid election
-      * string electionSetupData = read('classpath:data/election/data/electionSetup/valid_election_setup_2_data.json')
+      * string electionSetupData = read('classpath:data/election/data/electionSetup/valid_election_setup_data.json')
       * string electionSetup = converter.publishМessageFromData(electionSetupData, electionSetupId, laoChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
       * eval frontend.send(electionSetup)
       * def election_create_broadcast = frontend_buffer.takeTimeout(timeout)
       * def election_create = frontend_buffer.takeTimeout(timeout)
+      * def subscribe =
+            """
+          JSON.stringify(
+              {
+              "method": "subscribe",
+              "id": 200,
+              "params": {
+                  "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+              },
+              "jsonrpc": "2.0"
+          })
+        """
+      * frontend.send(subscribe)
+      * def subs = frontend_buffer.takeTimeout(timeout)
+      * def catchup =
+      """
+          JSON.stringify(
+              {
+              "method": "catchup",
+              "id": 500,
+              "params": {
+                  "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+              },
+              "jsonrpc": "2.0"
+          })
+      """
+      * frontend.send(catchup)
+      * def catchup_response = frontend_buffer.takeTimeout(timeout)
+
 
     @name=cast_vote
     Scenario: Casts a valid vote
@@ -104,4 +133,5 @@
       * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
       * eval frontend.send(castVote)
+      * def cast_vote_broadcast = frontend_buffer.takeTimeout(timeout)
       * def cast_vote = frontend_buffer.takeTimeout(timeout)
