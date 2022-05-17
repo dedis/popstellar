@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator.EVENT_HASH_PREFIX
 import spray.json._
 import util.examples.RollCall.CreateRollCallExamples.R_ID
-import util.examples.RollCall.OpenRollCallExamples.UPDATE_ID
 
 
 object CloseRollCallExamples {
