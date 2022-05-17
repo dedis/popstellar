@@ -66,7 +66,7 @@ export class EndElection implements MessageData {
 
   public static computeRegisteredVotesHash(election: Election) {
     // sort array in-place
-    election.registeredVotes
+    [...election.registeredVotes]
       // Sort by message ID
       // see https://github.com/dedis/popstellar/blob/master/docs/messageData.md#ending-an-election-electionend
       .sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));

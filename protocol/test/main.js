@@ -44,7 +44,7 @@ const message_data_accept_schema = require("../query/method/message/data/dataAcc
 const message_data_learn_schema = require("../query/method/message/data/dataLearn.json");
 const message_data_failure_schema = require("../query/method/message/data/dataFailure.json");
 
-const message_data_cash_transaction = require("../query/method/message/data/dataCashTransaction.json");
+const message_data_coin_post_transaction = require("../query/method/message/data/dataPostTransactionCoin.json");
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
@@ -97,7 +97,7 @@ ajv.addSchema([
     message_data_learn_schema,
     message_data_failure_schema,
 
-    message_data_cash_transaction
+    message_data_coin_post_transaction
 ]);
 
 module.exports = ajv;

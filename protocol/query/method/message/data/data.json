@@ -89,7 +89,7 @@
             "$ref": "dataFailure.json"
         },
         {
-            "$ref": "dataCashTransaction.json"
+            "$ref": "dataPostTransactionCoin.json"
         }
     ]
 }

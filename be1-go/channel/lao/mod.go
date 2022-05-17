@@ -8,6 +8,7 @@ import (
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
+	"popstellar/channel/coin"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
@@ -442,6 +443,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		}
 	}
 
+	c.createCoinChannel(senderSocket, c.log)
+
 	return nil
 }
 
@@ -600,6 +603,13 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
+}
+
+// createCoinChannel creates a coin channel to handle digital cash project
+func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
+	coinPath := fmt.Sprintf("%s/coin", c.channelID)
+	coinCh := coin.NewChannel(coinPath, c.hub, log)
+	c.hub.NotifyNewChannel(coinPath, coinCh, socket)
 }
 
 // createElection creates an election in the LAO.

@@ -103,6 +103,12 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     getCurrentLao: () => Lao;
 
     /**
+     * Gets a lao by its id
+     * @returns The lao with the given id or undefined if there is none
+     */
+    getLaoById: (laoId: string) => Lao | undefined;
+
+    /**
      * Gets the current lao id
      * @returns The current lao id or undefined if there is none
      */
