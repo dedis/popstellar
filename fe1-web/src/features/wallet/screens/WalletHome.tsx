@@ -89,7 +89,7 @@ const WalletHome = () => {
 
   return (
     <View style={styles.homeContainer}>
-      <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
+      <Text style={styles.textImportant}>{STRINGS.welcome_heading}</Text>
       <View style={styles.tokenSelectContainer}>
         {tokens && (
           <RollCallTokensDropDown

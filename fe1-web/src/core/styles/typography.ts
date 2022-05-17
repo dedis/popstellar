@@ -1,22 +1,41 @@
 import { TextStyle } from 'react-native';
 
-import { x05, x1 } from './spacing';
+import { contrast, accent as accentColor, secondaryAccent as secondaryColor } from './colors';
+import { x1 } from './spacing';
 
 export const base: TextStyle = {
   textAlign: 'left',
-  fontSize: 16,
+  fontSize: 20,
+  lineHeight: 26,
+};
+
+export const accent: TextStyle = {
+  color: accentColor,
+};
+
+export const negative: TextStyle = {
+  color: contrast,
+};
+
+export const secondary: TextStyle = {
+  color: secondaryColor,
 };
 
 export const paragraph: TextStyle = {
   ...base,
-  marginBottom: x05,
+  marginBottom: x1,
 };
 
 export const heading: TextStyle = {
   ...base,
-  fontSize: 24,
+  fontSize: 32,
+  lineHeight: 41,
   fontWeight: 'bold',
   marginBottom: x1,
+};
+
+export const centered: TextStyle = {
+  textAlign: 'center',
 };
 
 export const important: TextStyle = {

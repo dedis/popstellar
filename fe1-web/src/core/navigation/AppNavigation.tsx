@@ -4,6 +4,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import STRINGS from 'resources/strings';
+
 /**
  * Define the App stack navigation
  * Contains to navigation: the home navigation and the organization navigation
@@ -31,6 +33,7 @@ const AppNavigation = ({ screens }: IPropTypes) => {
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
+        initialRouteName={STRINGS.navigation_wallet_create_seed}
         screenOptions={{
           headerShown: false,
         }}>

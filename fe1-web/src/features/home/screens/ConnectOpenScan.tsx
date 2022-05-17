@@ -7,7 +7,7 @@ import CloseIcon from 'core/components/icons/CloseIcon';
 import CodeIcon from 'core/components/icons/CodeIcon';
 import CreateIcon from 'core/components/icons/CreateIcon';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
-import { Border, Colors, Spacing } from 'core/styles';
+import { Colors, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -101,7 +101,7 @@ const ConnectOpenScan = () => {
         <View>
           <View style={styles.leftButtons}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <CloseIcon color={Colors.primary} size={25} />
+              <CloseIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
           </View>
         </View>
@@ -110,10 +110,10 @@ const ConnectOpenScan = () => {
             <TouchableOpacity
               style={styles.buttonMargin}
               onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
-              <CreateIcon color={Colors.primary} size={25} />
+              <CreateIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate(STRINGS.connect_confirm_title)}>
-              <CodeIcon color={Colors.primary} size={25} />
+              <CodeIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
           </View>
         </View>

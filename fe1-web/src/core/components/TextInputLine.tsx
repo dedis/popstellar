@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, TextInput, TextStyle } from 'react-native';
 
-import { Spacing, Typography } from '../styles';
+import { Border, Colors, Spacing, Typography } from '../styles';
 
 /**
  * Component which creates the typical one line text input used in the application.
@@ -11,30 +11,30 @@ import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textInput: {
-    ...Typography.baseCentered,
-    borderBottomWidth: 2,
+    ...Typography.base,
+    color: Colors.primary,
+
+    borderBottomWidth: Border.width,
+    borderColor: Colors.primary,
+
     marginVertical: Spacing.x2,
+    padding: Spacing.x05,
   } as TextStyle,
+  negative: {
+    color: Colors.contrast,
+    borderColor: Colors.contrast,
+  },
 });
 
 const TextInputLine = (props: IPropTypes) => {
-  const { onChangeText } = props;
-  let { placeholder } = props;
-  let { defaultValue } = props;
-
-  if (placeholder == null) {
-    placeholder = '';
-  }
-  if (defaultValue == null) {
-    defaultValue = '';
-  }
+  const { onChangeText, placeholder, defaultValue, negative } = props;
 
   return (
     <TextInput
-      style={styles.textInput}
+      style={negative ? [styles.textInput, styles.negative] : styles.textInput}
       onChangeText={onChangeText}
-      placeholder={placeholder}
-      defaultValue={defaultValue}
+      placeholder={placeholder || ''}
+      defaultValue={defaultValue || ''}
       selectTextOnFocus
     />
   );
@@ -44,12 +44,14 @@ const propTypes = {
   onChangeText: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   defaultValue: PropTypes.string,
+  negative: PropTypes.bool,
 };
 TextInputLine.propTypes = propTypes;
 
 TextInputLine.defaultProps = {
   placeholder: '',
   defaultValue: '',
+  negative: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

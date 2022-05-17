@@ -90,7 +90,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <CameraReverseIcon color={Colors.primary} size={25} />
+              <CameraReverseIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
           </View>
         </View>

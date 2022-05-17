@@ -24,4 +24,4 @@ export { default as TextBlock } from './TextBlock';
 export { default as TextInputLine } from './TextInputLine';
 export { default as TextInputList } from './TextInputList';
 export { default as TimeDisplay } from './TimeDisplay';
-export { default as WideButtonView } from './WideButtonView';
+export { default as Button } from './Button';

@@ -102,11 +102,4 @@ describe('Home hooks', () => {
       expect(result.current).toEqual(getLaoChannel);
     });
   });
-
-  describe('HomeHooks.useHasSeed', () => {
-    it('should return the function for checking the existence of a seed', () => {
-      const { result } = renderHook(() => HomeHooks.useHasSeed(), { wrapper });
-      expect(result.current).toEqual(hasSeed);
-    });
-  });
 });

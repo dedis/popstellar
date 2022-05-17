@@ -3,8 +3,7 @@ import React from 'react';
 
 import STRINGS from 'resources/strings';
 
-import { WalletError, WalletHome, WalletSetSeed, WalletSetup, WalletCreateSeed } from '../screens';
-import { WalletStore } from '../store';
+import { WalletError, WalletHome } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -17,16 +16,8 @@ export default function WalletNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-      initialRouteName={
-        WalletStore.hasSeed()
-          ? STRINGS.navigation_wallet_home_tab
-          : STRINGS.navigation_wallet_setup_tab
-      }>
-      <Stack.Screen name={STRINGS.navigation_wallet_setup_tab} component={WalletSetup} />
+      }}>
       <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
-      <Stack.Screen name={STRINGS.navigation_wallet_create_seed} component={WalletCreateSeed} />
-      <Stack.Screen name={STRINGS.navigation_wallet_insert_seed} component={WalletSetSeed} />
       <Stack.Screen name={STRINGS.navigation_wallet_error} component={WalletError} />
     </Stack.Navigator>
   );

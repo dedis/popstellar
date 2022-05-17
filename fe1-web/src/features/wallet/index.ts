@@ -10,6 +10,8 @@ import {
 import * as navigation from './navigation';
 import { getCurrentPopTokenFromStore } from './objects';
 import { walletReducer } from './reducer';
+import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';
+import { WalletSetSeedScreen } from './screens/WalletSetSeed';
 
 /**
  * Configures the wallet feature
@@ -29,6 +31,7 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
 
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
+    appScreens: [WalletCreateSeedScreen, WalletSetSeedScreen],
     navigation,
     reducers: {
       ...walletReducer,

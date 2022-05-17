@@ -72,7 +72,7 @@ const LaoNavigation: React.FC = () => {
     <OrganizationTopTabNavigator.Navigator
       initialRouteName={STRINGS.organization_navigation_tab_events}
       screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
+        tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.inactive,
         headerLeftContainerStyle: {
           paddingLeft: Spacing.horizontalContentSpacing,

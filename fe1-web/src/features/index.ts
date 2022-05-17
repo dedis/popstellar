@@ -212,6 +212,7 @@ export function configureFeatures() {
     navigationOpts: {
       screens: [
         ...homeComposition.appScreens,
+        ...walletComposition.appScreens,
         {
           id: STRINGS.app_navigation_tab_lao,
           component: laoComposition.navigation.LaoNavigation,

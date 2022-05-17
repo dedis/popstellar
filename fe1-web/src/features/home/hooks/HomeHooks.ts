@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
@@ -62,25 +61,4 @@ export namespace HomeHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useHomeContext().useCurrentLaoId();
-
-  /**
-   * Gets the 'hasSeed' function
-   */
-  export const useHasSeed = () => {
-    // FIXME: route should use proper type
-    const navigation = useNavigation<any>();
-
-    const hasSeedFn = useHomeContext().hasSeed;
-    const [hasSeed, setHasSeed] = useState<boolean>(hasSeedFn());
-
-    useEffect(() => {
-      // Return the function to unsubscribe from the event so it gets removed on unmount
-      return navigation.addListener('focus', () => {
-        // The screen is now focused, set showScanner to true
-        setHasSeed(hasSeedFn());
-      });
-    }, [navigation, setHasSeed, hasSeedFn]);
-
-    return hasSeed;
-  };
 }

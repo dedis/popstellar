@@ -5,8 +5,8 @@ import { Modal, Text, View } from 'react-native';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
+import Button from './Button';
 import TextInputLine from './TextInputLine';
-import WideButtonView from './WideButtonView';
 
 /**
  * A modal used to ask for the confirmation or cancellation of the user.
@@ -39,8 +39,8 @@ const ConfirmModal = (props: IPropTypes) => {
           />
         ) : null}
         <View style={modalStyles.buttonView}>
-          <WideButtonView title={buttonConfirmText} onPress={() => onConfirmPress(textInput)} />
-          <WideButtonView
+          <Button title={buttonConfirmText} onPress={() => onConfirmPress(textInput)} />
+          <Button
             title={buttonCancelText}
             onPress={() => {
               setVisibility(!visibility);
