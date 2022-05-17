@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle, Text, TextStyle, TextInput } from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
-import { KeyPairStore } from 'core/keypair';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -12,7 +11,6 @@ import STRINGS from 'resources/strings';
 import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
-import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -104,28 +102,6 @@ const WalletHome = () => {
     return <Text style={styles.textBase}>{STRINGS.no_tokens_in_wallet}</Text>;
   };
 
-  const sendField = () => {
-    return (
-      <>
-        <WideButtonView
-          title={STRINGS.cash_send}
-          onPress={() => {
-            requestCoinbaseTransaction(
-              KeyPairStore.get(),
-              tokens![selectedTokenIndex].token.publicKey,
-              sendValue,
-            );
-          }}
-        />
-        <TextInput
-          onChangeText={(t) => {
-            setSendValue(Number.parseInt(t, 10));
-          }}
-        />
-      </>
-    );
-  };
-
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
@@ -165,7 +141,6 @@ const WalletHome = () => {
         title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
         onPress={() => toggleDebugMode()}
       />
-      {tokens && sendField()}
     </View>
   );
 };
