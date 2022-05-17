@@ -46,7 +46,14 @@ export function configureFeatures() {
     /* other dependencies */
     messageRegistry,
   });
-  const meetingConfiguration = meeting.configure(messageRegistry);
+  const meetingConfiguration = meeting.configure({
+    messageRegistry,
+    addEvent: eventsConfiguration.actionCreators.addEvent,
+    updateEvent: eventsConfiguration.actionCreators.updateEvent,
+    getEventById: eventsConfiguration.functions.getEventById,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+  });
   const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
   const witnessConfiguration = witness.configure({
@@ -60,7 +67,13 @@ export function configureFeatures() {
     markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
     discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
-  const walletConfiguration = wallet.configure(keyPairRegistry);
+  const walletConfiguration = wallet.configure({
+    keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
+  });
 
   // compose features
   const notificationComposition = notification.compose({
@@ -196,6 +209,7 @@ export function configureFeatures() {
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
+      [walletConfiguration.identifier]: walletConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
     },
   };
