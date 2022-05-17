@@ -1,17 +1,15 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { getKeyPairState } from 'core/keypair';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectCurrentLao } from '../reducer';
-import { AttendeeScreen, Identity } from '../screens';
-import OrganizerNavigation from './OrganizerNavigation';
+import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
+import { AttendeeEventsScreen, Identity } from '../screens';
+import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -37,47 +35,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const getLaoTabName = (isOrganizer: boolean, isWitness: boolean): string => {
-  if (isOrganizer) {
-    return STRINGS.organization_navigation_tab_organizer;
-  }
-
-  if (isWitness) {
-    return STRINGS.organization_navigation_tab_witness;
-  }
-
-  return STRINGS.organization_navigation_tab_attendee;
-};
-
-// Cannot omit the "component" attribute in Screen
-// Moreover, cannot use a lambda in "component"
-const DummyComponent = () => null;
-
 const LaoNavigation: React.FC = () => {
-  const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const store = useStore();
-
-  const publicKeyRaw = getKeyPairState(store.getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
-
-  const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
-  const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
-
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = lao ? lao.name : STRINGS.unused;
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isWitness = useSelector(selectIsLaoWitness);
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.Screen[] = useMemo(() => {
-    const screenName = getLaoTabName(isOrganizer, isWitness);
-
     let Component: React.ComponentType<any>;
 
     if (isOrganizer || isWitness) {
-      Component = OrganizerNavigation;
+      Component = OrganizerEventsNavigation;
     } else {
-      Component = AttendeeScreen;
+      Component = AttendeeEventsScreen;
     }
 
     return [
@@ -86,10 +57,9 @@ const LaoNavigation: React.FC = () => {
         id: STRINGS.organization_navigation_tab_identity,
         Component: Identity,
         order: 10000,
-      },
+      } as LaoFeature.Screen,
       {
-        id: STRINGS.organization_navigation_tab_user,
-        title: screenName,
+        id: STRINGS.organization_navigation_tab_events,
         Component,
         order: 20000,
       } as LaoFeature.Screen,
@@ -100,29 +70,22 @@ const LaoNavigation: React.FC = () => {
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
-      initialRouteName={tabName}
+      initialRouteName={STRINGS.organization_navigation_tab_events}
       screenOptions={{
         swipeEnabled: false,
       }}>
-      {screens.map(({ id, title, Component }) => (
+      {screens.map(({ id, title, Component, Badge, Icon }) => (
         <OrganizationTopTabNavigator.Screen
           key={id}
           name={id}
           component={Component}
-          options={{ title: title || id }}
+          options={{
+            title: title || id,
+            tabBarBadge: Badge,
+            tabBarIcon: Icon,
+          }}
         />
       ))}
-
-      <OrganizationTopTabNavigator.Screen
-        name={laoName}
-        component={DummyComponent}
-        listeners={{
-          tabPress: (e) => {
-            // => do nothing
-            e.preventDefault();
-          },
-        }}
-      />
     </OrganizationTopTabNavigator.Navigator>
   );
 };

@@ -15,13 +15,13 @@ const modalStyles = StyleSheet.create({
     borderBottomWidth: 1,
   } as ViewStyle,
   modalTitle: {
-    ...Typography.important,
+    ...Typography.importantCentered,
     alignSelf: 'flex-start',
     padding: 20,
     paddingLeft: 10,
   } as TextStyle,
   modalDescription: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     fontSize: 20,
     alignSelf: 'flex-start',
     textAlign: 'left',

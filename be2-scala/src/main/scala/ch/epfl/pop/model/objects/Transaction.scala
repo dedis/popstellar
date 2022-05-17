@@ -10,7 +10,7 @@ final case class LockScript(
 )
 
 final case class TxOut(
-  Value: Int,
+  Value: Long,
   Script: LockScript,
 )
 

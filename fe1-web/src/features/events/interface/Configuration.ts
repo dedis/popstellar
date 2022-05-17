@@ -20,6 +20,16 @@ export interface EventsInterface extends FeatureInterface {
      * @returns The event or undefined if none was found
      */
     getEventById: (id: Hash) => LaoEvent | undefined;
+
+    /**
+     * Creates a selector for a two-level map from laoIds to eventIds to events
+     * where all returned events have type 'eventType'
+     * @param eventType The type of the events that should be returned
+     * @returns A selector for a map from laoIds to a map of eventIds to events
+     */
+    makeEventByTypeSelector: <T extends LaoEvent>(
+      eventType: string,
+    ) => (state: unknown) => Record<string, Record<string, T>>;
   };
 
   components: {
