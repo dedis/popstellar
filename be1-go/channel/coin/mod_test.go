@@ -1,4 +1,4 @@
-package digitalCash
+package coin
 
 import (
 	"encoding/base64"
@@ -110,7 +110,7 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 }
 
 // Tests that the channel works correctly when it receives a catchup
-func Test_Consensus_Channel_Catchup(t *testing.T) {
+func Test_Coin_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
@@ -178,13 +178,13 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.Error(t, err, "nothing should be directly published in the general")
 }
 
-// Tests that the channel works correctly when it receives a reaction
-func Test_SendReaction(t *testing.T) {
+// Tests that the channel works correctly when it receives a transaction
+func Test_SendTransaction(t *testing.T) {
 	// Create the hub
 
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	var digitalCashChannelName = "/root/" + laoID + "/digitalCash/transaction"
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
 
 	keypair := generateKeyPair(t)
 
@@ -202,8 +202,8 @@ func Test_SendReaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction.json")
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -259,8 +259,8 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_max_amount.json")
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_max_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -316,8 +316,8 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_overflow_amount.json")
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_overflow_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -373,8 +373,8 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_zero_amount.json")
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_zero_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -430,8 +430,8 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	//load example
-	file := filepath.Join(relativePath, "cash", "post_transaction_negative_amount.json")
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_negative_amount.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -464,12 +464,12 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 }
 
 // Tests that the channel throw an error when receiving an incomplete json message
-func Test_SendReaction_MissingData(t *testing.T) {
+func Test_SendTransaction_MissingData(t *testing.T) {
 	// Create the hub
 
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	var digitalCashChannelName = "/root/" + laoID + "/digitalCash/transaction"
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
 
 	keypair := generateKeyPair(t)
 
@@ -483,7 +483,7 @@ func Test_SendReaction_MissingData(t *testing.T) {
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
-	//load example
+	// load example
 	require.NoError(t, err)
 
 	m := message.Message{
@@ -511,6 +511,185 @@ func Test_SendReaction_MissingData(t *testing.T) {
 	err = channel.Publish(message, socket.ClientSocket{})
 	require.EqualError(t, err, "failed to verify publish message: failed to "+
 		"verify json schema: failed to validate schema: EOF")
+}
+
+// Tests that the channel works correctly when it receives a Transaction with wrong id
+func Test_SendTransactionWrongId(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
+	require.True(t, found)
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_wrong_transaction_id.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = digitalCashChannelName
+
+	// Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
+	err = channel.Publish(message, socket.ClientSocket{})
+	require.EqualError(t, err, "failed to handle a publish message:"+
+		" failed to process message:"+
+		" failed to process action 'coin#post_transaction':"+
+		" invalid coin#postTransaction message:"+
+		" transaction id is not valid:"+
+		" 0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc= !="+
+		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
+}
+
+// Tests that the channel works correctly when it receives a transaction
+func Test_SendTransactionMultInpAndOut(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
+	require.True(t, found)
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_multipleinpandout.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = digitalCashChannelName
+
+	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+}
+
+// Tests that the channel works correctly when it receives a transaction
+func Test_SendTransactionCoinbase(t *testing.T) {
+	// Create the hub
+
+	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	var digitalCashChannelName = "/root/" + laoID + "/coin"
+
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	_, found := fakeHub.channelByID[digitalCashChannelName]
+	require.True(t, found)
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	// load example
+	file := filepath.Join(relativePath, "coin", "post_transaction_coinbase.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = digitalCashChannelName
+
+	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
 // -----------------------------------------------------------------------------

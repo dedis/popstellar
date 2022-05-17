@@ -57,8 +57,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
-	TransactionObject     = "transaction"
-	TransactionActionPost = "post"
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
