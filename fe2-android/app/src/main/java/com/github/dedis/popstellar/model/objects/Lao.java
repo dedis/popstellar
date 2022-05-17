@@ -43,7 +43,6 @@ public final class Lao {
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   // Some useful map for the digital cash
-  // TODO : SHOULD IT BE IN ROLL CALL
   private Map<String, PublicKey> pub_keyByHash;
   // Map for the history
   private Map<PublicKey, List<Transaction_object>> transaction_historyByUser;
@@ -205,7 +204,7 @@ public final class Lao {
       // Add the transaction in the current state  / for the sender and the receiver
       transactionByUser.put(current, transaction_object);
       // Add the transaction in the history / for the sender and the receiver
-      transaction_historyByUser.putIfAbsent(current, new ArrayList<Transaction_object>());
+      transaction_historyByUser.putIfAbsent(current, new ArrayList<>());
       if (!transaction_historyByUser.get(current).add(transaction_object)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }

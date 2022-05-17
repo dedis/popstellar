@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Script_output;
-
 public class Output_object {
   private final int value;
   private final Script_output_object script;

@@ -62,7 +62,7 @@ public class PostTransactionCoinTest {
 
   @Test
   public void getTransactionTest() {
-    assertEquals(POST_TRANSACTION.get_transaction(), TRANSACTION);
+    assertEquals(TRANSACTION, POST_TRANSACTION.get_transaction());
   }
 
   @Test
