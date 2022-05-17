@@ -9,7 +9,7 @@ import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { RollCallTokensDropDown } from '../components';
+import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import { requestCoinbaseTransaction } from '../network';
@@ -30,6 +30,14 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   } as ViewStyle,
+  mainButtonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    minWidth: '50%',
+    margin: 'auto',
+    marginTop: 20,
+  } as ViewStyle,
   textBase: Typography.base as TextStyle,
   textImportant: Typography.important as TextStyle,
 });
@@ -39,6 +47,7 @@ const styles = StyleSheet.create({
  */
 const WalletHome = () => {
   const [sendValue, setSendValue] = useState(0);
+  const [sendModalVisible, setSendModalVisible] = useState(false);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
@@ -130,6 +139,17 @@ const WalletHome = () => {
         )}
       </View>
       {tokenInfos()}
+      {tokens && (
+        <View style={styles.mainButtonsContainer}>
+          <RoundIconButton
+            name="send"
+            onClick={() => {
+              setSendModalVisible(true);
+            }}
+          />
+        </View>
+      )}
+      <SendModal modalVisible={sendModalVisible} setModalVisible={setSendModalVisible} />
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
