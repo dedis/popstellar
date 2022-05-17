@@ -1,18 +1,17 @@
-import { curve } from '@dedis/kyber';
-import Ed25519Point from '@dedis/kyber/curve/edwards25519/point';
+import { curve, Point } from '@dedis/kyber';
 
 import { Base64UrlData } from 'core/objects';
 
 const ed25519 = curve.newCurve('edwards25519');
 
 export class ElectionPublicKey {
-  public point: Ed25519Point;
+  public point: Point;
 
   constructor(encodedKey: string | Base64UrlData) {
     const point = ed25519.point();
     point.unmarshalBinary(Buffer.from(encodedKey, 'base64'));
 
-    this.point = point as Ed25519Point;
+    this.point = point;
   }
 
   toString(): string {

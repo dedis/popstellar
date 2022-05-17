@@ -2,7 +2,6 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import { curve } from '@dedis/kyber';
-import Ed25519Point from '@dedis/kyber/curve/edwards25519/point';
 
 import { Base64UrlData } from 'core/objects';
 import { mockEncodedElectionKey, mockElectionKeyString } from 'features/evoting/__tests__/utils';
@@ -42,7 +41,7 @@ describe('ElectionPublicKey', () => {
 
     it('returns false if the point is different', () => {
       const key1 = new ElectionPublicKey(mockEncodedElectionKey);
-      const p = ed25519.point().pick() as Ed25519Point;
+      const p = ed25519.point().pick();
       const key2 = new ElectionPublicKey(new Base64UrlData(p.marshalBinary().toString('base64')));
       expect(key1.equals(key2)).toBeFalse();
     });
@@ -64,7 +63,7 @@ describe('ElectionPublicKey', () => {
   });
 
   it('Decoding reconstructs the correct Ed25519 point', () => {
-    const p = ed25519.point().pick() as Ed25519Point;
+    const p = ed25519.point().pick();
     const electionKey = new ElectionPublicKey(
       new Base64UrlData(p.marshalBinary().toString('base64')),
     );
