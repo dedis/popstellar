@@ -1287,6 +1287,17 @@ A member of the LAO can cast a vote by publishing an election/cast_vote message 
 election’s channel. Each member may cast multiple votes, only the last one will be counted.
 If write-in is allowed for the election then the vote has to have a write-in.
 
+For the generated vote ids, it has to be made sure that the hash is unique and
+consistent across all subsystems. The hash is computed based on the list of
+ballot option indices. To disambiguated between `[1, 0]` and `[10]`, the usage
+of the comma delimiter `,` in between the indices is mandatory and to make the
+hash unique, the list of indicies should be sorted in ascending order (from
+small numbers/indicies to bigger ones, from left to right). Last but not least,
+it must be made sure that this list does not contain any duplicates, i.e.
+represents a set of indices. (Each ballot option can only be selected once).
+
+For example if the user select the ballot options with indices 5 and 2, then the hash function should be applied only to the string `2,5`, not to `2,2,5`, `5,2`, `25`, `[2,5]` or `2, 5` (note the additional space).
+
 <details>
 <summary>
 💡 See some examples
@@ -1374,7 +1385,7 @@ If write-in is allowed for the election then the vote has to have a write-in.
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
                             },
                             "question": {
                                 "type": "string",
@@ -1482,7 +1493,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)"
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered alphabetically by message_id; the multiple vote_ids in a election#cast_vote message should stay the same as in the original message"
         }
     },
     "additionalProperties": false,

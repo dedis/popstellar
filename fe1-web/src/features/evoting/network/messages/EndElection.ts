@@ -1,7 +1,7 @@
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import { Election } from 'features/evoting/objects';
 
@@ -65,15 +65,14 @@ export class EndElection implements MessageData {
   }
 
   public static computeRegisteredVotesHash(election: Election) {
-    // sort array in-place
-    election.registeredVotes
+    // sort mutates the array in-place, but this can be the object retrieved from the store
+    // thus we should create a copy
+    const sortedVoteIds = [...election.registeredVotes]
       // First sort by timestamp, than by message ID as tiebreaker
       .sort((a, b) => {
         const tiebreaker = a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1;
         return a !== b ? a.createdAt - b.createdAt : tiebreaker;
-      });
-
-    const sortedVoteIds = election.registeredVotes
+      })
       // Now expand each registered vote to the contained vote ids
       // flatMap = map + flatten array
       .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id));

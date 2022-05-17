@@ -3,11 +3,11 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey } from 'core/objects';
-import { RollCall } from 'features/rollCall/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
+import { RollCall } from 'features/rollCall/objects';
 
 import { eventFromState, LaoEvent, LaoEventState } from '../objects';
 
@@ -41,12 +41,14 @@ interface EventReducerState {
 /**
  * This is the root state for the Events Reducer
  */
-interface EventLaoReducerState {
+export interface EventLaoReducerState {
   /**
    * byLaoId associates a given LAO ID with the full representation of its events
    */
   byLaoId: Record<string, EventReducerState>;
 }
+
+export const EVENT_REDUCER_PATH = 'events';
 
 const initialState: EventLaoReducerState = {
   byLaoId: {
@@ -58,9 +60,8 @@ const initialState: EventLaoReducerState = {
   },
 };
 
-const eventReducerPath = 'events';
 const eventsSlice = createSlice({
-  name: eventReducerPath,
+  name: EVENT_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a Event to the list of known Events
@@ -168,7 +169,7 @@ const eventsSlice = createSlice({
 
 export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventsSlice.actions;
 
-export const getEventsState = (state: any): EventLaoReducerState => state[eventReducerPath];
+export const getEventsState = (state: any): EventLaoReducerState => state[EVENT_REDUCER_PATH];
 
 /**
  * Creates a list of all events.
@@ -349,5 +350,5 @@ export const makeRollCallAttendeesList = (
 export const eventReduce = eventsSlice.reducer;
 
 export default {
-  [eventReducerPath]: eventsSlice.reducer,
+  [EVENT_REDUCER_PATH]: eventsSlice.reducer,
 };

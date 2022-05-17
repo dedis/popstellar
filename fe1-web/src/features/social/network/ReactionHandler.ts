@@ -1,10 +1,10 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
-
 import { selectCurrentLao } from 'features/lao/reducer';
+
 import { Reaction } from '../objects';
-import { AddReaction } from './messages/reaction';
 import { addReaction } from '../reducer';
+import { AddReaction } from './messages/reaction';
 
 /**
  * Handler for social media chirp's reactions

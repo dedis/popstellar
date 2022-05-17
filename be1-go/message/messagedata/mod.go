@@ -21,6 +21,7 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
 	ElectionActionSetup  = "setup"
@@ -56,6 +57,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
@@ -126,5 +129,6 @@ func Hash(strs ...string) string {
 		h.Write([]byte(fmt.Sprintf("%d", len(s))))
 		h.Write([]byte(s))
 	}
+
 	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

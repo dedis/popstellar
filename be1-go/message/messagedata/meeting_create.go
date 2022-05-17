@@ -23,3 +23,18 @@ type MeetingCreate struct {
 
 	Extra json.RawMessage `json:"extra"`
 }
+
+// GetObject implements MessageData
+func (MeetingCreate) GetObject() string {
+	return MeetingObject
+}
+
+// GetAction implements MessageData
+func (MeetingCreate) GetAction() string {
+	return MeetingActionCreate
+}
+
+// NewEmpty implements MessageData
+func (MeetingCreate) NewEmpty() MessageData {
+	return &MeetingCreate{}
+}

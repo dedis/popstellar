@@ -1,4 +1,5 @@
 import { ProtocolError } from 'core/objects';
+
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ProcessableMessage } from './ProcessableMessage';
 
@@ -107,6 +108,7 @@ export class MessageRegistry {
   handleMessage(msg: ProcessableMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
+
     return messageEntry.handle!(msg);
   }
 

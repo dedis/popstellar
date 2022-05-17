@@ -1,16 +1,19 @@
 import 'jest-extended';
+
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
+import { RehydrateAction } from 'redux-persist';
 
-import { Hash, Timestamp } from 'core/objects';
 import {
   mockLaoCreationTime,
+  mockLao,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
   mockLaoState,
   org,
 } from '__tests__/utils/TestUtils';
+import { Hash, Timestamp } from 'core/objects';
 
 import { Lao, LaoState } from '../../objects';
 import {
@@ -28,6 +31,9 @@ import {
   selectCurrentLao,
   setLaoLastRollCall,
   updateLao,
+  LAO_REDUCER_PATH,
+  getLaoById,
+  LaoReducerState,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -178,6 +184,16 @@ describe('LaoReducer', () => {
       filledStateAfterRollCall,
     );
   });
+
+  it('should clear currentId on rehydration', () => {
+    expect(
+      laoReduce(connectedState1, {
+        type: 'persist/REHYDRATE',
+        key: 'root:persist',
+        payload: { [LAO_REDUCER_PATH]: {} },
+      } as RehydrateAction),
+    ).toEqual({ ...connectedState1, currentId: undefined });
+  });
 });
 
 describe('Lao selector', () => {
@@ -207,5 +223,33 @@ describe('Lao selector', () => {
 
   it('should return true for makeIsLaoOrganizer when it is true', () => {
     expect(selectIsLaoOrganizer.resultFunc(laoRecord, mockLaoId, org.toString())).toEqual(true);
+  });
+
+  describe('getLaoById', () => {
+    it('should return undefined if there is no lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toBeUndefined();
+    });
+
+    it('should return the correct value if there is a lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {
+              [mockLaoId]: mockLao.toState(),
+            },
+            allIds: [mockLaoId],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toEqual(mockLao);
+    });
   });
 });

@@ -34,6 +34,8 @@ case object LaoValidator extends MessageDataContentValidator {
           Right(validationError("unexpected organizer public key"))
         } else if (channel != Channel.ROOT_CHANNEL) {
           Right(validationError(s"trying to send a CreateLao message on a channel $channel other than ${Channel.ROOT_CHANNEL}"))
+        } else if (data.name == "") {
+          Right(validationError(s"LAO name must not be empty"))
         } else {
           Left(rpcMessage)
         }

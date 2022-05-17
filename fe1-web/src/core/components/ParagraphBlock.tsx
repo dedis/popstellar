@@ -1,21 +1,20 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
-import { Typography, Spacing } from '../styles';
+import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textStandard: {
     marginHorizontal: Spacing.xs,
   } as TextStyle,
   textBold: {
-    ...Typography.important,
+    ...Typography.importantCentered,
   } as TextStyle,
 });
 
 const ParagraphBlock = (props: IPropTypes) => {
-  const { text } = props;
-  const { bold } = props;
+  const { text, bold } = props;
 
   const style = bold ? styles.textBold : styles.textStandard;
   return text !== undefined && text !== null ? <Text style={style}>{text}</Text> : null;

@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+
 import { store } from './GlobalStore';
 import { makeRootReducer } from './RootReducer';
 

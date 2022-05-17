@@ -138,7 +138,7 @@ test("message data: meeting", () => {
 })
 
 test("message data: election", () => {
-    election_open = require("../examples/messageData/election_open.json")
+    election_open = require("../examples/messageData/election_open/election_open.json")
     expect(election_open).toBeValid(messageDataSchema)
 	
     election_end = require("../examples/messageData/election_end/election_end.json")
@@ -174,6 +174,26 @@ test("message data: chirp", () => {
 
     reaction_delete = require("../examples/messageData/reaction_delete/reaction_delete.json")
     expect(reaction_delete).toBeValid(messageDataSchema)
+})
+
+test("message data: cash", () => {
+    
+    cash_transaction = require("../examples/messageData/coin/post_transaction.json")
+    expect(cash_transaction).toBeValid(messageDataSchema)
+
+    cash_transaction_coinbase = require("../examples/messageData/coin/post_transaction_coinbase.json")
+    expect(cash_transaction_coinbase).toBeValid(messageDataSchema)
+
+    cash_transaction_multipleinandout = require("../examples/messageData/coin/post_transaction_multipleinpandout.json")
+    expect(cash_transaction_multipleinandout).toBeValid(messageDataSchema)
+
+    cash_transaction_nooutput = require("../examples/messageData/coin/post_transaction_nooutput.json")
+    expect(cash_transaction_nooutput).not.toBeValid(messageDataSchema)
+
+    cash_transaction_wrongid = require("../examples/messageData/coin/post_transaction_wrong_transaction_id.json")
+    expect(cash_transaction_wrongid).toBeValid(messageDataSchema)
+
+    
 })
 
 test("message data: consensus", () => {

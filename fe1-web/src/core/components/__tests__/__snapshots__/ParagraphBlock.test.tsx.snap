@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ParagraphBlock renders correctly 1`] = `
+<Text
+  style={
+    Object {
+      "marginHorizontal": 10,
+    }
+  }
+>
+  Some text
+</Text>
+`;
+
+exports[`ParagraphBlock renders correctly using bold prop 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 25,
+      "fontWeight": "bold",
+      "marginHorizontal": 10,
+      "textAlign": "center",
+    }
+  }
+>
+  Some text
+</Text>
+`;

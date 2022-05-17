@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { StyleSheet, TextInput, TextStyle } from 'react-native';
 
 import { Spacing, Typography } from '../styles';
@@ -11,7 +11,7 @@ import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     borderBottomWidth: 2,
     marginVertical: Spacing.s,
     marginHorizontal: Spacing.xl,

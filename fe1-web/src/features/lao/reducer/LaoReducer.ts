@@ -3,11 +3,11 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/toolkit';
-import { REHYDRATE } from 'redux-persist';
+import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import { REHYDRATE, RehydrateAction } from 'redux-persist';
 
-import { Hash } from 'core/objects';
 import { getKeyPairState } from 'core/keypair';
+import { Hash } from 'core/objects';
 
 import { Lao, LaoState } from '../objects';
 
@@ -16,7 +16,7 @@ import { Lao, LaoState } from '../objects';
  * and a reference to the current open one.
  */
 
-interface LaoReducerState {
+export interface LaoReducerState {
   byId: Record<string, LaoState>;
   allIds: string[];
   currentId?: string;
@@ -30,15 +30,23 @@ const initialState: LaoReducerState = {
 const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
   const newLao = action.payload;
 
-  if (!(newLao.id in state.byId)) {
+  if (newLao.id in state.byId) {
+    // we already have some data on this lao stored
+    // merge server addresses
+    state.byId[newLao.id].server_addresses = [
+      // the way via a set guarantees the list does not contain duplicates
+      ...new Set([...state.byId[newLao.id].server_addresses, ...newLao.server_addresses]),
+    ];
+  } else {
     state.byId[newLao.id] = newLao;
     state.allIds.push(newLao.id);
   }
 };
 
-const laoReducerPath = 'laos';
+export const LAO_REDUCER_PATH = 'laos';
+
 const laosSlice = createSlice({
-  name: laoReducerPath,
+  name: LAO_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a LAO to the list of known LAOs
@@ -90,7 +98,7 @@ const laosSlice = createSlice({
     },
 
     // Set the LAO server address
-    setLaoServerAddress: {
+    addLaoServerAddress: {
       prepare(laoId: Hash | string, serverAddress: string) {
         return {
           payload: {
@@ -113,7 +121,10 @@ const laosSlice = createSlice({
           return;
         }
 
-        state.byId[laoId].server_address = serverAddress;
+        // if not already in the list, add the new address
+        if (!state.byId[laoId].server_addresses.find((a) => a === serverAddress)) {
+          state.byId[laoId].server_addresses.push(serverAddress);
+        }
       },
     },
 
@@ -152,15 +163,21 @@ const laosSlice = createSlice({
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
-    builder.addCase(REHYDRATE, (state) => {
-      if (state.currentId) {
-        return {
-          ...state,
-          // make sure we always start disconnected
-          currentId: undefined,
-        };
+    builder.addCase(REHYDRATE, (state, rehydrateAction: RehydrateAction) => {
+      if (!rehydrateAction.payload || !(LAO_REDUCER_PATH in rehydrateAction.payload)) {
+        return state;
       }
-      return state;
+
+      const payload = rehydrateAction.payload as {
+        [LAO_REDUCER_PATH]: LaoReducerState;
+      };
+
+      return {
+        ...state,
+        ...(LAO_REDUCER_PATH in rehydrateAction.payload ? payload[LAO_REDUCER_PATH] : {}),
+        // make sure we always start disconnected
+        currentId: undefined,
+      };
     });
   },
 });
@@ -173,10 +190,10 @@ export const {
   connectToLao,
   disconnectFromLao,
   setLaoLastRollCall,
-  setLaoServerAddress,
+  addLaoServerAddress,
 } = laosSlice.actions;
 
-export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];
+export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];
 
 export function makeLao(id: string | undefined = undefined) {
   return createSelector(
@@ -194,6 +211,22 @@ export function makeLao(id: string | undefined = undefined) {
     },
   );
 }
+
+/**
+ * Gets a lao by its id or returns undefined if there is none with the given id
+ * @remark This function does not memoize its results, only use it outside of react components
+ * @param laoId The id of the lao
+ * @param state The redux state
+ */
+export const getLaoById = (laoId: string, state: unknown) => {
+  const laoMap = getLaosState(state).byId;
+
+  if (!(laoId in laoMap)) {
+    return undefined;
+  }
+
+  return Lao.fromState(laoMap[laoId]);
+};
 
 /**
  * Shorthand selector for widely used variant of makeLao()
@@ -242,9 +275,9 @@ export const selectIsLaoOrganizer = createSelector(
   (state) => getLaosState(state).byId,
   // Second input: current LAO id
   (state) => getLaosState(state)?.currentId,
-  // Second input: sorted LAO ids list
+  // Third input: the public key of the user
   (state) => getKeyPairState(state)?.keyPair?.publicKey,
-  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+  // Selector: returns whether the user is an organizer of the current lao
   (
     laoMap: Record<string, LaoState>,
     laoId: string | undefined,
@@ -252,8 +285,23 @@ export const selectIsLaoOrganizer = createSelector(
   ): boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
 );
 
+export const selectIsLaoWitness = createSelector(
+  // First input: all LAOs map
+  (state) => getLaosState(state).byId,
+  // Second input: current LAO id
+  (state) => getLaosState(state)?.currentId,
+  // Third input: the public key of the user
+  (state) => getKeyPairState(state)?.keyPair?.publicKey,
+  // Selector: returns whether the user is a witness of the current lao
+  (
+    laoMap: Record<string, LaoState>,
+    laoId: string | undefined,
+    pKey: string | undefined,
+  ): boolean => !!(laoId && pKey) && laoMap[laoId]?.witnesses.includes(pKey),
+);
+
 export const laoReduce = laosSlice.reducer;
 
 export default {
-  [laoReducerPath]: laosSlice.reducer,
+  [LAO_REDUCER_PATH]: laosSlice.reducer,
 };

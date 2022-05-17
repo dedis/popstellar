@@ -1,10 +1,10 @@
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
 
+import { mockLao } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
-import { mockLao } from '__tests__/utils/TestUtils';
 
 import {
   requestAddReaction as mockRequestAddReaction,
@@ -46,10 +46,14 @@ const chirp1 = new Chirp({
 jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn().mockImplementation(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
+  useSelector: jest.fn(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
+// Ionicons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons');
+
 // endregion
 
 beforeAll(() => {

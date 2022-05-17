@@ -1,19 +1,15 @@
-import React from 'react';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import { getKeyPairState } from 'core/keypair';
-import { getStore } from 'core/redux';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
-import { SocialMediaNavigation } from 'features/social/navigation';
-import { WalletNavigation } from 'features/wallet/navigation';
-import { Home } from 'features/home/screens';
 
-import { AttendeeScreen, Identity } from '../screens';
-import OrganizerNavigation from './OrganizerNavigation';
-import { selectCurrentLao } from '../reducer';
+import { LaoHooks } from '../hooks';
+import { LaoFeature } from '../interface';
+import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
+import { AttendeeEventsScreen, Identity } from '../screens';
+import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -39,83 +35,57 @@ const styles = StyleSheet.create({
   },
 });
 
-function getLaoTabName(isOrganizer: boolean, isWitness: boolean): string {
-  if (isOrganizer) {
-    return STRINGS.organization_navigation_tab_organizer;
-  }
-
-  if (isWitness) {
-    return STRINGS.organization_navigation_tab_witness;
-  }
-
-  return STRINGS.organization_navigation_tab_attendee;
-}
-
-function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  let component;
-
-  if (isOrganizer || isWitness) {
-    component = OrganizerNavigation;
-  } else {
-    component = AttendeeScreen;
-  }
-
-  return <OrganizationTopTabNavigator.Screen name={tabName} component={component} />;
-}
-
-// Cannot omit the "component" attribute in Screen
-// Moreover, cannot use a lambda in "component"
-const DummyComponent = () => null;
-
 const LaoNavigation: React.FC = () => {
-  const lao = useSelector(selectCurrentLao);
+  const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isWitness = useSelector(selectIsLaoWitness);
 
-  const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
-  const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
+  // add the organizer or attendee screen depeding on the user
+  const screens: LaoFeature.Screen[] = useMemo(() => {
+    let Component: React.ComponentType<any>;
 
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = lao ? lao.name : STRINGS.unused;
+    if (isOrganizer || isWitness) {
+      Component = OrganizerEventsNavigation;
+    } else {
+      Component = AttendeeEventsScreen;
+    }
+
+    return [
+      ...passedScreens,
+      {
+        id: STRINGS.organization_navigation_tab_identity,
+        Component: Identity,
+        order: 10000,
+      } as LaoFeature.Screen,
+      {
+        id: STRINGS.organization_navigation_tab_events,
+        Component,
+        order: 20000,
+      } as LaoFeature.Screen,
+      // sort screens by order before rendering them
+    ].sort((a, b) => a.order - b.order);
+  }, [passedScreens, isOrganizer, isWitness]);
 
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
-      initialRouteName={tabName}
+      initialRouteName={STRINGS.organization_navigation_tab_events}
       screenOptions={{
         swipeEnabled: false,
       }}>
-      <OrganizationTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_social_media}
-        component={SocialMediaNavigation}
-      />
-
-      {buildTabComponent(isOrganizer, isWitness)}
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_identity}
-        component={Identity}
-      />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_wallet}
-        component={WalletNavigation}
-      />
-
-      <OrganizationTopTabNavigator.Screen
-        name={laoName}
-        component={DummyComponent}
-        listeners={{
-          tabPress: (e) => {
-            // => do nothing
-            e.preventDefault();
-          },
-        }}
-      />
+      {screens.map(({ id, title, Component, Badge, Icon }) => (
+        <OrganizationTopTabNavigator.Screen
+          key={id}
+          name={id}
+          component={Component}
+          options={{
+            title: title || id,
+            tabBarBadge: Badge,
+            tabBarIcon: Icon,
+          }}
+        />
+      ))}
     </OrganizationTopTabNavigator.Navigator>
   );
 };

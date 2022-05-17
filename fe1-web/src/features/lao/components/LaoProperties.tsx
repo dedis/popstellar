@@ -1,57 +1,79 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import { useNavigation } from '@react-navigation/core';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Button, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
+import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
 import { Spacing } from 'core/styles';
-import { ConnectToLao } from 'features/connect/objects';
-import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
+import STRINGS from 'resources/strings';
 
-import laoPropertiesStyles from '../styles/laoPropertiesStyles';
-import { Lao } from '../objects';
-import { selectCurrentLao } from '../reducer';
+import { LaoHooks } from '../hooks';
+import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 
-function renderProperties(lao: Lao, url: string) {
-  const creationDateString = lao.creation.toDateString();
-  const connectToLao = new ConnectToLao({
-    server: url,
-    lao: lao.id.toString(),
-  });
+const laoPropertiesStyles = StyleSheet.create({
+  default: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: Spacing.xs,
+    marginHorizontal: Spacing.s,
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.xs,
+  },
+});
+
+const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
+  if (isOrganizer) {
+    return STRINGS.user_role_organizer;
+  }
+
+  if (isWitness) {
+    return STRINGS.user_role_witness;
+  }
+
+  return STRINGS.user_role_attendee;
+};
+
+const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
+  const lao = LaoHooks.useCurrentLao();
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
+  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
+
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const isWitness = useSelector(selectIsLaoWitness);
 
   return (
-    <>
-      <ParagraphBlock text={`Lao name: ${lao.name}`} />
-      <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-      <QRCode value={JSON.stringify(connectToLao)} visibility />
-    </>
-  );
-}
-
-const LaoProperties = ({ url }: IPropTypes) => {
-  const lao = useSelector(selectCurrentLao);
-
-  const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
-
-  const toggleChildren = () => setToggleChildrenVisible(!toggleChildrenVisible);
-
-  return (
-    <>
-      <TextBlock bold text="Lao Properties" />
-      <View style={[laoPropertiesStyles.default, { marginTop: Spacing.s }]}>
-        <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
-          <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
-        </TouchableOpacity>
-
-        {toggleChildrenVisible && lao && renderProperties(lao, url)}
-      </View>
-    </>
+    <View style={laoPropertiesStyles.default}>
+      <CollapsibleContainer title="Lao Properties" isInitiallyOpen={isInitiallyOpen}>
+        <ParagraphBlock text={`Lao name: ${lao.name}`} />
+        <ParagraphBlock text={`Your role: ${getUserRole(isOrganizer, isWitness)}`} />
+        <QRCode
+          value={encodeLaoConnection(lao.server_addresses[0] || '', lao.id.toString())}
+          visibility
+        />
+        <Button
+          title="Add connection"
+          onPress={() =>
+            navigation.navigate(STRINGS.navigation_tab_connect, {
+              screen: STRINGS.connect_scanning_title,
+            })
+          }
+        />
+      </CollapsibleContainer>
+    </View>
   );
 };
 
 const propTypes = {
-  url: PropTypes.string.isRequired,
+  isInitiallyOpen: PropTypes.bool,
 };
-LaoProperties.prototype = propTypes;
+
+LaoProperties.propTypes = propTypes;
+LaoProperties.defaultProps = {
+  isInitiallyOpen: false,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

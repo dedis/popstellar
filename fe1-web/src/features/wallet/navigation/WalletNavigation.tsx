@@ -1,15 +1,10 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 
 import STRINGS from 'resources/strings';
 
-import {
-  WalletError,
-  WalletHome,
-  WalletSetSeed,
-  WalletShowSeed,
-  WalletSyncedSeed,
-} from '../screens';
+import { WalletError, WalletHome, WalletSetSeed, WalletSetup, WalletCreateSeed } from '../screens';
+import { WalletStore } from '../store';
 
 const Stack = createStackNavigator();
 
@@ -22,11 +17,16 @@ export default function WalletNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}>
-      <Stack.Screen name={STRINGS.navigation_home_tab_wallet} component={WalletHome} />
-      <Stack.Screen name={STRINGS.navigation_show_seed_wallet} component={WalletShowSeed} />
-      <Stack.Screen name={STRINGS.navigation_insert_seed_tab_wallet} component={WalletSetSeed} />
-      <Stack.Screen name={STRINGS.navigation_synced_wallet} component={WalletSyncedSeed} />
+      }}
+      initialRouteName={
+        WalletStore.hasSeed()
+          ? STRINGS.navigation_wallet_home_tab
+          : STRINGS.navigation_wallet_setup_tab
+      }>
+      <Stack.Screen name={STRINGS.navigation_wallet_setup_tab} component={WalletSetup} />
+      <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
+      <Stack.Screen name={STRINGS.navigation_wallet_create_seed} component={WalletCreateSeed} />
+      <Stack.Screen name={STRINGS.navigation_wallet_insert_seed} component={WalletSetSeed} />
       <Stack.Screen name={STRINGS.navigation_wallet_error} component={WalletError} />
     </Stack.Navigator>
   );

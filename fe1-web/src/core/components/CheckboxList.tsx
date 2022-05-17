@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 
-import { Views, Typography } from '../styles';
+import { Typography, Views } from '../styles';
 
 /**
  * Component with a title and a list of checkboxes below it.
@@ -16,7 +16,7 @@ import { Views, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
   } as TextStyle,
   view: {
     ...Views.base,

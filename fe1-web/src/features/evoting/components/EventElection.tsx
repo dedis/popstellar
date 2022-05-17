@@ -1,18 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
-import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
+import React, { FunctionComponent, useMemo, useState } from 'react';
+import { SectionList, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 
-import { Spacing, Typography } from 'core/styles';
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import STRINGS from 'resources/strings';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
+import { EvotingHooks } from '../hooks';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
-import { EvotingHooks } from '../hooks';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -20,7 +20,7 @@ import { EvotingHooks } from '../hooks';
 
 const styles = StyleSheet.create({
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
   } as TextStyle,
   textOptions: {
     marginHorizontal: Spacing.s,
@@ -28,13 +28,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   } as TextStyle,
   textQuestions: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     fontSize: 20,
   } as TextStyle,
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { election, isOrganizer } = props;
+  const { event: election, isOrganizer } = props;
   const laoId = EvotingHooks.useCurrentLaoId();
 
   const toast = useToast();
@@ -138,11 +138,21 @@ const EventElection = (props: IPropTypes) => {
       case ElectionStatus.RESULT:
         return (
           <>
-            <Text style={styles.text}>Election Result</Text>
+            <Text style={styles.text}>Election Results</Text>
             {election.questionResult &&
-              election.questionResult.map((question: QuestionResult) => (
-                <BarChartDisplay data={question.result} key={question.id.valueOf()} />
-              ))}
+              election.questionResult.map((questionResult: QuestionResult) => {
+                const question = election.questions.find((q) => q.id === questionResult.id);
+
+                return question ? (
+                  <View>
+                    <Text style={styles.text}>{question.question}</Text>
+                    <BarChartDisplay
+                      data={questionResult.result}
+                      key={questionResult.id.valueOf()}
+                    />
+                  </View>
+                ) : null;
+              })}
           </>
         );
       default:
@@ -160,7 +170,7 @@ const EventElection = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  election: PropTypes.instanceOf(Election).isRequired,
+  event: PropTypes.instanceOf(Election).isRequired,
   isOrganizer: PropTypes.bool,
 };
 EventElection.propTypes = propTypes;
@@ -171,3 +181,11 @@ EventElection.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventElection;
+
+export const ElectionEventTypeComponent = {
+  isOfType: (event: unknown) => event instanceof Election,
+  Component: EventElection as FunctionComponent<{
+    event: unknown;
+    isOrganizer: boolean | null | undefined;
+  }>,
+};

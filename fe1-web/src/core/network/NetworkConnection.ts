@@ -2,21 +2,29 @@ import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import { ProtocolError } from 'core/objects';
 
-import { RpcOperationError } from './RpcOperationError';
+import {
+  ExtendedJsonRpcRequest,
+  ExtendedJsonRpcResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  UNDEFINED_ID,
+} from './jsonrpc';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
-import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
+import { RpcOperationError } from './RpcOperationError';
+
+const WEBSOCKET_CONNECTION_MAX_ATTEMPTS = 3;
+const WEBSOCKET_CONNECTION_FAILURE_TIMEOUT = 1000;
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
-
 const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 
 const JSON_RPC_ID_WRAP_AROUND = 10000;
 
 interface PendingResponse {
-  promise: Promise<JsonRpcResponse>;
-  resolvePromise: (value: JsonRpcResponse) => void;
+  promise: Promise<ExtendedJsonRpcResponse>;
+  resolvePromise: (value: ExtendedJsonRpcResponse) => void;
   rejectPromise: (error: RpcOperationError) => void;
   timeoutId: ReturnType<typeof setTimeout>;
 }
@@ -31,6 +39,8 @@ export class NetworkConnection {
   private onRpcHandler: JsonRpcHandler = defaultRpcHandler;
 
   public readonly address: string;
+
+  private failedConnectionAttempts: number = 0;
 
   constructor(address: string, handler?: JsonRpcHandler) {
     this.ws = this.establishConnection(address);
@@ -53,8 +63,19 @@ export class NetworkConnection {
     this.ws.close();
   }
 
+  public reconnectIfNecessary() {
+    // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
+    if (this.ws.readyState > 1) {
+      this.disconnect();
+      this.ws = this.establishConnection(this.address);
+    }
+  }
+
   private onOpen(): void {
     console.info(`Initiating web socket : ${this.address}`);
+
+    // reset failed connection attempts
+    this.failedConnectionAttempts = 0;
   }
 
   private onMessage(message: IMessageEvent): void {
@@ -80,9 +101,17 @@ export class NetworkConnection {
   }
 
   private onError(event: Error): void {
+    this.failedConnectionAttempts += 1;
+
     console.error(`WebSocket error observed on '${this.address}' : `, event);
     console.error(`Trying to establish a new connection at address : ${this.address}`);
-    this.ws = this.establishConnection(this.address);
+
+    // only retry a certain number of times and add a wait before retrying
+    if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
+      setTimeout(() => {
+        this.reconnectIfNecessary();
+      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
+    }
   }
 
   private static parseIncomingData(data: any): JsonRpcResponse | JsonRpcRequest {
@@ -109,7 +138,7 @@ export class NetworkConnection {
 
   private processRequest(request: JsonRpcRequest): void {
     try {
-      this.onRpcHandler(request);
+      this.onRpcHandler(new ExtendedJsonRpcRequest({ receivedFrom: this.address }, request));
     } catch (e) {
       console.error('Exception encountered when processing request:', request, e);
     }
@@ -131,7 +160,9 @@ export class NetworkConnection {
 
       // use promise resolve/reject to communicate RPC outcome
       if (parsedMessage.error === undefined) {
-        pendingResponse.resolvePromise(parsedMessage);
+        pendingResponse.resolvePromise(
+          new ExtendedJsonRpcResponse({ receivedFrom: this.address }, parsedMessage),
+        );
       } else {
         pendingResponse.rejectPromise(
           new RpcOperationError(
@@ -148,7 +179,7 @@ export class NetworkConnection {
     this.onRpcHandler = handler;
   }
 
-  public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse> {
+  public sendPayload(payload: JsonRpcRequest): Promise<ExtendedJsonRpcResponse> {
     // Check that the websocket connection is ready
     if (!this.ws.readyState) {
       return this.waitWebsocketReady().then(() => this.sendPayload(payload));
@@ -163,7 +194,7 @@ export class NetworkConnection {
       id: this.getNextRpcID(),
     });
 
-    const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
+    const promise = new Promise<ExtendedJsonRpcResponse>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.payloadPending.delete(query.id as number);
         reject(
