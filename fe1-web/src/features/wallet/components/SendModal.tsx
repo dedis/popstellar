@@ -29,12 +29,8 @@ const styles = StyleSheet.create({
   sendView: {
     margin: 'auto',
   } as ViewStyle,
-  label: {
-    color: 'gray',
-    fontSize: 17,
-  } as TextStyle,
   input: {
-    minWidth: 300,
+    minWidth: 400,
     padding: 5,
   } as ViewStyle,
 });

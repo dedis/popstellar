@@ -1,12 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
+import { send } from 'q';
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  Text,
-  TextStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
@@ -50,7 +45,7 @@ const styles = StyleSheet.create({
  * Wallet UI once the wallet is synced
  */
 const WalletHome = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [sendModalVisible, setSendModalVisible] = useState(false);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
@@ -120,12 +115,17 @@ const WalletHome = () => {
         )}
       </View>
       {tokenInfos()}
-      <View style={styles.mainButtonsContainer}>
-        <RoundIconButton name="send" onClick={() => {setModalVisible(true)}} />
-        <RoundIconButton name="search" onClick={() => {}} />
-        <RoundIconButton name="history" onClick={() => {}} />
-      </View>
-      <SendModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      {tokens && (
+        <View style={styles.mainButtonsContainer}>
+          <RoundIconButton
+            name="send"
+            onClick={() => {
+              setSendModalVisible(true);
+            }}
+          />
+        </View>
+      )}
+      <SendModal modalVisible={sendModalVisible} setModalVisible={setSendModalVisible} />
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
