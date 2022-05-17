@@ -31,10 +31,10 @@ func Test_Lao_Greet(t *testing.T) {
 	require.Equal(t, "greet", msg.Action)
 	require.Equal(t, "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=", msg.LaoID)
 	require.Equal(t, "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", msg.Frontend)
-	require.Equal(t, "wss://popdemo.dedis.ch/demo", msg.Address)
+	require.Equal(t, "wss://popdemo.dedis.ch:8000/demo", msg.Address)
 	require.Equal(t, 2, len(msg.Peers))
-	require.Equal(t, "wss://popdemo.dedis.ch/second-organizer-demo", msg.Peers[0].Address)
-	require.Equal(t, "wss://popdemo.dedis.ch/witness-demo", msg.Peers[1].Address)
+	require.Equal(t, "wss://popdemo.dedis.ch:8000/second-organizer-demo", msg.Peers[0].Address)
+	require.Equal(t, "wss://popdemo.dedis.ch:8000/witness-demo", msg.Peers[1].Address)
 }
 
 func Test_Greet_New_Empty(t *testing.T) {
