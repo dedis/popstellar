@@ -7,6 +7,7 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
+import { RoundIconButton } from '../components';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -14,6 +15,11 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   largePadding: {
     padding: '2rem',
+  } as ViewStyle,
+  container: {
+    ...containerStyles.centeredY,
+    padding: 20,
+    height: '100%',
   } as ViewStyle,
 });
 
@@ -40,7 +46,12 @@ const WalletSetSeed = () => {
   };
 
   return (
-    <View style={containerStyles.centeredXY}>
+    <View style={styles.container}>
+      <RoundIconButton
+        name={STRINGS.wallet_arrow_left_icon}
+        onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
+      />
+      <View style={styles.largePadding} />
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine
         placeholder={STRINGS.type_seed_example}
@@ -48,10 +59,6 @@ const WalletSetSeed = () => {
       />
       <View style={styles.smallPadding} />
       <WideButtonView title={STRINGS.save_seed_and_connect} onPress={() => initWallet()} />
-      <WideButtonView
-        title={STRINGS.back_to_wallet_setup}
-        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
-      />
     </View>
   );
 };
