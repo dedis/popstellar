@@ -106,7 +106,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
-  test("OpenRollCall should succed if the roll is already created") {
+  test("OpenRollCall should succeed if the roll is already created") {
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = OpenRollCallMessages.openRollCall
