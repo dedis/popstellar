@@ -146,20 +146,20 @@ namespace STRINGS {
   export const discussion_create_open = 'discussion open';
 
   /* --- Election creation Strings --- */
-  election_create_setup: 'Election Setup',
-  election_create_name: 'Name*',
-  election_create_version_open_ballot: 'Open Ballot',
-  election_create_version_secret_ballot: 'Secret Ballot',
-  election_create_start_time: 'Start time: ',
-  election_create_finish_time: 'End time:  ',
-  election_create_question: 'Question*',
-  election_create_voting_method: 'Voting method',
-  election_create_ballot_option: 'Option',
-  election_create_ballot_options: 'Ballot Options',
-  election_voting_method: 'Voting Method',
-  election_method_Plurality: 'Plurality',
-  election_method_Approval: 'Approval',
-  election_wait_for_election_key: 'Waiting for the election key to be broadcasted',
+  export const election_create_setup = 'Election Setup';
+  export const election_create_name = 'Name*';
+  export const election_create_version_open_ballot = 'Open Ballot';
+  export const election_create_version_secret_ballot = 'Secret Ballot';
+  export const election_create_start_time = 'Start time= ';
+  export const election_create_finish_time = 'End time:  export const ';
+  export const election_create_question = 'Question*';
+  export const election_create_voting_method = 'Voting method';
+  export const election_create_ballot_option = 'Option';
+  export const election_create_ballot_options = 'Ballot Options';
+  export const election_voting_method = 'Voting Method';
+  export const election_method_Plurality = 'Plurality';
+  export const election_method_Approval = 'Approval';
+  export const election_wait_for_election_key = 'Waiting for the election key to be broadcasted';
 
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';
