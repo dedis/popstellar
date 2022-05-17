@@ -132,27 +132,39 @@ public class Transaction_object {
     return get_receivers_hash_transaction().contains(publicKey.computeHash());
   }
 
+  /**
+   * Function that given a key pair change the sig of an input considering all the outputs
+   *
+   * @param keyPair of one input sender
+   * @return sig other all the outputs and inputs with the public key
+   * @throws GeneralSecurityException
+   */
   public String compute_sig_outputs_inputs(KeyPair keyPair) throws GeneralSecurityException {
-    //input #1: tx_out_hash Value //input #1: tx_out_index Value
-    //input #2: tx_out_hash Value //input #2: tx_out_index Value ...
-    //TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
-    //TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash Value...
-    String sig = "";
+    // input #1: tx_out_hash Value //input #1: tx_out_index Value
+    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
+    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
+    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
+    // Value...
+    String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
     Iterator<Input_object> ite_input = inputs.iterator();
     Iterator<Output_object> ite_output = outputs.iterator();
+
+    int index = 0;
     while (ite_input.hasNext()){
       Input_object current = ite_input.next();
-      sig.concat(current.get_tx_out_hash());
-      sig.concat(String.valueOf(current.get_tx_out_index()));
+      sig[index] = current.get_tx_out_hash();
+      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      index = index + 2;
     }
 
     while (ite_output.hasNext()){
       Output_object current = ite_output.next();
-      sig.concat(String.valueOf(current.get_value()));
-      sig.concat(current.get_script().get_type());
-      sig.concat(current.get_script().get_pubkey_hash());
+      sig[index] = String.valueOf(current.get_value());
+      sig[index + 1] = current.get_script().get_type();
+      sig[index + 2] = current.get_script().get_pubkey_hash();
+      index = index + 3;
     }
-    return keyPair.sign(new Base64URLData(sig)).getEncoded();
+    return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
   }
 
   /**
@@ -182,24 +194,25 @@ public class Transaction_object {
     return miniLao;
   }
 
-  // function that say if it was a coin base transaction
-  public boolean is_this_coin_base_transaction() {
-    return false;
+  /**
+   * Function that return the index of the output for a given key in this Transaction
+   *
+   * @param publicKey PublicKey of an individual in Transaction output
+   * @return int index in the transaction outputs
+   */
+  public int get_index_transaction(PublicKey publicKey) {
+    Iterator<Output_object> output_objectIterator = outputs.listIterator();
+    String hash_pubkey = publicKey.computeHash();
+    int index = 0;
+    while (output_objectIterator.hasNext()) {
+      Output_object current = output_objectIterator.next();
+      if (current.get_script().get_pubkey_hash().equals(hash_pubkey)) {
+        return index;
+      }
+      index = index + 1;
+    }
+    throw new IllegalArgumentException(
+        "this public key is not contained in the output of this transaction");
   }
 
-  // function that given a transaction check if the value send are alright
-  // check also of the lock_time is after
-
-  // function that given a list of attendees check if the transaction send is correct
-
-  // function that sum two transaction for a given PublicKey
-  public int transaction_add(List<Transaction_object> transaction_object_list, PublicKey receiver) {
-    // transaction_object_list
-
-    // get the hash of the public key
-
-    // check that all the transaction have a output for the given public key
-
-    return 0;
-  }
 }
