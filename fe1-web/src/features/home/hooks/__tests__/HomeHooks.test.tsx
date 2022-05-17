@@ -17,6 +17,7 @@ const addLaoServerAddress = jest.fn();
 const getLaoChannel = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
+const hasSeed = jest.fn();
 const mainNavigationScreens: HomeFeature.Screen[] = [
   { Component: LaoList, id: 'x', title: 'X', order: 2 },
 ];
@@ -30,7 +31,8 @@ const contextValue = {
     LaoList,
     mainNavigationScreens,
     getLaoChannel,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId
+    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    hasSeed,
   } as HomeReactContext,
 };
 
@@ -98,6 +100,13 @@ describe('Home hooks', () => {
     it('should return the function for getting a channel by lao id', () => {
       const { result } = renderHook(() => HomeHooks.useGetLaoChannel(), { wrapper });
       expect(result.current).toEqual(getLaoChannel);
+    });
+  });
+
+  describe('HomeHooks.useHasSeed', () => {
+    it('should return the function for checking the existence of a seed', () => {
+      const { result } = renderHook(() => HomeHooks.useHasSeed(), { wrapper });
+      expect(result.current).toEqual(hasSeed);
     });
   });
 });

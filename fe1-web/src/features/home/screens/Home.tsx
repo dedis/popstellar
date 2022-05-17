@@ -1,12 +1,19 @@
-import React, { FunctionComponent } from 'react';
-import { View } from 'react-native';
+import { useNavigation } from '@react-navigation/core';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet, Text, TextStyle, View } from 'react-native';
 
-import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
+
+const styles = StyleSheet.create({
+  text: {
+    ...Typography.base,
+  } as TextStyle,
+});
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -16,6 +23,8 @@ const Home: FunctionComponent = () => {
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
 
+  const hasSeed = HomeHooks.useHasSeed();
+
   return laos && laos.length > 0 ? (
     <ScreenWrapper>
       <LaoList />
@@ -23,9 +32,13 @@ const Home: FunctionComponent = () => {
   ) : (
     <ScreenWrapper>
       <View style={containerStyles.centeredY}>
-        <TextBlock bold text={STRINGS.home_welcome} />
-        <TextBlock bold text={STRINGS.home_connect_lao} />
-        <TextBlock bold text={STRINGS.home_launch_lao} />
+        <Text style={Typography.heading}>{STRINGS.home_welcome}</Text>
+        <Text style={Typography.paragraph}>{STRINGS.home_description}</Text>
+        {hasSeed ? (
+          <Text style={Typography.paragraph}>{STRINGS.home_wallet_setup}</Text>
+        ) : (
+          <Text style={Typography.paragraph}>{STRINGS.home_wallet}</Text>
+        )}
       </View>
     </ScreenWrapper>
   );

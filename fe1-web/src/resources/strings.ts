@@ -69,10 +69,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Home Strings --- */
-  export const home_welcome = 'Welcome to Personhood.Online!';
-  export const home_connect_lao =
-    'To connect to a local organization (LAO), please tap to Connect above';
-  export const home_launch_lao = 'To launch a new LAO as on organizer, please tap Launch tab above';
+  export const home_welcome = 'Welcome to POPstellar!';
+  export const home_description =
+    'The purpose of this application is to demonstrate use cases for proofs of personhood (PoP). ' +
+    'POPstellar is based on local autonomous organizations (LAOs) and in order to use the application you must connect to one.';
+  export const home_wallet =
+    'But before doing doing so, you must set up your wallet. This setup step is only required once.';
+  export const home_wallet_setup =
+    'After having set up your wallet, you can now connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code the organizer provides to you.';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';

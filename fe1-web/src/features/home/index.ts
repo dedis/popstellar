@@ -22,6 +22,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
       mainNavigationScreens: config.mainNavigationScreens,
       getLaoChannel: config.getLaoChannel,
       useCurrentLaoId: config.useCurrentLaoId,
+      hasSeed: config.hasSeed,
     },
   };
 }

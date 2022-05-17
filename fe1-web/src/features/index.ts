@@ -100,6 +100,7 @@ export function configureFeatures() {
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
     getLaoChannel: laoConfiguration.functions.getLaoChannel,
+    hasSeed: walletConfiguration.functions.hasSeed,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
