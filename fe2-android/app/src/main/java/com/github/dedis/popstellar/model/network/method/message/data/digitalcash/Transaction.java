@@ -107,17 +107,17 @@ public class Transaction {
     MessageDigest digest = null;
     try {
       digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(concat.getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
-      System.out.println("Something is wrong");
+      System.err.println("Something is wrong");
+      throw new IllegalArgumentException("Error in the computation of the transaction id");
     }
-
-    byte[] hash = digest.digest(concat.getBytes(StandardCharsets.UTF_8));
-    return Base64.getUrlEncoder().encodeToString(hash);
   }
 
   public void change_sig_inputs_considering_the_outputs(KeyPair keyPair)
       throws GeneralSecurityException {
-    String sig = this.compute_sig_outputs_inputs(keyPair, inputs, outputs);
+    String sig = compute_sig_outputs_inputs(keyPair, inputs, outputs);
     Iterator<Input> ite = inputs.iterator();
     while (ite.hasNext()) {
       Input current = ite.next();
@@ -134,22 +134,25 @@ public class Transaction {
     // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
-    String sig = "";
+    String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
     Iterator<Input> ite_input = inputs.iterator();
     Iterator<Output> ite_output = outputs.iterator();
+    int index = 0;
     while (ite_input.hasNext()) {
       Input current = ite_input.next();
-      sig.concat(current.get_tx_out_hash());
-      sig.concat(String.valueOf(current.get_tx_out_index()));
+      sig[index] = current.get_tx_out_hash();
+      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      index = index + 2;
     }
 
     while (ite_output.hasNext()) {
       Output current = ite_output.next();
-      sig.concat(String.valueOf(current.get_value()));
-      sig.concat(current.get_script().get_type());
-      sig.concat(current.get_script().get_pubkey_hash());
+      sig[index] = String.valueOf(current.get_value());
+      sig[index + 1] = current.get_script().get_type();
+      sig[index + 2] = current.get_script().get_pubkey_hash();
+      index = index + 3;
     }
-    return keyPair.sign(new Base64URLData(sig)).getEncoded();
+    return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
   }
 
   @Override

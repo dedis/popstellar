@@ -47,11 +47,11 @@ public class PublicKey extends Base64URLData {
     MessageDigest digest = null;
     try {
       digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(this.getEncoded().getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
-      System.out.println("Something is wrong by hashing the String element ");
+      System.err.println("Something is wrong by hashing the String element ");
+      throw new IllegalArgumentException("Error in computing the hash in public key");
     }
-
-    byte[] hash = digest.digest(this.getEncoded().getBytes(StandardCharsets.UTF_8));
-    return Base64.getUrlEncoder().encodeToString(hash);
   }
 }
