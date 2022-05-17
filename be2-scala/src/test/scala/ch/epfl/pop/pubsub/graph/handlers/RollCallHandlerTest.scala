@@ -31,7 +31,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
         // You can modify the following match case to include more args, names...
         case DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) => sender() ! DbActor.DbActorAck()
         case DbActor.WriteAndPropagate(_, _) =>
-          system.log.info(f"Received a write and propagate")
+          system.log.info("Received a write and propagate")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
@@ -46,11 +46,11 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
-          system.log.info(s"Received a message")
+          system.log.info("Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
         case DbActor.ChannelExists(_) =>
-          system.log.info(s"Received a create rollcall message")
+          system.log.info("Received a create rollcall message")
           system.log.info("Responding with a no")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
