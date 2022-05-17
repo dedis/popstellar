@@ -12,11 +12,7 @@ export class ElectionPublicKey {
     const point = ed25519.point();
     point.unmarshalBinary(Buffer.from(encodedKey, 'base64'));
 
-    if (!(point instanceof Ed25519Point)) {
-      throw new Error('Election keys are expected to be Ed25519 points');
-    }
-
-    this.point = point;
+    this.point = point as Ed25519Point;
   }
 
   toString(): string {
