@@ -256,6 +256,9 @@ namespace STRINGS {
   export const lao_id = 'LAO ID';
   export const lao_name = 'LAO name';
   export const roll_call_name = 'Roll Call name';
+  export const wallet_send_title = 'Send';
+  export const wallet_send_destination_label = "Receiver's public key";
+  export const wallet_send_amount_label = 'Amount to send';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

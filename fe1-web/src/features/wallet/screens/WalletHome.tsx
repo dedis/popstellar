@@ -6,7 +6,6 @@ import {
   ViewStyle,
   Text,
   TextStyle,
-  Modal,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -15,8 +14,7 @@ import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { RollCallTokensDropDown } from '../components';
-import RoundIconButton from '../components/RoundIconButton';
+import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
@@ -127,15 +125,7 @@ const WalletHome = () => {
         <RoundIconButton name="search" onClick={() => {}} />
         <RoundIconButton name="history" onClick={() => {}} />
       </View>
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => {
-          alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <Text>Hello World!</Text>
-      </Modal>
+      <SendModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
