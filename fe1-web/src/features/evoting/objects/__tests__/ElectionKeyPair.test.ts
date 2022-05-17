@@ -11,6 +11,9 @@ describe('ElectionKeyPair', () => {
     const encryptedData = keyPair.publicKey.encrypt(Buffer.from(data, 'utf-8'));
     const decryptedData = keyPair.privateKey.decrypt(encryptedData).toString('utf-8');
 
+    console.log('publicKey', keyPair.publicKey.toBase64());
+    console.log('privateKey', keyPair.privateKey.toBase64());
+
     expect(decryptedData).toEqual(data);
   });
 });

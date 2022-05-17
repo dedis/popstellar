@@ -1,4 +1,4 @@
-import { curve, PointFactory } from '@dedis/kyber';
+import { curve } from '@dedis/kyber';
 import Ed25519Point from '@dedis/kyber/curve/edwards25519/point';
 
 import { Base64UrlData } from 'core/objects';
@@ -9,7 +9,8 @@ export class ElectionPublicKey {
   public point: Ed25519Point;
 
   constructor(encodedKey: string | Base64UrlData) {
-    const point = PointFactory.fromProto(Buffer.from(encodedKey, 'base64'));
+    const point = ed25519.point();
+    point.unmarshalBinary(Buffer.from(encodedKey, 'base64'));
 
     if (!(point instanceof Ed25519Point)) {
       throw new Error('Election keys are expected to be Ed25519 points');
@@ -19,7 +20,7 @@ export class ElectionPublicKey {
   }
 
   toString(): string {
-    return this.point.toProto().toString('base64');
+    return this.point.marshalBinary().toString('base64');
   }
 
   toBase64(): Base64UrlData {

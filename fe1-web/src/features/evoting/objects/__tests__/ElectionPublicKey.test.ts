@@ -43,7 +43,7 @@ describe('ElectionPublicKey', () => {
     it('returns false if the point is different', () => {
       const key1 = new ElectionPublicKey(mockEncodedElectionKey);
       const p = ed25519.point().pick() as Ed25519Point;
-      const key2 = new ElectionPublicKey(new Base64UrlData(p.toProto().toString('base64')));
+      const key2 = new ElectionPublicKey(new Base64UrlData(p.marshalBinary().toString('base64')));
       expect(key1.equals(key2)).toBeFalse();
     });
   });
@@ -65,7 +65,9 @@ describe('ElectionPublicKey', () => {
 
   it('Decoding reconstructs the correct Ed25519 point', () => {
     const p = ed25519.point().pick() as Ed25519Point;
-    const electionKey = new ElectionPublicKey(new Base64UrlData(p.toProto().toString('base64')));
+    const electionKey = new ElectionPublicKey(
+      new Base64UrlData(p.marshalBinary().toString('base64')),
+    );
 
     expect(electionKey.point.equals(p)).toBeTrue();
   });
