@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// TransactionPost defines a message data
+// PostTransaction defines a message data
 type PostTransaction struct {
 	Object        string      `json:"object"`
 	Action        string      `json:"action"`
@@ -22,26 +22,26 @@ type Transaction struct {
 	Locktime int      `json:"lock_time"`
 }
 
-// Input define the source from the money used in transaction
+// Input defines the source from the money used in transaction
 type Input struct {
 	Hash   string       `json:"tx_out_hash"`
 	Index  int          `json:"tx_out_index"`
 	Script UnlockScript `json:"script"`
 }
 
-// Output define the destination for the money used in transaction
+// Output defines the destination for the money used in transaction
 type Output struct {
 	Value  int        `json:"value"`
 	Script LockScript `json:"script"`
 }
 
-// LockScript define the locking value for transaction
+// LockScript defines the locking value for transaction
 type LockScript struct {
 	Type       string `json:"type"`
 	PubKeyHash string `json:"pubkey_hash"`
 }
 
-// UnlockScript define the unlocking value for transaction
+// UnlockScript defines the unlocking value for transaction
 type UnlockScript struct {
 	Type   string `json:"type"`
 	PubKey string `json:"pubkey"`
