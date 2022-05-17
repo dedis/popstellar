@@ -85,8 +85,6 @@ public class Transaction_object {
     return senders;
   }
 
-  // function that give the list of receiver_hash
-
   /**
    * Function that give the Public Key Hash of the Outputs
    * @return List<String> outputs public keys hash
@@ -120,15 +118,41 @@ public class Transaction_object {
     return receivers;
   }
 
-  public boolean is_receiver(PublicKey publicKey){
-    get_receivers_hash_transaction().contains()
-    return false;
+  /**
+   * Check if a public key is in the recipient
+   *
+   * @param publicKey PublicKey of someone
+   * @return true if public key in receiver, false otherwise
+   */
+  public boolean is_receiver(PublicKey publicKey) {
+    return get_receivers_hash_transaction().contains(publicKey.computeHash());
   }
 
-  // function that given a receiver get the miniLaoCoin he has
+  /**
+   * Function that given a Public Key gives the miniLaoCoin received
+   *
+   * @param receiver Public Key of a potential receiver
+   * @return int amount of Lao Coin
+   */
   public int get_miniLao_per_receiver(PublicKey receiver) {
-    // first make the public key to the hash
-    return 0;
+    // TODO : Useful check ?
+    // if (!is_receiver(receiver)) {
+    // throw new IllegalArgumentException("The public Key is not contained in the receiver public
+    // key");
+    // }
+    // Set the return value to nothing
+    int miniLao = 0;
+    // Compute the hash of the public key
+    String hash_key = receiver.computeHash();
+    // iterate through the output and sum if it's for the argument public key
+    Iterator<Output_object> iterator = getOutputs().iterator();
+    while (iterator.hasNext()) {
+      Output_object current = iterator.next();
+      if (current.get_script().get_pubkey_hash().equals(hash_key)) {
+        miniLao = miniLao + current.get_value();
+      }
+    }
+    return miniLao;
   }
 
   // function that say if it was a coin base transaction
