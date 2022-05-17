@@ -66,6 +66,7 @@ import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler;
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler;
 import com.github.dedis.popstellar.utility.handler.data.LaoHandler;
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler;
+import com.github.dedis.popstellar.utility.handler.data.TransactionCoinHandler;
 
 import javax.inject.Singleton;
 
@@ -137,7 +138,11 @@ public abstract class DataRegistryModule {
         .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
 
     // Digital Cash
-    builder.add(COIN, POST_TRANSACTION, PostTransactionCoin.class, null);
+    builder.add(
+        COIN,
+        POST_TRANSACTION,
+        PostTransactionCoin.class,
+        TransactionCoinHandler::handlePostTransactionCoin);
 
     return builder.build();
   }

@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -109,8 +111,8 @@ public class Transaction_object {
     Iterator<String> receiver_hash_ite = get_receivers_hash_transaction().iterator();
     List<PublicKey> receivers = new ArrayList<>();
     while (receiver_hash_ite.hasNext()){
-      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),new PublicKey("-1"));
-      if (pub.equals(new PublicKey("-1"))) {
+      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),null);
+      if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
       receivers.add(pub);
@@ -126,6 +128,30 @@ public class Transaction_object {
    */
   public boolean is_receiver(PublicKey publicKey) {
     return get_receivers_hash_transaction().contains(publicKey.computeHash());
+  }
+
+  public String compute_sig_outputs_inputs(KeyPair keyPair) throws GeneralSecurityException {
+    //input #1: tx_out_hash Value //input #1: tx_out_index Value
+    //input #2: tx_out_hash Value //input #2: tx_out_index Value ...
+    //TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
+    //TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash Value...
+    String sig = "";
+    Iterator<Input_object> ite_input = inputs.iterator();
+    Iterator<Output_object> ite_output = outputs.iterator();
+    while (ite_input.hasNext()){
+      Input_object current = ite_input.next();
+      sig.concat(current.get_tx_out_hash());
+      sig.concat(String.valueOf(current.get_tx_out_index()));
+    }
+
+    while (ite_output.hasNext()){
+      Output_object current = ite_output.next();
+      sig.concat(String.valueOf(current.get_value()));
+      sig.concat(current.get_script().get_type());
+      sig.concat(current.get_script().get_pubkey_hash());
+    }
+    Sen
+    return null;
   }
 
   /**

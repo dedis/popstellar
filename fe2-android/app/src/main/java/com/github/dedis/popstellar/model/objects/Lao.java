@@ -85,6 +85,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
+    pub_keyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -170,6 +171,7 @@ public final class Lao {
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     Iterator<PublicKey> iterator = attendees.iterator();
     pub_keyByHash = new HashMap<>();
+    pub_keyByHash.put(organizer.computeHash(), organizer);
     while (iterator.hasNext()) {
       PublicKey current = iterator.next();
       pub_keyByHash.put(current.computeHash(), current);
@@ -381,6 +383,18 @@ public final class Lao {
     return allChirps.values().stream()
         .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
         .collect(Collectors.toList());
+  }
+
+  public Map<PublicKey, List<Transaction_object>> getTransaction_historyByUser() {
+    return transaction_historyByUser;
+  }
+
+  public Map<PublicKey, Transaction_object> getTransactionByUser() {
+    return transactionByUser;
+  }
+
+  public Map<String, PublicKey> getPub_keyByHash() {
+    return pub_keyByHash;
   }
 
   public Map<MessageID, Chirp> getAllChirps() {
