@@ -694,7 +694,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  fmt.Sprintf("wss://%s", c.hub.GetServerAddress()),
+		Address:  fmt.Sprintf("wss://%s/organizer/client", c.hub.GetServerAddress()),
 		Peers:    []messagedata.Peer{},
 	}
 
