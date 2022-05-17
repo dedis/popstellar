@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,19 +68,61 @@ public class Transaction_object {
     this.version = version;
   }
 
-  // function that give the list of sender
+  /**
+   * Function that give the Public Key of the Inputs
+   * @return List<PublicKey> senders public keys
+   */
   public List<PublicKey> get_senders_transaction() {
-    return null;
+    Iterator<Input_object> input_ite = getInputs().iterator();
+    List<PublicKey> senders= new ArrayList<>();
+
+    //Through the inputs look at the sender
+    while (input_ite.hasNext()){
+      PublicKey current_sender = new PublicKey(input_ite.next().get_script().get_pubkey());
+      senders.add(current_sender);
+    }
+
+    return senders;
   }
 
   // function that give the list of receiver_hash
+
+  /**
+   * Function that give the Public Key Hash of the Outputs
+   * @return List<String> outputs public keys hash
+   */
   public List<String> get_receivers_hash_transaction() {
-    return null;
+    Iterator<Output_object> output_ite = getOutputs().iterator();
+    List<String> receiver_hash = new ArrayList<>();
+
+    while(output_ite.hasNext()){
+      receiver_hash.add(output_ite.next().get_script().get_pubkey_hash());
+    }
+
+    return receiver_hash;
   }
 
-  // function that give the list of receiver
+  /**
+   * Function that give the Public Key of the Outputs
+   * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
+   * @return List<PublicKey> outputs public keys
+   */
   public List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key) {
-    return null;
+    Iterator<String> receiver_hash_ite = get_receivers_hash_transaction().iterator();
+    List<PublicKey> receivers = new ArrayList<>();
+    while (receiver_hash_ite.hasNext()){
+      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),new PublicKey("-1"));
+      if (pub.equals(new PublicKey("-1"))) {
+        throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
+      }
+      receivers.add(pub);
+    }
+    return receivers;
+  }
+
+  public boolean is_receiver(PublicKey publicKey){
+    get_receivers_hash_transaction().contains()
+    return false;
   }
 
   // function that given a receiver get the miniLaoCoin he has
