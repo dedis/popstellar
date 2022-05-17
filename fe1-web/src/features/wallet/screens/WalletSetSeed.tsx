@@ -2,11 +2,10 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { RoundIconButton, TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { RoundIconButton } from '../components';
 import * as Wallet from '../objects';
 
 const styles = StyleSheet.create({
