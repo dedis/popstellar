@@ -2,6 +2,7 @@ import React from 'react';
 import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -13,6 +14,7 @@ export const WALLET_FEATURE_IDENTIFIER = 'wallet';
 export interface WalletConfiguration {
   // objects
   keyPairRegistry: KeyPairRegistry;
+  messageRegistry: MessageRegistry;
 
   /* LAO related functions */
 
