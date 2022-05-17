@@ -19,12 +19,20 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onIndexChange, rollCallTokens, selectedTokenIndex } = props;
 
   const options = rollCallTokens.map((rc, index) => {
-    return <Picker.Item value={index} label={rc.token.publicKey.valueOf()} />;
+    return (
+      <Picker.Item
+        value={index}
+        key={rc.token.publicKey.valueOf()}
+        label={rc.token.publicKey.valueOf()}
+      />
+    );
   });
 
   return (
     <Picker
-      onValueChange={(value: number) => onIndexChange(value)}
+      onValueChange={(v, itemIndex) => {
+        onIndexChange(itemIndex);
+      }}
       style={styles.pickerStyle}
       selectedValue={selectedTokenIndex}>
       {options}

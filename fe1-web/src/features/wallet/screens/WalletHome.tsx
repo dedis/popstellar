@@ -8,7 +8,7 @@ import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { RollCallTokensDropDown } from '../components';
+import { RollCallTokensDropDown, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
@@ -28,8 +28,17 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   } as ViewStyle,
-  textBase: Typography.base as TextStyle,
+  textBase: Typography.baseCentered as TextStyle,
   textImportant: Typography.important as TextStyle,
+  topBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+  } as ViewStyle,
 });
 
 /**
@@ -94,7 +103,19 @@ const WalletHome = () => {
 
   return (
     <View style={styles.homeContainer}>
-      <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
+      <View style={styles.topBar}>
+        <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
+        <RoundIconButton
+          name={STRINGS.wallet_logout_icon}
+          onClick={() => {
+            Wallet.forget();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
+            });
+          }}
+        />
+      </View>
       <View style={styles.tokenSelectContainer}>
         {tokens && (
           <RollCallTokensDropDown
@@ -106,16 +127,6 @@ const WalletHome = () => {
       </View>
       {tokenInfos()}
       <View style={styles.smallPadding} />
-      <WideButtonView
-        title={STRINGS.logout_from_wallet}
-        onPress={() => {
-          Wallet.forget();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
-          });
-        }}
-      />
       <WideButtonView
         title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
         onPress={() => toggleDebugMode()}

@@ -1,3 +1,4 @@
 import RollCallTokensDropDown from './RollCallTokensDropDown';
+import RoundIconButton from './RoundIconButton';
 
-export { RollCallTokensDropDown };
+export { RollCallTokensDropDown, RoundIconButton };
