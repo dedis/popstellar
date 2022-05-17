@@ -69,6 +69,8 @@
             "properties": {
               "Value": {
                 "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
                 "description": "the value of the output transaction, expressed in miniLAOs"
               },
               "Script": {

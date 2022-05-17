@@ -1,5 +1,6 @@
 import { Hash, Timestamp } from 'core/objects';
-import { LaoEventState } from 'features/events/objects/LaoEvent';
+
+import { MeetingFeature } from '../interface';
 
 /**
  * Object to represent a meeting.
@@ -7,7 +8,7 @@ import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 export const EventTypeMeeting = 'MEETING';
 
-export interface MeetingState extends LaoEventState {
+export interface MeetingState extends MeetingFeature.EventState {
   name: string;
   location: string;
   creation: number;
