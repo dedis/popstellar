@@ -95,16 +95,17 @@ public class TransactionCoinHandlerTest {
   private static final Transaction TRANSACTION =
       new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
-  private static final PostTransactionCoin posttransactioncoin =
-      new PostTransactionCoin(TRANSACTION);
+  private static PostTransactionCoin posttransactioncoin;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
+    posttransactioncoin = new PostTransactionCoin(TRANSACTION);
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
+    TRANSACTION.change_sig_inputs_considering_the_outputs(SENDER_KEY);
     laoRepository = new LAORepository();
 
     // when(messageSender.subscribe(any())).then(args -> Completable.complete());
@@ -151,3 +152,4 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, lao.getPub_keyByHash().size());
   }
 }
+

@@ -13,7 +13,7 @@ public class Input {
   private final int txOutIndex; // index of the previous to-be-used transaction
 
   @SerializedName("script")
-  private final Script_input script; // The script describing the unlock mechanism
+  private Script_input script; // The script describing the unlock mechanism
 
   /**
    * @param txOutHash Previous (to-be-used) transaction hash
@@ -37,6 +37,7 @@ public class Input {
   public Script_input get_script() {
     return script;
   }
+
 
   @Override
   public String toString() {

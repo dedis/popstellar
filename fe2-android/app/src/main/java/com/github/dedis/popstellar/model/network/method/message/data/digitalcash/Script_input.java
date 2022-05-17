@@ -13,7 +13,7 @@ public class Script_input {
   private final String pub_key_recipient; // The recipient’s public key
 
   @SerializedName("sig")
-  private final String sig; // Signature on all txins and txouts using the recipient's private key
+  private String sig; // Signature on all txins and txouts using the recipient's private key
   // Transaction //with all txin txout
 
   /**
@@ -29,6 +29,10 @@ public class Script_input {
 
   public String get_sig() {
     return sig;
+  }
+
+  public void setSig(String sig) {
+    this.sig = sig;
   }
 
   public String get_type() {

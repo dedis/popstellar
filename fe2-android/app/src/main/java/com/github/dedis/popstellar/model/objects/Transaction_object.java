@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -28,6 +29,7 @@ public class Transaction_object {
 
   public Transaction_object() {
     // Empty constructor // empty transaction
+    // change the sig for all the inputs
   }
 
   public Channel getChannel() {
@@ -150,8 +152,7 @@ public class Transaction_object {
       sig.concat(current.get_script().get_type());
       sig.concat(current.get_script().get_pubkey_hash());
     }
-    Sen
-    return null;
+    return keyPair.sign(new Base64URLData(sig)).getEncoded();
   }
 
   /**
