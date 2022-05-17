@@ -176,6 +176,13 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Close Roll Call should fail if it is already closed") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_ALREADY_CLOSED_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   test("Close Roll Call should fail with wrong type of channel") {
     val dbActorRef = mockDbWrongChannel
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_RPC)

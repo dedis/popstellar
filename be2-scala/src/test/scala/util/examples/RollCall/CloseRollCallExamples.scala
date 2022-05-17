@@ -55,6 +55,16 @@ object CloseRollCallExamples {
     Some(wrongIdCloseRollCall)
   )
 
+  val wrongAlreadyClosedCloseRollCall: CloseRollCall = CloseRollCall(CLOSES, CLOSES, NOT_STALE_CLOSED_AT, ATTENDEES)
+  final val MESSAGE_CLOSE_ROLL_CALL_ALREADY_CLOSED: Message = new Message(
+    Base64Data.encode(wrongAlreadyClosedCloseRollCall.toJson.toString),
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongAlreadyClosedCloseRollCall)
+  )
+
   val wrongAttendeesCloseRollCall: CloseRollCall = CloseRollCall(UPDATE_ID, CLOSES, NOT_STALE_CLOSED_AT, List(invalidSender))
   final val MESSAGE_CLOSE_ROLL_CALL_WRONG_ATTENDEES: Message = new Message(
     Base64Data.encode(wrongAttendeesCloseRollCall.toJson.toString),
