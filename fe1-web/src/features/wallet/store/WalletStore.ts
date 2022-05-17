@@ -1,6 +1,6 @@
 import base64url from 'base64url';
-import * as platformCrypto from 'core/platform/crypto';
 
+import * as platformCrypto from 'core/platform/crypto';
 import { AsyncDispatch, getStore } from 'core/redux';
 
 import { clearWallet, getWalletState, setWallet } from '../reducer';
@@ -38,7 +38,6 @@ export namespace WalletStore {
    */
   export async function store(mnemonic: string, seed: Uint8Array) {
     const binaryMnemonic: Uint8Array = new TextEncoder().encode(mnemonic);
-
     await getStore().dispatch(async (dispatch: AsyncDispatch): Promise<void> => {
       const encryptedSeed = await encrypt(seed);
       const encryptedMnemonic = await encrypt(binaryMnemonic);

@@ -5,6 +5,15 @@ import spray.json._
 
 object ObjectProtocol extends DefaultJsonProtocol {
 
+  implicit object AddressFormat extends JsonFormat[Address] {
+    override def read(json: JsValue): Address = json match {
+      case JsString(data) => Address(Base64Data(data))
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to an Address object")
+    }
+
+    override def write(obj: Address): JsValue = JsString(obj.base64Data.data)
+  }
+
   implicit object Base64DataFormat extends JsonFormat[Base64Data] {
     override def read(json: JsValue): Base64Data = json match {
       case JsString(data) => Base64Data(data)
@@ -86,4 +95,11 @@ object ObjectProtocol extends DefaultJsonProtocol {
     )
   }
 
+  implicit val lockScriptFormat: JsonFormat[LockScript] = jsonFormat[String, Address, LockScript](LockScript.apply, "Type", "PubkeyHash")
+  implicit val unlockScriptFormat: JsonFormat[UnlockScript] = jsonFormat[String, PublicKey, Base64Data, UnlockScript](UnlockScript.apply, "Type", "Pubkey", "Sig")
+
+  implicit val txInFormat: JsonFormat[TxIn] = jsonFormat[Hash, Int, UnlockScript, TxIn](TxIn.apply, "TxOutHash", "TxOutIndex", "Script")
+  implicit val txOutFormat: JsonFormat[TxOut] = jsonFormat[Long, LockScript, TxOut](TxOut.apply, "Value", "Script")
+
+  implicit val transactionFormat: JsonFormat[Transaction] = jsonFormat[Int, List[TxIn], List[TxOut], Transaction](Transaction.apply, "Version", "TxIn", "TxOut")
 }

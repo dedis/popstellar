@@ -1,5 +1,5 @@
-import { shape, func, number, arrayOf, string, oneOf, object } from 'prop-types';
 import { Action } from '@react-navigation/routers/src/CommonActions';
+import { arrayOf, number, object, oneOf, shape, string } from 'prop-types';
 
 const PROPS_TYPE = {
   // --- LAO type ---
@@ -63,10 +63,14 @@ const PROPS_TYPE = {
     witnesses: arrayOf(string),
   }),
 
-  // --- navigation type of react-navigation (simplified) ---
-  navigation: shape({
-    navigate: func.isRequired,
-    addListener: func.isRequired,
+  // --- notification type ---
+  notification: shape({
+    // WitnessFeature.MessageToWitnessNotification
+    id: number.isRequired,
+    timestamp: number.isRequired,
+    title: string.isRequired,
+    type: string.isRequired,
+    messageId: string.isRequired,
   }),
 };
 

@@ -1,19 +1,20 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils';
 
-import { EventTags, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
+import { MessageDataProperties } from 'core/types';
+import {
+  mockBallotOptions,
+  mockElectionId,
+  mockQuestion1,
+  mockQuestionObject1,
+  mockQuestionObject2,
+  mockQuestions,
+} from 'features/evoting/__tests__/utils';
 import STRINGS from 'resources/strings';
 
-import { MessageDataProperties } from 'core/types';
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
@@ -24,54 +25,13 @@ const VERSION = STRINGS.election_version_identifier;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 
-const electionId: Hash = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-
-const mockQuestion1: string = 'Mock Question 1';
-const mockQuestion2 = 'Mock Question 2';
-
-const mockQuestionId1: Hash = Hash.fromStringArray(
-  EventTags.QUESTION,
-  electionId.toString(),
-  mockQuestion1,
-);
-const mockQuestionId2 = Hash.fromStringArray(
-  EventTags.QUESTION,
-  electionId.toString(),
-  mockQuestion2,
-);
-
-const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
-
-const mockQuestionObject1: Question = {
-  id: mockQuestionId1.toString(),
-  question: mockQuestion1,
-  voting_method: STRINGS.election_method_Plurality,
-  ballot_options: mockBallotOptions,
-  write_in: false,
-};
-
-const mockQuestionObject2: Question = {
-  id: mockQuestionId2.toString(),
-  question: mockQuestion2,
-  voting_method: STRINGS.election_method_Approval,
-  ballot_options: mockBallotOptions,
-  write_in: true,
-};
-
-const mockQuestions = [mockQuestionObject1];
-
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
 const sampleSetupElection: Partial<SetupElection> = {
   object: ObjectType.ELECTION,
   action: ActionType.SETUP,
-  id: electionId,
+  id: mockElectionId,
   lao: mockLaoIdHash,
   name: mockLaoName,
   version: VERSION,
@@ -84,7 +44,7 @@ const sampleSetupElection: Partial<SetupElection> = {
 const setupElectionJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.SETUP}",
-  "id": "${electionId}",
+  "id": "${mockElectionId}",
   "lao": "${mockLaoIdHash}",
   "name": "${mockLaoName}",
   "version": "${VERSION}",
@@ -98,7 +58,6 @@ const setupElectionJson: string = `{
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('SetupElection', () => {
@@ -109,7 +68,7 @@ describe('SetupElection', () => {
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.SETUP,
-      id: electionId,
+      id: mockElectionId,
       lao: mockLaoIdHash,
       name: mockLaoName,
       version: VERSION,
@@ -130,7 +89,7 @@ describe('SetupElection', () => {
     const obj = {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
-      id: electionId.toString(),
+      id: mockElectionId.toString(),
       lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
@@ -147,7 +106,7 @@ describe('SetupElection', () => {
     const obj = {
       object: ObjectType.CHIRP,
       action: ActionType.SETUP,
-      id: electionId.toString(),
+      id: mockElectionId.toString(),
       lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
@@ -179,7 +138,7 @@ describe('SetupElection', () => {
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: undefined as unknown as Hash,
           name: mockLaoName,
           version: VERSION,
@@ -194,7 +153,7 @@ describe('SetupElection', () => {
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: undefined as unknown as string,
           version: VERSION,
@@ -209,7 +168,7 @@ describe('SetupElection', () => {
     it('should throw an error if version is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: undefined as unknown as string,
@@ -224,7 +183,7 @@ describe('SetupElection', () => {
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -239,7 +198,7 @@ describe('SetupElection', () => {
     it('should throw an error if start_time is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -254,7 +213,7 @@ describe('SetupElection', () => {
     it('should throw an error if end_time is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -269,7 +228,7 @@ describe('SetupElection', () => {
     it('should throw an error if questions is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -284,7 +243,7 @@ describe('SetupElection', () => {
     it('should throw an error if start_time is before created_at', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -299,7 +258,7 @@ describe('SetupElection', () => {
     it('should throw an error if end_time is before start_time', () => {
       const createWrongObj = () =>
         new SetupElection({
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -316,7 +275,7 @@ describe('SetupElection', () => {
     const msg = new SetupElection({
       object: ObjectType.CHIRP,
       action: ActionType.NOTIFY_ADD,
-      id: electionId,
+      id: mockElectionId,
       lao: mockLaoIdHash,
       name: mockLaoName,
       version: VERSION,
@@ -340,7 +299,7 @@ describe('SetupElection', () => {
         write_in: false,
       };
       const wrongValidate = () => {
-        SetupElection.validateQuestions([wrongQuestion], electionId.valueOf());
+        SetupElection.validateQuestions([wrongQuestion], mockElectionId.valueOf());
       };
       expect(wrongValidate).toThrow(ProtocolError);
     });

@@ -38,6 +38,7 @@ import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -60,8 +61,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    if (getIntent().getExtras().get("FRAGMENT_TO_OPEN").equals("LaoDetail")) {
+        (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
+    if (getIntent()
+        .getExtras()
+        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
+        .equals(Constants.LAO_DETAIL_EXTRA)) {
       setupLaoFragment();
     } else {
       setupLaoWalletFragment();
@@ -224,6 +228,11 @@ public class LaoDetailActivity extends AppCompatActivity {
   public void setupSocialMediaButton() {
     Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
+  }
+
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = (Button) findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
   private void setupLaoFragment() {
@@ -434,7 +443,9 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(

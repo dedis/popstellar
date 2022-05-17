@@ -1,11 +1,11 @@
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-
-import STRINGS from 'resources/strings';
-import { Channel, Hash, PublicKey } from 'core/objects';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import React from 'react';
 import keyPair from 'test_data/keypair.json';
+
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { Channel, Hash, PublicKey } from 'core/objects';
+import STRINGS from 'resources/strings';
 
 import UserListItem from '../UserListItem';
 

@@ -1,24 +1,30 @@
-import { MessageRegistry, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { MeetingConfiguration } from '../interface';
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from './MeetingHandler';
 import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the meeting feature
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (configuration: MeetingConfiguration) => {
+  configuration.messageRegistry.add(
     ObjectType.MEETING,
     ActionType.CREATE,
-    handleMeetingCreateMessage,
+    handleMeetingCreateMessage(configuration.addEvent),
     CreateMeeting.fromJson,
   );
-  registry.add(
+
+  configuration.messageRegistry.add(
     ObjectType.MEETING,
     ActionType.STATE,
-    handleMeetingStateMessage,
+    handleMeetingStateMessage(
+      configuration.getLaoById,
+      configuration.getEventById,
+      configuration.updateEvent,
+    ),
     StateMeeting.fromJson,
   );
-}
+};

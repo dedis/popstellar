@@ -22,6 +22,13 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
 
   import SchemaVerifierSuite._
 
+  /* ----------------------------- Test invalid JSON requests ----------------------------- */
+  test("Invalid jsonString - string instead of JSON object") {
+    val invalidJSON = "wrond JSON string"
+
+    verifyRpcSchema(invalidJSON) shouldBe a[Right[_, PipelineError]]
+  }
+
   /* ----------------------------- High-level (JSON-rpc) tests ----------------------------- */
   test("Correct subscribe JSON-RPC query") {
     val subscribePath = "../protocol/examples/query/subscribe/subscribe.json"
@@ -108,6 +115,30 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     val examplePath = "../protocol/examples/messageData/lao_create/bad_lao_create_creation_negative.json"
     val exampleJson = getJsonStringFromFile(examplePath)
     val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.LAO, ActionType.CREATE).get
+
+    validator(exampleJson) shouldBe a[Failure[_]]
+  }
+
+  test("Correct CashTransaction data") {
+    val examplePath = "../protocol/examples/messageData/cash/post_transaction.json"
+    val exampleJson = getJsonStringFromFile(examplePath)
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.TRANSACTION, ActionType.POST).get
+
+    validator(exampleJson) should be (Success((): Unit))
+  }
+
+  test("Incorrect CashTransaction data: overflow amount") {
+    val examplePath = "../protocol/examples/messageData/cash/post_transaction_overflow_amount.json"
+    val exampleJson = getJsonStringFromFile(examplePath)
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.TRANSACTION, ActionType.POST).get
+
+    validator(exampleJson) shouldBe a[Failure[_]]
+  }
+
+  test("Incorrect CashTransaction data: negative amount") {
+    val examplePath = "../protocol/examples/messageData/cash/post_transaction_negative_amount.json"
+    val exampleJson = getJsonStringFromFile(examplePath)
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.TRANSACTION, ActionType.POST).get
 
     validator(exampleJson) shouldBe a[Failure[_]]
   }

@@ -1,19 +1,20 @@
 import {
+  Base64UrlData,
+  Channel,
+  getLaoIdFromChannel,
   Hash,
   PublicKey,
-  Base64UrlData,
   Signature,
   Timestamp,
-  Channel,
   WitnessSignature,
   WitnessSignatureState,
-  getLaoIdFromChannel,
 } from 'core/objects';
 
 import { Message, ProcessableMessage } from '../jsonrpc/messages';
 
 export interface ExtendedMessageState {
   receivedAt: number;
+  receivedFrom: string;
   processedAt?: number;
   channel?: Channel;
   laoId: string;
@@ -38,6 +39,8 @@ export function markMessageAsProcessed(
 export class ExtendedMessage extends Message implements ProcessableMessage {
   public readonly receivedAt: Timestamp;
 
+  public readonly receivedFrom: string;
+
   public processedAt?: Timestamp;
 
   // The channel on which the message was received
@@ -45,7 +48,15 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
 
   constructor(msg: Partial<ExtendedMessage>) {
     super(msg);
+
+    if (!msg.receivedFrom) {
+      throw new Error(
+        '"receivedFrom" is not defined when creating a new instance of ExtendedMessage',
+      );
+    }
+
     this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
+    this.receivedFrom = msg.receivedFrom;
     this.processedAt = msg.processedAt;
     this.channel =
       msg.channel ||
@@ -58,11 +69,17 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
     return getLaoIdFromChannel(this.channel);
   }
 
-  public static fromMessage(msg: Message, ch: Channel, receivedAt?: Timestamp): ExtendedMessage {
+  public static fromMessage(
+    msg: Message,
+    ch: Channel,
+    receivedFrom: string,
+    receivedAt?: Timestamp,
+  ): ExtendedMessage {
     return new ExtendedMessage({
       ...msg,
       channel: ch,
       receivedAt: receivedAt || Timestamp.EpochNow(),
+      receivedFrom,
     });
   }
 
@@ -83,6 +100,7 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
 
       // extended fields:
       receivedAt: state.receivedAt ? new Timestamp(state.receivedAt) : undefined,
+      receivedFrom: state.receivedFrom,
       processedAt: state.processedAt ? new Timestamp(state.processedAt) : undefined,
       channel: state.channel,
     });

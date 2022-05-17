@@ -29,7 +29,7 @@ func Test_Reaction_Add(t *testing.T) {
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "add", msg.Action)
 	require.Equal(t, "👍", msg.ReactionCodepoint)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()
@@ -56,7 +56,7 @@ func Test_Reaction_Add_Negative_Timestamp(t *testing.T) {
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "add", msg.Action)
 	require.Equal(t, "👍", msg.ReactionCodepoint)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpID)
 	require.Equal(t, int64(-1), msg.Timestamp)
 
 	err = msg.Verify()
@@ -83,7 +83,7 @@ func Test_Chirp_Add_Not_Base64_Message(t *testing.T) {
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "add", msg.Action)
 	require.Equal(t, "👍", msg.ReactionCodepoint)
-	require.Equal(t, "@@@", msg.ChirpId)
+	require.Equal(t, "@@@", msg.ChirpID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()

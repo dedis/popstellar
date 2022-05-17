@@ -1,19 +1,26 @@
 import 'jest-extended';
-import {
-  mockPopToken,
-  mockPrivateKey,
-  mockPublicKey,
-  configureTestFeatures,
-} from '__tests__/utils';
 
 import { AnyAction } from 'redux';
 
-import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
+import {
+  configureTestFeatures,
+  mockPopToken,
+  mockPrivateKey,
+  mockPublicKey,
+} from '__tests__/utils';
 import { Message } from 'core/network/jsonrpc/messages';
+import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
-import { addMessages, getMessage, messageReduce, processMessages } from '../MessageReducer';
+import {
+  addMessages,
+  getMessage,
+  makeMessageSelector,
+  messageReduce,
+  messageReducerPath,
+  processMessages,
+} from '../MessageReducer';
 
 jest.mock('features/wallet/objects/Token', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
@@ -30,14 +37,14 @@ const keyPair = KeyPair.fromState({
   publicKey: mockPublicKey,
 });
 
-const createExtendedMessage = async () => {
+const createExtendedMessage = () => {
   const messageData = new AddChirp({
     text: 'text',
     timestamp: new Timestamp(1607277600),
   });
-  const message = await Message.fromData(messageData, keyPair);
+  const message = Message.fromData(messageData, keyPair);
   const channel = channelFromIds();
-  return ExtendedMessage.fromMessage(message, channel);
+  return ExtendedMessage.fromMessage(message, channel, 'some address');
 };
 
 beforeAll(configureTestFeatures);
@@ -48,7 +55,7 @@ describe('MessageReducer', () => {
   });
 
   it('should add the message', async () => {
-    const extMsg = await createExtendedMessage();
+    const extMsg = createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
     const filledState = {
@@ -61,7 +68,7 @@ describe('MessageReducer', () => {
   });
 
   it('should process the message', async () => {
-    const extMsg = await createExtendedMessage();
+    const extMsg = createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
     const filledState = {
@@ -89,5 +96,34 @@ describe('message selectors', () => {
       unprocessedIds: ['1234'],
     };
     expect(getMessage(state, '1234')).toEqual(undefined);
+  });
+});
+
+describe('makeMessageSelector', () => {
+  it('should return undefined if the message id is not in store', () => {
+    const state = {
+      [messageReducerPath]: {
+        byId: {},
+        allIds: ['1234'],
+        unprocessedIds: ['1234'],
+      },
+    };
+    expect(makeMessageSelector('1234')(state)).toEqual(undefined);
+  });
+
+  it('should return the message state', () => {
+    const extMsg = createExtendedMessage();
+    const extMsgState = extMsg.toState();
+
+    const state = {
+      [messageReducerPath]: {
+        byId: {
+          '1234': extMsgState,
+        },
+        allIds: ['1234'],
+        unprocessedIds: ['1234'],
+      },
+    };
+    expect(makeMessageSelector('1234')(state)?.toState()).toEqual(extMsgState);
   });
 });

@@ -19,12 +19,14 @@ type ConsensusAccept struct {
 	Value ValueAccept `json:"value"`
 }
 
+// ValueAccept defines the accepted value and try of a ConsensusAccept message
 type ValueAccept struct {
 	AcceptedTry   int64 `json:"accepted_try"`
 	AcceptedValue bool  `json:"accepted_value"`
 }
 
-// Verify verifies that the ConsensusAccept message is correct
+// Verify implements Verifiable. It verifies that the ConsensusAccept message
+// is correct
 func (message ConsensusAccept) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
@@ -47,6 +49,7 @@ func (message ConsensusAccept) Verify() error {
 	if message.Value.AcceptedTry < -1 {
 		return xerrors.Errorf("accepted try is %d, should be minimum -1", message.Value.AcceptedTry)
 	}
+
 	return nil
 }
 

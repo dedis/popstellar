@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
 import { Spacing } from '../styles';
 
@@ -12,9 +12,7 @@ const styles = StyleSheet.create({
 });
 
 const WideButtonView = (props: IPropTypes) => {
-  const { title } = props;
-  const { onPress } = props;
-  const { disabled } = props;
+  const { title, onPress, disabled } = props;
 
   return (
     <View style={styles.wideButtonView}>

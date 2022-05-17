@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import 'react-datepicker/dist/react-datepicker.css';
+
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Platform, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'resources/strings';
 import {
   ConfirmModal,
   DatePicker,
@@ -14,11 +14,13 @@ import {
   TextInputLine,
   WideButtonView,
 } from 'core/components';
-import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
+import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
-import { onConfirmPress } from 'features/events/screens/CreateEvent';
+import STRINGS from 'resources/strings';
 
+import { MeetingHooks } from '../hooks';
 import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
@@ -34,6 +36,7 @@ const CreateMeeting = ({ route }: any) => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
+  const laoId = MeetingHooks.useCurrentLaoId();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -46,7 +49,7 @@ const CreateMeeting = ({ route }: any) => {
   const confirmButtonVisibility: boolean = meetingName !== '';
 
   const createMeeting = () => {
-    requestCreateMeeting(meetingName, startTime, location, endTime)
+    requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
@@ -108,7 +111,7 @@ const CreateMeeting = ({ route }: any) => {
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={() =>
-          onConfirmPress(
+          onConfirmEventCreation(
             startTime,
             endTime,
             createMeeting,

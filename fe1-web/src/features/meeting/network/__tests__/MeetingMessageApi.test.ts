@@ -1,19 +1,18 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+
 import {
-  defaultMessageDataFields,
-  mockLao,
-  mockLaoId,
   configureTestFeatures,
+  defaultMessageDataFields,
+  mockLaoId,
+  mockLaoIdHash,
 } from '__tests__/utils';
-
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, Timestamp } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
+import { Hash, Timestamp } from 'core/objects';
 
-import { CreateMeeting } from '../messages';
 import * as msApi from '../MeetingMessageApi';
+import { CreateMeeting } from '../messages';
 
 jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
@@ -59,25 +58,25 @@ const checkDataCreateMeeting = (obj: MessageData) => {
   }
 
   // check id
-  const expected = Hash.fromStringArray(
-    'M',
-    OpenedLaoStore.get().id.toString(),
-    data.creation.toString(),
-    data.name,
-  );
+  const expected = Hash.fromStringArray('M', mockLaoId, data.creation.toString(), data.name);
   expect(data.id).toEqual(expected);
 };
 
 beforeAll(configureTestFeatures);
 
 beforeEach(() => {
-  OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
 });
 
 describe('MessageApi', () => {
   it('should create the correct request for requestCreateMeeting without extra', async () => {
-    await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
+    await msApi.requestCreateMeeting(
+      mockLaoIdHash,
+      mockEventName,
+      mockStartTime,
+      mockLocation,
+      mockEndTime,
+    );
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -88,6 +87,7 @@ describe('MessageApi', () => {
   it('should create the correct request for requestCreateMeeting with extra', async () => {
     const mockExtra = { numberParticipants: 12, minAge: 18 };
     await msApi.requestCreateMeeting(
+      mockLaoIdHash,
       mockEventName,
       mockStartTime,
       mockLocation,

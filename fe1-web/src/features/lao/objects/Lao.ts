@@ -11,7 +11,7 @@ export interface LaoState {
   // the following properties are not related to the PoP protocol:
   last_roll_call_id?: string;
   last_tokenized_roll_call_id?: string;
-  server_address?: string;
+  server_addresses: string[];
 }
 
 export class Lao {
@@ -33,8 +33,8 @@ export class Lao {
   // ID of the last roll call for which we have a token
   public last_tokenized_roll_call_id?: Hash;
 
-  // Address of a server of the LAO
-  public server_address?: string;
+  // Addresses of all servers of the LAO
+  public server_addresses: string[];
 
   constructor(obj: Partial<Lao>) {
     if (obj === undefined || obj === null) {
@@ -68,7 +68,7 @@ export class Lao {
     this.witnesses = [...obj.witnesses];
     this.last_roll_call_id = obj.last_roll_call_id;
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
-    this.server_address = obj.server_address;
+    this.server_addresses = obj.server_addresses || [];
   }
 
   public static fromState(lao: LaoState): Lao {
@@ -83,7 +83,7 @@ export class Lao {
       last_tokenized_roll_call_id: lao.last_tokenized_roll_call_id
         ? new Hash(lao.last_tokenized_roll_call_id)
         : undefined,
-      server_address: lao.server_address,
+      server_addresses: lao.server_addresses,
     });
   }
 

@@ -1,7 +1,8 @@
 import 'jest-extended';
+
 import { AnyAction } from 'redux';
 
-import { walletReduce, clearWallet, setWallet } from '../WalletReducer';
+import { clearWallet, setWallet, walletReduce } from '../WalletReducer';
 
 const emptyState = {
   seed: undefined,

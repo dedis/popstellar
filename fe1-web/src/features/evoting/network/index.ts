@@ -1,38 +1,49 @@
-import { MessageRegistry, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+
+import { EvotingConfiguration } from '../interface';
 import {
-  handleElectionSetupMessage,
   handleCastVoteMessage,
   handleElectionEndMessage,
-  handleElectionResultMessage,
   handleElectionOpenMessage,
+  handleElectionResultMessage,
+  handleElectionSetupMessage,
 } from './ElectionHandler';
+import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - An evoting config object
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (config: EvotingConfiguration) => {
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.SETUP,
-    handleElectionSetupMessage,
+    handleElectionSetupMessage(config.addEvent),
     SetupElection.fromJson,
   );
-  registry.add(
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.OPEN,
-    handleElectionOpenMessage,
+    handleElectionOpenMessage(config.getEventById, config.updateEvent),
     OpenElection.fromJson,
   );
-  registry.add(ObjectType.ELECTION, ActionType.CAST_VOTE, handleCastVoteMessage, CastVote.fromJson);
-  registry.add(ObjectType.ELECTION, ActionType.END, handleElectionEndMessage, EndElection.fromJson);
-  registry.add(
+  config.messageRegistry.add(
+    ObjectType.ELECTION,
+    ActionType.CAST_VOTE,
+    handleCastVoteMessage(config.getCurrentLao, config.getEventById, config.updateEvent),
+    CastVote.fromJson,
+  );
+  config.messageRegistry.add(
+    ObjectType.ELECTION,
+    ActionType.END,
+    handleElectionEndMessage(config.getEventById, config.updateEvent),
+    EndElection.fromJson,
+  );
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage,
+    handleElectionResultMessage(config.getEventById, config.updateEvent),
     ElectionResult.fromJson,
   );
-}
+};

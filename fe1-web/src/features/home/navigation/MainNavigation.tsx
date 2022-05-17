@@ -1,11 +1,11 @@
-import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useMemo } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
 import STRINGS from 'resources/strings';
-import { ConnectNavigation } from 'features/connect/navigation';
-import { WalletNavigation } from 'features/wallet/navigation';
 
+import { HomeHooks } from '../hooks';
+import { HomeFeature } from '../interface';
 import { Home, Launch } from '../screens';
 
 /**
@@ -25,7 +25,30 @@ const styles = StyleSheet.create({
   },
 });
 
-const MainNavigation: React.FC = () => {
+const MainNavigation = () => {
+  const navigationScreens = HomeHooks.useMainNavigationScreens();
+
+  const screens: HomeFeature.Screen[] = useMemo(() => {
+    return [
+      ...navigationScreens,
+      // add home screen to the navigation
+      {
+        id: STRINGS.navigation_tab_home,
+        title: STRINGS.navigation_tab_home,
+        Component: Home,
+        order: -99999999,
+      } as HomeFeature.Screen,
+      // add launch screen to the navigation
+      {
+        id: STRINGS.navigation_tab_launch,
+        title: STRINGS.navigation_tab_launch,
+        Component: Launch,
+        order: -1000,
+      } as HomeFeature.Screen,
+      // sort screens by order before rendering them
+    ].sort((a, b) => a.order - b.order);
+  }, [navigationScreens]);
+
   return (
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}
@@ -33,16 +56,14 @@ const MainNavigation: React.FC = () => {
       screenOptions={{
         swipeEnabled: false,
       }}>
-      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_connect}
-        component={ConnectNavigation}
-      />
-      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_wallet}
-        component={WalletNavigation}
-      />
+      {screens.map(({ id, title, Component }) => (
+        <HomeTopTabNavigator.Screen
+          key={id}
+          name={id}
+          component={Component}
+          options={{ title: title || id }}
+        />
+      ))}
     </HomeTopTabNavigator.Navigator>
   );
 };

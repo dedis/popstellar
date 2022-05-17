@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 
 import RemovableTextInput from './RemovableTextInput';

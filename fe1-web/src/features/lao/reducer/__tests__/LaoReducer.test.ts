@@ -1,16 +1,19 @@
 import 'jest-extended';
+
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
+import { RehydrateAction } from 'redux-persist';
 
-import { Hash, Timestamp } from 'core/objects';
 import {
   mockLaoCreationTime,
+  mockLao,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
   mockLaoState,
   org,
 } from '__tests__/utils/TestUtils';
+import { Hash, Timestamp } from 'core/objects';
 
 import { Lao, LaoState } from '../../objects';
 import {
@@ -19,15 +22,18 @@ import {
   connectToLao,
   disconnectFromLao,
   laoReduce,
-  makeCurrentLao,
-  makeIsLaoOrganizer,
+  selectIsLaoOrganizer,
   makeLao,
-  makeLaoIdsList,
-  makeLaosList,
-  makeLaosMap,
+  selectLaoIdsList,
+  selectLaosList,
+  selectLaosMap,
   removeLao,
+  selectCurrentLao,
   setLaoLastRollCall,
   updateLao,
+  LAO_REDUCER_PATH,
+  getLaoById,
+  LaoReducerState,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -178,6 +184,16 @@ describe('LaoReducer', () => {
       filledStateAfterRollCall,
     );
   });
+
+  it('should clear currentId on rehydration', () => {
+    expect(
+      laoReduce(connectedState1, {
+        type: 'persist/REHYDRATE',
+        key: 'root:persist',
+        payload: { [LAO_REDUCER_PATH]: {} },
+      } as RehydrateAction),
+    ).toEqual({ ...connectedState1, currentId: undefined });
+  });
 });
 
 describe('Lao selector', () => {
@@ -185,27 +201,55 @@ describe('Lao selector', () => {
     expect(makeLao().resultFunc(laoRecord, undefined)).toEqual(undefined);
   });
 
-  it('should return lao for makeCurrentLao', () => {
-    expect(makeCurrentLao().resultFunc(laoRecord, mockLaoId)).toEqual(Lao.fromState(mockLaoState));
+  it('should return lao for selectCurrentLao', () => {
+    expect(selectCurrentLao.resultFunc(laoRecord, mockLaoId)).toEqual(Lao.fromState(mockLaoState));
   });
 
   it('should return an empty makeLaoIdsList when there is no lao', () => {
-    expect(makeLaoIdsList().resultFunc([])).toEqual([]);
+    expect(selectLaoIdsList.resultFunc([])).toEqual([]);
   });
 
   it('should return makeLaosList correctly', () => {
-    expect(makeLaosList().resultFunc(laoRecord, [mockLaoId])).toEqual([
+    expect(selectLaosList.resultFunc(laoRecord, [mockLaoId])).toEqual([
       Lao.fromState(mockLaoState),
     ]);
   });
 
   it('should return makeLaosMap correctly', () => {
-    expect(makeLaosMap().resultFunc(laoRecord)).toEqual({
+    expect(selectLaosMap.resultFunc(laoRecord)).toEqual({
       [mockLaoId]: Lao.fromState(mockLaoState),
     });
   });
 
   it('should return true for makeIsLaoOrganizer when it is true', () => {
-    expect(makeIsLaoOrganizer().resultFunc(laoRecord, mockLaoId, org.toString())).toEqual(true);
+    expect(selectIsLaoOrganizer.resultFunc(laoRecord, mockLaoId, org.toString())).toEqual(true);
+  });
+
+  describe('getLaoById', () => {
+    it('should return undefined if there is no lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toBeUndefined();
+    });
+
+    it('should return the correct value if there is a lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {
+              [mockLaoId]: mockLao.toState(),
+            },
+            allIds: [mockLaoId],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toEqual(mockLao);
+    });
   });
 });

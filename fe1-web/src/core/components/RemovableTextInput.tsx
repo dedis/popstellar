@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
 import STRINGS from 'resources/strings';
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   } as ViewStyle,
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     borderBottomWidth: 2,
     marginVertical: Spacing.s,
     marginHorizontal: Spacing.xl,

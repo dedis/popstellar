@@ -1,17 +1,17 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
+import * as React from 'react';
+import { useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { PublicKey } from 'core/objects';
 import { ProfileIcon, TextBlock } from 'core/components';
+import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
-import { useMemo } from 'react';
-import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { ChirpCard } from '../components';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
+import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
 /**
  * UI for the profile of the current user.

@@ -21,6 +21,7 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
 	ElectionActionSetup  = "setup"
@@ -56,6 +57,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
+	TransactionObject     = "transaction"
+	TransactionActionPost = "post"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
@@ -67,6 +70,12 @@ type MessageData interface {
 	GetObject() string
 	GetAction() string
 	NewEmpty() MessageData
+}
+
+// Verifiable defines a MessageData that offers message verification
+type Verifiable interface {
+	MessageData
+	Verify() error
 }
 
 // GetObjectAndAction returns the object and action of a JSON RPC message.
@@ -120,5 +129,6 @@ func Hash(strs ...string) string {
 		h.Write([]byte(fmt.Sprintf("%d", len(s))))
 		h.Write([]byte(s))
 	}
+
 	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

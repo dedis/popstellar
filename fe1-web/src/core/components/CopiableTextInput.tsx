@@ -1,6 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, ViewStyle, TextInput, TextStyle } from 'react-native';
+import React from 'react';
+import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
 import { Typography, Views } from '../styles';
 import CopyButton from './CopyButton';
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   } as ViewStyle,
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     height: 40,
     margin: 12,
     borderWidth: 1,

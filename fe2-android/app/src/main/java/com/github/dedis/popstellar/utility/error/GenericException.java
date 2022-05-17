@@ -12,6 +12,8 @@ public abstract class GenericException extends Exception {
     super(message, cause);
   }
 
+  protected GenericException(){}
+
   @StringRes
   public abstract int getUserMessage();
 

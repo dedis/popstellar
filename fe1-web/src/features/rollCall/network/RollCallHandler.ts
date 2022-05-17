@@ -1,20 +1,14 @@
+import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';
-import { subscribeToChannel } from 'core/network';
+import { selectEventById } from 'features/events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from 'features/events/reducer';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { selectCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
-import { makeCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
 
-import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';
-
-/**
- * Handles all incoming roll call messages.
- */
-
-const getCurrentLao = makeCurrentLao();
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 /**
  * Handles a RollCallCreate message by creating a roll call in the current Lao.
@@ -33,7 +27,7 @@ export function handleRollCallCreateMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `roll_call/create was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
@@ -52,7 +46,7 @@ export function handleRollCallCreateMessage(msg: ProcessableMessage): boolean {
     status: RollCallStatus.CREATED,
   });
 
-  dispatch(addEvent(lao.id, rc.toState()));
+  dispatch(addEvent(msg.laoId, rc.toState()));
   return true;
 }
 
@@ -73,14 +67,15 @@ export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `roll_call/open was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }
 
   const rcMsgData = msg.messageData as OpenRollCall;
-  const oldRC = getEventFromId(storeState, rcMsgData.opens) as RollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.opens) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
     return false;
@@ -93,7 +88,7 @@ export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
     status: RollCallStatus.OPENED,
   });
 
-  dispatch(updateEvent(lao.id, rc.toState()));
+  dispatch(updateEvent(msg.laoId, rc.toState()));
   return true;
 }
 
@@ -114,14 +109,15 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }
 
   const rcMsgData = msg.messageData as CloseRollCall;
-  const oldRC = getEventFromId(storeState, rcMsgData.closes) as RollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.closes) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'closes' field"));
     return false;
@@ -136,18 +132,18 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
   });
 
   // We can now dispatch an updated (closed) roll call, containing the attendees' public keys.
-  dispatch(updateEvent(lao.id, rc.toState()));
+  dispatch(updateEvent(msg.laoId, rc.toState()));
 
   // ... and update the Lao state to point to the latest roll call, if we have a token in it.
   dispatch(async (aDispatch: AsyncDispatch) => {
     try {
-      const token = await Wallet.generateToken(lao.id, rc.id);
+      const token = await Wallet.generateToken(msg.laoId, rc.id);
       const hasToken = rc.containsToken(token);
-      aDispatch(setLaoLastRollCall(lao.id, rc.id, hasToken));
+      aDispatch(setLaoLastRollCall(msg.laoId, rc.id, hasToken));
 
       // If we had a token in this roll call, we subscribe to our own social media channel
       if (token && hasToken) {
-        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey)).catch((err) => {
+        await subscribeToChannel(getUserSocialChannel(msg.laoId, token.publicKey)).catch((err) => {
           console.error(
             `Could not subscribe to our own social channel ${token.publicKey}, error:`,
             err,
@@ -155,7 +151,7 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
         });
       }
       // everyone is automatically subscribed to the reaction channel after the roll call
-      await subscribeToChannel(getReactionChannel(lao.id)).catch((err) => {
+      await subscribeToChannel(getReactionChannel(msg.laoId)).catch((err) => {
         console.error('Could not subscribe to reaction channel, error:', err);
       });
     } catch (err) {
@@ -167,14 +163,41 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
 }
 
 /**
- * TODO: Handles a reopen roll call message.
+ * Handles a RollCallReopen message by reopening the corresponding roll call.
  *
- * @param msg
+ * @param msg - The extended message for reopening a roll call
  */
 export function handleRollCallReopenMessage(msg: ProcessableMessage) {
-  console.warn(
-    'A RollCall reopen message was received but its processing logic is not yet implemented:',
-    msg,
-  );
-  return false;
+  if (
+    msg.messageData.object !== ObjectType.ROLL_CALL ||
+    msg.messageData.action !== ActionType.REOPEN
+  ) {
+    console.warn('handleRollCallReopenMessage was called to process an unsupported message', msg);
+    return false;
+  }
+
+  const makeErr = (err: string) => `roll_call/reopen was not processed: ${err}`;
+
+  const storeState = getStore().getState();
+
+  const rcMsgData = msg.messageData as ReopenRollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.opens) as RollCall;
+  if (!oldRC) {
+    console.warn(makeErr("no known roll call matching the 'opens' field"));
+    return false;
+  }
+  if (oldRC.status !== RollCallStatus.CLOSED) {
+    console.error(makeErr('The roll call status is not coherent'));
+    return false;
+  }
+
+  const rc = new RollCall({
+    ...oldRC,
+    idAlias: rcMsgData.update_id,
+    openedAt: rcMsgData.opened_at,
+    status: RollCallStatus.REOPENED,
+  });
+
+  dispatch(updateEvent(msg.laoId, rc.toState()));
+  return true;
 }

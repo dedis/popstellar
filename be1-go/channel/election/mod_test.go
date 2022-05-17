@@ -152,7 +152,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, electChannel.Broadcast(broadcast, nil))
+	require.Error(t, electChannel.Broadcast(broadcast, nil))
 }
 
 // Tests that the channel works correctly when it receives a cast vote and
@@ -161,6 +161,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
 	// create election channel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel.started = true
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -340,6 +341,94 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, expectedRes[1].BallotOption, res[1].BallotOption)
 }
 
+func Test_Publish_Election_Open(t *testing.T) {
+
+	// create election channel: election with one question
+	electChannel, pkOrganizer := newFakeChannel(t)
+
+	// create a fakeSocket that is listening to the channel
+	fakeSock := &fakeSocket{id: "socket"}
+	electChannel.sockets.Upsert(fakeSock)
+
+	// check the created election has only one question
+	require.Equal(t, 1, len(electChannel.questions))
+
+	// get election open message data
+	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var electionOpen messagedata.ElectionOpen
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the election open in a message
+	m := message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// wrap the message in a publish
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = electChannel.channelID
+
+	// publish the election open on the election channel
+	err = electChannel.Publish(pub, socket.ClientSocket{})
+	require.NoError(t, err)
+
+}
+
+func Test_Process_Election_Open(t *testing.T) {
+
+	// create election channel: election with one question
+	electChannel, _ := newFakeChannel(t)
+
+	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var electionOpen messagedata.ElectionOpen
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the election open in a message
+	m := message.Message{
+		Data:              buf64,
+		Sender:            "@@@",
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// Fail to process non election open
+	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.OrganizerSocket{}))
+
+	// Fail for non base64 sender key
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+
+	// Fail for non organizer public key
+	m.Sender = base64.URLEncoding.EncodeToString(generateKeyPair(t).publicBuf)
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -372,12 +461,14 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
-		electionSetup.Questions, attendees, fakeHub, nolog, keypair.public)
+	channel := NewChannel(channelPath, electionSetup, attendees, fakeHub, nolog, keypair.public)
 
-	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})
+	channelElec, ok := channel.(*Channel)
+	require.True(t, ok)
 
-	return &channel, pkOrganizer
+	fakeHub.NotifyNewChannel(channelElec.channelID, channel, &fakeSocket{id: "socket"})
+
+	return channelElec, pkOrganizer
 }
 
 type keypair struct {

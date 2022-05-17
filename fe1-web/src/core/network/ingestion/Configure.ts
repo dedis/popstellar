@@ -1,9 +1,10 @@
 import { addReducers, getStore } from 'core/redux';
-import { JsonRpcHandler } from '../RpcHandler';
+
 import { MessageRegistry } from '../jsonrpc/messages';
-import { handleRpcRequests, setMessageRegistry } from './Handler';
-import { makeMessageStoreWatcher } from './Watcher';
+import { JsonRpcHandler } from '../RpcHandler';
+import { handleExtendedRpcRequests, setMessageRegistry } from './Handler';
 import messageReducer from './MessageReducer';
+import { makeMessageStoreWatcher } from './Watcher';
 
 /**
  * Configures all handlers of the system within a MessageRegistry.
@@ -21,7 +22,7 @@ export function configureIngestion(
   addReducers(messageReducer);
 
   // setup the handler for incoming messages
-  setRpcHandler(handleRpcRequests);
+  setRpcHandler(handleExtendedRpcRequests);
 
   // returns the unsubscribe function, which we don't need.
   const store = getStore();

@@ -18,7 +18,15 @@ type ConsensusElect struct {
 	Value string `json:"value"`
 }
 
-// Verify verifies that the ConsensusElect message is correct
+// Key defines the object that the consensus refers to
+type Key struct {
+	Type     string `json:"type"`
+	ID       string `json:"id"`
+	Property string `json:"property"`
+}
+
+// Verify implements Verifiable. It verifies that the ConsensusElect message is
+// correct
 func (message ConsensusElect) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
@@ -59,10 +67,4 @@ func (ConsensusElect) GetAction() string {
 // NewEmpty implements MessageData
 func (ConsensusElect) NewEmpty() MessageData {
 	return &ConsensusElect{}
-}
-
-type Key struct {
-	Type     string `json:"type"`
-	ID       string `json:"id"`
-	Property string `json:"property"`
 }

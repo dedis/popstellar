@@ -26,7 +26,8 @@ type ValuePropose struct {
 	ProposedValue bool  `json:"proposed_value"`
 }
 
-// Verify verifies that the ConsensusPropose message is correct
+// Verify implements Verifiable. It verifies that the ConsensusPropose message
+// is correct
 func (message ConsensusPropose) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
@@ -54,7 +55,8 @@ func (message ConsensusPropose) Verify() error {
 	for acceptor := range message.AcceptorSignatures {
 		_, err = base64.URLEncoding.DecodeString(message.AcceptorSignatures[acceptor])
 		if err != nil {
-			return xerrors.Errorf("acceptor id is %s, should be base64URL encoded", message.AcceptorSignatures[acceptor])
+			return xerrors.Errorf("acceptor id is %s, should be base64URL encoded",
+				message.AcceptorSignatures[acceptor])
 		}
 	}
 

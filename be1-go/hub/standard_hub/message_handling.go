@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -12,13 +13,15 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+
 	"golang.org/x/xerrors"
 )
 
 const publishError = "failed to publish: %v"
 
-// handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
-func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish method.Publish) error {
+// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
+func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
@@ -44,7 +47,8 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, but found %s#%s", object, action)
+		err := xerrors.Errorf("only lao#create is allowed on root, "+
+			"but found %s#%s", object, action)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -76,14 +80,14 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	return nil
 }
 
-// handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
-func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast method.Broadcast) error {
-	id := -1
+// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
+func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
+	broadcast method.Broadcast) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
 		return err
 	}
 
@@ -91,7 +95,7 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
 		return err
 	}
 
@@ -99,14 +103,15 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := xerrors.Errorf("failed to get object#action: %v", err)
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
 		return err
 	}
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(id, "only lao#create is allowed on root, but found %s#%s", object, action)
-		sock.SendError(&id, err)
+		err := xerrors.Errorf("only lao#create is allowed on root, but found %s#%s",
+			object, action)
+		sock.SendError(nil, err)
 		return err
 	}
 
@@ -115,20 +120,21 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 	err = broadcast.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
 		return err
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
 		h.log.Err(err).Msg("invalid lao#create message")
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
+		return err
 	}
 
 	err = h.createLao(broadcast.Params.Message, laoCreate, sock)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
-		sock.SendError(&id, err)
+		sock.SendError(nil, err)
 		return err
 	}
 
@@ -138,7 +144,9 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 }
 
 // handleRootCatchup handles an incoming catchup message on the root channel
-func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
+	byteMessage []byte) ([]message.Message, int, error) {
+
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -147,10 +155,12 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 	}
 
 	if catchup.Params.Channel != rootChannel {
-		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root channel")
+		return nil, catchup.ID, xerrors.Errorf("server catchup message can only " +
+			"be sent on /root channel")
 	}
 
 	messages := h.rootInbox.GetSortedMessages()
+
 	return messages, catchup.ID, nil
 }
 
@@ -230,7 +240,6 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 // handleDuringCatchup handle a message obtained by the server catching up
 func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) error {
-
 	h.Lock()
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
@@ -241,7 +250,7 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {
-		err := h.handleRootChannelPublishMesssage(socket, publish)
+		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
 			return xerrors.Errorf(rootChannelErr, err)
 		}
@@ -269,6 +278,37 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
+	signature := publish.Params.Message.Signature
+	messageID := publish.Params.Message.MessageID
+	data := publish.Params.Message.Data
+
+	dataBytes, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode data string: %v", err)
+	}
+
+	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	if err != nil {
+		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
+		return publish.ID, xerrors.Errorf("failed to decode public key string: %v", err)
+	}
+
+	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to decode signature string: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
+	if err != nil {
+		return publish.ID, xerrors.Errorf("failed to verify signature : %v", err)
+	}
+
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q",
+			expectedMessageID, messageID)
+	}
+
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
 	if alreadyReceived {
 		h.log.Info().Msg("message was already received")
@@ -280,7 +320,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	if publish.Params.Channel == rootChannel {
-		err := h.handleRootChannelPublishMesssage(socket, publish)
+		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
 			return publish.ID, xerrors.Errorf(rootChannelErr, err)
 		}
@@ -308,6 +348,16 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 		return xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
+	signature := broadcast.Params.Message.Signature
+	messageID := broadcast.Params.Message.MessageID
+	data := broadcast.Params.Message.Data
+
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		return xerrors.Errorf("message_id is wrong: expected %q found %q",
+			expectedMessageID, messageID)
+	}
+
 	h.Lock()
 	_, ok := h.hubInbox.GetMessage(broadcast.Params.Message.MessageID)
 	if ok {
@@ -322,7 +372,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	}
 
 	if broadcast.Params.Channel == rootChannel {
-		err := h.handleRootChannelBroadcastMesssage(socket, broadcast)
+		err := h.handleRootChannelBroadcastMessage(socket, broadcast)
 		if err != nil {
 			return xerrors.Errorf(rootChannelErr, err)
 		}
@@ -384,7 +434,9 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 	return unsubscribe.ID, nil
 }
 
-func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleCatchup(socket socket.Socket,
+	byteMessage []byte) ([]message.Message, int, error) {
+
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Platform, ScrollView } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Platform, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'resources/strings';
 import {
   ConfirmModal,
   DatePicker,
@@ -13,10 +13,11 @@ import {
   TextInputLine,
   WideButtonView,
 } from 'core/components';
-import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
+import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
-import { onConfirmPress } from 'features/events/screens/CreateEvent';
+import STRINGS from 'resources/strings';
 
 import { requestCreateRollCall } from '../network';
 
@@ -127,7 +128,7 @@ const CreateRollCall = ({ route }: any) => {
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={() =>
-          onConfirmPress(
+          onConfirmEventCreation(
             proposedStartTime,
             proposedEndTime,
             createRollCall,

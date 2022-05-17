@@ -6,7 +6,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusLearn defines a message data
+// ConsensusFailure defines a message data
 type ConsensusFailure struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
@@ -17,7 +17,8 @@ type ConsensusFailure struct {
 	CreatedAt int64 `json:"created_at"`
 }
 
-// Verify verifies that the ConsensusLearn message is correct
+// Verify implements Verifiable. It verifies that the ConsensusLearn message is
+// correct
 func (message ConsensusFailure) Verify() error {
 
 	// verify that the instance id is base64URL encoded
