@@ -433,10 +433,10 @@ object DbActor {
   final case class DbActorReadChannelDataAck(channelData: ChannelData) extends DbActorMessage
 
   /**
-   * Response for a [[ReadChannelData]] db request Receiving [[DbActorReadChannelDataAck]] works as
+   * Response for a [[ReadElectionData]] db request Receiving [[DbActorReadElectionDataAck]] works as
    * an acknowledgement that the request was successful
    *
-   * @param channelData requested channel data
+   * @param electionData requested channel data
    */
   final case class DbActorReadElectionDataAck(electionData: ElectionData) extends DbActorMessage
 

@@ -42,7 +42,6 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   override final val dbActor: AskableActorRef = dbRef
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
     val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
     val electionId: Hash = data.id
@@ -62,12 +61,12 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case "OPEN_BALLOT" => Left(rpcMessage)
           case "SECRET_BALLOT" =>
             val keyPair = KeyPair()
-            val elecCombined = for {
+            val keyCombined = for {
               _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
               electionData <- dbActor ? DbActor.ReadElectionData(electionId)
             } yield electionData
 
-            Await.ready(elecCombined, duration).value match {
+            Await.ready(keyCombined, duration).value match {
               case Some(Success(_)) =>
                 val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
                 val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
