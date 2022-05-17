@@ -8,7 +8,9 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
 import util.examples.Election.EndElectionExamples._
 import util.examples.MessageExample._
+import util.examples.RollCall.CloseRollCallExamples._
 import util.examples.RollCall.CreateRollCallExamples._
+import util.examples.RollCall.OpenRollCallExamples._
 import util.examples.socialMedia.AddChirpExamples._
 import util.examples.socialMedia.AddReactionExamples._
 import util.examples.socialMedia.DeleteChirpExamples._
@@ -60,6 +62,30 @@ object JsonRpcRequestExample {
   final val CREATE_ROLL_CALL_WRONG_TIMESTAMP_ORDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongTimestampOrder, id)
   final val CREATE_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongId, id)
   final val CREATE_ROLL_CALL_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongSender, id)
+
+  // for OpenRollCall testing
+  private final val paramsWithOpenRollCall: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_OPEN_ROLL_CALL_WORKING)
+  private final val paramsWithOpenRollCallWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_OPEN_ROLL_CALL_WRONG_TIMESTAMP)
+  private final val paramsWithOpenRollCallWrongId: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_OPEN_ROLL_CALL_WRONG_ID)
+  private final val paramsWithOpenRollCallWrongSender: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_OPEN_ROLL_CALL_WRONG_SENDER)
+  final val OPEN_ROLL_CALL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCall, id)
+  final val OPEN_ROLL_CALL_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCallWrongTimestamp, id)
+  final val OPEN_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCallWrongId, id)
+  final val OPEN_ROLL_CALL_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCallWrongSender, id)
+
+  //for CloseRollCall testing
+  private final val paramsWithCloseRollCall: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WORKING)
+  private final val paramsWithCloseRollCallWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_TIMESTAMP)
+  private final val paramsWithCloseRollCallWrongId: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_ID)
+  private final val paramsWithCloseRollCallWrongAttendees: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_ATTENDEES)
+  private final val paramsWithCloseRollCallWrongDuplicateAttendees: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_DUPLICATE_ATTENDEES)
+  private final val paramsWithCloseRollCallWrongSender: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_SENDER)
+  final val CLOSE_ROLL_CALL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCall, id)
+  final val CLOSE_ROLL_CALL_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCallWrongTimestamp, id)
+  final val CLOSE_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCallWrongId, id)
+  final val CLOSE_ROLL_CALL_WRONG_ATTENDEES_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCallWrongAttendees, id)
+  final val CLOSE_ROLL_CALL_WRONG_DUPLICATE_ATTENDEES_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCallWrongDuplicateAttendees, id)
+  final val CLOSE_ROLL_CALL_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCloseRollCallWrongSender, id)
 
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)

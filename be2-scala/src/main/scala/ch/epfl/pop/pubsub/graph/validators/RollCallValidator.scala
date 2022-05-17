@@ -131,6 +131,8 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
         } else if (data.attendees.size != data.attendees.toSet.size) {
           Right(validationError("duplicate attendees keys"))
+        } else if (!validateAttendee(sender, channel, dbActorRef)) {
+          Right(validationError("unexpected attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
         } else if (data.update_id == data.closes) {
