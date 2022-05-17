@@ -6,8 +6,8 @@ import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import * as Wallet from '../objects';
 import { RoundIconButton } from '../components';
+import * as Wallet from '../objects';
 
 const styles = StyleSheet.create({
   smallPadding: {

@@ -6,8 +6,8 @@ import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
+import { RoundIconButton } from '../components';
 import * as Wallet from '../objects';
-import { RoundIconButton } from "../components";
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -55,7 +55,7 @@ const WalletCreateSeed = () => {
         name={STRINGS.wallet_arrow_left_icon}
         onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
       />
-      <View style={styles.largePadding}/>
+      <View style={styles.largePadding} />
       <TextBlock bold text={STRINGS.show_seed_info} />
       <View style={styles.smallPadding} />
       <CopiableTextInput text={seed} />

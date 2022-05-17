@@ -19,7 +19,7 @@ exports[`RoundIconButton renders correctly 1`] = `
       "backgroundColor": "#2196F3",
       "borderRadius": 30,
       "display": "flex",
-      "height": 80,
+      "height": 65,
       "justifyContent": "center",
       "opacity": 1,
       "shadowColor": "gray",
@@ -27,7 +27,7 @@ exports[`RoundIconButton renders correctly 1`] = `
         "height": 2,
         "width": 2,
       },
-      "width": 80,
+      "width": 65,
     }
   }
 >
