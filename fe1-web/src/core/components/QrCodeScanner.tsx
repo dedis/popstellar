@@ -1,13 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import { Colors, Spacing } from 'core/styles';
+import { Border, Colors, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
 import CameraReverseIcon from './icons/CameraReverseIcon';
+
+// FIXME: Remove CSS imports in order to support native apps
+// At the time of writing expo-camera nor expo-barcode-scanner work in web builds
+// because they load an external dependency (jsQR) that somehow does not properly load
+// outside the examples expo provides
+import '../platform/web-styles/qr-code-scanner.css';
+
+export const QrCodeScannerUIElementContainer: ViewStyle = {
+  backgroundColor: Colors.contrast,
+  padding: Spacing.x05,
+  borderRadius: Border.radius,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -22,11 +34,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 0,
   },
-  buttonContainer: {
+  uiContainer: {
     flex: 1,
     flexDirection: 'column',
     margin: Spacing.horizontalContentSpacing,
   },
+  buttonContainer: {
+    flexDirection: 'column',
+  },
+  flipButtonContainer: { ...QrCodeScannerUIElementContainer, alignSelf: 'flex-end' } as ViewStyle,
   flipButton: {
     alignSelf: 'flex-end',
     marginLeft: 'auto',
@@ -37,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Camera = ({ showCamera, children, handleScan }: IPropTypes) => {
+const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const toast = useToast();
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
@@ -62,18 +78,22 @@ const Camera = ({ showCamera, children, handleScan }: IPropTypes) => {
           onError={handleError}
           onScan={handleScan}
           facingMode={facingMode}
-          style={{ width: '100%', position: 'absolute', top: '50%', transform: 'translateY(-50%)' }}
+          className="qr-code-scanner"
         />
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.uiContainer}>
         <View style={styles.children}>{children}</View>
-        <TouchableOpacity
-          style={styles.flipButton}
-          onPress={() => {
-            setFacingMode(facingMode === 'user' ? 'environment' : 'user');
-          }}>
-          <CameraReverseIcon color={Colors.primary} size={25} />
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <View style={styles.flipButtonContainer}>
+            <TouchableOpacity
+              style={styles.flipButton}
+              onPress={() => {
+                setFacingMode(facingMode === 'user' ? 'environment' : 'user');
+              }}>
+              <CameraReverseIcon color={Colors.primary} size={25} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -84,11 +104,11 @@ const propTypes = {
   showCamera: PropTypes.bool.isRequired,
   handleScan: PropTypes.func.isRequired,
 };
-Camera.propTypes = propTypes;
-Camera.defaultProps = {
+QrCodeScanner.propTypes = propTypes;
+QrCodeScanner.defaultProps = {
   children: null,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export default Camera;
+export default QrCodeScanner;

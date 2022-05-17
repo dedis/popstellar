@@ -1,0 +1,13 @@
+.qr-code-scanner {
+  position: absolute;
+  width: 100%;
+
+  /* vertically center */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.qr-code-scanner > section > div {
+  border: none !important;
+  box-shadow: none !important;
+}

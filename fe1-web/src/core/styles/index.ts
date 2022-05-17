@@ -1,6 +1,7 @@
+import * as Border from './border';
 import * as Colors from './colors';
 import * as Spacing from './spacing';
 import * as Typography from './typography';
 import * as Views from './views';
 
-export { Colors, Spacing, Typography, Views };
+export { Border, Colors, Spacing, Typography, Views };

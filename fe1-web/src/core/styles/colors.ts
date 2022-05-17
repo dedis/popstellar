@@ -5,6 +5,8 @@ export const primaryLight = '#5352ed';
 export const secondary = '#ff4757';
 export const secondaryLight = '#ff6b81';
 
+export const contrast = '#fff';
+
 export const success = '#2ed573';
 export const warning = '#ffa502';
 export const error = '#e74c3c';

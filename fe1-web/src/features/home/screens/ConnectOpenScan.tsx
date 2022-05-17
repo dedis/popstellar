@@ -1,17 +1,13 @@
 import { useNavigation } from '@react-navigation/core';
-import { BarCodeScanningResult } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { WideButtonView } from 'core/components';
-import Camera from 'core/components/Camera';
 import CloseIcon from 'core/components/icons/CloseIcon';
+import CodeIcon from 'core/components/icons/CodeIcon';
 import CreateIcon from 'core/components/icons/CreateIcon';
-import SettingsIcon from 'core/components/icons/SettingsIcon';
-import ScreenWrapper from 'core/components/ScreenWrapper';
-import { Colors } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import { Border, Colors, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -20,13 +16,15 @@ import { ConnectToLao } from '../objects';
 
 const styles = StyleSheet.create({
   buttonContainer: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  manualConnection: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
+  } as ViewStyle,
+  leftButtons: QrCodeScannerUIElementContainer,
+  rightButtons: QrCodeScannerUIElementContainer,
+  buttonMargin: {
+    marginBottom: Spacing.x05,
+  } as ViewStyle,
 });
 
 /**
@@ -98,21 +96,29 @@ const ConnectOpenScan = () => {
   };
 
   return (
-    <Camera showCamera={showScanner} handleScan={handleScan}>
+    <QrCodeScanner showCamera={showScanner} handleScan={handleScan}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <CloseIcon color={Colors.primary} size={25} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
-          <CreateIcon color={Colors.primary} size={25} />
-        </TouchableOpacity>
+        <View>
+          <View style={styles.leftButtons}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <CloseIcon color={Colors.primary} size={25} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View>
+          <View style={styles.rightButtons}>
+            <TouchableOpacity
+              style={styles.buttonMargin}
+              onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
+              <CreateIcon color={Colors.primary} size={25} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate(STRINGS.connect_confirm_title)}>
+              <CodeIcon color={Colors.primary} size={25} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-      <View style={styles.manualConnection}>
-        <TouchableOpacity onPress={() => navigation.navigate(STRINGS.connect_confirm_title)}>
-          <SettingsIcon color={Colors.primary} size={25} />
-        </TouchableOpacity>
-      </View>
-    </Camera>
+    </QrCodeScanner>
   );
 };
 
