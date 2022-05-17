@@ -5,8 +5,8 @@ import { Icon } from 'react-native-elements';
 
 const styles = StyleSheet.create({
   roundButton: {
-    height: 80,
-    width: 80,
+    height: 65,
+    width: 65,
     shadowColor: 'gray',
     shadowOffset: {
       width: 2,
@@ -24,7 +24,7 @@ const RoundIconButton = (props: IPropTypes) => {
   const { name, onClick } = props;
   return (
     <TouchableOpacity style={styles.roundButton} onPress={onClick}>
-      <Icon name={name} type="material" color="white" size={30} />
+      <Icon name={name} type="material" color="white" size={25} />
     </TouchableOpacity>
   );
 };
