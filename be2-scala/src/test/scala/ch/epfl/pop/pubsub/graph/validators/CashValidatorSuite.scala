@@ -53,4 +53,10 @@ class CashValidatorSuite extends TestKit(ActorSystem("cashValidatorTestActorSyst
     message should equal(Left(postTransaction))
   }
 
+  test("Posting a transaction with an incorrect ID does not work") {
+    val postTransaction = postTransactionWrongTransactionId
+    val message: GraphMessage = CashValidator.validatePostTransaction(postTransaction)
+    message should matchPattern { case Right(_) => }
+  }
+
 }

@@ -21,4 +21,5 @@ object PostTransactionMessages extends CashMessagesTrait {
   final val postTransactionOverflowAmount: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction_overflow_amount.json")()
   final val postTransactionZeroAmount: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction_zero_amount.json")()
   final val postTransactionNegativeAmount: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction_negative_amount.json")()
+  final val postTransactionWrongTransactionId: JsonRpcRequest = getJsonRPCRequestFromFile("cash/post_transaction_wrong_transaction_id.json")()
 }

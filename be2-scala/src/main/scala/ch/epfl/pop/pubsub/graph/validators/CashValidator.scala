@@ -15,9 +15,15 @@ case object CashValidator extends MessageDataContentValidator {
   def validatePostTransaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "PostTransaction", rpcMessage.id)
 
+
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        Left(rpcMessage)
+        val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
+        if (data.transactionId != data.transaction.transactionId) {
+          Right(validationError("incorrect transaction id"))
+        } else {
+          Left(rpcMessage)
+        }
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }

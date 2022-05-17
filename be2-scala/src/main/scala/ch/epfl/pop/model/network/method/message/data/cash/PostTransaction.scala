@@ -5,11 +5,12 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.Transaction
+import ch.epfl.pop.model.objects.{Hash, Transaction}
 import spray.json._
 
 final case class PostTransaction(
   transaction: Transaction,
+  transactionId: Hash,
   ) extends MessageData {
     override val _object: ObjectType = ObjectType.TRANSACTION
     override val action: ActionType = ActionType.POST

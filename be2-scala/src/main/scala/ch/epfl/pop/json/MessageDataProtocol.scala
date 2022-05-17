@@ -266,7 +266,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val addReactionFormat: JsonFormat[AddReaction] = annotateHeader(jsonFormat[String, Hash, Timestamp, AddReaction](AddReaction.apply, "reaction_codepoint", "chirp_id", "timestamp"))
   implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp"))
 
-  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, PostTransaction](PostTransaction.apply, "transaction")
+  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, Hash, PostTransaction](PostTransaction.apply, "transaction", "transaction_id")
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
