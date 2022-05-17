@@ -156,7 +156,7 @@ describe('EndElection', () => {
   });
 
   describe('computeRegisteredVotesHash', () => {
-    it('return the correct result', () => {
+    it('returns the correct result', () => {
       const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
       expect(fn).not.toThrow();
       expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
