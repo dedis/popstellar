@@ -258,10 +258,10 @@ namespace STRINGS {
   export const roll_call_name = 'Roll Call name';
 
   /* --- Digital Cash Strings --- */
-  script_type: 'Pay-to-Pubkey-Hash',
-  coinbase_hash: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-  cash_send: 'Send',
-  cash_receiver: 'Receiver',
+  export const script_type = 'Pay-to-Pubkey-Hash';
+  export const coinbase_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+  export const cash_send = 'Send';
+  export const cash_receiver = 'Receiver';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';
