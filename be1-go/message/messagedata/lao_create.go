@@ -3,7 +3,6 @@ package messagedata
 import (
 	"encoding/base64"
 	"fmt"
-	"golang.org/x/xerrors"
 	"popstellar/message/answer"
 )
 
@@ -26,7 +25,7 @@ func (message LaoCreate) Verify() error {
 	// verify id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.ID)
 	if err != nil {
-		return answer.NewErrorf(-4, "lao id is %s, should be base64URL encoded", message.ID)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao id is %s, should be base64URL encoded", message.ID))
 	}
 
 	// verify lao id
@@ -36,30 +35,30 @@ func (message LaoCreate) Verify() error {
 		message.Name,
 	)
 	if message.ID != expectedLaoID {
-		return xerrors.Errorf("lao id is %s, should be %s", message.ID, expectedLaoID)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao id is %s, should be %s", message.ID, expectedLaoID))
 	}
 
 	// verify lao name non-empty
 	if len(message.Name) == 0 {
-		return answer.NewErrorf(-4, "lao name is %s, should not be empty", message.Name)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao name is %s, should not be empty", message.Name))
 	}
 
 	// verify creation is positive
 	if message.Creation < 0 {
-		return answer.NewErrorf(-4, "lao creation is %d, should be minimum 0", message.Creation)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao creation is %d, should be minimum 0", message.Creation))
 	}
 
 	// verify organizer is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(message.Organizer)
 	if err != nil {
-		return answer.NewErrorf(-4, "lao organizer is %s, should be base64URL encoded", message.Organizer)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao organizer is %s, should be base64URL encoded", message.Organizer))
 	}
 
 	// verify all witnesses are base64URL encoded
 	for _, witness := range message.Witnesses {
 		_, err = base64.URLEncoding.DecodeString(witness)
 		if err != nil {
-			return answer.NewErrorf(-4, "lao witness is %s, should be base64URL encoded", witness)
+			return answer.NewInvalidMessageFieldError(fmt.Sprintf("lao witness is %s, should be base64URL encoded", witness))
 		}
 	}
 

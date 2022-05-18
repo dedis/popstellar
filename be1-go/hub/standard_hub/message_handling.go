@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -24,7 +25,7 @@ const publishError = "failed to publish: %v"
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to decode message data: %v", err)
+		err := answer.NewInvalidMessageFieldError(fmt.Sprintf("failed to decode message data: %v", err))
 
 		return err
 	}
@@ -32,21 +33,21 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to validate message against json schema: %v", err)
+		err := answer.NewInvalidMessageFieldError(fmt.Sprintf("failed to validate message against json schema: %v", err))
 		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to get object#action: %v", err)
+		err := answer.NewInvalidMessageFieldError(fmt.Sprintf("failed to get object#action: %v", err))
 		return err
 	}
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(-4, "only lao#create is allowed on root, "+
-			"but found %s#%s", object, action)
+		err := answer.NewInvalidMessageFieldError(fmt.Sprintf("only lao#create is allowed on root, "+
+			"but found %s#%s", object, action))
 		return err
 	}
 

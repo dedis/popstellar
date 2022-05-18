@@ -44,3 +44,43 @@ func NewInvalidObjectError(action string) *Error {
 		Description: fmt.Sprintf("invalid object: %s", action),
 	}
 }
+
+// NewInvalid_ResourceError returns an error with -2 for an object with invalid ressources
+func NewInvalidResourceError(description string) *Error {
+	return &Error{
+		Code:        -2,
+		Description: description,
+	}
+}
+
+// NewInvalid_ResourceError returns an error with -3 for a resource that already exists
+func NewResourceAlreadyExistsError(description string) *Error {
+	return &Error{
+		Code:        -3,
+		Description: description,
+	}
+}
+
+// NewInvalid_ResourceError returns an error with -4 when a message field is bogus
+func NewInvalidMessageFieldError(description string) *Error {
+	return &Error{
+		Code:        -4,
+		Description: description,
+	}
+}
+
+// NewInvalid_ResourceError returns an error with -5 when an access is denied for the sender
+func NewAccessDeniedError(description string) *Error {
+	return &Error{
+		Code:        -5,
+		Description: description,
+	}
+}
+
+// NewInvalid_ResourceError returns an error with -6 when there is an internal server error
+func NewInternalServerError(description string) *Error {
+	return &Error{
+		Code:        -6,
+		Description: description,
+	}
+}

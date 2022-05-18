@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"popstellar/message/answer"
 )
 
@@ -22,12 +23,12 @@ type Message struct {
 func (m Message) UnmarshalData(e interface{}) error {
 	jsonData, err := base64.URLEncoding.DecodeString(m.Data)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to decode base64: %v", err)
+		return answer.NewInvalidMessageFieldError(fmt.Sprintf("failed to decode base64: %v", err))
 	}
 
 	err = json.Unmarshal(jsonData, e)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal jsonData: %v", err)
+		answer.NewInvalidMessageFieldError(fmt.Sprintf("failed to unmarshal jsonData: %v", err))
 	}
 
 	return nil
