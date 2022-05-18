@@ -2,7 +2,10 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.github.dedis.popstellar.utility.security.Hash;
 
@@ -36,9 +39,8 @@ public class ElectionEncryptedVoteTest {
     }
 
     @Test
-    public void electionVoteWriteInEnabledReturnsCorrectId() {
-        // WriteIn enabled so id is Hash('Vote'||election_id||question_id)
-        // Hash code shouldn't change with new protocol specifications
+    public void electionVoteWriteInEnabledReturnsCorrectIdTest() {
+        // hash = Hash('Vote'||election_id||question_id)
         String expectedId =
                 Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
         assertThat(electionEncryptedVotes2.getId().equals(expectedId), is(false));
@@ -51,7 +53,7 @@ public class ElectionEncryptedVoteTest {
     }
 
     @Test
-    public void attributesIsNull() {
+    public void attributesIsNullTest() {
         assertNull(electionEncryptedVotes2.getVote());
         assertNotNull(electionEncryptedVote1.getVote());
     }
@@ -62,22 +64,20 @@ public class ElectionEncryptedVoteTest {
     }
 
     @Test
-    public void isEqual() {
+    public void isEqualTest() {
         assertNotEquals(electionEncryptedVote1, electionEncryptedVotes2);
-        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, writeIn, false, electionId));
-        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, writeIn, false, electionId));
+        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, writeIn, false, questionId));
+        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, writeIn, false, questionId));
         assertNotEquals(
                 electionEncryptedVote1,
                 new ElectionEncryptedVote(
-                        questionId, new ArrayList<>(Arrays.asList("0","1", "2")), writeIn, false, electionId));
+                        electionId, new ArrayList<>(Arrays.asList("0", "1", "2")), writeIn, false, questionId));
         assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, writeIn, false, "random"));
 
-        // here because writeInEnabled is false it will be computed as null making both elections the
-        // same even though we don't give them the same constructor
+        // Same equals, no write_in
         assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, "random", false, questionId));
 
-        // here because writeInEnabled is true the list of votes should be computed as null making both
-        // election the same
+        // Same elections, write_in is the same
         assertEquals(
                 electionEncryptedVotes2,
                 new ElectionEncryptedVote(

@@ -1,11 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nonnegative;
 
 public class ElectionEncryptedVote {
 
@@ -22,22 +23,23 @@ public class ElectionEncryptedVote {
 
   /**
    * Constructs an encrypted vote object
-   * @param questionId question ID ( SHA256('Question'||election_id||question))
-   * @param voteArray Array[String]] index(es) corresponding to the ballot_options
+   *
+   * @param questionId       question ID ( SHA256('Question'||election_id||question))
+   * @param vote             Array[String]] index(es) corresponding to the ballot_options
    * @param encryptedWriteIn string representing the write in
    * @param encryptedWriteIn boolean asserting if write in mode is present
    */
   public ElectionEncryptedVote(
-      @NonNull String electionId,
-      @NonNull List<String> voteArray,
-      @NonNull String encryptedWriteIn,
-      @NonNull Boolean writeInEnabled,
-      @NonNull String questionId) {
+          @NonNull String electionId,
+          @NonNull List<String> vote,
+          @NonNull String encryptedWriteIn,
+          @NonNull Boolean writeInEnabled,
+          @NonNull String questionId) {
 
-    this.questionId=questionId;
+    this.questionId = questionId;
     this.id =
-            Election.generateEncryptedElectionVoteId(electionId, questionId, voteArray, encryptedWriteIn, writeInEnabled);
-    this.vote = voteArray;
+            Election.generateEncryptedElectionVoteId(electionId, questionId, vote, encryptedWriteIn, writeInEnabled);
+    this.vote = writeInEnabled ? null : vote;
   }
 
   @NonNull
@@ -75,17 +77,17 @@ public class ElectionEncryptedVote {
   }
 
   @Override
-  public String toString(){
+  public String toString() {
     return "ElectionEncryptedVote={"
-        + "id='"
-        + id
-        + '\''
-        + ", questionId='"
-        + '\''
-        + questionId
-        + ", vote="
-        + Arrays.toString(vote.toArray())
-        + '\''
+            + "id='"
+            + id
+            + '\''
+            + ", questionId='"
+            + questionId
+            + '\''
+            + ", vote="
+            + Arrays.toString(vote.toArray())
+            + '\''
         + '}';
   }
 

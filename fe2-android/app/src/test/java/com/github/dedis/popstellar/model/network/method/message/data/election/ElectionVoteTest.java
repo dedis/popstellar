@@ -74,11 +74,11 @@ public class ElectionVoteTest {
             questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), false, writeIn, electionId));
     assertNotEquals(electionVote1, new ElectionVote(questionId, votes, false, writeIn, "random"));
 
-    // here because writeInEnabled is false it will be computed as null making both elections the
+    // Here because writeInEnabled is false it will be computed as null making both elections the
     // same even though we don't give them the same constructor
     assertEquals(electionVote1, new ElectionVote(questionId, votes, false, "random", electionId));
 
-    // here because writeInEnabled is true the list of votes should be computed as null making both
+    // Here because writeInEnabled is true the list of votes should be computed as null making both
     // election the same
     assertEquals(
         electionVote2,
