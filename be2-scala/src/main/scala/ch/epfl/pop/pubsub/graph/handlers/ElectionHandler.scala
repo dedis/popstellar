@@ -146,9 +146,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       }
     }
     println(results)
-    results.map(tuple => {
-      val (qid, ballot2count) = tuple
-      ElectionQuestionResult(qid, ballot2count.map(tuple => ElectionBallotVotes(tuple._1, tuple._2)).toList)
-    }).toList
+    List.from(for {
+      (qid, ballot2count) <- results
+    } yield ElectionQuestionResult(qid, ballot2count.map(tuple => ElectionBallotVotes(tuple._1, tuple._2)).toList))
   }
 }
