@@ -9,10 +9,8 @@ import java.util.List;
 public class ElectionVote{
 
   private final String id;
-  /**
-   * Id of the object ElectionVote : Hash(“Vote”||election_id|| ||
-   * question_id||(vote_index(es)|write_in))
-   */
+
+   // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
   @SerializedName(value = "question")
   private final String questionId; // id of the question
 

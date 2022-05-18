@@ -37,6 +37,7 @@ public class CastVoteTest {
           new ElectionEncryptedVote(electionId, Arrays.asList("0","1","2"), write_in, writeInEnabled, questionId2);
   private final List<ElectionEncryptedVote> electionEncryptedVotes = Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
 
+  // Create the cast votes messages
   private final CastVote castOpenVote = new CastVote(electionVotes, null, electionId, laoId);
   private final CastVote castEncryptedVote = new CastVote(null, electionEncryptedVotes, electionId, laoId);
 
@@ -49,7 +50,7 @@ public class CastVoteTest {
   @Test
   public void getElectionIdTest() {
     assertThat(castOpenVote.getElectionId(), is(electionId));
-    assertThat(castEncryptedVote.getElectionId(), is(laoId));
+    assertThat(castEncryptedVote.getElectionId(), is(electionId));
   }
 
   @Test
@@ -77,11 +78,20 @@ public class CastVoteTest {
              castOpenVote, new CastVote(Collections.singletonList(electionVote1),null, electionId, "random"));
 
     // Test a SECRET_BALLOT cast vote
-
+    assertEquals(castEncryptedVote, new CastVote(null, electionEncryptedVotes,electionId, laoId));
+    assertEquals(castEncryptedVote, castEncryptedVote);
+    assertNotEquals(
+            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1), electionId, laoId));
+    assertNotEquals(
+            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1),"random", laoId));
+    assertNotEquals(
+            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1),electionId, "random"));
   }
 
   @Test
   public void jsonValidationTest() {
+    // Schema should be valid with both vote lists
     JsonTestUtils.testData(castOpenVote);
+    JsonTestUtils.testData(castEncryptedVote);
   }
 }

@@ -9,10 +9,8 @@ import javax.annotation.Nonnegative;
 
 public class ElectionEncryptedVote {
 
-
   // Id of the object ElectionVote :
   // Hash(“Vote”||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
-  @SerializedName("id")
   private final String id;
 
   // Id of the question
@@ -20,7 +18,6 @@ public class ElectionEncryptedVote {
   private final String questionId;
 
   // Vote array containing index corresponding to ballot options
-  @SerializedName("vote")
   private final List<String> vote;
 
   /**
@@ -38,7 +35,8 @@ public class ElectionEncryptedVote {
       @NonNull String questionId) {
 
     this.questionId=questionId;
-    this.id = Election.generateEncryptedElectionVoteId(electionId, questionId, voteArray, encryptedWriteIn, writeInEnabled);
+    this.id =
+            Election.generateEncryptedElectionVoteId(electionId, questionId, voteArray, encryptedWriteIn, writeInEnabled);
     this.vote = voteArray;
   }
 
@@ -63,8 +61,22 @@ public class ElectionEncryptedVote {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectionEncryptedVote that = (ElectionEncryptedVote) o;
+    return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
+            && java.util.Objects.equals(getId(), that.getId())
+            && java.util.Objects.equals(getVote(), that.getVote());
+  }
+
+  @Override
   public String toString(){
-    return "ElectionVote={"
+    return "ElectionEncryptedVote={"
         + "id='"
         + id
         + '\''

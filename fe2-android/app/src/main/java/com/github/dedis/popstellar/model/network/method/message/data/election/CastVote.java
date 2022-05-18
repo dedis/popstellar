@@ -55,10 +55,16 @@ public class CastVote extends Data {
     return createdAt;
   }
 
+  /**
+   * @return null if the election is encrypted else the votes
+   */
   public List<ElectionVote> getOpenBallotVotes() {
     return !java.util.Objects.isNull(votes) ? Collections.unmodifiableList(votes) : null;
   }
 
+  /**
+   * @return null if the election is with open ballots else the encrypted votes
+   */
   public List<ElectionEncryptedVote> getEncryptedVotes() {
     return !java.util.Objects.isNull(encryptedVotes) ? Collections.unmodifiableList(encryptedVotes) : null;
   }
@@ -83,7 +89,7 @@ public class CastVote extends Data {
     }
     CastVote that = (CastVote) o;
 
-    // compare votes values given the version of the election
+    // Compare votes values given the version of the election
     boolean compareVotes =
             !java.util.Objects.isNull(votes)
                     ? java.util.Objects.equals(votes, that.getOpenBallotVotes())
