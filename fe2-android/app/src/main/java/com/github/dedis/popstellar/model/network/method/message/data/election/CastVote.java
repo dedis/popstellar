@@ -21,19 +21,26 @@ public class CastVote extends Data {
   @SerializedName(value = "election")
   private final String electionId; // Id of the election
 
+  // Votes, either votes is null or encrypted votes is null depending on the value of the election
+  // either SECRET_BALLOT or OPEN_BALLOT
   private final List<ElectionVote> votes;
+  private final List<ElectionEncryptedVote> encryptedVotes;
 
   /**
-   * @param votes list of the Election Vote where an ElectionVote Object represents the
-   *     corresponding votes for one question
-   * @param electionId Id of the election for which to votee
-   * @param laoId id of the LAO
+   * @param electionVotes list of the votes to cast (null if this is an OPEN_BALLOT election)
+   * @param encryptedVotes list of the encrypted votes to cast (null if this is an OPEN_BALLOT election)
+   * @param electionId election id
+   * @param laoId lao id
    */
-  public CastVote(List<ElectionVote> votes, String electionId, String laoId) {
+  public CastVote(List<ElectionVote> electionVotes,
+                  List<ElectionEncryptedVote> encryptedVotes,
+                  String electionId,
+                  String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
-    this.votes = votes;
+    this.votes = electionVotes;
     this.electionId = electionId;
     this.laoId = laoId;
+    this.encryptedVotes=encryptedVotes;
   }
 
   public String getLaoId() {
@@ -48,8 +55,12 @@ public class CastVote extends Data {
     return createdAt;
   }
 
-  public List<ElectionVote> getVotes() {
-    return Collections.unmodifiableList(votes);
+  public List<ElectionVote> getOpenBallotVotes() {
+    return !java.util.Objects.isNull(votes) ? Collections.unmodifiableList(votes) : null;
+  }
+
+  public List<ElectionEncryptedVote> getEncryptedVotes() {
+    return !java.util.Objects.isNull(encryptedVotes) ? Collections.unmodifiableList(encryptedVotes) : null;
   }
 
   @Override
@@ -71,20 +82,32 @@ public class CastVote extends Data {
       return false;
     }
     CastVote that = (CastVote) o;
+
+    // compare votes values given the version of the election
+    boolean compareVotes =
+            !java.util.Objects.isNull(votes)
+                    ? java.util.Objects.equals(votes, that.getOpenBallotVotes())
+                    : java.util.Objects.equals(encryptedVotes, that.getEncryptedVotes());
+
     return java.util.Objects.equals(getLaoId(), that.getLaoId())
         && createdAt == that.getCreation()
         && java.util.Objects.equals(electionId, that.getElectionId())
         && java.util.Objects.equals(laoId, that.getLaoId())
-        && java.util.Objects.equals(votes, that.getVotes());
+        && compareVotes;
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getVotes());
+    return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getOpenBallotVotes());
   }
 
   @Override
   public String toString() {
+    // If one is null take the other
+    String votesFormat =
+            !java.util.Objects.isNull(votes)
+              ? Arrays.toString(votes.toArray())
+              : Arrays.toString(encryptedVotes.toArray());
     return "CastVote{"
         + "createdAt="
         + createdAt
@@ -95,7 +118,7 @@ public class CastVote extends Data {
         + electionId
         + '\''
         + ", votes="
-        + Arrays.toString(votes.toArray())
+        + votesFormat
         + '}';
   }
 }

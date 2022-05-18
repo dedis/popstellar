@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
 
-public class ElectionVote<E>{
+public class ElectionVote{
 
   private final String id;
   /**
@@ -18,7 +18,7 @@ public class ElectionVote<E>{
 
   // represents a boolean to know whether write_in is allowed or not
   // list of indexes for the votes
-  private final List<E> vote;
+  private final List<Integer> vote;
 
   /**
    * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
@@ -31,7 +31,7 @@ public class ElectionVote<E>{
    */
   public ElectionVote(
       String questionId,
-      List<E> vote,
+      List<Integer> vote,
       boolean writeInEnabled,
       String writeIn,
       String electionId) {
@@ -50,7 +50,7 @@ public class ElectionVote<E>{
     return questionId;
   }
 
-  public List<E> getVotes() {
+  public List<Integer> getVotes() {
     return vote;
   }
 

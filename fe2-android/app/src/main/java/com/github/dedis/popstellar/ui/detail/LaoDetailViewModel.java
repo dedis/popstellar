@@ -341,7 +341,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes) {
+  public void sendOpenBallotVote(List<ElectionVote> votes) {
     Election election = mCurrentElection.getValue();
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
@@ -361,7 +361,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote castVote = new CastVote(votes, election.getId(), lao.getId());
+      CastVote castVote = new CastVote(votes,null, election.getId(), lao.getId());
       Channel electionChannel = election.getChannel();
 
       Log.d(TAG, PUBLISH_MESSAGE);

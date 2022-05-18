@@ -178,7 +178,7 @@ public final class ElectionHandler {
 
       // Verify the current cast vote message is the last one received
       if (previousMessageCreation <= castVote.getCreation()) {
-        election.putVotesBySender(senderPk, castVote.getVotes());
+        election.putVotesBySender(senderPk, castVote.getOpenBallotVotes());
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
       }

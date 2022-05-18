@@ -54,7 +54,7 @@ public class CastVoteFragment extends Fragment {
                   mLaoDetailViewModel.getCurrentElection().getId());
           electionVotes.add(electionVote);
         }
-        mLaoDetailViewModel.sendVote(electionVotes);
+        mLaoDetailViewModel.sendOpenBallotVote(electionVotes);
       };
 
   public CastVoteFragment() {
