@@ -17,6 +17,8 @@ object SetupElectionMessages extends ElectionMessagesTrait {
 
   final val setupElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup.json")()
 
+  final val setupElectionSecretBallot: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup_secret_ballot.json")()
+
   //TODO: Generate other Set Up Election messages
 }
 
