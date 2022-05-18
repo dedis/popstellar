@@ -139,15 +139,14 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
         case _ => "<NOT_VOTED>"
       }
       println(f"Your ballot is $ballot !")
-      if (results.contains(question)) {
-        val questionresult = results(question)
-        if (questionresult.contains(ballot))
-          results.update(question, questionresult.updated(ballot, questionresult(ballot) + 1))
-        else
-          results.update(question, questionresult.updated(ballot, 1))
+      results.updateWith(question) {
+        case Some(result) =>
+          if (result.contains(ballot))
+            Some(result.updated(ballot, result(ballot) + 1))
+          else
+            Some(result.updated(ballot, 1))
+        case None => Some(Map(ballot -> 1))
       }
-      else
-        results.update(question, Map(ballot -> 1))
     }
     println(results)
     results.map(tuple => {
