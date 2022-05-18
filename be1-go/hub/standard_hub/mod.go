@@ -531,7 +531,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID[laoChannelPath]; ok {
-		return answer.NewInvalidResourceError(fmt.Sprintf("failed to create lao: duplicate lao path: %q", laoChannelPath))
+		return answer.NewDuplicateResourceError(fmt.Sprintf("failed to create lao: duplicate lao path: %q", laoChannelPath))
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)

@@ -45,7 +45,7 @@ func NewInvalidObjectError(action string) *Error {
 	}
 }
 
-// NewInvalid_ResourceError returns an error with -2 for an object with invalid ressources
+// NewInvalidResourceError returns an error with -2 for an object with invalid ressources
 func NewInvalidResourceError(description string) *Error {
 	return &Error{
 		Code:        -2,
@@ -53,15 +53,15 @@ func NewInvalidResourceError(description string) *Error {
 	}
 }
 
-// NewInvalid_ResourceError returns an error with -3 for a resource that already exists
-func NewResourceAlreadyExistsError(description string) *Error {
+// NewDuplicateResourceError returns an error with -3 for a resource that already exists
+func NewDuplicateResourceError(description string) *Error {
 	return &Error{
 		Code:        -3,
 		Description: description,
 	}
 }
 
-// NewInvalid_ResourceError returns an error with -4 when a message field is bogus
+// NewInvalidMessageFieldError returns an error with -4 when a message field is bogus
 func NewInvalidMessageFieldError(description string) *Error {
 	return &Error{
 		Code:        -4,
@@ -69,7 +69,7 @@ func NewInvalidMessageFieldError(description string) *Error {
 	}
 }
 
-// NewInvalid_ResourceError returns an error with -5 when an access is denied for the sender
+// NewAccessDeniedError returns an error with -5 when an access is denied for the sender
 func NewAccessDeniedError(description string) *Error {
 	return &Error{
 		Code:        -5,
@@ -77,7 +77,7 @@ func NewAccessDeniedError(description string) *Error {
 	}
 }
 
-// NewInvalid_ResourceError returns an error with -6 when there is an internal server error
+// NewInternalServerErrory returns an error with -6 when there is an internal server error
 func NewInternalServerError(description string) *Error {
 	return &Error{
 		Code:        -6,
