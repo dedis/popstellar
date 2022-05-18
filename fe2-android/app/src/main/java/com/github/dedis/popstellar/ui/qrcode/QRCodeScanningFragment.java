@@ -182,8 +182,7 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setOnDismissListener(dialog -> startCamera());
     builder.setPositiveButton(
         R.string.confirm,
-        (dialog, which) ->
-            ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall(nextFragment));
+        (dialog, which) -> ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall());
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     mPreview.stop();
     closeRollCallAlert = builder.create();

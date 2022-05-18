@@ -24,11 +24,10 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ManageElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
@@ -116,22 +115,9 @@ public class LaoDetailActivity extends AppCompatActivity {
                 openScanning(action);
               }
             });
-    mViewModel
-        .getCloseRollCallEvent()
-        .observe(
-            this,
-            integerEvent -> {
-              Integer nextFragment = integerEvent.getContentIfNotHandled();
-              if (nextFragment != null) {
-                if (nextFragment.equals(R.id.fragment_lao_detail)) {
-                  mViewModel.openLaoDetail();
-                } else if (nextFragment.equals(R.id.fragment_home)) {
-                  mViewModel.openHome();
-                } else if (nextFragment.equals(R.id.fragment_identity)) {
-                  mViewModel.openIdentity();
-                }
-              }
-            });
+
+    mViewModel.getCloseRollCallEvent().observe(this, booleanSingleEvent -> setupLaoFragment());
+
     mViewModel
         .getPkRollCallEvent()
         .observe(
@@ -151,7 +137,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupElectionResultsFragment();
 
     // Subscribe to "open manage election" event
-    setupManageElectionFragment();
+    setupElectionFragment();
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
@@ -367,8 +353,8 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupRollCallDetailFragment(PublicKey pk) {
-    setCurrentFragment(
-        R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
+    //    setCurrentFragment(
+    //        R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
   }
 
   private void setupCreateElectionSetupFragment() {
@@ -387,16 +373,16 @@ public class LaoDetailActivity extends AppCompatActivity {
     setCurrentFragment(R.id.fragment_attendees_list, () -> AttendeesListFragment.newInstance(id));
   }
 
-  private void setupManageElectionFragment() {
+  private void setupElectionFragment() {
     mViewModel
-        .getOpenManageElectionEvent()
+        .getOpenElectionFragmentEvent()
         .observe(
             this,
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setCurrentFragment(
-                    R.id.fragment_manage_election, ManageElectionFragment::newInstance);
+                Log.d(TAG, "opening new election fragment");
+                setCurrentFragment(R.id.fragment_election, ElectionFragment::newInstance);
               }
             });
   }

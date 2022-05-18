@@ -13,4 +13,8 @@ public class Constants {
 
   /** The extra value give to the LaoDetailActivity when the wallet content is to be opened */
   public static final String CONTENT_WALLET_EXTRA = "content_wallet";
+
+  public static final float DISABLED_TRANSPARENCY_ALPHA = 0.3f;
+
+  public static final float ENABLED_OPAQUE_ALPHA = 1.0f;
 }

@@ -36,15 +36,16 @@
   <string name="text_entry_launch">Organization name</string>
   <string name="text_button_launch">Launch</string>
 
-<!--  Lao Detail-->
+  <!--  Lao Detail-->
   <string name="add_election">New Election</string>
   <string name="add_roll_call">New Roll Call</string>
   <string name="present_header_title">Current</string>
   <string name="future_header_title">Upcoming</string>
   <string name="past_header_title">Previous</string>
 
-
   <!-- Abstract Event-->
+  <string name="open">Open</string>
+  <string name="close">Close</string>
   <string name="start_date_required">Start Date*</string>
   <string name="start_time_required">Start Time*</string>
   <string name="end_date_optional">End Date</string>
@@ -148,6 +149,8 @@
   <string name="ballot_option_2">Ballot option 2</string>
 
   <!-- Election Event -->
+  <string name="closed">Closed</string>
+  <string name="finished">Finished</string>
   <string name="election_setup_presentation_title_text">Election Setup</string>
   <string name="add_ballot_options_button_text">Add ballot options</string>
   <string name="add_question_button_text">Add question</string>
@@ -176,11 +179,13 @@
   <string name="edit_election_start_time">Edit Election Start Time</string>
   <string name="edit_election_end_time">Edit Election End Time</string>
   <string name="results">Results</string>
-  <string name="election_ended">Waiting for results</string>
+  <string name="waiting_for_results">Waiting for results</string>
   <string name="tally_votes">Tally up votes</string>
   <string name="cast_vote">Cast votes</string>
+  <string name="vote">Vote</string>
   <string name="show_results">Show results</string>
   <string name="start">Start</string>
+  <string name="end">End</string>
   <string name="refresh_start">Refresh to start</string>
 
   <!-- Consensus -->

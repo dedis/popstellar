@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +25,6 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-          List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
+      List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
     this.eventsMap = new HashMap<>();
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
@@ -65,14 +65,18 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     this.eventsMap.get(PAST).clear();
     this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
-    long now = Instant.now().getEpochSecond();
     for (Event event : events) {
-      if (event.getEndTimestamp() <= now) {
-        eventsMap.get(PAST).add(event);
-      } else if (event.getStartTimestamp() > now) {
-        eventsMap.get(FUTURE).add(event);
-      } else {
-        eventsMap.get(PRESENT).add(event);
+      switch (event.getState().getValue()) {
+        case CREATED:
+          eventsMap.get(FUTURE).add(event);
+          break;
+        case OPENED:
+          eventsMap.get(PRESENT).add(event);
+          break;
+        case CLOSED:
+        case RESULTS_READY:
+          eventsMap.get(PAST).add(event);
+          break;
       }
     }
   }
@@ -104,29 +108,29 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       ImageView expandIcon = headerViewHolder.expandIcon;
       ConstraintLayout headerLayout = headerViewHolder.headerLayout;
 
-        switch (eventCategory) {
-          case PRESENT:
-            headerTitle.setText("Current");
-            break;
-          case FUTURE:
-            headerTitle.setText("Upcoming");
-            break;
-          case PAST:
-            headerTitle.setText("Previous");
-            break;
-        }
-        expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
-        headerLayout.setOnClickListener(
-                view -> {
-                  headerLayout.setEnabled(false);
-                  boolean value = expanded[eventCategory.ordinal()];
-                  expanded[eventCategory.ordinal()] = !value;
-                  LaoDetailAnimation.rotateExpand(expandIcon, !value);
-                  notifyDataSetChanged();
-                  Log.d(TAG, "click on adapterPosition " + position);
-                  headerLayout.setEnabled(true);
-                });
-      } else if (holder instanceof EventViewHolder) {
+      switch (eventCategory) {
+        case PRESENT:
+          headerTitle.setText("Current");
+          break;
+        case FUTURE:
+          headerTitle.setText("Upcoming");
+          break;
+        case PAST:
+          headerTitle.setText("Previous");
+          break;
+      }
+      expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
+      headerLayout.setOnClickListener(
+          view -> {
+            headerLayout.setEnabled(false);
+            boolean value = expanded[eventCategory.ordinal()];
+            expanded[eventCategory.ordinal()] = !value;
+            LaoDetailAnimation.rotateExpand(expandIcon, !value);
+            notifyDataSetChanged();
+            Log.d(TAG, "click on adapterPosition " + position);
+            headerLayout.setEnabled(true);
+          });
+    } else if (holder instanceof EventViewHolder) {
       EventViewHolder eventViewHolder = (EventViewHolder) holder;
       Event event = getEvent(position);
       handleEventContent(eventViewHolder, event);
@@ -138,9 +142,26 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
       Election election = (Election) event;
       eventViewHolder.eventTitle.setText(election.getName());
+      Log.d(TAG, "getting into election " + election.getName());
+      View.OnClickListener listener =
+          view -> {
+            Log.d(TAG, "election listener triggered");
+            viewModel.setCurrentElection(election);
+            viewModel.openElectionFragment(true);
+          };
+      eventViewHolder.eventCard.setOnClickListener(listener);
+      //      eventViewHolder.eventTitle.setOnClickListener(listener);
+      //      eventViewHolder.eventIcon.setOnClickListener(listener);
+
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
       RollCall rollCall = (RollCall) event;
+      View.OnClickListener listener =
+          view -> {
+            Log.d(TAG, "roll-call listener triggered");
+            viewModel.enterRollCall(rollCall.getId());
+          };
+      eventViewHolder.eventCard.setOnClickListener(listener);
       eventViewHolder.eventTitle.setText(rollCall.getName());
     }
   }
@@ -195,73 +216,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     return null;
   }
 
-  private void handleHeaderContent(HeaderViewHolder headerViewHolder, int position) {
-    int adapterPosition = headerViewHolder.getAdapterPosition();
-    ImageView expandIcon = headerViewHolder.expandIcon;
-    ConstraintLayout headerLayout = headerViewHolder.headerLayout;
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
-    int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
-    int eventAccumulator = 0;
-    String title = "";
-    if (expanded[PRESENT.ordinal()]) {
-      eventAccumulator = nbrOfPresentEvents;
-    }
-    if (adapterPosition == 0) {
-      title = "Current";
-      headerLayout.setOnClickListener(
-          v -> {
-            headerLayout.setEnabled(false);
-            boolean value = expanded[PRESENT.ordinal()];
-            expanded[PRESENT.ordinal()] = !value;
-            LaoDetailAnimation.rotateExpand(expandIcon, !value);
-            notifyDataSetChanged();
-            Log.d(TAG, "\nclick PRESENT on adapterPosition " + adapterPosition);
-
-            headerLayout.setEnabled(true);
-          });
-      if (expanded[PRESENT.ordinal()]) {
-        LaoDetailAnimation.rotateExpand(expandIcon, true);
-      }
-    }
-    if (adapterPosition == eventAccumulator + 1) {
-      title = "Upcoming";
-      if (expanded[FUTURE.ordinal()]) {
-        LaoDetailAnimation.rotateExpand(expandIcon, true);
-      }
-      headerLayout.setOnClickListener(
-          v -> {
-            headerLayout.setEnabled(false);
-            boolean value = expanded[FUTURE.ordinal()];
-            expanded[FUTURE.ordinal()] = !value;
-            LaoDetailAnimation.rotateExpand(expandIcon, !value);
-            notifyDataSetChanged();
-            Log.d(TAG, "\nclick Future on adapterPosition " + adapterPosition);
-
-            headerLayout.setEnabled(true);
-          });
-    }
-    if (expanded[FUTURE.ordinal()]) {
-      eventAccumulator += nbrOfFutureEvents;
-    }
-    if (adapterPosition == eventAccumulator + 2) {
-      title = "Previous";
-      if (expanded[PAST.ordinal()]) {
-        LaoDetailAnimation.rotateExpand(expandIcon, true);
-      }
-      headerLayout.setOnClickListener(
-          v -> {
-            headerLayout.setEnabled(false);
-            boolean value = expanded[PAST.ordinal()];
-            expanded[PAST.ordinal()] = !value;
-            LaoDetailAnimation.rotateExpand(expandIcon, !value);
-            notifyDataSetChanged();
-            Log.d(TAG, "\nclick PAST on adapterPosition " + adapterPosition);
-            headerLayout.setEnabled(true);
-          });
-    }
-    headerViewHolder.headerTitle.setText(title);
-  }
-
   @Override
   public int getItemCount() {
     int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
@@ -312,6 +266,13 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   }
 
   private void setList(List<Event> events) {
+    for (EventCategory category : EventCategory.values()) {
+      for (Event event : eventsMap.get(category)) {
+        event.getState().removeObservers(lifecycleOwner);
+      }
+    }
+    events.forEach(
+        event -> event.getState().observe(lifecycleOwner, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
   }
@@ -319,15 +280,17 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   private static class EventViewHolder extends RecyclerView.ViewHolder {
     private final TextView eventTitle;
     private final ImageView eventIcon;
+    private final CardView eventCard;
 
     public EventViewHolder(@NonNull View itemView) {
       super(itemView);
       eventTitle = itemView.findViewById(R.id.event_card_text_view);
       eventIcon = itemView.findViewById(R.id.event_type_image);
+      eventCard = itemView.findViewById(R.id.event_card_view);
     }
   }
 
-   class HeaderViewHolder extends RecyclerView.ViewHolder {
+  private static class HeaderViewHolder extends RecyclerView.ViewHolder {
     private final TextView headerTitle;
     private final ImageView expandIcon;
     private final ConstraintLayout headerLayout;
@@ -337,11 +300,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       headerTitle = itemView.findViewById(R.id.event_header_title);
       expandIcon = itemView.findViewById(R.id.expand_icon);
       headerLayout = itemView.findViewById(R.id.header_layout);
-      int position = getAdapterPosition();
-      Log.d(TAG, "position is " + position);
-      Log.d(TAG, "layout position is " + getLayoutPosition());
-      EventCategory eventCategory = getHeaderCategory(position);
-
     }
   }
 }

@@ -120,7 +120,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionResultsEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenManageElectionEvent =
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionFragmentEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
@@ -135,7 +135,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Integer>> mAskCloseRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Integer>> mCloseRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
 
   private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
       new MutableLiveData<>();
@@ -157,7 +157,9 @@ public class LaoDetailViewModel extends AndroidViewModel
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Election> mCurrentElection =
-      new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
+      new MutableLiveData<>(); // Represents the current election being opened in a fragment
+  private final MutableLiveData<RollCall> mCurrentRollCall =
+      new MutableLiveData<>(); // Represents the current roll-call being opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -195,8 +197,8 @@ public class LaoDetailViewModel extends AndroidViewModel
               lao == null
                   ? new ArrayList<>()
                   : lao.getRollCalls().values().stream()
-                      .filter(rollcall -> rollcall.getState() == EventState.CLOSED)
-                      .filter(rollcall -> attendedOrOrganized(lao, rollcall))
+                      .filter(rollCall -> rollCall.getState().getValue() == EventState.CLOSED)
+                      .filter(rollCall -> attendedOrOrganized(lao, rollCall))
                       .collect(Collectors.toList()));
   /*
    * Dependencies for this class
@@ -589,8 +591,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param id the roll call id to open
    */
   public void openRollCall(String id) {
-    Log.d(TAG, "call openRollCall");
-
+    Log.d(TAG, "call openRollCall with id" + id);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
@@ -605,7 +606,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     RollCall rollCall = optRollCall.get();
-    OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
+    OpenRollCall openRollCall =
+        new OpenRollCall(laoId, id, openedAt, rollCall.getState().getValue());
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
@@ -637,13 +639,17 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public void closeRollCall(int nextFragment) {
+  public void closeRollCall() {
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
+    Log.d(TAG, "rc id is " + currentRollCallId);
+    Log.d(TAG, "lao id is " + lao.getId());
+    Log.d(TAG, "attendees are" + attendees.toString());
+
     long end = Instant.now().getEpochSecond();
     Channel channel = lao.getChannel();
     CloseRollCall closeRollCall =
@@ -657,7 +663,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "closed the roll call");
                   currentRollCallId = "";
                   attendees.clear();
-                  mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
+                  mCloseRollCallEvent.setValue(new SingleEvent<>(true));
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -741,8 +747,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mElectionCreatedEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenManageElectionEvent() {
-    return mOpenManageElectionEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenElectionFragmentEvent() {
+    return mOpenElectionFragmentEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
@@ -887,7 +893,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mAskCloseRollCallEvent;
   }
 
-  public LiveData<SingleEvent<Integer>> getCloseRollCallEvent() {
+  public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
     return mCloseRollCallEvent;
   }
 
@@ -932,6 +938,14 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void setCurrentElection(Election e) {
     mCurrentElection.setValue(e);
+  }
+
+  public RollCall getCurrentRollCall() {
+    return mCurrentRollCall.getValue();
+  }
+
+  public void setCurrentRollCall(RollCall rc) {
+    mCurrentRollCall.setValue(rc);
   }
 
   public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {
@@ -987,7 +1001,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void openSocialMedia() {
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
-
 
   public void openDigitalCash() {
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
@@ -1073,8 +1086,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenElectionResultsEvent.postValue(new SingleEvent<>(open));
   }
 
-  public void openManageElection(Boolean open) {
-    mOpenManageElectionEvent.postValue(new SingleEvent<>(open));
+  public void openElectionFragment(Boolean open) {
+    Log.d(TAG, "openElection in view model");
+    mOpenElectionFragmentEvent.postValue(new SingleEvent<>(open));
   }
 
   public void openStartElection(Boolean open) {

@@ -18,13 +18,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-      android:id="@+id/qr_code_tab_back"
-      layout="@layout/tab_back"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="@{(scanningAction == ScanningAction.ADD_WITNESS) ? View.VISIBLE : View.GONE}" />
-
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_horizontal"
       android:layout_width="match_parent"
