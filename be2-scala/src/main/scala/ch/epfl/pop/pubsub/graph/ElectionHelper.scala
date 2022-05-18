@@ -9,7 +9,8 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadAck
 
 import scala.collection.mutable
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
 
 /**
@@ -27,25 +28,17 @@ object ElectionHelper extends AskPatternConstants {
     getAllMessage[SetupElection](electionChannel, dbActor).head._2
 
   def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
-    var result: List[(Message, T)] = Nil
-    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
-      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-        for (message <- channelData.messages) {
-          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
-            case Some(Success(value)) => value
+    val task = for {
+        DbActor.DbActorReadChannelDataAck(channelData) <- dbActor ? DbActor.ReadChannelData(electionChannel)
+        result <- Future.traverse(channelData.messages) { messageHash => (for {
+            DbActorReadAck(Some(message)) <- dbActor ? DbActor.Read(electionChannel, messageHash)
+          } yield message.decodedData match {
+            case Some(t: T) => Some((message, t))
             case _ => None
-          }) match {
-            case DbActorReadAck(Some(message)) =>
-              message.decodedData match {
-                case Some(t: T) =>
-                  result = (message, t) :: result
-                case _ =>
-              }
-          }
+          })
         }
-      case _ =>
-    }
-    result
+      } yield result.flatten
+    Await.ready(task, duration).value.get.get
   }
 
   /**
