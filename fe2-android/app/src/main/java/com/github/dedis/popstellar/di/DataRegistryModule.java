@@ -10,6 +10,8 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.GREET;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.KEY;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
@@ -42,10 +44,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
@@ -63,13 +67,11 @@ import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler;
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler;
 import com.github.dedis.popstellar.utility.handler.data.LaoHandler;
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler;
-
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
+import javax.inject.Singleton;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -86,7 +88,8 @@ public abstract class DataRegistryModule {
     builder
         .add(LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao)
         .add(LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao)
-        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao);
+        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao)
+        .add(LAO, GREET, GreetLao.class, LaoHandler::handleGreetLao);
 
     // Meeting
     builder
@@ -109,7 +112,8 @@ public abstract class DataRegistryModule {
         .add(ELECTION, OPEN, OpenElection.class, ElectionHandler::handleElectionOpen)
         .add(ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote)
         .add(ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd)
-        .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);
+        .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult)
+        .add(ELECTION, KEY, ElectionKey.class, ElectionHandler::handleElectionKey);
 
     // Consensus
     builder

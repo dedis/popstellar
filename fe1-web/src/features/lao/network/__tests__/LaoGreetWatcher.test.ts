@@ -19,7 +19,7 @@ import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Channel, ROOT_CHANNEL, Timestamp, WitnessSignature } from 'core/objects';
 import { dispatch } from 'core/redux';
-import { Server } from 'features/lao/objects/Server';
+import { LaoServer } from 'features/lao/objects/LaoServer';
 import {
   addServer,
   addUnhandledGreetLaoMessage,
@@ -82,7 +82,7 @@ describe('handleLaoGreet', () => {
     // the key of the server should have been stored
     expect(dispatch).toHaveBeenCalledWith(
       addServer(
-        new Server({
+        new LaoServer({
           laoId: greetLaoMsg.lao,
           address: greetLaoMsg.address,
           serverPublicKey: msg.sender,
