@@ -141,10 +141,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       println(f"Your ballot is $ballot !")
       results.updateWith(question) {
         case Some(result) =>
-          if (result.contains(ballot))
-            Some(result.updated(ballot, result(ballot) + 1))
-          else
-            Some(result.updated(ballot, 1))
+            Some(result.updated(ballot, result.getOrElse(ballot, 0) + 1))
         case None => Some(Map(ballot -> 1))
       }
     }
