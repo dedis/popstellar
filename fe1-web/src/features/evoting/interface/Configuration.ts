@@ -83,20 +83,22 @@ export interface EvotingInterface extends FeatureInterface {
     CreateElection: React.ComponentType<any>;
   };
 
-  eventTypes: {
-    eventType: string;
-    navigationNames: {
-      createEvent: string;
-    };
-    Component: React.ComponentType<{
-      eventId: string;
-      isOrganizer: boolean | null | undefined;
-    }>;
-  }[];
+  eventTypes: EventType[];
 
   context: EvotingReactContext;
 
   reducers: {
     [ELECTION_REDUCER_PATH]: Reducer<ElectionReducerState>;
   };
+}
+
+interface EventType {
+  eventType: string;
+  navigationNames: {
+    createEvent: string;
+  };
+  Component: React.ComponentType<{
+    eventId: string;
+    isOrganizer: boolean | null | undefined;
+  }>;
 }

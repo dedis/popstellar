@@ -1,3 +1,9 @@
+/*
+  FIXME: let sonarcloud keep track of this :)
+  WARNING: THIS FILE WAS CREATED TO TEST THE UI OF THE WALLET.
+  IT SHOULD NOT STAY IN THE CODEBASE FOR LONG AND WILL SHOULD REMOVED BY THE END OF THE SEMESTER
+  Tyratox, 18.05.2022
+*/
 import testKeyPair from 'test_data/keypair.json';
 
 import { EventTags, Hash, PublicKey, Timestamp } from 'core/objects';

@@ -12,7 +12,7 @@ import { EventState } from '../objects';
 /**
  * This is the root state for the Events Reducer
  * We can store all events together since the event ids are hashes that include the laoId.
- * Assuming the hash function is collision resistent, the event ids for different laos will be different
+ * Assuming the hash function is collision resistant, the event ids for different laos will be different
  * (We rely for more important things on the collision resistance, so it is safe to do this here as well)
  */
 export interface EventReducerState {

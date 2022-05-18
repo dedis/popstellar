@@ -104,16 +104,7 @@ export interface RollCallInterface extends FeatureInterface {
     RollCallOpened: React.ComponentType<any>;
   };
 
-  eventTypes: {
-    eventType: string;
-    navigationNames: {
-      createEvent: string;
-    };
-    Component: React.ComponentType<{
-      eventId: string;
-      isOrganizer: boolean | null | undefined;
-    }>;
-  }[];
+  eventTypes: EventType[];
 
   functions: {
     getRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
@@ -132,4 +123,15 @@ export interface RollCallInterface extends FeatureInterface {
   reducers: {
     [ROLLCALL_REDUCER_PATH]: Reducer<RollCallReducerState>;
   };
+}
+
+interface EventType {
+  eventType: string;
+  navigationNames: {
+    createEvent: string;
+  };
+  Component: React.ComponentType<{
+    eventId: string;
+    isOrganizer: boolean | null | undefined;
+  }>;
 }
