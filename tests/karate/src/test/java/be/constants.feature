@@ -2,6 +2,35 @@
 Feature: Constants
   Scenario: Creates constants that will be used by other features
     # TODO: make the function depend on all the attributes the lao id depends on
+    * def organizerPk =
+      """
+        function(){
+          return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
+        }
+      """
+    * def attendeePk =
+      """
+        function(){
+          return "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+        }
+      """
+
+    * def getOrganizer = call organizerPk
+    * def getAttendee = call attendeePk
+
+    * def laoIdHash =
+       """
+          function(){
+            var JsonConverter = Java.type('be.utils.JsonConverter')
+            var String = Java.type('java.lang.String')
+            var jsonConverter = new JsonConverter()
+            var organizer = getOrganizer
+            var time = String.format("%d",1633035721)
+            var name = "LAO"
+            return jsonConverter.hash(organizer.getBytes(), time.getBytes(), name.getBytes())
+          }
+       """
+
     * def createLaoIdEmptyName =
       """
         function(){
@@ -14,12 +43,7 @@ Feature: Constants
           return "p8TW08AWlBScs9FGXK3KbLQX7Fbgz8_gLwX-B5VEWS0="
         }
       """
-    * def createLaoValid =
-      """
-        function(){
-          return "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-        }
-      """
+
     * def createRollCallValid =
       """
         function(){
@@ -116,21 +140,9 @@ Feature: Constants
           return "nas8r4aF0wq9ad4isfp4nsfiMFPMPS9sdsF8lsd8sopfd0="
         }
       """
-    * def organizerPk =
-      """
-        function(){
-          return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
-        }
-      """
-    * def attendeePk =
-      """
-        function(){
-          return "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-        }
-      """
+    * def getLaoValid = call laoIdHash
     * def getLaoIdEmptyName = call createLaoIdEmptyName
     * def getLaoIdNegativeTime = call createLaoIdNegativeTime
-    * def getLaoValid = call createLaoValid
 
     * def getRollCallValidId = call createRollCallValid
     * def getRollCallInvalidId = call createRollCallInvalid
@@ -151,9 +163,6 @@ Feature: Constants
     * def getInvalidVoteId = call createInvalidVoteId
     * def getValidRegisteredVotes = call createValidRegisteredVotes
     * def getInvalidRegisteredVotes = call createInvalidRegisteredVotes
-
-    * def getOrganizer = call organizerPk
-    * def getAttendee = call attendeePk
 
     * def INVALID_ACTION =          {error: {code: -1, description: '#string'}}
     * def INVALID_RESOURCE =        {error: {code: -2, description: '#string'}}
