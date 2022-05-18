@@ -102,10 +102,11 @@ public class TransactionCoinHandlerTest {
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
-    posttransactioncoin = new PostTransactionCoin(TRANSACTION);
+
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
-    TRANSACTION.change_sig_inputs_considering_the_outputs(SENDER_KEY);
+    //TRANSACTION.change_sig_inputs_considering_the_outputs(SENDER_KEY);
+    posttransactioncoin = new PostTransactionCoin(TRANSACTION);
     laoRepository = new LAORepository();
 
     // when(messageSender.subscribe(any())).then(args -> Completable.complete());

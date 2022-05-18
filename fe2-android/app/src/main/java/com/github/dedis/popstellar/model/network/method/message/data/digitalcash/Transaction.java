@@ -152,7 +152,8 @@ public class Transaction {
       sig[index + 2] = current.get_script().get_pubkey_hash();
       index = index + 3;
     }
-    return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
+    Base64URLData signature = new Base64URLData(String.join("", sig));
+    return keyPair.sign(signature).getEncoded();
   }
 
   @Override
