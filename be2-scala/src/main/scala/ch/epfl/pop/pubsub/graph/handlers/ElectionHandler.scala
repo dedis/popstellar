@@ -148,6 +148,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     println(results)
     List.from(for {
       (qid, ballot2count) <- results
-    } yield ElectionQuestionResult(qid, ballot2count.map(tuple => ElectionBallotVotes(tuple._1, tuple._2)).toList))
+    } yield ElectionQuestionResult(qid, List.from(for {
+      (ballot, count) <- ballot2count
+    } yield ElectionBallotVotes(ballot, count))))
   }
 }
