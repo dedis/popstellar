@@ -255,8 +255,12 @@ public class Election extends Event {
     // If write_in is enabled the id is formed with the write_in string
     // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2,
     // ...])
+    String voteIndexFormat = voteIndex
+            .toString()
+            .replace("]", "")
+            .replace("[", "");
     return Hash.hash(
-        "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+            "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndexFormat);
   }
 
   @Override
