@@ -13,7 +13,7 @@ export async function recoverWalletRollCallTokens(
   laoId: Hash,
 ): Promise<RollCallToken[]> {
   // For all the roll calls of the current lao
-  const tokens = Object.values(rollCalls[laoId.valueOf()]).map((rc) => {
+  const tokens = Object.values(rollCalls[laoId.valueOf()] || {}).map((rc) => {
     // Generate the token corresponding to this roll call
     return generateToken(laoId, rc.id).then((popToken) => {
       // If the token participated in the roll call, create a RollCallToken object

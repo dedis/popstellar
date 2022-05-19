@@ -5,7 +5,7 @@ import { dispatch } from 'core/redux';
 import { addEvent, removeEvent } from 'features/events/reducer';
 import { connectToLao, disconnectFromLao, removeLao } from 'features/lao/reducer';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
-import { addRollCall } from 'features/rollCall/reducer';
+import { addRollCall, removeRollCall } from 'features/rollCall/reducer';
 
 import { Lao, LaoState } from '../../lao/objects';
 import { generateToken } from './Token';
@@ -114,10 +114,9 @@ export async function createDummyWalletState() {
   dispatch(
     addEvent(mockLao.id, {
       eventType: RollCall.EVENT_TYPE,
-      id: mockRollCall0.id.valueOf(),
-
-      start: mockRollCall0.proposedStart.valueOf(),
-      end: mockRollCall0.proposedEnd.valueOf(),
+      id: mockRollCall1.id.valueOf(),
+      start: mockRollCall1.proposedStart.valueOf(),
+      end: mockRollCall1.proposedEnd.valueOf(),
     }),
   );
   dispatch(addRollCall(mockRollCall1.toState()));
@@ -129,6 +128,8 @@ export async function createDummyWalletState() {
 export function clearDummyWalletState() {
   dispatch(removeEvent(mockLao.id, hashMock0));
   dispatch(removeEvent(mockLao.id, hashMock1));
+  dispatch(removeRollCall(hashMock0));
+  dispatch(removeRollCall(hashMock1));
   dispatch(disconnectFromLao());
   dispatch(removeLao(mockLao.id));
 }

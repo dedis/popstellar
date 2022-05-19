@@ -48,7 +48,7 @@ const Launch = () => {
       .then((channel: Channel) =>
         subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
-          navigation.navigate(STRINGS.app_navigation_tab_lao, {
+          navigation.navigate(STRINGS.navigation_app_tab_lao, {
             screen: STRINGS.organization_navigation_tab_events,
           });
         }),

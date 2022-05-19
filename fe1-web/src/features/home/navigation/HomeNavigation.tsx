@@ -19,11 +19,11 @@ import ConnectNavigation from './ConnectNavigation';
  */
 const HomeNavigator = createBottomTabNavigator();
 
-const MainNavigation = () => {
+const HomeNavigation = () => {
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
 
-  const navigationScreens = HomeHooks.useMainNavigationScreens();
+  const navigationScreens = HomeHooks.useHomeNavigationScreens();
 
   const screens: HomeFeature.Screen[] = useMemo(() => {
     return [
@@ -66,7 +66,7 @@ const MainNavigation = () => {
         },
         headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component, tabBarIcon, tabPress }) => (
+      {screens.map(({ id, title, Component, tabBarIcon, tabPress, headerLeft, headerRight }) => (
         <HomeNavigator.Screen
           key={id}
           name={id}
@@ -75,6 +75,8 @@ const MainNavigation = () => {
           options={{
             title: title || id,
             tabBarIcon,
+            headerLeft,
+            headerRight,
           }}
         />
       ))}
@@ -82,10 +84,10 @@ const MainNavigation = () => {
   );
 };
 
-export default MainNavigation;
+export default HomeNavigation;
 
-export const MainNavigationScreen: AppScreen = {
-  id: STRINGS.app_navigation_tab_home,
-  title: STRINGS.app_navigation_tab_home,
-  component: MainNavigation,
+export const HomeNavigationScreen: AppScreen = {
+  id: STRINGS.navigation_app_tab_home,
+  title: STRINGS.navigation_app_tab_home,
+  component: HomeNavigation,
 };

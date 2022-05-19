@@ -7,7 +7,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { Home } from 'features/home/screens';
 
-import MainNavigation from '../MainNavigation';
+import HomeNavigation from '../HomeNavigation';
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
@@ -16,7 +16,7 @@ const contextValue = {
     connectToTestLao: () => {},
     useLaoList: () => [],
     LaoList: () => null,
-    mainNavigationScreens: [
+    homeNavigationScreens: [
       { id: 'home', title: 'Home', order: 0, Component: Home },
       { id: 'home2', order: -3, Component: Home },
     ],
@@ -27,11 +27,11 @@ const contextValue = {
 
 // react-navigation has a problem that makes this test always fail
 // https://github.com/satya164/react-native-tab-view/issues/1104
-describe.skip('MainNavigation', () => {
+describe.skip('HomeNavigation', () => {
   it('renders correctly', () => {
     const component = render(
       <FeatureContext.Provider value={contextValue}>
-        <MockNavigator component={MainNavigation} />
+        <MockNavigator component={HomeNavigation} />
       </FeatureContext.Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();

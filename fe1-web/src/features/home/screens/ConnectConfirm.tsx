@@ -64,7 +64,7 @@ const ConnectConfirm = () => {
       // subscribe to the lao channel on the new connection
       await subscribeToChannel(channel, [connection]);
 
-      navigation.navigate(STRINGS.app_navigation_tab_lao, {
+      navigation.navigate(STRINGS.navigation_app_tab_lao, {
         screen: STRINGS.organization_navigation_tab_events,
       });
     } catch (err) {

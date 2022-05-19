@@ -109,7 +109,7 @@ const ConnectOpenScan = () => {
 
       // subscribe to the lao channel on the new connection
       subscribeToChannel(channel, [connection]).then(() => {
-        navigation.navigate(STRINGS.app_navigation_tab_lao, {
+        navigation.navigate(STRINGS.navigation_app_tab_lao, {
           screen: STRINGS.organization_navigation_tab_events,
         });
       });

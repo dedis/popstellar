@@ -1,4 +1,3 @@
-import WalletIcon from 'core/components/icons/WalletIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
@@ -108,14 +107,7 @@ export function configureFeatures() {
     /* components */
     LaoList: laoConfiguration.components.LaoList,
     /* screens */
-    mainNavigationScreens: [
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletComposition.navigation.WalletNavigation,
-        tabBarIcon: WalletIcon,
-        order: 99999999,
-      },
-    ],
+    homeNavigationScreens: [...walletComposition.homeScreens],
   });
 
   const eventsComposition = events.compose({
@@ -151,11 +143,7 @@ export function configureFeatures() {
         order: 70000,
         Badge: notificationConfiguration.components.NotificationBadge,
       },
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletComposition.navigation.WalletNavigation,
-        order: 99999999,
-      },
+      ...walletComposition.laoScreens,
     ],
     organizerNavigationScreens: [
       {
@@ -213,7 +201,7 @@ export function configureFeatures() {
         ...homeComposition.appScreens,
         ...walletComposition.appScreens,
         {
-          id: STRINGS.app_navigation_tab_lao,
+          id: STRINGS.navigation_app_tab_lao,
           component: laoComposition.navigation.LaoNavigation,
         },
       ],

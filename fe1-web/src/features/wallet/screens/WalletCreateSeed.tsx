@@ -47,7 +47,7 @@ const WalletCreateSeed = () => {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return navigation.addListener('focus', () => {
       if (WalletStore.hasSeed()) {
-        navigation.navigate(STRINGS.app_navigation_tab_home, {
+        navigation.navigate(STRINGS.navigation_app_tab_home, {
           screen: STRINGS.navigation_tab_home,
         });
       }
@@ -57,7 +57,7 @@ const WalletCreateSeed = () => {
   const connectWithSeed = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.app_navigation_tab_home, {
+      navigation.navigate(STRINGS.navigation_app_tab_home, {
         screen: STRINGS.navigation_tab_home,
       });
     } catch (e) {
@@ -127,7 +127,7 @@ const WalletCreateSeed = () => {
             </Text>
           </Button>
           <Button
-            onPress={() => navigation.navigate(STRINGS.navigation_wallet_insert_seed)}
+            onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_insert_seed)}
             negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
               {STRINGS.wallet_welcome_already_know_seed}
@@ -141,7 +141,7 @@ const WalletCreateSeed = () => {
 export default WalletCreateSeed;
 
 export const WalletCreateSeedScreen: AppScreen = {
-  id: STRINGS.navigation_wallet_create_seed,
-  title: STRINGS.navigation_wallet_create_seed,
+  id: STRINGS.navigation_app_wallet_create_seed,
+  title: STRINGS.navigation_app_wallet_create_seed,
   component: WalletCreateSeed,
 };

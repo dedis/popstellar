@@ -20,6 +20,9 @@ export namespace HomeFeature {
 
     tabPress?: EventListenerCallback<BottomTabNavigationEventMap, 'tabPress'>;
 
+    headerLeft?: HeaderComponent;
+    headerRight?: HeaderComponent;
+
     /**
      * This number is here to order the screens.
      * The numbers have to be unique, otherwise an error will be thrown.
@@ -29,4 +32,13 @@ export namespace HomeFeature {
      */
     order: number;
   }
+
+  type HeaderComponent =
+    | ((props: {
+        tintColor?: string | undefined;
+        pressColor?: string | undefined;
+        pressOpacity?: number | undefined;
+        labelVisible?: boolean | undefined;
+      }) => React.ReactNode)
+    | undefined;
 }

@@ -18,7 +18,7 @@ const getLaoChannel = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
-const mainNavigationScreens: HomeFeature.Screen[] = [
+const homeNavigationScreens: HomeFeature.Screen[] = [
   { Component: LaoList, id: 'x', title: 'X', order: 2 },
 ];
 
@@ -29,7 +29,7 @@ const contextValue = {
     connectToTestLao,
     useLaoList: LaoHooks.useLaoList,
     LaoList,
-    mainNavigationScreens,
+    homeNavigationScreens,
     getLaoChannel,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
     hasSeed,
@@ -82,10 +82,10 @@ describe('Home hooks', () => {
     });
   });
 
-  describe('HomeHooks.useMainNavigationScreens', () => {
+  describe('HomeHooks.useHomeNavigationScreens', () => {
     it('should return the main navigation screens', () => {
-      const { result } = renderHook(() => HomeHooks.useMainNavigationScreens(), { wrapper });
-      expect(result.current).toEqual(mainNavigationScreens);
+      const { result } = renderHook(() => HomeHooks.useHomeNavigationScreens(), { wrapper });
+      expect(result.current).toEqual(homeNavigationScreens);
     });
   });
 

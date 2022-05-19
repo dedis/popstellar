@@ -20,11 +20,15 @@ namespace STRINGS {
   export const navigation_tab_social_media = 'Social Media';
   export const navigation_tab_connect = 'Connect';
   export const navigation_tab_launch = 'Launch';
-  export const navigation_tab_wallet = 'Wallet';
+
+  /* --- HomeNavigation Strings --- */
+  export const navigation_home_tab_wallet = 'Wallet';
 
   /* --- App Navigation Strings --- */
-  export const app_navigation_tab_home = 'AppHome';
-  export const app_navigation_tab_lao = 'AppLao';
+  export const navigation_app_tab_home = 'AppHome';
+  export const navigation_app_tab_lao = 'AppLao';
+  export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
+  export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
 
   /* --- Notification Navigation Strings --- */
   export const notification_navigation_tab_notifications = 'NotificationNavigation Notifications';
@@ -54,10 +58,8 @@ namespace STRINGS {
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home_tab = 'Wallet Home';
   export const navigation_wallet_setup_tab = 'Wallet Setup';
-  export const navigation_wallet_insert_seed = 'Wallet Recovery';
   export const navigation_wallet_show_seed = 'New Wallet';
   export const navigation_wallet_synced = 'My Wallet';
-  export const navigation_wallet_create_seed = 'Wallet Seed Creation';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
@@ -253,7 +255,8 @@ namespace STRINGS {
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
 
   /* --- Wallet Home Screen Strings --- */
-  export const wallet_home_logout = 'LOGOUT';
+  export const wallet_home_header = 'Your Wallet 🔒';
+
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
 

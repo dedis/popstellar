@@ -58,7 +58,7 @@ export interface HomeCompositionConfiguration {
   /**
    * A list of screens show in the main navigations
    */
-  mainNavigationScreens: HomeFeature.Screen[];
+  homeNavigationScreens: HomeFeature.Screen[];
 }
 
 /**
@@ -72,7 +72,7 @@ export type HomeReactContext = Pick<
   | 'connectToTestLao'
   | 'useLaoList'
   | 'LaoList'
-  | 'mainNavigationScreens'
+  | 'homeNavigationScreens'
   | 'getLaoChannel'
   | 'useCurrentLaoId'
 >;

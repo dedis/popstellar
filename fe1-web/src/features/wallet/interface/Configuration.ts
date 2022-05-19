@@ -1,4 +1,3 @@
-import React from 'react';
 import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
@@ -86,9 +85,8 @@ export type WalletReactContext = Pick<
 export interface WalletCompositionInterface extends FeatureInterface {
   appScreens: AppScreen[];
 
-  navigation: {
-    WalletNavigation: React.ComponentType<any>;
-  };
+  homeScreens: WalletFeature.HomeScreen[];
+  laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;
 

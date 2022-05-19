@@ -33,7 +33,7 @@ const AppNavigation = ({ screens }: IPropTypes) => {
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
-        initialRouteName={STRINGS.navigation_wallet_create_seed}
+        initialRouteName={STRINGS.navigation_app_wallet_create_seed}
         screenOptions={{
           headerShown: false,
         }}>

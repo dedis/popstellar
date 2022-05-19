@@ -24,6 +24,7 @@
     "docs": "typedoc"
   },
   "dependencies": {
+    "@expo/react-native-action-sheet": "^3.13.0",
     "@expo/vector-icons": "^12.0.5",
     "@react-native-async-storage/async-storage": "^1.15.7",
     "@react-native-community/datetimepicker": "3.5.2",
@@ -53,6 +54,7 @@
     "react-datepicker": "^3.3.0",
     "react-dom": "17.0.2",
     "react-native": "^0.65.1",
+    "react-native-action-sheet": "^2.2.0",
     "react-native-chart-kit": "^6.11.0",
     "react-native-elements": "^3.4.2",
     "react-native-flipper": "^0.105.0",

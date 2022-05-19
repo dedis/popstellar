@@ -34,7 +34,7 @@ const WalletSetSeed = () => {
   const initWallet = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.app_navigation_tab_home, {
+      navigation.navigate(STRINGS.navigation_app_tab_home, {
         screen: STRINGS.navigation_wallet_home_tab,
       });
     } catch (e) {
@@ -51,7 +51,9 @@ const WalletSetSeed = () => {
     <View style={styles.welcomeView}>
       <ScreenWrapper>
         <View>
-          <Text style={[Typography.heading, Typography.negative]}>{STRINGS.wallet_restore_heading}</Text>
+          <Text style={[Typography.heading, Typography.negative]}>
+            {STRINGS.wallet_restore_heading}
+          </Text>
           <TextInputLine
             placeholder={STRINGS.wallet_restore_seed_example}
             onChangeText={(input: string) => setSeed(input)}
@@ -63,7 +65,7 @@ const WalletSetSeed = () => {
             </Text>
           </Button>
           <Button
-            onPress={() => navigation.navigate(STRINGS.navigation_wallet_create_seed)}
+            onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_create_seed)}
             negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
               {STRINGS.wallet_previous_seed_not_known}
@@ -78,7 +80,7 @@ const WalletSetSeed = () => {
 export default WalletSetSeed;
 
 export const WalletSetSeedScreen: AppScreen = {
-  id: STRINGS.navigation_wallet_insert_seed,
-  title: STRINGS.navigation_wallet_insert_seed,
+  id: STRINGS.navigation_app_wallet_insert_seed,
+  title: STRINGS.navigation_app_wallet_insert_seed,
   component: WalletSetSeed,
 };

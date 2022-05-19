@@ -78,7 +78,9 @@ export namespace RollCallHooks {
         map[laoId] = {};
 
         for (const rollCallId of Object.keys(eventStatesByLaoId[laoId])) {
-          map[laoId][rollCallId] = rollCallById[rollCallId];
+          if (rollCallById[rollCallId]) {
+            map[laoId][rollCallId] = rollCallById[rollCallId];
+          }
         }
       }
 
