@@ -10,6 +10,11 @@ import { Hash } from 'core/objects';
 import { TransactionState } from '../objects/transaction/Transaction';
 
 interface DigitalCashReducerState {
+  /**
+   * A mapping between the public key hashes and their respective balances
+   */
+  balances: Record<string, number>;
+
   transactions: TransactionState[];
   transactionsByHash: Record<string, TransactionState>;
   /**
@@ -73,6 +78,7 @@ const digitalCashSlice = createSlice({
 
         if (!(rollCallId in state.byLaoId[laoId])) {
           state.byLaoId[laoId].byRCId[rollCallId] = {
+            balances: {},
             transactions: [],
             transactionsByHash: {},
             transactionsByPubHash: {},
@@ -81,10 +87,16 @@ const digitalCashSlice = createSlice({
 
         const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
 
-        rollCallState.transactionsByHash[transactionMessage.transactionId] = transactionMessage;
+        rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
         rollCallState.transactions.push(transactionMessage);
 
+        // In any case every inputs from this public key will be used spent in the outputs
+        transactionMessage.inputs.forEach((input) => {
+          rollCallState.balances[Hash.fromString(input.script.publicKey).valueOf()] = 0;
+        });
+
         transactionMessage.outputs.forEach((output) => {
+          rollCallState.balances[output.script.publicKeyHash] += output.value;
           rollCallState.transactionsByPubHash[output.script.publicKeyHash].add(transactionMessage);
         });
       },

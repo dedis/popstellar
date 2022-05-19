@@ -12,4 +12,9 @@ export namespace DigitalCashStore {
     const hash = Hash.fromString(pk);
     return Array.from(transactionMessagesByPKH[hash.valueOf()].values());
   }
+  export function getBalance(pk: string): number {
+    const { balances } = getDigitalCashState(getStore().getState());
+    const hash = Hash.fromString(pk);
+    return balances[hash.valueOf()];
+  }
 }

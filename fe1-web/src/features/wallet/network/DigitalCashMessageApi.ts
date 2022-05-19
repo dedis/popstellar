@@ -5,15 +5,14 @@ import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
 
 import {
-  concatenateTxData,
-  getTotalValue,
-  getInputsInToSign,
   Transaction,
   TransactionInputState,
-  TransactionOutputState,
+  TransactionOutputState, TransactionState
 } from '../objects/transaction';
 import { DigitalCashStore } from '../store';
 import { PostTransaction } from './messages';
+
+import getBalance = DigitalCashStore.getBalance;
 
 const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
 
@@ -40,9 +39,9 @@ export function requestSendTransaction(
     return Promise.resolve();
   }
 
-  const totalValueOut = getTotalValue(fromPublicKeyHash, transactionStates);
+  const balance = getBalance(from.publicKey.valueOf());
 
-  if (amount < 0 || amount > totalValueOut) {
+  if (amount < 0 || amount > balance) {
     console.warn(makeErr('balance is not sufficient to send this amount'));
     return Promise.resolve();
   }
@@ -57,11 +56,11 @@ export function requestSendTransaction(
 
   const outputs: TransactionOutputState[] = [outputTo];
 
-  if (totalValueOut > amount) {
+  if (balance > amount) {
     // Send the rest of the value back to the owner, so that the entire balance
     // is always in only one TxOut
     const outputFrom: TransactionOutputState = {
-      value: totalValueOut - amount,
+      value: balance - amount,
       script: {
         type: STRINGS.script_type,
         publicKeyHash: fromPublicKeyHash.valueOf(),
@@ -175,3 +174,47 @@ export function requestCoinbaseTransaction(
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
+
+/**
+ * Constructs a partial Input object from transaction messages to take as input
+ * @param pk the public key of the sender
+ * @param transactions the transaction messages used as inputs
+ */
+const getInputsInToSign = (
+  pk: string,
+  transactions: TransactionState[],
+): Omit<TransactionInputState, 'script'>[] => {
+  return transactions.flatMap((tr) =>
+    tr.outputs
+      .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
+      .map((output, index) => {
+        return {
+          txOutHash: tr.transactionId!.valueOf(),
+          txOutIndex: index,
+        };
+      }),
+  );
+};
+
+/**
+ * Concatenates the partial inputs and the outputs in a string to sign over it by following the digital cash specification
+ * @param inputs
+ * @param outputs
+ */
+const concatenateTxData = (
+  inputs: Omit<TransactionInputState, 'script'>[],
+  outputs: TransactionOutputState[],
+) => {
+  const inputsDataString = inputs.reduce(
+    (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
+    '',
+  );
+  return outputs.reduce(
+    (dataString, output) =>
+      dataString +
+      output.value.toString() +
+      output.script.type +
+      output.script.publicKeyHash.valueOf(),
+    inputsDataString,
+  );
+};
