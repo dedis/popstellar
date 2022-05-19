@@ -1,12 +1,13 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { TextBlock, TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -74,16 +75,30 @@ const Launch = () => {
           />
         </View>
         <View style={styles.viewBottom}>
-          <WideButtonView
-            title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
-            onPress={() => onButtonLaunchPress(inputLaoName)}
-          />
-          <WideButtonView
-            title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
-            onPress={connectToTestLao}
-          />
-          <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
-          <WideButtonView title="Cancel" onPress={() => navigation.goBack()} />
+          <Button onPress={() => onButtonLaunchPress(inputLaoName)}>
+            <Text
+              style={[
+                Typography.base,
+                Typography.centered,
+                Typography.negative,
+              ]}>{`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}</Text>
+          </Button>
+
+          <Button onPress={connectToTestLao}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
+            </Text>
+          </Button>
+
+          <Button onPress={onTestClearStorage}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              [TEST] Clear (persistent) storage
+            </Text>
+          </Button>
+
+          <Button onPress={navigation.goBack}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>Cancel</Text>
+          </Button>
         </View>
       </View>
     </ScreenWrapper>

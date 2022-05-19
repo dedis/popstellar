@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 
-import { QRCode, WideButtonView } from 'core/components';
+import { QRCode, Button } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -101,20 +101,23 @@ const WalletHome = () => {
       </View>
       {tokenInfos()}
       <View style={styles.smallPadding} />
-      <WideButtonView
-        title={STRINGS.logout_from_wallet}
+      <Button
         onPress={() => {
           Wallet.forget();
           navigation.reset({
             index: 0,
             routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
           });
-        }}
-      />
-      <WideButtonView
-        title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
-        onPress={() => toggleDebugMode()}
-      />
+        }}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.logout_from_wallet}
+        </Text>
+      </Button>
+      <Button onPress={() => toggleDebugMode()}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
+        </Text>
+      </Button>
     </View>
   );
 };

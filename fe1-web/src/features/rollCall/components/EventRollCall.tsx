@@ -5,7 +5,8 @@ import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { QRCode, WideButtonView } from 'core/components';
+import { QRCode, Button } from 'core/components';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -114,7 +115,11 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Not Open yet</Text>
             <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
-              <WideButtonView title={STRINGS.roll_call_open} onPress={() => onOpenRollCall()} />
+              <Button onPress={onOpenRollCall}>
+                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                  {STRINGS.roll_call_open}
+                </Text>
+              </Button>
             )}
           </>
         );
@@ -129,10 +134,11 @@ const EventRollCall = (props: IPropTypes) => {
               </>
             )}
             {isOrganizer && (
-              <WideButtonView
-                title={STRINGS.roll_call_scan_attendees}
-                onPress={() => onScanAttendees()}
-              />
+              <Button onPress={onScanAttendees}>
+                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                  {STRINGS.roll_call_scan_attendees}
+                </Text>
+              </Button>
             )}
           </>
         );
@@ -145,7 +151,11 @@ const EventRollCall = (props: IPropTypes) => {
               <Text key={attendee.valueOf()}>{attendee}</Text>
             ))}
             {isOrganizer && (
-              <WideButtonView title={STRINGS.roll_call_reopen} onPress={() => onReopenRollCall()} />
+              <Button onPress={onReopenRollCall}>
+                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                  {STRINGS.roll_call_reopen}
+                </Text>
+              </Button>
             )}
           </>
         );

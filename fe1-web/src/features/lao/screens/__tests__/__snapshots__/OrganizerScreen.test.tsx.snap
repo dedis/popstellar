@@ -321,10 +321,10 @@ exports[`OrganizerScreen renders correctly 1`] = `
                               Object {
                                 "borderRadius": 5,
                                 "borderWidth": 1,
-                                "marginBottom": 10,
-                                "marginHorizontal": 20,
-                                "marginTop": 10,
-                                "padding": 10,
+                                "marginBottom": 16,
+                                "marginHorizontal": 32,
+                                "marginTop": 16,
+                                "padding": 16,
                               }
                             }
                           >
@@ -354,6 +354,7 @@ exports[`OrganizerScreen renders correctly 1`] = `
                                         "color": "black",
                                         "fontSize": 25,
                                         "fontWeight": "bold",
+                                        "lineHeight": 26,
                                         "marginHorizontal": 10,
                                         "textAlign": "center",
                                       }
@@ -365,7 +366,8 @@ exports[`OrganizerScreen renders correctly 1`] = `
                                     style={
                                       Array [
                                         Object {
-                                          "fontSize": 25,
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
                                           "marginHorizontal": 10,
                                           "textAlign": "center",
                                         },

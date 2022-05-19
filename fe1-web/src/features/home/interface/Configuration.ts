@@ -53,13 +53,6 @@ export interface HomeCompositionConfiguration {
    */
   LaoList: React.ComponentType<unknown>;
 
-  /* wallet */
-
-  /**
-   * Checks whether a seed is present in the wallet store
-   */
-  hasSeed: () => boolean;
-
   /* other */
 
   /**
@@ -82,7 +75,6 @@ export type HomeReactContext = Pick<
   | 'mainNavigationScreens'
   | 'getLaoChannel'
   | 'useCurrentLaoId'
-  | 'hasSeed'
 >;
 
 /**

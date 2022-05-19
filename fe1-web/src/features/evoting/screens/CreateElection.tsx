@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -13,11 +13,12 @@ import {
   TextBlock,
   TextInputLine,
   TextInputList,
-  WideButtonView,
+  Button,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { EventTags, Hash, Timestamp } from 'core/objects';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -158,13 +159,17 @@ const CreateElection = ({ route }: any) => {
       ))}
 
       <View style={[styles.view, { zIndex: 'initial' }]}>
-        <WideButtonView
-          title="Add Question"
-          onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}
-        />
-        <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
-        <WideButtonView
-          title={STRINGS.general_button_confirm}
+        <Button onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            Add Question
+          </Text>
+        </Button>
+        <Button onPress={navigation.goBack}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.general_button_cancel}
+          </Text>
+        </Button>
+        <Button
           onPress={() =>
             onConfirmEventCreation(
               startTime,
@@ -174,8 +179,11 @@ const CreateElection = ({ route }: any) => {
               setModalEndIsVisible,
             )
           }
-          disabled={!buttonsVisibility}
-        />
+          disabled={!buttonsVisibility}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.general_button_confirm}
+          </Text>
+        </Button>
       </View>
 
       <DismissModal

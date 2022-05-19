@@ -376,6 +376,7 @@ exports[`Identity renders correctly 1`] = `
                           Object {
                             "color": "black",
                             "fontSize": 25,
+                            "lineHeight": 26,
                             "marginHorizontal": 10,
                             "textAlign": "center",
                           }
@@ -389,8 +390,9 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
-                              "fontSize": 25,
-                              "marginBottom": 10,
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             },
@@ -406,8 +408,9 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
-                              "fontSize": 25,
-                              "marginBottom": 10,
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             },
@@ -423,8 +426,9 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
-                              "fontSize": 25,
-                              "marginBottom": 10,
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             },
@@ -442,8 +446,9 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
-                              "fontSize": 25,
-                              "marginBottom": 10,
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             },
@@ -462,8 +467,9 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
-                              "fontSize": 25,
-                              "marginBottom": 10,
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
                               "marginHorizontal": 10,
                               "textAlign": "center",
                             },

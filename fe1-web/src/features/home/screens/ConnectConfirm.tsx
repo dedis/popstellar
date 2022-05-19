@@ -1,13 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { TextBlock, TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
-import { Spacing } from 'core/styles';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -20,14 +20,6 @@ import { HomeHooks } from '../hooks';
  *
  * TODO Make the confirm button make the action require in the UI specification
  */
-const styles = StyleSheet.create({
-  viewCenter: {
-    flex: 8,
-    justifyContent: 'center',
-    borderWidth: 1,
-    margin: Spacing.x1,
-  } as ViewStyle,
-});
 
 /**
  * Connects to the given server URL.
@@ -99,8 +91,17 @@ const ConnectConfirm = () => {
           onChangeText={(input: string) => setLaoId(input)}
           defaultValue={laoId}
         />
-        <WideButtonView title={STRINGS.general_button_confirm} onPress={() => onButtonConfirm()} />
-        <WideButtonView title={STRINGS.general_button_cancel} onPress={() => navigation.goBack()} />
+
+        <Button onPress={onButtonConfirm}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.general_button_confirm}
+          </Text>
+        </Button>
+        <Button onPress={navigation.goBack}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.general_button_cancel}
+          </Text>
+        </Button>
       </View>
     </ScreenWrapper>
   );

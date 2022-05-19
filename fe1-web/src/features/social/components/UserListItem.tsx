@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ProfileIcon, WideButtonView } from 'core/components';
+import { ProfileIcon, Button } from 'core/components';
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
+import { Typography } from 'core/styles';
 import { gray } from 'core/styles/colors';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -85,18 +86,18 @@ const UserListItem = (props: IPropTypes) => {
         <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <WideButtonView
-              title={STRINGS.follow_button}
-              onPress={followUser}
-              disabled={isFollowing}
-            />
+            <Button onPress={followUser} disabled={isFollowing}>
+              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                {STRINGS.follow_button}
+              </Text>
+            </Button>
           </View>
           <View style={styles.buttonView}>
-            <WideButtonView
-              title={STRINGS.profile_button}
-              onPress={goToUserProfile}
-              disabled={!isFollowing}
-            />
+            <Button onPress={goToUserProfile} disabled={!isFollowing}>
+              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                {STRINGS.profile_button}
+              </Text>
+            </Button>
           </View>
         </View>
       </View>

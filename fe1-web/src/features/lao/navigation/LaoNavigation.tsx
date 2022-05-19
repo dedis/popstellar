@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
-import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { Colors, Spacing } from 'core/styles';
@@ -25,16 +24,6 @@ const OrganizationTopTabNavigator = createBottomTabNavigator();
  *  - Wallet
  *  - Name of the connected lao (fake link)
  */
-const styles = StyleSheet.create({
-  navigator: {
-    ...Platform.select({
-      web: {
-        width: '100vw',
-      },
-      default: {},
-    }),
-  },
-});
 
 const LaoNavigation: React.FC = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();

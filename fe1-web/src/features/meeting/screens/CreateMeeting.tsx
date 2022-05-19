@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -12,11 +12,12 @@ import {
   ParagraphBlock,
   TextBlock,
   TextInputLine,
-  WideButtonView,
+  Button,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -108,8 +109,7 @@ const CreateMeeting = ({ route }: any) => {
           setLocation(text);
         }}
       />
-      <WideButtonView
-        title={STRINGS.general_button_confirm}
+      <Button
         onPress={() =>
           onConfirmEventCreation(
             startTime,
@@ -119,9 +119,17 @@ const CreateMeeting = ({ route }: any) => {
             setModalEndIsVisible,
           )
         }
-        disabled={!confirmButtonVisibility}
-      />
-      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
+        disabled={!confirmButtonVisibility}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.general_button_confirm}
+        </Text>
+      </Button>
+
+      <Button onPress={navigation.goBack}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.general_button_cancel}
+        </Text>
+      </Button>
 
       <DismissModal
         visibility={modalEndIsVisible}

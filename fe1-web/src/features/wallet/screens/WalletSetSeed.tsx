@@ -1,12 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 
-import { TextBlock, TextInputLine, Button } from 'core/components';
+import { TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { Colors, Typography } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
@@ -22,11 +23,13 @@ const styles = StyleSheet.create({
  * Wallet screen to set an already existing mnemonic
  */
 const WalletSetSeed = () => {
-  /* used to set the mnemonic seed inserted by the user */
-  const [seed, setSeed] = useState('');
-
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
+
+  const toast = useToast();
+
+  /* used to set the mnemonic seed inserted by the user */
+  const [seed, setSeed] = useState('');
 
   const initWallet = async () => {
     try {
@@ -34,8 +37,13 @@ const WalletSetSeed = () => {
       navigation.navigate(STRINGS.app_navigation_tab_home, {
         screen: STRINGS.navigation_wallet_home_tab,
       });
-    } catch {
-      navigation.navigate(STRINGS.navigation_wallet_error);
+    } catch (e) {
+      console.error(e);
+      toast.show(STRINGS.wallet_error, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 

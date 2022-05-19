@@ -320,7 +320,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 16,
+                            "padding": 48,
                           }
                         }
                       >
@@ -382,8 +382,9 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "fontSize": 25,
+                                      "fontSize": 20,
                                       "fontWeight": "bold",
+                                      "lineHeight": 26,
                                       "textAlign": "left",
                                     }
                                   }
@@ -441,8 +442,9 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "fontSize": 25,
+                                      "fontSize": 20,
                                       "fontWeight": "bold",
+                                      "lineHeight": 26,
                                       "textAlign": "left",
                                     }
                                   }

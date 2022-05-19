@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Modal, Text, View } from 'react-native';
 
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
@@ -26,7 +27,11 @@ const DismissModal = (props: IPropTypes) => {
         </View>
         <Text style={modalStyles.modalDescription}>{description}</Text>
         <View style={modalStyles.buttonView}>
-          <Button title={buttonText} onPress={() => setVisibility(!visibility)} />
+          <Button onPress={() => setVisibility(!visibility)}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              {buttonText}
+            </Text>
+          </Button>
         </View>
       </View>
     </Modal>

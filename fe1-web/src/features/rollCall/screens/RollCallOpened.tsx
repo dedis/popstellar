@@ -1,14 +1,14 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
-import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
+import { ConfirmModal, TextBlock, Button } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { Spacing } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -159,11 +159,17 @@ const RollCallOpened = () => {
           style={qrScannerStyles}
         />
         <Badge value={attendeePopTokens.size} status="success" />
-        <WideButtonView title={STRINGS.roll_call_scan_close} onPress={() => onCloseRollCall()} />
-        <WideButtonView
-          title={STRINGS.roll_call_add_attendee_manually}
-          onPress={() => setInputModalIsVisible(true)}
-        />
+        <Button onPress={() => onCloseRollCall()}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.roll_call_scan_close}
+          </Text>
+        </Button>
+
+        <Button onPress={() => setInputModalIsVisible(true)}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {STRINGS.roll_call_add_attendee_manually}
+          </Text>
+        </Button>
       </View>
       <ConfirmModal
         visibility={inputModalIsVisible}

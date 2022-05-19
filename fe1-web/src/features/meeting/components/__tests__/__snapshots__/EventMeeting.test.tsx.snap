@@ -6,7 +6,7 @@ Array [
     <Text
       style={
         Object {
-          "marginHorizontal": 10,
+          "marginHorizontal": 16,
         }
       }
     >
@@ -23,7 +23,7 @@ Array [
     <Text
       style={
         Object {
-          "marginHorizontal": 10,
+          "marginHorizontal": 16,
         }
       }
     >
@@ -39,7 +39,7 @@ Array [
   <Text
     style={
       Object {
-        "marginHorizontal": 10,
+        "marginHorizontal": 16,
       }
     }
   >

@@ -317,7 +317,7 @@ exports[`LaoItem renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "marginBottom": 10,
+                            "marginBottom": 16,
                           }
                         }
                       >
@@ -344,7 +344,8 @@ exports[`LaoItem renders correctly 1`] = `
                               Object {
                                 "borderRadius": 5,
                                 "borderWidth": 1,
-                                "fontSize": 25,
+                                "fontSize": 20,
+                                "lineHeight": 26,
                                 "marginHorizontal": 10,
                                 "textAlign": "center",
                               }

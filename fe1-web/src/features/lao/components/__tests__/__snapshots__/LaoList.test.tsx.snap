@@ -340,7 +340,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                           stickyHeaderIndices={Array []}
                           style={
                             Object {
-                              "marginTop": 20,
+                              "marginTop": 32,
                             }
                           }
                           viewabilityConfigCallbackPairs={Array []}
@@ -805,7 +805,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                           stickyHeaderIndices={Array []}
                           style={
                             Object {
-                              "marginTop": 20,
+                              "marginTop": 32,
                             }
                           }
                           viewabilityConfigCallbackPairs={Array []}
@@ -818,7 +818,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                               <View
                                 style={
                                   Object {
-                                    "marginBottom": 10,
+                                    "marginBottom": 16,
                                   }
                                 }
                               >
@@ -845,7 +845,8 @@ exports[`LaoList renders correctly with one item 1`] = `
                                       Object {
                                         "borderRadius": 5,
                                         "borderWidth": 1,
-                                        "fontSize": 25,
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
                                         "marginHorizontal": 10,
                                         "textAlign": "center",
                                       }

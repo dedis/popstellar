@@ -24,13 +24,10 @@ export namespace WalletFeature {
     CLOSED,
   }
 
-  export interface RollCallState {}
-
   export interface RollCall {
     id: Hash;
     name: string;
 
-    toState: () => RollCallState;
     containsToken(token: PopToken | undefined): boolean;
   }
 }

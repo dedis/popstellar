@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, Text, View } from 'react-native';
 
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
@@ -14,15 +15,18 @@ import TextInputLine from './TextInputLine';
  */
 
 const ConfirmModal = (props: IPropTypes) => {
-  const { visibility } = props;
-  const { setVisibility } = props;
-  const { title } = props;
-  const { description } = props;
-  const { buttonConfirmText } = props;
-  const { buttonCancelText } = props;
-  const { onConfirmPress } = props;
-  const { hasTextInput } = props;
-  const { textInputPlaceholder } = props;
+  const {
+    visibility,
+    setVisibility,
+    title,
+    description,
+    buttonConfirmText,
+    buttonCancelText,
+    onConfirmPress,
+    hasTextInput,
+    textInputPlaceholder,
+  } = props;
+
   const [textInput, setTextInput] = useState('');
 
   return (
@@ -39,14 +43,21 @@ const ConfirmModal = (props: IPropTypes) => {
           />
         ) : null}
         <View style={modalStyles.buttonView}>
-          <Button title={buttonConfirmText} onPress={() => onConfirmPress(textInput)} />
+          <Button onPress={() => onConfirmPress(textInput)}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              {buttonConfirmText}
+            </Text>
+          </Button>
+
           <Button
-            title={buttonCancelText}
             onPress={() => {
               setVisibility(!visibility);
               setTextInput('');
-            }}
-          />
+            }}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              {buttonCancelText}
+            </Text>
+          </Button>
         </View>
       </View>
     </Modal>

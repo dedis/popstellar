@@ -57,7 +57,6 @@ namespace STRINGS {
   export const navigation_wallet_insert_seed = 'Wallet Recovery';
   export const navigation_wallet_show_seed = 'New Wallet';
   export const navigation_wallet_synced = 'My Wallet';
-  export const navigation_wallet_error = 'Error';
   export const navigation_wallet_create_seed = 'Wallet Seed Creation';
 
   /* --- Social Media Navigation Strings --- */

@@ -60,6 +60,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
           Object {
             "color": "black",
             "fontSize": 25,
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -178,6 +179,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
           Object {
             "color": "red",
             "fontSize": 25,
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -300,6 +302,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
           Object {
             "color": "black",
             "fontSize": 25,
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -424,6 +427,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
           Object {
             "color": "black",
             "fontSize": 25,
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }

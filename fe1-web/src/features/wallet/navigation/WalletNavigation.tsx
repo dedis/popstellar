@@ -3,7 +3,7 @@ import React from 'react';
 
 import STRINGS from 'resources/strings';
 
-import { WalletError, WalletHome } from '../screens';
+import { WalletHome } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -18,7 +18,6 @@ export default function WalletNavigation() {
         headerShown: false,
       }}>
       <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
-      <Stack.Screen name={STRINGS.navigation_wallet_error} component={WalletError} />
     </Stack.Navigator>
   );
 }

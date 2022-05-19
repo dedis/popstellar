@@ -36,6 +36,7 @@ const contextValue = {
     mainNavigationScreens: [],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    hasSeed: () => true,
   } as HomeReactContext,
 };
 

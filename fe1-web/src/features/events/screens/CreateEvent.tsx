@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { TextBlock, WideButtonView } from 'core/components';
-import { Views } from 'core/styles';
+import { TextBlock, Button } from 'core/components';
+import { Typography, Views } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -36,14 +36,20 @@ const CreateEvent = () => {
       <TextBlock text={STRINGS.create_description} />
 
       {eventTypes.map((eventType) => (
-        <WideButtonView
-          title={eventType.eventType}
+        <Button
           key={`wide-btn-view-${eventType.eventType}`}
-          onPress={() => navigation.navigate(eventType.navigationNames.createEvent, styleEvents)}
-        />
+          onPress={() => navigation.navigate(eventType.navigationNames.createEvent, styleEvents)}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {eventType.eventType}
+          </Text>
+        </Button>
       ))}
 
-      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
+      <Button onPress={navigation.goBack}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.general_button_cancel}
+        </Text>
+      </Button>
     </View>
   );
 };

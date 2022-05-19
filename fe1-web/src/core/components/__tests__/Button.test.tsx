@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
+import { Text } from 'react-native';
 
 import Button from '../Button';
 
@@ -12,7 +13,11 @@ beforeEach(() => {
 
 describe('WideButtonView', () => {
   it('renders correctly without disabled', () => {
-    const { toJSON } = render(<Button title={wideButtonTitle} onPress={() => onPress} />);
+    const { toJSON } = render(
+      <Button onPress={() => onPress}>
+        <Text>{wideButtonTitle}</Text>
+      </Button>,
+    );
     expect(toJSON()).toMatchSnapshot();
   });
 });

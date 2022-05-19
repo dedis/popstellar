@@ -8,7 +8,7 @@ import { mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
-import { addLao, laoReducer } from 'features/lao/reducer';
+import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import { HomeHooks } from '../index';
 
@@ -38,7 +38,7 @@ const contextValue = {
 
 // setup mock store
 const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(addLao(mockLao.toState()));
+mockStore.dispatch(connectToLao(mockLao.toState()));
 
 const wrapper = ({ children }: { children: React.ReactChildren }) => (
   <Provider store={mockStore}>
@@ -92,7 +92,7 @@ describe('Home hooks', () => {
   describe('HomeHooks.useCurrentLaoId', () => {
     it('should return the the current lao id', () => {
       const { result } = renderHook(() => HomeHooks.useCurrentLaoId(), { wrapper });
-      expect(result.current?.valueOf()).toEqual(mockLaoIdHash);
+      expect(result.current).toEqual(mockLaoIdHash);
     });
   });
 

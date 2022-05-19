@@ -5,7 +5,7 @@ import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
+import { CheckboxList, TimeDisplay, Button } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -112,7 +112,13 @@ const EventElection = (props: IPropTypes) => {
               )}
               renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
             />
-            {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
+            {isOrganizer && (
+              <Button onPress={onOpenElection}>
+                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                  Open election
+                </Text>
+              </Button>
+            )}
           </>
         );
       case ElectionStatus.OPENED:
@@ -128,13 +134,19 @@ const EventElection = (props: IPropTypes) => {
                 }
               />
             ))}
-            <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
+
+            <Button onPress={onCastVote}>
+              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                {STRINGS.cast_vote}
+              </Text>
+            </Button>
             <Badge value={hasVoted} status="success" />
             {isOrganizer && (
-              <WideButtonView
-                title="Terminate Election / Tally Votes"
-                onPress={onTerminateElection}
-              />
+              <Button onPress={onTerminateElection}>
+                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+                  Terminate Election / Tally Votes
+                </Text>
+              </Button>
             )}
           </>
         );
