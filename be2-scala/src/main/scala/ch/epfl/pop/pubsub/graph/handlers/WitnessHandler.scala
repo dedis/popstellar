@@ -6,6 +6,7 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
@@ -18,25 +19,23 @@ case object WitnessHandler extends MessageHandler {
     val channel: Channel = rpcMessage.getParamsChannel
 
     rpcMessage.getParamsMessage match {
-      case Some(witnessMessage) =>
-        // get message (Message) with messageId message_id from db
-        val askRead = dbActor ? DbActor.Read(channel, messageId)
-        Await.ready(askRead, duration).value match {
-          case Some(Success(DbActor.DbActorReadAck(Some(message)))) =>
-            // add new witness signature to existing ones
-            message.addWitnessSignature(WitnessSignaturePair(witnessMessage.sender, signature))
-            val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(channel, message)
-            Await.result(askWritePropagate, duration) match {
-              case Success(_) => Left(rpcMessage)
-              case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
-              case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-            }
+      case Some(message) =>
+        val combined = for {
+          // add new witness signature to existing ones
+          _ <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+          //overwrites the message containing now the witness signature in the db
+          _ <- dbActor ? DbActor.WriteAndPropagate(channel, message)
+        } yield ()
+
+        Await.ready(combined, duration).value match {
+          case Some(Success(_)) => Left(rpcMessage)
           case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
+
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle witness message $rpcMessage. Not a AddWitness message",
+        s"Unable to handle witness message $rpcMessage. Not a AddWitnessSignature message",
         rpcMessage.id
       ))
     }

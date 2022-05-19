@@ -163,11 +163,16 @@ final case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def addWitnessSignature(messageId: Hash, signature: Signature): Unit = {
-    throw DbActorNAckException(
-      ErrorCodes.SERVER_ERROR.id,
-      s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
-    )
+  private def addWitnessSignature(channel: Channel, messageId: Hash, signature: Signature): Unit = {
+    Try(read(channel, messageId)) match {
+      case Success(Some(msg)) =>
+        msg.addWitnessSignature(WitnessSignaturePair(msg.sender, signature))
+        sender() ! DbActorReadAck(Some(msg))
+      case Success(None) =>
+        log.error(s"Actor $self (db) encountered a problem while reading the message having as id '$messageId'")
+        throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not read message of message id $messageId")
+      case failure => sender() ! failure.recover(Status.Failure(_))
+    }
   }
 
   @throws [DbActorNAckException]
@@ -253,9 +258,9 @@ final case class DbActor(
         sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
       }
 
-    case AddWitnessSignature(messageId, signature) =>
+    case AddWitnessSignature(channel, messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
-      Try(addWitnessSignature(messageId, signature)) match {
+      Try(addWitnessSignature(channel, messageId, signature)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -358,10 +363,11 @@ object DbActor {
    * Request to append witness <signature> to a stored message with message_id
    * <messageId>
    *
+   * @param channel channel in which the messages are being sent
    * @param messageId message_id of the targeted message
    * @param signature signature to append to the witness signature list of the message
    */
-  final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
+  final case class AddWitnessSignature(channel: Channel, messageId: Hash, signature: Signature) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
