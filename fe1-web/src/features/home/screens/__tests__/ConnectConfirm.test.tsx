@@ -21,7 +21,7 @@ const contextValue = {
     connectToTestLao: () => {},
     useLaoList: () => [],
     LaoList: () => null,
-    hpmeNavigationScreens: [],
+    homeNavigationScreens: [],
   } as HomeReactContext,
 };
 

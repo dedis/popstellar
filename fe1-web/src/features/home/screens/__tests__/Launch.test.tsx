@@ -15,7 +15,7 @@ const contextValue = {
     connectToTestLao: () => {},
     useLaoList: () => [],
     LaoList: () => null,
-    hpmeNavigationScreens: [],
+    homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
   } as HomeReactContext,
