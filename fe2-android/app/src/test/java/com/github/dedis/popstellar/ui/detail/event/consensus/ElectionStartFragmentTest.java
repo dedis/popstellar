@@ -20,7 +20,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
@@ -28,6 +27,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
@@ -49,7 +49,17 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Completable;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -61,20 +71,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnit;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -166,7 +162,8 @@ public class ElectionStartFragmentTest {
   private static final long PAST_TIME = 946684800;
   private static final long FUTURE_TIME = 2145916800;
 
-  private static final Election election = new Election(LAO_ID, PAST_TIME, ELECTION_NAME);
+  private static final Election election =
+      new Election(LAO_ID, PAST_TIME, ELECTION_NAME, ElectionVersion.OPEN_BALLOT);
   private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
   private static final String INSTANCE_ID =
       ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
