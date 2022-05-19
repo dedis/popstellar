@@ -59,10 +59,9 @@ const NotificationScreenListItem = ({ item }: { item: ListSeparatorItem | Notifi
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate<'Notification'>(
-            STRINGS.navigation_notification_single_notification,
-            { notificationId: item.id },
-          )
+          navigation.navigate<'Notification'>(STRINGS.navigation_notification_single_notification, {
+            notificationId: item.id,
+          })
         }>
         <View
           style={

@@ -12,7 +12,6 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { subscribeToChannel } from 'core/network';
 import { Colors, Spacing } from 'core/styles';
-import { getLaoChannel } from 'features/lao/functions';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -47,6 +46,7 @@ const ConnectOpenScan = () => {
   const toast = useToast();
 
   const laoId = HomeHooks.useCurrentLaoId();
+  const getLaoChannel = HomeHooks.useGetLaoChannel();
 
   // this is needed as otherwise the camera will stay turned on
   const [showScanner, setShowScanner] = useState(false);

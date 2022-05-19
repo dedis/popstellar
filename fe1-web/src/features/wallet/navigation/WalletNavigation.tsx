@@ -9,9 +9,9 @@ import WalletIcon from 'core/components/icons/WalletIcon';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Colors } from 'core/styles';
-import { HomeFeature } from 'features/home/interface';
 import STRINGS from 'resources/strings';
 
+import { WalletFeature } from '../interface';
 import { forget } from '../objects';
 import { clearDummyWalletState, createDummyWalletState } from '../objects/DummyWallet';
 import { WalletHome } from '../screens';
@@ -82,7 +82,7 @@ const WalletNavigationHeaderRight = () => {
   );
 };
 
-export const WalletNavigationScreen: HomeFeature.HomeScreen & HomeFeature.LaoScreen = {
+export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.LaoScreen = {
   id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
   tabBarIcon: WalletIcon,

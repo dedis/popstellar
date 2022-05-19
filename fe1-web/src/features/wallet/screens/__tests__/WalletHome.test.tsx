@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
@@ -19,7 +19,6 @@ import { walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { generateToken, recoverWalletRollCallTokens } from '../../objects';
-import { clearDummyWalletState, createDummyWalletState } from '../../objects/DummyWallet';
 import { RollCallToken } from '../../objects/RollCallToken';
 import { WalletHome } from '../index';
 

@@ -43,10 +43,7 @@ const qrScannerStyles: ViewStyle = {
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<
-    LaoOrganizerParamList,
-    typeof STRINGS.navigation_lao_organizer_open_roll_call
-  >,
+  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_open_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
