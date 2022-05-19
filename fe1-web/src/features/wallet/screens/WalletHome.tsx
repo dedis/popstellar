@@ -89,7 +89,7 @@ const WalletHome = () => {
 
   return (
     <View style={styles.homeContainer}>
-      <Text style={styles.textImportant}>{STRINGS.welcome_heading}</Text>
+      <Text style={styles.textImportant}>{STRINGS.wallet_welcome_heading}</Text>
       <View style={styles.tokenSelectContainer}>
         {tokens && (
           <RollCallTokensDropDown
@@ -110,7 +110,7 @@ const WalletHome = () => {
           });
         }}>
         <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.logout_from_wallet}
+          {STRINGS.wallet_home_logout}
         </Text>
       </Button>
       <Button onPress={() => toggleDebugMode()}>

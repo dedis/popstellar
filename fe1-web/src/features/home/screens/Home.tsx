@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 
@@ -14,7 +14,6 @@ import { HomeHooks } from '../hooks';
 const Home: FunctionComponent = () => {
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
-  console.log('h');
 
   return laos && laos.length > 0 ? (
     <ScreenWrapper>
@@ -22,9 +21,9 @@ const Home: FunctionComponent = () => {
     </ScreenWrapper>
   ) : (
     <ScreenWrapper>
-      <View style={containerStyles.centeredY}>
-        <Text style={Typography.heading}>h</Text>
-      </View>
+      <Text style={Typography.heading}>{STRINGS.home_setup_heading}</Text>
+      <Text style={Typography.paragraph}>{STRINGS.home_setup_description_1}</Text>
+      <Text style={Typography.paragraph}>{STRINGS.home_setup_description_2}</Text>
     </ScreenWrapper>
   );
 };

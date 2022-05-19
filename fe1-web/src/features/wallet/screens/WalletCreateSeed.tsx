@@ -62,7 +62,7 @@ const WalletCreateSeed = () => {
       });
     } catch (e) {
       console.error(e);
-      toast.show(STRINGS.wallet_error, {
+      toast.show(STRINGS.wallet_set_seed_error, {
         type: 'danger',
         placement: 'top',
         duration: FOUR_SECONDS,
@@ -74,43 +74,63 @@ const WalletCreateSeed = () => {
     <View style={styles.welcomeView}>
       <ScreenWrapper>
         <View style={containerStyles.centeredY}>
-          <Text style={[Typography.heading, Typography.negative]}>{STRINGS.welcome_heading}</Text>
+          <Text style={[Typography.heading, Typography.negative]}>
+            {STRINGS.wallet_welcome_heading}
+          </Text>
           <Text style={[Typography.paragraph, Typography.negative]}>
-            {STRINGS.welcome_text_first_time}
+            {STRINGS.wallet_welcome_text_first_time}
           </Text>
           <Text style={Typography.paragraph}>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_1}</Text>
-            <Text> </Text>
-            <Text style={Typography.secondary}>
-              {STRINGS.welcome_text_wallet_explanation_wallet}
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_1}
             </Text>
             <Text> </Text>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_2}</Text>
+            <Text style={Typography.secondary}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_wallet}
+            </Text>
             <Text> </Text>
-            <Text style={Typography.secondary}>{STRINGS.welcome_text_wallet_explanation_seed}</Text>
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_2}
+            </Text>
+            <Text> </Text>
+            <Text style={Typography.secondary}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
+            </Text>
             <Text style={Typography.negative}>. </Text>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_3}</Text>
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_3}
+            </Text>
             <Text> </Text>
-            <Text style={Typography.secondary}>{STRINGS.welcome_text_wallet_explanation_seed}</Text>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_4}</Text>
+            <Text style={Typography.secondary}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
+            </Text>
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_4}
+            </Text>
           </Text>
           <CopiableTextInput text={seed} negative />
           <Text style={Typography.paragraph}>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_5}</Text>
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_5}
+            </Text>
             <Text> </Text>
-            <Text style={Typography.secondary}>{STRINGS.welcome_text_wallet_explanation_seed}</Text>
-            <Text style={Typography.negative}>{STRINGS.welcome_text_wallet_explanation_6}</Text>
+            <Text style={Typography.secondary}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
+            </Text>
+            <Text style={Typography.negative}>
+              {STRINGS.wallet_welcome_text_wallet_explanation_6}
+            </Text>
           </Text>
           <Button onPress={() => connectWithSeed()} negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.welcome_start_exploring}
+              {STRINGS.wallet_welcome_start_exploring}
             </Text>
           </Button>
           <Button
             onPress={() => navigation.navigate(STRINGS.navigation_wallet_insert_seed)}
             negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.welcome_already_know_seed}
+              {STRINGS.wallet_welcome_already_know_seed}
             </Text>
           </Button>
         </View>

@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/core';
 import React, { useMemo } from 'react';
 
-import HomeIcon from 'core/components/icons/HomeIcon';
+import ListIcon from 'core/components/icons/ListIcon';
 import ScanIcon from 'core/components/icons/ScanIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { Colors, Spacing } from 'core/styles';
@@ -31,9 +31,9 @@ const MainNavigation = () => {
       // add home screen to the navigation
       {
         id: STRINGS.navigation_tab_home,
-        title: STRINGS.navigation_tab_home,
+        title: STRINGS.home_navigation_title,
         Component: Home,
-        tabBarIcon: HomeIcon,
+        tabBarIcon: ListIcon,
         order: -99999999,
       } as HomeFeature.Screen,
       {
@@ -56,7 +56,7 @@ const MainNavigation = () => {
     <HomeNavigator.Navigator
       initialRouteName={STRINGS.navigation_tab_home}
       screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
+        tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.inactive,
         headerLeftContainerStyle: {
           paddingLeft: Spacing.horizontalContentSpacing,

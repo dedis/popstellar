@@ -68,8 +68,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Home Strings --- */
-  export const home_setup =
-    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code the organizer provides to you.';
+
+  export const home_navigation_title = 'LAOs';
+  export const home_setup_heading = 'POPStellar 🤩';
+  export const home_setup_description_1 =
+    'The POPStellar application builds on top of so-called local autonomous organizations (LAOs). ' +
+    'Known LAOs will be listed here after you connected to it once.';
+  export const home_setup_description_2 =
+    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
@@ -209,64 +215,47 @@ namespace STRINGS {
   export const time_display_start = 'Start: ';
   export const time_display_end = 'End: ';
 
-  /* --- Welcome Screen Strings --- */
-  export const welcome_heading = 'Hey there 👋';
-  export const welcome_text_first_time =
+  /* --- Wallet Strings --- */
+
+  export const wallet_set_seed_error = 'A synchronization error with your wallet occurred';
+
+  /* --- Wallet Welcome Screen Strings --- */
+  export const wallet_welcome_heading = 'Hey there 👋';
+  export const wallet_welcome_text_first_time =
     'It seems as if you are using POPStellar for the first time?';
 
-  export const welcome_text_wallet_explanation_1 = 'As a first step, you need to set up your';
-  export const welcome_text_wallet_explanation_2 = 'that is secured using a';
-  export const welcome_text_wallet_explanation_wallet = 'wallet 🔒';
-  export const welcome_text_wallet_explanation_seed = 'seed 🔑';
-  export const welcome_text_wallet_explanation_3 =
+  export const wallet_welcome_text_wallet_explanation_1 =
+    'As a first step, you need to set up your';
+  export const wallet_welcome_text_wallet_explanation_2 = 'that is secured using a';
+  export const wallet_welcome_text_wallet_explanation_wallet = 'wallet 🔒';
+  export const wallet_welcome_text_wallet_explanation_seed = 'seed 🔑';
+  export const wallet_welcome_text_wallet_explanation_3 =
     'It is very important that you keep a backup copy of your';
-  export const welcome_text_wallet_explanation_4 =
+  export const wallet_welcome_text_wallet_explanation_4 =
     ', as it is the only way to restore your PoP tokens.';
 
-  export const welcome_text_wallet_explanation_5 = 'If you have backed up the above';
+  export const wallet_welcome_text_wallet_explanation_5 = 'If you have backed up the above';
 
-  export const welcome_text_wallet_explanation_6 =
+  export const wallet_welcome_text_wallet_explanation_6 =
     ', you can continue and start using the POPStellar application. ' +
     'The purpose of this application is to demonstrate use cases for proofs of personhood (PoP).';
 
-  export const welcome_start_exploring = 'Start exploring POPStellar 🤩';
+  export const wallet_welcome_start_exploring = 'Start exploring POPStellar 🤩';
 
-  export const welcome_already_know_seed =
+  export const wallet_welcome_already_know_seed =
     'I have already used this application and know previous seed 🧐';
 
-  /* --- Wallet Strings --- */
-
-  export const wallet_save_seed_and_connect = 'Restore my wallet 🔐';
-  export const wallet_no_seed = 'Oof, I might not know my seed 🔑 after all 😬';
-  export const wallet_seed_info = 'My 12 word seed 🔑 is ...';
-
-  export const wallet_private_key_id = 'Private Decryption Key';
-  export const wallet_public_key_id = 'Public Encryption Key';
-  export const wallet_private_key = 'private';
-  export const wallet_public_key = 'public';
-  export const wallet_balance = 'Your balance = ';
-  export const wallet_your_pk = 'Your public key = ';
-  export const show_seed_info =
-    'This is the only backup seed for your PoP tokens - store it securely';
-  export const copy_to_clipboard = 'Copy to clipboard';
-  export const type_seed_example =
+  /* --- Wallet Restore Seed Screen Strings --- */
+  export const wallet_restore_heading = 'My 12 word seed 🔑 is ...';
+  export const wallet_restore_using_known_seed = 'Restore my wallet 🔐';
+  export const wallet_previous_seed_not_known = 'Oof, I might not know my seed 🔑 after all 😬';
+  export const wallet_restore_seed_example =
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
-  export const wallet_synced_info = 'Your digital wallet is synced !';
-  export const setup_wallet = 'SETUP WALLET';
 
-  export const logout_from_wallet = 'LOGOUT';
-  export const show_tokens_title = 'SHOW POP TOKENS';
-  export const show_public_keys = 'SHOW PUBLIC KEYS';
-  export const hide_public_keys = 'HIDE PUBLIC KEYS';
-  export const show_qr_public_keys = 'SHOW QR KEYS';
-  export const hide_qr_public_keys = 'HIDE QR KEYS';
-  export const your_tokens_title = 'Your PoP Tokens';
-  export const wallet_error = 'A synchronization error with your wallet occurred';
+  /* --- Wallet Home Screen Strings --- */
+  export const wallet_home_logout = 'LOGOUT';
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
-  export const lao_id = 'LAO ID';
-  export const lao_name = 'LAO name';
-  export const roll_call_name = 'Roll Call name';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

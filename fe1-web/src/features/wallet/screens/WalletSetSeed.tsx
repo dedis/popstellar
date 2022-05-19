@@ -39,7 +39,7 @@ const WalletSetSeed = () => {
       });
     } catch (e) {
       console.error(e);
-      toast.show(STRINGS.wallet_error, {
+      toast.show(STRINGS.wallet_set_seed_error, {
         type: 'danger',
         placement: 'top',
         duration: FOUR_SECONDS,
@@ -51,22 +51,22 @@ const WalletSetSeed = () => {
     <View style={styles.welcomeView}>
       <ScreenWrapper>
         <View>
-          <Text style={[Typography.heading, Typography.negative]}>{STRINGS.wallet_seed_info}</Text>
+          <Text style={[Typography.heading, Typography.negative]}>{STRINGS.wallet_restore_heading}</Text>
           <TextInputLine
-            placeholder={STRINGS.type_seed_example}
+            placeholder={STRINGS.wallet_restore_seed_example}
             onChangeText={(input: string) => setSeed(input)}
             negative
           />
           <Button onPress={() => initWallet()} negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_save_seed_and_connect}
+              {STRINGS.wallet_restore_using_known_seed}
             </Text>
           </Button>
           <Button
             onPress={() => navigation.navigate(STRINGS.navigation_wallet_create_seed)}
             negative>
             <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_no_seed}
+              {STRINGS.wallet_previous_seed_not_known}
             </Text>
           </Button>
         </View>
