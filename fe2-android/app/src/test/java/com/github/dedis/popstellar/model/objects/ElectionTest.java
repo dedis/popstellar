@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -7,18 +8,19 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
 
 public class ElectionTest {
 
@@ -43,10 +45,9 @@ public class ElectionTest {
   private final String id = "my election id";
   private final long startTime = 0;
   private final long endTime = 1;
-  private final ElectionVersion electionVersion = ElectionVersion.OPEN_BALLOT;
   private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election =
-      new Election("lao id", Instant.now().getEpochSecond(), name, electionVersion);
+          new Election("lao id", Instant.now().getEpochSecond(), name, OPEN_BALLOT);
 
   @Test
   public void settingNullParametersThrowsException() {
@@ -162,7 +163,7 @@ public class ElectionTest {
 
   @Test
   public void getVersionTest() {
-    assertThat(ElectionVersion.OPEN_BALLOT, is(election.getElectionVersion()));
+    assertThat(OPEN_BALLOT, is(election.getElectionVersion()));
   }
 
   @Test

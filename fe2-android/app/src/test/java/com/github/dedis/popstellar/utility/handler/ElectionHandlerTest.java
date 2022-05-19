@@ -15,9 +15,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -34,7 +34,15 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import io.reactivex.Completable;
+
+import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -42,12 +50,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
@@ -129,17 +133,9 @@ public class ElectionHandlerTest extends TestCase {
   public void testHandleElectionSetup() throws DataHandlingException {
     // Create the setup Election message
     ElectionSetup electionSetupOpenBallot =
-        new ElectionSetup(
-            ElectionVersion.OPEN_BALLOT,
-            "election 2",
-            election.getCreation(),
-            election.getStartTimestamp(),
-            election.getEndTimestamp(),
-            Collections.singletonList(electionQuestion.getVotingMethod()),
-            Collections.singletonList(electionQuestion.getWriteIn()),
-            Collections.singletonList(electionQuestion.getBallotOptions()),
-            Collections.singletonList(electionQuestion.getQuestion()),
-            lao.getId());
+            new ElectionSetup(
+                    Collections.singletonList(electionQuestion.getWriteIn()), "election 2", election.getCreation(), election.getStartTimestamp(), election.getEndTimestamp(), Collections.singletonList(electionQuestion.getVotingMethod()), lao.getId(), Collections.singletonList(electionQuestion.getBallotOptions()), Collections.singletonList(electionQuestion.getQuestion()), ElectionVersion.OPEN_BALLOT
+            );
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, GSON);
 
     // Call the message handler

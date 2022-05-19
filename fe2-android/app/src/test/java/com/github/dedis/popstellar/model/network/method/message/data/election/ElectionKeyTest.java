@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
 import org.junit.Test;
 
 public class ElectionKeyTest {
@@ -33,7 +34,7 @@ public class ElectionKeyTest {
 
   @Test
   public void getObjectTest() {
-    assertEquals(Objects.ELECTION.getObject(),ELEC_KEY1 .getObject());
+    assertEquals(Objects.ELECTION.getObject(), ELEC_KEY1.getObject());
   }
 
   @Test
@@ -43,7 +44,6 @@ public class ElectionKeyTest {
 
     ElectionKey testElect1 = new ElectionKey(ELEC_ID1, KEY1);
     assertEquals(testElect1,ELEC_KEY1);
-    assertEquals(ELEC_KEY1, ELEC_KEY1);
     assertNotEquals(ELEC_KEY1, null);
     assertEquals(testElect1.hashCode(), ELEC_KEY1.hashCode());
   }
