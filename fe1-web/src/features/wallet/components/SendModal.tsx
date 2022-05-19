@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { Button, Modal, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import React, { useState } from 'react';
+import { Button, Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Input } from 'react-native-elements';
 
 import { Typography } from 'core/styles';
@@ -35,9 +35,18 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * A modal to send some LAOCOINs to another public key
+ */
 const SendModal = (props: IPropTypes) => {
-  const { modalVisible, setModalVisible } = props;
+  const { modalVisible, setModalVisible, send } = props;
+  const [receiverPK, setReceiverPK] = useState('');
+  const [amount, setAmount] = useState(0);
+
   const switchModalVisibility = () => setModalVisible(!modalVisible);
+  const onPressSend = () => {
+    send(receiverPK, amount);
+  };
   return (
     <Modal animationType="slide" visible={modalVisible} onRequestClose={switchModalVisibility}>
       <View style={styles.modal}>
@@ -48,9 +57,17 @@ const SendModal = (props: IPropTypes) => {
           </View>
           <View style={styles.sendContainer}>
             <View style={styles.sendView}>
-              <Input style={styles.input} label={STRINGS.wallet_send_destination_label} />
-              <Input style={styles.input} label={STRINGS.wallet_send_amount_label} />
-              <Button title={STRINGS.wallet_send_title} onPress={() => {}} />
+              <Input
+                style={styles.input}
+                label={STRINGS.wallet_send_destination_label}
+                onChangeText={(text) => setReceiverPK(text)}
+              />
+              <Input
+                style={styles.input}
+                label={STRINGS.wallet_send_amount_label}
+                onChangeText={(text) => setAmount(Number.parseInt(text, 10))}
+              />
+              <Button title={STRINGS.wallet_send_title} onPress={onPressSend} />
             </View>
           </View>
         </View>
@@ -62,6 +79,7 @@ const SendModal = (props: IPropTypes) => {
 const propTypes = {
   modalVisible: PropTypes.bool.isRequired,
   setModalVisible: PropTypes.func.isRequired,
+  send: PropTypes.func.isRequired,
 };
 SendModal.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
