@@ -44,7 +44,7 @@ const digitalCashSlice = createSlice({
   reducers: {
     /*
      * Adds a transaction to the state
-     * We are trusting information of the transaction object, we do not verify any hashes
+     * We are trusting information of the transaction object, we do not verify it
      */
     addTransaction: {
       prepare(
@@ -90,9 +90,11 @@ const digitalCashSlice = createSlice({
         rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
         rollCallState.transactions.push(transactionMessage);
 
-        // In any case every inputs from this public key will be used spent in the outputs
+        // Invariant: Every inputs of a public key used in an input will be spent in the outputs
         transactionMessage.inputs.forEach((input) => {
-          rollCallState.balances[Hash.fromString(input.script.publicKey).valueOf()] = 0;
+          const pubHash = Hash.fromString(input.script.publicKey).valueOf();
+          rollCallState.balances[pubHash] = 0;
+          rollCallState.transactionsByPubHash[pubHash].clear();
         });
 
         transactionMessage.outputs.forEach((output) => {
