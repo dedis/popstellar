@@ -72,11 +72,14 @@ Feature: Create a pop LAO
           "action": "create",
           "id": '#(getLaoValid)',
           "name": "LAO",
-          "creation": 1633035721,
+          "creation": '#(getLaoValidCreationTime)',
           "organizer": '#(getOrganizer)',
           "witnesses": []
         }
       """
+    * karate.log("----------------------------1111111111111111------------------------")
+    * karate.log(laoCreateRequest)
+    * karate.log("----------------------------1111111111111111------------------------")
     When frontend.publish(JSON.stringify(laoCreateRequest), channel)
     And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
     Then match answer contains VALID_MESSAGE

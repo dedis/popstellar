@@ -18,6 +18,14 @@ Feature: Constants
     * def getOrganizer = call organizerPk
     * def getAttendee = call attendeePk
 
+    * def laoValidCreationTime =
+    """
+        function(){
+          return 1633035721
+        }
+    """
+    * def getLaoValidCreationTime = call laoValidCreationTime
+
     * def laoIdHash =
        """
           function(){
@@ -25,7 +33,7 @@ Feature: Constants
             var String = Java.type('java.lang.String')
             var jsonConverter = new JsonConverter()
             var organizer = getOrganizer
-            var time = String.format("%d",1633035721)
+            var time = String.format("%d",getLaoValidCreationTime)
             var name = "LAO"
             return jsonConverter.hash(organizer.getBytes(), time.getBytes(), name.getBytes())
           }
