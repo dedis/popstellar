@@ -10,10 +10,12 @@ import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -32,7 +34,15 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import io.reactivex.Completable;
+
+import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -40,12 +50,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
@@ -97,7 +103,9 @@ public class ElectionHandlerTest extends TestCase {
         });
 
     // Create one Election and add it to the LAO
-    election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
+    election =
+        new Election(
+            lao.getId(), Instant.now().getEpochSecond(), "election 1", ElectionVersion.OPEN_BALLOT);
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
     election.setChannel(lao.getChannel().subChannel(election.getId()));
@@ -124,28 +132,24 @@ public class ElectionHandlerTest extends TestCase {
   @Test
   public void testHandleElectionSetup() throws DataHandlingException {
     // Create the setup Election message
-    ElectionSetup electionSetup =
-        new ElectionSetup(
-            "election 2",
-            election.getCreation(),
-            election.getStartTimestamp(),
-            election.getEndTimestamp(),
-            Collections.singletonList(electionQuestion.getVotingMethod()),
-            Collections.singletonList(electionQuestion.getWriteIn()),
-            Collections.singletonList(electionQuestion.getBallotOptions()),
-            Collections.singletonList(electionQuestion.getQuestion()),
-            lao.getId());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetup, GSON);
+    ElectionSetup electionSetupOpenBallot =
+            new ElectionSetup(
+                    Collections.singletonList(electionQuestion.getWriteIn()), "election 2", election.getCreation(), election.getStartTimestamp(), election.getEndTimestamp(), Collections.singletonList(electionQuestion.getVotingMethod()), lao.getId(), Collections.singletonList(electionQuestion.getBallotOptions()), Collections.singletonList(electionQuestion.getQuestion()), ElectionVersion.OPEN_BALLOT
+            );
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, GSON);
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
-        laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetup.getId());
+        laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetupOpenBallot.getId());
     assertTrue(electionOpt.isPresent());
     assertEquals(EventState.CREATED, electionOpt.get().getState());
-    assertEquals(electionSetup.getId(), electionOpt.get().getId());
+    assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
+
+    // Check that the election version has been successfully set
+    assertEquals(ElectionVersion.OPEN_BALLOT, electionOpt.get().getElectionVersion());
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -211,10 +215,24 @@ public class ElectionHandlerTest extends TestCase {
           election.getChannel(), message);
       if (state == EventState.CREATED) {
         assertEquals(EventState.OPENED, election.getState());
-        //Test for current TimeStamp
+        // Test for current TimeStamp
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
       } else {
         assertEquals(state, election.getState());}
     }
+  }
+
+  @Test
+  public void testElectionKey() throws DataHandlingException{
+    // Create the election key message
+    String key = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
+    ElectionKey electionKey = new ElectionKey(election.getId(), key);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionKey, GSON);
+
+    // Call the message handler
+    messageHandler.handleMessage(
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+
+    assertEquals(key, election.getElectionKey());
   }
 }

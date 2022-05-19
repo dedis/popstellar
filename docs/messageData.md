@@ -400,6 +400,7 @@ the required number of witness signatures.
 
 This is a message that is broadcasted by the server on the lao channel after it is created. Clients can then receive this message by sending a [catchup message](./protocol.md#catching-up-on-past-messages-on-a-channel).
 
+
 The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
 
 Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
@@ -1521,7 +1522,7 @@ A vote in an open ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [0]
+            "vote": 0
         }
     ]
 }
@@ -1543,10 +1544,7 @@ A vote in a secret ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [
-                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
-                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
-            ]
+            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
         }
     ]
 }
@@ -1596,7 +1594,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in))), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in))"
                             },
                             "question": {
                                 "type": "string",
@@ -1604,14 +1602,9 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "integer",
-                                    "$comment": "index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "index corresponding to the ballot_option",
+                                "type": "integer",
+                                "$comment": "index of the option to vote for"
                             }
                         }
                     },
@@ -1620,7 +1613,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))), concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index | encrypted_write_in)))"
                             },
                             "question": {
                                 "type": "string",
@@ -1628,15 +1621,10 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "contentEncoding": "base64",
-                                    "$comment": "encrypted index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "encrypted index corresponding to the ballot_option",
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "encrypted index of the option to vote for"
                             }
                         }
                     }
