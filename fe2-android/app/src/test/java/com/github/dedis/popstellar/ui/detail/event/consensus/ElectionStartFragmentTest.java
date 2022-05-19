@@ -27,7 +27,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
@@ -163,7 +163,7 @@ public class ElectionStartFragmentTest {
   private static final long FUTURE_TIME = 2145916800;
 
   private static final Election election =
-      new Election(LAO_ID, PAST_TIME, ELECTION_NAME, Version.OPEN_BALLOT);
+      new Election(LAO_ID, PAST_TIME, ELECTION_NAME, ElectionVersion.OPEN_BALLOT);
   private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
   private static final String INSTANCE_ID =
       ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());

@@ -4,7 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -29,7 +29,7 @@ public class Election extends Event {
   private long end;
   private List<ElectionQuestion> electionQuestions;
   private String electionKey;
-  private final Version electionVersion;
+  private final ElectionVersion electionVersion;
 
   // Map that associates each sender pk to their votes
   private final Map<PublicKey, List<ElectionVote>> voteMap;
@@ -41,7 +41,7 @@ public class Election extends Event {
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
 
-  public Election(String laoId, long creation, String name, Version version) {
+  public Election(String laoId, long creation, String name, ElectionVersion electionVersion) {
     this.id = Election.generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
@@ -50,7 +50,7 @@ public class Election extends Event {
     this.voteMap = new HashMap<>();
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
-    this.electionVersion = version;
+    this.electionVersion = electionVersion;
     this.electionKey = null;
   }
 
@@ -76,7 +76,7 @@ public class Election extends Event {
     this.name = name;
   }
 
-  public Version getElectionVersion() {
+  public ElectionVersion getElectionVersion() {
     return electionVersion;
   }
 

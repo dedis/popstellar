@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class ElectionSetupTest {
 
-  private final Version version = Version.OPEN_BALLOT;
+  private final ElectionVersion electionVersion = ElectionVersion.OPEN_BALLOT;
   private final String electionSetupName = "new election setup";
   private final long creation = 0;
   private final long start = 0;
@@ -34,7 +34,7 @@ public class ElectionSetupTest {
   private final String laoId = "my lao id";
   private final ElectionSetup openBallotSetup =
       new ElectionSetup(
-          version,
+              electionVersion,
           electionSetupName,
           creation,
           start,
@@ -46,7 +46,7 @@ public class ElectionSetupTest {
           laoId);
   private final ElectionSetup secretBallotSetup =
       new ElectionSetup(
-          Version.SECRET_BALLOT,
+          ElectionVersion.SECRET_BALLOT,
           electionSetupName,
           creation,
           start,
@@ -103,10 +103,10 @@ public class ElectionSetupTest {
   @Test
   public void getVersionTest(){
     assertEquals(
-        Version.OPEN_BALLOT.getStringBallotVersion(), openBallotSetup.getVersion().getStringBallotVersion());
+        ElectionVersion.OPEN_BALLOT.getStringBallotVersion(), openBallotSetup.getElectionVersion().getStringBallotVersion());
     assertEquals(
-        Version.SECRET_BALLOT.getStringBallotVersion(),
-        secretBallotSetup.getVersion().getStringBallotVersion());
+        ElectionVersion.SECRET_BALLOT.getStringBallotVersion(),
+        secretBallotSetup.getElectionVersion().getStringBallotVersion());
   }
 
   @Test
@@ -115,12 +115,12 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version, null, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId));
+                    electionVersion, null, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId));
     assertThrows(
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 start,
@@ -134,7 +134,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 start,
@@ -148,7 +148,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 start,
@@ -162,7 +162,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 start,
@@ -180,7 +180,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 2,
@@ -199,7 +199,7 @@ public class ElectionSetupTest {
 
     ElectionSetup election1 =
         new ElectionSetup(
-            version,
+                electionVersion,
             electionSetupName,
             creation,
             time - gap,
@@ -218,7 +218,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 -1,
@@ -232,7 +232,7 @@ public class ElectionSetupTest {
         IllegalArgumentException.class,
         () ->
             new ElectionSetup(
-                version,
+                    electionVersion,
                 electionSetupName,
                 creation,
                 start,
@@ -268,7 +268,7 @@ public class ElectionSetupTest {
                 + "startTime=%d, "
                 + "endTime=%d, "
                 + "questions=%s}",
-            version,
+                electionVersion,
             Election.generateElectionSetupId(laoId, creation, electionSetupName),
             laoId,
             electionSetupName,

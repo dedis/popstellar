@@ -9,15 +9,15 @@ import java.util.List;
  * - OPEN_BALLOT: normal process
  * - SECRET_BALLOT: vote is encrypted with EL_GAMAL encryption scheme
  */
-public enum Version {
+public enum ElectionVersion {
 
   OPEN_BALLOT("open-ballot"),
   SECRET_BALLOT("secret-ballot");
 
   private final String ballotVersion;
-  private static final List<Version> ALL = Collections.unmodifiableList(Arrays.asList(values()));
+  private static final List<ElectionVersion> ALL = Collections.unmodifiableList(Arrays.asList(values()));
 
-  Version (String ballotVersion) {
+  ElectionVersion(String ballotVersion) {
     this.ballotVersion = ballotVersion;
   }
 
@@ -25,7 +25,7 @@ public enum Version {
     return ballotVersion;
   }
 
-  public static List<Version> getAllVersion() {
+  public static List<ElectionVersion> getAllElectionVersion() {
     return ALL;
   }
 

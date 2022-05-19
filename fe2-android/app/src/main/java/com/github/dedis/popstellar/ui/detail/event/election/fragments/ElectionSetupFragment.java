@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
@@ -44,7 +44,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private LaoDetailViewModel mLaoDetailViewModel;
 
   // For election version choice
-  private Version electionVersion;
+  private ElectionVersion electionVersion;
 
   // Enum of all voting methods, associated to a string desc for protocol and spinner display
   public enum VotingMethods {
@@ -163,14 +163,14 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position == 0) {
-                electionVersion = Version.OPEN_BALLOT;
+                electionVersion = ElectionVersion.OPEN_BALLOT;
             } else if (position == 1) {
-              electionVersion = Version.SECRET_BALLOT;
+              electionVersion = ElectionVersion.SECRET_BALLOT;
             }
           }
           @Override
           public void onNothingSelected(AdapterView<?> parent) {
-            electionVersion = Version.OPEN_BALLOT;
+            electionVersion = ElectionVersion.OPEN_BALLOT;
           }
         };
     setUpElectionVersionSpinner(versionSpinner, listener);
@@ -300,11 +300,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
    */
   private void setUpElectionVersionSpinner(Spinner spinner, AdapterView.OnItemSelectedListener listener) {
 
-    List<Version> versionsList = Version.getAllVersion();
+    List<ElectionVersion> versionsList = ElectionVersion.getAllElectionVersion();
     List<String> items = new ArrayList<>();
 
     // Add items to version list
-    for (Version v : versionsList){
+    for (ElectionVersion v : versionsList){
       items.add(v.getStringBallotVersion());
     }
 

@@ -25,7 +25,7 @@ public class ElectionSetup extends Data {
   private final long endTime;
 
   @SerializedName("version")
-  private final Version version;
+  private final ElectionVersion electionVersion;
 
   private final List<ElectionQuestion> questions;
 
@@ -38,7 +38,7 @@ public class ElectionSetup extends Data {
    * @param laoId id of the LAO
    */
   public ElectionSetup(
-      Version version,
+      ElectionVersion electionVersion,
       String name,
       long creation,
       long start,
@@ -70,7 +70,7 @@ public class ElectionSetup extends Data {
     this.startTime = start;
     this.endTime = end;
     this.lao = laoId;
-    this.version = version;
+    this.electionVersion = electionVersion;
     this.id = Election.generateElectionSetupId(laoId, createdAt, name);
     this.questions = new ArrayList<>();
     for (int i = 0; i < questionList.size(); i++) {
@@ -122,8 +122,8 @@ public class ElectionSetup extends Data {
     return lao;
   }
 
-  public Version getVersion() {
-    return version;
+  public ElectionVersion getElectionVersion() {
+    return electionVersion;
   }
 
   @Override
@@ -136,7 +136,7 @@ public class ElectionSetup extends Data {
     }
     ElectionSetup that = (ElectionSetup) o;
     return getCreation() == that.getCreation()
-        && getVersion() == that.getVersion()
+        && getElectionVersion() == that.getElectionVersion()
         && startTime == that.getStartTime()
         && java.util.Objects.equals(getId(), that.getId())
         && createdAt == that.getCreation()
@@ -155,7 +155,7 @@ public class ElectionSetup extends Data {
   public String toString() {
     return "ElectionSetup={"
         + "version='"
-        + version
+        + electionVersion
         + '\''
         + ", id='"
         + id
