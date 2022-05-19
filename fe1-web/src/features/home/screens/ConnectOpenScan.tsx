@@ -7,12 +7,15 @@ import CloseIcon from 'core/components/icons/CloseIcon';
 import CodeIcon from 'core/components/icons/CodeIcon';
 import CreateIcon from 'core/components/icons/CreateIcon';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import { subscribeToChannel } from 'core/network';
 import { Colors, Spacing } from 'core/styles';
+import { getLaoChannel } from 'features/lao/functions';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
+import { connectTo } from './ConnectConfirm';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -82,9 +85,33 @@ const ConnectOpenScan = () => {
       }
 
       setShowScanner(false);
-      navigation.navigate(STRINGS.connect_confirm_title, {
-        laoIdIn: connectToLao.lao,
-        url: connectToLao.server,
+
+      console.info(
+        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.server}'.`,
+      );
+
+      // connect to the lao
+      const connection = connectTo(connectToLao.server);
+      if (!connection) {
+        return;
+      }
+
+      const channel = getLaoChannel(connectToLao.lao);
+      if (!channel) {
+        // invalid lao id
+        toast.show(STRINGS.connect_scanning_fail, {
+          type: 'warning',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+        return;
+      }
+
+      // subscribe to the lao channel on the new connection
+      subscribeToChannel(channel, [connection]).then(() => {
+        navigation.navigate(STRINGS.app_navigation_tab_lao, {
+          screen: STRINGS.organization_navigation_tab_events,
+        });
       });
     } catch (error) {
       toast.show(STRINGS.connect_scanning_fail, {
