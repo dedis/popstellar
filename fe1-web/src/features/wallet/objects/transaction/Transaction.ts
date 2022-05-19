@@ -99,6 +99,14 @@ export class Transaction {
     return Hash.fromStringArray(...data);
   };
 
+  /**
+   * Creates a transaction
+   * @param from the sender
+   * @param to the receiver
+   * @param currentBalance the current balance of the sender
+   * @param amount the amount to send to the receiver
+   * @param inputTransactions the transactions that contains the outputs to use as inputs in this transaction
+   */
   public static create(
     from: PopToken,
     to: PublicKey,
@@ -165,6 +173,12 @@ export class Transaction {
     });
   }
 
+  /**
+   * Creates a coinbase transaction
+   * @param organizerKP the organizer's key pair
+   * @param to the receiver of the coinbase transaction
+   * @param amount the amount to send
+   */
   public static createCoinbase(organizerKP: KeyPair, to: PublicKey, amount: number): Transaction {
     const toPublicKeyHash = Hash.fromString(to.valueOf());
 
