@@ -49,7 +49,7 @@ func NewInvalidObjectError(action string) *Error {
 func NewInvalidResourceError(description string) *Error {
 	return &Error{
 		Code:        -2,
-		Description: fmt.Sprintf("invalid resource: #{description}"),
+		Description: fmt.Sprintf("invalid resource: %s", description),
 	}
 }
 
@@ -57,7 +57,7 @@ func NewInvalidResourceError(description string) *Error {
 func NewDuplicateResourceError(description string) *Error {
 	return &Error{
 		Code:        -3,
-		Description: fmt.Sprintf("duplicate resource: #{description}"),
+		Description: fmt.Sprintf("duplicate resource: %s", description),
 	}
 }
 
@@ -65,7 +65,7 @@ func NewDuplicateResourceError(description string) *Error {
 func NewInvalidMessageFieldError(description string) *Error {
 	return &Error{
 		Code:        -4,
-		Description: fmt.Sprintf("invalid message field: #{description}"),
+		Description: fmt.Sprintf("invalid message field: %s", description),
 	}
 }
 
@@ -73,7 +73,7 @@ func NewInvalidMessageFieldError(description string) *Error {
 func NewAccessDeniedError(description string) *Error {
 	return &Error{
 		Code:        -5,
-		Description: fmt.Sprintf("access denied: #{description}"),
+		Description: fmt.Sprintf("access denied: %s", description),
 	}
 }
 
@@ -81,6 +81,6 @@ func NewAccessDeniedError(description string) *Error {
 func NewInternalServerError(description string) *Error {
 	return &Error{
 		Code:        -6,
-		Description: fmt.Sprintf("internal server error: #{description}"),
+		Description: fmt.Sprintf("internal server error: %s", description),
 	}
 }

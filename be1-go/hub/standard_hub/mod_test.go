@@ -115,7 +115,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	require.EqualError(
 		t, sock.err,
 		fmt.Sprintf(
-			"failed to handle method: failed to handle root channel message: sender's public key does not "+
+			"failed to handle method: failed to handle root channel message: access denied: sender's public key does not "+
 				"match the organizer's: %q != %q", wrongKeypair.public.String(), keypair.public.String()))
 }
 
