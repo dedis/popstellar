@@ -19,7 +19,7 @@ export interface TransactionState {
   inputs: TransactionInputState[];
   outputs: TransactionOutputState[];
   lockTime: number;
-  transactionId: string;
+  transactionId?: string;
 }
 
 /**
@@ -55,23 +55,57 @@ export class Transaction {
       throw new Error("Undefined 'lockTime' when creating 'Transaction'");
     }
 
-    if (obj.transactionId === undefined) {
-      throw new Error("Undefined 'transactionId' when creating 'Transaction'");
-    }
-
-    this.transactionId = obj.transactionId;
     this.version = obj.version;
     this.inputs = obj.inputs;
     this.outputs = obj.outputs;
     this.lockTime = obj.lockTime;
+
+    if (obj.transactionId === undefined) {
+      this.transactionId = this.hashTransaction();
+    } else {
+      if (obj.transactionId.valueOf() !== this.hashTransaction().valueOf()) {
+        throw new Error(
+          "The computed transaction hash does not correspond to the provided one when creating 'Transaction'",
+        );
+      }
+      this.transactionId = obj.transactionId;
+    }
   }
+
+  /**
+   * Hashes the transaction to get its id
+   */
+  private hashTransaction = (): Hash => {
+    // Recursively concatenating fields by lexicographic order of their names
+    const dataInputs = this.inputs.flatMap((input) => {
+      return [
+        input.script.publicKey.valueOf(),
+        input.script.signature.valueOf(),
+        input.script.type,
+        input.txOutHash.valueOf(),
+        input.txOutIndex.toString(),
+      ];
+    });
+    const dataOutputs = this.outputs.flatMap((output) => {
+      return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
+    });
+    const data = dataInputs
+      .concat([this.lockTime.toString()])
+      .concat(dataOutputs)
+      .concat([this.version.toString()]);
+
+    // Hash will take care of concatenating each fields length
+    return Hash.fromStringArray(...data);
+  };
 
   public static fromState(transactionState: TransactionState): Transaction {
     return new Transaction({
       ...transactionState,
       inputs: transactionState.inputs.map((input) => TransactionInput.fromState(input)),
       outputs: transactionState.outputs.map((output) => TransactionOutput.fromState(output)),
-      transactionId: new Hash(transactionState.transactionId),
+      transactionId: transactionState.transactionId
+        ? new Hash(transactionState.transactionId)
+        : undefined,
     });
   }
 

@@ -5,33 +5,6 @@ import { TransactionInputState } from './TransactionInput';
 import { TransactionOutputState } from './TransactionOutput';
 
 /**
- * Hash a transaction to get its id
- * @param transaction to hash
- */
-export const hashTransaction = (transaction: Omit<TransactionState, 'transactionId'>): Hash => {
-  // Recursively concatenating fields by lexicographic order of their names
-  const dataInputs = transaction.inputs.flatMap((input) => {
-    return [
-      input.script.publicKey,
-      input.script.signature,
-      input.script.type,
-      input.txOutHash,
-      input.txOutIndex.toString(),
-    ];
-  });
-  const dataOutputs = transaction.outputs.flatMap((output) => {
-    return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
-  });
-  const data = dataInputs
-    .concat([transaction.lockTime.toString()])
-    .concat(dataOutputs)
-    .concat([transaction.version.toString()]);
-
-  // Hash will take care of concatenating each fields length
-  return Hash.fromStringArray(...data);
-};
-
-/**
  * Get the total value out that corresponds to this public key hash from an array of transactions
  * @param pkHash the public key hash
  * @param transactions the transaction messages from which the amount out
@@ -58,7 +31,7 @@ export const getInputsInToSign = (
       .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
       .map((output, index) => {
         return {
-          txOutHash: hashTransaction(tr).valueOf(),
+          txOutHash: tr.transactionId!.valueOf(),
           txOutIndex: index,
         };
       }),

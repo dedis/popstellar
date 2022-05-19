@@ -8,9 +8,7 @@ import {
   concatenateTxData,
   getTotalValue,
   getInputsInToSign,
-  hashTransaction,
   Transaction,
-  TransactionState,
   TransactionInputState,
   TransactionOutputState,
 } from '../objects/transaction';
@@ -96,27 +94,20 @@ export function requestSendTransaction(
     };
   });
 
-  const draftTransaction: Omit<TransactionState, 'transactionId'> = {
+  const transaction: Transaction = Transaction.fromState({
     version: 1,
     inputs: finalInputs,
     outputs: outputs,
     lockTime: 0,
-  };
-
-  const transactionId = hashTransaction(draftTransaction);
-
-  const finalTransaction: TransactionState = {
-    ...draftTransaction,
-    transactionId: transactionId.valueOf(),
-  };
+  });
 
   const postTransactionMessage = new PostTransaction({
-    transaction_id: transactionId,
-    transaction: Transaction.fromState(finalTransaction).toJSON(),
+    transaction_id: transaction.transactionId,
+    transaction: transaction.toJSON(),
   });
   const lao: Lao = OpenedLaoStore.get();
 
-  console.log(`Sending a transaction with id: ${transactionId.valueOf()}`);
+  console.log(`Sending a transaction with id: ${transaction.transactionId.valueOf()}`);
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
@@ -166,28 +157,21 @@ export function requestCoinbaseTransaction(
     },
   };
 
-  const draftTransaction: Omit<TransactionState, 'transactionId'> = {
+  const transaction: Transaction = Transaction.fromState({
     version: 1,
     inputs: [finalInput],
     outputs: outputs,
     lockTime: 0,
-  };
-
-  const transactionId = hashTransaction(draftTransaction);
-
-  const finalTransaction: TransactionState = {
-    ...draftTransaction,
-    transactionId: transactionId.valueOf(),
-  };
+  });
 
   const postTransactionMessage = new PostTransaction({
-    transaction_id: transactionId,
-    transaction: Transaction.fromState(finalTransaction).toJSON(),
+    transaction_id: transaction.transactionId,
+    transaction: transaction.toJSON(),
   });
 
   const lao: Lao = OpenedLaoStore.get();
 
-  console.log(`Sending a coinbase transaction with id: ${transactionId.valueOf()}`);
+  console.log(`Sending a coinbase transaction with id: ${transaction.transactionId.valueOf()}`);
 
   return publish(channelFromIds(lao.id), postTransactionMessage);
 }
