@@ -163,15 +163,14 @@ final case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def addWitnessSignature(channel: Channel, messageId: Hash, signature: Signature): Unit = {
+  private def addWitnessSignature(channel: Channel, messageId: Hash, signature: Signature): Message = {
     Try(read(channel, messageId)) match {
       case Success(Some(msg)) =>
         msg.addWitnessSignature(WitnessSignaturePair(msg.sender, signature))
-        sender() ! DbActorReadAck(Some(msg))
       case Success(None) =>
         log.error(s"Actor $self (db) encountered a problem while reading the message having as id '$messageId'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not read message of message id $messageId")
-      case failure => sender() ! failure.recover(Status.Failure(_))
+      case Failure(ex) => throw ex
     }
   }
 
@@ -261,7 +260,7 @@ final case class DbActor(
     case AddWitnessSignature(channel, messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(channel, messageId, signature)) match {
-        case Success(_) => sender() ! DbActorAck()
+        case Success(witnessMessage) => sender() ! DbActorAddWitnessMessage(witnessMessage)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
@@ -395,6 +394,15 @@ object DbActor {
    * @param laoData requested lao data
    */
   final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
+
+  /**
+   * Response for a [[AddWitnessSignature]] db request Receiving [[DbActorAddWitnessMessage]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param witnessMessage requested message witnessed
+   */
+  final case class DbActorAddWitnessMessage(witnessMessage: Message) extends DbActorMessage
+
 
   /**
    * Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]

@@ -5,6 +5,7 @@ import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorAddWitnessMessage
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
@@ -19,12 +20,12 @@ case object WitnessHandler extends MessageHandler {
     val channel: Channel = rpcMessage.getParamsChannel
 
     rpcMessage.getParamsMessage match {
-      case Some(message) =>
+      case Some(_) =>
         val combined = for {
           // add new witness signature to existing ones
-          _ <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+          DbActorAddWitnessMessage(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
           //overwrites the message containing now the witness signature in the db
-          _ <- dbActor ? DbActor.WriteAndPropagate(channel, message)
+          _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
         } yield ()
 
         Await.ready(combined, duration).value match {

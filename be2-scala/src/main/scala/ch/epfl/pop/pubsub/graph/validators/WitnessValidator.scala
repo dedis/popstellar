@@ -23,7 +23,7 @@ case object WitnessValidator extends MessageDataContentValidator {
         val channel: Channel = rpcMessage.getParamsChannel
 
         //check if the signature in the message received is valid
-        //not sure thought .. 
+        //not sure thought ..
         if (!signature.verify(sender, messageId.base64Data)) {
           Right(validationError("verification of the signature over the message id failed"))
         } else if (!validateOwner(sender, channel)) {
