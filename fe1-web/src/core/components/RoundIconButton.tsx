@@ -1,24 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-elements';
 
-const styles = StyleSheet.create({
-  roundButton: {
-    height: 65,
-    width: 65,
-    shadowColor: 'gray',
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    borderRadius: 30,
-    backgroundColor: '#2196F3',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  } as ViewStyle,
-});
+import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 /**
  * This is a round button with an icon that uses Google material icons
@@ -28,7 +13,7 @@ const styles = StyleSheet.create({
 const RoundIconButton = (props: IPropTypes) => {
   const { name, onClick } = props;
   return (
-    <TouchableOpacity style={styles.roundButton} onPress={onClick}>
+    <TouchableOpacity style={circularButtonStyles.roundButton} onPress={onClick}>
       <Icon name={name} type="material" color="white" size={25} />
     </TouchableOpacity>
   );
