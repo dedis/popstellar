@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
@@ -341,16 +342,17 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendOpenBallotVote(List<ElectionVote> votes) {
+  public void sendVote(List<ElectionVote> votes) {
     Election election = mCurrentElection.getValue();
+
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
       return;
     }
     Log.d(
-        TAG,
-        "sending a new vote in election : "
-            + election
+            TAG,
+            "sending a new vote in election : "
+                    + election
             + " with election start time"
             + election.getStartTimestamp());
     Lao lao = getCurrentLaoValue();
@@ -361,17 +363,24 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote castVote = new CastVote(votes,null, election.getId(), lao.getId());
+      CastVote castVote;
+      // Construct the cast vote depending if the messages need to be encrypted or not
+      if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+        castVote = new CastVote(votes, null, election.getId(), lao.getId());
+      } else {
+        List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
+        castVote = new CastVote(null, encryptedVotes, election.getId(), lao.getId());
+      }
       Channel electionChannel = election.getChannel();
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
-          networkManager
-              .getMessageSender()
-              .publish(token, electionChannel, castVote)
-              .doFinally(this::openLaoDetail)
-              .subscribe(
-                  () -> {
+              networkManager
+                      .getMessageSender()
+                      .publish(token, electionChannel, castVote)
+                      .doFinally(this::openLaoDetail)
+                      .subscribe(
+                              () -> {
                     Log.d(TAG, "sent a vote successfully");
                     // Toast ? + send back to election screen or details screen ?
                     Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
@@ -385,6 +394,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
+
 
   /**
    * Creates new Election event.

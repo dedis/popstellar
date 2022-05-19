@@ -1,16 +1,18 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -263,17 +265,17 @@ public class Election extends Event {
    * @return the ID of an election question computed as
    *     Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
    */
-  public static <E> String generateElectionVoteId(
-      String electionId,
-      String questionId,
-      List<E> voteIndex,
-      String writeIn,
-      boolean writeInEnabled) {
+  public static String generateElectionVoteId(
+          String electionId,
+          String questionId,
+          List<Integer> voteIndex,
+          String writeIn,
+          boolean writeInEnabled) {
     // If write_in is enabled the id is formed with the write_in string
     // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2,
     // ...])
     return Hash.hash(
-        "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+            "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
   }
 
   /**
@@ -289,27 +291,38 @@ public class Election extends Event {
    *     Hash('Vote'||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
    */
   public static String generateEncryptedElectionVoteId(
-      String electionId,
-      String questionId,
-      List<String> voteIndex,
-      String writeInEncrypted,
-      boolean writeInEnabled) {
+          String electionId,
+          String questionId,
+          List<String> voteIndex,
+          String writeInEncrypted,
+          boolean writeInEnabled) {
     // HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))),
     // concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
     return Hash.hash(
-        "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex.toString());
+            "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex.toString());
+  }
+
+  /**
+   * Encrypts the content of the votes using El-GamaL scheme
+   *
+   * @param votes list of votes to encrypt
+   * @return encrypted votes
+   */
+  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
+    // TODO
+    return null;
   }
 
   @Override
   public String toString() {
     return "Election{"
-        + "channel='"
-        + channel
-        + '\''
-        + ", id='"
-        + id
-        + '\''
-        + ", name='"
+            + "channel='"
+            + channel
+            + '\''
+            + ", id='"
+            + id
+            + '\''
+            + ", name='"
         + name
         + '\''
         + ", creation="

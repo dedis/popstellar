@@ -25,9 +25,9 @@ public class ElectionEncryptedVoteTest {
                     Arrays.asList("2", "1", "0"));
     private final String writeIn = "My write in ballot option";
     private final ElectionEncryptedVote electionEncryptedVote1 =
-            new ElectionEncryptedVote(electionId, votes, writeIn, false, questionId);
+            new ElectionEncryptedVote(questionId, votes, false, writeIn, electionId);
     private final ElectionEncryptedVote electionEncryptedVotes2 =
-            new ElectionEncryptedVote(electionId, votes, writeIn, true, questionId);
+            new ElectionEncryptedVote(questionId, votes, true, writeIn, electionId);
 
     @Test
     public void electionVoteWriteInDisabledReturnsCorrectId() {
@@ -66,22 +66,22 @@ public class ElectionEncryptedVoteTest {
     @Test
     public void isEqualTest() {
         assertNotEquals(electionEncryptedVote1, electionEncryptedVotes2);
-        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, writeIn, false, questionId));
-        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, writeIn, false, questionId));
+        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, writeIn, electionId));
+        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, writeIn, "random"));
         assertNotEquals(
                 electionEncryptedVote1,
                 new ElectionEncryptedVote(
-                        electionId, new ArrayList<>(Arrays.asList("0", "1", "2")), writeIn, false, questionId));
-        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, writeIn, false, "random"));
+                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), false, writeIn, electionId));
+        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, false, writeIn, electionId));
 
         // Same equals, no write_in
-        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(electionId, votes, "random", false, questionId));
+        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, "random", electionId));
 
         // Same elections, write_in is the same
         assertEquals(
                 electionEncryptedVotes2,
                 new ElectionEncryptedVote(
-                        electionId, new ArrayList<>(Arrays.asList("0", "1", "2")), writeIn, true, questionId));
+                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), true, writeIn, electionId));
     }
 
 

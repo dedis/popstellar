@@ -22,24 +22,19 @@ public class ElectionEncryptedVote {
   private final List<String> vote;
 
   /**
-   * Constructs an encrypted vote object
-   *
-   * @param questionId       question ID ( SHA256('Question'||election_id||question))
-   * @param vote             Array[String]] index(es) corresponding to the ballot_options
-   * @param encryptedWriteIn string representing the write in
-   * @param encryptedWriteIn boolean asserting if write in mode is present
+   * @param questionId       id of the question
+   * @param encryptedVotes   list of encrypted votes
+   * @param writeInEnabled   indicates if write in is enabled
+   * @param encryptedWriteIn
+   * @param electionId
    */
   public ElectionEncryptedVote(
-          @NonNull String electionId,
-          @NonNull List<String> vote,
-          @NonNull String encryptedWriteIn,
-          @NonNull Boolean writeInEnabled,
-          @NonNull String questionId) {
+          @NonNull String questionId, @NonNull List<String> encryptedVotes, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
 
     this.questionId = questionId;
     this.id =
-            Election.generateEncryptedElectionVoteId(electionId, questionId, vote, encryptedWriteIn, writeInEnabled);
-    this.vote = writeInEnabled ? null : vote;
+            Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVotes, encryptedWriteIn, writeInEnabled);
+    this.vote = writeInEnabled ? null : encryptedVotes;
   }
 
   @NonNull
