@@ -1,5 +1,6 @@
-import { Hash } from 'core/objects';
+import { Base64UrlData, Hash, KeyPair, PopToken, PrivateKey, PublicKey } from 'core/objects';
 
+import STRINGS from '../../../../resources/strings';
 import { TransactionInput, TransactionInputJSON, TransactionInputState } from './TransactionInput';
 import {
   TransactionOutput,
@@ -96,6 +97,158 @@ export class Transaction {
 
     // Hash will take care of concatenating each fields length
     return Hash.fromStringArray(...data);
+  };
+
+  public static create(
+    from: PopToken,
+    to: PublicKey,
+    currentBalance: number,
+    amount: number,
+    inputTransactions: TransactionState[],
+  ): Transaction {
+    const fromPublicKeyHash = Hash.fromString(from.publicKey.valueOf());
+
+    const toPublicKeyHash = Hash.fromString(to.valueOf());
+
+    const outputTo = {
+      value: amount,
+      script: {
+        type: STRINGS.script_type,
+        publicKeyHash: toPublicKeyHash.valueOf(),
+      },
+    };
+
+    const outputs: TransactionOutputState[] = [outputTo];
+
+    if (currentBalance > amount) {
+      // Send the rest of the value back to the owner, so that the entire balance
+      // is always in only one output
+      const outputFrom: TransactionOutputState = {
+        value: currentBalance - amount,
+        script: {
+          type: STRINGS.script_type,
+          publicKeyHash: fromPublicKeyHash.valueOf(),
+        },
+      };
+      outputs.push(outputFrom);
+    }
+
+    const inputs: Omit<TransactionInputState, 'script'>[] = Transaction.getInputsInToSign(
+      from.publicKey.valueOf(),
+      inputTransactions,
+    );
+    // Now we need to define each objects because we need some string representation of everything to hash on
+
+    // Concatenate the data to sign
+    const dataString = Transaction.concatenateTxData(inputs, outputs);
+
+    // Sign with the popToken
+    const signature = from.privateKey.sign(Base64UrlData.encode(dataString));
+
+    // Reconstruct the txIns with the signature
+    const finalInputs: TransactionInputState[] = inputs.map((input) => {
+      return {
+        ...input,
+        script: {
+          type: STRINGS.script_type,
+          publicKey: from.publicKey.valueOf(),
+          signature: signature.valueOf(),
+        },
+      };
+    });
+
+    return Transaction.fromState({
+      version: 1,
+      inputs: finalInputs,
+      outputs: outputs,
+      lockTime: 0,
+    });
+  }
+
+  public static createCoinbase(organizerKP: KeyPair, to: PublicKey, amount: number): Transaction {
+    const toPublicKeyHash = Hash.fromString(to.valueOf());
+
+    const outputTo = {
+      value: amount,
+      script: {
+        type: STRINGS.script_type,
+        publicKeyHash: toPublicKeyHash.valueOf(),
+      },
+    };
+
+    const outputs: TransactionOutputState[] = [outputTo];
+
+    const input: Omit<TransactionInputState, 'script'> = {
+      txOutHash: STRINGS.coinbase_hash,
+      txOutIndex: 0,
+    };
+
+    // Concatenate the data to sign
+    const dataString = Transaction.concatenateTxData([input], outputs);
+
+    // Sign with the popToken
+    const signature = organizerKP.privateKey.sign(Base64UrlData.encode(dataString));
+
+    // Reconstruct the inputs with the signature of the organizer
+    const finalInput: TransactionInputState = {
+      ...input,
+      script: {
+        type: STRINGS.script_type,
+        publicKey: organizerKP.publicKey.valueOf(),
+        signature: signature.valueOf(),
+      },
+    };
+
+    return Transaction.fromState({
+      version: 1,
+      inputs: [finalInput],
+      outputs: outputs,
+      lockTime: 0,
+    });
+  }
+
+  /**
+   * Constructs a partial Input object from transaction messages to take as input
+   * @param pk the public key of the sender
+   * @param transactions the transaction messages used as inputs
+   */
+  private static getInputsInToSign = (
+    pk: string,
+    transactions: TransactionState[],
+  ): Omit<TransactionInputState, 'script'>[] => {
+    return transactions.flatMap((tr) =>
+      tr.outputs
+        .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
+        .map((output, index) => {
+          return {
+            txOutHash: tr.transactionId!.valueOf(),
+            txOutIndex: index,
+          };
+        }),
+    );
+  };
+
+  /**
+   * Concatenates the partial inputs and the outputs in a string to sign over it by following the digital cash specification
+   * @param inputs
+   * @param outputs
+   */
+  private static concatenateTxData = (
+    inputs: Omit<TransactionInputState, 'script'>[],
+    outputs: TransactionOutputState[],
+  ) => {
+    const inputsDataString = inputs.reduce(
+      (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
+      '',
+    );
+    return outputs.reduce(
+      (dataString, output) =>
+        dataString +
+        output.value.toString() +
+        output.script.type +
+        output.script.publicKeyHash.valueOf(),
+      inputsDataString,
+    );
   };
 
   public static fromState(transactionState: TransactionState): Transaction {

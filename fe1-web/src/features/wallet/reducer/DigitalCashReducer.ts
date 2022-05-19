@@ -7,7 +7,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import { TransactionState } from '../objects/transaction/Transaction';
+import { TransactionState } from '../objects/transaction';
 
 interface DigitalCashReducerState {
   /**
