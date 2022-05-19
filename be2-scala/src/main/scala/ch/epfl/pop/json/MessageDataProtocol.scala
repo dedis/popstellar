@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.cash._
+import ch.epfl.pop.model.network.method.message.data.coin._
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
@@ -322,7 +322,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val addReactionFormat: JsonFormat[AddReaction] = annotateHeader(jsonFormat[String, Hash, Timestamp, AddReaction](AddReaction.apply, "reaction_codepoint", "chirp_id", "timestamp"))
   implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp"))
 
-  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, PostTransaction](PostTransaction.apply, "transaction")
+  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, Hash, PostTransaction](PostTransaction.apply, "transaction", "transaction_id")
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"

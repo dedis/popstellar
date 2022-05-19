@@ -60,7 +60,7 @@ public class LaoHandlerTest {
 
   public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
-  public static final PeerAddress RANDOM_PEER = new PeerAddress("ws://128.0.0.2");
+  public static final PeerAddress RANDOM_PEER = new PeerAddress("ws://128.0.0.2:8001/");
 
   private Lao lao;
   private MessageGeneral createLaoMessage;

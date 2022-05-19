@@ -67,8 +67,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
 
+	// compute the client server address
+	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
+
 	// create user hub
-	h, err := standard_hub.NewHub(point, publicAddress, log.With().Str("role", user).Logger(),
+	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
 		lao.NewChannel, hubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)

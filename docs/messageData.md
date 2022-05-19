@@ -421,13 +421,13 @@ Last but not least, the greeting message contains a list of peers that tells cli
     "action": "greet",
     "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
     "frontend": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "address": "wss://popdemo.dedis.ch/demo",
+    "address": "wss://popdemo.dedis.ch:8000/demo",
     "peers": [
         {
-            "address": "wss://popdemo.dedis.ch/second-organizer-demo"
+            "address": "wss://popdemo.dedis.ch:8000/second-organizer-demo"
         },
         {
-            "address": "wss://popdemo.dedis.ch/witness-demo"
+            "address": "wss://popdemo.dedis.ch:8000/witness-demo"
         }
     ]
 }
@@ -464,9 +464,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
             "$comment": "Note: the string is encoded in Base64"
         },
         "address": {
-            "description": "Canonical address of the server with a protocol prefix",
+            "description": "Canonical address of the server with a protocol prefix and the port number",
             "type": "string",
-            "pattern": "^.*://.*$"
+            "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
         },
         "peers": {
             "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
@@ -476,9 +476,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
                 "additionalProperties": false,
                 "properties": {
                     "address": {
-                        "description": "Address of the peer without a protocol prefix",
+                        "description": "Canonical address of the peer with a protocol prefix and the port number",
                         "type": "string",
-                        "pattern": "^.*://.*$"
+                        "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
                     }
                 },
                 "required": ["address"]
