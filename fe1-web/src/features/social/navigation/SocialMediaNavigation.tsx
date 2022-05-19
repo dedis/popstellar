@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
 import { gray, popBlue } from 'core/styles/colors';
 import { selectCurrentLao } from 'features/lao/reducer';
@@ -14,7 +15,7 @@ import STRINGS from 'resources/strings';
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<SocialParamList>();
 
 const iconSelector =
   (routeName: string) =>

@@ -4,6 +4,7 @@ import { AnyAction, Reducer } from 'redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import { MeetingReducerState } from '../reducer';
 import { MeetingFeature } from './Feature';
@@ -71,7 +72,10 @@ export interface MeetingInterface extends FeatureInterface {
   eventTypes: {
     eventType: string;
     navigationNames: {
-      createEvent: string;
+      createEvent:
+        | typeof STRINGS.navigation_lao_organizer_creation_meeting
+        | typeof STRINGS.navigation_lao_organizer_creation_roll_call
+        | typeof STRINGS.navigation_lao_organizer_creation_election;
     };
     Component: React.ComponentType<{
       eventId: string;

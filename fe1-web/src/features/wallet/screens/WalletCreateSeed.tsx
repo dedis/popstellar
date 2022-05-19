@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -6,6 +7,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { CopiableTextInput, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { Colors, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -27,12 +29,16 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = StackScreenProps<
+  AppParamList,
+  typeof STRINGS.navigation_app_wallet_create_seed
+>;
+
 /**
  * Wallet screen to obtain a new mnemonic seed
  */
 const WalletCreateSeed = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const toast = useToast();
 
@@ -47,8 +53,8 @@ const WalletCreateSeed = () => {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return navigation.addListener('focus', () => {
       if (WalletStore.hasSeed()) {
-        navigation.navigate(STRINGS.navigation_app_tab_home, {
-          screen: STRINGS.navigation_tab_home,
+        navigation.navigate(STRINGS.navigation_app_home, {
+          screen: STRINGS.navigation_home_home,
         });
       }
     });
@@ -57,8 +63,8 @@ const WalletCreateSeed = () => {
   const connectWithSeed = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.navigation_app_tab_home, {
-        screen: STRINGS.navigation_tab_home,
+      navigation.navigate(STRINGS.navigation_app_home, {
+        screen: STRINGS.navigation_home_home,
       });
     } catch (e) {
       console.error(e);

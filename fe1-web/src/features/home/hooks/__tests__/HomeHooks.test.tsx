@@ -18,8 +18,8 @@ const getLaoChannel = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
-const homeNavigationScreens: HomeFeature.Screen[] = [
-  { Component: LaoList, id: 'x', title: 'X', order: 2 },
+const homeNavigationScreens: HomeFeature.HomeScreen[] = [
+  { Component: LaoList, id: 'x' as HomeFeature.HomeScreen['id'], title: 'X', order: 2 },
 ];
 
 const contextValue = {

@@ -1,6 +1,9 @@
 import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import { EventListenerCallback } from '@react-navigation/core';
 
+import { HomeParamList } from 'core/navigation/typing/HomeParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+
 export namespace HomeFeature {
   export interface LaoState {
     id: string;
@@ -10,8 +13,10 @@ export namespace HomeFeature {
     toState: () => LaoState;
   }
 
-  export interface Screen {
-    id: string;
+  export type LaoScreen = Omit<HomeScreen, 'id'> & { id: keyof LaoParamList };
+
+  export interface HomeScreen {
+    id: keyof HomeParamList;
     title?: string;
 
     Component: React.ComponentType<unknown>;

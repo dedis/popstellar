@@ -113,7 +113,7 @@ const CreateElection = ({ route }: any) => {
     )
       .then(() => {
         // @ts-ignore
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        navigation.navigate(STRINGS.navigation_lao_organizer_home);
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);

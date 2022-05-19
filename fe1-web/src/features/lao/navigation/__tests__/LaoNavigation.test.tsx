@@ -9,7 +9,7 @@ import { mockKeyPair, mockLao } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
-import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
+import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import LaoNavigation from '../LaoNavigation';
@@ -19,8 +19,17 @@ const contextValue = {
     EventList: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [
-      { id: 'screen1', title: 'a title', order: 2, Component: () => <Text>first screen</Text> },
-      { id: 'screen2', order: -2, Component: () => <Text>second screen</Text> },
+      {
+        id: 'screen1' as LaoFeature.LaoScreen['id'],
+        title: 'a title',
+        order: 2,
+        Component: () => <Text>first screen</Text>,
+      },
+      {
+        id: 'screen2' as LaoFeature.LaoScreen['id'],
+        order: -2,
+        Component: () => <Text>second screen</Text>,
+      },
     ],
     organizerNavigationScreens: [],
   } as LaoReactContext,

@@ -1,4 +1,5 @@
-import { useNavigation } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -7,6 +8,8 @@ import CloseIcon from 'core/components/icons/CloseIcon';
 import CodeIcon from 'core/components/icons/CodeIcon';
 import CreateIcon from 'core/components/icons/CreateIcon';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { subscribeToChannel } from 'core/network';
 import { Colors, Spacing } from 'core/styles';
 import { getLaoChannel } from 'features/lao/functions';
@@ -30,12 +33,16 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_scan>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
+>;
+
 /**
  * Starts a QR code scan
  */
 const ConnectOpenScan = () => {
-  // FIXME: route should use proper type
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const toast = useToast();
 
@@ -109,8 +116,11 @@ const ConnectOpenScan = () => {
 
       // subscribe to the lao channel on the new connection
       subscribeToChannel(channel, [connection]).then(() => {
-        navigation.navigate(STRINGS.navigation_app_tab_lao, {
-          screen: STRINGS.organization_navigation_tab_events,
+        navigation.navigate(STRINGS.navigation_app_lao, {
+          screen: STRINGS.navigation_lao_events,
+          params: {
+            screen: STRINGS.navigation_lao_organizer_home,
+          },
         });
       });
     } catch (error) {
@@ -136,10 +146,11 @@ const ConnectOpenScan = () => {
           <View style={styles.rightButtons}>
             <TouchableOpacity
               style={styles.buttonMargin}
-              onPress={() => navigation.navigate(STRINGS.navigation_tab_launch)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
               <CreateIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate(STRINGS.connect_confirm_title)}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
               <CodeIcon color={Colors.accent} size={25} />
             </TouchableOpacity>
           </View>

@@ -1,9 +1,14 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useMemo } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -50,6 +55,14 @@ const categorizeEventsByTime = (time: number, events: EventState[]) => {
   return [pastEvents, currentEvents, futureEvents];
 };
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 /**
  * Collapsible list of events: list with 3 sections corresponding
  * to 'past', 'present' and 'future' events.
@@ -87,8 +100,7 @@ const EventList = () => {
 
   const isOrganizer = EventHooks.useIsLaoOrganizer();
 
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const renderSectionHeader = useCallback(
     (title: string) => {
@@ -101,7 +113,14 @@ const EventList = () => {
           {sectionTitle}
           <Text
             style={styles.expandButton}
-            onPress={() => navigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
+            onPress={() =>
+              navigation.navigate(STRINGS.navigation_app_lao, {
+                screen: STRINGS.navigation_lao_events,
+                params: {
+                  screen: STRINGS.navigation_lao_organizer_create_event,
+                },
+              })
+            }>
             {expandSign}
           </Text>
         </View>

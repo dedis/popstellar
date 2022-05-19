@@ -1,8 +1,13 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { TextBlock, Button } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Typography, Views } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -26,9 +31,16 @@ const styleEvents = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 const CreateEvent = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const eventTypes = EventHooks.useEventTypes();
 
   return (
@@ -37,8 +49,16 @@ const CreateEvent = () => {
 
       {eventTypes.map((eventType) => (
         <Button
-          key={`wide-btn-view-${eventType.eventType}`}
-          onPress={() => navigation.navigate(eventType.navigationNames.createEvent, styleEvents)}>
+          key={eventType.eventType}
+          onPress={() =>
+            navigation.navigate(STRINGS.navigation_app_lao, {
+              screen: STRINGS.navigation_lao_events,
+              params: {
+                screen: eventType.navigationNames.createEvent,
+                params: styleEvents,
+              },
+            })
+          }>
           <Text style={[Typography.base, Typography.centered, Typography.negative]}>
             {eventType.eventType}
           </Text>

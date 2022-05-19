@@ -1,10 +1,13 @@
-import { useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { TextBlock, TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Typography } from 'core/styles';
@@ -36,13 +39,17 @@ export function connectTo(serverUrl: string): NetworkConnection | undefined {
   }
 }
 
-const ConnectConfirm = () => {
-  // FIXME: route should use proper type
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_confirm>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
+>;
 
-  const laoIdIn = route.params?.laoIdIn || '';
-  const url = route.params?.url || 'ws://localhost:9000/organizer/client';
+const ConnectConfirm = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const route = useRoute<NavigationProps['route']>();
+
+  const laoIdIn = route.params?.laoId || '';
+  const url = route.params?.serverUrl || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);
 
@@ -64,8 +71,11 @@ const ConnectConfirm = () => {
       // subscribe to the lao channel on the new connection
       await subscribeToChannel(channel, [connection]);
 
-      navigation.navigate(STRINGS.navigation_app_tab_lao, {
-        screen: STRINGS.organization_navigation_tab_events,
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_events,
+        params: {
+          screen: STRINGS.navigation_lao_organizer_home,
+        },
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);

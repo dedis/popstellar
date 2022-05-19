@@ -1,6 +1,8 @@
 import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import { EventListenerCallback } from '@react-navigation/core';
 
+import { HomeParamList } from 'core/navigation/typing/HomeParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PopToken } from 'core/objects';
 
 export namespace WalletFeature {
@@ -34,10 +36,10 @@ export namespace WalletFeature {
     containsToken(token: PopToken | undefined): boolean;
   }
 
-  export type LaoScreen = HomeScreen;
+  export type LaoScreen = Omit<HomeScreen, 'id'> & { id: keyof LaoParamList };
 
   export interface HomeScreen {
-    id: string;
+    id: keyof HomeParamList;
     title?: string;
 
     Component: React.ComponentType<unknown>;

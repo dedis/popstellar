@@ -1,10 +1,13 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
 import ListIcon from 'core/components/icons/ListIcon';
 import ScanIcon from 'core/components/icons/ScanIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { HomeParamList } from 'core/navigation/typing/HomeParamList';
 import { Colors, Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -17,44 +20,48 @@ import ConnectNavigation from './ConnectNavigation';
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
  * and Wallet components.
  */
-const HomeNavigator = createBottomTabNavigator();
+const HomeNavigator = createBottomTabNavigator<HomeParamList>();
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<HomeParamList, typeof STRINGS.navigation_home_home>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
+>;
 
 const HomeNavigation = () => {
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const navigationScreens = HomeHooks.useHomeNavigationScreens();
 
-  const screens: HomeFeature.Screen[] = useMemo(() => {
+  const screens: HomeFeature.HomeScreen[] = useMemo(() => {
     return [
       ...navigationScreens,
       // add home screen to the navigation
       {
-        id: STRINGS.navigation_tab_home,
+        id: STRINGS.navigation_home_home,
         title: STRINGS.home_navigation_title,
         Component: Home,
         tabBarIcon: ListIcon,
         order: -99999999,
-      } as HomeFeature.Screen,
+      } as HomeFeature.HomeScreen,
       {
-        id: `mock_${STRINGS.navigation_tab_connect}`,
-        title: STRINGS.navigation_tab_connect,
+        id: STRINGS.navigation_home_mock_connect,
+        title: STRINGS.navigation_app_connect,
         Component: ConnectNavigation,
         tabPress: (e) => {
           // prevent navigation
           e.preventDefault();
-          navigation.navigate(STRINGS.navigation_tab_connect);
+          navigation.navigate(STRINGS.navigation_app_connect);
         },
         tabBarIcon: ScanIcon,
         order: -10000,
-      } as HomeFeature.Screen,
+      } as HomeFeature.HomeScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
   }, [navigation, navigationScreens]);
 
   return (
     <HomeNavigator.Navigator
-      initialRouteName={STRINGS.navigation_tab_home}
+      initialRouteName={STRINGS.navigation_home_home}
       screenOptions={{
         tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.inactive,
@@ -87,7 +94,7 @@ const HomeNavigation = () => {
 export default HomeNavigation;
 
 export const HomeNavigationScreen: AppScreen = {
-  id: STRINGS.navigation_app_tab_home,
-  title: STRINGS.navigation_app_tab_home,
+  id: STRINGS.navigation_app_home,
+  title: STRINGS.navigation_app_home,
   component: HomeNavigation,
 };

@@ -6,12 +6,12 @@ import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import { dispatch } from 'core/redux';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
-import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
 import {
   discardNotifications,
   makeReadNotificationsSelector,
@@ -43,8 +43,8 @@ const NotificationScreenStyles = StyleSheet.create({
 });
 
 type NavigationProps = StackScreenProps<
-  NotificationStackParamList,
-  typeof STRINGS.notification_navigation_tab_notifications
+  NotificationParamList,
+  typeof STRINGS.navigation_notification_notifications
 >;
 
 /**
@@ -60,7 +60,7 @@ const NotificationScreenListItem = ({ item }: { item: ListSeparatorItem | Notifi
       <TouchableOpacity
         onPress={() =>
           navigation.navigate<'Notification'>(
-            STRINGS.notification_navigation_tab_single_notification,
+            STRINGS.navigation_notification_single_notification,
             { notificationId: item.id },
           )
         }>

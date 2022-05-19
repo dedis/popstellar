@@ -1,8 +1,13 @@
 import React, { ReactNode } from 'react';
 
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+
 export namespace LaoFeature {
-  export interface Screen {
-    id: string;
+  export type OrganizerScreen = Omit<LaoScreen, 'id'> & { id: keyof LaoOrganizerParamList };
+
+  export interface LaoScreen {
+    id: keyof LaoParamList;
     title?: string;
     Component: React.ComponentType<unknown>;
 

@@ -1,10 +1,16 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { ProfileIcon, Button } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
 import { Typography } from 'core/styles';
@@ -49,11 +55,22 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_attendee_list>,
+  CompositeScreenProps<
+    StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_search>,
+    CompositeScreenProps<
+      StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+      StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+    >
+  >
+>;
+
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { currentUserPublicKey, laoId, publicKey } = props;
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
   const followUser = () => {

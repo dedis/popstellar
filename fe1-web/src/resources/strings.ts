@@ -15,45 +15,44 @@ namespace STRINGS {
   export const user_role_organizer = 'Organizer';
   export const user_role_witness = 'Witness';
 
-  /* --- Navigation Strings --- */
-  export const navigation_tab_home = 'Home';
-  export const navigation_tab_social_media = 'Social Media';
-  export const navigation_tab_connect = 'Connect';
-  export const navigation_tab_launch = 'Launch';
-
-  /* --- HomeNavigation Strings --- */
-  export const navigation_home_tab_wallet = 'Wallet';
+  export const navigation_social_media = 'Social Media';
 
   /* --- App Navigation Strings --- */
-  export const navigation_app_tab_home = 'AppHome';
-  export const navigation_app_tab_lao = 'AppLao';
+  export const navigation_app_home = 'AppHome';
+  export const navigation_app_lao = 'AppLao';
   export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
   export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
+  export const navigation_app_connect = 'Connect';
+
+  /* --- HomeNavigation Strings --- */
+  export const navigation_home_home = 'Home';
+  export const navigation_home_mock_connect = 'MockConnect';
+  export const navigation_home_wallet = 'Wallet';
+
+  /* --- ConnectionNavigation Strings --- */
+  export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_launch = 'Launch';
+  export const navigation_connect_confirm = 'Confirm';
 
   /* --- Notification Navigation Strings --- */
-  export const notification_navigation_tab_notifications = 'NotificationNavigation Notifications';
-  export const notification_navigation_tab_notifications_title = 'Notifications';
-  export const notification_navigation_tab_single_notification = 'Notification';
+  export const navigation_notification_notifications = 'NotificationNavigation Notifications';
+  export const navigation_notification_notifications_title = 'Notifications';
+  export const navigation_notification_single_notification = 'Notification';
 
-  /* --- Organization Navigation Strings --- */
-  export const organization_navigation_tab_home = 'Home';
-  export const organization_navigation_tab_user = 'User';
-  export const organization_navigation_tab_events = 'Events';
-  export const organization_navigation_tab_notifications = 'Notifications';
-  export const organization_navigation_tab_identity = 'My identity';
+  /* --- Lap Navigation Strings --- */
+  export const navigation_lao_home = 'Home';
+  export const navigation_lao_notifications = 'Notifications';
+  export const navigation_lao_events = 'Events';
+  export const navigation_lao_identity = 'My identity';
+  export const navigation_lao_wallet = 'Wallet';
 
-  /* --- Witness Navigation Strings --- */
-  export const witness_navigation_tab_home = 'Witness';
-  export const witness_navigation_tab_video = 'WitnessScreen Video';
-
-  /* --- Organizer Navigation Strings --- */
-  export const organizer_navigation_tab_home = 'Organizer Home';
-  export const organizer_navigation_tab_create_event = 'Create Event';
-  export const organizer_navigation_tab_add_witness = 'Add witness';
-  export const organizer_navigation_tab_roll_call = 'Roll-Call';
-  export const organizer_navigation_creation_meeting = 'Create meeting';
-  export const organizer_navigation_creation_roll_call = 'Create roll call';
-  export const organizer_navigation_creation_election = 'Create election';
+  /* --- Lao Organizer Navigation Strings --- */
+  export const navigation_lao_organizer_home = 'Organizer Home';
+  export const navigation_lao_organizer_create_event = 'Create Event';
+  export const navigation_lao_organizer_creation_meeting = 'Create meeting';
+  export const navigation_lao_organizer_creation_roll_call = 'Create roll call';
+  export const navigation_lao_organizer_creation_election = 'Create election';
+  export const navigation_lao_organizer_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home_tab = 'Wallet Home';
@@ -94,10 +93,6 @@ namespace STRINGS {
   /* --- Connect Strings --- */
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
-
-  // Scanning Connect Strings
-  export const connect_scanning_title = 'Scanning';
-  export const connect_scanning_camera_view = 'Camera view';
   export const connect_scanning_fail = 'Invalid QRCode data';
 
   // Connecting Connect Strings
@@ -108,7 +103,6 @@ namespace STRINGS {
   export const connect_lao_id = 'LAO ID';
 
   // Confirm Connect Strings
-  export const connect_confirm_title = 'Confirm';
   export const connect_confirm_description = 'Connect to this local organization?';
 
   /* --- Launch Strings --- */

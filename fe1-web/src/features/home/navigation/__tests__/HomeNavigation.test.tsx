@@ -4,7 +4,7 @@ import React from 'react';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockChannel, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
+import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { Home } from 'features/home/screens';
 
 import HomeNavigation from '../HomeNavigation';
@@ -17,8 +17,8 @@ const contextValue = {
     useLaoList: () => [],
     LaoList: () => null,
     homeNavigationScreens: [
-      { id: 'home', title: 'Home', order: 0, Component: Home },
-      { id: 'home2', order: -3, Component: Home },
+      { id: 'home' as HomeFeature.HomeScreen['id'], title: 'Home', order: 0, Component: Home },
+      { id: 'home2' as HomeFeature.HomeScreen['id'], order: -3, Component: Home },
     ],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,

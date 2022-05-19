@@ -6,12 +6,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'resources/strings';
 
+import { AppParamList } from './typing/AppParamList';
+
 /**
  * Define the App stack navigation
  * Contains to navigation: the home navigation and the organization navigation
  */
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<AppParamList>();
 
 const styles = StyleSheet.create({
   view: {
@@ -22,12 +24,7 @@ const styles = StyleSheet.create({
 const AppNavigation = ({ screens }: IPropTypes) => {
   const entries = screens.map(({ id, title, component }) => (
     // make the reasonable assumption that we haven't passed strings as components here
-    <Stack.Screen
-      name={id}
-      key={id}
-      component={component as React.ComponentType}
-      options={{ title: title || id }}
-    />
+    <Stack.Screen name={id} key={id} component={component} options={{ title: title || id }} />
   ));
 
   return (
@@ -56,8 +53,14 @@ AppNavigation.propTypes = propTypes;
 
 AppNavigation.defaultProps = {};
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+export type AppScreen = {
+  id: keyof AppParamList;
+  title?: string | undefined;
+  component: React.ComponentType;
+};
 
-export type AppScreen = IPropTypes['screens']['0'];
+type IPropTypes = Omit<PropTypes.InferProps<typeof propTypes>, 'screens'> & {
+  screens: AppScreen[];
+};
 
 export default AppNavigation;

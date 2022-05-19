@@ -3,6 +3,7 @@ import { AnyAction, Reducer } from 'redux';
 
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import { EventState } from '../objects';
 import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
@@ -92,7 +93,10 @@ export interface EventCompositionConfiguration {
   eventTypes: {
     eventType: string;
     navigationNames: {
-      createEvent: string;
+      createEvent:
+        | typeof STRINGS.navigation_lao_organizer_creation_meeting
+        | typeof STRINGS.navigation_lao_organizer_creation_roll_call
+        | typeof STRINGS.navigation_lao_organizer_creation_election;
     };
     Component: React.ComponentType<{
       eventId: string;

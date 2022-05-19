@@ -1,6 +1,8 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -16,6 +18,9 @@ import {
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -26,16 +31,22 @@ import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_creation_meeting>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  */
-
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = MeetingHooks.useCurrentLaoId();
 
@@ -52,7 +63,7 @@ const CreateMeeting = ({ route }: any) => {
   const createMeeting = () => {
     requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
       .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        navigation.navigate(STRINGS.navigation_lao_organizer_home);
       })
       .catch((err) => {
         console.error('Could not create meeting, error:', err);

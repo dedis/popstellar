@@ -1,4 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
@@ -7,6 +8,9 @@ import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, Button } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
@@ -38,11 +42,21 @@ const qrScannerStyles: ViewStyle = {
 
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<
+    LaoOrganizerParamList,
+    typeof STRINGS.navigation_lao_organizer_open_roll_call
+  >,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 const RollCallOpened = () => {
-  // FIXME: navigation and route should user proper type
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const { rollCallID } = route.params;
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const route = useRoute<NavigationProps['route']>();
+  const { rollCallId } = route.params;
   const [attendeePopTokens, updateAttendeePopTokens] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -50,7 +64,7 @@ const RollCallOpened = () => {
   const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
-  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallID), [rollCallID]);
+  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
   const rollCall = useSelector(rollCallSelector);
 
   if (!laoId) {
@@ -122,7 +136,7 @@ const RollCallOpened = () => {
 
     try {
       await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
-      navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      navigation.navigate(STRINGS.navigation_lao_organizer_home);
     } catch (err) {
       toast.show(`Could not close roll call, error: ${err}`, {
         type: 'danger',

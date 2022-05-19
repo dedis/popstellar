@@ -34,12 +34,12 @@ export interface LaoCompositionConfiguration {
   /**
    * The screens that should additionally be included in the lao navigation
    */
-  laoNavigationScreens: LaoFeature.Screen[];
+  laoNavigationScreens: LaoFeature.LaoScreen[];
 
   /**
    * The screens that should additionally be included in the lao navigation
    */
-  organizerNavigationScreens: LaoFeature.Screen[];
+  organizerNavigationScreens: LaoFeature.OrganizerScreen[];
 }
 
 /**

@@ -1,11 +1,13 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import OptionsIcon from 'core/components/icons/OptionsIcon';
 import WalletIcon from 'core/components/icons/WalletIcon';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Colors } from 'core/styles';
 import { HomeFeature } from 'features/home/interface';
 import STRINGS from 'resources/strings';
@@ -14,7 +16,7 @@ import { forget } from '../objects';
 import { clearDummyWalletState, createDummyWalletState } from '../objects/DummyWallet';
 import { WalletHome } from '../screens';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<WalletParamList>();
 
 /**
  * Defines the Wallet stack navigation.
@@ -31,9 +33,12 @@ export default function WalletNavigation() {
   );
 }
 
+/* can be in the lao or home navigation but we only need the top app navigatio which is always present */
+type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>;
+
 const WalletNavigationHeaderRight = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -77,8 +82,8 @@ const WalletNavigationHeaderRight = () => {
   );
 };
 
-export const WalletNavigationScreen: HomeFeature.Screen = {
-  id: STRINGS.navigation_home_tab_wallet,
+export const WalletNavigationScreen: HomeFeature.HomeScreen & HomeFeature.LaoScreen = {
+  id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
   tabBarIcon: WalletIcon,
   order: 99999999,

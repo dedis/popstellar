@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -6,6 +7,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { Colors, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -19,12 +21,16 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = StackScreenProps<
+  AppParamList,
+  typeof STRINGS.navigation_app_wallet_insert_seed
+>;
+
 /**
  * Wallet screen to set an already existing mnemonic
  */
 const WalletSetSeed = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const toast = useToast();
 
@@ -34,8 +40,11 @@ const WalletSetSeed = () => {
   const initWallet = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.navigation_app_tab_home, {
-        screen: STRINGS.navigation_wallet_home_tab,
+      navigation.navigate(STRINGS.navigation_app_home, {
+        screen: STRINGS.navigation_home_wallet,
+        params: {
+          screen: STRINGS.navigation_wallet_home_tab,
+        },
       });
     } catch (e) {
       console.error(e);

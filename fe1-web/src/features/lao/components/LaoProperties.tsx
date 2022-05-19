@@ -1,10 +1,13 @@
-import { useNavigation } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -34,10 +37,15 @@ const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   return STRINGS.user_role_attendee;
 };
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+>;
+
 const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
   const lao = LaoHooks.useCurrentLao();
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
@@ -55,11 +63,7 @@ const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
         />
         <Button
           title="Add connection"
-          onPress={() =>
-            navigation.navigate(STRINGS.navigation_tab_connect, {
-              screen: STRINGS.connect_scanning_title,
-            })
-          }
+          onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}
         />
       </CollapsibleContainer>
     </View>

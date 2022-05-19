@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Colors, Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -11,7 +12,7 @@ import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
 import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
-const OrganizationTopTabNavigator = createBottomTabNavigator();
+const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 /**
  * Navigation when connected to a lao
@@ -32,7 +33,7 @@ const LaoNavigation: React.FC = () => {
   const isWitness = useSelector(selectIsLaoWitness);
 
   // add the organizer or attendee screen depeding on the user
-  const screens: LaoFeature.Screen[] = useMemo(() => {
+  const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     let Component: React.ComponentType<any>;
 
     if (isOrganizer || isWitness) {
@@ -44,22 +45,22 @@ const LaoNavigation: React.FC = () => {
     return [
       ...passedScreens,
       {
-        id: STRINGS.organization_navigation_tab_identity,
+        id: STRINGS.navigation_lao_identity,
         Component: Identity,
         order: 10000,
-      } as LaoFeature.Screen,
+      } as LaoFeature.LaoScreen,
       {
-        id: STRINGS.organization_navigation_tab_events,
+        id: STRINGS.navigation_lao_events,
         Component,
         order: 20000,
-      } as LaoFeature.Screen,
+      } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
   }, [passedScreens, isOrganizer, isWitness]);
 
   return (
     <OrganizationTopTabNavigator.Navigator
-      initialRouteName={STRINGS.organization_navigation_tab_events}
+      initialRouteName={STRINGS.navigation_lao_events}
       screenOptions={{
         tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.inactive,

@@ -15,8 +15,8 @@ import { LaoHooks } from '../LaoHooks';
 
 const EventList = jest.fn();
 
-const laoNavigationScreens: LaoFeature.Screen[] = [];
-const organizerNavigationScreens: LaoFeature.Screen[] = [];
+const laoNavigationScreens: LaoFeature.LaoScreen[] = [];
+const organizerNavigationScreens: LaoFeature.OrganizerScreen[] = [];
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {

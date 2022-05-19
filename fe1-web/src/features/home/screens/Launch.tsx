@@ -1,9 +1,12 @@
-import { useNavigation } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
@@ -27,9 +30,13 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_launch>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
+>;
+
 const Launch = () => {
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const [inputLaoName, setInputLaoName] = useState('');
   const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
@@ -48,8 +55,11 @@ const Launch = () => {
       .then((channel: Channel) =>
         subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
-          navigation.navigate(STRINGS.navigation_app_tab_lao, {
-            screen: STRINGS.organization_navigation_tab_events,
+          navigation.navigate(STRINGS.navigation_app_lao, {
+            screen: STRINGS.navigation_lao_events,
+            params: {
+              screen: STRINGS.navigation_lao_organizer_home,
+            },
           });
         }),
       )

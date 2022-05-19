@@ -1,4 +1,6 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState, FunctionComponent, useMemo } from 'react';
 import { Text } from 'react-native';
@@ -6,14 +8,26 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { QRCode, Button } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
+import { RollCallInterface } from '../interface';
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -28,8 +42,7 @@ const EventRollCall = (props: IPropTypes) => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
-  // FIXME: use a more specific navigation
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
   const laoId = RollCallHooks.useCurrentLaoId();
@@ -98,8 +111,12 @@ const EventRollCall = (props: IPropTypes) => {
 
   const onScanAttendees = () => {
     if (eventHasBeenOpened) {
-      navigation.navigate(STRINGS.roll_call_open, {
-        rollCallID: rollCall.id.toString(),
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_events,
+        params: {
+          screen: STRINGS.navigation_lao_organizer_open_roll_call,
+          params: { rollCallId: rollCall.id.toString() },
+        },
       });
     } else {
       makeToastErr('Unable to scan attendees, the event does not have an idAlias');
@@ -187,10 +204,10 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventRollCall;
 
-export const RollCallEventType = {
+export const RollCallEventType: RollCallInterface['eventTypes']['0'] = {
   eventType: RollCall.EVENT_TYPE,
   navigationNames: {
-    createEvent: STRINGS.organizer_navigation_creation_roll_call,
+    createEvent: STRINGS.navigation_lao_organizer_creation_roll_call,
   },
   Component: EventRollCall as FunctionComponent<{
     eventId: string;

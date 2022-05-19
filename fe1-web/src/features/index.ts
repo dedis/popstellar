@@ -1,4 +1,5 @@
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
@@ -128,17 +129,17 @@ export function configureFeatures() {
     /* navigation */
     laoNavigationScreens: [
       {
-        id: STRINGS.navigation_tab_home,
+        id: STRINGS.navigation_lao_home,
         Component: homeComposition.screens.Home,
         order: -99999999,
       },
       {
-        id: STRINGS.navigation_tab_social_media,
+        id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
         order: 0,
       },
       {
-        id: STRINGS.organization_navigation_tab_notifications,
+        id: STRINGS.navigation_lao_notifications,
         Component: notificationConfiguration.navigation.NotificationNavigation,
         order: 70000,
         Badge: notificationConfiguration.components.NotificationBadge,
@@ -147,27 +148,27 @@ export function configureFeatures() {
     ],
     organizerNavigationScreens: [
       {
-        id: STRINGS.organizer_navigation_tab_create_event,
+        id: STRINGS.navigation_lao_organizer_create_event,
         Component: eventConfiguration.screens.CreateEvent,
         order: 0,
       },
       {
-        id: STRINGS.organizer_navigation_creation_meeting,
+        id: STRINGS.navigation_lao_organizer_creation_meeting,
         Component: meetingConfiguration.screens.CreateMeeting,
         order: 10000,
       },
       {
-        id: STRINGS.organizer_navigation_creation_roll_call,
+        id: STRINGS.navigation_lao_organizer_creation_roll_call,
         Component: rollCallConfiguration.screens.CreateRollCall,
         order: 20000,
       },
       {
-        id: STRINGS.organizer_navigation_creation_election,
+        id: STRINGS.navigation_lao_organizer_creation_election,
         Component: evotingConfiguration.screens.CreateElection,
         order: 30000,
       },
       {
-        id: STRINGS.roll_call_open,
+        id: STRINGS.navigation_lao_organizer_open_roll_call,
         Component: rollCallConfiguration.screens.RollCallOpened,
         order: 40000,
       },
@@ -201,9 +202,9 @@ export function configureFeatures() {
         ...homeComposition.appScreens,
         ...walletComposition.appScreens,
         {
-          id: STRINGS.navigation_app_tab_lao,
+          id: STRINGS.navigation_app_lao,
           component: laoComposition.navigation.LaoNavigation,
-        },
+        } as AppScreen,
       ],
     },
     context: {

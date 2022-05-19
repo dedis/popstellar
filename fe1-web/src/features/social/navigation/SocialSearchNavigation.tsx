@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
@@ -12,7 +13,7 @@ import { SocialSearch, SocialUserProfile } from '../screens';
  * of them.
  */
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<SocialSearchParamList>();
 
 const SocialSearchNavigation = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;

@@ -1,8 +1,12 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { HomeParamList } from 'core/navigation/typing/HomeParamList';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -24,16 +28,23 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<HomeParamList, typeof STRINGS.navigation_home_home>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
+>;
+
 const LaoItem = ({ lao }: IPropTypes) => {
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const handlePress = () => {
-    navigation.navigate(STRINGS.navigation_tab_connect, {
-      screen: STRINGS.connect_confirm_title,
+    navigation.navigate(STRINGS.navigation_app_home, {
+      screen: STRINGS.navigation_home_mock_connect,
       params: {
-        laoIdIn: lao.id.valueOf(),
-        url: lao.server_addresses[0],
+        screen: STRINGS.navigation_connect_confirm,
+        params: {
+          laoId: lao.id.valueOf(),
+          serverUrl: lao.server_addresses[0],
+        },
       },
     });
   };

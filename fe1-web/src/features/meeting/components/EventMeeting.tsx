@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { ParagraphBlock, TimeDisplay } from 'core/components';
 import STRINGS from 'resources/strings';
 
+import { MeetingInterface } from '../interface';
 import { Meeting } from '../objects';
 import { makeMeetingSelector } from '../reducer';
 
@@ -40,10 +41,10 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventMeeting;
 
-export const MeetingEventType = {
+export const MeetingEventType: MeetingInterface['eventTypes']['0'] = {
   eventType: Meeting.EVENT_TYPE,
   navigationNames: {
-    createEvent: STRINGS.organizer_navigation_creation_meeting,
+    createEvent: STRINGS.navigation_lao_organizer_creation_meeting,
   },
   Component: EventMeeting as FunctionComponent<{
     eventId: string;

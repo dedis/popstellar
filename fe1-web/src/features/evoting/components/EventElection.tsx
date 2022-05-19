@@ -11,6 +11,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
+import { EvotingInterface } from '../interface';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import { makeElectionSelector } from '../reducer';
@@ -204,10 +205,10 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventElection;
 
-export const ElectionEventType = {
+export const ElectionEventType: EvotingInterface['eventTypes']['0'] = {
   eventType: Election.EVENT_TYPE,
   navigationNames: {
-    createEvent: STRINGS.organizer_navigation_creation_election,
+    createEvent: STRINGS.navigation_lao_organizer_creation_election,
   },
   Component: EventElection as FunctionComponent<{
     eventId: string;
