@@ -4,9 +4,7 @@ Feature: Constants
     # TODO: make the function depend on all the attributes the lao id depends on
     * def organizerPk =
       """
-        function(){
-          return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
-        }
+        function(){ return "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=" }
       """
     * def attendeePk =
       """
@@ -18,39 +16,29 @@ Feature: Constants
     * def getOrganizer = call organizerPk
     * def getAttendee = call attendeePk
 
-    * def laoValidCreationTime =
-    """
-        function(){
-          return 1633035721
-        }
-    """
-    * def getLaoValidCreationTime = call laoValidCreationTime
+    * def laoValidCreationTime = function(){ return 1633035721 }
+    * def laoInvalidCreationTime = function(){ return -1633035721 }
 
-    * def laoIdHash =
+    * def laoValidName = function(){ return "LAO"}
+    * def laoInvalidName = function(){ return ""}
+
+    * def getLaoValidName = call laoValidName
+    * def getLaoInvalidName = call laoValidName
+
+    * def getLaoValidCreationTime = call laoValidCreationTime
+    * def getLaoInvalidCreationTime = call laoInvalidCreationTime
+
+    * def constructLaoId =
        """
-          function(){
+          function(laoName, time){
             var JsonConverter = Java.type('be.utils.JsonConverter')
             var String = Java.type('java.lang.String')
             var jsonConverter = new JsonConverter()
             var organizer = getOrganizer
-            var time = String.format("%d",getLaoValidCreationTime)
-            var name = "LAO"
-            return jsonConverter.hash(organizer.getBytes(), time.getBytes(), name.getBytes())
+            var timeString = String.format("%d",time)
+            return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
-
-    * def createLaoIdEmptyName =
-      """
-        function(){
-          return "p8TW08AWlBScs9FGXK3KbLQX7Fbgz8_gLwX-B5VEWS0="
-        }
-      """
-    * def createLaoIdNegativeTime =
-      """
-        function(){
-          return "p8TW08AWlBScs9FGXK3KbLQX7Fbgz8_gLwX-B5VEWS0="
-        }
-      """
 
     * def createRollCallValid =
       """
@@ -148,9 +136,9 @@ Feature: Constants
           return "nas8r4aF0wq9ad4isfp4nsfiMFPMPS9sdsF8lsd8sopfd0="
         }
       """
-    * def getLaoValid = call laoIdHash
-    * def getLaoIdEmptyName = call createLaoIdEmptyName
-    * def getLaoIdNegativeTime = call createLaoIdNegativeTime
+    * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+    * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
+    * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
 
     * def getRollCallValidId = call createRollCallValid
     * def getRollCallInvalidId = call createRollCallInvalid
