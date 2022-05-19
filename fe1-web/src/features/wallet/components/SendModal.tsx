@@ -50,7 +50,7 @@ const SendModal = (props: IPropTypes) => {
             <View style={styles.sendView}>
               <Input style={styles.input} label={STRINGS.wallet_send_destination_label} />
               <Input style={styles.input} label={STRINGS.wallet_send_amount_label} />
-              <Button title={STRINGS.wallet_send_title} onPress={() => {}}/>
+              <Button title={STRINGS.wallet_send_title} onPress={() => {}} />
             </View>
           </View>
         </View>

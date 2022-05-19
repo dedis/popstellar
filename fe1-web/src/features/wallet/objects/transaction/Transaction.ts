@@ -1,6 +1,6 @@
-import { Base64UrlData, Hash, KeyPair, PopToken, PrivateKey, PublicKey } from 'core/objects';
+import { Base64UrlData, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
+import STRINGS from 'resources/strings';
 
-import STRINGS from '../../../../resources/strings';
 import { TransactionInput, TransactionInputJSON, TransactionInputState } from './TransactionInput';
 import {
   TransactionOutput,
