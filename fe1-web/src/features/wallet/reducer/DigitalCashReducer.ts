@@ -26,7 +26,7 @@ interface DigitalCashReducerState {
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
 }
-interface DigitalCashLaoReducerState {
+export interface DigitalCashLaoReducerState {
   byLaoId: Record<string, DigitalCashRollCallReducerState>;
 }
 
@@ -36,7 +36,7 @@ const initialState: DigitalCashLaoReducerState = {
 };
 
 /* Name of digital cash slice in storage */
-const DIGITAL_CASH_REDUCER_PATH = 'digitalCash';
+export const DIGITAL_CASH_REDUCER_PATH = 'digitalCash';
 
 const digitalCashSlice = createSlice({
   name: DIGITAL_CASH_REDUCER_PATH,
@@ -112,5 +112,5 @@ export default {
   [DIGITAL_CASH_REDUCER_PATH]: digitalCashSlice.reducer,
 };
 
-export const getDigitalCashState = (state: any): DigitalCashReducerState =>
+export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];

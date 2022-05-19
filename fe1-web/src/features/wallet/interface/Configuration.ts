@@ -6,7 +6,12 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { WalletReducerState, WALLET_REDUCER_PATH } from '../reducer';
+import {
+  WalletReducerState,
+  WALLET_REDUCER_PATH,
+  DIGITAL_CASH_REDUCER_PATH,
+  DigitalCashLaoReducerState,
+} from '../reducer';
 import { WalletFeature } from './Feature';
 
 export const WALLET_FEATURE_IDENTIFIER = 'wallet';
@@ -75,5 +80,6 @@ export interface WalletInterface extends FeatureInterface {
 
   reducers: {
     [WALLET_REDUCER_PATH]: Reducer<WalletReducerState>;
+    [DIGITAL_CASH_REDUCER_PATH]: Reducer<DigitalCashLaoReducerState>;
   };
 }

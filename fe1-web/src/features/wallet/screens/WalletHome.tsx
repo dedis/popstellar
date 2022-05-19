@@ -14,6 +14,7 @@ import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
+import { DigitalCashStore } from '../store';
 
 const styles = StyleSheet.create({
   homeContainer: {
@@ -44,7 +45,6 @@ const styles = StyleSheet.create({
  * Wallet UI once the wallet is synced
  */
 const WalletHome = () => {
-  const [sendValue, setSendValue] = useState(0);
   const [sendModalVisible, setSendModalVisible] = useState(false);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
@@ -91,10 +91,17 @@ const WalletHome = () => {
 
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
-      const rollCallName = `Roll Call name: ${tokens[selectedTokenIndex].rollCallName.valueOf()}`;
+      const selectedToken = tokens[selectedTokenIndex];
+      const balance = DigitalCashStore.getBalance(
+        selectedToken.laoId.valueOf(),
+        selectedToken.rollCallId.valueOf(),
+        selectedToken.token.publicKey.valueOf(),
+      );
+      const rollCallName = `Roll Call name: ${selectedToken.rollCallName.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
           <Text style={styles.textBase}>{rollCallName}</Text>
+          <Text style={styles.textBase}>{STRINGS.wallet_balance + balance.valueOf()}</Text>
           <QRCode value={tokens[selectedTokenIndex].token.publicKey.valueOf()} visibility />
         </View>
       );
@@ -125,7 +132,11 @@ const WalletHome = () => {
           />
         </View>
       )}
-      <SendModal modalVisible={sendModalVisible} setModalVisible={setSendModalVisible} />
+      <SendModal
+        modalVisible={sendModalVisible}
+        setModalVisible={setSendModalVisible}
+        send={() => {}}
+      />
       <View style={styles.smallPadding} />
       <WideButtonView
         title={STRINGS.logout_from_wallet}
