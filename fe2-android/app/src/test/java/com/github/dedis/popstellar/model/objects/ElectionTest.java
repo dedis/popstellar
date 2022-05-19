@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -163,7 +164,7 @@ public class ElectionTest {
 
   @Test
   public void getVersionTest() {
-    assertThat(OPEN_BALLOT, is(election.getElectionVersion()));
+    assertThat(ElectionVersion.OPEN_BALLOT, is(election.getElectionVersion()));
   }
 
   @Test

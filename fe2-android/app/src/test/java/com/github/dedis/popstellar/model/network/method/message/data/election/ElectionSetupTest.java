@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -23,7 +22,6 @@ import java.util.List;
 
 public class ElectionSetupTest {
 
-  private final ElectionVersion electionVersion = OPEN_BALLOT;
   private final String electionSetupName = "new election setup";
   private final long creation = 0;
   private final long start = 0;
@@ -37,7 +35,7 @@ public class ElectionSetupTest {
   private final String laoId = "my lao id";
   private final ElectionSetup openBallotSetup =
           new ElectionSetup(
-                  writeIn, electionSetupName, creation, start, end, votingMethod, laoId, ballotOptions, question, electionVersion
+                  writeIn, electionSetupName, creation, start, end, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
           );
   private final ElectionSetup secretBallotSetup =
           new ElectionSetup(
@@ -90,7 +88,7 @@ public class ElectionSetupTest {
   @Test
   public void getVersionTest(){
     assertEquals(
-            OPEN_BALLOT.getStringBallotVersion(), openBallotSetup.getElectionVersion().getStringBallotVersion());
+            ElectionVersion.OPEN_BALLOT.getStringBallotVersion(), openBallotSetup.getElectionVersion().getStringBallotVersion());
     assertEquals(
             ElectionVersion.SECRET_BALLOT.getStringBallotVersion(),
             secretBallotSetup.getElectionVersion().getStringBallotVersion());
@@ -102,30 +100,30 @@ public class ElectionSetupTest {
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, null, creation, start, end, votingMethod, laoId, ballotOptions, question, electionVersion));
+                            writeIn, null, creation, start, end, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT));
     assertThrows(
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, start, end, null, laoId, ballotOptions, question, electionVersion
+                            writeIn, electionSetupName, creation, start, end, null, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
                     ));
     assertThrows(
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, start, end, votingMethod, laoId, null, question, electionVersion
+                            writeIn, electionSetupName, creation, start, end, votingMethod, laoId, null, question, ElectionVersion.OPEN_BALLOT
                     ));
     assertThrows(
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, start, end, votingMethod, laoId, ballotOptions, null, electionVersion
+                            writeIn, electionSetupName, creation, start, end, votingMethod, laoId, ballotOptions, null, ElectionVersion.OPEN_BALLOT
                     ));
     assertThrows(
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, start, end, votingMethod, null, ballotOptions, question, electionVersion
+                            writeIn, electionSetupName, creation, start, end, votingMethod, null, ballotOptions, question, ElectionVersion.OPEN_BALLOT
                     ));
   }
 
@@ -135,7 +133,7 @@ public class ElectionSetupTest {
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, 2, 1, votingMethod, laoId, ballotOptions, question, electionVersion
+                            writeIn, electionSetupName, creation, 2, 1, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
                     ));
   }
 
@@ -146,7 +144,7 @@ public class ElectionSetupTest {
 
     ElectionSetup election1 =
             new ElectionSetup(
-                    writeIn, electionSetupName, creation, time - gap, time, votingMethod, laoId, ballotOptions, question, electionVersion
+                    writeIn, electionSetupName, creation, time - gap, time, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
             );
     assertFalse(election1.getStartTime() < election1.getCreation());
   }
@@ -157,13 +155,13 @@ public class ElectionSetupTest {
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, -1, end, votingMethod, laoId, ballotOptions, question, electionVersion
+                            writeIn, electionSetupName, creation, -1, end, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
                     ));
     assertThrows(
             IllegalArgumentException.class,
             () ->
                     new ElectionSetup(
-                            writeIn, electionSetupName, creation, start, -1, votingMethod, laoId, ballotOptions, question, electionVersion
+                            writeIn, electionSetupName, creation, start, -1, votingMethod, laoId, ballotOptions, question, ElectionVersion.OPEN_BALLOT
                     ));
   }
   
@@ -182,23 +180,23 @@ public class ElectionSetupTest {
   public void toStringTest(){
     String setupElectionStringTest =
         String.format(
-            "ElectionSetup={"
-                + "version='%s', "
-                + "id='%s', "
-                + "lao='%s', "
-                + "name='%s', "
-                + "createdAt=%d, "
-                + "startTime=%d, "
-                + "endTime=%d, "
-                + "questions=%s}",
-                electionVersion,
-            Election.generateElectionSetupId(laoId, creation, electionSetupName),
-            laoId,
-            electionSetupName,
-            creation,
-            start,
-            end,
-            Arrays.toString(openBallotSetup.getQuestions().toArray()));
+                "ElectionSetup={"
+                        + "version='%s', "
+                        + "id='%s', "
+                        + "lao='%s', "
+                        + "name='%s', "
+                        + "createdAt=%d, "
+                        + "startTime=%d, "
+                        + "endTime=%d, "
+                        + "questions=%s}",
+                ElectionVersion.OPEN_BALLOT,
+                Election.generateElectionSetupId(laoId, creation, electionSetupName),
+                laoId,
+                electionSetupName,
+                creation,
+                start,
+                end,
+                Arrays.toString(openBallotSetup.getQuestions().toArray()));
     assertEquals(setupElectionStringTest, openBallotSetup.toString());
   }
 }
