@@ -32,6 +32,7 @@ export enum ActionType {
   NOTIFY_ADD = 'notify_add',
   DELETE = 'delete',
   NOTIFY_DELETE = 'notify_delete',
+  GREET = 'greet',
 }
 
 /** Enumeration of all possible signatures of a message */

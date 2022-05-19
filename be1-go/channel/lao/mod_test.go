@@ -38,7 +38,8 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 
 	m := message.Message{MessageID: "0"}
 
-	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -69,7 +70,8 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -104,7 +106,8 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "unsubscribe")
@@ -130,7 +133,8 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 	laoChannel := channel.(*Channel)
 
 	// Creates a sockSocket subscribed to the channel
@@ -195,19 +199,21 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Create the messages
 	numMessages := 5
 
-	messages := make([]message.Message, numMessages)
+	messages := make([]message.Message, numMessages+1)
 
 	messages[0] = message.Message{MessageID: "0"}
+	messages[1] = message.Message{MessageID: "1"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
 
-	for i := 1; i < numMessages; i++ {
+	for i := 2; i < numMessages+1; i++ {
 		// Create a new message containing only an id
 		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = message
@@ -223,9 +229,12 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Compute the catchup method
 	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
 
+	// Change the greeting message id to make it easier to check
+	catchupAnswer[1] = message.Message{MessageID: "1"}
+
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
-	for i := 0; i < numMessages; i++ {
+	for i := 0; i < numMessages+1; i++ {
 		require.Equal(t, messages[i].MessageID, catchupAnswer[i].MessageID,
 			catchupAnswer)
 	}
@@ -239,7 +248,8 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	// Create an update lao message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -284,7 +294,8 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 	laoChannel := channel.(*Channel)
 
 	// Create an update lao
@@ -363,7 +374,8 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -386,7 +398,8 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -483,7 +496,8 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	// Create an update lao message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -518,6 +532,35 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	messagePublish.Params.Message = m1
 
 	require.NoError(t, channel.Publish(messagePublish, nil))
+}
+
+func TestLAOChannel_Sends_Greeting(t *testing.T) {
+	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
+
+	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+
+	greetMsg := catchupAnswer[1]
+
+	data := messagedata.LaoGreet{}.NewEmpty()
+
+	err = greetMsg.UnmarshalData(data)
+	require.NoError(t, err)
+
+	dataGreet, ok := data.(*messagedata.LaoGreet)
+	require.True(t, ok)
+
+	require.Equal(t, messagedata.LAOObject, dataGreet.Object)
+	require.Equal(t, messagedata.LAOActionGreet, dataGreet.Action)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", dataGreet.LaoID)
+	require.Equal(t, publicKey64, dataGreet.Frontend)
 }
 
 // -----------------------------------------------------------------------------
@@ -616,6 +659,11 @@ func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
+}
+
+// GetServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetServerAddress() string {
+	return ""
 }
 
 // Sign implements channel.HubFunctionalities
