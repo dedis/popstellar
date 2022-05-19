@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,30 +31,25 @@ public class ElectionSetup extends Data {
   private final List<ElectionQuestion> questions;
 
   /**
-   * Constructor for a data setup Election Event
-   *
-   * @param name name of the Election
-   * @param creation of the Election
-   * @param start of the Election
-   * @param laoId id of the LAO
+   * @param writeIn         write in for questions
+   * @param name            name of the election
+   * @param creation        creation timestamp
+   * @param start           start timestamp
+   * @param end             end timestamp
+   * @param votingMethod    voting methods
+   * @param laoId           id of the LAO
+   * @param ballotOptions   ballot options
+   * @param questionList    list of questions
+   * @param electionVersion version of the election
    */
   public ElectionSetup(
-      ElectionVersion electionVersion,
-      String name,
-      long creation,
-      long start,
-      long end,
-      List<String> votingMethod,
-      List<Boolean> writeIn,
-      List<List<String>> ballotOptions,
-      List<String> questionList,
-      String laoId) {
+          List<Boolean> writeIn, String name, long creation, long start, long end, List<String> votingMethod, String laoId, List<List<String>> ballotOptions, List<String> questionList, ElectionVersion electionVersion) {
     if (name == null
-        || votingMethod == null
-        || writeIn == null
-        || ballotOptions == null
-        || questionList == null
-        || laoId == null) {
+            || votingMethod == null
+            || writeIn == null
+            || ballotOptions == null
+            || questionList == null
+            || laoId == null) {
       throw new IllegalArgumentException();
     }
     // we don't need to check if end < 0 or start < 0 as it is already covered by other statements

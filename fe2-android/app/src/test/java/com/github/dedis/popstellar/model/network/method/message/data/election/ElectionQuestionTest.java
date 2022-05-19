@@ -27,19 +27,11 @@ public class ElectionQuestionTest {
   private final List<String> ballotOptions1 = Arrays.asList("a", "b");
   private final List<String> ballotOptions2 = Arrays.asList("a", "b");
   private final List<Boolean> allWriteIns = Arrays.asList(false, false);
-  private final ElectionSetup electionSetup =
-      new ElectionSetup(
-          version,
-          name,
-          now,
-          now,
-          end,
-          allMethods,
-          allWriteIns,
-          Arrays.asList(ballotOptions1, ballotOptions2),
-          allQuestions,
-          laoId);
-  private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+    private final ElectionSetup electionSetup =
+            new ElectionSetup(
+                    allWriteIns, name, now, now, end, allMethods, laoId, Arrays.asList(ballotOptions1, ballotOptions2), allQuestions, version
+            );
+    private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
 
   @Test
   public void electionQuestionGetterReturnsCorrectId() {

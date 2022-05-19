@@ -420,17 +420,9 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Channel channel = lao.getChannel();
     ElectionSetup electionSetup =
-        new ElectionSetup(
-                electionVersion,
-            name,
-            creation,
-            start,
-            end,
-            votingMethod,
-            writeIn,
-            ballotOptions,
-            question,
-            lao.getId());
+            new ElectionSetup(
+                    writeIn, name, creation, start, end, votingMethod, lao.getId(), ballotOptions, question, electionVersion
+            );
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
