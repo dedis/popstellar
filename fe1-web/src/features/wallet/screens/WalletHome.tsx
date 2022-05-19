@@ -4,7 +4,6 @@ import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
