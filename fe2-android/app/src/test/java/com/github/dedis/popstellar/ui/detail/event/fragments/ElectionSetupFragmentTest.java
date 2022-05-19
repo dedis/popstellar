@@ -40,7 +40,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -541,11 +541,11 @@ public class ElectionSetupFragmentTest {
     versionChoice().perform(click());
     onData(anything()).atPosition(0).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(Version.OPEN_BALLOT.getStringBallotVersion()))));
+        .check(matches(withSpinnerText(containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
 
     versionChoice().perform(click());
     onData(anything()).atPosition(1).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(Version.SECRET_BALLOT.getStringBallotVersion()))));
+        .check(matches(withSpinnerText(containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
   }
 }

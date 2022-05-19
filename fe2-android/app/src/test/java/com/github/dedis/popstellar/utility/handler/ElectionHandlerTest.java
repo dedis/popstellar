@@ -17,7 +17,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -101,7 +101,7 @@ public class ElectionHandlerTest extends TestCase {
     // Create one Election and add it to the LAO
     election =
         new Election(
-            lao.getId(), Instant.now().getEpochSecond(), "election 1", Version.OPEN_BALLOT);
+            lao.getId(), Instant.now().getEpochSecond(), "election 1", ElectionVersion.OPEN_BALLOT);
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
     election.setChannel(lao.getChannel().subChannel(election.getId()));
@@ -130,7 +130,7 @@ public class ElectionHandlerTest extends TestCase {
     // Create the setup Election message
     ElectionSetup electionSetupOpenBallot =
         new ElectionSetup(
-            Version.OPEN_BALLOT,
+            ElectionVersion.OPEN_BALLOT,
             "election 2",
             election.getCreation(),
             election.getStartTimestamp(),
@@ -153,7 +153,7 @@ public class ElectionHandlerTest extends TestCase {
     assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
 
     // Check that the election version has been successfully set
-    assertEquals(Version.OPEN_BALLOT, electionOpt.get().getElectionVersion());
+    assertEquals(ElectionVersion.OPEN_BALLOT, electionOpt.get().getElectionVersion());
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =

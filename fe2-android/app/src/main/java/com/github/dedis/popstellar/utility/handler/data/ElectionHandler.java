@@ -56,7 +56,7 @@ public final class ElectionHandler {
               lao.getId(),
               electionSetup.getCreation(),
               electionSetup.getName(),
-              electionSetup.getVersion());
+              electionSetup.getElectionVersion());
       election.setChannel(channel.subChannel(election.getId()));
       election.setElectionQuestions(electionSetup.getQuestions());
 

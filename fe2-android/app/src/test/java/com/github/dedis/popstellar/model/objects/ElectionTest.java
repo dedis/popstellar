@@ -7,9 +7,9 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Version;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -43,7 +43,7 @@ public class ElectionTest {
   private final String id = "my election id";
   private final long startTime = 0;
   private final long endTime = 1;
-  private final Version electionVersion = Version.OPEN_BALLOT;
+  private final ElectionVersion electionVersion = ElectionVersion.OPEN_BALLOT;
   private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election =
       new Election("lao id", Instant.now().getEpochSecond(), name, electionVersion);
@@ -162,7 +162,7 @@ public class ElectionTest {
 
   @Test
   public void getVersionTest() {
-    assertThat(Version.OPEN_BALLOT, is(election.getElectionVersion()));
+    assertThat(ElectionVersion.OPEN_BALLOT, is(election.getElectionVersion()));
   }
 
   @Test
