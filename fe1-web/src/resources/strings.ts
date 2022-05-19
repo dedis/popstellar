@@ -41,6 +41,7 @@ namespace STRINGS {
 
   /* --- Lap Navigation Strings --- */
   export const navigation_lao_home = 'Home';
+  export const navigation_lao_home_title = 'LAOs';
   export const navigation_lao_notifications = 'Notifications';
   export const navigation_lao_events = 'Events';
   export const navigation_lao_identity = 'My identity';

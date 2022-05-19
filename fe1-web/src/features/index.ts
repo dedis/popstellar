@@ -1,3 +1,6 @@
+import ListIcon from 'core/components/icons/ListIcon';
+import NotificationIcon from 'core/components/icons/NotificationIcon';
+import SocialMediaIcon from 'core/components/icons/SocialMediaIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
@@ -130,19 +133,23 @@ export function configureFeatures() {
     laoNavigationScreens: [
       {
         id: STRINGS.navigation_lao_home,
+        title: STRINGS.navigation_lao_home_title,
         Component: homeComposition.screens.Home,
+        tabBarIcon: ListIcon,
         order: -99999999,
       },
       {
         id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
+        tabBarIcon: SocialMediaIcon,
         order: 0,
       },
       {
         id: STRINGS.navigation_lao_notifications,
         Component: notificationConfiguration.navigation.NotificationNavigation,
+        tabBarIcon: NotificationIcon,
         order: 70000,
-        Badge: notificationConfiguration.components.NotificationBadge,
+        headerRight: notificationConfiguration.components.NotificationBadge,
       },
       ...walletComposition.laoScreens,
     ],

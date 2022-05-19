@@ -2,6 +2,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+import EventIcon from 'core/components/icons/EventIcon';
+import IdentityIcon from 'core/components/icons/IdentityIcon';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Colors, Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -47,11 +49,13 @@ const LaoNavigation: React.FC = () => {
       {
         id: STRINGS.navigation_lao_identity,
         Component: Identity,
+        tabBarIcon: IdentityIcon,
         order: 10000,
       } as LaoFeature.LaoScreen,
       {
         id: STRINGS.navigation_lao_events,
         Component,
+        tabBarIcon: EventIcon,
         order: 20000,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
@@ -72,15 +76,15 @@ const LaoNavigation: React.FC = () => {
         },
         headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component, Badge, Icon }) => (
+      {screens.map(({ id, title, Component, headerRight, tabBarIcon }) => (
         <OrganizationTopTabNavigator.Screen
           key={id}
           name={id}
           component={Component}
           options={{
             title: title || id,
-            headerRight: Badge,
-            tabBarIcon: Icon,
+            headerRight,
+            tabBarIcon,
           }}
         />
       ))}

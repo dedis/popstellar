@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
@@ -20,9 +20,18 @@ export namespace LaoFeature {
      */
     order: number;
 
-    Badge?: () => ReactNode;
-    Icon?: () => ReactNode;
+    headerRight?: HeaderComponent;
+    tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
   }
+
+  type HeaderComponent =
+    | ((props: {
+        tintColor?: string | undefined;
+        pressColor?: string | undefined;
+        pressOpacity?: number | undefined;
+        labelVisible?: boolean | undefined;
+      }) => React.ReactNode)
+    | undefined;
 
   export interface LaoConnection {
     server: string;
