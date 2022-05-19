@@ -50,7 +50,7 @@ jest.mock('react-native-toast-notifications', () => ({
 (mockRequestCloseRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
 
 const mockRollCall = RollCall.fromState({ ...mockRollCallWithAliasState, attendees: [] });
-const rollCallID = mockRollCallWithAlias.id.valueOf();
+const rollCallId = mockRollCallWithAlias.id.valueOf();
 
 // set up mock store
 const mockStore = createStore(
@@ -74,7 +74,7 @@ const renderRollCallOpened = () =>
   render(
     <Provider store={mockStore}>
       <FeatureContext.Provider value={contextValue}>
-        <MockNavigator component={RollCallOpened} params={{ rollCallID }} />
+        <MockNavigator component={RollCallOpened} params={{ rollCallId }} />
       </FeatureContext.Provider>
     </Provider>,
   );
