@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.security.GeneralSecurityException;
 
-public class Input_objectTest {
+public class InputObjectTest {
   private static final int TX_OUT_INDEX = 0;
   private static final String Tx_OUT_HASH = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
@@ -34,17 +34,17 @@ public class Input_objectTest {
   }
 
   @Test
-  public void get_tx_out_indexTest() {
+  public void getTxOutIndexTest() {
     assertEquals(TX_OUT_INDEX, INPUT.get_tx_out_index());
   }
 
   @Test
-  public void get_tx_out_hashTest() {
+  public void getTxOutHashTest() {
     assertEquals(Tx_OUT_HASH, INPUT.get_tx_out_hash());
   }
 
   @Test
-  public void get_scriptTest() {
+  public void getScriptTest() {
     assertEquals(INPUT.get_script().get_pubkey(), PUBKEY);
     assertEquals(INPUT.get_script().get_sig(), SIG);
     assertEquals(INPUT.get_script().get_type(), TYPE);

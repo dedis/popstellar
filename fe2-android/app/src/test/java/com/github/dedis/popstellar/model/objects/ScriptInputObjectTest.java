@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.security.GeneralSecurityException;
 
-public class Script_input_objectTest {
+public class ScriptInputObjectTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -30,17 +30,17 @@ public class Script_input_objectTest {
   }
 
   @Test
-  public void gettypetest() {
+  public void getTypeTest() {
     assertEquals(TYPE, SCRIPTTXIN.get_type());
   }
 
   @Test
-  public void getpubkeytest() {
+  public void getPubkeyTest() {
     assertEquals(PUBKEY, SCRIPTTXIN.get_pubkey());
   }
 
   @Test
-  public void getsigtest() {
+  public void getSigTest() {
     assertEquals(SIG, SCRIPTTXIN.get_sig());
   }
 }

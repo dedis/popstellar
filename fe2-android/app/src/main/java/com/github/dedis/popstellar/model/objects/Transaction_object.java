@@ -25,7 +25,7 @@ public class Transaction_object {
   private List<Output_object> outputs;
 
   // lock_time
-  private long lock_time;
+  private long lockTime;
 
   public Transaction_object() {
     // Empty constructor // empty transaction
@@ -56,12 +56,12 @@ public class Transaction_object {
     this.outputs = outputs;
   }
 
-  public long getLock_time() {
-    return lock_time;
+  public long getLockTime() {
+    return lockTime;
   }
 
-  public void setLock_time(long lock_time) {
-    this.lock_time = lock_time;
+  public void setLockTime(long lock_time) {
+    this.lockTime = lock_time;
   }
 
   public int getVersion() {
@@ -74,9 +74,10 @@ public class Transaction_object {
 
   /**
    * Function that give the Public Key of the Inputs
+   *
    * @return List<PublicKey> senders public keys
    */
-  public List<PublicKey> get_senders_transaction() {
+  public List<PublicKey> getSendersTransaction() {
     Iterator<Input_object> input_ite = getInputs().iterator();
     List<PublicKey> senders= new ArrayList<>();
 
@@ -91,9 +92,10 @@ public class Transaction_object {
 
   /**
    * Function that give the Public Key Hash of the Outputs
+   *
    * @return List<String> outputs public keys hash
    */
-  public List<String> get_receivers_hash_transaction() {
+  public List<String> getReceiversHashTransaction() {
     Iterator<Output_object> output_ite = getOutputs().iterator();
     List<String> receiver_hash = new ArrayList<>();
 
@@ -106,11 +108,12 @@ public class Transaction_object {
 
   /**
    * Function that give the Public Key of the Outputs
+   *
    * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
    * @return List<PublicKey> outputs public keys
    */
-  public List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key) {
-    Iterator<String> receiver_hash_ite = get_receivers_hash_transaction().iterator();
+  public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> map_hash_key) {
+    Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
     List<PublicKey> receivers = new ArrayList<>();
     while (receiver_hash_ite.hasNext()){
       PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),null);
@@ -128,8 +131,8 @@ public class Transaction_object {
    * @param publicKey PublicKey of someone
    * @return true if public key in receiver, false otherwise
    */
-  public boolean is_receiver(PublicKey publicKey) {
-    return get_receivers_hash_transaction().contains(publicKey.computeHash());
+  public boolean isReceiver(PublicKey publicKey) {
+    return getReceiversHashTransaction().contains(publicKey.computeHash());
   }
 
   /**
@@ -139,7 +142,7 @@ public class Transaction_object {
    * @return sig other all the outputs and inputs with the public key
    * @throws GeneralSecurityException
    */
-  public String compute_sig_outputs_inputs(KeyPair keyPair) throws GeneralSecurityException {
+  public String computeSigOutputsInputs(KeyPair keyPair) throws GeneralSecurityException {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
     // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
     // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
@@ -173,12 +176,12 @@ public class Transaction_object {
    * @param receiver Public Key of a potential receiver
    * @return int amount of Lao Coin
    */
-  public int get_miniLao_per_receiver(PublicKey receiver) {
-    // TODO : Useful check ?
-    // if (!is_receiver(receiver)) {
-    // throw new IllegalArgumentException("The public Key is not contained in the receiver public
-    // key");
-    // }
+  public int getMiniLaoPerReceiver(PublicKey receiver) {
+    // Check in the future if useful
+    if (!isReceiver(receiver)) {
+      throw new IllegalArgumentException(
+          "The public Key is not contained in the receiver public key");
+    }
     // Set the return value to nothing
     int miniLao = 0;
     // Compute the hash of the public key
@@ -200,7 +203,7 @@ public class Transaction_object {
    * @param publicKey PublicKey of an individual in Transaction output
    * @return int index in the transaction outputs
    */
-  public int get_index_transaction(PublicKey publicKey) {
+  public int getIndexTransaction(PublicKey publicKey) {
     Iterator<Output_object> output_objectIterator = outputs.listIterator();
     String hash_pubkey = publicKey.computeHash();
     int index = 0;
