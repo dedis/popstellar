@@ -1,4 +1,4 @@
-package digitalCash
+package coin
 
 import (
 	"encoding/base64"
@@ -40,7 +40,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 
 	box := inbox.NewInbox(channelID)
 
-	log = log.With().Str("channel", "digitalCash").Logger()
+	log = log.With().Str("channel", "coin").Logger()
 
 	// Saving on Digital Cash channel too so it self-contains the entire cash history
 	retChannel := &Channel{
@@ -148,7 +148,7 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.TransactionPost{}, c.processTransactionPost)
+	registry.Register(messagedata.PostTransaction{}, c.processPostTransaction)
 
 	return registry
 }
@@ -204,20 +204,18 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// processTransactionPost handles a message object.
-func (c *Channel) processTransactionPost(msg message.Message, msgData interface{},
+// processPostTransaction handles a message object.
+func (c *Channel) processPostTransaction(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.TransactionPost)
+	data, ok := msgData.(*messagedata.PostTransaction)
 	if !ok {
 		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}
 
-	var transactionData messagedata.TransactionPost
-
-	err := msg.UnmarshalData(&transactionData)
+	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal transaction data: %v", err)
+		return xerrors.Errorf("invalid coin#postTransaction message: %v", err)
 	}
 
 	return nil
