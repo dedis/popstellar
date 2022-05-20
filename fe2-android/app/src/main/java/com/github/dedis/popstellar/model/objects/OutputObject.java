@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-public class Output_object {
+public class OutputObject {
   private final int value;
   private final Script_output_object script;
 
@@ -8,7 +8,7 @@ public class Output_object {
    * @param value the value of the output transaction, expressed in miniLAOs
    * @param script The script describing the TxOut unlock mechanism
    */
-  public Output_object(int value, Script_output_object script) {
+  public OutputObject(int value, Script_output_object script) {
     this.value = value;
     this.script = script;
   }

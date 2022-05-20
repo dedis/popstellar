@@ -17,7 +17,7 @@ public class OutputObjectTest {
   private static Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
 
   private static final int VALUE = 32;
-  private static final Output_object OUTPUT = new Output_object(VALUE, SCRIPTTXOUT);
+  private static final OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
 
   @Test
   public void getValueTest() {
