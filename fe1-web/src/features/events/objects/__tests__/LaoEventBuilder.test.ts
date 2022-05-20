@@ -56,7 +56,7 @@ describe('LaoEventBuilder', () => {
     const registeredVotes: RegisteredVote = {
       createdAt: 1520255700,
       sender: 'Sender1',
-      votes: [{ id: 'v1', question: 'q1', vote: [0] }],
+      votes: [{ id: 'v1', question: 'q1', vote: 0 }],
       messageId: 'messageId1',
     };
     const election: ElectionState = {

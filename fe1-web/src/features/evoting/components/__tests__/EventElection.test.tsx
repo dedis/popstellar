@@ -59,7 +59,7 @@ const registeredVote: RegisteredVote = {
   createdAt: 0,
   messageId: '',
   sender: '',
-  votes: [{ id: '', question: '', vote: [0] }],
+  votes: [{ id: '', question: '', vote: 0 }],
 };
 
 const questionResult: QuestionResult = {
