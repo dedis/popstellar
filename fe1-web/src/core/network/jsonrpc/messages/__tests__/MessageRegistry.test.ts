@@ -1,6 +1,12 @@
 import 'jest-extended';
 
-import { configureTestFeatures, mockChannel, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockAddress,
+  mockChannel,
+  mockLaoIdHash,
+  mockPopToken,
+} from '__tests__/utils';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
@@ -35,7 +41,7 @@ describe('MessageRegistry', () => {
 
   it('should work correctly for handling message', async () => {
     const message = Message.fromData(messageData, mockPopToken, mockChannel);
-    const extMsg = ExtendedMessage.fromMessage(message, 'some address', mockChannel);
+    const extMsg = ExtendedMessage.fromMessage(message, mockAddress, mockChannel);
 
     const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();
