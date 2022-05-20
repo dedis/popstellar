@@ -13,7 +13,7 @@ import { ExtendedMessage, ExtendedMessageState, markMessageAsProcessed } from '.
  * Reducer & associated function implementation to store all known Messages
  */
 
-interface MessageReducerState {
+export interface MessageReducerState {
   byId: Record<string, ExtendedMessageState>;
   allIds: string[];
   unprocessedIds: string[];

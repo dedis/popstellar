@@ -2,13 +2,13 @@
   "object": "election",
   "action": "cast_vote",
   "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-  "election": "ZVxXK2QN60uCNxNsIzShYYQmtwGttWLpQPQapYCNg4g=",
-  "created_at": 1633098944,
+  "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+  "created_at": 1633098941,
   "votes": [
     {
-      "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
-      "question": "k0RvqQHCELFjr2RxgUWRmq2tDb6koGs2MhYr5D5PAoU=",
-      "vote": [1]
+      "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
+      "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
+      "vote": [0]
     }
   ]
 }
