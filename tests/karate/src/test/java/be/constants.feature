@@ -112,30 +112,29 @@ Feature: Constants
       """
     * def getValidElectionSetupId = call createValidElectionSetupId
     * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
-    * def createIsThisProjectFunVoteIdVoteYes =
+    * def createIsThisProjectFunVoteId =
       """
-        function(){
+        function(vote){
           var JsonConverter = Java.type('be.utils.JsonConverter')
           var String = Java.type('java.lang.String')
           var jsonConverter = new JsonConverter()
           var voteConstant = "Vote"
           var electionId = getValidElectionSetupId
           var questionId = getIsThisProjectFunQuestionId
-          var vote = "0"
           return jsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
                                      questionId.getBytes(), vote.getBytes())
+        }
+      """
+    * def createIsThisProjectFunVoteIdVoteYes =
+      """
+        function(){
+          return createIsThisProjectFunVoteId("0")
         }
       """
     * def createIsThisProjectFunVoteIdVoteNo =
       """
         function(){
-        return 1
-        }
-      """
-    * def createIsThisProjectFunVoteId =
-      """
-        function(){
-          return "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk="
+          return createIsThisProjectFunVoteId("1")
         }
       """
     * def createInvalidVoteId =
