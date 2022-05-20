@@ -14,7 +14,7 @@ import util.examples.data.PostTransactionMessages._
 import scala.concurrent.duration.FiniteDuration
 
 
-class CashHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
+class CoinHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
@@ -26,7 +26,7 @@ class CashHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) wit
   }
 
   test("PostTransaction is handled with no-op") {
-    val rc = CashHandler
+    val rc = CoinHandler
     val request = postTransaction
 
     rc.handlePostTransaction(request) should equal (Left(request))
