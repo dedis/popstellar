@@ -17,7 +17,8 @@ Feature: Create a Roll Call
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-
+    * def creationTime = 1633098853
+    * def rollCallName = "Roll Call "
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
@@ -28,9 +29,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
+          "id": '#(getRollCallValidId(rollCallName, creationTime))',
+          "name": '#(rollCallName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -46,14 +47,15 @@ Feature: Create a Roll Call
   # an empty roll call name should result in an error message from the backend.
   Scenario: Roll Call Creation with empty name should return an error code
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def rollCallEmptyName = ""
     And def validCreateRollCall =
       """
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "",
-          "creation": 1633098853,
+          "id": '#(getRollCallValidId(rollCallEmptyName, creationTime))',
+          "name": '#(rollCallEmptyName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -74,9 +76,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
+          "id": '#(getRollCallValidId(rollCallName, creationTime))',
+          "name": '#(rollCallName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -98,9 +100,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
+          "id": '#(getRollCallValidId(rollCallName, creationTime))',
+          "name": '#(rollCallName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -124,9 +126,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
+          "id": '#(getRollCallValidId(rollCallName, creationTime))',
+          "name": '#(rollCallName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099155,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -142,14 +144,15 @@ Feature: Create a Roll Call
   # a negative creation time should result in an error message from the backend.
   Scenario: Roll Call Creation with creation time is negative should return an error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def creationTimeNegative = -153
     And def validCreateRollCall =
       """
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation":-153,
+          "id": '#(getRollCallValidId(rollCallName, creationTimeNegative))',
+          "name": '#(rollCallName)',
+          "creation": '#(creationTimeNegative)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -166,14 +169,15 @@ Feature: Create a Roll Call
   # from the backend.
   Scenario: Roll Call Creation with creation time < proposed start should return and error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def smallCreationTime = 1633099055
     And def validCreateRollCall =
       """
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
-          "name": "Roll Call ",
-          "creation": 1633099055,
+          "id": '#(getRollCallValidId(rollCallName, smallCreationTime))',
+          "name": '#(rollCallName)',
+          "creation": '#(smallCreationTime)',
           "proposed_start": 1633099155,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -194,8 +198,8 @@ Feature: Create a Roll Call
           "object": "roll_call",
           "action": "create",
           "id": '#(getRollCallInvalidId)',
-          "name": "Roll Call ",
-          "creation": 1633098853,
+          "name": '#(rollCallName)',
+          "creation": '#(creationTime)',
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",

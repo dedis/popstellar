@@ -18,6 +18,7 @@ Feature: Constants
 
     * def laoValidCreationTime = function(){ return 1633035721 }
     * def laoInvalidCreationTime = function(){ return -1633035721 }
+    * def rollCallValidCreationTime = function() { return 1633098853 }
 
     * def laoValidName = function(){ return "LAO"}
     * def laoInvalidName = function(){ return ""}
@@ -39,17 +40,14 @@ Feature: Constants
             return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
-
-    * def createRollCallValid =
+    * def constructRollCallId =
       """
-        function(){
-          return "Slj7C1LBEXlRC8ItV2B0zWfUSD6YiGJt6N_I_m02uw4="
-        }
-      """
-    * def createRollCallInvalid =
-      """
-        function(){
-          return "Dui7C1LBEXlRC8ItV2B0zWfUSD6YiGJt6N_I_m02uw4="
+        function(laoId, rollCallName, time){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var String = Java.type('java.lang.String')
+          var timeString = String.format("%d",time)
+          return jsonConverter.hash("R".getBytes(),laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
         }
       """
     * def createValidRollCallOpenId =
@@ -140,8 +138,8 @@ Feature: Constants
     * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
     * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
 
-    * def getRollCallValidId = call createRollCallValid
-    * def getRollCallInvalidId = call createRollCallInvalid
+    * def getRollCallValidId = function(rollName, time) { return constructRollCallId(getLaoValid, rollName, time) }
+    * def getRollCallInvalidId = constructRollCallId(getLaoValid, getLaoValidName, 1633098853)
 
     * def getRollCallOpenValidId = call createValidRollCallOpenId
     * def getRollCallOpenValidUpdateId = call createValidRollCallOpenUpdateId
