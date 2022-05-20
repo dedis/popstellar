@@ -105,7 +105,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Log.d(TAG, "@string/digital_cash_receipt_fragment");
+              Log.d(TAG, "Open digital cash receipt Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_receipt);
