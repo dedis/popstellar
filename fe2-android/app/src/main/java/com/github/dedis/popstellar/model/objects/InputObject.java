@@ -1,30 +1,30 @@
 package com.github.dedis.popstellar.model.objects;
 
-public class Input_object {
+public class InputObject {
   private final String txOutHash;
   private final int txOutIndex;
-  private final Script_input_object script;
+  private final ScriptInputObject script;
 
   /**
    * @param txOutHash Previous (to-be-used) transaction hash
    * @param txOutIndex index of the previous to-be-used transaction
    * @param script The script describing the unlock mechanism
    */
-  public Input_object(String txOutHash, int txOutIndex, Script_input_object script) {
+  public InputObject(String txOutHash, int txOutIndex, ScriptInputObject script) {
     this.script = script;
     this.txOutHash = txOutHash;
     this.txOutIndex = txOutIndex;
   }
 
-  public String get_tx_out_hash() {
+  public String getTxOutHash() {
     return txOutHash;
   }
 
-  public int get_tx_out_index() {
+  public int getTxOutIndex() {
     return txOutIndex;
   }
 
-  public Script_input_object get_script() {
+  public ScriptInputObject getScript() {
     return script;
   }
 }

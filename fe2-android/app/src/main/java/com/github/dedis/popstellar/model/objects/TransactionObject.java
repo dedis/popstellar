@@ -12,22 +12,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Transaction_object {
+public class TransactionObject {
   private Channel channel;
 
   // version
   private int version;
 
   // inputs
-  private List<Input_object> inputs;
+  private List<InputObject> inputs;
 
   // outputs
-  private List<Output_object> outputs;
+  private List<OutputObject> outputs;
 
   // lock_time
   private long lockTime;
 
-  public Transaction_object() {
+  public TransactionObject() {
     // Empty constructor // empty transaction
     // change the sig for all the inputs
   }
@@ -40,19 +40,19 @@ public class Transaction_object {
     this.channel = channel;
   }
 
-  public List<Input_object> getInputs() {
+  public List<InputObject> getInputs() {
     return inputs;
   }
 
-  public void setInputs(List<Input_object> inputs) {
+  public void setInputs(List<InputObject> inputs) {
     this.inputs = inputs;
   }
 
-  public List<Output_object> getOutputs() {
+  public List<OutputObject> getOutputs() {
     return outputs;
   }
 
-  public void setOutputs(List<Output_object> outputs) {
+  public void setOutputs(List<OutputObject> outputs) {
     this.outputs = outputs;
   }
 
@@ -77,12 +77,12 @@ public class Transaction_object {
    * @return List<PublicKey> senders public keys
    */
   public List<PublicKey> getSendersTransaction() {
-    Iterator<Input_object> input_ite = getInputs().iterator();
+    Iterator<InputObject> input_ite = getInputs().iterator();
     List<PublicKey> senders= new ArrayList<>();
 
     //Through the inputs look at the sender
     while (input_ite.hasNext()){
-      PublicKey current_sender = new PublicKey(input_ite.next().get_script().get_pubkey());
+      PublicKey current_sender = new PublicKey(input_ite.next().getScript().getPubkey());
       senders.add(current_sender);
     }
 
@@ -94,11 +94,11 @@ public class Transaction_object {
    * @return List<String> outputs public keys hash
    */
   public List<String> getReceiversHashTransaction() {
-    Iterator<Output_object> output_ite = getOutputs().iterator();
+    Iterator<OutputObject> output_ite = getOutputs().iterator();
     List<String> receiver_hash = new ArrayList<>();
 
     while(output_ite.hasNext()){
-      receiver_hash.add(output_ite.next().get_script().get_pubkey_hash());
+      receiver_hash.add(output_ite.next().getScript().getPubkeyHash());
     }
 
     return receiver_hash;
@@ -146,22 +146,22 @@ public class Transaction_object {
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
     String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
-    Iterator<Input_object> ite_input = inputs.iterator();
-    Iterator<Output_object> ite_output = outputs.iterator();
+    Iterator<InputObject> ite_input = inputs.iterator();
+    Iterator<OutputObject> ite_output = outputs.iterator();
 
     int index = 0;
     while (ite_input.hasNext()){
-      Input_object current = ite_input.next();
-      sig[index] = current.get_tx_out_hash();
-      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      InputObject current = ite_input.next();
+      sig[index] = current.getTxOutHash();
+      sig[index + 1] = String.valueOf(current.getTxOutIndex());
       index = index + 2;
     }
 
     while (ite_output.hasNext()){
-      Output_object current = ite_output.next();
-      sig[index] = String.valueOf(current.get_value());
-      sig[index + 1] = current.get_script().get_type();
-      sig[index + 2] = current.get_script().get_pubkey_hash();
+      OutputObject current = ite_output.next();
+      sig[index] = String.valueOf(current.getValue());
+      sig[index + 1] = current.getScript().getType();
+      sig[index + 2] = current.getScript().getPubkeyHash();
       index = index + 3;
     }
     return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
@@ -183,11 +183,11 @@ public class Transaction_object {
     // Compute the hash of the public key
     String hash_key = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
-    Iterator<Output_object> iterator = getOutputs().iterator();
+    Iterator<OutputObject> iterator = getOutputs().iterator();
     while (iterator.hasNext()) {
-      Output_object current = iterator.next();
-      if (current.get_script().get_pubkey_hash().equals(hash_key)) {
-        miniLao = miniLao + current.get_value();
+      OutputObject current = iterator.next();
+      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+        miniLao = miniLao + current.getValue();
       }
     }
     return miniLao;
@@ -200,12 +200,12 @@ public class Transaction_object {
    * @return int index in the transaction outputs
    */
   public int getIndexTransaction(PublicKey publicKey) {
-    Iterator<Output_object> output_objectIterator = outputs.listIterator();
+    Iterator<OutputObject> output_objectIterator = outputs.listIterator();
     String hash_pubkey = publicKey.computeHash();
     int index = 0;
     while (output_objectIterator.hasNext()) {
-      Output_object current = output_objectIterator.next();
-      if (current.get_script().get_pubkey_hash().equals(hash_pubkey)) {
+      OutputObject current = output_objectIterator.next();
+      if (current.getScript().getPubkeyHash().equals(hash_pubkey)) {
         return index;
       }
       index = index + 1;

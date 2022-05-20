@@ -10,22 +10,22 @@ public class Output {
   private final int value; // the value of the output transaction, expressed in miniLAOs
 
   @SerializedName("script")
-  private final Script_output script; // The script describing the TxOut unlock mechanism
+  private final ScriptOutput script; // The script describing the TxOut unlock mechanism
 
   /**
    * @param value the value of the output transaction, expressed in miniLAOs
    * @param script The script describing the TxOut unlock mechanism
    */
-  public Output(int value, Script_output script) {
+  public Output(int value, ScriptOutput script) {
     this.value = value;
     this.script = script;
   }
 
-  public int get_value() {
+  public int getValue() {
     return value;
   }
 
-  public Script_output get_script() {
+  public ScriptOutput getScript() {
     return script;
   }
 
@@ -39,7 +39,7 @@ public class Output {
 
   @Override
   public int hashCode() {
-    return Objects.hash(get_value(), get_script());
+    return Objects.hash(getValue(), getScript());
   }
 
   @Override

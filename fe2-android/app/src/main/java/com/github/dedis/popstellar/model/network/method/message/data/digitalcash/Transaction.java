@@ -89,11 +89,11 @@ public class Transaction {
       Output currentTxout = outputs.get(i);
       // Script
       // PubKeyHash
-      collect_transaction.add(currentTxout.get_script().get_pubkey_hash());
+      collect_transaction.add(currentTxout.getScript().get_pubkey_hash());
       // Type
-      collect_transaction.add(currentTxout.get_script().get_type());
+      collect_transaction.add(currentTxout.getScript().get_type());
       // Value
-      collect_transaction.add(String.valueOf(currentTxout.get_value()));
+      collect_transaction.add(String.valueOf(currentTxout.getValue()));
     }
     // Version
     collect_transaction.add(String.valueOf(version));
@@ -147,9 +147,9 @@ public class Transaction {
 
     while (ite_output.hasNext()) {
       Output current = ite_output.next();
-      sig[index] = String.valueOf(current.get_value());
-      sig[index + 1] = current.get_script().get_type();
-      sig[index + 2] = current.get_script().get_pubkey_hash();
+      sig[index] = String.valueOf(current.getValue());
+      sig[index + 1] = current.getScript().get_type();
+      sig[index + 2] = current.getScript().get_pubkey_hash();
       index = index + 3;
     }
     Base64URLData signature = new Base64URLData(String.join("", sig));

@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
-public class Script_inputTest {
+public class ScriptInputTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
 
-  private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
 
   @Test
   public void testGetType() {
@@ -29,10 +29,10 @@ public class Script_inputTest {
 
   @Test
   public void testTestEquals() {
-    assertEquals(SCRIPTTXIN, new Script_input(TYPE, PUBKEY, SIG));
+    assertEquals(SCRIPTTXIN, new ScriptInput(TYPE, PUBKEY, SIG));
     String random = "random";
-    assertNotEquals(SCRIPTTXIN, new Script_input(random, PUBKEY, SIG));
-    assertNotEquals(SCRIPTTXIN, new Script_input(TYPE, random, SIG));
-    assertNotEquals(SCRIPTTXIN, new Script_input(TYPE, PUBKEY, random));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(random, PUBKEY, SIG));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(TYPE, random, SIG));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(TYPE, PUBKEY, random));
   }
 }

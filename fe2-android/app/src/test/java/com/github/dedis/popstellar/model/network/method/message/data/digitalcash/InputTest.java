@@ -13,7 +13,7 @@ public class InputTest {
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
 
-  private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
 
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
@@ -39,6 +39,6 @@ public class InputTest {
     assertNotEquals(TXIN, new Input(random, TX_OUT_INDEX, SCRIPTTXIN));
     assertNotEquals(TXIN, new Input(Tx_OUT_HASH, 4, SCRIPTTXIN));
     assertNotEquals(
-        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new Script_input(random, PUBKEY, SIG)));
+        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new ScriptInput(random, PUBKEY, SIG)));
   }
 }

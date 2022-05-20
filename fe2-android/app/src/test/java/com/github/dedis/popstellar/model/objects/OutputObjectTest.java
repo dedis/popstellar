@@ -14,19 +14,19 @@ public class OutputObjectTest {
 
   public static final String TYPE = "P2PKH";
   public static String PUBKEYHASH = SENDER.computeHash();
-  private static Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+  private static ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
 
   private static final int VALUE = 32;
-  private static final Output_object OUTPUT = new Output_object(VALUE, SCRIPTTXOUT);
+  private static final OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
 
   @Test
   public void getValueTest() {
-    assertEquals(VALUE, OUTPUT.get_value());
+    assertEquals(VALUE, OUTPUT.getValue());
   }
 
   @Test
   public void getScriptTest() {
-    assertEquals(TYPE, OUTPUT.get_script().get_type());
-    assertEquals(PUBKEYHASH, OUTPUT.get_script().get_pubkey_hash());
+    assertEquals(TYPE, OUTPUT.getScript().getType());
+    assertEquals(PUBKEYHASH, OUTPUT.getScript().getPubkeyHash());
   }
 }
