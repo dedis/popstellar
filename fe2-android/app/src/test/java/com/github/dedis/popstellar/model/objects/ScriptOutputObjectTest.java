@@ -14,15 +14,15 @@ public class ScriptOutputObjectTest {
 
   public static final String TYPE = "P2PKH";
   public static String PUBKEYHASH = SENDER.computeHash();
-  private static Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+  private static ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
 
   @Test
   public void getTypeTest() {
-    assertEquals(TYPE, SCRIPTTXOUT.get_type());
+    assertEquals(TYPE, SCRIPTTXOUT.getType());
   }
 
   @Test
   public void getPublicKeyHashTest() {
-    assertEquals(PUBKEYHASH, SCRIPTTXOUT.get_pubkey_hash());
+    assertEquals(PUBKEYHASH, SCRIPTTXOUT.getPubkeyHash());
   }
 }

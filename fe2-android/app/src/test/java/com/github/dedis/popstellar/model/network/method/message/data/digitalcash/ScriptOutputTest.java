@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
-public class Script_outputTest {
+public class ScriptOutputTest {
   public static final String TYPE = "P2PKH";
   public static final String PUBKEYHASH = "2jmj7l5rSw0yVb-vlWAYkK-YBwk=";
 
