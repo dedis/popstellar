@@ -12,11 +12,8 @@ import static org.hamcrest.Matchers.allOf;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
 import androidx.test.espresso.ViewInteraction;
-
 import com.github.dedis.popstellar.R;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -76,6 +73,10 @@ public class ElectionSetupPageObject {
             withText(R.string.submit),
             isClickable(),
             isDisplayed()));
+  }
+
+  public static ViewInteraction versionChoice() {
+    return onView(allOf(withId(R.id.election_setup_mode_spinner), isClickable(), isDisplayed()));
   }
 
   private static Matcher<View> childAtPosition(

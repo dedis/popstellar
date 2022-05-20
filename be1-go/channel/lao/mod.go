@@ -8,6 +8,7 @@ import (
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
+	"popstellar/channel/coin"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
@@ -448,6 +449,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		}
 	}
 
+	c.createCoinChannel(senderSocket, c.log)
+
 	return nil
 }
 
@@ -608,6 +611,13 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
+// createCoinChannel creates a coin channel to handle digital cash project
+func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
+	coinPath := fmt.Sprintf("%s/coin", c.channelID)
+	coinCh := coin.NewChannel(coinPath, c.hub, log)
+	c.hub.NotifyNewChannel(coinPath, coinCh, socket)
+}
+
 // createElection creates an election in the LAO.
 func (c *Channel) createElection(msg message.Message,
 	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
@@ -687,7 +697,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  fmt.Sprintf("wss://%s", c.hub.GetServerAddress()),
+		Address:  fmt.Sprintf("wss://%s/organizer/client", c.hub.GetServerAddress()),
 		Peers:    []messagedata.Peer{},
 	}
 

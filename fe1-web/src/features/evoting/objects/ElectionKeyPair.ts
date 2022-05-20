@@ -19,7 +19,7 @@ export class ElectionKeyPair {
     const a = ed25519.scalar().pick();
     const aP = ed25519.point().base().mul(a);
 
-    const publicKey = new ElectionPublicKey(aP.toProto().toString('base64'));
+    const publicKey = new ElectionPublicKey(aP.marshalBinary().toString('base64'));
     const privateKey = new ElectionPrivateKey(a.marshalBinary().toString('base64'));
     return new ElectionKeyPair(privateKey, publicKey);
   }

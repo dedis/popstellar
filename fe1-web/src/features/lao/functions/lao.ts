@@ -6,6 +6,7 @@ import {
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoWitness,
+  getLaoById as getLaoByIdFromState,
 } from '../reducer';
 
 /**
