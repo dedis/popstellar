@@ -1594,7 +1594,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in))"
                             },
                             "question": {
                                 "type": "string",
@@ -1613,7 +1613,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))), concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index | encrypted_write_in)))"
                             },
                             "question": {
                                 "type": "string",
