@@ -19,15 +19,19 @@ Feature: Constants
     * def laoValidCreationTime = function(){ return 1633035721 }
     * def laoInvalidCreationTime = function(){ return -1633035721 }
     * def rollCallValidCreationTime = function() { return 1633098853 }
+    * def electionSetupCreationTime = function() { return 1633098941 }
 
     * def laoValidName = function(){ return "LAO"}
     * def laoInvalidName = function(){ return ""}
+    * def electionSetupName = function() { return "Election" }
 
     * def getLaoValidName = call laoValidName
     * def getLaoInvalidName = call laoValidName
+    * def getElectionSetupName = call electionSetupName
 
     * def getLaoValidCreationTime = call laoValidCreationTime
     * def getLaoInvalidCreationTime = call laoInvalidCreationTime
+    * def getElectionSetupCreationTime = call electionSetupCreationTime
 
     * def constructLaoId =
        """
@@ -40,6 +44,11 @@ Feature: Constants
             return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
+
+    * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+    * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
+    * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+
     * def constructRollCallId =
       """
         function(laoId, rollCallName, time){
@@ -86,10 +95,17 @@ Feature: Constants
           return "lM5Lntpk4Y4SpKjzV2ICYpe4YnMOvWz1eeREB_RVVRg="
         }
       """
-    * def createValidElectionSetupId =
+    * def createElectionId =
       """
-        function(){
-          return "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
+        function(name, time){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var electionConstant = "Election"
+          var lao = getLaoValid
+          var String = Java.type('java.lang.String')
+          var timeString = String.format("%d",time)
+          return jsonConverter.hash(electionConstant.getBytes(), lao.getBytes(),
+                                    timeString.getBytes(), name.getBytes())
         }
       """
     * def createInvalidElectionSetupId =
@@ -98,10 +114,17 @@ Feature: Constants
           return "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="
         }
       """
+    * def getValidElectionSetupId = createElectionId(getElectionSetupName, getElectionSetupCreationTime)
+
     * def createIsThisProjectFunQuestionId =
       """
         function(){
-          return "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg="
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var questionConstant = "Question"
+          var electionId = getValidElectionSetupId
+          var question = "Is this project fun?"
+          return jsonConverter.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
         }
       """
     * def createInvalidQuestionId =
@@ -110,7 +133,6 @@ Feature: Constants
           return "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="
         }
       """
-    * def getValidElectionSetupId = call createValidElectionSetupId
     * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
     * def createIsThisProjectFunVoteId =
       """
@@ -155,9 +177,6 @@ Feature: Constants
           return "nas8r4aF0wq9ad4isfp4nsfiMFPMPS9sdsF8lsd8sopfd0="
         }
       """
-    * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
-    * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
-    * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
 
     * def getRollCallValidId = function(rollName, time) { return constructRollCallId(getLaoValid, rollName, time) }
     * def getRollCallInvalidId = constructRollCallId(getLaoValid, getLaoValidName, 1633098853)
