@@ -22,7 +22,7 @@ public class InputObjectTest {
   private static String PUBKEY;
   private static String SIG;
   private static Script_input_object SCRIPTTXIN;
-  private static Input_object INPUT;
+  private static InputObject INPUT;
 
   @Before
   public void setup() throws GeneralSecurityException {
@@ -30,7 +30,7 @@ public class InputObjectTest {
     PUBKEY = SENDER.getEncoded();
     SIG = SENDER_KEY.sign(SENDER).getEncoded();
     SCRIPTTXIN = new Script_input_object(TYPE, PUBKEY, SIG);
-    INPUT = new Input_object(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
+    INPUT = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
   }
 
   @Test
