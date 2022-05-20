@@ -360,10 +360,10 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             onStartShouldSetResponder={[Function]}
                             style={
                               Object {
+                                "alignContent": "center",
                                 "alignItems": "center",
                                 "backgroundColor": "#2196F3",
                                 "borderRadius": 30,
-                                "display": "flex",
                                 "height": 65,
                                 "justifyContent": "center",
                                 "opacity": 1,
@@ -376,49 +376,11 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               }
                             }
                           >
-                            <View
-                              style={
-                                Object {
-                                  "overflow": "hidden",
-                                }
-                              }
-                            >
-                              <View>
-                                <View
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "transparent",
-                                      "justifyContent": "center",
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "white",
-                                          "fontSize": 25,
-                                        },
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                        },
-                                        Object {
-                                          "fontFamily": "material",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                    testID="iconIcon"
-                                  >
-                                    
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
+                            <AntDesign
+                              color="white"
+                              name="logout"
+                              size={25}
+                            />
                           </View>
                         </View>
                         <View
@@ -929,10 +891,10 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             onStartShouldSetResponder={[Function]}
                             style={
                               Object {
+                                "alignContent": "center",
                                 "alignItems": "center",
                                 "backgroundColor": "#2196F3",
                                 "borderRadius": 30,
-                                "display": "flex",
                                 "height": 65,
                                 "justifyContent": "center",
                                 "opacity": 1,
@@ -945,27 +907,11 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               }
                             }
                           >
-                            <View
-                              style={
-                                Object {
-                                  "overflow": "hidden",
-                                }
-                              }
-                            >
-                              <View>
-                                <View
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "transparent",
-                                      "justifyContent": "center",
-                                    }
-                                  }
-                                >
-                                  <Text />
-                                </View>
-                              </View>
-                            </View>
+                            <AntDesign
+                              color="white"
+                              name="logout"
+                              size={25}
+                            />
                           </View>
                         </View>
                         <View

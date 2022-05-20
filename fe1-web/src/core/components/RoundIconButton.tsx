@@ -1,29 +1,46 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Icon } from 'react-native-elements';
 
+import { Buttons } from '../styles';
 import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 /**
- * This is a round button with an icon that uses Google material icons
- * The 'name' property is the name of the icon that will be rendered,
- * you can look for icon and their names here : https://fonts.google.com/icons
+ * This is a round button with an icon that uses expo icons
+ * Ref: https://icons.expo.fyi/
  */
-const RoundIconButton = (props: IPropTypes) => {
-  const { name, onClick } = props;
+const RoundIconButton = (props: IRoundButtonPropTypes) => {
+  const { type, name, onClick } = props;
+  const family = type || Buttons.defaultButtonIconFamily;
   return (
     <TouchableOpacity style={circularButtonStyles.roundButton} onPress={onClick}>
-      <Icon name={name} type="material" color="white" size={25} />
+      {React.createElement(family, {
+        name: name,
+        size: Buttons.defaultButtonIconSize,
+        color: Buttons.defaultButtonIconColor,
+      })}
     </TouchableOpacity>
   );
 };
 
-const propTypes = {
+const roundButtonPropTypes = {
+  type: PropTypes.string,
   name: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };
-RoundIconButton.propTypes = propTypes;
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+type IRoundButtonPropTypes = PropTypes.InferProps<typeof roundButtonPropTypes>;
 
-export default RoundIconButton;
+export const BackRoundButton = (props: IButtonPropTypes) => {
+  const { onClick } = props;
+  return <RoundIconButton name="arrowleft" onClick={onClick} />;
+};
+
+export const LogoutRoundButton = (props: IButtonPropTypes) => {
+  const { onClick } = props;
+  return <RoundIconButton name="logout" onClick={onClick} />;
+};
+
+const buttonPropTypes = {
+  onClick: PropTypes.func.isRequired,
+};
+type IButtonPropTypes = PropTypes.InferProps<typeof buttonPropTypes>;

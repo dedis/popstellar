@@ -336,10 +336,10 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "alignContent": "center",
                               "alignItems": "center",
                               "backgroundColor": "#2196F3",
                               "borderRadius": 30,
-                              "display": "flex",
                               "height": 65,
                               "justifyContent": "center",
                               "opacity": 1,
@@ -352,27 +352,11 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                             }
                           }
                         >
-                          <View
-                            style={
-                              Object {
-                                "overflow": "hidden",
-                              }
-                            }
-                          >
-                            <View>
-                              <View
-                                style={
-                                  Object {
-                                    "alignItems": "center",
-                                    "backgroundColor": "transparent",
-                                    "justifyContent": "center",
-                                  }
-                                }
-                              >
-                                <Text />
-                              </View>
-                            </View>
-                          </View>
+                          <AntDesign
+                            color="white"
+                            name="arrowleft"
+                            size={25}
+                          />
                         </View>
                         <View
                           style={

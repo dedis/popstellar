@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { RoundIconButton, TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { BackRoundButton, TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -46,10 +46,7 @@ const WalletSetSeed = () => {
 
   return (
     <View style={styles.container}>
-      <RoundIconButton
-        name={STRINGS.wallet_arrow_left_icon}
-        onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
-      />
+      <BackRoundButton onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)} />
       <View style={styles.largePadding} />
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine

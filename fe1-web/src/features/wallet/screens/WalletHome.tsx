@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { QRCode, RoundIconButton, WideButtonView } from 'core/components';
+import { LogoutRoundButton, QRCode, WideButtonView } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -105,8 +105,7 @@ const WalletHome = () => {
     <View style={styles.homeContainer}>
       <View style={styles.topBar}>
         <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
-        <RoundIconButton
-          name={STRINGS.wallet_logout_icon}
+        <LogoutRoundButton
           onClick={() => {
             Wallet.forget();
             navigation.reset({
