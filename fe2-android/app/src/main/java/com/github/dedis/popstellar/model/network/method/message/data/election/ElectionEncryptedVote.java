@@ -73,7 +73,7 @@ public class ElectionEncryptedVote {
 
   @Override
   public String toString() {
-    return "ElectionEncryptedVote={"
+    return "{"
             + "id='"
             + id
             + '\''

@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ElectionVote{
 
+  @SerializedName(value = "id")
   private final String id;
 
    // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
@@ -16,6 +17,7 @@ public class ElectionVote{
 
   // represents a boolean to know whether write_in is allowed or not
   // list of indexes for the votes
+  @SerializedName(value = "vote")
   private final List<Integer> vote;
 
   /**
@@ -73,7 +75,7 @@ public class ElectionVote{
 
   @Override
   public String toString() {
-    return "ElectionVote{"
+    return "{"
         + "id='"
         + id
         + '\''

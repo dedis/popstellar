@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class CastVote extends Data {
+public class CastVote <E> extends Data {
 
   @SerializedName(value = "created_at")
   private final long createdAt; // time the votes were submitted
@@ -22,25 +22,22 @@ public class CastVote extends Data {
   private final String electionId; // Id of the election
 
   // Votes, either votes is null or encrypted votes is null depending on the value of the election
-  // either SECRET_BALLOT or OPEN_BALLOT
-  private final List<ElectionVote> votes;
-  private final List<ElectionEncryptedVote> encryptedVotes;
+  // Type must be specified upon creation of the cast vote (either ElectionVote or ElectionEncryptedVote)
+  @SerializedName(value = "votes")
+  private final List<E> votes;
 
   /**
-   * @param electionVotes list of the votes to cast (null if this is an OPEN_BALLOT election)
-   * @param encryptedVotes list of the encrypted votes to cast (null if this is an OPEN_BALLOT election)
+   * @param votes list of the votes to cast (null if this is an OPEN_BALLOT election)
    * @param electionId election id
    * @param laoId lao id
    */
-  public CastVote(List<ElectionVote> electionVotes,
-                  List<ElectionEncryptedVote> encryptedVotes,
+  public CastVote(List<E> votes,
                   String electionId,
                   String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
-    this.votes = electionVotes;
     this.electionId = electionId;
     this.laoId = laoId;
-    this.encryptedVotes=encryptedVotes;
+    this.votes =votes;
   }
 
   public String getLaoId() {
@@ -58,15 +55,8 @@ public class CastVote extends Data {
   /**
    * @return null if the election is encrypted else the votes
    */
-  public List<ElectionVote> getOpenBallotVotes() {
-    return !java.util.Objects.isNull(votes) ? Collections.unmodifiableList(votes) : null;
-  }
-
-  /**
-   * @return null if the election is with open ballots else the encrypted votes
-   */
-  public List<ElectionEncryptedVote> getEncryptedVotes() {
-    return !java.util.Objects.isNull(encryptedVotes) ? Collections.unmodifiableList(encryptedVotes) : null;
+  public List<E> getVotes() {
+    return votes;
   }
 
   @Override
@@ -89,31 +79,20 @@ public class CastVote extends Data {
     }
     CastVote that = (CastVote) o;
 
-    // Compare votes values given the version of the election
-    boolean compareVotes =
-            !java.util.Objects.isNull(votes)
-                    ? java.util.Objects.equals(votes, that.getOpenBallotVotes())
-                    : java.util.Objects.equals(encryptedVotes, that.getEncryptedVotes());
-
     return java.util.Objects.equals(getLaoId(), that.getLaoId())
         && createdAt == that.getCreation()
         && java.util.Objects.equals(electionId, that.getElectionId())
         && java.util.Objects.equals(laoId, that.getLaoId())
-        && compareVotes;
+        && java.util.Objects.equals(votes, that.getVotes());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getOpenBallotVotes());
+    return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getVotes());
   }
 
   @Override
   public String toString() {
-    // If one is null take the other
-    String votesFormat =
-            !java.util.Objects.isNull(votes)
-              ? Arrays.toString(votes.toArray())
-              : Arrays.toString(encryptedVotes.toArray());
     return "CastVote{"
         + "createdAt="
         + createdAt
@@ -124,7 +103,7 @@ public class CastVote extends Data {
         + electionId
         + '\''
         + ", votes="
-        + votesFormat
+        + Arrays.toString(votes.toArray())
         + '}';
   }
 }

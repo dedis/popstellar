@@ -37,8 +37,8 @@ public class CastVoteTest {
   private final List<ElectionEncryptedVote> electionEncryptedVotes = Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
 
   // Create the cast votes messages
-  private final CastVote castOpenVote = new CastVote(electionVotes, null, electionId, laoId);
-  private final CastVote castEncryptedVote = new CastVote(null, electionEncryptedVotes, electionId, laoId);
+  private final CastVote<ElectionVote> castOpenVote = new CastVote(electionVotes,  electionId, laoId);
+  private final CastVote<ElectionEncryptedVote> castEncryptedVote = new CastVote(electionEncryptedVotes, electionId, laoId);
 
   @Test
   public void getLaoIdTest() {
@@ -53,38 +53,32 @@ public class CastVoteTest {
   }
 
   @Test
-  public void getOpenBallotVotesTest() {
-    assertThat(castOpenVote.getOpenBallotVotes(), is(electionVotes));
-    assertThat(null, is(castEncryptedVote.getOpenBallotVotes()));
-  }
-
-  @Test
-  public void getEncryptedBallotVotesTest() {
-    assertThat(castEncryptedVote.getEncryptedVotes(), is(electionEncryptedVotes));
-    assertThat(null, is(castOpenVote.getEncryptedVotes()));
+  public void getVotesTest() {
+    assertThat(electionVotes, is(castOpenVote.getVotes()));
+    assertThat(electionEncryptedVotes, is(castEncryptedVote.getVotes()));
   }
 
   @Test
   public void isEqualTest() {
     // Test an OPEN_BALLOT cast vote
-    assertEquals(castOpenVote, new CastVote(electionVotes,null, electionId, laoId));
+    assertEquals(castOpenVote, new CastVote(electionVotes,electionId, laoId));
     assertEquals(castOpenVote, castOpenVote);
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(electionVote1), null, electionId, laoId));
+        castOpenVote, new CastVote(Collections.singletonList(electionVote1), electionId, laoId));
     assertNotEquals(
-            castOpenVote, new CastVote(Collections.singletonList(electionVote1),null, "random", laoId));
+            castOpenVote, new CastVote(Collections.singletonList(electionVote1),"random", laoId));
     assertNotEquals(
-             castOpenVote, new CastVote(Collections.singletonList(electionVote1),null, electionId, "random"));
+             castOpenVote, new CastVote(Collections.singletonList(electionVote1),electionId, "random"));
 
     // Test a SECRET_BALLOT cast vote
-    assertEquals(castEncryptedVote, new CastVote(null, electionEncryptedVotes,electionId, laoId));
+    assertEquals(castEncryptedVote, new CastVote(electionEncryptedVotes,electionId, laoId));
     assertEquals(castEncryptedVote, castEncryptedVote);
     assertNotEquals(
-            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1), electionId, laoId));
+            castEncryptedVote, new CastVote(Collections.singletonList(electionEncryptedVote1), electionId, laoId));
     assertNotEquals(
-            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1),"random", laoId));
+            castEncryptedVote, new CastVote(Collections.singletonList(electionEncryptedVote1),"random", laoId));
     assertNotEquals(
-            castEncryptedVote, new CastVote(null, Collections.singletonList(electionEncryptedVote1),electionId, "random"));
+            castEncryptedVote, new CastVote(Collections.singletonList(electionEncryptedVote1),electionId, "random"));
   }
 
   @Test
