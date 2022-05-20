@@ -110,6 +110,28 @@ Feature: Constants
           return "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="
         }
       """
+    * def getValidElectionSetupId = call createValidElectionSetupId
+    * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
+    * def createIsThisProjectFunVoteIdVoteYes =
+      """
+        function(){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var String = Java.type('java.lang.String')
+          var jsonConverter = new JsonConverter()
+          var voteConstant = "Vote"
+          var electionId = getValidElectionSetupId
+          var questionId = getIsThisProjectFunQuestionId
+          var vote = "0"
+          return jsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
+                                     questionId.getBytes(), vote.getBytes())
+        }
+      """
+    * def createIsThisProjectFunVoteIdVoteNo =
+      """
+        function(){
+        return 1
+        }
+      """
     * def createIsThisProjectFunVoteId =
       """
         function(){
@@ -149,11 +171,9 @@ Feature: Constants
     * def getRollCallCloseValidUpdateId = call createValidRollCallCloseUpdateId
     * def getRollCallCloseInvalidUpdateId = call createInvalidRollCallCloseUpdateId
 
-    * def getValidElectionSetupId = call createValidElectionSetupId
     * def getInvalidElectionSetupId = call createInvalidElectionSetupId
-    * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
     * def getInvalidQuestionId = call createInvalidQuestionId
-    * def getIsThisProjectFunVoteId = call createIsThisProjectFunVoteId
+    * def getIsThisProjectFunVoteIdVoteYes = call createIsThisProjectFunVoteIdVoteYes
     * def getInvalidVoteId = call createInvalidVoteId
     * def getValidRegisteredVotes = call createValidRegisteredVotes
     * def getInvalidRegisteredVotes = call createInvalidRegisteredVotes
