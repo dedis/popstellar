@@ -134,6 +134,13 @@ public abstract class DataRegistryModule {
         .add(CHIRP, DELETE, DeleteChirp.class, ChirpHandler::handleDeleteChirp)
         .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
 
+    // Digital Cash
+    builder.add(
+        COIN,
+        POST_TRANSACTION,
+        PostTransactionCoin.class,
+        TransactionCoinHandler::handlePostTransactionCoin);
+            
     return builder.build();
   }
 }
