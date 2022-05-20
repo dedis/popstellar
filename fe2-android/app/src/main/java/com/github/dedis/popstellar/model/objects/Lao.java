@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,12 @@ public final class Lao {
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
+  // Some useful map for the digital cash
+  private Map<String, PublicKey> pub_keyByHash;
+  // Map for the history
+  private Map<PublicKey, List<Transaction_object>> transaction_historyByUser;
+  // Map for the the public_key last transaction
+  private Map<PublicKey, Transaction_object> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -60,6 +67,10 @@ public final class Lao {
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
+    // initialize the maps :
+    this.transaction_historyByUser = new HashMap<>();
+    this.transactionByUser = new HashMap<>();
+    this.pub_keyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -73,6 +84,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
+    pub_keyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -147,6 +159,56 @@ public final class Lao {
 
     PublicKey user = chirp.getSender();
     chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
+  }
+
+  /**
+   * Function which update the transaction map publickey by transacation hash on the list of the
+   * roll call attendees
+   *
+   * @param attendees List<PublicKey> of the roll call attendees
+   */
+  public void updateTransactionHashMap(List<PublicKey> attendees) {
+    Iterator<PublicKey> iterator = attendees.iterator();
+    pub_keyByHash = new HashMap<>();
+    pub_keyByHash.put(organizer.computeHash(), organizer);
+    while (iterator.hasNext()) {
+      PublicKey current = iterator.next();
+      pub_keyByHash.put(current.computeHash(), current);
+    }
+    // also update the history and the current transaction per attendees
+    // both map have to be set to empty again
+    transactionByUser = new HashMap<>();
+    transaction_historyByUser = new HashMap<>();
+  }
+
+  // add a function that update all the transaction
+  public void updateTransactionMaps(Transaction_object transaction_object) {
+    if (transaction_object == null) {
+      throw new IllegalArgumentException("The transaction is null");
+    }
+    // Change the transaction per public key in transacionperUser
+    // for the sender and the receiver
+    if (this.getRollCalls().values().isEmpty()) {
+      throw new IllegalStateException("A transaction need a roll call creation ");
+    }
+    if (this.pub_keyByHash.isEmpty()) {
+      throw new IllegalStateException("A transaction need attendees !");
+    }
+
+    // Contained in the receiver there are also the sender
+    // which has to be in the list of attendees of the roll call
+    Iterator<PublicKey> receivers_ite =
+        transaction_object.get_receivers_transaction(pub_keyByHash).iterator();
+    while (receivers_ite.hasNext()) {
+      PublicKey current = receivers_ite.next();
+      // Add the transaction in the current state  / for the sender and the receiver
+      transactionByUser.put(current, transaction_object);
+      // Add the transaction in the history / for the sender and the receiver
+      transaction_historyByUser.putIfAbsent(current, new ArrayList<>());
+      if (!transaction_historyByUser.get(current).add(transaction_object)) {
+        throw new IllegalStateException("Problem occur by updating the transaction history");
+      }
+    }
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -320,6 +382,18 @@ public final class Lao {
     return allChirps.values().stream()
         .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
         .collect(Collectors.toList());
+  }
+
+  public Map<PublicKey, List<Transaction_object>> getTransaction_historyByUser() {
+    return transaction_historyByUser;
+  }
+
+  public Map<PublicKey, Transaction_object> getTransactionByUser() {
+    return transactionByUser;
+  }
+
+  public Map<String, PublicKey> getPub_keyByHash() {
+    return pub_keyByHash;
   }
 
   public Map<MessageID, Chirp> getAllChirps() {
