@@ -4,7 +4,7 @@ import { WalletConfiguration, WalletInterface, WALLET_FEATURE_IDENTIFIER } from 
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
 import { getCurrentPopTokenFromStore } from './objects';
-import { walletReducer } from './reducer';
+import { digitalCashReducer, walletReducer } from './reducer';
 
 /**
  * Configures the wallet feature
@@ -20,6 +20,7 @@ export function configure(configuration: WalletConfiguration): WalletInterface {
     navigation,
     reducers: {
       ...walletReducer,
+      ...digitalCashReducer,
     },
     context: {
       makeEventByTypeSelector: configuration.makeEventByTypeSelector,

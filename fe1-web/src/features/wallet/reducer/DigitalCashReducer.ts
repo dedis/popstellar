@@ -106,7 +106,7 @@ const digitalCashSlice = createSlice({
   },
 });
 export const { addTransaction } = digitalCashSlice.actions;
-export const digitalCashReduce = digitalCashSlice.reducer;
+export const digitalCashReducer = digitalCashSlice.reducer;
 
 export default {
   [DIGITAL_CASH_REDUCER_PATH]: digitalCashSlice.reducer,

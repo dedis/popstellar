@@ -4,6 +4,8 @@ import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
+import { KeyPairStore } from 'core/keypair';
+import { PublicKey } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -11,6 +13,7 @@ import STRINGS from 'resources/strings';
 import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
+import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -135,7 +138,9 @@ const WalletHome = () => {
       <SendModal
         modalVisible={sendModalVisible}
         setModalVisible={setSendModalVisible}
-        send={() => {}}
+        send={(receiver: string, amount: number) => {
+          requestCoinbaseTransaction(KeyPairStore.get(), new PublicKey(receiver), amount);
+        }}
       />
       <View style={styles.smallPadding} />
       <WideButtonView

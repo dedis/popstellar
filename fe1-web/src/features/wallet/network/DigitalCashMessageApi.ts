@@ -16,22 +16,26 @@ const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
  * @param from the popToken to send it with
  * @param to the destination public key
  * @param amount the value of the transaction
+ * @param laoId the lao id of the roll call
+ * @param rcId the id of the roll call in which to send the transaction
  */
 export function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
+  laoId: string,
+  rcId: string,
 ): Promise<void> {
   // TODO: Should check total value, OVERFLOW
 
-  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(from.publicKey.valueOf());
+  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(laoId, rcId, from.publicKey.valueOf());
 
   if (!transactionStates) {
     console.warn(makeErr('no transaction out were found for this public key'));
     return Promise.resolve();
   }
 
-  const balance = getBalance(from.publicKey.valueOf());
+  const balance = getBalance(laoId, rcId, from.publicKey.valueOf());
 
   if (amount < 0 || amount > balance) {
     console.warn(makeErr('balance is not sufficient to send this amount'));
