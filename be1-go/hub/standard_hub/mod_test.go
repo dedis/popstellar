@@ -281,7 +281,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -357,7 +357,7 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	type N0thing struct {
@@ -429,7 +429,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
