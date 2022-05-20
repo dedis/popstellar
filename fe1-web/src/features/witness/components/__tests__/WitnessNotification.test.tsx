@@ -5,6 +5,7 @@ import { combineReducers, createStore } from 'redux';
 
 import {
   configureTestFeatures,
+  mockAddress,
   mockChannel,
   mockKeyPair,
   mockLao,
@@ -58,7 +59,7 @@ const msg = ExtendedMessage.fromMessage(
     mockKeyPair,
     mockChannel,
   ),
-  'some address',
+  mockAddress,
   mockChannel,
 );
 

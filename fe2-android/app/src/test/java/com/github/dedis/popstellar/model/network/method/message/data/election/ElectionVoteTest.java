@@ -31,9 +31,13 @@ public class ElectionVoteTest {
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
+    String electionVoteFormat =
+            electionVote1.getVotes().toString().toString()
+                    .replace("]", "")
+                    .replace("[", "");
     String expectedId =
-        Hash.hash(
-            "Vote", electionId, electionVote1.getQuestionId(), electionVote1.getVotes().toString());
+            Hash.hash(
+                    "Vote", electionId, electionVote1.getQuestionId(), electionVoteFormat);
     assertThat(electionVote1.getId(), is(expectedId));
     assertNull(electionVote1.getWriteIn());
   }

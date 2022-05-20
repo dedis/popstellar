@@ -45,7 +45,7 @@ type Server struct {
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to start
 // listening for connections.
-func NewServer(hub hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
+func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zerolog.Logger) *Server {
 	log = log.With().Str("role", "server").Logger()
 
 	server := &Server{
@@ -68,7 +68,7 @@ func NewServer(hub hub.Hub, port int, st socket.SocketType, log zerolog.Logger) 
 	}
 
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
+		Addr:    fmt.Sprintf("%s:%d", addr, port),
 		Handler: tracing(nextRequestID)(logging(log)(mux)),
 	}
 

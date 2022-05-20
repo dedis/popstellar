@@ -69,23 +69,25 @@ export interface MeetingInterface extends FeatureInterface {
     CreateMeeting: React.ComponentType<any>;
   };
 
-  eventTypes: {
-    eventType: string;
-    navigationNames: {
-      createEvent:
-        | typeof STRINGS.navigation_lao_organizer_creation_meeting
-        | typeof STRINGS.navigation_lao_organizer_creation_roll_call
-        | typeof STRINGS.navigation_lao_organizer_creation_election;
-    };
-    Component: React.ComponentType<{
-      eventId: string;
-      isOrganizer: boolean | null | undefined;
-    }>;
-  }[];
+  eventTypes: EventType[];
 
   context: MeetingReactContext;
 
   reducers: {
     [MEETING_FEATURE_IDENTIFIER]: Reducer<MeetingReducerState>;
   };
+}
+
+interface EventType {
+  eventType: string;
+  navigationNames: {
+    createEvent:
+      | typeof STRINGS.navigation_lao_organizer_creation_meeting
+      | typeof STRINGS.navigation_lao_organizer_creation_roll_call
+      | typeof STRINGS.navigation_lao_organizer_creation_election;
+  };
+  Component: React.ComponentType<{
+    eventId: string;
+    isOrganizer: boolean | null | undefined;
+  }>;
 }

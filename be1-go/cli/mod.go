@@ -34,8 +34,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 		return xerrors.Errorf("unrecognized user, should be \"organizer\" or \"witness\"")
 	}
 
-	// get command line args which specify public key, port to use for clients
+	// get command line args which specify public key, addresses, port to use for clients
 	// and witnesses, witness' address
+	publicAddress := cliCtx.String("server-public-address")
+	privateAddress := cliCtx.String("server-listen-address")
+
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
@@ -64,8 +67,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
 
+	// compute the client server address
+	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
+
 	// create user hub
-	h, err := standard_hub.NewHub(point, log.With().Str("role", user).Logger(),
+	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
 		lao.NewChannel, hubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)
@@ -75,12 +81,12 @@ func Serve(cliCtx *cli.Context, user string) error {
 	h.Start()
 
 	// Start a client websocket server
-	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType,
+	clientSrv := network.NewServer(h, privateAddress, clientPort, socket.ClientSocketType,
 		log.With().Str("role", "client server").Logger())
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType,
+	witnessSrv := network.NewServer(h, privateAddress, witnessPort, socket.WitnessSocketType,
 		log.With().Str("role", "witness server").Logger())
 	witnessSrv.Start()
 

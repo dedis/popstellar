@@ -4,6 +4,7 @@ import { AnyAction } from 'redux';
 
 import {
   configureTestFeatures,
+  mockAddress,
   mockChannel,
   mockPopToken,
   mockPrivateKey,
@@ -44,7 +45,7 @@ const createExtendedMessage = () => {
     timestamp: new Timestamp(1607277600),
   });
   const message = Message.fromData(messageData, keyPair, mockChannel);
-  return ExtendedMessage.fromMessage(message, 'some address', mockChannel);
+  return ExtendedMessage.fromMessage(message, mockAddress, mockChannel);
 };
 
 beforeAll(configureTestFeatures);

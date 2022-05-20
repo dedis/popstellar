@@ -56,7 +56,7 @@ export interface EventInterface extends FeatureInterface {
     /**
      * Creates a redux action for adding an event to the event store
      * @param laoId - The lao id where to add the event
-     * @param event - The the event
+     * @param event - The event
      * @returns A redux action causing the state change
      */
     addEvent: (laoId: Hash | string, event: EventState) => AnyAction;
@@ -90,19 +90,21 @@ export interface EventCompositionConfiguration {
    */
   useIsLaoOrganizer: () => boolean;
 
-  eventTypes: {
-    eventType: string;
-    navigationNames: {
-      createEvent:
-        | typeof STRINGS.navigation_lao_organizer_creation_meeting
-        | typeof STRINGS.navigation_lao_organizer_creation_roll_call
-        | typeof STRINGS.navigation_lao_organizer_creation_election;
-    };
-    Component: React.ComponentType<{
-      eventId: string;
-      isOrganizer: boolean | null | undefined;
-    }>;
-  }[];
+  eventTypes: EventType[];
+}
+
+interface EventType {
+  eventType: string;
+  navigationNames: {
+    createEvent:
+      | typeof STRINGS.navigation_lao_organizer_creation_meeting
+      | typeof STRINGS.navigation_lao_organizer_creation_roll_call
+      | typeof STRINGS.navigation_lao_organizer_creation_election;
+  };
+  Component: React.ComponentType<{
+    eventId: string;
+    isOrganizer: boolean | null | undefined;
+  }>;
 }
 
 /**
