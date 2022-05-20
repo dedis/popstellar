@@ -8,10 +8,7 @@
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [
-                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
-                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
-            ]
+            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
         }
     ]
 }

@@ -1522,7 +1522,7 @@ A vote in an open ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [0]
+            "vote": 0
         }
     ]
 }
@@ -1544,10 +1544,7 @@ A vote in a secret ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [
-                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
-                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
-            ]
+            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
         }
     ]
 }
@@ -1597,7 +1594,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in))), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
                             },
                             "question": {
                                 "type": "string",
@@ -1605,14 +1602,9 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "integer",
-                                    "$comment": "index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "index corresponding to the ballot_option",
+                                "type": "integer",
+                                "$comment": "index of the option to vote for"
                             }
                         }
                     },
@@ -1629,15 +1621,10 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "contentEncoding": "base64",
-                                    "$comment": "encrypted index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "encrypted index corresponding to the ballot_option",
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "encrypted index of the option to vote for"
                             }
                         }
                     }
