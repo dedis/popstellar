@@ -152,7 +152,7 @@ namespace STRINGS {
   export const election_create_version_secret_ballot = 'Secret Ballot';
   export const election_create_start_time = 'Start time';
   export const election_create_finish_time = 'End time';
-  
+
   export const election_create_question = 'Question*';
   export const election_create_voting_method = 'Voting method';
   export const election_create_ballot_option = 'Option';
