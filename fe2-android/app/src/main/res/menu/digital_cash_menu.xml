@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:id="@+id/send_coin_m"
+    android:id="@+id/send_coin"
     android:icon="@drawable/ic_digicash_send"
     android:iconTint="@color/colorPrimary"
     android:title="@string/digital_cash_send" />
   <item
-    android:id="@+id/receive_coin_m"
+    android:id="@+id/receive_coin"
     android:icon="@drawable/ic_digicash_receive"
     android:iconTint="@color/colorPrimary"
     android:title="@string/digital_cash_receive" />

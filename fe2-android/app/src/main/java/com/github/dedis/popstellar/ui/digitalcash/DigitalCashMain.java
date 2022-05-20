@@ -39,7 +39,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Log.d(TAG, "@string/digital_cash_home_fragment");
+              Log.d(TAG, "Open digital cash home Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_home);
@@ -52,7 +52,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Log.d(TAG, "@string/digital_cash_history_fragment");
+              Log.d(TAG, "Open digital cash history Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_history);
@@ -65,7 +65,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Log.d(TAG, "@string/digital_cash_send_fragment");
+              Log.d(TAG, "Open digital cash send Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_send);
@@ -78,7 +78,7 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Log.d(TAG, "@string/digital_cash_receive_fragment");
+              Log.d(TAG, "Open digital cash receive Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupFragment(R.id.fragment_digital_cash_receive);
@@ -94,7 +94,7 @@ public class DigitalCashMain extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
 
-                Log.d(TAG, "@string/digital_cash_issue_fragment");
+                Log.d(TAG, "Open digital cash issue Fragment");
                 setupFragment(R.id.fragment_digital_cash_issue);
               }
             });
@@ -133,9 +133,9 @@ public class DigitalCashMain extends AppCompatActivity {
             mViewModel.openHome();
           } else if (id == R.id.history_coin) {
             mViewModel.openHistory();
-          } else if (id == R.id.send_coin_m) {
+          } else if (id == R.id.send_coin) {
             mViewModel.openSend();
-          } else if (id == R.id.receive_coin_m) {
+          } else if (id == R.id.receive_coin) {
             mViewModel.openReceive();
           } else if (id == R.id.issue_coin) {
             mViewModel.openIssue();
