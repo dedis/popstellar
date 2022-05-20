@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import org.junit.Test;
 
-public class Output_objectTest {
+public class ScriptOutputObjectTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
@@ -16,17 +16,13 @@ public class Output_objectTest {
   public static String PUBKEYHASH = SENDER.computeHash();
   private static Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
 
-  private static final int VALUE = 32;
-  private static final Output_object OUTPUT = new Output_object(VALUE, SCRIPTTXOUT);
-
   @Test
-  public void get_valueTest() {
-    assertEquals(VALUE, OUTPUT.get_value());
+  public void getTypeTest() {
+    assertEquals(TYPE, SCRIPTTXOUT.get_type());
   }
 
   @Test
-  public void get_scriptTest() {
-    assertEquals(TYPE, OUTPUT.get_script().get_type());
-    assertEquals(PUBKEYHASH, OUTPUT.get_script().get_pubkey_hash());
+  public void getPublicKeyHashTest() {
+    assertEquals(PUBKEYHASH, SCRIPTTXOUT.get_pubkey_hash());
   }
 }
