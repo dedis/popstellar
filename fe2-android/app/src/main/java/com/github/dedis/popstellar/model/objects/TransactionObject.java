@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Transaction_object {
+public class TransactionObject {
   private Channel channel;
 
   // version
@@ -27,7 +27,7 @@ public class Transaction_object {
   // lock_time
   private long lockTime;
 
-  public Transaction_object() {
+  public TransactionObject() {
     // Empty constructor // empty transaction
     // change the sig for all the inputs
   }
@@ -82,7 +82,7 @@ public class Transaction_object {
 
     //Through the inputs look at the sender
     while (input_ite.hasNext()){
-      PublicKey current_sender = new PublicKey(input_ite.next().get_script().get_pubkey());
+      PublicKey current_sender = new PublicKey(input_ite.next().getScript().getPubkey());
       senders.add(current_sender);
     }
 
@@ -98,7 +98,7 @@ public class Transaction_object {
     List<String> receiver_hash = new ArrayList<>();
 
     while(output_ite.hasNext()){
-      receiver_hash.add(output_ite.next().get_script().get_pubkey_hash());
+      receiver_hash.add(output_ite.next().getScript().getPubkeyHash());
     }
 
     return receiver_hash;
@@ -152,16 +152,16 @@ public class Transaction_object {
     int index = 0;
     while (ite_input.hasNext()){
       InputObject current = ite_input.next();
-      sig[index] = current.get_tx_out_hash();
-      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      sig[index] = current.getTxOutHash();
+      sig[index + 1] = String.valueOf(current.getTxOutIndex());
       index = index + 2;
     }
 
     while (ite_output.hasNext()){
       OutputObject current = ite_output.next();
-      sig[index] = String.valueOf(current.get_value());
-      sig[index + 1] = current.get_script().get_type();
-      sig[index + 2] = current.get_script().get_pubkey_hash();
+      sig[index] = String.valueOf(current.getValue());
+      sig[index + 1] = current.getScript().getType();
+      sig[index + 2] = current.getScript().getPubkeyHash();
       index = index + 3;
     }
     return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
@@ -186,8 +186,8 @@ public class Transaction_object {
     Iterator<OutputObject> iterator = getOutputs().iterator();
     while (iterator.hasNext()) {
       OutputObject current = iterator.next();
-      if (current.get_script().get_pubkey_hash().equals(hash_key)) {
-        miniLao = miniLao + current.get_value();
+      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+        miniLao = miniLao + current.getValue();
       }
     }
     return miniLao;
@@ -205,7 +205,7 @@ public class Transaction_object {
     int index = 0;
     while (output_objectIterator.hasNext()) {
       OutputObject current = output_objectIterator.next();
-      if (current.get_script().get_pubkey_hash().equals(hash_pubkey)) {
+      if (current.getScript().getPubkeyHash().equals(hash_pubkey)) {
         return index;
       }
       index = index + 1;

@@ -13,11 +13,9 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-public class Transaction_objectTest {
+public class TransactionObjectTest {
 
-  private static Transaction_object transaction_object = new Transaction_object();
-
-
+  private static TransactionObject transaction_object = new TransactionObject();
 
   @Test
   public void setAndGetChannelTest() {
@@ -37,9 +35,9 @@ public class Transaction_objectTest {
 
     String TYPE = "P2PKH";
     String PUBKEY = SENDER.getEncoded();
-    Script_input_object SCRIPTTXIN;
+    ScriptInputObject SCRIPTTXIN;
     String SIG = SENDER_KEY.sign(SENDER).getEncoded();
-    SCRIPTTXIN = new Script_input_object(TYPE, PUBKEY, SIG);
+    SCRIPTTXIN = new ScriptInputObject(TYPE, PUBKEY, SIG);
     InputObject INPUT = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
     List<InputObject> list_input = Collections.singletonList(INPUT);
     transaction_object.setInputs(list_input);
@@ -53,7 +51,7 @@ public class Transaction_objectTest {
     PublicKey SENDER = SENDER_KEY.getPublicKey();
     String TYPE = "P2PKH";
     String PUBKEYHASH = SENDER.computeHash();
-    Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
     int VALUE = 32;
     OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
     List<OutputObject> list_output = Collections.singletonList(OUTPUT);
@@ -87,9 +85,9 @@ public class Transaction_objectTest {
 
     String TYPE = "P2PKH";
     String PUBKEY = SENDER.getEncoded();
-    Script_input_object SCRIPTTXIN;
+    ScriptInputObject SCRIPTTXIN;
     String SIG = "dhfqkdfhqu";
-    SCRIPTTXIN = new Script_input_object(TYPE, PUBKEY, SIG);
+    SCRIPTTXIN = new ScriptInputObject(TYPE, PUBKEY, SIG);
     InputObject INPUT = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
     List<InputObject> list_input = Collections.singletonList(INPUT);
     transaction_object.setInputs(list_input);
@@ -102,7 +100,7 @@ public class Transaction_objectTest {
     PublicKey SENDER = SENDER_KEY.getPublicKey();
     String TYPE = "P2PKH";
     String PUBKEYHASH = SENDER.computeHash();
-    Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
     int VALUE = 32;
     OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
     List<OutputObject> list_output = Collections.singletonList(OUTPUT);
@@ -112,6 +110,7 @@ public class Transaction_objectTest {
   }
 
   // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
+  // TODO:
 
   // test boolean is_receiver(PublicKey publicKey)
   @Test
@@ -122,7 +121,7 @@ public class Transaction_objectTest {
 
     String TYPE = "P2PKH";
     String PUBKEYHASH = SENDER.computeHash();
-    Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
     int VALUE = 32;
     OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
     List<OutputObject> list_output = Collections.singletonList(OUTPUT);
@@ -149,7 +148,7 @@ public class Transaction_objectTest {
     String TYPE = "P2PKH";
     // RECEIVER
     String PUBKEYHASH = SENDER.computeHash();
-    Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
     int VALUE = 32;
     OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
     List<OutputObject> list_output = Collections.singletonList(OUTPUT);
@@ -165,7 +164,7 @@ public class Transaction_objectTest {
     String TYPE = "P2PKH";
     // RECEIVER
     String PUBKEYHASH = SENDER.computeHash();
-    Script_output_object SCRIPTTXOUT = new Script_output_object(TYPE, PUBKEYHASH);
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
     int VALUE = 32;
     OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
     List<OutputObject> list_output = Collections.singletonList(OUTPUT);

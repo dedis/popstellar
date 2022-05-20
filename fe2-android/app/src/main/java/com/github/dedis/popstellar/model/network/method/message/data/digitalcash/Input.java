@@ -13,14 +13,14 @@ public class Input {
   private final int txOutIndex; // index of the previous to-be-used transaction
 
   @SerializedName("script")
-  private Script_input script; // The script describing the unlock mechanism
+  private ScriptInput script; // The script describing the unlock mechanism
 
   /**
    * @param txOutHash Previous (to-be-used) transaction hash
    * @param txOutIndex index of the previous to-be-used transaction
    * @param script The script describing the unlock mechanism
    */
-  public Input(String txOutHash, int txOutIndex, Script_input script) {
+  public Input(String txOutHash, int txOutIndex, ScriptInput script) {
     this.script = script;
     this.txOutHash = txOutHash;
     this.txOutIndex = txOutIndex;
@@ -34,7 +34,7 @@ public class Input {
     return txOutIndex;
   }
 
-  public Script_input get_script() {
+  public ScriptInput get_script() {
     return script;
   }
 
