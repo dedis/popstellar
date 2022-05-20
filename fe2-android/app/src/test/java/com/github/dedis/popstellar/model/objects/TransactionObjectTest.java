@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class TransactionObjectTest {
 
@@ -110,7 +111,21 @@ public class TransactionObjectTest {
   }
 
   // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
-  // TODO:
+  @Test
+  public void getReceiversTransactionTest() {
+    KeyPair SENDER_KEY = generateKeyPair();
+    PublicKey SENDER = SENDER_KEY.getPublicKey();
+    String TYPE = "P2PKH";
+    String PUBKEYHASH = SENDER.computeHash();
+    ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
+    int VALUE = 32;
+    OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
+    List<OutputObject> list_output = Collections.singletonList(OUTPUT);
+    Map<String, PublicKey> map_hash = Collections.singletonMap(PUBKEYHASH, SENDER);
+    transaction_object.setOutputs(list_output);
+    assertEquals(
+        Collections.singletonList(SENDER), transaction_object.getReceiversTransaction(map_hash));
+  }
 
   // test boolean is_receiver(PublicKey publicKey)
   @Test
@@ -138,6 +153,8 @@ public class TransactionObjectTest {
   }
 
   // test String compute_sig_outputs_inputs(KeyPair keyPair)
+  // @Test
+  // public void computeSigOutputsInputs()
 
   // test int get_miniLao_per_receiver(PublicKey receiver)
   @Test
@@ -157,6 +174,7 @@ public class TransactionObjectTest {
   }
 
   // test int get_index_transaction(PublicKey publicKey)
+  @Test
   public void getIndexTransactionTest() {
     KeyPair SENDER_KEY = generateKeyPair();
     PublicKey SENDER = SENDER_KEY.getPublicKey();
