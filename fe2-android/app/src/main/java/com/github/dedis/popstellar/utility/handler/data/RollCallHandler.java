@@ -128,15 +128,22 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
+
     lao.updateRollCall(closes, rollCall);
+    lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
+    // Subscribe to the digital cash channels
     try {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
+          .subscribe();
+      context
+          .getMessageSender()
+          .subscribe(channel.subChannel("coin").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
