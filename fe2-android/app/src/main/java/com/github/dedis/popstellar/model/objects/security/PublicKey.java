@@ -5,7 +5,11 @@ import android.util.Log;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /** A public key that can be used to verify a signature */
 public class PublicKey extends Base64URLData {
@@ -31,6 +35,23 @@ public class PublicKey extends Base64URLData {
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to verify witness signature " + e.getMessage());
       return false;
+    }
+  }
+
+  /**
+   * Function that compute the hash of a public key
+   *
+   * @return String which correspond to the SHA256 Hash
+   */
+  public String computeHash() {
+    MessageDigest digest = null;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(this.getEncoded().getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(hash);
+    } catch (NoSuchAlgorithmException e) {
+      System.err.println("Something is wrong by hashing the String element ");
+      throw new IllegalArgumentException("Error in computing the hash in public key");
     }
   }
 }
