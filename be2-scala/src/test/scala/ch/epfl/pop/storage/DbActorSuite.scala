@@ -5,7 +5,6 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import org.scalatest.concurrent.ScalaFutures
@@ -22,7 +21,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   final val CHANNEL_NAME: String = "/root/wex"
   final val MESSAGE: Message = MessageExample.MESSAGE_CREATELAO_WORKING
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
-  val ELECTION_NAME: String = s"${ROOT_CHANNEL_PREFIX}private/${ELECTION_ID.toString}"
+  val ELECTION_NAME: String = s"/root/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
 
 
