@@ -21,6 +21,8 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
       case Some(message: Message) =>
         val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
 
+        val laoCheck: String = rpcMessage.params.channel.toString()
+
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
@@ -34,7 +36,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
           Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
-           Right(validationError(s"unexpected 'id' timestamp (${data.id}) vs (${expectedRollCallId}) vs (${data.creation}) vs (${data.name}) vs (${laoId.toString()})"))
+           Right(validationError(s"unexpected 'id' timestamp (${data.id}) vs (${expectedRollCallId}) vs (${data.creation}) vs (${data.name}) vs (${laoCheck})"))
         } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
