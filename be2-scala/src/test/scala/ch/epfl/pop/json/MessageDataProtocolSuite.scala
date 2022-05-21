@@ -105,7 +105,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/vote_cast_vote/vote_cast_vote.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
-    val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), List(0))
+    val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), 0)
     val expected = CastVoteElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Timestamp(1633098941L), votes :: Nil)
 
     messageData shouldBe a[CastVoteElection]

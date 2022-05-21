@@ -78,8 +78,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
       case Seq(id@JsString(_), question@JsString(_)) =>
 
-        val voteOpt: Option[List[Int]] = json.asJsObject.getFields(PARAM_VOTE) match {
-          case Seq(JsArray(vote)) => Some(vote.map(_.convertTo[Int]).toList)
+        val voteOpt: Option[Int] = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(vote@JsNumber(_)) => Some(vote.convertTo[Int])
           case _ => None
         }
         val writeInOpt: Option[String] = json.asJsObject.getFields(PARAM_WRITE_IN) match {
@@ -108,7 +108,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
       // Adding either of the optional values depending on which is defined
       obj.write_in.foreach { w => jsObjectContent += (PARAM_WRITE_IN -> w.toJson) }
-      obj.vote.foreach { v => jsObjectContent += (PARAM_VOTE -> v.toJson) }
+      jsObjectContent += (PARAM_VOTE -> obj.vote.toJson)
 
 
       JsObject(jsObjectContent)
