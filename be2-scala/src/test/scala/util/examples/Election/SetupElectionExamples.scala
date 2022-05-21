@@ -2,6 +2,7 @@ package util.examples.Election
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 import ch.epfl.pop.model.network.method.message.data.election.{ElectionQuestion, SetupElection}
 import ch.epfl.pop.model.objects._
 import spray.json._
@@ -16,8 +17,6 @@ object SetupElectionExamples {
   final val ID: Hash = Hash(Base64Data("fSk3oxJfmhUlRzhpP2rLypTtxboGMhfFaaYKDeZn1SY="))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val ELECTION_NAME: String = "valid"
-  final val OPEN_BALLOT_VERSION: String = "OPEN_BALLOT"
-  final val SECRET_BALLOT_VERSION: String = "SECRET_BALLOT"
   final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
   final val NOT_STALE_START_TIME = Timestamp(1649089860L)
   final val NOT_STALE_END_TIME = Timestamp(1649093440L)
@@ -29,7 +28,7 @@ object SetupElectionExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
 
-  val workingSetupElectionOpenBallot: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  val workingSetupElectionOpenBallot: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING: Message = new Message(
     Base64Data.encode(workingSetupElectionOpenBallot.toJson.toString),
     SENDER_SETUPELECTION,
@@ -39,7 +38,7 @@ object SetupElectionExamples {
     Some(workingSetupElectionOpenBallot)
   )
 
-  val wrongTimestampSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT_VERSION, invalidTimestamp, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  val wrongTimestampSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, invalidTimestamp, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_WRONG_TIMESTAMP: Message = new Message(
     Base64Data.encode(wrongTimestampSetupElection.toJson.toString),
     SENDER_SETUPELECTION,
@@ -49,7 +48,7 @@ object SetupElectionExamples {
     Some(wrongTimestampSetupElection)
   )
 
-  val wrongTimestampOrderSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_END_TIME, NOT_STALE_START_TIME, QUESTIONS)
+  val wrongTimestampOrderSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_END_TIME, NOT_STALE_START_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_WRONG_ORDER: Message = new Message(
     Base64Data.encode(wrongTimestampOrderSetupElection.toJson.toString),
     SENDER_SETUPELECTION,
@@ -59,7 +58,7 @@ object SetupElectionExamples {
     Some(wrongTimestampOrderSetupElection)
   )
 
-  val wrongTimestampOrderSetupElection2: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT_VERSION, NOT_STALE_START_TIME, NOT_STALE_CREATED_AT, NOT_STALE_END_TIME, QUESTIONS)
+  val wrongTimestampOrderSetupElection2: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_START_TIME, NOT_STALE_CREATED_AT, NOT_STALE_END_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_WRONG_ORDER2: Message = new Message(
     Base64Data.encode(wrongTimestampOrderSetupElection2.toJson.toString),
     SENDER_SETUPELECTION,
@@ -69,7 +68,7 @@ object SetupElectionExamples {
     Some(wrongTimestampOrderSetupElection2)
   )
 
-  val wrongIdSetupElection: SetupElection = SetupElection(invalidId, LAO_ID, ELECTION_NAME, OPEN_BALLOT_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  val wrongIdSetupElection: SetupElection = SetupElection(invalidId, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_WRONG_ID: Message = new Message(
     Base64Data.encode(wrongIdSetupElection.toJson.toString),
     SENDER_SETUPELECTION,
@@ -89,7 +88,7 @@ object SetupElectionExamples {
   )
 
   //encrypted version
-  val workingSetupElectionSecretBallot: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, SECRET_BALLOT_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  val workingSetupElectionSecretBallot: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, SECRET_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
   final val MESSAGE_SETUPELECTION_SECRET_BALLOT_WORKING: Message = new Message(
     Base64Data.encode(workingSetupElectionOpenBallot.toJson.toString),
     SENDER_SETUPELECTION,

@@ -5,6 +5,7 @@ import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, KeyPair}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -58,8 +59,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         //generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
         data.version match {
-          case "OPEN_BALLOT" => Left(rpcMessage)
-          case "SECRET_BALLOT" =>
+          case OPEN_BALLOT => Left(rpcMessage)
+          case SECRET_BALLOT =>
             val keyPair = KeyPair()
             val keyCombined = for {
               _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)

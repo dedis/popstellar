@@ -4,13 +4,14 @@ import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.coin._
+import ch.epfl.pop.model.network.method.message.data.election.VersionType.VersionType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
-import ch.epfl.pop.model.network.method.message.data.{MessageData, ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects._
 import spray.json._
 
@@ -38,6 +39,15 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: ActionType): JsValue = JsString(obj.toString)
+  }
+
+  implicit object versionTypeFormat extends RootJsonFormat[VersionType] {
+    override def read(json: JsValue): VersionType = json match {
+      case JsString(version) => VersionType.unapply(version).getOrElse(VersionType.INVALID)
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to an VersionType")
+    }
+
+    override def write(obj: VersionType): JsValue = JsString(obj.toString)
   }
 
 
@@ -288,7 +298,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = annotateHeader(jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature"))
 
   implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, List[VoteElection], CastVoteElection](CastVoteElection.apply, "lao", "election", "created_at", "votes"))
-  implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
+  implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, VersionType, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
   implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
   implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
