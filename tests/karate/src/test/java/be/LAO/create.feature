@@ -77,6 +77,9 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
+    * karate.log("-------------fffffff------------------------")
+    * karate.log(laoCreateRequest)
+    * karate.log("-------------fffffff------------------------")
     When frontend.publish(JSON.stringify(laoCreateRequest), channel)
     And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
     Then match answer contains VALID_MESSAGE

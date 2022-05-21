@@ -9,6 +9,7 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
+import akka.parboiled2.util.Base64
 
 object MessageExample {
 
@@ -153,6 +154,15 @@ object MessageExample {
     Some(CreateLao(Hash(Base64Data("aWQy")), "LAO2", Timestamp(0), PublicKey(Base64Data("a2V5Mg==")), List.empty))
   )
    // Create Roll Call
+  final val laoCreateRollCallMessage: CreateLao = new CreateLao(Hash(Base64Data("p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")), "LAO", Timestamp(1633035721), PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")), List.empty) 
+  final val MESSAGE_CREATELAO_ROLLCALL: Message = new Message(
+  Base64Data.encode(laoCreateRollCallMessage.toJson.toString()),
+  PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+  Signature(Base64Data("IZfKQGY6qD3o1yQX0M-XmkRvaAzBF7z7vElxzRqNNgEmG_mr7iWu4Gpx2JB-e3fUyQUOExVgHfKlJIeka6uuAw==")),
+  Hash(Base64Data("7mJPJLGt1_efU3cUFF5dwYB3tjalpFYpJVXYjGoFK-Q=")),
+  List.empty,
+  Some(laoCreateRollCallMessage)
+  ) 
   val createRollCallData: String = 
   """
         {

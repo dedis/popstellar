@@ -76,7 +76,8 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     message shouldBe a[Right[_, PipelineError]]
   }
 
-  test("ROll Call creation valid succeeds") {
+  test("Roll Call creation valid succeeds") {
+    val laoMessageL: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_ROLL_CALL_RPC)
     val message: GraphMessage = RollCallValidator.validateCreateRollCall(CREATE_ROLL_CALL_VALID_RPC)
     message should equal(Left(CREATE_ROLL_CALL_VALID_RPC))
   }
