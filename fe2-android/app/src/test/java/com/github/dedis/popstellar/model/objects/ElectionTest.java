@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -57,12 +56,6 @@ public class ElectionTest {
   public void settingAndGettingReturnsCorrespondingName() {
     election.setName(name);
     assertThat(election.getName(), is(name));
-  }
-
-  @Test
-  public void settingAndGettingReturnsCorrespondingState() {
-    election.setEventState(OPENED);
-    assertThat(election.getState().getValue(), is(OPENED));
   }
 
   @Test

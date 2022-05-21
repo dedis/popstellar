@@ -57,6 +57,8 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
+  private boolean toBeCleared = true;
+
   public void setDateAndTimeView(View view) {
     long currentMillis = System.currentTimeMillis();
     long suggestedEndMillis = currentMillis + 1000 * 60 * 60; // Adding one hour
@@ -92,16 +94,43 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     threshold.add(Calendar.MINUTE, -1);
 
     startDateEditText.setOnClickListener(
-        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate));
+        v -> {
+          clearDates();
+          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate);
+        });
 
     endDateEditText.setOnClickListener(
-        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate));
+        v -> {
+          clearDates();
+          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate);
+        });
 
     startTimeEditText.setOnClickListener(
-        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime));
+        v -> {
+          clearDates();
+          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime);
+        });
 
     endTimeEditText.setOnClickListener(
-        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime));
+        v -> {
+          clearDates();
+          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime);
+        });
+  }
+
+  private void clearDates() {
+    if (toBeCleared) {
+      startDateEditText.getText().clear();
+      startTimeEditText.getText().clear();
+      endDateEditText.getText().clear();
+      endTimeEditText.getText().clear();
+
+      startDate = null;
+      startTime = null;
+      endDate = null;
+      endTime = null;
+      toBeCleared = false;
+    }
   }
 
   private void openPickerDialog(

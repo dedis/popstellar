@@ -469,7 +469,8 @@ public class ElectionSetupFragmentTest {
   }
 
   @Test
-  public void cannotSubmitWithoutDateAndTimeTest() {
+  public void canWithoutDateAndTimeTest() {
+    // Since now suggested start and end time are provided
     setupViewModel();
 
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
@@ -478,9 +479,6 @@ public class ElectionSetupFragmentTest {
     for (int i = 0; i < 2; ++i) {
       ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
     }
-
-    submit().check(matches(isNotEnabled()));
-    pickValidDateAndTime();
     submit().check(matches(isEnabled()));
   }
 

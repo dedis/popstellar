@@ -88,7 +88,6 @@
     android:id="@+id/roll_call_fragment_end_time"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
     app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
     app:layout_constraintStart_toStartOf="@id/roll_call_fragment_start_time"
     app:layout_constraintTop_toTopOf="@id/end_time_icon" />

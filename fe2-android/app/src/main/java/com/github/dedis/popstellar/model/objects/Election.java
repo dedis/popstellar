@@ -36,7 +36,7 @@ public class Election extends Event {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private final MutableLiveData<EventState> state = new MutableLiveData<>();
+  private final MutableLiveData<EventState> state = new MutableLiveData<>(EventState.CLOSED);
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;

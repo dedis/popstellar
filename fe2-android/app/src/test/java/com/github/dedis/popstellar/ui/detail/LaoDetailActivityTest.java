@@ -8,16 +8,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.connectQrCode;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.homeButton;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.identityButton;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.identityFragmentId;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.laoDetailValue;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.propertiesLayout;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.showPropertiesButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.qrCodeIcon;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.qrCodeLayout;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.witnessButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.witnessFragmentId;
-import static org.junit.Assert.assertEquals;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.witnessingFragmentId;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -27,12 +25,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.lifecycle.LiveData;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -40,8 +36,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.google.gson.Gson;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -114,20 +108,6 @@ public class LaoDetailActivityTest {
           .around(activityScenarioRule);
 
   @Test
-  public void homeButtonOpensHome() {
-    homeButton().perform(click());
-
-    assertEquals(
-        HomeActivity.class.getName(),
-        activityScenarioRule
-            .getScenario()
-            .getResult()
-            .getResultData()
-            .getComponent()
-            .getClassName());
-  }
-
-  @Test
   public void identityButtonOpensIdentityTab() {
     identityButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(identityFragmentId()))));
@@ -135,9 +115,9 @@ public class LaoDetailActivityTest {
 
   @Test
   public void showPropertyButtonShowsConnectQRCode() {
-    showPropertiesButton().perform(click());
+    qrCodeIcon().perform(click());
 
-    propertiesLayout().check(matches(isDisplayed()));
+    qrCodeLayout().check(matches(isDisplayed()));
 
     String expectedQRCode = gson.toJson(new ConnectToLao(networkManager.getCurrentUrl(), LAO_ID));
     connectQrCode().check(matches(withQrCode(expectedQRCode)));
@@ -146,7 +126,7 @@ public class LaoDetailActivityTest {
   @Test
   public void witnessButtonShowsWitnessTab() {
     witnessButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(witnessFragmentId()))));
+    fragmentContainer().check(matches(withChild(withId(witnessingFragmentId()))));
   }
 
 

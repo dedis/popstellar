@@ -26,7 +26,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
 import com.github.dedis.popstellar.ui.detail.event.EventListDivider;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -49,7 +48,6 @@ public class LaoDetailFragment extends Fragment {
 
   private LaoDetailFragmentBinding mLaoDetailFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
-  private WitnessListViewAdapter mWitnessListViewAdapter;
   private EventListAdapter mEventListViewEventAdapter;
   private boolean isRotated = false;
 
@@ -102,11 +100,9 @@ public class LaoDetailFragment extends Fragment {
       };
 
   private View.OnClickListener addEventLister(EventType type) {
-    View.OnClickListener listener =
-        v -> {
-          mLaoDetailViewModel.chooseEventType(type);
-        };
-    return listener;
+    return v -> {
+      mLaoDetailViewModel.chooseEventType(type);
+    };
   }
 
   @Override

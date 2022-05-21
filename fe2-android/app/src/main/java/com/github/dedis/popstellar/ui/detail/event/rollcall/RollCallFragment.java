@@ -173,7 +173,7 @@ public class RollCallFragment extends Fragment {
     TextView endTimeDisplay = view.findViewById(R.id.roll_call_fragment_end_time);
 
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
-    Date endTime = new Date(rollCall.getStartTimestampInMillis());
+    Date endTime = new Date(rollCall.getEndTimestampInMillis());
 
     startTimeDisplay.setText(DATE_FORMAT.format(startTime));
     endTimeDisplay.setText(DATE_FORMAT.format(endTime));

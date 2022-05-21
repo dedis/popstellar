@@ -21,20 +21,16 @@ public class LaoDetailPageObject {
     return onView(withId(R.id.fragment_container_lao_detail));
   }
 
-  public static ViewInteraction homeButton() {
-    return onView(withId(R.id.tab_home));
-  }
-
   public static ViewInteraction identityButton() {
     return onView(withId(R.id.lao_detail_identity_menu));
   }
 
-  public static ViewInteraction showPropertiesButton() {
-    return onView(withId(R.id.tab_properties));
+  public static ViewInteraction qrCodeIcon() {
+    return onView(withId(R.id.qr_code_icon));
   }
 
-  public static ViewInteraction propertiesLayout() {
-    return onView(withId(R.id.properties_linear_layout));
+  public static ViewInteraction qrCodeLayout() {
+    return onView(withId(R.id.lao_detail_qr_layout));
   }
 
   public static ViewInteraction connectQrCode() {
@@ -42,7 +38,7 @@ public class LaoDetailPageObject {
   }
 
   public static ViewInteraction witnessButton() {
-    return onView(withId(R.id.tab_witness_message_button));
+    return onView(withId(R.id.lao_detail_witnessing_menu));
   }
 
   @IdRes
@@ -51,9 +47,10 @@ public class LaoDetailPageObject {
   }
 
   @IdRes
-  public static int witnessFragmentId() {
-    return R.id.fragment_witness_message;
+  public static int witnessingFragmentId() {
+    return R.id.fragment_witnessing;
   }
+
 
   public static String laoIdExtra() {
     return Constants.LAO_ID_EXTRA;
