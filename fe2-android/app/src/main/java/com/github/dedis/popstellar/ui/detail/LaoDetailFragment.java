@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -109,18 +108,10 @@ public class LaoDetailFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    // setupWitnessMessageButton();
     setupQrCodeIconButton();
     setUpQrCloseButton();
-    //   setupEditPropertiesButton();
-    //   setupConfirmEditButton();
-    //  setupCancelEditButton();
-    //  setupAddWitnessButton();
-
     setupEventListAdapter();
     setupEventListUpdates();
-    //  setupWitnessListAdapter();
-    //  setupWitnessListUpdates();
 
     // TODO: Add witness handler
 
@@ -136,18 +127,6 @@ public class LaoDetailFragment extends Fragment {
                 showHideProperties(action);
               }
             });
-
-    // Subscribe to "edit properties" event
-    //    mLaoDetailViewModel
-    //        .getEditPropertiesEvent()
-    //        .observe(
-    //            getViewLifecycleOwner(),
-    //            booleanEvent -> {
-    //              Boolean action = booleanEvent.getContentIfNotHandled();
-    //              if (action != null) {
-    //                editProperties(action);
-    //              }
-    //            });
 
     mLaoDetailViewModel
         .getLaoEvents()
@@ -169,20 +148,6 @@ public class LaoDetailFragment extends Fragment {
             });
   }
 
-  //  private void setupWitnessMessageButton() {
-  //    Button witnessMessageButton =
-  // requireActivity().findViewById(R.id.tab_witness_message_button);
-  //    witnessMessageButton.setOnClickListener(v -> mLaoDetailViewModel.openWitnessMessage());
-  //  }
-
-  //  private void setupAddWitnessButton() {
-  //    mLaoDetailFragBinding.addWitnessButton.setOnClickListener(
-  //        v -> {
-  //          mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-  //          mLaoDetailViewModel.openScanning();
-  //        });
-  //  }
-
   private void setupQrCodeIconButton() {
     ImageView propertiesButton = requireActivity().findViewById(R.id.qr_code_icon);
     propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
@@ -193,41 +158,6 @@ public class LaoDetailFragment extends Fragment {
     closeButton.setOnClickListener(view -> mLaoDetailViewModel.toggleShowHideProperties());
   }
 
-  //  private void setupEditPropertiesButton() {
-  //    mLaoDetailFragBinding.editButton.setOnClickListener(
-  //        clicked -> mLaoDetailViewModel.openEditProperties());
-  //  }
-
-  //  private void setupConfirmEditButton() {
-  //    mLaoDetailFragBinding.propertiesEditConfirm.setOnClickListener(
-  //        clicked -> mLaoDetailViewModel.confirmEdit());
-  //  }
-
-  //  private void setupCancelEditButton() {
-  //    mLaoDetailFragBinding.propertiesEditCancel.setOnClickListener(
-  //        clicked -> mLaoDetailViewModel.cancelEdit());
-  //  }
-
-  //  private void setupWitnessListAdapter() {
-  //    ListView listView = mLaoDetailFragBinding.witnessList;
-  //
-  //    mWitnessListViewAdapter =
-  //        new WitnessListViewAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
-  //
-  //    listView.setAdapter(mWitnessListViewAdapter);
-  //  }
-
-  //  private void setupWitnessListUpdates() {
-  //    mLaoDetailViewModel
-  //        .getWitnesses()
-  //        .observe(
-  //            requireActivity(),
-  //            witnesses -> {
-  //              Log.d(TAG, "witnesses updated");
-  //              mWitnessListViewAdapter.replaceList(witnesses);
-  //            });
-  //  }
-
   private void setupEventListAdapter() {
     RecyclerView eventList = mLaoDetailFragBinding.eventList;
 
@@ -237,11 +167,6 @@ public class LaoDetailFragment extends Fragment {
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
-    DividerItemDecoration dividerItemDecoration =
-        new DividerItemDecoration(getContext(), mLayoutManager.getOrientation());
-    //    EventListDivider divider =
-    //        new EventListDivider(ContextCompat.getDrawable(getContext(),
-    // R.drawable.event_divider));
     EventListDivider divider = new EventListDivider(getContext());
     eventList.addItemDecoration(divider);
     eventList.setAdapter(mEventListViewEventAdapter);
@@ -264,18 +189,6 @@ public class LaoDetailFragment extends Fragment {
             });
   }
 
-  private void setupSwipeRefresh() {
-    //    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(
-    //        () -> {
-    //          mWitnessListViewAdapter.notifyDataSetChanged();
-    //          mEventListViewEventAdapter.notifyDataSetChanged();
-    //          if (getFragmentManager() != null) {
-    //            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-    //          }
-    //          mLaoDetailFragBinding.swipeRefresh.setRefreshing(false);
-    //        });
-  }
-
   private void showHideProperties(Boolean show) {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
     //    mLaoDetailFragBinding.laoDetailQrLayout.setVisibility(
@@ -288,13 +201,4 @@ public class LaoDetailFragment extends Fragment {
     }
   }
 
-  //  private void editProperties(Boolean edit) {
-  //    mLaoDetailFragBinding.editPropertiesLinearLayout.setVisibility(
-  //        Boolean.TRUE.equals(edit) ? View.VISIBLE : View.GONE);
-  //
-  //    // Hide current LAO name and edit button while editing
-  //    final int visibility = Boolean.TRUE.equals(edit) ? View.GONE : View.VISIBLE;
-  //    mLaoDetailFragBinding.editButton.setVisibility(visibility);
-  //    mLaoDetailFragBinding.organizationName.setVisibility(visibility);
-  //  }
 }

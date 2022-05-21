@@ -20,7 +20,7 @@ public class RollCall extends Event {
   private long creation;
   private long start;
   private long end;
-  private MutableLiveData<EventState> state = new MutableLiveData<>();
+  private final MutableLiveData<EventState> state = new MutableLiveData<>();
   private Set<PublicKey> attendees;
 
   private String location;

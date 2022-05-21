@@ -51,7 +51,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     expanded[PAST.ordinal()] = false;
     expanded[PRESENT.ordinal()] = true;
     expanded[FUTURE.ordinal()] = false;
-
     putEventsInMap(events);
   }
 
@@ -111,13 +110,13 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
       switch (eventCategory) {
         case PRESENT:
-          headerTitle.setText("Current");
+          headerTitle.setText(R.string.present_header_title);
           break;
         case FUTURE:
-          headerTitle.setText("Upcoming");
+          headerTitle.setText(R.string.future_header_title);
           break;
         case PAST:
-          headerTitle.setText("Previous");
+          headerTitle.setText(R.string.past_header_title);
           break;
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);

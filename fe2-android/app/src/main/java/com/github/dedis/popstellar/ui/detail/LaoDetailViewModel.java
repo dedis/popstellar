@@ -98,8 +98,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mEditPropertiesEvent =
-      new MutableLiveData<>();
+
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
@@ -128,8 +127,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
-      new MutableLiveData<>(new SingleEvent<>(false));
-  private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
 
   private final MutableLiveData<SingleEvent<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
@@ -707,18 +704,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  /**
-   * Remove specific witness from the LAO's list of witnesses.
-   *
-   * <p>Publish a GeneralMessage containing UpdateLao data.
-   *
-   * @param witness the id of the witness to remove
-   */
-  public void removeWitness(String witness) {
-    Log.d(TAG, "trying to remove witness: " + witness);
-    // TODO: implement this by sending an UpdateLao
-  }
-
   /*
    * Getters for MutableLiveData instances declared above
    */
@@ -726,20 +711,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenLaoDetailEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent() {
-    return mOpenElectionEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getEndElectionEvent() {
-    return mEndElectionEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenElectionResultsEvent() {
     return mOpenElectionResultsEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getReceivedElectionResultsEvent() {
-    return mReceivedElectionResultsEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getElectionCreated() {
@@ -786,16 +759,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mShowPropertiesEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getEditPropertiesEvent() {
-    return mEditPropertiesEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
     return mOpenSocialMediaEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
-    return mOpenDigitalCashEvent;
   }
 
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
@@ -977,10 +942,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  public void electionCreated() {
-    mElectionCreatedEvent.postValue(new SingleEvent<>(true));
-  }
-
   public void openLaoDetail() {
     mOpenLaoDetailEvent.postValue(new SingleEvent<>(true));
   }
@@ -1005,17 +966,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
-  /** Propagates the open election event */
-  public void openElectionEvent() {
-    mOpenElectionEvent.postValue(new SingleEvent<>(true));
-  }
-
   public void endElectionEvent() {
     mEndElectionEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void receiveElectionResultsEvent() {
-    mReceivedElectionResultsEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openAddWitness() {
@@ -1034,25 +986,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     Log.d(TAG, "TOGGLED to " + val);
     showProperties.postValue(!val);
     mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
-  }
-
-  public void openEditProperties() {
-    mEditPropertiesEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void closeEditProperties() {
-    mEditPropertiesEvent.setValue(new SingleEvent<>(false));
-  }
-
-  public void terminateCurrentElection() {
-    if (mCurrentLao.getValue().removeElection(mCurrentElection.getValue().getId())) {
-      Log.d(TAG, "Election deleted : " + mCurrentElection.getValue().getId());
-      Lao lao = getCurrentLaoValue();
-      mCurrentLao.postValue(lao);
-      openLaoDetail();
-    } else {
-      Log.d(TAG, "Impossible to delete election : " + mCurrentElection.getValue().getId());
-    }
   }
 
   /**
@@ -1084,51 +1017,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void openElectionFragment(Boolean open) {
     Log.d(TAG, "openElection in view model");
     mOpenElectionFragmentEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void openStartElection(Boolean open) {
-    mOpenStartElectionEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void confirmEdit() {
-    closeEditProperties();
-    if (!mLaoName.getValue().isEmpty()) {
-      updateLaoName();
-    }
-  }
-
-  /**
-   * Method to update the name of a Lao by sending an updateLao msg and a stateLao msg to the
-   * backend
-   */
-  public void updateLaoName() {
-    Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
-
-    Lao lao = getCurrentLaoValue();
-    Channel channel = lao.getChannel();
-    KeyPair mainKey = keyManager.getMainKeyPair();
-    long now = Instant.now().getEpochSecond();
-    UpdateLao updateLao =
-        new UpdateLao(
-            mainKey.getPublicKey(),
-            lao.getCreation(),
-            mLaoName.getValue(),
-            now,
-            lao.getWitnesses());
-    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(channel, msg)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "updated lao name");
-                  dispatchLaoUpdate("lao name", updateLao, lao, channel, msg);
-                },
-                error ->
-                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao));
-
-    disposables.add(disposable);
   }
 
   /**
@@ -1186,11 +1074,6 @@ public class LaoDetailViewModel extends AndroidViewModel
                 () -> Log.d(TAG, "updated " + desc),
                 error ->
                     ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_state_lao)));
-  }
-
-  public void cancelEdit() {
-    mLaoName.setValue("");
-    closeEditProperties();
   }
 
   public void subscribeToLao(String laoId) {
