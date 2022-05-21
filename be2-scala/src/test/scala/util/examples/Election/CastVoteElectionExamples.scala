@@ -29,6 +29,7 @@ object CastVoteElectionExamples {
   val invalidBallot: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(List(2)), None))
   val invalidVoteId:  List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(List(1)), None))
 
+
   val workingCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, VOTES)
   val DATA_CAST_VOTE_MESSAGE: Hash = Hash(Base64Data.encode(workingCastVoteElection.toJson.toString))
   final val MESSAGE_CAST_VOTE_ELECTION_WORKING: Message = new Message(
@@ -100,7 +101,7 @@ object CastVoteElectionExamples {
     List.empty,
     Some(invalidBallotCastVoteElection)
   )
-
+  
   val invalidVoteIdCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidVoteId)
   val DATA_CAST_VOTE_INVALID_VOTE_ID: Hash = Hash(Base64Data.encode(invalidVoteIdCastVoteElection.toJson.toString))
   final val MESSAGE_CAST_VOTE_INVALID_VOTE_ID: Message = new Message(

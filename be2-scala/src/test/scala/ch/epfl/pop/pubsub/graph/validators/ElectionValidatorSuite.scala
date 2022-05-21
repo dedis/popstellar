@@ -433,7 +433,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
-
+    
   test("Casting a vote if election is not open should fail") {
     val dbActorRef = mockDbMissingOpenElectionMessage
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)

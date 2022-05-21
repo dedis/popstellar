@@ -49,8 +49,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val questions: List[ElectionQuestion] = data.questions
-
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (!validateTimestampOrder(data.created_at, data.start_time)) {
@@ -59,7 +57,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } else if (!validateQuestionId(questions, data.id)) {
+        } else if (!validateQuestionId(data.questions, data.id)) {
           Right(validationError("unexpected question ids"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
@@ -125,6 +123,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
 
         val channel: Channel = rpcMessage.getParamsChannel
+      
         val questions = getSetupMessage(channel, dbActorRef).questions
         val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
 
@@ -231,4 +230,5 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
    */
   private def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
     questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
+
 }
