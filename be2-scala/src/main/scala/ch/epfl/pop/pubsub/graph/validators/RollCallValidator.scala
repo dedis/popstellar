@@ -34,7 +34,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
           Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
-          Right(validationError(s"unexpected id"))
+           Right(validationError(s"unexpected 'id' timestamp (${data.id}) vs (${expectedRollCallId})"))
         } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
