@@ -5,6 +5,7 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import org.scalatest.concurrent.ScalaFutures
@@ -20,6 +21,9 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   final val CHANNEL_NAME: String = "/root/wex"
   final val MESSAGE: Message = MessageExample.MESSAGE_CREATELAO_WORKING
+  val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
+  val ELECTION_NAME: String = s"${ROOT_CHANNEL_PREFIX}private/${ELECTION_ID.toString}"
+  val KEYPAIR: KeyPair = KeyPair()
 
 
   override def afterAll(): Unit = {
@@ -153,6 +157,37 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal (1)
     storage.elements(CHANNEL_NAME) should equal (ChannelData(ObjectType.LAO, Nil).toJsonString)
+  }
+
+  test("createElectionData effectively creates a new channel for the electionData") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    storage.size should equal (0)
+
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR); sleep()
+
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+    storage.elements(ELECTION_NAME) should equal (ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
+  }
+
+  test("createElectionData does not overwrite channels on duplicates") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    storage.size should equal (0)
+
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR); sleep()
+
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+    storage.elements(ELECTION_NAME) should equal (ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
+
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR); sleep()
+
+    storage.size should equal (1)
+    storage.elements(ELECTION_NAME) should equal (ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
   }
 
   test("createChannelsFromList creates multiple channels") {
@@ -384,6 +419,26 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     readChannelData should equal(channelData)
   }
+
+  test("readElectionData succeeds for existing ElectionData") {
+    //arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val electionData: ElectionData = ElectionData(ELECTION_ID, KEYPAIR)
+    initialStorage.write((ELECTION_NAME, electionData.toJsonString))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    //act
+    val ask = dbActor ? DbActor.ReadElectionData(ELECTION_ID)
+    val answer = Await.result(ask, duration)
+
+    //assert
+    answer shouldBe a[DbActor.DbActorReadElectionDataAck]
+
+    val readElectionData: ElectionData = answer.asInstanceOf[DbActor.DbActorReadElectionDataAck].electionData
+
+    readElectionData should equal(electionData)
+  }
+
 
   test("catchup works on a channel with valid ChannelData and messages"){
     // arrange
