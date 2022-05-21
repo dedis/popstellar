@@ -35,4 +35,7 @@ public class DigitalCashIssueFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     return inflater.inflate(R.layout.digital_cash_issue_fragment, container, false);
   }
+
+  /** Function that permits to post transaction */
+  private void postTransaction() {}
 }

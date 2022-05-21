@@ -14,11 +14,16 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -27,7 +32,11 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -43,6 +52,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String COIN = "coin";
 
+  private static final String TYPE = "Pay-to-Pubkey-Hash";
+  private static final int VERSION = 1;
   /*
    * LiveData objects for capturing events
    */
@@ -150,7 +161,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(Transaction transactionToPost) {
+  public void postTransaction(Map<PublicKey, Integer> receiverandvalue, long locktime) {
     Log.d(TAG, "Post a transaction");
     Lao lao = getCurrentLao();
     if (lao == null) {
@@ -158,10 +169,48 @@ public class DigitalCashViewModel extends AndroidViewModel {
       return;
     }
 
-    PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transactionToPost);
-
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
+      // first make the output
+      List<Output> outputs = new ArrayList<>();
+      for (Map.Entry<PublicKey, Integer> current : receiverandvalue.entrySet()) {
+        Output add_output =
+            new Output(current.getValue(), new ScriptOutput(TYPE, current.getKey().computeHash()));
+        outputs.add(add_output);
+      }
+
+      // Then make the inputs
+      // First there would be only one Input
+
+      // Case no transaction before
+      String transaction_hash = "";
+      int index = 0;
+
+      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
+        transaction_hash =
+            getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        index =
+            getCurrentLao()
+                .getTransactionByUser()
+                .get(token.getPublicKey())
+                .getIndexTransaction(token.getPublicKey());
+      }
+      String sig =
+          Transaction.computeSigOutputsPairTxOutHashAndIndex(
+              token, outputs, Collections.singletonMap(transaction_hash, index));
+      Transaction transaction =
+          new Transaction(
+              VERSION,
+              Collections.singletonList(
+                  new Input(
+                      transaction_hash,
+                      index,
+                      new ScriptInput(TYPE, token.getPublicKey().getEncoded(), sig))),
+              outputs,
+              locktime);
+
+      PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
+
       Channel channel =
           lao.getChannel().subChannel(COIN).subChannel(token.getPublicKey().getEncoded());
 
@@ -187,7 +236,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                           getApplication(), TAG, error, R.string.error_post_transaction));
 
       disposables.add(disposable);
-    } catch (KeyException e) {
+    } catch (KeyException | GeneralSecurityException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }

@@ -14,6 +14,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 // the transaction object
@@ -115,33 +116,30 @@ public class Transaction {
     }
   }
 
-  public void change_sig_inputs_considering_the_outputs(KeyPair keyPair)
+  /**
+   * Function that given a key pair change the sig of an input considering all the outputs
+   *
+   * @param keyPair of one input sender
+   * @return sig other all the outputs and inputs with the public key
+   * @throws GeneralSecurityException
+   */
+  public static String computeSigOutputsPairTxOutHashAndIndex(
+      KeyPair keyPair, List<Output> outputs, Map<String, Integer> inputs_pairs)
       throws GeneralSecurityException {
-    String sig = compute_sig_outputs_inputs(keyPair, inputs, outputs);
-    Iterator<Input> ite = inputs.iterator();
-    while (ite.hasNext()) {
-      Input current = ite.next();
-      if (keyPair.getPublicKey().computeHash().equals(current.get_script().get_pubkey())) {
-        current.get_script().setSig(sig);
-      }
-    }
-  }
-
-  public static String compute_sig_outputs_inputs(
-      KeyPair keyPair, List<Input> inputs, List<Output> outputs) throws GeneralSecurityException {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
     // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
     // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
-    String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
-    Iterator<Input> ite_input = inputs.iterator();
+    String[] sig = new String[inputs_pairs.size() * 2 + outputs.size() * 3];
+    Iterator<Map.Entry<String, Integer>> ite_input = inputs_pairs.entrySet().iterator();
     Iterator<Output> ite_output = outputs.iterator();
+
     int index = 0;
     while (ite_input.hasNext()) {
-      Input current = ite_input.next();
-      sig[index] = current.get_tx_out_hash();
-      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      Map.Entry<String, Integer> current = ite_input.next();
+      sig[index] = current.getKey();
+      sig[index + 1] = String.valueOf(current.getValue());
       index = index + 2;
     }
 
@@ -152,8 +150,7 @@ public class Transaction {
       sig[index + 2] = current.getScript().get_pubkey_hash();
       index = index + 3;
     }
-    Base64URLData signature = new Base64URLData(String.join("", sig));
-    return keyPair.sign(signature).getEncoded();
+    return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
   }
 
   @Override
