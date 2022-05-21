@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
-import util.examples.Election.SetupElectionExamples._
+import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
 import util.examples.Election.EndElectionExamples._
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
