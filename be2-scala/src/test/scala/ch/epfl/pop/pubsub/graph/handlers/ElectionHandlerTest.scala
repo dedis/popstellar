@@ -150,7 +150,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = SetupElectionMessages.setupElectionSecretBallot
 
-    rc.handleSetupElection(request) should equal(Left(request))
+    rc.handleSetupElection(request) shouldBe an[Right[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
