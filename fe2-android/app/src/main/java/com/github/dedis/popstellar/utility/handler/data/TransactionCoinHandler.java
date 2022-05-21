@@ -4,12 +4,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Input_object;
+import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.Output_object;
-import com.github.dedis.popstellar.model.objects.Script_input_object;
-import com.github.dedis.popstellar.model.objects.Script_output_object;
-import com.github.dedis.popstellar.model.objects.Transaction_object;
+import com.github.dedis.popstellar.model.objects.OutputObject;
+import com.github.dedis.popstellar.model.objects.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.repository.LAORepository;
 
 import java.util.ArrayList;
@@ -35,15 +35,15 @@ public class TransactionCoinHandler {
     Channel channel = context.getChannel();
     Lao lao = laoRepository.getLaoByChannel(channel);
 
-    Transaction_object transaction_object = new Transaction_object();
+    TransactionObject transaction_object = new TransactionObject();
 
     transaction_object.setChannel(channel);
-    transaction_object.setLock_time(postTransactionCoin.get_transaction().get_lock_time());
+    transaction_object.setLockTime(postTransactionCoin.get_transaction().get_lock_time());
     transaction_object.setVersion(postTransactionCoin.get_transaction().get_version());
 
-    //inputs and outputs for the creation
-    List<Input_object> inputs = new ArrayList<>();
-    List<Output_object> outputs = new ArrayList<>();
+    // inputs and outputs for the creation
+    List<InputObject> inputs = new ArrayList<>();
+    List<OutputObject> outputs = new ArrayList<>();
 
     //Should always be at least one input and one output
     if ( postTransactionCoin.get_transaction().get_inputs().size() == 0 ||
@@ -63,26 +63,25 @@ public class TransactionCoinHandler {
       if (current.get_script() == null){
         throw new IllegalArgumentException();
       }
-      Script_input_object script_ =
-          new Script_input_object(
+      ScriptInputObject script_ =
+          new ScriptInputObject(
               current.get_script().get_type(),
               current.get_script().get_pubkey(),
               current.get_script().get_sig());
 
-      inputs.add(new Input_object(current.get_tx_out_hash(), current.get_tx_out_index(), script_));
+      inputs.add(new InputObject(current.get_tx_out_hash(), current.get_tx_out_index(), script_));
     }
 
     while (iterator_output.hasNext()) {
       //Normally if there is an output there is always a script
       Output current = iterator_output.next();
-      if (current.get_script() == null){
+      if (current.getScript() == null) {
         throw new IllegalArgumentException();
       }
-      Script_output_object script = new Script_output_object(
-              current.get_script().get_type(),
-              current.get_script().get_pubkey_hash()
-      );
-      outputs.add(new Output_object(current.get_value(),script));
+      ScriptOutputObject script =
+          new ScriptOutputObject(
+              current.getScript().get_type(), current.getScript().get_pubkey_hash());
+      outputs.add(new OutputObject(current.getValue(), script));
     }
 
     transaction_object.setInputs(inputs);
