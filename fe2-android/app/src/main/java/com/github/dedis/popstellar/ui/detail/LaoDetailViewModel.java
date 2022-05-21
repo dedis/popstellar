@@ -65,7 +65,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,6 +93,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<PublicKey>> mOpenIdentityEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
@@ -1018,11 +1018,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     mReceivedElectionResultsEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openWitnessMessage() {
-    mOpenWitnessMessageEvent.setValue(new SingleEvent<>(true));
-  }
-
-  private void openAddWitness() {
+  public void openAddWitness() {
 
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -1290,19 +1286,33 @@ public class LaoDetailViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    PublicKey attendee;
-    try {
-      attendee = new PublicKey(barcode.rawValue);
-    } catch (IllegalArgumentException e) {
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid QR code. Please try again."));
-      return;
+    handleAttendeeAddition(barcode.rawValue);
     }
 
-    if (attendees.contains(attendee)
-        || Objects.requireNonNull(mWitnesses.getValue()).contains(attendee)) {
+  @Override
+  public boolean addManually(String data) {
+    Log.d(TAG, "Key manually submitted with value: " + data);
+    return handleAttendeeAddition(data);
+  }
+
+  /**
+   * Checks the key validity and handles the attendee addition process
+   *
+   * @param data the textual representation of the key
+   * @return true if an attendee was added false otherwise
+   */
+  private boolean handleAttendeeAddition(String data) {
+    PublicKey attendee;
+    try {
+      attendee = new PublicKey(data);
+    } catch (IllegalArgumentException e) {
+      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
+      return false;
+    }
+    if (attendees.contains(attendee) || witnesses.contains(attendee)) {
       mScanWarningEvent.postValue(
-          new SingleEvent<>("This QR code has already been scanned. Please try again."));
-      return;
+          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
+      return false;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
       attendees.add(attendee);
@@ -1313,5 +1323,14 @@ public class LaoDetailViewModel extends AndroidViewModel
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
     }
+    return true;
+  }
+
+  public MutableLiveData<SingleEvent<Boolean>> getOpenWitnessing() {
+    return mOpenWitnessing;
+  }
+
+  public void openWitnessing() {
+    mOpenWitnessing.postValue(new SingleEvent<>(true));
   }
 }

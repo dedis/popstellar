@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
+import com.github.dedis.popstellar.ui.detail.event.EventListDivider;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -76,37 +77,35 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailFragBinding.addRollCall.setOnClickListener(addEventLister(EventType.ROLL_CALL));
     mLaoDetailFragBinding.addRollCallText.setOnClickListener(addEventLister(EventType.ROLL_CALL));
 
-
     return mLaoDetailFragBinding.getRoot();
   }
 
+  View.OnClickListener fabListener =
+      view -> {
+        ConstraintLayout laoContainer = mLaoDetailFragBinding.laoContainer;
+        isRotated = LaoDetailAnimation.rotateFab(view, !isRotated);
+        if (isRotated) {
+          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCall);
+          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElection);
+          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElectionText);
+          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCallText);
+          LaoDetailAnimation.fadeOut(laoContainer, 1.0f, 0.2f, 300);
+          laoContainer.setEnabled(false);
+        } else {
+          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCall);
+          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElection);
+          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElectionText);
+          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCallText);
+          LaoDetailAnimation.fadeIn(laoContainer, 0.2f, 1.0f, 300);
+          laoContainer.setEnabled(true);
+        }
+      };
 
-  View.OnClickListener fabListener = view ->{
-    ConstraintLayout laoContainer = mLaoDetailFragBinding.laoContainer;
-    isRotated = LaoDetailAnimation.rotateFab(view, !isRotated);
-    if (isRotated){
-      LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCall);
-      LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElection);
-      LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElectionText);
-      LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCallText);
-      LaoDetailAnimation.fadeOut(laoContainer, 1.0f, 0.2f, 300);
-      laoContainer.setEnabled(false);
-    }
-    else {
-      LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCall);
-      LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElection);
-      LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElectionText);
-      LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCallText);
-      LaoDetailAnimation.fadeIn(laoContainer, 0.2f, 1.0f, 300);
-      laoContainer.setEnabled(true);
-
-    }
-  };
-
-  private View.OnClickListener addEventLister(EventType type){
-    View.OnClickListener listener = v -> {
-      mLaoDetailViewModel.chooseEventType(type);
-    };
+  private View.OnClickListener addEventLister(EventType type) {
+    View.OnClickListener listener =
+        v -> {
+          mLaoDetailViewModel.chooseEventType(type);
+        };
     return listener;
   }
 
@@ -244,7 +243,11 @@ public class LaoDetailFragment extends Fragment {
 
     DividerItemDecoration dividerItemDecoration =
         new DividerItemDecoration(getContext(), mLayoutManager.getOrientation());
-    eventList.addItemDecoration(dividerItemDecoration);
+    //    EventListDivider divider =
+    //        new EventListDivider(ContextCompat.getDrawable(getContext(),
+    // R.drawable.event_divider));
+    EventListDivider divider = new EventListDivider(getContext());
+    eventList.addItemDecoration(divider);
     eventList.setAdapter(mEventListViewEventAdapter);
     eventList.setAdapter(mEventListViewEventAdapter);
   }
@@ -279,16 +282,14 @@ public class LaoDetailFragment extends Fragment {
 
   private void showHideProperties(Boolean show) {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-//    mLaoDetailFragBinding.laoDetailQrLayout.setVisibility(
-//        Boolean.TRUE.equals(show) ? View.VISIBLE : View.GONE);
-    if (Boolean.TRUE.equals(show)){
+    //    mLaoDetailFragBinding.laoDetailQrLayout.setVisibility(
+    //        Boolean.TRUE.equals(show) ? View.VISIBLE : View.GONE);
+    if (Boolean.TRUE.equals(show)) {
       LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
       laoDetailQrLayout.setVisibility(View.VISIBLE);
-    }
-    else {
+    } else {
       LaoDetailAnimation.fadeOut(laoDetailQrLayout, 1.0f, 0.0f, 500);
     }
-
   }
 
   //  private void editProperties(Boolean edit) {

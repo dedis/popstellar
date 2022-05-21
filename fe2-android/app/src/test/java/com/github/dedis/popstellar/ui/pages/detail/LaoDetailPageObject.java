@@ -26,7 +26,7 @@ public class LaoDetailPageObject {
   }
 
   public static ViewInteraction identityButton() {
-    return onView(withId(R.id.tab_identity));
+    return onView(withId(R.id.lao_detail_identity_menu));
   }
 
   public static ViewInteraction showPropertiesButton() {

@@ -5,4 +5,6 @@ public interface QRCodeScanningViewModel extends QRCodeListener {
   int getScanDescription();
 
   ScanningAction getScanningAction();
+
+  boolean addManually(String data);
 }

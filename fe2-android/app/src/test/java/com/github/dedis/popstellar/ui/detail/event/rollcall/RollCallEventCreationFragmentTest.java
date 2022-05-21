@@ -61,8 +61,8 @@ public class RollCallEventCreationFragmentTest {
     DATE = DATE_FORMAT.format(today.getTime());
   }
 
-  private final FragmentScenarioRule<RollCallEventCreationFragment> fragmentRule =
-      FragmentScenarioRule.launch(RollCallEventCreationFragment.class);
+  private final FragmentScenarioRule<RollCallCreationFragment> fragmentRule =
+      FragmentScenarioRule.launch(RollCallCreationFragment.class);
 
   @Rule
   public final RuleChain chain =

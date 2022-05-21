@@ -36,8 +36,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   private final LifecycleOwner lifecycleOwner;
   private final HashMap<EventCategory, List<Event>> eventsMap;
   private static final boolean[] expanded = new boolean[3];
-  private static final int TYPE_HEADER = 0;
-  private static final int TYPE_EVENT = 1;
+  public static final int TYPE_HEADER = 0;
+  public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
@@ -56,7 +56,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   }
 
   /**
-   * A helper method that places the events in the correct key-value pair according to their times
+   * A helper method that places the events in the correct key-value pair according to state
    *
    * @param events
    */
@@ -65,6 +65,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     this.eventsMap.get(PAST).clear();
     this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
+
     for (Event event : events) {
       switch (event.getState().getValue()) {
         case CREATED:
@@ -100,7 +101,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    holder.setIsRecyclable(false);
+    //    holder.setIsRecyclable(false);
     if (holder instanceof HeaderViewHolder) {
       EventCategory eventCategory = getHeaderCategory(position);
       HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -150,8 +151,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             viewModel.openElectionFragment(true);
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
-      //      eventViewHolder.eventTitle.setOnClickListener(listener);
-      //      eventViewHolder.eventIcon.setOnClickListener(listener);
 
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);

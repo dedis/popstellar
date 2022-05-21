@@ -16,66 +16,85 @@
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_qrcode"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+    android:layout_height="match_parent"
+    android:layout_margin="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/zero"
-      app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_bottom"
-      app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
+      android:layout_height="0dp"
+      android:layout_marginHorizontal="@dimen/camera_preview_margin"
+      app:layout_constraintBottom_toTopOf="@id/add_attendee_confirm"
+      app:layout_constraintTop_toTopOf="parent">
 
-      <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/camera_preview_margin"
-        android:layout_marginEnd="@dimen/camera_preview_margin"
-        android:layout_marginBottom="@dimen/camera_preview_margin">
+      <TextView
+        android:id="@+id/scan_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/qrcode_scanning_add_attendee"
+        android:textSize="@dimen/size_title"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-          android:id="@+id/scan_description"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:gravity="center"
-          android:paddingTop="@dimen/camera_preview_text_padding_top"
-          android:text="@string/qrcode_scanning_add_attendee"
-          android:textSize="@dimen/size_title"
-          android:textStyle="bold"
-          app:layout_constraintBottom_toTopOf="@id/qr_camera_preview"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toRightOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
+      <com.github.dedis.popstellar.ui.qrcode.CameraPreview
+        android:id="@+id/qr_camera_preview"
+        android:layout_width="240dp"
+        android:layout_height="300dp"
+        android:layout_marginEnd="48dp"
+        app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scan_description" />
 
-        <com.github.dedis.popstellar.ui.qrcode.CameraPreview
-          android:id="@+id/qr_camera_preview"
-          android:layout_width="wrap_content"
-          android:layout_height="@dimen/zero"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/scan_description" />
-      </androidx.constraintlayout.widget.ConstraintLayout>
+      <EditText
+        android:id="@+id/manual_add_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/roll_call_add_manually_hint"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_camera_preview" />
+
+      <TextView
+        android:id="@+id/manual_add_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="@string/add_caps"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginStart="16dp"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/manual_add_edit_text"
+        app:layout_constraintStart_toStartOf="@id/manual_add_edit_text"
+        app:layout_constraintEnd_toEndOf="@id/manual_add_edit_text" />
+
+      <!--      <ImageView-->
+      <!--        android:id="@+id/"-->
+      <!--        android:layout_width="40dp"-->
+      <!--        android:layout_height="40dp"-->
+      <!--        android:layout_marginStart="16dp"-->
+      <!--        app:tint="@color/green"-->
+      <!--        android:src="@drawable/ic_complete"-->
+      <!--        app:layout_constraintBottom_toBottomOf="@id/roll_call_manual_add_edit_text"-->
+      <!--        app:layout_constraintStart_toEndOf="@id/roll_call_manual_add_edit_text"-->
+      <!--        app:layout_constraintTop_toTopOf="@id/roll_call_manual_add_edit_text" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_bottom"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_bottom" />
 
     <Button
       android:id="@+id/add_attendee_confirm"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/close_roll_call"
+      android:text="@string/close"
       android:visibility="gone"
+      android:layout_marginEnd="8dp"
+      style="@style/button_style"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent" />
 
@@ -93,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text_small"
         android:text="@string/total"
+        android:textColor="@color/black"
         android:textSize="@dimen/size_title"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -103,6 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
+        android:textColor="@color/black"
         android:textSize="@dimen/size_title"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

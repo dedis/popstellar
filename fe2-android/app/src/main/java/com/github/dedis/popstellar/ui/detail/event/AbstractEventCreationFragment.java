@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -33,7 +35,7 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
-
+  public static final String TAG = AbstractEventCreationFragment.class.getSimpleName();
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
@@ -56,17 +58,35 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText endTimeEditText;
 
   public void setDateAndTimeView(View view) {
+    long currentMillis = System.currentTimeMillis();
+    long suggestedEndMillis = currentMillis + 1000 * 60 * 60; // Adding one hour
+    startDate = new GregorianCalendar();
+    startTime = new GregorianCalendar();
+    Date dCurrent =
+        new java.util.Date(currentMillis); // Get's the date based on the unix time stamp
+    startDate.setTime(dCurrent);
+    startTime.setTime(dCurrent);
+    Date dSuggestedEnd = new Date(suggestedEndMillis);
+    endDate = new GregorianCalendar();
+    endTime = new GregorianCalendar();
+    endDate.setTime(dSuggestedEnd);
+    endTime.setTime(dSuggestedEnd);
+
     startDateEditText = view.findViewById(R.id.start_date_edit_text);
     startDateEditText.setInputType(InputType.TYPE_NULL);
+    startDateEditText.setText(dateFormat.format(dCurrent));
 
     endDateEditText = view.findViewById(R.id.end_date_edit_text);
     endDateEditText.setInputType(InputType.TYPE_NULL);
+    endDateEditText.setText(dateFormat.format(dSuggestedEnd));
 
     startTimeEditText = view.findViewById(R.id.start_time_edit_text);
     startTimeEditText.setInputType(InputType.TYPE_NULL);
+    startTimeEditText.setText(timeFormat.format(dCurrent));
 
     endTimeEditText = view.findViewById(R.id.end_time_edit_text);
     endTimeEditText.setInputType(InputType.TYPE_NULL);
+    endTimeEditText.setText(timeFormat.format(dSuggestedEnd));
 
     // Offset the threshold a little to accept current value
     threshold.add(Calendar.MINUTE, -1);
@@ -235,6 +255,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
    */
   public boolean computeTimesInSeconds() {
     if (startDate == null || startTime == null) {
+      Log.d(TAG, "start date is null");
       return false;
     }
     completeStartTime.set(
@@ -253,6 +274,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         showToast(R.string.past_date_not_allowed);
         startTime = null;
         startTimeEditText.setText("");
+        Log.d(TAG, "5 minutes not passing");
         return false;
       } else {
         // Else (if start is only a little in the past), set the start to creation

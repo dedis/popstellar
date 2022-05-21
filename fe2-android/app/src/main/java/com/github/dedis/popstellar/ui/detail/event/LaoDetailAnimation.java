@@ -29,9 +29,7 @@ public class LaoDetailAnimation {
   }
 
   public static boolean rotateExpand(final View view, boolean rotate){
-      view.animate()
-              .setDuration(200)
-              .rotation(rotate ? 180f : 0f);
+    view.animate().setDuration(300).rotation(rotate ? 180f : 0f);
       return rotate;
 
   }

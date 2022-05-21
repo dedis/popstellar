@@ -71,6 +71,7 @@
         android:layout_width="@dimen/qr_icon_side"
         android:layout_height="@dimen/qr_icon_side"
         android:layout_marginStart="30dp"
+        app:tint="@color/colorPrimary"
         android:src="@drawable/ic_qr_code"
         app:layout_constraintBottom_toBottomOf="@id/organization_name"
         app:layout_constraintStart_toEndOf="@id/organization_name"
@@ -116,11 +117,13 @@
         android:backgroundTint="@color/white"
         android:tint="@color/black"
         app:fabSize="mini"
+        app:borderWidth="1dp"
+        app:backgroundTint="@color/black"
         android:elevation="8dp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
-        app:layout_constraintBottom_toTopOf="@id/add_event"/>
+        app:layout_constraintBottom_toTopOf="@id/add_event" />
 
       <TextView
         android:id="@+id/add_election_text"
@@ -144,13 +147,15 @@
         android:src="@drawable/ic_roll_call"
         android:layout_marginBottom="10dp"
         android:backgroundTint="@color/white"
+        app:borderWidth="1dp"
+        app:backgroundTint="@color/black"
         android:tint="@color/black"
         app:fabSize="mini"
         android:elevation="8dp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
-        app:layout_constraintBottom_toTopOf="@id/add_election"/>
+        app:layout_constraintBottom_toTopOf="@id/add_election" />
 
       <TextView
         android:id="@+id/add_roll_call_text"

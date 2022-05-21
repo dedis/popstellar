@@ -88,6 +88,14 @@ public final class QRCodeScanningFragment extends Fragment {
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
+      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
+          view -> {
+            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
+            boolean success = mQRCodeScanningViewModel.addManually(data);
+            if (success) {
+              mQrCodeFragBinding.manualAddEditText.getText().clear();
+            }
+          });
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -104,7 +112,11 @@ public final class QRCodeScanningFragment extends Fragment {
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
     } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
-
+      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
+          view -> {
+            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
+            mQRCodeScanningViewModel.addManually(data);
+          });
       mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
     }
 

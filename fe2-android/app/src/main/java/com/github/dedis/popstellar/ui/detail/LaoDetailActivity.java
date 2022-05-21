@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -28,10 +29,11 @@ import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFr
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -102,6 +104,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
     setupAddWitness();
+    // Subscribe to "open witnessing" event
+    setupWitnessing();
     // Subscribe to "new lao event" event
     handleNewEvent();
 
@@ -142,6 +146,19 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
+  }
+
+  private void setupWitnessing() {
+    mViewModel
+        .getOpenWitnessing()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupWitnessingFragment();
+              }
+            });
   }
 
   private void subscribeWalletEvents() {
@@ -219,6 +236,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         openHome();
       } else {
         setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+        navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
       }
       return true;
     }
@@ -303,8 +321,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupCreateRollCallFragment() {
-    setCurrentFragment(
-        R.id.fragment_create_roll_call_event, RollCallEventCreationFragment::newInstance);
+    setCurrentFragment(R.id.fragment_create_roll_call_event, RollCallCreationFragment::newInstance);
   }
 
   private void setupAddWitness() {
@@ -363,6 +380,10 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   private void setupLaoWalletFragment() {
     setCurrentFragment(R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+  }
+
+  private void setupWitnessingFragment() {
+    setCurrentFragment(R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 
   private void setupRollCallTokenFragment(String id) {
@@ -444,6 +465,7 @@ public class LaoDetailActivity extends AppCompatActivity {
           } else if (id == R.id.lao_detail_identity_menu) {
             mViewModel.openIdentity();
           } else if (id == R.id.lao_detail_witnessing_menu) {
+            mViewModel.openWitnessing();
           } else if (id == R.id.lao_detail_digital_cash_menu) {
             mViewModel.openDigitalCash();
           } else if (id == R.id.lao_detail_social_media_menu) {
@@ -465,6 +487,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     if (fragment == null) {
       fragment = fragmentSupplier.get();
     }
+
+    // We want to remove the possibility to escape the fragment without closing the roll-call
+    navbar.setVisibility(fragment instanceof QRCodeScanningFragment ? View.GONE : View.VISIBLE);
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(

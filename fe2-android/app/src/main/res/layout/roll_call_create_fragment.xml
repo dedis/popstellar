@@ -7,29 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-      layout="@layout/tab_home"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-
-    <include
-      layout="@layout/tab_identity"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/roll_call_guideline_horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <LinearLayout
       android:id="@+id/roll_call_title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical"
-      app:layout_constraintTop_toBottomOf="@id/roll_call_guideline_horizontal">
+      app:layout_constraintTop_toTopOf="parent">
 
       <EditText
         android:id="@+id/roll_call_title_text"
@@ -97,7 +81,7 @@
 
       <Button
         android:id="@+id/roll_call_confirm"
-        style="@style/Theme.AppCompat"
+        style="@style/button_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
@@ -105,7 +89,7 @@
 
       <Button
         android:id="@+id/roll_call_open"
-        style="@style/Theme.AppCompat"
+        style="@style/button_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"

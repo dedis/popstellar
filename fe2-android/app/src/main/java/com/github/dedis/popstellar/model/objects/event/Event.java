@@ -23,11 +23,11 @@ public abstract class Event implements Comparable<Event> {
 
   @Override
   public int compareTo(Event o) {
-    int start = Long.compare(this.getStartTimestamp(), o.getStartTimestamp());
+    int start = Long.compare(o.getStartTimestamp(), this.getStartTimestamp());
     if (start != 0) {
       return start;
     }
 
-    return Long.compare(this.getEndTimestamp(), o.getEndTimestamp());
+    return Long.compare(o.getEndTimestamp(), this.getEndTimestamp());
   }
 }

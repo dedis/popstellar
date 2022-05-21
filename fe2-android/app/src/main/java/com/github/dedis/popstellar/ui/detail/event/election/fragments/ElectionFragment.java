@@ -208,7 +208,7 @@ public class ElectionFragment extends Fragment {
     TextView endTimeDisplay = view.findViewById(R.id.election_fragment_end_time);
 
     Date startTime = new Date(election.getStartTimestampInMillis());
-    Date endTime = new Date(election.getStartTimestampInMillis());
+    Date endTime = new Date(election.getEndTimestampInMillis());
 
     startTimeDisplay.setText(DATE_FORMAT.format(startTime));
     endTimeDisplay.setText(DATE_FORMAT.format(endTime));

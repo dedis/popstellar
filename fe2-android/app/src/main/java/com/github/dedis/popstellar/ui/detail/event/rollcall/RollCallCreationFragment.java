@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event.rollcall;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +18,15 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
+import com.github.dedis.popstellar.utility.Constants;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 @AndroidEntryPoint
-public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
+public final class RollCallCreationFragment extends AbstractEventCreationFragment {
 
-  public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
+  public static final String TAG = RollCallCreationFragment.class.getSimpleName();
 
   private RollCallCreateFragmentBinding mFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
@@ -44,8 +46,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
           String meetingTitle = rollCallTitleEditText.getText().toString().trim();
           boolean areFieldsFilled =
               !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
-          confirmButton.setEnabled(areFieldsFilled);
-          openButton.setEnabled(areFieldsFilled);
+          Log.d(TAG, "areFeils is " + areFieldsFilled);
+          setButtonEnabling(confirmButton, areFieldsFilled);
+          setButtonEnabling(openButton, areFieldsFilled);
         }
 
         @Override
@@ -54,8 +57,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         }
       };
 
-  public static RollCallEventCreationFragment newInstance() {
-    return new RollCallEventCreationFragment();
+  public static RollCallCreationFragment newInstance() {
+    return new RollCallCreationFragment();
   }
 
   @Override
@@ -72,8 +75,12 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
+    rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
+
     openButton = mFragBinding.rollCallOpen;
     confirmButton = mFragBinding.rollCallConfirm;
+    setButtonEnabling(confirmButton, false);
+    setButtonEnabling(openButton, false);
 
     mFragBinding.setLifecycleOwner(getActivity());
 
@@ -146,5 +153,11 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel.createNewRollCall(
         title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
+  }
+
+  private void setButtonEnabling(Button button, boolean enabled) {
+    button.setAlpha(
+        enabled ? Constants.ENABLED_OPAQUE_ALPHA : Constants.DISABLED_TRANSPARENCY_ALPHA);
+    button.setEnabled(enabled);
   }
 }

@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         public void afterTextChanged(Editable s) {
           // On each change of election level information, we check that at least one question is
           // complete to know if submit is allowed
-          submitButton.setEnabled(
+          setButtonEnabling(
+              submitButton,
               isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());
         }
       };
@@ -130,7 +132,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         .isAnInputValid()
         .observe(
             getViewLifecycleOwner(),
-            aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
+            aBoolean -> setButtonEnabling(submitButton, aBoolean && isElectionLevelInputValid()));
 
     Button addQuestion = mSetupElectionFragBinding.addQuestion;
     addQuestion.setOnClickListener(
@@ -182,7 +184,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         v -> {
           // We "deactivate" the button on click, to prevent the user from creating multiple
           // elections at once
-          submitButton.setEnabled(false);
+          setButtonEnabling(submitButton, false);
+
           // When submitting, we compute the timestamps for the selected start and end time
           if (!computeTimesInSeconds()) {
             return;
@@ -256,12 +259,20 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
   }
 
-  /** @return true if the election name text, dates and times inputs are valid */
+  /**
+   * @return true if the election name text, dates and times inputs are valid
+   */
   private boolean isElectionLevelInputValid() {
     return !electionNameText.getText().toString().trim().isEmpty()
         && !getStartDate().isEmpty()
         && !getStartTime().isEmpty()
         && !getEndDate().isEmpty()
         && !getEndTime().isEmpty();
+  }
+
+  private void setButtonEnabling(Button button, boolean enabled) {
+    button.setAlpha(
+        enabled ? Constants.ENABLED_OPAQUE_ALPHA : Constants.DISABLED_TRANSPARENCY_ALPHA);
+    button.setEnabled(enabled);
   }
 }

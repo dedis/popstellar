@@ -5,14 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
@@ -42,7 +40,6 @@ public class WitnessMessageFragment extends Fragment {
     mWitnessMessageFragBinding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-
     mWitnessMessageFragBinding.setViewmodel(mLaoDetailViewModel);
     mWitnessMessageFragBinding.setLifecycleOwner(getActivity());
 
@@ -54,8 +51,6 @@ public class WitnessMessageFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
     setupListAdapter();
     setupListUpdates();
-    Button back = requireActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c -> mLaoDetailViewModel.openLaoDetail());
   }
 
   private void setupListAdapter() {
