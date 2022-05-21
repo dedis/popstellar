@@ -45,19 +45,19 @@ public class Transaction {
 
   }
 
-  public int get_version() {
+  public int getVersion() {
     return version;
   }
 
-  public List<Input> get_inputs() {
+  public List<Input> getInputs() {
     return Collections.checkedList(inputs, Input.class);
   }
 
-  public List<Output> get_outputs() {
+  public List<Output> getOutputs() {
     return Collections.checkedList(outputs, Output.class);
   }
 
-  public long get_lock_time() {
+  public long getLockTime() {
     return lock_time;
   }
 
@@ -71,15 +71,15 @@ public class Transaction {
       Input currentTxin = inputs.get(i);
       // Script
       // PubKey
-      collect_transaction.add(currentTxin.get_script().get_pubkey());
+      collect_transaction.add(currentTxin.getScript().getPubkey());
       // Sig
-      collect_transaction.add(currentTxin.get_script().get_sig());
+      collect_transaction.add(currentTxin.getScript().getSig());
       // Type
-      collect_transaction.add(currentTxin.get_script().get_type());
+      collect_transaction.add(currentTxin.getScript().get_type());
       // TxOutHash
-      collect_transaction.add(currentTxin.get_tx_out_hash());
+      collect_transaction.add(currentTxin.getTxOutHash());
       // TxOutIndex
-      collect_transaction.add(String.valueOf(currentTxin.get_tx_out_index()));
+      collect_transaction.add(String.valueOf(currentTxin.getTxOutIndex()));
     }
 
     // lock_time
@@ -89,11 +89,11 @@ public class Transaction {
       Output currentTxout = outputs.get(i);
       // Script
       // PubKeyHash
-      collect_transaction.add(currentTxout.get_script().get_pubkey_hash());
+      collect_transaction.add(currentTxout.getScript().getPubkeyHash());
       // Type
-      collect_transaction.add(currentTxout.get_script().get_type());
+      collect_transaction.add(currentTxout.getScript().getType());
       // Value
-      collect_transaction.add(String.valueOf(currentTxout.get_value()));
+      collect_transaction.add(String.valueOf(currentTxout.getValue()));
     }
     // Version
     collect_transaction.add(String.valueOf(version));
@@ -115,19 +115,19 @@ public class Transaction {
     }
   }
 
-  public void change_sig_inputs_considering_the_outputs(KeyPair keyPair)
+  public void changeSigInputsConsideringTheOutputs(KeyPair keyPair)
       throws GeneralSecurityException {
-    String sig = compute_sig_outputs_inputs(keyPair, inputs, outputs);
+    String sig = computeSigOutputsInputs(keyPair, inputs, outputs);
     Iterator<Input> ite = inputs.iterator();
     while (ite.hasNext()) {
       Input current = ite.next();
-      if (keyPair.getPublicKey().computeHash().equals(current.get_script().get_pubkey())) {
-        current.get_script().setSig(sig);
+      if (keyPair.getPublicKey().computeHash().equals(current.getScript().getPubkey())) {
+        current.getScript().setSig(sig);
       }
     }
   }
 
-  public static String compute_sig_outputs_inputs(
+  public static String computeSigOutputsInputs(
       KeyPair keyPair, List<Input> inputs, List<Output> outputs) throws GeneralSecurityException {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
     // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
@@ -140,16 +140,16 @@ public class Transaction {
     int index = 0;
     while (ite_input.hasNext()) {
       Input current = ite_input.next();
-      sig[index] = current.get_tx_out_hash();
-      sig[index + 1] = String.valueOf(current.get_tx_out_index());
+      sig[index] = current.getTxOutHash();
+      sig[index + 1] = String.valueOf(current.getTxOutIndex());
       index = index + 2;
     }
 
     while (ite_output.hasNext()) {
       Output current = ite_output.next();
-      sig[index] = String.valueOf(current.get_value());
-      sig[index + 1] = current.get_script().get_type();
-      sig[index + 2] = current.get_script().get_pubkey_hash();
+      sig[index] = String.valueOf(current.getValue());
+      sig[index + 1] = current.getScript().getType();
+      sig[index + 2] = current.getScript().getPubkeyHash();
       index = index + 3;
     }
     Base64URLData signature = new Base64URLData(String.join("", sig));
@@ -169,7 +169,7 @@ public class Transaction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(get_version(), get_inputs(), get_outputs(), get_lock_time());
+    return Objects.hash(getVersion(), getInputs(), getOutputs(), getLockTime());
   }
 
   @Override

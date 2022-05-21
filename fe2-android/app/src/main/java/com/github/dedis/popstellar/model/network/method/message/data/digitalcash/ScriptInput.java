@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // The script describing the unlock mechanism
-public class Script_input {
+public class ScriptInput {
   @SerializedName("type")
   private final String type; // The script describing the unlock mechanism
 
@@ -21,13 +21,13 @@ public class Script_input {
    * @param pub_key_recipient The recipient’s public key
    * @param sig Signature on all txins and txouts using the recipient's private key
    */
-  public Script_input(String type, String pub_key_recipient, String sig) {
+  public ScriptInput(String type, String pub_key_recipient, String sig) {
     this.type = type;
     this.pub_key_recipient = pub_key_recipient;
     this.sig = sig;
   }
 
-  public String get_sig() {
+  public String getSig() {
     return sig;
   }
 
@@ -39,7 +39,7 @@ public class Script_input {
     return type;
   }
 
-  public String get_pubkey() {
+  public String getPubkey() {
     return pub_key_recipient;
   }
 
@@ -47,7 +47,7 @@ public class Script_input {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Script_input that = (Script_input) o;
+    ScriptInput that = (ScriptInput) o;
     return Objects.equals(type, that.type)
         && Objects.equals(pub_key_recipient, that.pub_key_recipient)
         && Objects.equals(sig, that.sig);
@@ -55,7 +55,7 @@ public class Script_input {
 
   @Override
   public int hashCode() {
-    return Objects.hash(get_type(), get_pubkey(), get_sig());
+    return Objects.hash(get_type(), getPubkey(), getSig());
   }
 
   @Override

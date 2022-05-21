@@ -10,8 +10,8 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Script_input;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Script_output;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Transaction_object;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -75,13 +75,13 @@ public class TransactionCoinHandlerTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = SENDER.getEncoded();
   private static final String SIG = "CAFEBABE";
-  private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
   private static final int VALUE = 32;
   private static final String PUBKEYHASH = SENDER.computeHash();
-  private static final Script_output SCRIPT_TX_OUT = new Script_output(TYPE, PUBKEYHASH);
+  private static final ScriptOutput SCRIPT_TX_OUT = new ScriptOutput(TYPE, PUBKEYHASH);
   private static final Output TXOUT = new Output(VALUE, SCRIPT_TX_OUT);
 
   // List TXIN, List TXOUT
@@ -147,7 +147,7 @@ public class TransactionCoinHandlerTest {
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransaction_historyByUser().size());
-    Transaction_object transaction_object =
+    TransactionObject transaction_object =
         lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
     assertEquals(transaction_object.getChannel(), coinChannel);
     assertEquals(1, lao.getPub_keyByHash().size());

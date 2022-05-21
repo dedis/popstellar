@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-public class Script_output_object {
+public class ScriptOutputObject {
 
   // Type of script
   private final String type;
@@ -11,16 +11,16 @@ public class Script_output_object {
    * @param type Type of script
    * @param pub_key_hash Hash of the recipient’s public key
    */
-  public Script_output_object(String type, String pub_key_hash) {
+  public ScriptOutputObject(String type, String pub_key_hash) {
     this.type = type;
     this.pub_key_hash = pub_key_hash;
   }
 
-  public String get_type() {
+  public String getType() {
     return type;
   }
 
-  public String get_pubkey_hash() {
+  public String getPubkeyHash() {
     return pub_key_hash;
   }
 

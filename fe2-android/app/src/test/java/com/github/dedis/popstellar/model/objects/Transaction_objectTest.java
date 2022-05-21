@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class Transaction_objectTest {
 
-  private static Transaction_object transaction_object = new Transaction_object();
+  private static TransactionObject transaction_object = new TransactionObject();
 
   @Test
   public void setAndGetChannelTest() {
