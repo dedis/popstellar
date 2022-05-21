@@ -7,6 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
 import ch.epfl.pop.model.objects._
 import spray.json._
+import ch.epfl.pop.model.network.method.message.data.MessageData
+import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 
 object MessageExample {
 
@@ -113,7 +115,7 @@ object MessageExample {
   )
 
   final val MESSAGE_CREATELAO_WRONG_SENDER: Message = new Message(
-    Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
+    Base64Data.encode(createLaoCorrect.toJson.toString),
     PublicKey(Base64Data.encode("wrong")),
     Signature(Base64Data("")),
     Hash(Base64Data("")),
@@ -149,7 +151,31 @@ object MessageExample {
     List.empty,
     Some(CreateLao(Hash(Base64Data("aWQy")), "LAO2", Timestamp(0), PublicKey(Base64Data("a2V5Mg==")), List.empty))
   )
-
+   // Create Roll Call
+  val createRollCallData: String = 
+  """
+        {
+          "object": "roll_call",
+          "action": "create",
+          "id": "Slj7C1LBEXlRC8ItV2B0zWfUSD6YiGJt6N_I_m02uw4=",
+          "name": "Roll Call ",
+          "creation": 1633098853,
+          "proposed_start": 1633099125,
+          "proposed_end": 1633099140,
+          "location": "EPFL",
+          "description": "Food is welcome!"
+        }
+  """
+  lazy val rollCallCreate: CreateRollCall = new CreateRollCall(Hash(Base64Data("Slj7C1LBEXlRC8ItV2B0zWfUSD6YiGJt6N_I_m02uw4=")), "Roll Call ", Timestamp(1633098853), Timestamp(1633099125), Timestamp(1633099140), "EPFL", Some("Food is welcome!"))
+  lazy val rollCallCreateFromJson = CreateRollCall.buildFromJson(createRollCallData)
+  final val MESSAGE_CREATEROLLCALL_VALID: Message =  new Message(
+    Base64Data.encode(createRollCallData),
+    organizer,
+    Signature(Base64Data.encode(createRollCallData)),
+    Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
+    List.empty,
+    Some(rollCallCreateFromJson)
+  )
 
   final val MESSAGE_CLOSEROLLCALL: Message = new Message(
     Base64Data.encode(CloseRollCall(Hash(Base64Data("")), Hash(Base64Data("")), Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))).toJson.toString),

@@ -37,7 +37,9 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
+    * karate.log("--------------222222222222222222222222222222222----------")
     When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
+    * karate.log("--------------222222222222222222222222222222222----------")
     And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true

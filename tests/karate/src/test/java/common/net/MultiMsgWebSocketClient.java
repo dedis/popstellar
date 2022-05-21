@@ -55,6 +55,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
     Json request =  jsonConverter.publishМessageFromData(data, id, channel);
+    System.out.println("-------------------77777--------------------");
+    System.out.println(request.toString());
+    System.out.println("-------------------77777--------------------");
     this.send(request.toString());
   }
 
