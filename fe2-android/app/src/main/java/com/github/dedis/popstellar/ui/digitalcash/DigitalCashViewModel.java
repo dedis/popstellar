@@ -1,11 +1,14 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import android.Manifest;
 import android.app.Application;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -27,9 +30,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
 import java.security.GeneralSecurityException;
@@ -46,11 +54,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
-public class DigitalCashViewModel extends AndroidViewModel {
+public class DigitalCashViewModel extends AndroidViewModel
+    implements CameraPermissionViewModel, QRCodeScanningViewModel {
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String COIN = "coin";
+  private List<PublicKey> receivers = new ArrayList<>();
 
   private static final String TYPE = "Pay-to-Pubkey-Hash";
   private static final int VERSION = 1;
@@ -68,6 +78,12 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
+  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mSendTransactionEvent =
+      new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mCoinSendingScanConfirmEvent =
+      new MutableLiveData<>();
+  private ScanningAction scanningAction;
   /*
    * Dependencies for this class
    */
@@ -241,6 +257,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
   }
 
+  public LiveData<SingleEvent<Boolean>> getCoinSendingScanConfirmEvent() {
+    return mCoinSendingScanConfirmEvent;
+  }
+
+  public LiveData<SingleEvent<String>> getScanWarningEvent() {
+    return mScanWarningEvent;
+  }
+
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
@@ -251,6 +275,29 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public LiveData<String> getLaoName() {
     return mLaoName;
+  }
+
+  public void openQrCodeScanningCoinTransaction() {
+    mSendTransactionEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
+  }
+
+  public void openCameraPermission() {
+    if (scanningAction == ScanningAction.SEND_COIN_ATTENDEE) {
+      mSendTransactionEvent.setValue(
+          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
+    }
+  }
+
+  public void openScanning() {
+    if (ContextCompat.checkSelfPermission(
+            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+        == PackageManager.PERMISSION_GRANTED) {
+      if (scanningAction == ScanningAction.SEND_COIN_ATTENDEE) {
+        openQrCodeScanningCoinTransaction();
+      }
+    } else {
+      openCameraPermission();
+    }
   }
 
   public void setLaoId(String laoId) {
@@ -272,5 +319,55 @@ public class DigitalCashViewModel extends AndroidViewModel {
     if (laoState == null) return null;
 
     return laoState.getLao();
+  }
+
+  @Override
+  public void onPermissionGranted() {
+    if (scanningAction == ScanningAction.SEND_COIN_ATTENDEE) {
+      openQrCodeScanningCoinTransaction();
+    } else {
+      throw new IllegalStateException("The permission should not occur when you not sending money");
+    }
+  }
+
+  @Override
+  public void onQRCodeDetected(Barcode barcode) {
+    Log.d(TAG, "");
+    PublicKey receiver;
+    try {
+      receiver = new PublicKey(barcode.rawValue);
+    } catch (IllegalArgumentException e) {
+      mScanWarningEvent.postValue(new SingleEvent<>("Invalid QR code. Please try again."));
+      return;
+    }
+
+    if (receivers.contains(receiver)) {
+      mScanWarningEvent.postValue(
+          new SingleEvent<>("This QR code has already been scanned. Please try again."));
+      return;
+    }
+
+    if (scanningAction == (ScanningAction.SEND_COIN_ATTENDEE)) {
+      receivers.add(receiver);
+      mCoinSendingScanConfirmEvent.postValue(new SingleEvent<>(true));
+    }
+  }
+
+  @Override
+  public int getScanDescription() {
+    if (scanningAction == ScanningAction.SEND_COIN_ATTENDEE) {
+      return R.string.qrcode_scanning_send_coin;
+    } else {
+      throw new IllegalStateException("The scanning should not occur when you not sending money");
+    }
+  }
+
+  public void setScanningAction(ScanningAction scanningAction) {
+    this.scanningAction = scanningAction;
+  }
+
+  @Override
+  public ScanningAction getScanningAction() {
+    return scanningAction;
   }
 }

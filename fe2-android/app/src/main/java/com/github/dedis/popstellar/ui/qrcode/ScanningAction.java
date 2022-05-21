@@ -26,5 +26,13 @@ public enum ScanningAction {
     public String toString() {
       return "Add Participants to the LAO";
     }
+  },
+
+  SEND_COIN_ATTENDEE {
+    @NonNull
+    @Override
+    public String toString() {
+      return "Send a coin to a particular participant";
+    }
   }
 }

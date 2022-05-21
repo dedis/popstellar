@@ -24,10 +24,41 @@
       android:layout_height="wrap_content"
       android:gravity="center"
       android:text="@string/digital_cash_send"
-      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+      android:id="@+id/channel_qr_code"
+      android:layout_width="@dimen/channel_qr_code_size"
+      android:layout_height="@dimen/channel_qr_code_size"
+      android:layout_gravity="center"
+      app:layout_constraintTop_toBottomOf="@id/textView_digital_cash_send"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
+
+    <Space
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/channel_qr_code" />
+
+    <TextView
+      android:id="@+id/textView2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="TextView"
+      tools:layout_editor_absoluteX="165dp"
+      tools:layout_editor_absoluteY="305dp" />
+
+    <Button
+      android:id="@+id/button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Button"
+      tools:layout_editor_absoluteX="204dp"
+      tools:layout_editor_absoluteY="371dp" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 
