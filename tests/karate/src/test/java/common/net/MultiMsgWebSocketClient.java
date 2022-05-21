@@ -79,7 +79,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       idAssociatedWithSentMessages.remove(data);
       return answer;
     }
-    String answer = getBuffer().takeTimeout(5000);
+    String answer = getBuffer().takeTimeout(10000);
     while(answer != null){
       if(answer.contains("result") || answer.contains("error")){
         Json resultJson = Json.of(answer);
