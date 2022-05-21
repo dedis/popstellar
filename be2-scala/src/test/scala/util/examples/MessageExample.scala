@@ -62,6 +62,7 @@ object MessageExample {
 
   //CreateLao
   val organizer: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="))
+  val organizerRollCall: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
   val organizerInvalid: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLid="))
   val name: String = "LAO"
   val nameInvalid: String = "wrong"
@@ -170,7 +171,7 @@ object MessageExample {
   lazy val rollCallCreateFromJson = CreateRollCall.buildFromJson(createRollCallData)
   final val MESSAGE_CREATEROLLCALL_VALID: Message =  new Message(
     Base64Data.encode(rollCallCreate.toString()),
-    organizer,
+    organizerRollCall,
     Signature(Base64Data.encode(rollCallCreate.toString())),
     Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
     List.empty,
