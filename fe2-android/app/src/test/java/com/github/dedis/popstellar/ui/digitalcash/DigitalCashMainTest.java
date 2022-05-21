@@ -24,6 +24,8 @@ import org.mockito.junit.MockitoJUnit;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.AndroidEntryPoint;
+
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -43,8 +45,8 @@ public class DigitalCashMainTest {
 
     @Test
     public void homeButtonStaysHome() {
-        //homeButton().perform(click());
-        //fragmentContainer().check(matches(withChild(withId(digitalCashFragmentId()))));
+        homeButton().perform(click());
+        fragmentContainer().check(matches(withChild(withId(digitalCashFragmentId()))));
     }
 /*
     @Test
