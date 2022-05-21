@@ -4,3 +4,5 @@ import { getStore } from 'core/redux';
 import { selectEventById } from '../network/EventHandlerUtils';
 
 export const getEventById = (id: Hash) => selectEventById(getStore().getState(), id);
+
+export { makeEventByTypeSelector } from '../reducer';

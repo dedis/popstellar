@@ -30,6 +30,7 @@ const (
 	LAOActionCreate = "create"
 	LAOActionState  = "state"
 	LAOActionUpdate = "update_properties"
+	LAOActionGreet  = "greet"
 
 	MeetingObject       = "meeting"
 	MeetingActionCreate = "create"
@@ -57,6 +58,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
