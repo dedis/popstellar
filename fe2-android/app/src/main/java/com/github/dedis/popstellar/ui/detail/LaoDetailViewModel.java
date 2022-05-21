@@ -296,8 +296,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             .subscribe(
                 () -> {
                   Log.d(TAG, "opened election successfully");
-                  // Block action button on expandableListViewAdapter
-                  openElectionEvent();
+                  // stay on the election fragment for now
                 },
                 error ->
                     ErrorUtils.logAndShow(

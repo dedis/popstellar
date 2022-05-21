@@ -105,8 +105,7 @@
   <Button
     android:id="@+id/roll_call_management_button"
     android:layout_width="100dp"
-    android:layout_height="50dp"
-    android:enabled="false"
+    android:layout_height="48dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_margin="24dp"

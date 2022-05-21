@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 
+import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
@@ -24,10 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link ElectionFragment#newInstance} factory method
- * to create an instance of this fragment.
- */
 public class ElectionFragment extends Fragment {
 
   protected final SimpleDateFormat DATE_FORMAT =
@@ -65,10 +62,27 @@ public class ElectionFragment extends Fragment {
         v -> {
           switch (election.getState().getValue()) {
             case CREATED:
-              laoDetailViewModel.openStartElection(true);
+              // When implemented across all subsystems go into start election fragment which
+              // implements consensus
+              // laoDetailViewModel.openStartElection(true);
+              new AlertDialog.Builder(getContext())
+                  .setTitle(R.string.confirm_title)
+                  .setMessage(R.string.election_confirm_open)
+                  .setPositiveButton(
+                      R.string.yes,
+                      (dialogInterface, i) -> laoDetailViewModel.openElection(election))
+                  .setNegativeButton(R.string.no, null)
+                  .show();
               break;
             case OPENED:
-              laoDetailViewModel.endElection(election);
+              new AlertDialog.Builder(getContext())
+                  .setTitle(R.string.confirm_title)
+                  .setMessage(R.string.election_confirm_close)
+                  .setPositiveButton(
+                      R.string.yes,
+                      (dialogInterface, i) -> laoDetailViewModel.endElection(election))
+                  .setNegativeButton(R.string.no, null)
+                  .show();
               break;
             case CLOSED:
             case RESULTS_READY:
@@ -76,6 +90,7 @@ public class ElectionFragment extends Fragment {
                   "User should not be able to use the management button when in this state");
           }
         });
+
     actionButton.setOnClickListener(
         v -> {
           switch (election.getState().getValue()) {
@@ -90,6 +105,8 @@ public class ElectionFragment extends Fragment {
               laoDetailViewModel.openElectionResults(true);
           }
         });
+
+    election.getState().observe(getViewLifecycleOwner(), eventState -> setupElectionContent());
 
     return view;
   }
@@ -122,13 +139,14 @@ public class ElectionFragment extends Fragment {
         managementTextId = R.string.open;
 
         setButtonEnabling(actionButton, false);
-        imgAction = getDrawableFromContext(R.drawable.ic_voting_action, R.color.white);
+        imgAction = getDrawableFromContext(R.drawable.ic_voting_action);
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock, R.color.red);
+        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
         statusText.setTextColor(getResources().getColor(R.color.red, null));
+        setImageColor(statusIcon, R.color.red);
 
-        imgManagement = getDrawableFromContext(R.drawable.ic_unlock, R.color.white);
-        managementButton.setBackgroundColor(getResources().getColor(R.color.green, null));
+        imgManagement = getDrawableFromContext(R.drawable.ic_unlock);
+        setButtonColor(managementButton, R.color.green);
         break;
       case OPENED:
         actionTextId = R.string.vote;
@@ -136,13 +154,14 @@ public class ElectionFragment extends Fragment {
         managementTextId = R.string.close;
 
         setButtonEnabling(actionButton, true);
-        imgAction = getDrawableFromContext(R.drawable.ic_voting_action, R.color.white);
+        imgAction = getDrawableFromContext(R.drawable.ic_voting_action);
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_unlock, R.color.green);
+        imgStatus = getDrawableFromContext(R.drawable.ic_unlock);
+        setImageColor(statusIcon, R.color.green);
         statusText.setTextColor(getResources().getColor(R.color.green, null));
 
-        imgManagement = getDrawableFromContext(R.drawable.ic_lock, R.color.white);
-        managementButton.setBackgroundColor(getResources().getColor(R.color.red, null));
+        imgManagement = getDrawableFromContext(R.drawable.ic_lock);
+        setButtonColor(managementButton, R.color.red);
 
         break;
       case CLOSED:
@@ -150,9 +169,10 @@ public class ElectionFragment extends Fragment {
         actionTextId = R.string.results;
 
         setButtonEnabling(actionButton, false);
-        imgAction = getDrawableFromContext(R.drawable.ic_result, R.color.white);
+        imgAction = getDrawableFromContext(R.drawable.ic_result);
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_wait, R.color.colorPrimary);
+        imgStatus = getDrawableFromContext(R.drawable.ic_wait);
+        setImageColor(statusIcon, R.color.colorPrimary);
         statusText.setTextColor(getResources().getColor(R.color.colorPrimary, null));
 
         managementButton.setVisibility(View.GONE);
@@ -162,22 +182,23 @@ public class ElectionFragment extends Fragment {
         actionTextId = R.string.results;
 
         setButtonEnabling(actionButton, true);
-        imgAction = getDrawableFromContext(R.drawable.ic_result, R.color.white);
+        imgAction = getDrawableFromContext(R.drawable.ic_result);
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_complete, R.color.green);
+        imgStatus = getDrawableFromContext(R.drawable.ic_complete);
+        setImageColor(statusIcon, R.color.green);
         statusText.setTextColor(getResources().getColor(R.color.green, null));
 
         managementButton.setVisibility(View.GONE);
     }
 
-    actionButton.setCompoundDrawables(imgAction, null, null, null);
+    actionButton.setCompoundDrawablesWithIntrinsicBounds(imgAction, null, null, null);
     actionButton.setText(actionTextId);
 
     statusIcon.setImageDrawable(imgStatus);
     statusText.setText(statusTextId);
 
     if (imgManagement != null) {
-      managementButton.setCompoundDrawables(imgManagement, null, null, null);
+      managementButton.setCompoundDrawablesWithIntrinsicBounds(imgManagement, null, null, null);
       managementButton.setText(managementTextId);
     }
   }
@@ -199,10 +220,15 @@ public class ElectionFragment extends Fragment {
     button.setEnabled(enabled);
   }
 
-  private Drawable getDrawableFromContext(int id, int colorId) {
-    Drawable unWrappedDrawable = AppCompatResources.getDrawable(getContext(), id);
-    Drawable wrappedDrawable = DrawableCompat.wrap(unWrappedDrawable);
-    DrawableCompat.setTint(wrappedDrawable, colorId);
-    return wrappedDrawable;
+  private Drawable getDrawableFromContext(int id) {
+    return AppCompatResources.getDrawable(getContext(), id);
+  }
+
+  private void setButtonColor(View v, int colorId) {
+    v.setBackgroundTintList(getResources().getColorStateList(colorId, null));
+  }
+
+  private void setImageColor(ImageView imageView, int colorId) {
+    ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
   }
 }

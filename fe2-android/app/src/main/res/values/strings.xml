@@ -1,6 +1,10 @@
 <resources>
   <string name="app_name">popstellar</string>
 
+  <!--  General-->
+  <string name="yes">Yes</string>
+  <string name="no">No</string>
+
   <!-- bottom nav -->
   <string name="tab_home">Home</string>
   <string name="tab_connect">Connect</string>
@@ -187,6 +191,11 @@
   <string name="start">Start</string>
   <string name="end">End</string>
   <string name="refresh_start">Refresh to start</string>
+  <string name="election_confirm_open">Are your sure you want to open this election ?</string>
+  <string name="election_confirm_close">
+    Are your sure you want to close this election, this action is irreversible ?
+  </string>
+  <string name="confirm_title">Confirm action</string>
 
   <!-- Consensus -->
   <string name="start_election">Start Election</string>

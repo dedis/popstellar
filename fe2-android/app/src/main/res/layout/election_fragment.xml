@@ -22,6 +22,7 @@
     android:layout_height="wrap_content"
     android:text="@string/closed"
     android:textColor="@color/red"
+    android:textSize="18dp"
     android:layout_marginTop="16dp"
     app:layout_constraintTop_toBottomOf="@id/election_fragment_title"
     app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +33,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:src="@drawable/ic_lock"
-    app:tint="@color/red"
     app:layout_constraintTop_toTopOf="@id/election_fragment_status"
     app:layout_constraintBottom_toBottomOf="@id/election_fragment_status"
     app:layout_constraintEnd_toStartOf="@id/election_fragment_status" />
@@ -89,15 +89,14 @@
     android:id="@+id/election_fragment_end_time"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
     app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
     app:layout_constraintStart_toStartOf="@id/election_fragment_start_time"
     app:layout_constraintTop_toTopOf="@id/end_time_icon" />
 
   <Button
     android:id="@+id/election_action_button"
-    android:layout_width="100dp"
-    android:layout_height="50dp"
+    android:layout_width="110dp"
+    android:layout_height="48dp"
     android:enabled="false"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -106,12 +105,13 @@
     android:text="Vote"
     android:textColor="@color/white"
     android:textSize="14sp"
-    android:drawableStart="@drawable/ic_voting_action" />
+    android:drawableStart="@drawable/ic_voting_action"
+    android:drawableTint="@color/white" />
 
   <Button
     android:id="@+id/election_management_button"
     android:layout_width="100dp"
-    android:layout_height="50dp"
+    android:layout_height="48dp"
     app:layout_constraintBottom_toBottomOf="@id/election_action_button"
     app:layout_constraintEnd_toStartOf="@id/election_action_button"
     android:layout_marginEnd="8dp"
@@ -119,6 +119,7 @@
     android:text="@string/start"
     android:textColor="@color/white"
     android:textSize="14sp"
+    android:drawableTint="@color/white"
     android:drawableStart="@drawable/ic_unlock" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

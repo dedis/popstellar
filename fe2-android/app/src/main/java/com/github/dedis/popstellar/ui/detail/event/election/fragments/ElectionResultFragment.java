@@ -4,15 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -33,13 +30,6 @@ public class ElectionResultFragment extends Fragment {
 
   public static ElectionResultFragment newInstance() {
     return new ElectionResultFragment();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    Button back = requireActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
   }
 
   @Override

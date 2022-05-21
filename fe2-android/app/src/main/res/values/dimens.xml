@@ -104,7 +104,7 @@
 
   <!-- Recycler View dimensions  -->
   <integer name="requested_preview_height">1024</integer>
-  <integer name="navigation_reversion_delay">500</integer>
+  <integer name="navigation_reversion_delay">5000</integer>
 
   <!-- Menu icons dimensions -->
   <string name="camera_preview_ratio">3:4</string>

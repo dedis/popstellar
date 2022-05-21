@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event.rollcall;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
@@ -20,6 +21,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.Constants;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -31,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
-
+  public static final String TAG = RollCallFragment.class.getSimpleName();
   protected final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
@@ -70,7 +72,7 @@ public class RollCallFragment extends Fragment {
     managementButton = view.findViewById(R.id.roll_call_management_button);
     title = view.findViewById(R.id.roll_call_fragment_title);
     statusText = view.findViewById(R.id.roll_call_fragment_status);
-    statusIcon = view.findViewById(R.id.election_fragment_status_icon);
+    statusIcon = view.findViewById(R.id.roll_call_fragment_status_icon);
 
     setUpStateDependantContent();
     setupTime(view);
@@ -81,11 +83,12 @@ public class RollCallFragment extends Fragment {
           switch (state) {
             case CLOSED:
             case CREATED:
+              Log.d(TAG, "trying to open the roll call");
               laoDetailViewModel.openRollCall(rollCall.getId());
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              // laoDetailViewModel.closeRollCall();
+              laoDetailViewModel.closeRollCall();
           }
         };
 
@@ -97,16 +100,19 @@ public class RollCallFragment extends Fragment {
             eventState -> {
               setUpStateDependantContent();
             });
-
+    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     if (pk != null) {
-      ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
       Bitmap myBitmap = QRCode.from(pk.getEncoded()).bitmap();
       qrCode.setImageBitmap(myBitmap);
     }
+    qrCode.setVisibility(
+        laoDetailViewModel.isOrganizer().getValue() ? View.INVISIBLE : View.VISIBLE);
+
     return view;
   }
 
   private void setUpStateDependantContent() {
+    Log.d(TAG, "Roll call is " + (rollCall == null));
     EventState rcState = rollCall.getState().getValue();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
@@ -124,7 +130,8 @@ public class RollCallFragment extends Fragment {
         managementTextId = R.string.open;
         statusTextId = R.string.closed;
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock, R.color.red);
+        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
+        setImageColor(statusIcon, R.color.red);
         statusText.setTextColor(getResources().getColor(R.color.red, null));
 
         imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
@@ -133,7 +140,8 @@ public class RollCallFragment extends Fragment {
         statusTextId = R.string.open;
         managementTextId = R.string.close;
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_unlock, R.color.green);
+        imgStatus = getDrawableFromContext(R.drawable.ic_unlock);
+        setImageColor(statusIcon, R.color.green);
         statusText.setTextColor(getResources().getColor(R.color.green, null));
 
         imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_lock);
@@ -142,7 +150,8 @@ public class RollCallFragment extends Fragment {
         statusTextId = R.string.closed;
         managementTextId = R.string.reopen_rollcall;
 
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock, R.color.red);
+        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
+        setImageColor(statusIcon, R.color.red);
         statusText.setTextColor(getResources().getColor(R.color.red, null));
 
         imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
@@ -170,10 +179,17 @@ public class RollCallFragment extends Fragment {
     endTimeDisplay.setText(DATE_FORMAT.format(endTime));
   }
 
-  private Drawable getDrawableFromContext(int id, int colorId) {
-    Drawable unWrappedDrawable = AppCompatResources.getDrawable(getContext(), id);
-    Drawable wrappedDrawable = DrawableCompat.wrap(unWrappedDrawable);
-    DrawableCompat.setTint(wrappedDrawable, colorId);
-    return wrappedDrawable;
+  private Drawable getDrawableFromContext(int id) {
+    return AppCompatResources.getDrawable(getContext(), id);
+  }
+
+  private void setImageColor(ImageView imageView, int colorId) {
+    ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
+  }
+
+  private void setButtonEnabling(Button button, boolean enabled) {
+    button.setAlpha(
+        enabled ? Constants.ENABLED_OPAQUE_ALPHA : Constants.DISABLED_TRANSPARENCY_ALPHA);
+    button.setEnabled(enabled);
   }
 }

@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionRe
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -353,8 +354,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupRollCallDetailFragment(PublicKey pk) {
-    //    setCurrentFragment(
-    //        R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
+    setCurrentFragment(R.id.fragment_roll_call_detail, () -> RollCallFragment.newInstance(pk));
   }
 
   private void setupCreateElectionSetupFragment() {
