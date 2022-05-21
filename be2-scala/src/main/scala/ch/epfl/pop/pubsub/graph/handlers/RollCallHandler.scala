@@ -113,7 +113,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               case Some(_) =>
                 val combined = for {
                   _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
-                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message)
+                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
                 } yield ()
 
                 Await.ready(combined, duration).value match {

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   } as ViewStyle,
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     borderWidth: 1,
     borderRadius: 5,
   } as TextStyle,

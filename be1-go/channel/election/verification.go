@@ -2,6 +2,7 @@ package election
 
 import (
 	"encoding/base64"
+	"fmt"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
@@ -122,20 +123,20 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		return xerrors.Errorf("cast vote created at is %d, should be minimum 0", castVote.CreatedAt)
 	}
 
-	// verify created at is after start of election
-	if castVote.CreatedAt < c.start {
-		return xerrors.Errorf("cast vote created at is %d, should be greater or "+
-			"equal to defined start time %d",
-			castVote.CreatedAt, c.start)
-	}
+	for i, vote := range castVote.Votes {
+		qs, ok := c.questions[vote.Question]
+		if !ok {
+			return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
+		}
 
-	// verify created at is before end of election
-	if castVote.CreatedAt > c.end {
-		// note that CreatedAt is provided by the client and can't be fully trusted.
-		// We leave this check as is until we have a better solution.
-		return xerrors.Errorf("cast vote created at is %d, should be smaller or "+
-			"equal to defined end time %d",
-			castVote.CreatedAt, c.end)
+		sort.Ints(vote.Vote)
+		sortedIndex := arrayToString(vote.Vote, ",")
+
+		hash := messagedata.Hash("Vote", electionID, string(qs.ID), sortedIndex)
+
+		if vote.ID != hash {
+			return xerrors.Errorf("vote ID of vote %d is incorrect", i)
+		}
 	}
 
 	return nil
@@ -251,4 +252,8 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	}
 
 	return nil
+}
+
+func arrayToString(a []int, delim string) string {
+	return strings.Trim(strings.Replace(fmt.Sprint(a), " ", delim, -1), "[]")
 }
