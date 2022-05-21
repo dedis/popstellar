@@ -40,7 +40,6 @@ object JsonRpcRequestExample {
   private final val paramsWithCreateLaoWrongId: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL, MESSAGE_CREATELAO_WRONG_ID)
   private final val paramsWithCreateLaoWrongSender: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL, MESSAGE_CREATELAO_WRONG_SENDER)
   private final val paramsWithCreateLaoEmptyName: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL, MESSAGE_CREATELAO_EMPTY_NAME)
-  private final val paramsWithCreateRollCallValid: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL,  MESSAGE_CREATEROLLCALL_VALID)
   final val CREATE_LAO_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLao, id)
   final val CREATE_LAO_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongChannel, id)
   final val CREATE_LAO_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongTimestamp, id)
@@ -48,10 +47,9 @@ object JsonRpcRequestExample {
   final val CREATE_LAO_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongId, id)
   final val CREATE_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongSender, id)
   final val CREATE_LAO_EMPTY_NAME_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoEmptyName, id)
-  final val CREATE_ROLL_CALL_VALID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallValid, id)
+  
   //for GreetLao testing
   private final val laoChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId"))
-  private final val paramsWithGreetLao: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO)
   private final val paramsWithGreetLaoWrongFrontend: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_FRONTEND)
   private final val paramsWithGreetLaoWrongAddress: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_ADDRESS)
   private final val paramsWithGreetLaoWrongLao: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO_WRONG_LAO)
@@ -64,6 +62,10 @@ object JsonRpcRequestExample {
   final val GREET_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongSender, id)
   final val GREET_LAO_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithGreetLaoWrongChannel, id)
 
+  // for roll call create
+  private final val laoChannelRollCall: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data("p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="))
+  private final val paramsWithCreateRollCallValid: ParamsWithMessage = new ParamsWithMessage(laoChannelRollCall,  MESSAGE_CREATEROLLCALL_VALID)
+  final val CREATE_ROLL_CALL_VALID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallValid, id)
 
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)
