@@ -91,17 +91,16 @@ public class DigitalCashMain extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
+              Log.d(TAG, "Open digital cash issue Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-
-                Log.d(TAG, "Open digital cash issue Fragment");
                 setupFragment(R.id.fragment_digital_cash_issue);
               }
             });
 
     // Subscribe to "open receipt"
     mViewModel
-        .getOpenIssueEvent()
+        .getOpenReceiptEvent()
         .observe(
             this,
             booleanEvent -> {
@@ -115,12 +114,6 @@ public class DigitalCashMain extends AppCompatActivity {
 
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.digital_cash_menu, menu);
-    return true;
   }
 
   @SuppressLint("NonConstantResourceId")
