@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.digitalCashFragmentId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.homeButton;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.sendButton;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
 
 
@@ -48,13 +50,13 @@ public class DigitalCashMainTest {
         homeButton().perform(click());
         fragmentContainer().check(matches(withChild(withId(digitalCashFragmentId()))));
     }
-/*
+
     @Test
     public void connectButtonStaysHomeWithoutInitializedWallet() {
-        connectButton().perform(click());
-        fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+        sendButton().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
     }
-
+/*
     @Test
     public void launchButtonStaysHomeWithoutInitializedWallet() {
         launchButton().perform(click());

@@ -212,6 +212,7 @@
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
   <string name="digital_cash_receipt">RECEIPT</string>
+  <string name="digital_cash_send_button">Send</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
