@@ -174,7 +174,7 @@ object MessageExample {
     Signature(Base64Data.encode(createRollCallData)),
     Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
     List.empty,
-    Some(rollCallCreateFromJson)
+    Some(rollCallCreate)
   )
 
   final val MESSAGE_CLOSEROLLCALL: Message = new Message(
