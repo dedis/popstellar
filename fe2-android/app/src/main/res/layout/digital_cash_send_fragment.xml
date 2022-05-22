@@ -26,7 +26,8 @@
       android:text="@string/digital_cash_send"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/channel_qr_code" />
 
     <ImageView
       android:id="@+id/channel_qr_code"
@@ -35,30 +36,58 @@
       android:layout_gravity="center"
       app:layout_constraintTop_toBottomOf="@id/textView_digital_cash_send"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent" />
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/blank_space" />
 
     <Space
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:id="@+id/blank_space"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/channel_qr_code" />
+      app:layout_constraintBottom_toTopOf="@id/amount_coin"
+      app:layout_constraintTop_toBottomOf="@id/channel_qr_code" />
 
-    <TextView
-      android:id="@+id/textView2"
+    <EditText
+      android:id="@+id/amount_coin"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="TextView"
-      tools:layout_editor_absoluteX="165dp"
+      android:hint="Enter a amount (miniLao)"
+      app:layout_constraintTop_toBottomOf="@id/blank_space"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_gravity="center_horizontal"
       tools:layout_editor_absoluteY="305dp" />
 
+    <Space
+      android:id="@+id/blank_space_2"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/send_button_coin"
+      app:layout_constraintTop_toBottomOf="@id/amount_coin" />
+
     <Button
-      android:id="@+id/button"
+      android:id="@+id/send_button_coin"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Button"
-      tools:layout_editor_absoluteX="204dp"
-      tools:layout_editor_absoluteY="371dp" />
+      android:text="@string/digital_cash_send"
+      android:layout_gravity="center_horizontal"
+      app:layout_constraintBottom_toTopOf="id/blank_space_3"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/amount_coin" />
+
+    <Space
+      android:id="@+id/blank_space_3"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/send_button_coin" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

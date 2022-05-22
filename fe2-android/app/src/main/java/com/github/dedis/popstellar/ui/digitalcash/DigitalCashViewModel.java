@@ -25,6 +25,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -44,7 +45,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -84,6 +84,9 @@ public class DigitalCashViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mCoinSendingScanConfirmEvent =
       new MutableLiveData<>();
   private ScanningAction scanningAction;
+
+  private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
+      new MutableLiveData<>();
   /*
    * Dependencies for this class
    */
@@ -177,7 +180,7 @@ public class DigitalCashViewModel extends AndroidViewModel
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(Map<PublicKey, Integer> receiverandvalue, long locktime) {
+  public void postTransaction(List<Integer> values, long locktime) {
     Log.d(TAG, "Post a transaction");
     Lao lao = getCurrentLao();
     if (lao == null) {
@@ -189,11 +192,11 @@ public class DigitalCashViewModel extends AndroidViewModel
       PoPToken token = keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
-      for (Map.Entry<PublicKey, Integer> current : receiverandvalue.entrySet()) {
-        Output add_output =
-            new Output(current.getValue(), new ScriptOutput(TYPE, current.getKey().computeHash()));
-        outputs.add(add_output);
-      }
+
+      //  Output add_output =
+      //      new Output(current.getValue(), new ScriptOutput(TYPE,
+      // current.getKey().computeHash()));
+      //  outputs.add(add_output);
 
       // Then make the inputs
       // First there would be only one Input
@@ -203,6 +206,25 @@ public class DigitalCashViewModel extends AndroidViewModel
       int index = 0;
 
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
+        TransactionObject previous =
+            getCurrentLao().getTransactionByUser().get(token.getPublicKey());
+        int totalvalue_send = 0;
+        if (receivers.size() != values.size()) {
+          throw new IllegalArgumentException("There not enough values for public keys ");
+        }
+
+        for (int i = 0; i < receivers.size(); i++) {
+          totalvalue_send = totalvalue_send + values.get(i);
+          outputs.add(
+              new Output(values.get(i), new ScriptOutput(TYPE, receivers.get(i).computeHash())));
+        }
+        int to_self = previous.getMiniLaoPerReceiver(token.getPublicKey()) - totalvalue_send;
+        if (to_self < 0) {
+          throw new IllegalStateException("You can not send more than you have !");
+        }
+        outputs.add(
+            new Output(to_self, new ScriptOutput(TYPE, token.getPublicKey().computeHash())));
+
         transaction_hash =
             getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
         index =
@@ -306,6 +328,14 @@ public class DigitalCashViewModel extends AndroidViewModel
 
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
+  }
+
+  public void setPostTransactionEvent() {
+    postTransactionEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
+    return postTransactionEvent;
   }
 
   @Nullable

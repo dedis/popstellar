@@ -33,4 +33,7 @@ public class DigitalCashHomeFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     return inflater.inflate(R.layout.digital_cash_home_fragment, container, false);
   }
+
+  // Bitmap myBitmap = QRCode.from(pk).bitmap();
+  // could add the token of your user in the main
 }

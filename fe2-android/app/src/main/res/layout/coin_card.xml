@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_margin="@dimen/rounded_edit_text"
+  android:orientation="horizontal">
+
+  <ImageView
+    android:layout_width="@dimen/bottom_navigation_view_height"
+    android:layout_height="@dimen/bottom_navigation_view_height"
+    android:contentDescription="@string/profile"
+    android:src="@drawable/ic_social_media_profile_foreground" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_top"
+    android:layout_marginEnd="@dimen/margin_top"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/attendee_username"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start"
+      android:text="@string/username"
+      android:textSize="@dimen/size_for_longer_text"
+      android:textStyle="bold" />
+
+  </LinearLayout>
+
+</LinearLayout>

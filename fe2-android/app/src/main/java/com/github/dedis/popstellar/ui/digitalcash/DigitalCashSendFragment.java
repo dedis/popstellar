@@ -6,14 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.time.Instant;
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
@@ -37,23 +38,57 @@ public class DigitalCashSendFragment extends Fragment {
     return new DigitalCashSendFragment();
   }
 
-
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_send_fragment, container, false);
+    this.digitalCashSendFragmentBinding =
+        DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+    this.digitalCashViewModel = DigitalCashMain.obtainViewModel(requireActivity());
+    digitalCashSendFragmentBinding.setViewModel(digitalCashViewModel);
+    digitalCashSendFragmentBinding.setLifecycleOwner(getViewLifecycleOwner());
+
+    return digitalCashSendFragmentBinding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    setupSendCoinButton();
+    // subscribe to "send coin" event
+    digitalCashViewModel
+        .getPostTransactionEvent()
+        .observe(
+            getViewLifecycleOwner(),
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                postTransaction();
+              }
+            });
+  }
+
+  private void setupSendCoinButton() {
+    digitalCashSendFragmentBinding.sendButtonCoin.setOnClickListener(
+        v -> digitalCashViewModel.setPostTransactionEvent());
   }
 
   /** Function that permits to post transaction */
-  private void postTransaction(Map<PublicKey, Integer> receiver) {
+  private void postTransaction() {
     if (digitalCashViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      digitalCashViewModel.postTransaction(receiver, Instant.now().getEpochSecond());
+      Integer amount =
+          Integer.valueOf(digitalCashSendFragmentBinding.amountCoin.getText().toString());
+      digitalCashViewModel.postTransaction(
+          Collections.singletonList(amount), Instant.now().getEpochSecond());
       digitalCashViewModel.openReceipt();
     }
   }
+
+  private void setupScanAttendee() {}
 }
