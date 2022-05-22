@@ -70,7 +70,7 @@ object JsonRpcRequestExample {
   private final val paramsWithCreateRollCallWrongId: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_CREATEROLLCALL_BAD_ID)
   final val CREATE_ROLL_CALL_VALID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallValid, id)
   final val CREATE_ROLL_CALL_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongSender, id)
-  final val CREATE_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rps, methodType, paramsWithCreateRollCallWrongId, id)
+  final val CREATE_ROLL_CALL_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallWrongId, id)
 
   // for AddChirp testing
   private final val rightSocialChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.SOCIAL_CHANNEL_PREFIX + SENDER_ADDCHIRP.base64Data)
