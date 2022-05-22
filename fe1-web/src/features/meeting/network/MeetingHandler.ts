@@ -18,12 +18,22 @@ import { CreateMeeting, StateMeeting } from './messages';
 export const handleMeetingCreateMessage =
   (addEvent: MeetingConfiguration['addEvent']) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `meeting#create was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.MEETING ||
-      msg.messageData.action !== ActionType.CREATE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.CREATE
     ) {
-      console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
@@ -57,20 +67,24 @@ export const handleMeetingStateMessage =
     updateEvent: MeetingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `meeting#state was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.MEETING ||
-      msg.messageData.action !== ActionType.STATE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.STATE
     ) {
       console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
       return false;
     }
 
-    const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const lao = getLaoById(msg.laoId.valueOf());
     if (!lao) {
-      console.warn(makeErr('no LAO is currently active'));
+      console.warn(makeErr(`no known lao with id '${msg.laoId}'`));
       return false;
     }
 
@@ -83,7 +97,7 @@ export const handleMeetingStateMessage =
     // FIXME: use meeting reducer
     const oldMeeting = getEventById(mtgMsg.id) as Meeting;
     if (!oldMeeting) {
-      console.warn(makeErr("no known meeting matching the 'id' field"));
+      console.warn(makeErr(`no known meeting with id ${mtgMsg.id}`));
       return false;
     }
 

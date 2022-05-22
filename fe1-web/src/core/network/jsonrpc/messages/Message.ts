@@ -137,6 +137,13 @@ export class Message {
     try {
       laoId = getLaoIdFromChannel(channel);
     } catch {
+      // getLaoIdFromChannel throw an error if the channel does not contain a laoId
+      // this is the case if either the channel is invalid (which should not happen)
+      // or when a message is not sent on a subchannel of a lao
+      // there are messages for which this is standard behaviour such as the lao#create
+      // message and thus we do not want to throw an error but rather pass undefined
+      // as the laoId. The individual message constructors can then decide whether to
+      // use the laoId for validation
       laoId = undefined;
     }
     this.#messageData = messageRegistry.buildMessageData(dataObj, laoId);

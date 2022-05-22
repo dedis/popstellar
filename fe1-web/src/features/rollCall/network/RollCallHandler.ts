@@ -15,12 +15,22 @@ import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './m
 export const handleRollCallCreateMessage =
   (addEvent: RollCallConfiguration['addEvent']) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#create was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CREATE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.CREATE
     ) {
-      console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
@@ -53,16 +63,24 @@ export const handleRollCallOpenMessage =
     updateEvent: RollCallConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#open was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.OPEN ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.OPEN
     ) {
-      console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `roll_call/open was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const rcMsgData = msg.messageData as OpenRollCall;
     const oldRC = getEventById(rcMsgData.opens) as RollCall;
@@ -98,18 +116,26 @@ export const handleRollCallCloseMessage =
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#close was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CLOSE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.CLOSE
     ) {
-      console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
     const { laoId } = msg;
-
-    const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as CloseRollCall;
     const oldRC = getEventById(rcMsgData.closes) as RollCall;
@@ -127,7 +153,7 @@ export const handleRollCallCloseMessage =
     });
 
     // We can now dispatch an updated (closed) roll call, containing the attendees' public keys.
-    dispatch(updateEvent(msg.laoId, rc.toState()));
+    dispatch(updateEvent(laoId, rc.toState()));
 
     // ... and update the Lao state to point to the latest roll call, if we have a token in it.
     dispatch(async (aDispatch: AsyncDispatch) => {
@@ -169,16 +195,24 @@ export const handleRollCallReopenMessage =
     updateEvent: RollCallConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage) => {
+    const makeErr = (err: string) => `roll_call#reopen was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.REOPEN ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.REOPEN
     ) {
-      console.warn('handleRollCallReopenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `roll_call/reopen was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const rcMsgData = msg.messageData as ReopenRollCall;
     const oldRC = getEventById(rcMsgData.opens) as RollCall;
