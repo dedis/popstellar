@@ -66,7 +66,7 @@ object JsonRpcRequestExample {
   // for roll call create
   private final val laoChannelRollCall: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data("p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="))
   private final val paramsWithCreateLaoRollCall: ParamsWithMessage = new ParamsWithMessage(Channel.ROOT_CHANNEL,  MESSAGE_CREATELAO_ROLLCALL)
-  private final val paramsWithCreateRollCallValid: ParamsWithMessage = new ParamsWithMessage(laoChannelRollCall,  MESSAGE_CREATEROLLCALL_VALID)
+  private final val paramsWithCreateRollCallValid: ParamsWithMessage = new ParamsWithMessage(laoChannel,  MESSAGE_CREATEROLLCALL_VALID)
   final val CREATE_LAO_ROLL_CALL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoRollCall, id)
   final val CREATE_ROLL_CALL_VALID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateRollCallValid, id)
 
