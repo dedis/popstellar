@@ -177,7 +177,7 @@ object MessageExample {
           "description": "Food is welcome!"
         }
   """
-  lazy val rollCallCreate: CreateRollCall = new CreateRollCall(Hash(Base64Data("Slj7C1LBEXlRC8ItV2B0zWfUSD6YiGJt6N_I_m02uw4=")), "Roll Call ", Timestamp(1633098853), Timestamp(1633099125), Timestamp(1633099140), "EPFL", Some("Food is welcome!"))
+  lazy val rollCallCreate: CreateRollCall = new CreateRollCall(Hash(Base64Data("ywPSfeTuaTK5fQ785xfDQVEZbJWbavVwikB-HCDfv7I=")), "Roll Call ", Timestamp(1633098853), Timestamp(1633099125), Timestamp(1633099140), "EPFL", Some("Food is welcome!"))
   lazy val rollCallCreateFromJson = CreateRollCall.buildFromJson(createRollCallData)
   final val MESSAGE_CREATEROLLCALL_VALID: Message =  new Message(
     Base64Data.encode(rollCallCreate.toString()),
