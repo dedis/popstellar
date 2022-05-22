@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -84,7 +86,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    // pub_keyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -191,10 +193,6 @@ public final class Lao {
     if (this.getRollCalls().values().isEmpty()) {
       throw new IllegalStateException("A transaction need a roll call creation ");
     }
-    if (this.pub_keyByHash.isEmpty()) {
-      throw new IllegalStateException("A transaction need attendees !");
-    }
-
     // Contained in the receiver there are also the sender
     // which has to be in the list of attendees of the roll call
     Iterator<PublicKey> receivers_ite =
@@ -204,6 +202,7 @@ public final class Lao {
       // Add the transaction in the current state  / for the sender and the receiver
       transactionByUser.put(current, transaction_object);
       // Add the transaction in the history / for the sender and the receiver
+      Log.d(Lao.class.getSimpleName(), "add : " + current.getEncoded());
       transaction_historyByUser.putIfAbsent(current, new ArrayList<>());
       if (!transaction_historyByUser.get(current).add(transaction_object)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
