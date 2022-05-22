@@ -76,12 +76,6 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     message shouldBe a[Right[_, PipelineError]]
   }
 
-  test("Roll Call creation valid succeeds") {
-    val laoMessageL: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_ROLL_CALL_RPC)
-    val message: GraphMessage = RollCallValidator.validateCreateRollCall(CREATE_ROLL_CALL_VALID_RPC)
-    message should equal(Left(CREATE_ROLL_CALL_VALID_RPC))
-  }
-
   test("LAO creation fails without ParamsWithMessage") {
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
@@ -150,7 +144,7 @@ private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277U
   }
 
   //Setup Election
-  test("Roll call setup works as intended 2") {
+  test("Roll call setup works as intended") {
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val rollCallActor: RollCallValidator = new RollCallValidator(dbActorRef)
