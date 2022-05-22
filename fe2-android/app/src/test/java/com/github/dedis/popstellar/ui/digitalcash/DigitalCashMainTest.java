@@ -18,13 +18,10 @@ import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceiptPageObject
 import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.sendButtonToReceipt;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
 
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
-import dagger.hilt.android.AndroidEntryPoint;
 
 
 @HiltAndroidTest
