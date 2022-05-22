@@ -7,9 +7,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.digitalCashFragmentId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.fragmentContainer;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.historyButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.homeButton;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.issueButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.sendButton;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceiptPageObject.fragmentDigitalCashReceiptId;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.sendButtonToReceipt;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
 
 
@@ -52,40 +59,28 @@ public class DigitalCashMainTest {
     }
 
     @Test
-    public void connectButtonStaysHomeWithoutInitializedWallet() {
+    public void sendButtonGoesToSendThenToReceipt() {
         sendButton().perform(click());
         fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
-    }
-/*
-    @Test
-    public void launchButtonStaysHomeWithoutInitializedWallet() {
-        launchButton().perform(click());
-        fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+        sendButtonToReceipt().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
     }
 
     @Test
-    public void socialMediaButtonStaysHomeWithoutInitializedWallet() {
-        socialMediaButton().perform(click());
-        fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+    public void historyButtonGoesToHistory() {
+        historyButton().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashHistoryId()))));
     }
 
     @Test
-    public void walletButtonOpensWalletFragment() {
-        walletButton().perform(click());
-        fragmentContainer().check(matches(withChild(withId(walletFragmentId()))));
+    public void issueButtonGoesToIssue() {
+        issueButton().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashIssueId()))));
     }
 
     @Test
-    public void walletButtonIsDisplayed() {
-        walletButton().check(matches(isDisplayed()));
+    public void receiveButtonGoesToReceive() {
+        receiveButton().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiveId()))));
     }
-
-    @Test
-    public void navBarIsDisplayed() {
-        navBar().check(matches(isDisplayed()));
-    }
-
- */
-
-
 }
