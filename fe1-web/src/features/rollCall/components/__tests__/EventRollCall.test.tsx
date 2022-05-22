@@ -1,15 +1,18 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
-import * as reactRedux from 'react-redux';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
 import MockNavigator from '__tests__/components/MockNavigator';
-import { configureTestFeatures } from '__tests__/utils';
-import { mockLao } from '__tests__/utils/TestUtils';
+import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
+import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
+import { addEvent, eventsReducer, makeEventSelector, updateEvent } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { generateToken } from 'features/wallet/objects';
+import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
@@ -52,30 +55,36 @@ jest.mock('features/rollCall/network', () => {
   };
 });
 
-let mockSelector: any;
-
-beforeAll(() => {
-  // the wallet uses the global store hence the full test features are required
-  configureTestFeatures();
-});
-
 // set up mock store
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = createStore(
+  combineReducers({ ...laoReducer, ...eventsReducer, ...walletReducer }),
+);
 mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(addEvent(mockLaoId, mockRollCallCreated.toState()));
+
+const contextValue = {
+  [ROLLCALL_FEATURE_IDENTIFIER]: {
+    useCurrentLaoId: () => mockLaoIdHash,
+    makeEventSelector,
+    generateToken,
+    hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
+  } as RollCallReactContext,
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockSelector = jest.spyOn(reactRedux, 'useSelector').mockReturnValueOnce(mockLao);
 });
 
 describe('EventRollCall', () => {
   it('should correctly render', () => {
-    mockSelector.mockReturnValueOnce(mockRollCallCreated);
+    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallCreated.toState()));
 
     const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer={false} />;
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -83,15 +92,14 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestOpenRollCall when the open button is clicked', () => {
-    const usedMockRollCall = mockRollCallCreated;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={Screen} />
-        </Provider>
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -101,13 +109,14 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
-    const usedMockRollCall = mockRollCallClosed;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallClosed.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall event={mockRollCallClosed} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -117,13 +126,14 @@ describe('EventRollCall', () => {
   });
 
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
-    const usedMockRollCall = mockRollCallOpened;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallOpened.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall event={mockRollCallOpened} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
-import { Hash } from 'core/objects';
+import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { WalletReducerState, WALLET_REDUCER_PATH } from '../reducer';
@@ -67,6 +67,21 @@ export type WalletReactContext = Pick<
 export interface WalletInterface extends FeatureInterface {
   navigation: {
     WalletNavigation: React.ComponentType<any>;
+  };
+
+  functions: {
+    /**
+     * Deterministically generates a pop token from given lao and rollCall ids
+     * @param laoId The lao id to generate a token for
+     * @param rollCallId The rollCall id to generate a token for
+     * @returns The generated pop token
+     */
+    generateToken: (laoId: Hash, rollCallId: Hash | undefined) => Promise<PopToken>;
+
+    /**
+     * Returns whether a seed is present in the store
+     */
+    hasSeed: () => boolean;
   };
 
   context: WalletReactContext;

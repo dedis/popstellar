@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
+import { channelFromIds, Hash, Timestamp } from 'core/objects';
 
 import { CreateMeeting } from './messages';
 
@@ -27,15 +27,18 @@ export const requestCreateMeeting = (
 ): Promise<void> => {
   const time = Timestamp.EpochNow();
 
-  const message = new CreateMeeting({
-    id: Hash.fromStringArray(EventTags.MEETING, laoId.valueOf(), time.toString(), name),
-    name,
-    start: Timestamp.max(time, startTime),
-    creation: time,
-    location,
-    end: endTime,
-    extra,
-  });
+  const message = new CreateMeeting(
+    {
+      id: CreateMeeting.computeMeetingId(laoId, time, name),
+      name,
+      start: Timestamp.max(time, startTime),
+      creation: time,
+      location,
+      end: endTime,
+      extra,
+    },
+    laoId,
+  );
 
   return publish(channelFromIds(laoId), message);
 };

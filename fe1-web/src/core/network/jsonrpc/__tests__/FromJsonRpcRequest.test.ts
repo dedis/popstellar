@@ -3,11 +3,9 @@ import '__tests__/utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
-import { configureTestFeatures } from '__tests__/utils';
+import { configureTestFeatures, mockChannel } from '__tests__/utils';
 import { Base64UrlData, Hash, PrivateKey, PublicKey, ROOT_CHANNEL } from 'core/objects';
 import { CreateLao } from 'features/lao/network/messages';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { JsonRpcMethod, JsonRpcRequest } from '../index';
 import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';
@@ -41,16 +39,9 @@ function checkRpcParams(obj: any, channel: string): void {
   expect(obj.message).toBeObject();
 }
 
-function checkMessage(obj: any, ch: string): void {
+function checkMessage(obj: any): void {
   expect(obj).toBeObject();
-  expect(obj).toContainAllKeys([
-    'data',
-    'sender',
-    'signature',
-    'message_id',
-    'witness_signatures',
-    'channel',
-  ]);
+  expect(obj).toContainAllKeys(['data', 'sender', 'signature', 'message_id', 'witness_signatures']);
 
   expect(obj.data).toBeBase64Url();
 
@@ -66,8 +57,6 @@ function checkMessage(obj: any, ch: string): void {
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
   expect(obj.witness_signatures).toBeKeySignatureArray('publicKey', 'signature');
-
-  expect(obj.channel).toEqual(ch);
 }
 
 const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
@@ -109,21 +98,6 @@ function embeddedMessage(data: string, channel: string, id: number = 0): string 
 describe('FromJsonRpcRequest should successfully create objects from Json', () => {
   beforeAll(() => {
     configureTestFeatures();
-
-    const sampleLao: Lao = new Lao({
-      name: sampleCreateLaoData.name,
-      id: Hash.fromStringArray(
-        sampleCreateLaoData.organizer.toString(),
-        sampleCreateLaoData.creation.toString(),
-        sampleCreateLaoData.name,
-      ),
-      creation: sampleCreateLaoData.creation,
-      last_modified: sampleCreateLaoData.creation,
-      organizer: sampleCreateLaoData.organizer,
-      witnesses: sampleCreateLaoData.witnesses,
-    });
-
-    OpenedLaoStore.store(sampleLao);
   });
 
   const verify = (jsonString: string, channel: string) => {
@@ -132,16 +106,15 @@ describe('FromJsonRpcRequest should successfully create objects from Json', () =
     checkRpcParams(query.params, channel);
 
     const msg = (query.params as JsonRpcParamsWithMessage).message;
-    checkMessage(msg, channel);
+    checkMessage(msg);
 
     const msgData = JSON.parse(msg.data.decode());
     expect(msgData).toBeJsonEqual(msg.messageData);
   };
 
   it('using a sub-channel', () => {
-    const chan = '/root/bGFvX2lk';
-    const msg = embeddedMessage(sampleCreateLaoDataString, chan);
-    verify(msg, chan);
+    const msg = embeddedMessage(sampleCreateLaoDataString, mockChannel);
+    verify(msg, mockChannel);
   });
 
   it(`using '${ROOT_CHANNEL}' channel`, () => {

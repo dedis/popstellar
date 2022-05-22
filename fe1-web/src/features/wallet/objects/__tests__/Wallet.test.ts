@@ -39,6 +39,7 @@ describe('Recover wallet roll call tokens function', () => {
     const rct = await recoverWalletRollCallTokens(state, mockLao.id);
     expect(rct).toEqual([expected]);
   });
+
   it('Should return an empty array when no corresponding token', async () => {
     const mockRC = createMockRCWithAttendee(mockRollCallState.attendees[0]);
 

@@ -19,6 +19,7 @@ import { Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { RollCallHooks } from '../hooks';
 import { requestCreateRollCall } from '../network';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
@@ -34,6 +35,8 @@ const CreateRollCall = ({ route }: any) => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
+
+  const laoId = RollCallHooks.useCurrentLaoId();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(
@@ -82,6 +85,7 @@ const CreateRollCall = ({ route }: any) => {
   const createRollCall = () => {
     const description = rollCallDescription === '' ? undefined : rollCallDescription;
     requestCreateRollCall(
+      laoId,
       rollCallName,
       rollCallLocation,
       proposedStartTime,

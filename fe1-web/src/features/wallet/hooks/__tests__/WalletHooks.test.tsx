@@ -28,15 +28,15 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Wallet hooks', () => {
-  describe('WalletHooks.useCurrentLaoId', () => {
+describe('WalletHooks', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });
 
-  describe('WalletHooks.useEventByTypeSelector', () => {
+  describe('useEventByTypeSelector', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useEventByTypeSelector('type'), { wrapper });
       expect(result.current).toEqual(eventByTypeSelector);
