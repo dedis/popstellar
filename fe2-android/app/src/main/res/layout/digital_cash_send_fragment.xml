@@ -52,7 +52,7 @@
       app:layout_constraintTop_toBottomOf="@id/channel_qr_code"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toTopOf="blank_space"
+      app:layout_constraintBottom_toTopOf="@id/blank_space"
       android:layout_gravity="center_horizontal"
       android:inputType="text"
       tools:layout_editor_absoluteY="305dp" />
@@ -75,7 +75,7 @@
       app:layout_constraintTop_toBottomOf="@id/blank_space"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toTopOf="blank_space_2"
+      app:layout_constraintBottom_toTopOf="@id/blank_space_2"
       android:layout_gravity="center_horizontal"
       android:inputType="number"
       tools:layout_editor_absoluteY="305dp" />
@@ -95,7 +95,7 @@
       android:layout_height="wrap_content"
       android:text="@string/digital_cash_send"
       android:layout_gravity="center_horizontal"
-      app:layout_constraintBottom_toTopOf="id/blank_space_3"
+      app:layout_constraintBottom_toTopOf="@id/blank_space_3"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/blank_space_2" />

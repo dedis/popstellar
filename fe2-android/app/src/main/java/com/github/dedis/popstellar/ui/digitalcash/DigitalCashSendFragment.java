@@ -82,10 +82,12 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
+      String receiver = digitalCashSendFragmentBinding.pkToSend.getText().toString();
+
       Integer amount =
           Integer.valueOf(digitalCashSendFragmentBinding.amountCoin.getText().toString());
       digitalCashViewModel.postTransaction(
-          Collections.singletonList(amount), Instant.now().getEpochSecond());
+          receiver, Collections.singletonList(amount), Instant.now().getEpochSecond());
       digitalCashViewModel.openReceipt();
     }
   }

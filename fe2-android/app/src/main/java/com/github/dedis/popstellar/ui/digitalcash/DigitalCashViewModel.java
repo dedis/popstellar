@@ -180,7 +180,7 @@ public class DigitalCashViewModel extends AndroidViewModel
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(List<Integer> values, long locktime) {
+  public void postTransaction(String receiver, List<Integer> values, long locktime) {
     Log.d(TAG, "Post a transaction");
     Lao lao = getCurrentLao();
     if (lao == null) {
@@ -189,6 +189,8 @@ public class DigitalCashViewModel extends AndroidViewModel
     }
 
     try {
+      // temporary fix
+      receivers.add(new PublicKey(receiver));
       PoPToken token = keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
