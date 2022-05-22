@@ -3,9 +3,6 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class ElectionVote{
 
   @SerializedName(value = "id")
@@ -18,7 +15,7 @@ public class ElectionVote{
   // represents a boolean to know whether write_in is allowed or not
   // list of indexes for the votes
   @SerializedName(value = "vote")
-  private final List<Integer> vote;
+  private final Integer vote;
 
   /**
    * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
@@ -31,7 +28,7 @@ public class ElectionVote{
    */
   public ElectionVote(
       String questionId,
-      List<Integer> vote,
+      Integer vote,
       boolean writeInEnabled,
       String writeIn,
       String electionId) {
@@ -50,7 +47,7 @@ public class ElectionVote{
     return questionId;
   }
 
-  public List<Integer> getVotes() {
+  public Integer getVote() {
     return vote;
   }
 
@@ -65,12 +62,12 @@ public class ElectionVote{
     ElectionVote that = (ElectionVote) o;
     return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
         && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getVotes(), that.getVotes());
+        && java.util.Objects.equals(getVote(), that.getVote());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getId(), getVotes(), getQuestionId());
+    return java.util.Objects.hash(getId(), getVote(), getQuestionId());
   }
 
   @Override
@@ -83,7 +80,7 @@ public class ElectionVote{
             + questionId
             + '\''
             + ", vote="
-            + Arrays.toString(vote.toArray())
+            + vote
             + '}';
   }
 }

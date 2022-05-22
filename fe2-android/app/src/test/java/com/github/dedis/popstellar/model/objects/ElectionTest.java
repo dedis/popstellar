@@ -113,13 +113,13 @@ public class ElectionTest {
   @Test
   public void settingSameRegisteredVotesAndComparingReturnsTrue() {
     List<ElectionVote> votes1 =
-        Arrays.asList(
-            new ElectionVote("b", Collections.singletonList(1), false, "", "my election id"),
-            new ElectionVote("a", Collections.singletonList(2), false, "", "my election id"));
-    List<ElectionVote> votes2 =
-        Arrays.asList(
-            new ElectionVote("c", Collections.singletonList(3), false, "", "my election id"),
-            new ElectionVote("d", Collections.singletonList(4), false, "", "my election id"));
+            Arrays.asList(
+                    new ElectionVote("b", 1, false, "", "my election id"),
+                    new ElectionVote("a", 2, false, "", "my election id"));
+      List<ElectionVote> votes2 =
+              Arrays.asList(
+                      new ElectionVote("c", 3, false, "", "my election id"),
+                      new ElectionVote("d", 4, false, "", "my election id"));
     election.putVotesBySender(SENDER_2, votes2);
     election.putSenderByMessageId(SENDER_1, MESSAGE_ID_1);
     election.putSenderByMessageId(SENDER_2, MESSAGE_ID_2);

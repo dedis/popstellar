@@ -31,10 +31,10 @@ public class CastVoteTest {
 
   // Set up a open ballot election
   private final ElectionVote electionVote1 =
-      new ElectionVote(questionId1, Arrays.asList(2, 1, 0), writeInEnabled, write_in, electionId);
-  private final ElectionVote electionVote2 =
-      new ElectionVote(questionId2, Arrays.asList(0, 1, 2), writeInEnabled, write_in, electionId);
-  private final List<ElectionVote> electionVotes = Arrays.asList(electionVote1, electionVote2);
+          new ElectionVote(questionId1, 1, writeInEnabled, write_in, electionId);
+    private final ElectionVote electionVote2 =
+            new ElectionVote(questionId2, 2, writeInEnabled, write_in, electionId);
+    private final List<ElectionVote> electionVotes = Arrays.asList(electionVote1, electionVote2);
 
   // Set up a secret ballot election
   private final ElectionEncryptedVote electionEncryptedVote1 =

@@ -45,10 +45,11 @@ public class CastVoteFragment extends Fragment {
         for (int i = 0; i < electionQuestions.size(); i++) {
           ElectionQuestion electionQuestion = electionQuestions.get(i);
           List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+          // Only one vote should be selected.
           ElectionVote electionVote =
               new ElectionVote(
                   electionQuestion.getId(),
-                  votes,
+                  votes.get(0),
                   electionQuestion.getWriteIn(),
                   null,
                   mLaoDetailViewModel.getCurrentElection().getId());

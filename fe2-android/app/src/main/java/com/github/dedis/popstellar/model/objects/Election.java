@@ -270,7 +270,7 @@ public class Election extends Event {
   public static String generateElectionVoteId(
           String electionId,
           String questionId,
-          List<Integer> voteIndex,
+          Integer voteIndex,
           String writeIn,
           boolean writeInEnabled) {
     // If write_in is enabled the id is formed with the write_in string
@@ -321,7 +321,7 @@ public class Election extends Event {
     List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
     for (ElectionVote vote : votes) {
       // We are sure that each vote is unique per question following new specification
-      List<Integer> voteIndices = vote.getVotes();
+      Integer voteIndice = vote.getVote();
 
       String encryptedVotesIndices = null;
       ElectionEncryptedVote cc = new
