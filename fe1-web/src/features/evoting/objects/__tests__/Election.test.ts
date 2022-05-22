@@ -44,7 +44,7 @@ const initializeData = () => {
   vote1 = {
     id: 'v1',
     question: 'q1',
-    vote: [0],
+    vote: 0,
   };
 
   registeredVotes = {

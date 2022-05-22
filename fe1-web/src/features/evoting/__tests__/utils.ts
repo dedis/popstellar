@@ -68,8 +68,8 @@ export const mockRegisteredVotes: RegisteredVote[] = [
     messageId: '0',
     sender: 'sender 1',
     votes: [
-      { id: 'id1', question: 'q1', vote: [0] },
-      { id: 'id2', question: 'q2', vote: [0] },
+      { id: 'id1', question: 'q1', vote: 0 },
+      { id: 'id2', question: 'q2', vote: 0 },
     ],
   },
   {
@@ -77,8 +77,8 @@ export const mockRegisteredVotes: RegisteredVote[] = [
     messageId: '1',
     sender: 'sender 2',
     votes: [
-      { id: 'id3', question: 'q3', vote: [0] },
-      { id: 'id4', question: 'q4', vote: [0] },
+      { id: 'id3', question: 'q3', vote: 0 },
+      { id: 'id4', question: 'q4', vote: 0 },
     ],
   },
 ];
@@ -135,22 +135,22 @@ export const mockElectionTerminated = new Election({
 
 export const mockRegistedVotesHash = EndElection.computeRegisteredVotesHash(mockElectionOpened);
 
-export const mockVoteVotes1 = new Set([0]);
-export const mockVoteVotes2 = new Set([1, 0]);
+export const mockVoteOption1 = 0;
+export const mockVoteOption2 = 1;
 
-export const mockVoteId1 = CastVote.computeVoteId(mockElectionNotStarted, 0, mockVoteVotes1);
-export const mockVoteId2 = CastVote.computeVoteId(mockElectionNotStarted, 1, mockVoteVotes2);
+export const mockVoteId1 = CastVote.computeVoteId(mockElectionNotStarted, 0, mockVoteOption1);
+export const mockVoteId2 = CastVote.computeVoteId(mockElectionNotStarted, 1, mockVoteOption2);
 
 export const mockVote1: Vote = {
   id: mockVoteId1.toString(),
   question: mockQuestionId1.valueOf(),
-  vote: [0],
+  vote: 0,
 };
 
 export const mockVote2: Vote = {
   id: mockVoteId2.toString(),
   question: mockQuestionId2.valueOf(),
-  vote: [1],
+  vote: 1,
 };
 
 export const mockVotes = [mockVote1];
