@@ -84,7 +84,6 @@ public class ElectionVote{
             + '\''
             + ", vote="
             + Arrays.toString(vote.toArray())
-            + '\''
             + '}';
   }
 }

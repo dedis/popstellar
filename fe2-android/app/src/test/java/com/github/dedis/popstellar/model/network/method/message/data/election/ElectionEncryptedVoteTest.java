@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -23,18 +24,17 @@ public class ElectionEncryptedVoteTest {
     private final List<String> votes =
             new ArrayList<>(
                     Arrays.asList("2", "1", "0"));
-    private final String writeIn = "My write in ballot option";
+    private final String encryptedWriteIn = "My write in ballot option";
     private final ElectionEncryptedVote electionEncryptedVote1 =
-            new ElectionEncryptedVote(questionId, votes, false, writeIn, electionId);
+            new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, electionId);
+    // Hash values util for testing
+    private final String expectedIdNoWriteIn = Election
+            .generateEncryptedElectionVoteId(electionId, questionId, electionEncryptedVote1.getVote(), encryptedWriteIn, false);
     private final ElectionEncryptedVote electionEncryptedVotes2 =
-            new ElectionEncryptedVote(questionId, votes, true, writeIn, electionId);
-
-    //Hash values util for testing
-    String expectedIdNoWriteIn =
-            Hash.hash(
-                    "Vote", electionId, electionEncryptedVote1.getQuestionId(), electionEncryptedVote1.getVote().toString());
-    String expectedIdWithoutWriteIn = Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
-
+            new ElectionEncryptedVote(questionId, votes, true, encryptedWriteIn, electionId);
+    private final String wrongFormatId = Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
+    private final String expectedIdWithWriteIn = Election
+            .generateEncryptedElectionVoteId(electionId, questionId, electionEncryptedVotes2.getVote(), encryptedWriteIn, true);
 
     @Test
     public void electionVoteWriteInDisabledReturnsCorrectId() {
@@ -45,8 +45,8 @@ public class ElectionEncryptedVoteTest {
     @Test
     public void electionVoteWriteInEnabledReturnsCorrectIdTest() {
         // hash = Hash('Vote'||election_id||question_id||encryptedWriteIn)
-
-        assertThat(electionEncryptedVotes2.getId().equals(expectedIdWithoutWriteIn), is(false));
+        assertThat(electionEncryptedVotes2.getId().equals(wrongFormatId), is(false));
+        assertThat(electionEncryptedVotes2.getId().equals(expectedIdWithWriteIn), is(true));
         assertNull(electionEncryptedVotes2.getVote());
     }
 
@@ -69,13 +69,13 @@ public class ElectionEncryptedVoteTest {
     @Test
     public void isEqualTest() {
         assertNotEquals(electionEncryptedVote1, electionEncryptedVotes2);
-        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, writeIn, electionId));
-        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, writeIn, "random"));
+        assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, electionId));
+        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, "random"));
         assertNotEquals(
                 electionEncryptedVote1,
                 new ElectionEncryptedVote(
-                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), false, writeIn, electionId));
-        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, false, writeIn, electionId));
+                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), false, encryptedWriteIn, electionId));
+        assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, false, encryptedWriteIn, electionId));
 
         // Same equals, no write_in
         assertEquals(electionEncryptedVote1, new ElectionEncryptedVote(questionId, votes, false, "random", electionId));
@@ -84,7 +84,7 @@ public class ElectionEncryptedVoteTest {
         assertEquals(
                 electionEncryptedVotes2,
                 new ElectionEncryptedVote(
-                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), true, writeIn, electionId));
+                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), true, encryptedWriteIn, electionId));
     }
 
     @Test

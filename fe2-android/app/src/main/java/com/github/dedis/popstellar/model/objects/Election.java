@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static java.util.Objects.isNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
@@ -274,12 +276,14 @@ public class Election extends Event {
     // If write_in is enabled the id is formed with the write_in string
     // If write_in is not enabled the id is formed with the vote indexes (formatted as int1, int2,
     // ). The vote are concatenated and brackets are removed from the array toString representation
-    String voteIndexFormat = voteIndex
-            .toString()
+
+    String voteIndexFormat = !isNull(voteIndex)
+            ? voteIndex.toString()
             .replace("]", "")
-            .replace("[", "");
+            .replace("[", "")
+            : null;
     return Hash.hash(
-            "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+            "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndexFormat);
   }
 
   /**

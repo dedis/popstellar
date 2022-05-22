@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -20,34 +21,33 @@ public class ElectionVoteTest {
   private final String electionId = "my election id";
   private final String questionId = " my question id";
   private final List<Integer> votes =
-      new ArrayList<>(
-          Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
+          new ArrayList<>(
+                  Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
   private final String writeIn = "My write in ballot option";
   private final ElectionVote electionVote1 =
-      new ElectionVote(questionId, votes, false, writeIn, electionId);
+          new ElectionVote(questionId, votes, false, writeIn, electionId);
   private final ElectionVote electionVote2 =
-      new ElectionVote(questionId, votes, true, writeIn, electionId);
+          new ElectionVote(questionId, votes, true, writeIn, electionId);
+
+  // Hash values util for testing
+  private final String expectedIdNoWriteIn = Election
+          .generateElectionVoteId(electionId, questionId, electionVote1.getVotes(), writeIn, false);
+  private final String wrongFormatId = Hash.hash("Vote", electionId, electionVote2.getQuestionId());
+  private final String expectedIdWithWriteIn = Election
+          .generateElectionVoteId(electionId, questionId, electionVote2.getVotes(), writeIn, true);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    String electionVoteFormat =
-            electionVote1.getVotes().toString().toString()
-                    .replace("]", "")
-                    .replace("[", "");
-    String expectedId =
-            Hash.hash(
-                    "Vote", electionId, electionVote1.getQuestionId(), electionVoteFormat);
-    assertThat(electionVote1.getId(), is(expectedId));
+    assertThat(electionVote1.getId(), is(expectedIdNoWriteIn));
   }
 
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id)
     // Hash code shouldn't change with new protocol specifications
-    String expectedId =
-        Hash.hash("Vote", electionId, electionVote2.getQuestionId());
-    assertThat(electionVote2.getId().equals(expectedId), is(false));
+    assertThat(electionVote2.getId().equals(wrongFormatId), is(false));
+    assertThat(electionVote2.getId().equals(expectedIdWithWriteIn), is(true));
     assertNull(electionVote2.getVotes());
   }
 
@@ -85,8 +85,22 @@ public class ElectionVoteTest {
     // Here because writeInEnabled is true the list of votes should be computed as null making both
     // election the same
     assertEquals(
-        electionVote2,
-        new ElectionVote(
-            questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), true, writeIn, electionId));
+            electionVote2,
+            new ElectionVote(
+                    questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), true, writeIn, electionId));
   }
+
+  @Test
+  public void toStringTest() {
+    String format =
+            String.format("ElectionVote{"
+                            + "id='%s', "
+                            + "questionId='%s', "
+                            + "vote=%s}",
+                    expectedIdNoWriteIn,
+                    questionId,
+                    Arrays.toString(votes.toArray()));
+    assertEquals(format, electionVote1.toString());
+  }
+
 }
