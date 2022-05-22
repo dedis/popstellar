@@ -38,7 +38,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         } else if (expectedRollCallId != data.id) {
            Right(validationError(s"unexpected 'id' timestamp (${data.id}) vs (${expectedRollCallId}) vs (${data.creation}) vs (${data.name}) vs (${laoCheck})"))
         } else if (!validateOwner(sender, channel)) {
-          Right(validationError(s"invalid sender $sender"))
+          Right(validationError(s"invalid sender (${sender})"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
         } else {
