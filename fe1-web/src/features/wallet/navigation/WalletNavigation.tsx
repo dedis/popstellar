@@ -33,7 +33,7 @@ export default function WalletNavigation() {
   );
 }
 
-/* can be in the lao or home navigation but we only need the top app navigatio which is always present */
+/* can be in the lao or home navigation but we only need the top app navigation which is always present */
 type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>;
 
 const WalletNavigationHeaderRight = () => {
