@@ -186,8 +186,8 @@ object MessageExample {
     List.empty,
     Some(rollCallCreate)
   )
-  
-  final val MESSAGE_CREATEROLLCALL_BAD_SENDER: Message = new Message(
+
+  final val MESSAGE_CREATEROLLCALL_BADSENDER: Message = new Message(
     Base64Data.encode(rollCallCreate.toString()),
     organizerInvalid,
     Signature(Base64Data.encode(rollCallCreate.toString())),
