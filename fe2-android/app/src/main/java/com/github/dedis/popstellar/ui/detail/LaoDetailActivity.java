@@ -96,16 +96,19 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
     // Subscribe to "open home" event
     setupHomeActivity();
+
     // Subscribe to "open identity" event
     setupIdentityFragment();
+
     // Subscribe to " open social media " event
     setupSocialMediaActivity();
+
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
-    // Subscribe to "add witness" event
-    setupAddWitness();
+
     // Subscribe to "open witnessing" event
     setupWitnessing();
+
     // Subscribe to "new lao event" event
     handleNewEvent();
 
@@ -121,18 +124,20 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
-    mViewModel.getCloseRollCallEvent().observe(this, booleanSingleEvent -> setupLaoFragment());
-
+    // Subscribe to "enter roll call" event
     mViewModel
         .getPkRollCallEvent()
         .observe(
             this,
-            stringEvent -> {
-              PublicKey pk = stringEvent.getContentIfNotHandled();
+            publicKeySingleEvent -> {
+              PublicKey pk = publicKeySingleEvent.getContentIfNotHandled();
               if (pk != null) {
-                setupRollCallDetailFragment(pk);
+                enterRollCall(pk);
               }
             });
+
+    mViewModel.getCloseRollCallEvent().observe(this, booleanSingleEvent -> setupLaoFragment());
+
     subscribeWalletEvents();
 
     // Subscribe to "open cast votes event" event
@@ -324,20 +329,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     setCurrentFragment(R.id.fragment_create_roll_call_event, RollCallCreationFragment::newInstance);
   }
 
-  private void setupAddWitness() {
-
-    // Subscribe to "open witness " event
-    mViewModel
-        .getOpenAddWitness()
-        .observe(
-            this,
-            stringEvent -> {
-              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
-              if (action != null) {
-                openScanning(action);
-              }
-            });
-  }
 
   private void setupScanFragmentWitness() {
     setCurrentFragment(R.id.qr_code, QRCodeScanningFragment::new);
@@ -370,10 +361,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-  private void setupRollCallDetailFragment(PublicKey pk) {
-    setCurrentFragment(R.id.fragment_roll_call_detail, () -> RollCallFragment.newInstance(pk));
-  }
-
   private void setupCreateElectionSetupFragment() {
     setCurrentFragment(R.id.fragment_setup_election_event, ElectionSetupFragment::newInstance);
   }
@@ -392,6 +379,10 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   private void setupAttendeesListFragment(String id) {
     setCurrentFragment(R.id.fragment_attendees_list, () -> AttendeesListFragment.newInstance(id));
+  }
+
+  private void enterRollCall(PublicKey pk) {
+    setCurrentFragment(R.id.fragment_roll_call, () -> RollCallFragment.newInstance(pk));
   }
 
   private void setupElectionFragment() {

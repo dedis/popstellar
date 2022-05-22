@@ -134,7 +134,9 @@ public final class RollCallHandler {
 
     // Subscribe to the social media channels
     try {
+
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
+      Log.d(TAG, "Token ok " + token.toString());
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))

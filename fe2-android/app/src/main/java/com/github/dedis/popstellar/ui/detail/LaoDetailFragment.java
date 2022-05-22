@@ -121,7 +121,6 @@ public class LaoDetailFragment extends Fragment {
         .observe(
             getViewLifecycleOwner(),
             booleanEvent -> {
-              Log.d(TAG, "toggle happened");
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
                 showHideProperties(action);
@@ -170,7 +169,6 @@ public class LaoDetailFragment extends Fragment {
     EventListDivider divider = new EventListDivider(getContext());
     eventList.addItemDecoration(divider);
     eventList.setAdapter(mEventListViewEventAdapter);
-    eventList.setAdapter(mEventListViewEventAdapter);
   }
 
   private void setupEventListUpdates() {
@@ -191,8 +189,6 @@ public class LaoDetailFragment extends Fragment {
 
   private void showHideProperties(Boolean show) {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-    //    mLaoDetailFragBinding.laoDetailQrLayout.setVisibility(
-    //        Boolean.TRUE.equals(show) ? View.VISIBLE : View.GONE);
     if (Boolean.TRUE.equals(show)) {
       LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
       laoDetailQrLayout.setVisibility(View.VISIBLE);
