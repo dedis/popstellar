@@ -165,7 +165,7 @@ export const makeRollCallByIdSelector = (rollCallIds: string[]) =>
   );
 
 /**
- * Retrieves an rollcall by its id from the redux store
+ * Retrieves a rollcall by its id from the redux store
  * @remark This function does not memoize its result, use 'makeRollCallSelector' in react components
  * @param rollCallId The id of the rollcall / event to retrieve
  * @param state The redux state
