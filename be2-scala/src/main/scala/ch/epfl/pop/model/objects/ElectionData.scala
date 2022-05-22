@@ -17,9 +17,6 @@ object ElectionData extends Parsable {
            ): ElectionData =
     ElectionData(id, KeyPair())
 
-  def apply(id: Hash, keyPair: KeyPair) = new ElectionData(id, keyPair)
-
-
   override def buildFromJson(payload: String): ElectionData = payload.parseJson.asJsObject.convertTo[ElectionData]
 
   def getName: String = "electionData"

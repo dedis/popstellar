@@ -44,7 +44,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit object versionTypeFormat extends RootJsonFormat[VersionType] {
     override def read(json: JsValue): VersionType = json match {
       case JsString(version) => VersionType.unapply(version).getOrElse(VersionType.INVALID)
-      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to an VersionType")
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a VersionType")
     }
 
     override def write(obj: VersionType): JsValue = JsString(obj.toString)
