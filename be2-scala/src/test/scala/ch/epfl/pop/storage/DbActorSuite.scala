@@ -263,11 +263,12 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
+    val address: Option[String] = Option("ws://popdemo.dedis.ch")
 
     storage.size should equal (0)
 
     // act
-    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageLao); sleep()
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageLao, address); sleep()
 
     // assert
     expectMsg(DbActor.DbActorAck())
@@ -284,14 +285,15 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // arrange
     val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
-    val laoData: LaoData = LaoData().updateWith(messageLao)
+    val address: Option[String] = Option("ws://popdemo.dedis.ch")
+    val laoData: LaoData = LaoData().updateWith(messageLao, address)
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((laoDataKey, laoData.toJsonString))
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
-    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall, address); sleep()
 
     // assert
     expectMsg(DbActor.DbActorAck())

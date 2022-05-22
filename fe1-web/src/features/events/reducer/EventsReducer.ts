@@ -254,7 +254,7 @@ export const selectCurrentLaoEventsMap = makeEventsMap();
  * @param laoId - The id of the Lao
  * @param eventId - The id of the event
  */
-export const makeEventGetter = (
+export const makeEventSelector = (
   laoId: Hash | string | undefined,
   eventId: Hash | string | undefined,
 ) => {

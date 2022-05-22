@@ -1,5 +1,6 @@
 import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
-import { LaoEventState } from 'features/events/objects/LaoEvent';
+
+import { RollCallFeature } from '../interface';
 
 /**
  * Object to represent a roll call.
@@ -14,7 +15,7 @@ export enum RollCallStatus {
   REOPENED,
 }
 
-export interface RollCallState extends LaoEventState {
+export interface RollCallState extends RollCallFeature.EventState {
   name: string;
   location: string;
   description?: string;

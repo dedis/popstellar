@@ -1,7 +1,13 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLao, mockLaoId, mockLaoName } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockLaoName,
+} from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
@@ -40,7 +46,9 @@ beforeAll(() => {
 
 describe('ReopenRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new ReopenRollCall(sampleReopenRollCall)).toBeJsonEqual(sampleReopenRollCall);
+    expect(new ReopenRollCall(sampleReopenRollCall, mockLaoIdHash)).toBeJsonEqual(
+      sampleReopenRollCall,
+    );
     const temp = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.REOPEN,
@@ -48,12 +56,12 @@ describe('ReopenRollCall', () => {
       opens: rollCallId,
       opened_at: TIMESTAMP,
     };
-    expect(new ReopenRollCall(temp)).toBeJsonEqual(temp);
+    expect(new ReopenRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(reopenRollCallJson);
-    expect(ReopenRollCall.fromJson(obj)).toBeJsonEqual(sampleReopenRollCall);
+    expect(ReopenRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleReopenRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -64,7 +72,7 @@ describe('ReopenRollCall', () => {
       opens: rollCallId,
       opened_at: TIMESTAMP,
     };
-    const createWrongObj = () => ReopenRollCall.fromJson(obj);
+    const createWrongObj = () => ReopenRollCall.fromJson(obj, mockLaoIdHash);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 });

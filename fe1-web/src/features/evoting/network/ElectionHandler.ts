@@ -1,4 +1,3 @@
-import { KeyPairStore } from 'core/keypair';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
@@ -21,16 +20,26 @@ import { OpenElection } from './messages/OpenElection';
 export const handleElectionSetupMessage =
   (addEvent: EvotingConfiguration['addEvent']) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `election#setup was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.SETUP
     ) {
-      console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
     const elecMsg = msg.messageData as SetupElection;
-    elecMsg.validate(msg.laoId);
 
     const election = new Election({
       lao: elecMsg.lao,
@@ -68,14 +77,25 @@ export const handleElectionOpenMessage =
   ) =>
   (msg: ProcessableMessage): boolean => {
     console.log('Handling Election open message');
+
+    const makeErr = (err: string) => `election#open was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.OPEN
     ) {
-      console.warn('handleElectionOpenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/open was not processed: ${err}`;
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const electionOpenMsg = msg.messageData as OpenElection;
     const election = getEventById(electionOpenMsg.election) as Election;
@@ -93,40 +113,39 @@ export const handleElectionOpenMessage =
 /**
  * Returns a function that handles a CastVote message being sent during an election.
  *
- * @param getCurrentLao - A function returning the current lao
  * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleCastVoteMessage =
   (
-    getCurrentLao: EvotingConfiguration['getCurrentLao'],
     getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `election#cast-vote was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.CAST_VOTE
     ) {
-      console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/cast-vote was not processed: ${err}`;
-    const lao = getCurrentLao();
 
-    const myPublicKey = KeyPairStore.getPublicKey();
-    const isOrganizer = lao.organizer.equals(myPublicKey);
-    const isWitness = lao.witnesses.some((w) => w.equals(myPublicKey));
-    if (!isOrganizer && !isWitness) {
-      // Then current user is an attendee and doesn't have to store the votes
-      return true;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
     }
 
     const castVoteMsg = msg.messageData as CastVote;
 
     const election = getEventById(castVoteMsg.election) as Election;
     if (!election) {
-      console.warn(makeErr('No active election to register vote '));
+      console.warn(makeErr('No active election to register vote'));
       return false;
     }
 
@@ -164,14 +183,25 @@ export const handleElectionEndMessage =
   ) =>
   (msg: ProcessableMessage) => {
     console.log('Handling Election end message');
+
+    const makeErr = (err: string) => `election#end was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.END
     ) {
-      console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/end was not processed: ${err}`;
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const ElectionEndMsg = msg.messageData as EndElection;
     const election = getEventById(ElectionEndMsg.election) as Election;
@@ -198,15 +228,24 @@ export const handleElectionResultMessage =
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage) => {
+    const makeErr = (err: string) => `election#result was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.RESULT
     ) {
-      console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `election/Result was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     if (!msg.channel) {
       console.warn(makeErr('No channel found in message'));

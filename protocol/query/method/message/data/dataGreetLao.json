@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetLao.json",
+    "description": "Match a lao greeting query",
+    "$comment": "A message the back-end sends to clients when they subscribe to a LAO. It informs clients about the servers public key and its peers for this lao",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "greet"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "frontend": {
+            "description": "[Base64String] public key of the frontend of the server owner",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "address": {
+            "description": "Canonical address of the server with a protocol prefix and the port number",
+            "type": "string",
+            "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+        },
+        "peers": {
+            "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "description": "Canonical address of the peer with a protocol prefix and the port number",
+                        "type": "string",
+                        "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+                    }
+                },
+                "required": ["address"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "frontend", "address", "peers"]
+}

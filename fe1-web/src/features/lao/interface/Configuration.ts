@@ -53,7 +53,19 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
   /* action creators */
   actionCreators: {
+    /**
+     * Creates a redux action to add a server address for a given lao
+     */
     addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+
+    /**
+     * Creates a redux action to set the last roll call for a given lao
+     */
+    setLaoLastRollCall: (
+      laoId: Hash | string,
+      rollCallId: Hash | string,
+      hasToken: boolean,
+    ) => AnyAction;
   };
 
   /* hooks */

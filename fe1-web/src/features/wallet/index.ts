@@ -1,5 +1,6 @@
 import { SignatureType } from 'core/network/jsonrpc/messages';
 
+import * as functions from './functions';
 import { WalletConfiguration, WalletInterface, WALLET_FEATURE_IDENTIFIER } from './interface';
 import * as navigation from './navigation';
 import { getCurrentPopTokenFromStore } from './objects';
@@ -17,6 +18,7 @@ export function configure(configuration: WalletConfiguration): WalletInterface {
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
     navigation,
+    functions,
     reducers: {
       ...walletReducer,
     },

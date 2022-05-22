@@ -13,7 +13,7 @@ import {
   clearAllEvents,
   eventReduce,
   makeEventByTypeSelector,
-  makeEventGetter,
+  makeEventSelector,
   selectEventsAliasMap,
   selectEventsList,
   makeRollCallAttendeesList,
@@ -218,12 +218,14 @@ describe('event selector', () => {
   });
 
   it('should return undefined for makeEventGetter if the state is empty', () => {
-    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(emptyState)).toEqual(undefined);
+    expect(makeEventSelector(mockLaoId, rollCallIdString).resultFunc(emptyState)).toEqual(
+      undefined,
+    );
   });
 
   it('should return makeEventGetter correctly', () => {
     expect(
-      makeEventGetter(mockLaoId, rollCallIdString).resultFunc(filledStateWithRollCallCreated),
+      makeEventSelector(mockLaoId, rollCallIdString).resultFunc(filledStateWithRollCallCreated),
     ).toEqual(RollCall.fromState(rollCallCreated));
   });
 

@@ -46,6 +46,7 @@ export function configureFeatures() {
     /* other dependencies */
     messageRegistry,
   });
+
   const meetingConfiguration = meeting.configure({
     messageRegistry,
     addEvent: eventsConfiguration.actionCreators.addEvent,
@@ -54,7 +55,28 @@ export function configureFeatures() {
     getLaoById: laoConfiguration.functions.getLaoById,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
-  const rollCallConfiguration = rollCall.configure(messageRegistry);
+
+  const walletConfiguration = wallet.configure({
+    keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
+  });
+
+  const rollCallConfiguration = rollCall.configure({
+    messageRegistry,
+    addEvent: eventsConfiguration.actionCreators.addEvent,
+    updateEvent: eventsConfiguration.actionCreators.updateEvent,
+    getEventById: eventsConfiguration.functions.getEventById,
+    makeEventSelector: eventsConfiguration.functions.makeEventSelector,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    generateToken: walletConfiguration.functions.generateToken,
+    hasSeed: walletConfiguration.functions.hasSeed,
+  });
+
   const socialConfiguration = social.configure(messageRegistry);
   const witnessConfiguration = witness.configure({
     enabled: false,
@@ -66,13 +88,6 @@ export function configureFeatures() {
     addNotification: notificationConfiguration.actionCreators.addNotification,
     markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
     discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
-  });
-  const walletConfiguration = wallet.configure({
-    keyPairRegistry,
-    getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    getEventById: eventsConfiguration.functions.getEventById,
-    makeEventByTypeSelector: eventsConfiguration.functions.makeEventByTypeSelector,
   });
 
   // compose features
@@ -210,6 +225,7 @@ export function configureFeatures() {
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletConfiguration.context,
+      [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
     },
   };
