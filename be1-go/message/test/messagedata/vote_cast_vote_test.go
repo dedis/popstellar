@@ -38,5 +38,5 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=", msg.Votes[0].Question)
 
 	require.Len(t, msg.Votes[0].Vote, 1)
-	require.Equal(t, 0, msg.Votes[0].Vote[0])
+	require.Equal(t, 0, msg.Votes[0].Vote)
 }

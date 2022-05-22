@@ -3,6 +3,7 @@ package election
 import (
 	"encoding/base64"
 	"fmt"
+	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
@@ -129,10 +130,18 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 			return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
 		}
 
-		sort.Ints(vote.Vote)
-		sortedIndex := arrayToString(vote.Vote, ",")
+		var vs string
+		switch c.electionType {
+		case messagedata.OpenBallot:
+			v, _ := vote.Vote.(int)
+			vs = string(v)
+		case messagedata.SecretBallot:
+			vs, _ = vote.Vote.(string)
+		default:
+			return answer.NewErrorf(-4, "vote id should be an int or string")
+		}
 
-		hash := messagedata.Hash("Vote", electionID, string(qs.ID), sortedIndex)
+		hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
 
 		if vote.ID != hash {
 			return xerrors.Errorf("vote ID of vote %d is incorrect", i)

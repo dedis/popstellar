@@ -105,8 +105,8 @@ type validVote struct {
 	// voteTime represents the time of the creation of the vote
 	voteTime int64
 
-	// indexes represents the indexes of the ballot options
-	indexes []int
+	// index represents the index of the ballot options
+	index interface{}
 }
 
 // attendees represents the attendees in an election.
@@ -597,7 +597,7 @@ func (a *attendees) isPresent(key string) bool {
 
 // broadcastElectionResult gathers and broadcasts the results of an election
 func (c *Channel) broadcastElectionResult() error {
-	resultElection, err := gatherResults(c.questions, c.log)
+	resultElection, err := c.gatherResults(c.questions, c.log)
 	if err != nil {
 		return xerrors.Errorf("failed to gather results: %v", err)
 	}
@@ -636,7 +636,7 @@ func (c *Channel) broadcastElectionResult() error {
 	return nil
 }
 
-func gatherResults(questions map[string]*question,
+func (c *Channel) gatherResults(questions map[string]*question,
 	log zerolog.Logger) (messagedata.ElectionResult, error) {
 
 	log.Info().Msgf("gathering results for the election")
@@ -658,8 +658,17 @@ func gatherResults(questions map[string]*question,
 		if question.method == "Plurality" {
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
-				for _, ballotIndex := range vote.indexes {
-					numberOfVotesPerBallotOption[ballotIndex]++
+				switch c.electionType {
+				case messagedata.OpenBallot:
+					index, _ := vote.index.(int)
+					numberOfVotesPerBallotOption[index]++
+				case messagedata.SecretBallot:
+					temp, _ := vote.index.(string)
+					index, err := c.decryptVote(temp)
+					if err != nil {
+						return resultElection, answer.NewErrorf()
+					}
+					numberOfVotesPerBallotOption[index]++
 				}
 			}
 
@@ -679,6 +688,10 @@ func gatherResults(questions map[string]*question,
 	}
 
 	return resultElection, nil
+}
+
+func (c *Channel) decryptVote(temp string) (int, error) {
+	panic("unimplemented")
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
@@ -723,7 +736,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 
 		// if the sender didn't previously cast a vote or if the vote is no
 		// longer valid update it
-		err := checkMethodProperties(qs.method, len(vote.Vote))
+		err := checkMethodProperties(qs.method, 1)
 		if err != nil {
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}

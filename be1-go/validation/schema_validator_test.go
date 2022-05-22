@@ -2,9 +2,10 @@ package validation
 
 import (
 	"encoding/base64"
-	"github.com/rs/zerolog"
 	"io"
 	"testing"
+
+	"github.com/rs/zerolog"
 
 	"github.com/stretchr/testify/require"
 )
@@ -89,7 +90,7 @@ func TestSchemaValidator_ValidatePublishBadMethod(t *testing.T) {
 }
 
 func TestSchemaValidator_ValidateCastVoteData(t *testing.T) {
-	request := "eyJvYmplY3QiOiJlbGVjdGlvbiIsImFjdGlvbiI6ImNhc3Rfdm90ZSIsImxhbyI6IjRlaXNzUzRWTl9CbUl5dktRb1NKQVBmMXRraFNwUXVTZ0J2dTdPNzZBYUE9IiwiY3JlYXRlZF9hdCI6MTYyMzM0NTY2MCwidm90ZXMiOlt7ImlkIjoieUIybEtHR1lSY0Robm4wWVdhOGJ0MlhrU0FHazBXNVNZQ3dBWHdWeVJIdz0iLCJxdWVzdGlvbiI6IlhPSmVDdXRsNzlJU1RFRkhWSVhTdUJmRWh6czF2V3lJYlZ3NFJ0U3FYSlk9Iiwidm90ZSI6WzFdfV0sImVsZWN0aW9uIjoiY3FBSk5iaFlzVWNncWJxUUtpRHlDbmxBY1dLZ2VHMXotcHoxYWNMcjEzND0ifQ=="
+	request := "ewogICAgIm9iamVjdCI6ICJlbGVjdGlvbiIsCiAgICAiYWN0aW9uIjogImNhc3Rfdm90ZSIsCiAgICAibGFvIjogImZ6SlNaaktmLTJjYlhIN2tkczlIOE5PUnV1RklSTGtldkpsTjdxUWVtam89IiwKICAgICJlbGVjdGlvbiI6ICJ6RzFvbGdGWndBMG0zbUx5VXFlT3FyRzBNYmp0ZnFTaGt5WjZobHl4MXRnPSIsCiAgICAiY3JlYXRlZF9hdCI6IDE2MzMwOTg5NDEsCiAgICAidm90ZXMiOiBbCiAgICAgICAgewogICAgICAgICAgICAiaWQiOiAiOEwyTVdKSllOR0c1N1pPS2RibWhIRDlBb3B2QmFCTjI2eTF3NWpMMDdtcz0iLAogICAgICAgICAgICAicXVlc3Rpb24iOiAiMlBMd1Z2cXhNcVc1aFFKWGtGcE5DdkJJOU1ad3VOOHJmNjZWMWhTLWlaVT0iLAogICAgICAgICAgICAidm90ZSI6IDAKICAgICAgICB9CiAgICBdCn0K"
 	dataBuf, err := base64.URLEncoding.DecodeString(request)
 	require.NoError(t, err)
 
