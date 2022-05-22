@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
+    android:id="@+id/home_coin"
+    android:icon="@drawable/ic_digicash_home"
+    android:iconTint="@color/colorPrimaryDark"
+    android:title="@string/digital_cash_home" />
+  <item
     android:id="@+id/send_coin"
     android:icon="@drawable/ic_digicash_send"
     android:iconTint="@color/colorPrimary"
@@ -15,12 +20,6 @@
     android:id="@+id/history_coin"
     android:icon="@drawable/ic_digicash_history"
     android:title="@string/digital_cash_history"
-    android:iconTint="@color/colorPrimaryDark" />
-
-  <item
-    android:id="@+id/home_coin"
-    android:icon="@drawable/ic_digicash_home"
-    android:title="@string/digital_cash_home"
     android:iconTint="@color/colorPrimaryDark" />
 
   <item

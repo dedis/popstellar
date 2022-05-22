@@ -25,14 +25,14 @@ public class DigitalCashReceiptFragment extends Fragment {
    *
    * @return A new instance of fragment DigitalCashReceiveFragment.
    */
-  public static DigitalCashReceiveFragment newInstance() {
-    return new DigitalCashReceiveFragment();
+  public static DigitalCashReceiptFragment newInstance() {
+    return new DigitalCashReceiptFragment();
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_receive_fragment, container, false);
+    return inflater.inflate(R.layout.digital_cash_receipt_fragment, container, false);
   }
 }

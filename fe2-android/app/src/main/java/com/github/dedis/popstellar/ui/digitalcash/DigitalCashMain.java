@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.digitalcash;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -110,6 +109,8 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_receipt);
               }
             });
+
+    mViewModel.openHome();
   }
 
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
