@@ -620,6 +620,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 () -> {
                   Log.d(TAG, "opened the roll call");
                   currentRollCallId = openRollCall.getUpdateId();
+                  Log.d(TAG, "opening rc with current id = " + currentRollCallId);
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
                   openScanning();
                 },

@@ -115,7 +115,8 @@ public final class RollCallHandler {
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
-
+    Log.d(TAG, "All roll call are " + lao.getRollCalls().toString());
+    Log.d(TAG, "closes is " + closes);
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to close : " + closes);

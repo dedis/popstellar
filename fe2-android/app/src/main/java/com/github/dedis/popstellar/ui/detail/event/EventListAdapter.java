@@ -4,7 +4,6 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-  private final EventCategory[] categories = EventCategory.values();
   private final LaoDetailViewModel viewModel;
   private final LifecycleOwner lifecycleOwner;
   private final HashMap<EventCategory, List<Event>> eventsMap;
@@ -127,7 +125,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             expanded[eventCategory.ordinal()] = !value;
             LaoDetailAnimation.rotateExpand(expandIcon, !value);
             notifyDataSetChanged();
-            Log.d(TAG, "click on adapterPosition " + position);
             headerLayout.setEnabled(true);
           });
     } else if (holder instanceof EventViewHolder) {
@@ -142,10 +139,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
       Election election = (Election) event;
       eventViewHolder.eventTitle.setText(election.getName());
-      Log.d(TAG, "getting into election " + election.getName());
       View.OnClickListener listener =
           view -> {
-            Log.d(TAG, "election listener triggered");
             viewModel.setCurrentElection(election);
             viewModel.openElectionFragment(true);
           };
@@ -156,7 +151,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       RollCall rollCall = (RollCall) event;
       View.OnClickListener listener =
           view -> {
-            Log.d(TAG, "roll-call listener triggered");
             viewModel.setCurrentRollCall(rollCall);
             viewModel.enterRollCall(rollCall.getId());
           };
@@ -259,8 +253,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   }
 
   public void replaceList(List<Event> events) {
-
-    Log.d(TAG, "Replace list called " + events.toString());
     setList(events);
   }
 

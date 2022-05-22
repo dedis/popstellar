@@ -112,7 +112,6 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
-    Log.d(TAG, "Roll call is " + (rollCall == null));
     EventState rcState = rollCall.getState().getValue();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
