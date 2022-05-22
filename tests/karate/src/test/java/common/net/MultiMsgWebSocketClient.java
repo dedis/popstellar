@@ -5,10 +5,9 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
+import io.opencensus.trace.Link;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
@@ -20,6 +19,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
+  private ArrayList<String> broadcasts = new ArrayList<>();
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -64,6 +64,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   public String getBackendResponse(String data){
+    return getBackendResponseWithOrWithoutBroadcasts(data, false);
+  }
+
+  public String getBackendResponseWithOrWithoutBroadcasts(String data, boolean withBroadcasts){
     assert idAssociatedWithSentMessages.containsKey(data);
     int idData = idAssociatedWithSentMessages.get(data);
     if (idAssociatedWithAnswers.containsKey(idData)){
@@ -84,14 +88,39 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
           idAssociatedWithAnswers.put(idResult, answer);
         }
       }
+      if (withBroadcasts && answer.contains("broadcast")){
+        broadcasts.add(answer);
+      }
       answer = getBuffer().takeTimeout(5000);
     }
     assert false;
     throw new IllegalArgumentException("No answer from the backend");
   }
 
+  public String getBackendResponseWithElectionResults(String data){
+    String answer = getBackendResponseWithOrWithoutBroadcasts(data, true);
+    Base64.Decoder decoder = Base64.getDecoder();
+    for (String broadcast : broadcasts) {
+      String base64Data =
+          (((LinkedHashMap)
+                  ((LinkedHashMap) Json.of(broadcast).get("params")).get("message"))
+              .get("data")
+              .toString());
+      String broadcastData = new String(decoder.decode(base64Data.getBytes()));
+      if (broadcastData.contains("result")){
+        return broadcastData;
+      }
+    }
+    assert false;
+    throw new IllegalArgumentException("No election results where received");
+  }
+
   public boolean receiveNoMoreResponses(){
     String result = getBuffer().takeTimeout(5000);
     return result == null;
+  }
+
+  public void setWrongSignature(){
+    jsonConverter.setSignature(nonAttendeePk);
   }
 }

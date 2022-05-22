@@ -2,11 +2,12 @@ package messagedata
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"popstellar/message/messagedata"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Delete_Publish(t *testing.T) {

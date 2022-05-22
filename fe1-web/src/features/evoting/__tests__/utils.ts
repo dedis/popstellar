@@ -174,9 +174,9 @@ export const mockElectionResultQuestions: ElectionResult['questions'] = [
   },
 ];
 
-export const mockElectionKeyString = 'ZWQucG9pbnRQX88KbADoKklwztS2Bz5R4SOvbEN2BhimKRBMYK0X4g==';
+export const mockElectionKeyString = 'uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=';
 export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyString);
 export const mockElectionKey = new ElectionPublicKey(mockElectionKeyString);
 
-export const mockElectionPrivateKeyString = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+export const mockElectionPrivateKeyString = 'o1EESXAvTFD34Ss29FVohukOximnyn/qf/PdZu2HCQw=';
 export const mockEncodedElectionPrivateKey = new Base64UrlData(mockElectionPrivateKeyString);

@@ -121,9 +121,6 @@ test("message data: vote", () => {
 
     vote_cast_vote_encrypted = require("../examples/messageData/vote_cast_vote/vote_cast_vote_encrypted.json");
     expect(vote_cast_vote_encrypted).toBeValid(messageDataSchema);
-
-    failure = require("../examples/messageData/vote_cast_vote/wrong_vote_cast_vote_mixed_encrypted.json");
-    expect(failure).not.toBeValid(messageDataSchema);
 });
 
 test("message data: roll call", () => {
@@ -263,6 +260,23 @@ test("message data: chirp", () => {
 
     reaction_delete = require("../examples/messageData/reaction_delete/reaction_delete.json");
     expect(reaction_delete).toBeValid(messageDataSchema);
+});
+
+test("message data: cash", () => {
+    cash_transaction = require("../examples/messageData/coin/post_transaction.json");
+    expect(cash_transaction).toBeValid(messageDataSchema);
+
+    cash_transaction_coinbase = require("../examples/messageData/coin/post_transaction_coinbase.json");
+    expect(cash_transaction_coinbase).toBeValid(messageDataSchema);
+
+    cash_transaction_multipleinandout = require("../examples/messageData/coin/post_transaction_multipleinpandout.json");
+    expect(cash_transaction_multipleinandout).toBeValid(messageDataSchema);
+
+    cash_transaction_nooutput = require("../examples/messageData/coin/post_transaction_nooutput.json");
+    expect(cash_transaction_nooutput).not.toBeValid(messageDataSchema);
+
+    cash_transaction_wrongid = require("../examples/messageData/coin/post_transaction_wrong_transaction_id.json");
+    expect(cash_transaction_wrongid).toBeValid(messageDataSchema);
 });
 
 test("message data: consensus", () => {

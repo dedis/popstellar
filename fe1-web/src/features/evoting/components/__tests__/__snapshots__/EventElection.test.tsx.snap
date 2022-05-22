@@ -1608,7 +1608,6 @@ Array [
       </View>
     </View>
   </View>,
-  ",",
 ]
 `;
 
@@ -1664,13 +1663,18 @@ Array [
     </Text>
     <View
       style={
-        Object {
-          "alignContent": "center",
-          "alignItems": "center",
-          "flexDirection": "row",
-          "justifyContent": "center",
-          "zIndex": 3,
-        }
+        Array [
+          Object {
+            "alignContent": "center",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "justifyContent": "center",
+            "zIndex": 3,
+          },
+          Object {
+            "flexDirection": "row",
+          },
+        ]
       }
     >
       <View
@@ -1974,13 +1978,18 @@ Array [
     </Text>
     <View
       style={
-        Object {
-          "alignContent": "center",
-          "alignItems": "center",
-          "flexDirection": "row",
-          "justifyContent": "center",
-          "zIndex": 3,
-        }
+        Array [
+          Object {
+            "alignContent": "center",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "justifyContent": "center",
+            "zIndex": 3,
+          },
+          Object {
+            "flexDirection": "row",
+          },
+        ]
       }
     >
       <View
@@ -2312,7 +2321,6 @@ Array [
   <Text>
     Waiting for the election key to be broadcasted
   </Text>,
-  ",",
 ]
 `;
 
@@ -2419,7 +2427,6 @@ Array [
   >
     Waiting for result
   </Text>,
-  ",",
 ]
 `;
 

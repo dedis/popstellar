@@ -40,7 +40,7 @@ type Channel struct {
 
 	// *baseChannel
 
-	// Type of election channel ("open-ballot", "secret-ballot", ...)
+	// Type of election channel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
 	electionType string
 
 	// Keys of the election if secret ballot, nil otherwise
@@ -77,8 +77,8 @@ type Channel struct {
 
 // question represents a question in an election.
 type question struct {
-	// ID represents the id of the question.
-	id []byte
+	// ID represents the ID of the question.
+	ID []byte
 
 	// ballotOptions represents different ballot options.
 	ballotOptions []string
@@ -751,7 +751,7 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 		copy(ballotOpts, q.BallotOptions)
 
 		qs[q.ID] = &question{
-			id:            []byte(q.ID),
+			ID:            []byte(q.ID),
 			ballotOptions: ballotOpts,
 			validVotesMu:  sync.RWMutex{},
 			validVotes:    make(map[string]validVote),

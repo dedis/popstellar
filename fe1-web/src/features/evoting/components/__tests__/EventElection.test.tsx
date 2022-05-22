@@ -174,7 +174,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection event={notStartedElection} isOrganizer />,
+            <EventElection event={notStartedElection} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -222,7 +222,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection event={terminatedElection} isOrganizer />,
+            <EventElection event={terminatedElection} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -294,7 +294,7 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection event={openedSecretBallotElection} isOrganizer />,
+            <EventElection event={openedSecretBallotElection} isOrganizer />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();

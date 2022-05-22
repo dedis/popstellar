@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -30,12 +30,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 20,
   } as ViewStyle,
-  textInput: {
-    padding: 10,
-    borderWidth: 1,
-    width: 500,
-    alignContent: 'flex-end',
-  } as TextStyle,
 });
 
 const SocialHome = (props: IPropTypes) => {

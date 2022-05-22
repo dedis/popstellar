@@ -422,13 +422,13 @@ Last but not least, the greeting message contains a list of peers that tells cli
     "action": "greet",
     "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
     "frontend": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "address": "wss://popdemo.dedis.ch/demo",
+    "address": "wss://popdemo.dedis.ch:8000/demo",
     "peers": [
         {
-            "address": "wss://popdemo.dedis.ch/second-organizer-demo"
+            "address": "wss://popdemo.dedis.ch:8000/second-organizer-demo"
         },
         {
-            "address": "wss://popdemo.dedis.ch/witness-demo"
+            "address": "wss://popdemo.dedis.ch:8000/witness-demo"
         }
     ]
 }
@@ -465,9 +465,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
             "$comment": "Note: the string is encoded in Base64"
         },
         "address": {
-            "description": "Canonical address of the server with a protocol prefix",
+            "description": "Canonical address of the server with a protocol prefix and the port number",
             "type": "string",
-            "pattern": "^.*://.*$"
+            "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
         },
         "peers": {
             "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
@@ -477,9 +477,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
                 "additionalProperties": false,
                 "properties": {
                     "address": {
-                        "description": "Address of the peer without a protocol prefix",
+                        "description": "Canonical address of the peer with a protocol prefix and the port number",
                         "type": "string",
-                        "pattern": "^.*://.*$"
+                        "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
                     }
                 },
                 "required": ["address"]
@@ -1522,7 +1522,7 @@ A vote in an open ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [0]
+            "vote": 0
         }
     ]
 }
@@ -1544,10 +1544,7 @@ A vote in a secret ballot election
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [
-                "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA==",
-                "d2h5IGRpZCB5b3UgZGVjb2RlIHRoaXM/IHRvbyBtdWNoIHRpbWU/IPCfmII="
-            ]
+            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
         }
     ]
 }
@@ -1597,7 +1594,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in))), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in))"
                             },
                             "question": {
                                 "type": "string",
@@ -1605,14 +1602,9 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "integer",
-                                    "$comment": "index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "index corresponding to the ballot_option",
+                                "type": "integer",
+                                "$comment": "index of the option to vote for"
                             }
                         }
                     },
@@ -1621,7 +1613,7 @@ A vote in a secret ballot election
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))), concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index | encrypted_write_in)))"
                             },
                             "question": {
                                 "type": "string",
@@ -1629,15 +1621,10 @@ A vote in a secret ballot election
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             },
                             "vote": {
-                                "description": "[Array[String]] encrypted index(es) corresponding to the ballot_options",
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "contentEncoding": "base64",
-                                    "$comment": "encrypted index of the option to vote for"
-                                },
-                                "minItems": 1,
-                                "uniqueItems": true
+                                "description": "encrypted index corresponding to the ballot_option",
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "encrypted index of the option to vote for"
                             }
                         }
                     }

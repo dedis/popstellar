@@ -16,12 +16,15 @@ import { Typography, Views } from '../styles';
 
 const styles = StyleSheet.create({
   text: {
-    ...Typography.base,
+    ...Typography.baseCentered,
   } as TextStyle,
   view: {
     ...Views.base,
     flexDirection: 'column',
     zIndex: 3,
+  } as ViewStyle,
+  flexRow: {
+    flexDirection: 'row',
   } as ViewStyle,
 });
 
@@ -82,7 +85,7 @@ const CheckboxList = (props: IPropTypes) => {
   return (
     <View style={styles.view}>
       <Text style={styles.text}>{title}</Text>
-      <View style={{ ...styles.view, flexDirection: 'row' }}>
+      <View style={[styles.view, styles.flexRow]}>
         {values.map((value, idx) => (
           <CheckBox
             key={value}

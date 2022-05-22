@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 600,
   } as ViewStyle,
+  innerContainer: {
+    flexDirection: 'row',
+  } as ViewStyle,
   leftView: {
     width: 60,
   } as ViewStyle,
@@ -69,6 +72,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     display: 'flex',
     marginTop: 10,
+  } as ViewStyle,
+  deleteChirpContainer: {
+    marginRight: 'auto',
+  } as ViewStyle,
+  chirpTimeContainer: {
+    marginLeft: 'auto',
   } as ViewStyle,
 });
 
@@ -115,7 +124,7 @@ const ChirpCard = (props: IPropTypes) => {
   return (
     <>
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={styles.innerContainer}>
           <View style={styles.leftView}>
             <ProfileIcon publicKey={chirp.sender} />
           </View>
@@ -160,7 +169,7 @@ const ChirpCard = (props: IPropTypes) => {
         </View>
         <View style={styles.bottomView}>
           {isSender && !chirp.isDeleted && (
-            <View style={{ marginRight: 'auto' }}>
+            <View style={styles.deleteChirpContainer}>
               <Pressable
                 onPress={() => {
                   setDeleteModalIsVisible(true);
@@ -170,7 +179,7 @@ const ChirpCard = (props: IPropTypes) => {
               </Pressable>
             </View>
           )}
-          <View style={{ marginLeft: 'auto' }}>
+          <View style={styles.chirpTimeContainer}>
             <TimeAgo date={chirp.time.valueOf() * 1000} />
           </View>
         </View>
