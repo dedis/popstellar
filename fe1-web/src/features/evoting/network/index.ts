@@ -67,7 +67,7 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
   configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.CAST_VOTE,
-    handleCastVoteMessage(configuration.getCurrentLao, boundGetElectionById, updateElectionEvent),
+    handleCastVoteMessage(boundGetElectionById, updateElectionEvent),
     CastVote.fromJson,
   );
   configuration.messageRegistry.add(
