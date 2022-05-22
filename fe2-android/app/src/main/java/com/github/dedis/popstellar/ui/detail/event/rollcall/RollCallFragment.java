@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.utility.Constants;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -52,10 +51,6 @@ public class RollCallFragment extends Fragment {
     this.pk = pk;
   }
 
-  public static RollCallFragment newInstance() {
-    return new RollCallFragment();
-  }
-
   public static RollCallFragment newInstance(PublicKey pk) {
     return new RollCallFragment(pk);
   }
@@ -83,7 +78,6 @@ public class RollCallFragment extends Fragment {
           switch (state) {
             case CLOSED:
             case CREATED:
-              Log.d(TAG, "trying to open the roll call");
               laoDetailViewModel.openRollCall(rollCall.getId());
               break;
             case OPENED:
@@ -102,6 +96,7 @@ public class RollCallFragment extends Fragment {
             });
     ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     if (pk != null) {
+      Log.d(TAG, "key displayed is " + pk.getEncoded());
       Bitmap myBitmap = QRCode.from(pk.getEncoded()).bitmap();
       qrCode.setImageBitmap(myBitmap);
     }
@@ -184,11 +179,5 @@ public class RollCallFragment extends Fragment {
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
-  }
-
-  private void setButtonEnabling(Button button, boolean enabled) {
-    button.setAlpha(
-        enabled ? Constants.ENABLED_OPAQUE_ALPHA : Constants.DISABLED_TRANSPARENCY_ALPHA);
-    button.setEnabled(enabled);
   }
 }

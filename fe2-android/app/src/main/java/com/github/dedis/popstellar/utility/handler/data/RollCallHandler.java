@@ -115,8 +115,6 @@ public final class RollCallHandler {
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
-    Log.d(TAG, "All roll call are " + lao.getRollCalls().toString());
-    Log.d(TAG, "closes is " + closes);
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to close : " + closes);
@@ -128,7 +126,6 @@ public final class RollCallHandler {
     rollCall.setId(updateId);
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
-
     lao.updateRollCall(closes, rollCall);
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
@@ -136,7 +133,6 @@ public final class RollCallHandler {
     try {
 
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
-      Log.d(TAG, "Token ok " + token.toString());
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))

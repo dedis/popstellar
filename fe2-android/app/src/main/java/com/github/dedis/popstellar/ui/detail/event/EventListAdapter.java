@@ -152,7 +152,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       View.OnClickListener listener =
           view -> {
             viewModel.setCurrentRollCall(rollCall);
-            viewModel.enterRollCall(rollCall.getId());
+            viewModel.enterRollCall(rollCall.getPersistentId());
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
       eventViewHolder.eventTitle.setText(rollCall.getName());
