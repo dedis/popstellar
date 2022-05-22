@@ -172,11 +172,13 @@ public final class Lao {
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     Iterator<PublicKey> iterator = attendees.iterator();
     pub_keyByHash = new HashMap<>();
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    //pub_keyByHash.put(organizer.computeHash(), organizer);
     while (iterator.hasNext()) {
       PublicKey current = iterator.next();
       pub_keyByHash.put(current.computeHash(), current);
+      Log.d(Lao.class.getSimpleName(),"add in map for transaction :" + current);
     }
+
     // also update the history and the current transaction per attendees
     // both map have to be set to empty again
     transactionByUser = new HashMap<>();
