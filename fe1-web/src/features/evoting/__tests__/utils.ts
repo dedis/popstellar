@@ -154,3 +154,20 @@ export const mockElectionResultQuestions: ElectionResult['questions'] = [
     ],
   },
 ];
+
+export const mockElectionResults = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: mockElectionName,
+  version: VERSION,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
+  electionStatus: ElectionStatus.RESULT,
+  registeredVotes: mockRegisteredVotes,
+  questionResult: mockElectionResultQuestions.map((q) => ({
+    id: q.id,
+    result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+  })),
+});

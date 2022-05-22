@@ -1,9 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
+import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { PublicKey } from 'core/objects';
@@ -14,7 +15,7 @@ import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
 import { requestCloseRollCall } from '../network';
-import { RollCall } from '../objects';
+import { makeRollCallSelector } from '../reducer';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -49,11 +50,12 @@ const RollCallOpened = () => {
   const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
+  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallID), [rollCallID]);
+  const rollCall = useSelector(rollCallSelector);
+
   if (!laoId) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
   }
-
-  const rollCall = RollCallHooks.useEventSelector(laoId, rollCallID) as RollCall;
 
   if (!rollCall) {
     throw new Error('Impossible to open a Roll Call that does not exist');

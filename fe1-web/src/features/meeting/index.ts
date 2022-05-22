@@ -1,6 +1,7 @@
-import { MeetingEventTypeComponent } from './components';
+import { MeetingEventType } from './components';
 import { MeetingConfiguration, MeetingInterface, MEETING_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
+import { meetingReducer } from './reducer';
 import * as screens from './screens';
 
 /**
@@ -13,10 +14,13 @@ export const configure = (configuration: MeetingConfiguration): MeetingInterface
 
   return {
     identifier: MEETING_FEATURE_IDENTIFIER,
-    eventTypeComponents: [MeetingEventTypeComponent],
+    eventTypes: [MeetingEventType],
     screens,
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,
+    },
+    reducers: {
+      ...meetingReducer,
     },
   };
 };

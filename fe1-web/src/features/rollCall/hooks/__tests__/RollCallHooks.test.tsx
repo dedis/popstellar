@@ -4,14 +4,52 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { mockLao, mockLaoIdHash, mockRollCallState } from '__tests__/utils';
+import { mockLao, mockLaoId, mockLaoIdHash, org } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { addEvent, eventsReducer, makeEventSelector } from 'features/events/reducer';
+import { Hash, Timestamp } from 'core/objects';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
-import { mockLaoId } from 'features/wallet/objects/DummyWallet';
+import { CreateRollCall } from 'features/rollCall/network/messages';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 
 import { RollCallHooks } from '../index';
+
+// region mock data
+
+const mockLaoName2 = 'MyLao';
+const mockLaoCreationTime2 = new Timestamp(1600009000);
+const mockLaoIdHash2: Hash = Hash.fromStringArray(
+  org.toString(),
+  mockLaoCreationTime2.toString(),
+  mockLaoName2,
+);
+const mockLaoId2 = mockLaoIdHash2.valueOf();
+
+const mockRollCallName3 = 'myRollCall3';
+const mockRollCallLocation3 = 'location3';
+const mockRollCallTimestampCreation3 = new Timestamp(1620255700);
+const mockRollCallTimestampStart3 = new Timestamp(1620255800);
+const mockRollCallTimestampEnd3 = new Timestamp(1620357900);
+
+const mockRollCall3 = new RollCall({
+  id: CreateRollCall.computeRollCallId(
+    mockLaoIdHash2,
+    mockRollCallTimestampCreation3,
+    mockRollCallName3,
+  ),
+  start: mockRollCallTimestampStart3,
+  end: mockRollCallTimestampEnd3,
+  name: mockRollCallName3,
+  location: mockRollCallLocation3,
+  creation: mockRollCallTimestampCreation3,
+  proposedStart: mockRollCallTimestampStart3,
+  proposedEnd: mockRollCallTimestampEnd3,
+  status: RollCallStatus.CREATED,
+  attendees: [],
+});
 
 const mockGenerateToken = jest.fn();
 const mockHasSeed = jest.fn();
@@ -19,15 +57,37 @@ const mockHasSeed = jest.fn();
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    makeEventSelector,
+    makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: mockHasSeed,
   } as RollCallReactContext,
 };
 
-const mockStore = createStore(combineReducers({ ...laoReducer, ...eventsReducer }));
+const mockStore = createStore(
+  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer }),
+);
 mockStore.dispatch(connectToLao(mockLao.toState()));
-mockStore.dispatch(addEvent(mockLaoId, mockRollCallState));
+mockStore.dispatch(
+  addEvent(mockLaoId, {
+    eventType: RollCall.EVENT_TYPE,
+    id: mockRollCallState.id.valueOf(),
+    start: mockRollCall.start.valueOf(),
+    end: mockRollCall.end.valueOf(),
+  }),
+);
+mockStore.dispatch(addRollCall(mockRollCallState));
+
+mockStore.dispatch(
+  addEvent(mockLaoId2, {
+    eventType: RollCall.EVENT_TYPE,
+    id: mockRollCall3.id.valueOf(),
+    start: mockRollCall3.start.valueOf(),
+    end: mockRollCall3.end.valueOf(),
+  }),
+);
+mockStore.dispatch(addRollCall(mockRollCall3.toState()));
+
+// endregion
 
 const wrapper = ({ children }: { children: React.ReactChildren }) => (
   <Provider store={mockStore}>
@@ -43,35 +103,6 @@ describe('RollCallHooks', () => {
     });
   });
 
-  describe('useEventSelector', () => {
-    it('should return the undefined if there is no entry for the given lao id', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector('someInexistentLao', mockRollCallState.id),
-        { wrapper },
-      );
-      expect(result.current).toBeUndefined();
-    });
-
-    it('should return the undefined if there is no event for the given id', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector(mockLaoId, 'someInexistentEventId'),
-        { wrapper },
-      );
-      expect(result.current).toBeUndefined();
-    });
-
-    it('should return the event if there is an event for the given ids', () => {
-      const { result } = renderHook(
-        () => RollCallHooks.useEventSelector(mockLaoId, mockRollCallState.id),
-        {
-          wrapper,
-        },
-      );
-      // the 'end' field
-      expect(result.current?.toState()).toEqual(mockRollCallState);
-    });
-  });
-
   describe('useGenerateToken', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => RollCallHooks.useGenerateToken(), { wrapper });
@@ -83,6 +114,20 @@ describe('RollCallHooks', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => RollCallHooks.useHasSeed(), { wrapper });
       expect(result.current).toBe(mockHasSeed);
+    });
+  });
+
+  describe('RollCallHook.useRollCallsByLaoId', () => {
+    it('should return the correct value', () => {
+      const { result } = renderHook(() => RollCallHooks.useRollCallsByLaoId(), { wrapper });
+      expect(result.current).toEqual({
+        [mockLaoId]: {
+          [mockRollCallState.id]: mockRollCall,
+        },
+        [mockLaoId2]: {
+          [mockRollCall3.id.valueOf()]: mockRollCall3,
+        },
+      });
     });
   });
 });

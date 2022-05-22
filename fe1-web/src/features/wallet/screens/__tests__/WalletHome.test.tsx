@@ -4,16 +4,21 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoId, mockLaoIdHash, mockPopToken, mockRC } from '__tests__/utils';
+import { mockLao, mockLaoId, mockLaoIdHash, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { EventTags, Hash, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
-import { LaoEventType } from 'features/events/objects';
-import { addEvent, eventsReducer, makeEventByTypeSelector } from 'features/events/reducer';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
+import { RollCallHooks } from 'features/rollCall/hooks';
+import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
+import { hasSeed } from 'features/wallet/functions';
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
 import { walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
-import { recoverWalletRollCallTokens } from '../../objects';
+import { generateToken, recoverWalletRollCallTokens } from '../../objects';
 import { clearDummyWalletState, createDummyWalletState } from '../../objects/DummyWallet';
 import { RollCallToken } from '../../objects/RollCallToken';
 import { WalletHome } from '../index';
@@ -24,12 +29,54 @@ jest.mock('features/wallet/objects/Wallet');
 jest.mock('features/wallet/objects/DummyWallet');
 jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 
+const mockRCName = 'myRollCall';
+const mockRCLocation = 'location';
+const mockRCTimestampStart = new Timestamp(1620255600);
+const mockRCTimestampEnd = new Timestamp(1620357600);
+const mockRCAttendees = ['attendee1', 'attendee2'];
+
+const mockRCIdAliasHash = Hash.fromStringArray(
+  EventTags.ROLL_CALL,
+  mockLaoId,
+  mockRCTimestampStart.toString(),
+  mockRCName,
+);
+
+const mockRCIdHash = Hash.fromStringArray(
+  EventTags.ROLL_CALL,
+  mockLaoId,
+  mockRCIdAliasHash.valueOf(),
+  mockRCName,
+);
+
+const mockRollCallState = {
+  id: mockRCIdHash.valueOf(),
+  idAlias: mockRCIdAliasHash.valueOf(),
+  eventType: RollCall.EVENT_TYPE,
+  start: mockRCTimestampStart.valueOf(),
+  end: mockRCTimestampEnd.valueOf(),
+  name: mockRCName,
+  location: mockRCLocation,
+  creation: mockRCTimestampStart.valueOf(),
+  proposedStart: mockRCTimestampStart.valueOf(),
+  proposedEnd: mockRCTimestampEnd.valueOf(),
+  status: RollCallStatus.CLOSED,
+  attendees: mockRCAttendees,
+};
+const mockRollCall = RollCall.fromState(mockRollCallState);
+
 const contextValue = {
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
     getEventById,
-    makeEventByTypeSelector,
+    useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
   } as WalletReactContext,
+  [ROLLCALL_FEATURE_IDENTIFIER]: {
+    useCurrentLaoId: () => mockLaoIdHash,
+    generateToken,
+    hasSeed,
+    makeEventByTypeSelector,
+  } as RollCallReactContext,
 };
 
 beforeEach(() => {
@@ -38,7 +85,9 @@ beforeEach(() => {
 
 describe('Wallet home', () => {
   it('renders correctly with an empty wallet', () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
+    const mockStore = createStore(
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
+    );
 
     const component = render(
       <Provider store={mockStore}>
@@ -51,17 +100,27 @@ describe('Wallet home', () => {
   });
 
   it('renders correctly with a non empty wallet', async () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
+    const mockStore = createStore(
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
+    );
 
     const mockRCToken = new RollCallToken({
       token: mockPopToken,
       laoId: mockLao.id,
-      rollCallId: mockRC.id,
-      rollCallName: mockRC.name,
+      rollCallId: mockRollCall.id,
+      rollCallName: mockRollCall.name,
     });
 
     // make the selector return data
-    mockStore.dispatch(addEvent(mockLaoId, mockRC.toState()));
+    mockStore.dispatch(
+      addEvent(mockLaoId, {
+        eventType: RollCall.EVENT_TYPE,
+        id: mockRollCallState.id,
+        start: mockRollCallState.proposedStart,
+        end: mockRollCallState.proposedEnd,
+      }),
+    );
+    mockStore.dispatch(addRollCall(mockRollCallState));
 
     (recoverWalletRollCallTokens as jest.Mock).mockImplementation(() =>
       Promise.resolve([mockRCToken]),
@@ -76,10 +135,7 @@ describe('Wallet home', () => {
     );
 
     expect(recoverWalletRollCallTokens).toHaveBeenCalledTimes(1);
-    expect(recoverWalletRollCallTokens).toHaveBeenCalledWith(
-      makeEventByTypeSelector(LaoEventType.ROLL_CALL)(mockStore.getState()),
-      mockLaoIdHash,
-    );
+    expect(recoverWalletRollCallTokens).toHaveBeenCalledWith(expect.anything(), mockLaoIdHash);
 
     await waitFor(() => {
       expect(() => component.getByText(STRINGS.no_tokens_in_wallet)).toThrow();
@@ -89,7 +145,9 @@ describe('Wallet home', () => {
   });
 
   it('enables correctly the debug mode', async () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
+    const mockStore = createStore(
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
+    );
 
     const mockCreateWalletState = (createDummyWalletState as jest.Mock).mockImplementation(() =>
       Promise.resolve(),
@@ -110,7 +168,9 @@ describe('Wallet home', () => {
   });
 
   it('disables correctly the debug mode', async () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
+    const mockStore = createStore(
+      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
+    );
 
     (createDummyWalletState as jest.Mock).mockImplementation(() => Promise.resolve());
 
