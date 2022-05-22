@@ -32,6 +32,15 @@ Feature: Constants
     * def getLaoValidCreationTime = call laoValidCreationTime
     * def getLaoInvalidCreationTime = call laoInvalidCreationTime
     * def getElectionSetupCreationTime = call electionSetupCreationTime
+    * def rollCallValidName = function() {return "Roll Call "}
+
+    * def getLaoValidName = call laoValidName
+    * def getLaoInvalidName = call laoValidName
+    * def getRolCallValidName = call rollCallValidName
+
+    * def getLaoValidCreationTime = call laoValidCreationTime
+    * def getLaoInvalidCreationTime = call laoInvalidCreationTime
+    * def getRollCallValidCreationTime = call rollCallValidCreationTime
 
     * def constructLaoId =
        """
@@ -56,7 +65,7 @@ Feature: Constants
           var jsonConverter = new JsonConverter()
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d",time)
-          return jsonConverter.hash("R".getBytes(),laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
+          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
         }
       """
     * def createValidRollCallOpenId =
@@ -65,10 +74,14 @@ Feature: Constants
           return "VSsRrcHoOTQJ-nU_VT_FakiMkezZA86z2UHNZKCxbN8="
         }
       """
-    * def createValidRollCallOpenUpdateId =
+    * def constructRollCallUpdateId =
       """
-        function(){
-          return "l2OYtZueg1xkjvh3RCWw0nSZrrPNThuaz3U3ys7MjHI="
+        function(laoId, update, openedAt){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var String = Java.type('java.lang.String')
+          var timeString = String.format("%d",openedAt)
+          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), update.getBytes(), timeString.getBytes())
         }
       """
     * def createInvalidRollCallOpenUpdateId =
@@ -81,12 +94,6 @@ Feature: Constants
       """
         function(){
           return "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU="
-        }
-      """
-    * def createValidRollCallCloseUpdateId =
-      """
-        function(){
-          return "IGLB3pipK0p0G5E_wFxedEk4IpyM3L7XIQoFummhj0Y="
         }
       """
     * def createInvalidRollCallCloseUpdateId =
@@ -178,15 +185,15 @@ Feature: Constants
         }
       """
 
-    * def getRollCallValidId = function(rollName, time) { return constructRollCallId(getLaoValid, rollName, time) }
+    * def getRollCallValidId = constructRollCallId(getLaoValid, getRolCallValidName, getRollCallValidCreationTime)
     * def getRollCallInvalidId = constructRollCallId(getLaoValid, getLaoValidName, 1633098853)
 
     * def getRollCallOpenValidId = call createValidRollCallOpenId
-    * def getRollCallOpenValidUpdateId = call createValidRollCallOpenUpdateId
+    * def getRollCallOpenValidUpdateId = constructRollCallUpdateId(getLaoValid, getRollCallOpenValidId, 1633099127)
     * def getRollCallOpenInvalidUpdateId = call createInvalidRollCallOpenUpdateId
 
     * def getRollCallCloseValidId = call createValidRollCallCloseId
-    * def getRollCallCloseValidUpdateId = call createValidRollCallCloseUpdateId
+    * def getRollCallCloseValidUpdateId = constructRollCallUpdateId(getLaoValid, getRollCallCloseValidId, 1633099135)
     * def getRollCallCloseInvalidUpdateId = call createInvalidRollCallCloseUpdateId
 
     * def getInvalidElectionSetupId = call createInvalidElectionSetupId

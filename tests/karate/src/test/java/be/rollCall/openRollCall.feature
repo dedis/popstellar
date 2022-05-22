@@ -36,6 +36,9 @@ Feature: Roll Call Open
           "opened_at": 1633099127
         }
       """
+    * karate.log("------------4444444444444444------------------------")
+    * karate.log(validOpenRollCall)
+    * karate.log("------------4444444444444444------------------------")
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains VALID_MESSAGE

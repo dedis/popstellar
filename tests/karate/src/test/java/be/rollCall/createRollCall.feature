@@ -17,8 +17,6 @@ Feature: Create a Roll Call
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-    * def creationTime = 1633098853
-    * def rollCallName = "Roll Call "
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
@@ -29,9 +27,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId(rollCallName, creationTime))',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTime)',
+          "id": '#(getRollCallValidId)',
+          "name": "Roll Call ",
+          "creation": 1633098853,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -53,9 +51,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId(rollCallEmptyName, creationTime))',
-          "name": '#(rollCallEmptyName)',
-          "creation": '#(creationTime)',
+          "id": '#(getRollCallValidId)',
+          "name": "",
+          "creation": 1633098853,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -76,9 +74,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId(rollCallName, creationTime))',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTime)',
+          "id": '#(getRollCallValidId)',
+          "name": "Roll Call ",
+          "creation": 1633098853,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -100,9 +98,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId(rollCallName, creationTime))',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTime)',
+          "id": '#(getRollCallValidId)',
+          "name": "Roll Call ",
+          "creation": 1633098853,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -127,8 +125,8 @@ Feature: Create a Roll Call
           "object": "roll_call",
           "action": "create",
           "id": '#(getRollCallValidId(rollCallName, creationTime))',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTime)',
+          "name": "Roll Call ",
+          "creation": 1633098853,
           "proposed_start": 1633099155,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -151,8 +149,8 @@ Feature: Create a Roll Call
           "object": "roll_call",
           "action": "create",
           "id": '#(getRollCallValidId(rollCallName, creationTimeNegative))',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTimeNegative)',
+          "name": "Roll Call ",
+          "creation": -153,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -176,8 +174,8 @@ Feature: Create a Roll Call
           "object": "roll_call",
           "action": "create",
           "id": '#(getRollCallValidId(rollCallName, smallCreationTime))',
-          "name": '#(rollCallName)',
-          "creation": '#(smallCreationTime)',
+          "name": "Roll Call ",
+          "creation": 1633099055,
           "proposed_start": 1633099155,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -198,8 +196,8 @@ Feature: Create a Roll Call
           "object": "roll_call",
           "action": "create",
           "id": '#(getRollCallInvalidId)',
-          "name": '#(rollCallName)',
-          "creation": '#(creationTime)',
+          "name": "Roll Call ",
+          "creation": 1633098853,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
