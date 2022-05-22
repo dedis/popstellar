@@ -47,7 +47,7 @@ describe('RollCallReducer', () => {
       } as RollCallReducerState);
     });
 
-    it('throws an error if the store already contains an rollcall with the same id', () => {
+    it('throws an error if the store already contains a rollcall with the same id', () => {
       expect(() =>
         rollcallReduce(
           {

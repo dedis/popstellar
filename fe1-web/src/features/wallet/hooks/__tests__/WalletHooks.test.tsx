@@ -33,8 +33,8 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Wallet hooks', () => {
-  describe('WalletHooks.useCurrentLaoId', () => {
+describe('WalletHooks', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);

@@ -96,21 +96,21 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('RollCallHooks', () => {
-  describe('RollCallHook.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => RollCallHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });
 
-  describe('RollCallHook.useGenerateToken', () => {
+  describe('useGenerateToken', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => RollCallHooks.useGenerateToken(), { wrapper });
       expect(result.current).toBe(mockGenerateToken);
     });
   });
 
-  describe('RollCallHook.hasSeed', () => {
+  describe('hasSeed', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => RollCallHooks.useHasSeed(), { wrapper });
       expect(result.current).toBe(mockHasSeed);

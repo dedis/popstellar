@@ -14,12 +14,22 @@ import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './m
 export const handleRollCallCreateMessage =
   (addRollCall: (laoId: Hash | string, rollCall: RollCall) => void) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#create was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CREATE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.CREATE
     ) {
-      console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
@@ -51,16 +61,24 @@ export const handleRollCallOpenMessage =
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#open was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.OPEN ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.OPEN
     ) {
-      console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `roll_call/open was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const rcMsgData = msg.messageData as OpenRollCall;
     const oldRC = getRollCallById(rcMsgData.opens);
@@ -95,18 +113,26 @@ export const handleRollCallCloseMessage =
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `roll_call#close was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.CLOSE ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.CLOSE
     ) {
-      console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
     const { laoId } = msg;
-
-    const makeErr = (err: string) => `roll_call/close was not processed: ${err}`;
 
     const rcMsgData = msg.messageData as CloseRollCall;
     const oldRC = getRollCallById(rcMsgData.closes);
@@ -165,16 +191,24 @@ export const handleRollCallReopenMessage =
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage) => {
+    const makeErr = (err: string) => `roll_call#reopen was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ROLL_CALL ||
-      msg.messageData.action !== ActionType.REOPEN ||
-      !msg.laoId
+      msg.messageData.action !== ActionType.REOPEN
     ) {
-      console.warn('handleRollCallReopenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `roll_call/reopen was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const rcMsgData = msg.messageData as ReopenRollCall;
     const oldRC = getRollCallById(rcMsgData.opens);
