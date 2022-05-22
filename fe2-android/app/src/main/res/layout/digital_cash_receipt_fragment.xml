@@ -56,6 +56,7 @@
 
     <ImageView
       android:id="@+id/digital_cash_receipt_qr"
+      android:contentDescription="@string/digital_cash_content_description_qr_receipt"
       android:layout_width="@dimen/qr_digital_cash"
       android:layout_height="@dimen/qr_digital_cash"
       app:layout_constraintBottom_toBottomOf="parent"

@@ -46,6 +46,7 @@
       android:id="@+id/digital_cash_receive_qr"
       android:layout_width="@dimen/qr_digital_cash"
       android:layout_height="@dimen/qr_digital_cash"
+      android:contentDescription="@string/digital_cash_content_description_qr_receive"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

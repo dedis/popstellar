@@ -81,6 +81,7 @@
 
     <EditText
       android:id="@+id/digital_cash_issue_amount"
+      android:autofillHints="false"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:ems="10"
