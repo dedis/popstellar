@@ -180,11 +180,10 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private void setupCloseRollCallButton() {
-    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-        clicked -> setupClickCloseListener(R.id.fragment_lao_detail));
+    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(clicked -> setupClickCloseListener());
   }
 
-  private void setupClickCloseListener(int nextFragment) {
+  private void setupClickCloseListener() {
     if (closeRollCallAlert != null && closeRollCallAlert.isShowing()) {
       closeRollCallAlert.dismiss();
     }
@@ -297,7 +296,7 @@ public final class QRCodeScanningFragment extends Fragment {
             integerEvent -> {
               Integer nextFragment = integerEvent.getContentIfNotHandled();
               if (nextFragment != null) {
-                setupClickCloseListener(nextFragment);
+                setupClickCloseListener();
               }
             });
   }
