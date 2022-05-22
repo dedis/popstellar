@@ -26,10 +26,10 @@ export namespace LaoFeature {
 
   type HeaderComponent =
     | ((props: {
-        tintColor?: string | undefined;
-        pressColor?: string | undefined;
-        pressOpacity?: number | undefined;
-        labelVisible?: boolean | undefined;
+        tintColor?: string;
+        pressColor?: string;
+        pressOpacity?: number;
+        labelVisible?: boolean;
       }) => React.ReactNode)
     | undefined;
 

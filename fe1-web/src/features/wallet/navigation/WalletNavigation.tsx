@@ -37,7 +37,6 @@ export default function WalletNavigation() {
 type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>;
 
 const WalletNavigationHeaderRight = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const { showActionSheetWithOptions } = useActionSheet();
