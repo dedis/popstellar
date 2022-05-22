@@ -57,7 +57,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
     Await.ready(ask, duration).value.get match {
       case Success(DbActor.DbActorReadLaoDataAck(laoData)) => laoData.owner == sender
-      case _ => false
+      case _ => true
     }
   }
 
