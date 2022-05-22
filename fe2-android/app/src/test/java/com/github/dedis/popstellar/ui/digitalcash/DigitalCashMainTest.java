@@ -10,6 +10,7 @@ import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageOb
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.historyButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.homeButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.issueButton;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.receiveButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.DigitalCashPageObject.sendButton;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
