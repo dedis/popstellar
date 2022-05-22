@@ -96,7 +96,7 @@ export const handleMeetingStateMessage =
     // FIXME: use meeting reducer
     const oldMeeting = getMeetingById(meetingMessage.id) as Meeting;
     if (!oldMeeting) {
-      console.warn(makeErr(`no known meeting with id ${mtgMsg.id}`));
+      console.warn(makeErr(`no known meeting with id ${meetingMessage.id}`));
       return false;
     }
 

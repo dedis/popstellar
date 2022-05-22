@@ -161,6 +161,7 @@ export const handleCastVoteMessage =
     } else {
       election.registeredVotes = [...election.registeredVotes, currentVote];
     }
+
     updateElection(election);
     return true;
   };

@@ -1,13 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  mockKeyPair,
-  mockLaoId,
-  mockLaoIdHash,
-  mockReduxAction,
-} from '__tests__/utils';
+import { configureTestFeatures, mockKeyPair, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import {
@@ -344,28 +338,21 @@ describe('ElectionHandler', () => {
     });
 
     it('it should update election.registeredVotes', () => {
-      let storedElection = mockElectionOpened.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
+      const mockElection = Election.fromState({
+        ...mockElectionOpened.toState(),
+        registeredVotes: [],
       });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
 
       const castVoteMessage = new CastVote({
         lao: mockLaoIdHash,
-        election: mockElectionId,
+        election: mockElection.id,
         created_at: TIMESTAMP,
         votes: [mockVote1, mockVote2],
       });
 
       expect(
         handleCastVoteMessage(
-          mockGetEventById,
+          mockGetEventById.mockImplementationOnce(() => Election.fromState(mockElection.toState())),
           mockUpdateEvent,
         )({
           ...mockMessageData,
@@ -374,8 +361,8 @@ describe('ElectionHandler', () => {
       ).toBeTrue();
 
       // check whether getEventById has been called correctly
-      expect(getEventById).toHaveBeenCalledWith(mockElectionId);
-      expect(getEventById).toHaveBeenCalledTimes(1);
+      expect(mockGetEventById).toHaveBeenCalledWith(mockElection.id);
+      expect(mockGetEventById).toHaveBeenCalledTimes(1);
 
       const newVote: RegisteredVote = {
         createdAt: castVoteMessage.created_at.valueOf(),
@@ -384,13 +371,13 @@ describe('ElectionHandler', () => {
         messageId: mockMessageData.message_id.valueOf(),
       };
 
-      const newRegisteredVotes = [...mockElectionOpened.registeredVotes, newVote];
+      const newRegisteredVotes = [...mockElection.registeredVotes, newVote];
 
       // check whether updateEvent has been called correctly
-      const updatedElection = Election.fromState(mockElectionOpened.toState());
+      const updatedElection = Election.fromState(mockElection.toState());
       updatedElection.registeredVotes = newRegisteredVotes;
 
-      expect(updateEvent).toHaveBeenLastCalledWith(updatedElection);
+      expect(mockUpdateEvent).toHaveBeenLastCalledWith(updatedElection);
     });
   });
 
