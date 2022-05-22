@@ -178,10 +178,18 @@ object MessageExample {
         }
   """
   lazy val rollCallCreate: CreateRollCall = new CreateRollCall(Hash(Base64Data("ywPSfeTuaTK5fQ785xfDQVEZbJWbavVwikB-HCDfv7I=")), "Roll Call ", Timestamp(1633098853), Timestamp(1633099125), Timestamp(1633099140), "EPFL", Some("Food is welcome!"))
-  lazy val rollCallCreateFromJson = CreateRollCall.buildFromJson(createRollCallData)
   final val MESSAGE_CREATEROLLCALL_VALID: Message =  new Message(
     Base64Data.encode(rollCallCreate.toString()),
     organizerRollCall,
+    Signature(Base64Data.encode(rollCallCreate.toString())),
+    Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
+    List.empty,
+    Some(rollCallCreate)
+  )
+  
+  final val MESSAGE_CREATEROLLCALL_BAD_SENDER: Message = new Message(
+    Base64Data.encode(rollCallCreate.toString()),
+    organizerInvalid,
     Signature(Base64Data.encode(rollCallCreate.toString())),
     Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
     List.empty,

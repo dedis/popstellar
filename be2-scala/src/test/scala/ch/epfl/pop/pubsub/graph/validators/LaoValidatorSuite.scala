@@ -143,7 +143,7 @@ private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277U
     system.actorOf(dbActorMock)
   }
 
-  //Setup Election
+  //Create a valid Roll Call
   test("Roll call setup works as intended") {
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
@@ -152,5 +152,15 @@ private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277U
     message should equal(Left(CREATE_ROLL_CALL_VALID_RPC))
     system.stop(dbActorRef.actorRef)
   }
+
+  test("Roll Call create with wrong sender should fail"){
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val rollCallActor: RollCallValidator = new RollCallValidator(dbActorRef)
+    val message: GraphMessage = rollCallActor.validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
 
 }
