@@ -1,10 +1,8 @@
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
 
 import { Base64UrlData, Hash, PopToken, PrivateKey, PublicKey } from 'core/objects';
-import { EventStore } from 'features/events/store';
-import { OpenedLaoStore } from 'features/lao/store';
-import { RollCall } from 'features/rollCall/objects';
 
+import { WalletFeature } from '../interface';
 import { WalletStore } from '../store';
 import * as bip39path from './Bip32Path';
 
@@ -49,25 +47,37 @@ export function generateToken(laoId: Hash, rollCallId: Hash | undefined): Promis
 
 /**
  * Retrieve the latest PoP token associated with the current LAO from the store.
- *
+ * @param getCurrentLao A function returning the current lao
+ * @param getRollCallById A function to get a roll call by its id
  * @remarks
- * Do not use it inside of a react component, this is meant to be used only where you cannot
- * access to reducers.
+ * Do not use it inside of a react component, this is meant to be used only where you
+ * do not have access to reducers.
  *
  * @returns A Promise that resolves to a PoP token or to undefined if no token exists
  */
-export async function getCurrentPopTokenFromStore(): Promise<PopToken> {
-  const lao = OpenedLaoStore.get();
+export const getCurrentPopTokenFromStore =
+  (
+    getCurrentLao: () => WalletFeature.Lao,
+    getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined,
+  ) =>
+  async (): Promise<PopToken> => {
+    const lao = getCurrentLao();
 
-  const rollCallId = lao.last_tokenized_roll_call_id;
-  if (rollCallId === undefined) {
-    throw new Error('Cannot retrieve pop token: roll call id is undefined');
-  }
+    const rollCallId = lao.last_tokenized_roll_call_id;
+    if (rollCallId === undefined) {
+      throw new Error('Cannot retrieve pop token: roll call id is undefined');
+    }
 
-  const rollCall = EventStore.getEvent(rollCallId) as RollCall;
-  const token = await generateToken(lao.id, rollCallId);
-  if (rollCall.containsToken(token)) {
+    const rollCall = getRollCallById(rollCallId);
+    if (!rollCall) {
+      throw new Error(`Cannot retrieve pop token: did not find a roll call with id ${rollCallId}`);
+    }
+
+    const token = await generateToken(lao.id, rollCallId);
+
+    if (!rollCall.containsToken(token)) {
+      throw new Error('Cannot retrieve pop token: roll call does not contain this token');
+    }
+
     return token;
-  }
-  throw new Error('Cannot retrieve pop token: roll call does not contain this token');
-}
+  };

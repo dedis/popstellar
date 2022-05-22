@@ -38,7 +38,6 @@ export namespace WalletStore {
    */
   export async function store(mnemonic: string, seed: Uint8Array) {
     const binaryMnemonic: Uint8Array = new TextEncoder().encode(mnemonic);
-
     await getStore().dispatch(async (dispatch: AsyncDispatch): Promise<void> => {
       const encryptedSeed = await encrypt(seed);
       const encryptedMnemonic = await encrypt(binaryMnemonic);
@@ -84,7 +83,6 @@ export namespace WalletStore {
 
   /**
    * Indicates whether a seed is present in the store.
-   *
    * @returns true if a seed exists, false otherwise
    */
   export function hasSeed(): boolean {

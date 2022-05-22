@@ -8,6 +8,7 @@ import { MessageDataProperties } from 'core/types';
 import {
   mockBallotOptions,
   mockElectionId,
+  mockElectionName,
   mockQuestion1,
   mockQuestionObject1,
   mockQuestionObject2,
@@ -33,7 +34,7 @@ const sampleSetupElection: Partial<SetupElection> = {
   action: ActionType.SETUP,
   id: mockElectionId,
   lao: mockLaoIdHash,
-  name: mockLaoName,
+  name: mockElectionName,
   version: VERSION,
   created_at: TIMESTAMP,
   start_time: TIMESTAMP,
@@ -46,7 +47,7 @@ const setupElectionJson: string = `{
   "action": "${ActionType.SETUP}",
   "id": "${mockElectionId}",
   "lao": "${mockLaoIdHash}",
-  "name": "${mockLaoName}",
+  "name": "${mockElectionName}",
   "version": "${VERSION}",
   "created_at": ${TIMESTAMP},
   "start_time": ${TIMESTAMP},
@@ -63,26 +64,26 @@ beforeAll(() => {
 describe('SetupElection', () => {
   it('should be created correctly from Json', () => {
     expect(
-      new SetupElection(sampleSetupElection as MessageDataProperties<SetupElection>),
+      new SetupElection(sampleSetupElection as MessageDataProperties<SetupElection>, mockLaoIdHash),
     ).toBeJsonEqual(sampleSetupElection);
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.SETUP,
       id: mockElectionId,
       lao: mockLaoIdHash,
-      name: mockLaoName,
+      name: mockElectionName,
       version: VERSION,
       created_at: TIMESTAMP,
       start_time: TIMESTAMP,
       end_time: CLOSE_TIMESTAMP,
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
-    expect(new SetupElection(temp)).toBeJsonEqual(temp);
+    expect(new SetupElection(temp, mockLaoIdHash)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(setupElectionJson);
-    expect(SetupElection.fromJson(obj)).toBeJsonEqual(sampleSetupElection);
+    expect(SetupElection.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleSetupElection);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -98,7 +99,7 @@ describe('SetupElection', () => {
       end_time: CLOSE_TIMESTAMP.valueOf(),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
-    const createFromJson = () => SetupElection.fromJson(obj);
+    const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
     expect(createFromJson).toThrow(ProtocolError);
   });
 
@@ -115,175 +116,208 @@ describe('SetupElection', () => {
       end_time: CLOSE_TIMESTAMP.valueOf(),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
-    const createFromJson = () => SetupElection.fromJson(obj);
+    const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
     expect(createFromJson).toThrow(ProtocolError);
   });
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: undefined as unknown as Hash,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: undefined as unknown as Hash,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: undefined as unknown as Hash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: undefined as unknown as Hash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: undefined as unknown as string,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: undefined as unknown as string,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if version is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: undefined as unknown as string,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: undefined as unknown as string,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: undefined as unknown as Timestamp,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: undefined as unknown as Timestamp,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if start_time is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: undefined as unknown as Timestamp,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: undefined as unknown as Timestamp,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if end_time is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: undefined as unknown as Timestamp,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: undefined as unknown as Timestamp,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if questions is undefined', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP,
-          end_time: CLOSE_TIMESTAMP,
-          questions: undefined as unknown as Question[],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP,
+            end_time: CLOSE_TIMESTAMP,
+            questions: undefined as unknown as Question[],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if start_time is before created_at', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP,
-          start_time: TIMESTAMP_BEFORE,
-          end_time: CLOSE_TIMESTAMP,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP,
+            start_time: TIMESTAMP_BEFORE,
+            end_time: CLOSE_TIMESTAMP,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if end_time is before start_time', () => {
       const createWrongObj = () =>
-        new SetupElection({
-          id: mockElectionId,
-          lao: mockLaoIdHash,
-          name: mockLaoName,
-          version: VERSION,
-          created_at: TIMESTAMP_BEFORE,
-          start_time: TIMESTAMP,
-          end_time: TIMESTAMP_BEFORE,
-          questions: [mockQuestionObject1, mockQuestionObject2],
-        });
+        new SetupElection(
+          {
+            id: mockElectionId,
+            lao: mockLaoIdHash,
+            name: mockLaoName,
+            version: VERSION,
+            created_at: TIMESTAMP_BEFORE,
+            start_time: TIMESTAMP,
+            end_time: TIMESTAMP_BEFORE,
+            questions: [mockQuestionObject1, mockQuestionObject2],
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });
 
   it('should ignore passed object and action parameters', () => {
-    const msg = new SetupElection({
-      object: ObjectType.CHIRP,
-      action: ActionType.NOTIFY_ADD,
-      id: mockElectionId,
-      lao: mockLaoIdHash,
-      name: mockLaoName,
-      version: VERSION,
-      created_at: TIMESTAMP,
-      start_time: TIMESTAMP,
-      end_time: CLOSE_TIMESTAMP,
-      questions: [mockQuestionObject1, mockQuestionObject2],
-    } as MessageDataProperties<SetupElection>);
+    const msg = new SetupElection(
+      {
+        object: ObjectType.CHIRP,
+        action: ActionType.NOTIFY_ADD,
+        id: mockElectionId,
+        lao: mockLaoIdHash,
+        name: mockElectionName,
+        version: VERSION,
+        created_at: TIMESTAMP,
+        start_time: TIMESTAMP,
+        end_time: CLOSE_TIMESTAMP,
+        questions: [mockQuestionObject1, mockQuestionObject2],
+      } as MessageDataProperties<SetupElection>,
+      mockLaoIdHash,
+    );
 
     expect(msg.object).toEqual(ObjectType.ELECTION);
     expect(msg.action).toEqual(ActionType.SETUP);

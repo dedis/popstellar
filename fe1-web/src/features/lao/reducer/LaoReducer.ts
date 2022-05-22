@@ -213,6 +213,22 @@ export function makeLao(id: string | undefined = undefined) {
 }
 
 /**
+ * Gets a lao by its id or returns undefined if there is none with the given id
+ * @remark This function does not memoize its results, only use it outside of react components
+ * @param laoId The id of the lao
+ * @param state The redux state
+ */
+export const getLaoById = (laoId: string, state: unknown) => {
+  const laoMap = getLaosState(state).byId;
+
+  if (!(laoId in laoMap)) {
+    return undefined;
+  }
+
+  return Lao.fromState(laoMap[laoId]);
+};
+
+/**
  * Shorthand selector for widely used variant of makeLao()
  * Selects the current lao from the redux store
  * @returns The current lao

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.repository.remote;
 
 import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -23,18 +22,16 @@ import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** This class handles the JSON-RPC layer of the protocol */
 public class LAONetworkManager implements MessageSender {

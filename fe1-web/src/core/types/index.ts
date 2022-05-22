@@ -21,3 +21,11 @@ export type NonMethodKeys<T> = { [P in keyof T]: T[P] extends Function ? never :
 export type RemoveMethods<T> = Pick<T, NonMethodKeys<T>>;
 
 export type MessageDataProperties<T> = Omit<RemoveMethods<T>, 'object' | 'action'>;
+
+/**
+ * Checks whether a given value is defined (not null or undefined)
+ * @param value The value to check
+ */
+export const isDefined = <T>(value: T | null | undefined): value is T => {
+  return value !== null && value !== undefined;
+};
