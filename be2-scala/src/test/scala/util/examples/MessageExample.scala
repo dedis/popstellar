@@ -181,7 +181,7 @@ object MessageExample {
   lazy val rollCallCreateFromJson = CreateRollCall.buildFromJson(createRollCallData)
   final val MESSAGE_CREATEROLLCALL_VALID: Message =  new Message(
     Base64Data.encode(rollCallCreate.toString()),
-    organizerRollCall,
+    organizer,
     Signature(Base64Data.encode(rollCallCreate.toString())),
     Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
     List.empty,
