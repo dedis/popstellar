@@ -12,18 +12,14 @@ import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class ElectionEncryptedVoteTest {
 
     private final String electionId = "my election id";
     private final String questionId = " my question id";
-    // we vote for ballot option in position 2, then posiion 1 and 0
-    private final List<String> votes =
-            new ArrayList<>(
-                    Arrays.asList("2", "1", "0"));
+
+    // We vote for ballot option in position 2, vote is unique
+    private final String votes = "2";
+
     private final String encryptedWriteIn = "My write in ballot option";
     private final ElectionEncryptedVote electionEncryptedVote1 =
             new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, electionId);
@@ -74,7 +70,7 @@ public class ElectionEncryptedVoteTest {
         assertNotEquals(
                 electionEncryptedVote1,
                 new ElectionEncryptedVote(
-                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), false, encryptedWriteIn, electionId));
+                        questionId, votes, false, encryptedWriteIn, electionId));
         assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, false, encryptedWriteIn, electionId));
 
         // Same equals, no write_in
@@ -84,19 +80,19 @@ public class ElectionEncryptedVoteTest {
         assertEquals(
                 electionEncryptedVotes2,
                 new ElectionEncryptedVote(
-                        questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), true, encryptedWriteIn, electionId));
+                        questionId, votes, true, encryptedWriteIn, electionId));
     }
 
     @Test
     public void toStringTest() {
         String format =
-                String.format("ElectionEncryptedVote{"
+                String.format("{"
                                 + "id='%s', "
                                 + "questionId='%s', "
                                 + "vote=%s}",
                         expectedIdNoWriteIn,
                         questionId,
-                        Arrays.toString(votes.toArray()));
+                        votes);
         assertEquals(format, electionEncryptedVote1.toString());
     }
 

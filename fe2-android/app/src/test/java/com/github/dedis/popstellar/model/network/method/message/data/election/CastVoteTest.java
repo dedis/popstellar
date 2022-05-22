@@ -38,9 +38,9 @@ public class CastVoteTest {
 
   // Set up a secret ballot election
   private final ElectionEncryptedVote electionEncryptedVote1 =
-          new ElectionEncryptedVote(questionId1, Arrays.asList("2", "1", "0"), writeInEnabled, write_in, electionId);
+          new ElectionEncryptedVote(questionId1, "2", writeInEnabled, write_in, electionId);
   private final ElectionEncryptedVote electionEncryptedVote2 =
-          new ElectionEncryptedVote(questionId2, Arrays.asList("0", "1", "2"), writeInEnabled, write_in, electionId);
+          new ElectionEncryptedVote(questionId2, "1", writeInEnabled, write_in, electionId);
   private final List<ElectionEncryptedVote> electionEncryptedVotes = Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
 
   // Create the cast votes messages
@@ -95,7 +95,6 @@ public class CastVoteTest {
   public void jsonValidationTestOpenBallot() {
     // Schema should be valid with both vote lists
     // For testing now, create a custom JSON Test parser
-    GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
     String json = GSON.toJson(castOpenVote, Data.class);
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, json);
     Type token = new TypeToken<CastVote<ElectionVote>>() {
@@ -111,7 +110,6 @@ public class CastVoteTest {
   public void jsonValidationTestSecretBallot() {
     // Schema should be valid with both vote lists
     // For testing now, create a custom JSON Test parser
-    GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
     String json = GSON.toJson(castEncryptedVote, Data.class);
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, json);
     Type token = new TypeToken<CastVote<ElectionEncryptedVote>>() {

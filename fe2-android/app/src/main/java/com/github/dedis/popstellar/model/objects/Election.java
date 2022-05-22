@@ -301,13 +301,13 @@ public class Election extends Event {
   public static String generateEncryptedElectionVoteId(
           String electionId,
           String questionId,
-          List<String> voteIndex,
+          String voteIndex,
           String writeInEncrypted,
           boolean writeInEnabled) {
     // HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))),
     // concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
     return Hash.hash(
-            "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex.toString());
+            "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex);
   }
 
   /**
@@ -323,7 +323,7 @@ public class Election extends Event {
       // We are sure that each vote is unique per question following new specification
       List<Integer> voteIndices = vote.getVotes();
 
-      List<String> encryptedVotesIndices = null;
+      String encryptedVotesIndices = null;
       ElectionEncryptedVote cc = new
               ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndices, false, null, getId());
       encryptedVotes.add(cc);

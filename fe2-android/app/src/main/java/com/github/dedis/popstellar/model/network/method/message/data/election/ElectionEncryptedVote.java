@@ -5,9 +5,6 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class ElectionEncryptedVote {
 
   // Id of the object ElectionVote :
@@ -19,7 +16,7 @@ public class ElectionEncryptedVote {
   private final String questionId;
 
   // Vote array containing index corresponding to ballot options
-  private final List<String> vote;
+  private final String vote;
 
   /**
    * @param questionId       id of the question
@@ -29,7 +26,7 @@ public class ElectionEncryptedVote {
    * @param electionId
    */
   public ElectionEncryptedVote(
-          @NonNull String questionId, @NonNull List<String> encryptedVotes, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
+          @NonNull String questionId, @NonNull String encryptedVotes, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
 
     this.questionId = questionId;
     this.id =
@@ -38,7 +35,7 @@ public class ElectionEncryptedVote {
   }
 
   @NonNull
-  public List<String> getVote(){
+  public String getVote() {
     return vote;
   }
 
@@ -73,7 +70,7 @@ public class ElectionEncryptedVote {
 
   @Override
   public String toString() {
-    return "ElectionEncryptedVote{"
+    return "{"
             + "id='"
             + id
             + '\''
@@ -81,7 +78,7 @@ public class ElectionEncryptedVote {
             + questionId
             + '\''
             + ", vote="
-            + Arrays.toString(vote.toArray())
+            + vote
             + '}';
   }
 
