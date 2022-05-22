@@ -29,21 +29,24 @@ public class ElectionEncryptedVoteTest {
     private final ElectionEncryptedVote electionEncryptedVotes2 =
             new ElectionEncryptedVote(questionId, votes, true, writeIn, electionId);
 
+    //Hash values util for testing
+    String expectedIdNoWriteIn =
+            Hash.hash(
+                    "Vote", electionId, electionEncryptedVote1.getQuestionId(), electionEncryptedVote1.getVote().toString());
+    String expectedIdWithoutWriteIn = Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
+
+
     @Test
     public void electionVoteWriteInDisabledReturnsCorrectId() {
         // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-        String expectedId =
-                Hash.hash(
-                        "Vote", electionId, electionEncryptedVote1.getQuestionId(), electionEncryptedVote1.getVote().toString());
-        assertThat(electionEncryptedVote1.getId(), is(expectedId));
+        assertThat(electionEncryptedVote1.getId(), is(expectedIdNoWriteIn));
     }
 
     @Test
     public void electionVoteWriteInEnabledReturnsCorrectIdTest() {
-        // hash = Hash('Vote'||election_id||question_id)
-        String expectedId =
-                Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
-        assertThat(electionEncryptedVotes2.getId().equals(expectedId), is(false));
+        // hash = Hash('Vote'||election_id||question_id||encryptedWriteIn)
+
+        assertThat(electionEncryptedVotes2.getId().equals(expectedIdWithoutWriteIn), is(false));
         assertNull(electionEncryptedVotes2.getVote());
     }
 
@@ -84,5 +87,17 @@ public class ElectionEncryptedVoteTest {
                         questionId, new ArrayList<>(Arrays.asList("0", "1", "2")), true, writeIn, electionId));
     }
 
+    @Test
+    public void toStringTest() {
+        String format =
+                String.format("ElectionEncryptedVote{"
+                                + "id='%s', "
+                                + "questionId='%s', "
+                                + "vote=%s}",
+                        expectedIdNoWriteIn,
+                        questionId,
+                        Arrays.toString(votes.toArray()));
+        assertEquals(format, electionEncryptedVote1.toString());
+    }
 
 }

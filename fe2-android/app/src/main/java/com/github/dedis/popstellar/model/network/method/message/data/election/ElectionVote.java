@@ -75,16 +75,16 @@ public class ElectionVote{
 
   @Override
   public String toString() {
-    return "{"
-        + "id='"
-        + id
-        + '\''
-        + ", questionId='"
-        + questionId
-        + '\''
-        + ", vote="
-        + Arrays.toString(vote.toArray())
-        + '\''
-        + '}';
+    return "ElectionVote{"
+            + "id='"
+            + id
+            + '\''
+            + ", questionId='"
+            + questionId
+            + '\''
+            + ", vote="
+            + Arrays.toString(vote.toArray())
+            + '\''
+            + '}';
   }
 }

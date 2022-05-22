@@ -73,7 +73,7 @@ public class ElectionEncryptedVote {
 
   @Override
   public String toString() {
-    return "{"
+    return "ElectionEncryptedVote{"
             + "id='"
             + id
             + '\''
@@ -82,8 +82,7 @@ public class ElectionEncryptedVote {
             + '\''
             + ", vote="
             + Arrays.toString(vote.toArray())
-            + '\''
-        + '}';
+            + '}';
   }
 
 }
