@@ -25,11 +25,6 @@ public class CastVote <E> extends Data {
   // Votes, either votes is null or encrypted votes is null depending on the value of the election
   // Type must be specified upon creation of the cast vote (either ElectionVote or ElectionEncryptedVote)
   @SerializedName(value = "votes")
-  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-  @JsonSubTypes({
-          @JsonSubTypes.Type(value = ElectionVote.class, name = "ElectionVote"),
-          @JsonSubTypes.Type(value = ElectionEncryptedVote.class, name = "ElectionEncryptedVote")}
-  )
   private final List<E> votes;
 
   /**

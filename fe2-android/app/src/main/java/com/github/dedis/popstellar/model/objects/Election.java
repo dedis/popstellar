@@ -26,7 +26,7 @@ import java.util.TreeMap;
 public class Election extends Event {
 
   private Channel channel;
-  private String id;
+  private static String id;
   private String name;
   private long creation;
   private long start;
@@ -58,7 +58,7 @@ public class Election extends Event {
     this.electionKey = null;
   }
 
-  public String getId() {
+  public static String getId() {
     return id;
   }
 
@@ -317,7 +317,19 @@ public class Election extends Event {
    * @return encrypted votes
    */
   public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
-    // TODO
+    // we need to iterate over all election votes to encrypt them
+    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
+    for (ElectionVote vote : votes) {
+      // We are sure that each vote is unique per question following new specification
+      List<Integer> voteIndices = vote.getVotes();
+
+      List<String> encryptedVotesIndices = null;
+      ElectionEncryptedVote cc = new
+              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndices, false, null, getId());
+      encryptedVotes.add(cc);
+    }
+
+    List<ElectionEncryptedVote> encryptedFinalVotes = null;
     return null;
   }
 

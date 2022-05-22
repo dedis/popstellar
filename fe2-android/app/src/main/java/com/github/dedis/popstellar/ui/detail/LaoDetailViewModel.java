@@ -363,14 +363,16 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote castVote;
+      CastVote<ElectionVote> castVote = null;
+      CastVote<ElectionEncryptedVote> castEncryptedVote;
+
       // Construct the cast vote depending if the messages need to be encrypted or not
       // TODO
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
         castVote = new CastVote(votes, election.getId(), lao.getId());
       } else {
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        castVote = new CastVote(encryptedVotes, election.getId(), lao.getId());
+        castEncryptedVote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
       }
       Channel electionChannel = election.getChannel();
 
