@@ -196,6 +196,16 @@ object MessageExample {
     Some(rollCallCreate)
   )
 
+  lazy val rollCallCreateWrongId: CreateRollCall = new CreateRollCall(Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")), "Roll Call ", Timestamp(1633098853), Timestamp(1633099125), Timestamp(1633099140), "EPFL", Some("Food is welcome!"))
+  final val MESSAGE_CREATEROLLCALL_BAD_ID(
+    Base64Data.encode(rollCallCreateWrongId.toString()),
+    organizer,
+    Signature(Base64Data.encode(rollCallCreateWrongId.toString())),
+    Hash(Base64Data("bgmzJEyaNoEQo3sA-Zky8pTZ9gMRjSW27ljm1vEPXMI=")),
+    List.empty,
+    Some(rollCallCreate)
+  )
+
   final val MESSAGE_CLOSEROLLCALL: Message = new Message(
     Base64Data.encode(CloseRollCall(Hash(Base64Data("")), Hash(Base64Data("")), Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))).toJson.toString),
     PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),

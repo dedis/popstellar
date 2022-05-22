@@ -158,9 +158,21 @@ private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277U
     println(dbActorRef)
     val rollCallActor: RollCallValidator = new RollCallValidator(dbActorRef)
     val message: GraphMessage = rollCallActor.validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
+    val message2: GraphMessage = RollCallValidator.validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
     message shouldBe a[Right[_, PipelineError]]
+    message2 shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Roll Call create with roll call id should fail"){
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val rollCallActor: RollCallValidator = new RollCallValidator(dbActorRef)
+    val message: GraphMessage = rollCallActor.validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
+    val message2: GraphMessage = RollCallValidator.validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    message2 shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
 
 }
