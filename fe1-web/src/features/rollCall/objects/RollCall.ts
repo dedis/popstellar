@@ -1,12 +1,8 @@
 import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 
-import { RollCallFeature } from '../interface';
-
 /**
  * Object to represent a roll call.
  */
-
-export const EventTypeRollCall = 'ROLL_CALL';
 
 export enum RollCallStatus {
   CREATED,
@@ -15,7 +11,9 @@ export enum RollCallStatus {
   REOPENED,
 }
 
-export interface RollCallState extends RollCallFeature.EventState {
+export interface RollCallState {
+  id: string;
+  idAlias?: string;
   name: string;
   location: string;
   description?: string;
@@ -29,6 +27,8 @@ export interface RollCallState extends RollCallFeature.EventState {
 }
 
 export class RollCall {
+  public static EVENT_TYPE = 'ROLL_CALL';
+
   public readonly id: Hash;
 
   public readonly idAlias?: Hash;
@@ -135,13 +135,7 @@ export class RollCall {
    * Creates a RollCallState object from the current RollCall object.
    */
   public toState(): RollCallState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      start: this.start.valueOf(),
-      end: this.end.valueOf(),
-      eventType: EventTypeRollCall,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 
   /**

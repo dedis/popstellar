@@ -9,19 +9,9 @@ export namespace RollCallFeature {
 
   export interface EventState {
     eventType: string;
-
     id: string;
-    idAlias?: string;
-
-    name: string;
 
     start: number;
     end?: number;
-  }
-
-  export interface Event {
-    id: Hash;
-    name: string;
-    toState(): EventState;
   }
 }

@@ -6,13 +6,18 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash, mockPopToken, mockRollCallState } from '__tests__/utils/TestUtils';
+import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
-import { eventsReducer } from 'features/events/reducer';
+import { eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import {
+  mockRollCallWithAlias,
+  mockRollCallWithAliasState,
+} from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
 import { RollCall } from 'features/rollCall/objects';
+import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
@@ -44,21 +49,22 @@ jest.mock('react-native-toast-notifications', () => ({
 
 (mockRequestCloseRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
 
-const mockRollCall = RollCall.fromState({ ...mockRollCallState, attendees: [] });
-const rollCallID = mockRollCall.id.valueOf();
+const mockRollCall = RollCall.fromState({ ...mockRollCallWithAliasState, attendees: [] });
+const rollCallID = mockRollCallWithAlias.id.valueOf();
 
 // set up mock store
 const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventsReducer, ...walletReducer }),
+  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
 );
 mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
 const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    makeEventSelector: () => () => mockRollCall,
+    makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,

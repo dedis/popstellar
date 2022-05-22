@@ -8,15 +8,17 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
-import { addEvent, eventsReducer, makeEventSelector, updateEvent } from 'features/events/reducer';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
-import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
+import { RollCall, RollCallStatus } from '../../objects';
 import EventRollCall from '../EventRollCall';
 
 const ID = new Hash('rollCallId');
@@ -29,7 +31,7 @@ const ATTENDEES = ['attendee1', 'attendee2'];
 const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
   return {
     id: ID.valueOf(),
-    eventType: EventTypeRollCall,
+    eventType: RollCall.EVENT_TYPE,
     start: TIMESTAMP_START.valueOf(),
     name: NAME,
     location: LOCATION,
@@ -57,15 +59,25 @@ jest.mock('features/rollCall/network', () => {
 
 // set up mock store
 const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventsReducer, ...walletReducer }),
+  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
 );
 mockStore.dispatch(connectToLao(mockLao.toState()));
-mockStore.dispatch(addEvent(mockLaoId, mockRollCallCreated.toState()));
+const mockRollCallState = mockRollCallCreated.toState();
+
+mockStore.dispatch(
+  addEvent(mockLaoId, {
+    eventType: RollCall.EVENT_TYPE,
+    id: mockRollCallState.id,
+    start: mockRollCall.start.valueOf(),
+    end: mockRollCall.end.valueOf(),
+  }),
+);
+mockStore.dispatch(addRollCall(mockRollCallState));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    makeEventSelector,
+    makeEventByTypeSelector,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,
@@ -77,9 +89,11 @@ beforeEach(() => {
 
 describe('EventRollCall', () => {
   it('should correctly render', () => {
-    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallCreated.toState()));
+    mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer={false} />;
+    const Screen = () => (
+      <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer={false} />
+    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -92,9 +106,9 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestOpenRollCall when the open button is clicked', () => {
-    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallCreated.toState()));
+    mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -109,9 +123,9 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
-    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallClosed.toState()));
+    mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallClosed} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallClosed.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -126,9 +140,9 @@ describe('EventRollCall', () => {
   });
 
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
-    mockStore.dispatch(updateEvent(mockLaoId, mockRollCallOpened.toState()));
+    mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallOpened} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallOpened.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
