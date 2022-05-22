@@ -67,8 +67,6 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailFragBinding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = mLaoDetailFragBinding.addEvent;
-    addButton.setVisibility(
-        mLaoDetailViewModel.isOrganizer().getValue() ? View.VISIBLE : View.GONE);
     addButton.setOnClickListener(fabListener);
 
     mLaoDetailFragBinding.addElection.setOnClickListener(addEventLister(EventType.ELECTION));
