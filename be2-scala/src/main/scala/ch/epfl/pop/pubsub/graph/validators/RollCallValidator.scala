@@ -7,7 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, Cr
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-
+import ch.epfl.pop.storage.DbActor
+import akka.pattern.AskableActorRef
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "R"
@@ -127,4 +128,45 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+}
+
+
+sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+
+  override val EVENT_HASH_PREFIX: String = "R"
+
+  def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+
+        val laoCheck: String = rpcMessage.params.channel.toString()
+
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
+
+        val sender: PublicKey = message.sender
+        val channel: Channel = rpcMessage.getParamsChannel
+
+        if (!validateTimestampStaleness(data.creation)) {
+          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
+        } else if (!validateTimestampOrder(data.creation, data.proposed_start)) {
+          Right(validationError(s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"))
+        } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
+          Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
+        } else if (expectedRollCallId != data.id) {
+           Right(validationError(s"unexpected 'id' timestamp (${data.id}) vs (${expectedRollCallId}) vs (${data.creation}) vs (${data.name}) vs (${laoCheck})"))
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
+          Right(validationError(s"invalid sender (${sender})"))
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
+          Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
+        } else {
+          Left(rpcMessage)
+        }
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
 }
