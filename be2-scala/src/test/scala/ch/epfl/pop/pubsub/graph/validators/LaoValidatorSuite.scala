@@ -122,4 +122,41 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
   }
+
+
+private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
+
+  private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+  private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+
+  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+  private final val channelDataWrongElection: ChannelData =ChannelData(ObjectType.LAO, List.empty)
+
+  private def mockDbWorkingSetup: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  //Setup Election
+  test("Roll call setup works as intended 2") {
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val rollCallActor: RollCallValidator = new RollCallValidator(dbActorRef)
+    val message: GraphMessage = rollCallActor.validateCreateRollCall(CREATE_ROLL_CALL_VALID_RPC)
+    message should equal(Left(CREATE_ROLL_CALL_VALID_RPC))
+    system.stop(dbActorRef.actorRef)
+  }
+
 }
