@@ -90,5 +90,8 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
-  private void setupScanAttendee() {}
+  // open Scanning
+  // setup Camera Permission Fragment
+  // setupSendCoinFragment
+
 }

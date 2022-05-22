@@ -23,6 +23,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:gravity="center"
+      android:layout_marginTop="5dp"
+      android:layout_marginBottom="10dp"
       android:text="@string/digital_cash_send"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -34,30 +36,48 @@
       android:layout_width="@dimen/channel_qr_code_size"
       android:layout_height="@dimen/channel_qr_code_size"
       android:layout_gravity="center"
+      android:layout_marginBottom="10dp"
+      android:autofillHints="QR_Code"
+      android:contentDescription="@string/qrcode_scanning_send_coin"
       app:layout_constraintTop_toBottomOf="@id/textView_digital_cash_send"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/blank_space" />
+      app:layout_constraintBottom_toTopOf="@id/pk_to_send" />
+
+    <EditText
+      android:id="@+id/pk_to_send"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:hint="@string/enter_public_key_receiver"
+      app:layout_constraintTop_toBottomOf="@id/channel_qr_code"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toTopOf="blank_space"
+      android:layout_gravity="center_horizontal"
+      android:inputType="text"
+      tools:layout_editor_absoluteY="305dp" />
 
     <Space
       android:id="@+id/blank_space"
-      android:layout_width="50dp"
-      android:layout_height="50dp"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center_horizontal"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintBottom_toTopOf="@id/amount_coin"
-      app:layout_constraintTop_toBottomOf="@id/channel_qr_code" />
+      app:layout_constraintTop_toBottomOf="@id/pk_to_send" />
 
     <EditText
       android:id="@+id/amount_coin"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:hint="Enter a amount (miniLao)"
+      android:hint="@string/enter_a_amount_minilao"
       app:layout_constraintTop_toBottomOf="@id/blank_space"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintBottom_toTopOf="blank_space_2"
       android:layout_gravity="center_horizontal"
+      android:inputType="number"
       tools:layout_editor_absoluteY="305dp" />
 
     <Space
@@ -78,7 +98,7 @@
       app:layout_constraintBottom_toTopOf="id/blank_space_3"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/amount_coin" />
+      app:layout_constraintTop_toBottomOf="@id/blank_space_2" />
 
     <Space
       android:id="@+id/blank_space_3"

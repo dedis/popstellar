@@ -272,4 +272,6 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
+  <string name="enter_a_amount_minilao">Enter a amount (miniLao)</string>
+  <string name="enter_public_key_receiver">Enter public key receiver</string>
 </resources>
