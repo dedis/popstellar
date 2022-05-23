@@ -13,7 +13,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Success, Try}
 
 
-final case class Channel(channel: String) extends AskPatternConstants {
+final case class Channel(channel: String) {
 
   /**
    * Extract the laoId from a channel name (even though it might be in the middle)

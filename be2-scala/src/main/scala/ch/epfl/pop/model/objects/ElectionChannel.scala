@@ -2,6 +2,7 @@ package ch.epfl.pop.model.objects
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, SetupElection}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
@@ -20,7 +21,7 @@ object ElectionChannel {
      * @tparam T type of data to extract from the election channel
      * @return Future of a list of tuple containing the message and the data extracted
      */
-    def extractMessages[T: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
+    def extractMessages[T<: MessageData: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
         DbActor.DbActorReadChannelDataAck(channelData) <- dbActor ? DbActor.ReadChannelData(channel)
         result <- Future.traverse(channelData.messages) { messageHash =>
@@ -49,7 +50,7 @@ object ElectionChannel {
      * @return the final vote for each attendee that has voted
      */
     def getLastVotes(dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, CastVoteElection)]] = {
-      extractMessages[CastVoteElection](dbActor).map(votes => {
+      extractMessages[CastVoteElection](dbActor).map{votes =>
         val attendeeIdToLastVote = mutable.Map[PublicKey, (Message, CastVoteElection)]()
         for ((message, castvote) <- votes) {
           if (!attendeeIdToLastVote.contains(message.sender) ||
@@ -58,7 +59,7 @@ object ElectionChannel {
           }
         }
         attendeeIdToLastVote.values.toList
-      })
+      }
     }
   }
 }

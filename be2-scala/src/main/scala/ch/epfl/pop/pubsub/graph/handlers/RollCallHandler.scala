@@ -46,18 +46,16 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         // we are using the rollcall id instead of the message_id at rollcall creation
         val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val ask =
-          for (
+          for {
             _ <- dbActor ? DbActor.ChannelExists(rollCallChannel) transformWith {
               case Success(_) => Future {
                 throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall already exists in db")
               }
-              case _ => Future {
-                ()
-              }
-            };
-            _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL);
+              case _ => Future {}
+            }
+            _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
             _ <- dbAskWritePropagate(rpcRequest)
-          ) yield ()
+          } yield ()
 
         Await.ready(ask, duration).value match {
           case Some(Success(_)) => Left(rpcRequest)

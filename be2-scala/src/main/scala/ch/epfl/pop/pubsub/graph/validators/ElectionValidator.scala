@@ -105,16 +105,14 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]]) =
-    votes.forall(
-      voteElection => {
-        val vote = voteElection.vote match {
-          case Some(v :: _) => v
-          case _ => -1
-        }
-        // check if the ballot is available
-        vote < q2ballots(voteElection.question).size
+    votes.forall { voteElection =>
+      val vote = voteElection.vote match {
+        case Some(v :: _) => v
+        case _ => -1
       }
-    )
+      // check if the ballot is available
+      vote < q2ballots(voteElection.question).size
+    }
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
