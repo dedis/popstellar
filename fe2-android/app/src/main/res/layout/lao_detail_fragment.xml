@@ -13,6 +13,7 @@
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_lao_detail"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -56,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
       <TextView
-        android:id="@+id/organization_name"
+        android:id="@+id/lao_detail_title"
         style="@style/title_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,26 +67,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-      <ImageView
-        android:id="@+id/qr_code_icon"
-        android:layout_width="@dimen/qr_icon_side"
-        android:layout_height="@dimen/qr_icon_side"
-        android:layout_marginStart="30dp"
-        app:tint="@color/colorPrimary"
-        android:src="@drawable/ic_qr_code"
-        app:layout_constraintBottom_toBottomOf="@id/organization_name"
-        app:layout_constraintStart_toEndOf="@id/organization_name"
-        app:layout_constraintTop_toTopOf="@id/organization_name" />
+        <ImageView
+          android:id="@+id/qr_code_icon"
+          android:layout_width="@dimen/qr_icon_side"
+          android:layout_height="@dimen/qr_icon_side"
+          android:layout_marginStart="30dp"
+          app:tint="@color/colorPrimary"
+          android:src="@drawable/ic_qr_code"
+          app:layout_constraintBottom_toBottomOf="@id/lao_detail_title"
+          app:layout_constraintStart_toEndOf="@id/lao_detail_title"
+          app:layout_constraintTop_toTopOf="@id/lao_detail_title" />
 
-      <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/event_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organization_name" />
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/event_list"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_marginTop="40dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/lao_detail_title" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+      </androidx.constraintlayout.widget.ConstraintLayout>
 
       <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_event"
@@ -166,91 +167,5 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--    <LinearLayout-->
-<!--      android:id="@+id/lao_detail_linear_layout"-->
-<!--      android:layout_width="match_parent"-->
-<!--      android:layout_height="0dp"-->
-<!--      android:orientation="vertical"-->
-<!--      app:layout_constraintBottom_toBottomOf="parent"-->
-<!--      app:layout_constraintEnd_toEndOf="parent"-->
-<!--      app:layout_constraintStart_toStartOf="parent"-->
-<!--      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">-->
-
-<!--      <LinearLayout-->
-<!--        android:id="@+id/properties_linear_layout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        android:visibility="@{view_model.getShowProperties() ? View.VISIBLE : View.GONE }"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">-->
-
-
-
-<!--        <ImageButton-->
-<!--          android:id="@+id/edit_button"-->
-<!--          android:layout_width="wrap_content"-->
-<!--          android:layout_height="wrap_content"-->
-<!--          android:layout_gravity="end"-->
-<!--          android:contentDescription="@string/edit_lao_name"-->
-<!--          android:src="@drawable/ic_baseline_edit_24"-->
-<!--          android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"-->
-<!--          app:layout_constraintRight_toRightOf="parent"-->
-<!--          app:layout_constraintTop_toTopOf="parent" />-->
-
-
-
-
-
-<!--        <LinearLayout-->
-<!--          android:id="@+id/edit_properties_linear_layout"-->
-<!--          android:layout_width="match_parent"-->
-<!--          android:layout_height="wrap_content"-->
-<!--          android:orientation="vertical"-->
-<!--          android:visibility="gone"-->
-<!--          app:layout_constraintBottom_toBottomOf="parent"-->
-<!--          app:layout_constraintEnd_toEndOf="parent"-->
-<!--          app:layout_constraintStart_toStartOf="parent"-->
-<!--          app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">-->
-
-<!--          <EditText-->
-<!--            android:id="@+id/edit_organization_name"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="@dimen/size_title"-->
-<!--            android:afterTextChanged="@{(edtitable)->view_model.setCurrentLaoName(edtitable.toString())}"-->
-<!--            android:autofillHints=""-->
-<!--            android:hint="@string/text_entry_launch"-->
-<!--            android:inputType="text"-->
-<!--            android:text="@{view_model.getCurrentLaoName()}" />-->
-
-
-
-<!--          <Button-->
-<!--            android:id="@+id/properties_edit_confirm"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/button_confirm"-->
-<!--            app:layout_constraintRight_toLeftOf="@id/properties_edit_cancel"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/witness_list" />-->
-
-<!--          <Button-->
-<!--            android:id="@+id/properties_edit_cancel"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/button_cancel"-->
-<!--            app:layout_constraintRight_toRightOf="@id/properties_edit_confirm"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/witness_list" />-->
-
-<!--        </LinearLayout>-->
-
-<!--      </LinearLayout>-->
-
-
-
-<!--    </LinearLayout>-->
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

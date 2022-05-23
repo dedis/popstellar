@@ -15,7 +15,7 @@ import com.github.dedis.popstellar.utility.Constants;
  *
  * <p>Creation : 04/12/2021
  */
-public class LaoDetailPageObject {
+public class LaoDetailActivityPageObject {
 
   public static ViewInteraction fragmentContainer() {
     return onView(withId(R.id.fragment_container_lao_detail));
@@ -25,20 +25,15 @@ public class LaoDetailPageObject {
     return onView(withId(R.id.lao_detail_identity_menu));
   }
 
-  public static ViewInteraction qrCodeIcon() {
-    return onView(withId(R.id.qr_code_icon));
-  }
 
-  public static ViewInteraction qrCodeLayout() {
-    return onView(withId(R.id.lao_detail_qr_layout));
-  }
-
-  public static ViewInteraction connectQrCode() {
-    return onView(withId(R.id.channel_qr_code));
-  }
 
   public static ViewInteraction witnessButton() {
     return onView(withId(R.id.lao_detail_witnessing_menu));
+  }
+
+  @IdRes
+  public static int laoDetailFragmentId() {
+    return R.id.fragment_lao_detail;
   }
 
   @IdRes
@@ -51,6 +46,9 @@ public class LaoDetailPageObject {
     return R.id.fragment_witnessing;
   }
 
+  public static int containerId() {
+    return R.id.fragment_container_lao_detail;
+  }
 
   public static String laoIdExtra() {
     return Constants.LAO_ID_EXTRA;
