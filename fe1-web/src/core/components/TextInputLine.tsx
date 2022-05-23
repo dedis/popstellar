@@ -11,7 +11,7 @@ import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     borderBottomWidth: 2,
     marginVertical: Spacing.s,
     marginHorizontal: Spacing.xl,

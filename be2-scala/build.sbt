@@ -3,8 +3,6 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 
 name := "pop"
 
-version := "0.1"
-
 scalaVersion := "2.13.7"
 
 // Recommended 2.13 Scala flags (https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13) slightly adapted for PoP

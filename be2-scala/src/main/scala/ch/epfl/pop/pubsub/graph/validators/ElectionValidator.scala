@@ -84,7 +84,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
@@ -147,7 +147,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"This election has not started yet"))
         } else if (getEndMessage(channel).isDefined) {
           Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
+        } else if (!validateOwner(message.sender, channel, dbActorRef)) {
           Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
