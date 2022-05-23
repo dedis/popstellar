@@ -75,6 +75,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -342,7 +343,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes) {
+  public void sendVote(List<ElectionVote> votes) throws CothorityCryptoException {
     Election election = mCurrentElection.getValue();
 
     if (election == null) {

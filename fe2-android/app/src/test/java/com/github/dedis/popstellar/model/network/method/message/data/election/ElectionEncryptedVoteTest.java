@@ -70,7 +70,7 @@ public class ElectionEncryptedVoteTest {
         assertNotEquals(
                 electionEncryptedVote1,
                 new ElectionEncryptedVote(
-                        questionId, votes, false, encryptedWriteIn, electionId));
+                        questionId, "shouldNotBeEqual", false, encryptedWriteIn, electionId));
         assertNotEquals(electionEncryptedVote1, new ElectionEncryptedVote("random", votes, false, encryptedWriteIn, electionId));
 
         // Same equals, no write_in

@@ -20,18 +20,18 @@ public class ElectionEncryptedVote {
 
   /**
    * @param questionId       id of the question
-   * @param encryptedVotes   list of encrypted votes
+   * @param encryptedVote    encrypted uniaue indice of the chosen vote
    * @param writeInEnabled   indicates if write in is enabled
    * @param encryptedWriteIn
    * @param electionId
    */
   public ElectionEncryptedVote(
-          @NonNull String questionId, @NonNull String encryptedVotes, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
+          @NonNull String questionId, @NonNull String encryptedVote, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
 
-    this.questionId = questionId;
-    this.id =
-            Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVotes, encryptedWriteIn, writeInEnabled);
-    this.vote = writeInEnabled ? null : encryptedVotes;
+      this.questionId = questionId;
+      this.id =
+              Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
+      this.vote = writeInEnabled ? null : encryptedVote;
   }
 
   @NonNull
