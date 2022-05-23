@@ -9,26 +9,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-      android:id="@+id/back_layout"
-      layout="@layout/tab_back"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/election_start_guideline_horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
-
     <LinearLayout
       android:id="@+id/nodes_top"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical"
       android:gravity="center"
-      app:layout_constraintTop_toBottomOf="@+id/election_start_guideline_horizontal" >
+      app:layout_constraintTop_toTopOf="parent">
 
       <TextView
         android:id="@+id/election_title"
@@ -65,7 +52,7 @@
       android:layout_height="0dp"
       android:columnWidth="120dp"
       android:numColumns="auto_fit"
-      app:layout_constraintBottom_toBottomOf="@+id/back_layout"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintTop_toBottomOf="@id/nodes_top"
       app:layout_constraintVertical_bias="0" />
   </androidx.constraintlayout.widget.ConstraintLayout>
