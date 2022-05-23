@@ -343,7 +343,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes) throws CothorityCryptoException {
+  public void sendVote(List<ElectionVote> votes) {
     Election election = mCurrentElection.getValue();
 
     if (election == null) {
@@ -365,18 +365,25 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
       CastVote<ElectionVote> castVote = null;
-      CastVote<ElectionEncryptedVote> castEncryptedVote;
+      CastVote<ElectionEncryptedVote> castEncryptedVote = null;
 
       // Construct the cast vote depending if the messages need to be encrypted or not
-      // TODO
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
         castVote = new CastVote(votes, election.getId(), lao.getId());
       } else {
-        List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        castEncryptedVote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
+        try {
+          Log.d(TAG, "Encrypting the vote ...");
+          List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
+        } catch (CothorityCryptoException e) {
+          Log.d(TAG, "Something happened during happened during encryption");
+          Toast.makeText(getApplication(), "Something happened during happened during encryption", Toast.LENGTH_LONG)
+                  .show();
+        }
+        Log.d(TAG, "Vote encrypted!");
       }
-      Channel electionChannel = election.getChannel();
 
+      //TODO differentiate both votes and send
+      Channel electionChannel = election.getChannel();
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
               networkManager
@@ -385,7 +392,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                       .doFinally(this::openLaoDetail)
                       .subscribe(
                               () -> {
-                    Log.d(TAG, "sent a vote successfully");
+                                Log.d(TAG, "sent a vote successfully");
                     // Toast ? + send back to election screen or details screen ?
                     Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
                         .show();
