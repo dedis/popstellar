@@ -14,27 +14,12 @@ import scala.concurrent.{Await, Future}
 object ElectionChannel {
   implicit class ElectionChannel(channel: Channel) extends AskPatternConstants {
 
-    /*def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
-       var result: List[(Message, T)] = Nil
-       Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
-         case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-           for (message <- channelData.messages) {
-             (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
-               case Some(Success(value)) => value
-               case _ => None
-             }) match {
-               case DbActorReadAck(Some(message)) =>
-                 message.decodedData match {
-                   case Some(t: T) =>
-                     result = (message, t) :: result
-                   case _ =>
-                 }
-             }
-           }
-         case _ =>
-       }
-       result
-     }*/
+    /**
+     *
+     * @param dbActor AskableActorRef
+     * @tparam T type of data to extract from the election channel
+     * @return Future of a list of tuple containing the message and the data extracted
+     */
     def extractMessages[T: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
         DbActor.DbActorReadChannelDataAck(channelData) <- dbActor ? DbActor.ReadChannelData(channel)
