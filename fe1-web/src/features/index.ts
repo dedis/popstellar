@@ -73,6 +73,7 @@ export function configureFeatures() {
 
   const walletComposition = wallet.compose({
     keyPairRegistry,
+    messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getEventById: eventConfiguration.functions.getEventById,
