@@ -281,9 +281,6 @@ public class LaoDetailActivity extends AppCompatActivity {
               if (event != null) {
                 Intent intent = new Intent(this, DigitalCashMain.class);
                 Log.d(TAG, "Trying to open digital cash");
-                intent.putExtra(LAO_ID, mViewModel.getCurrentLaoValue().getId());
-                intent.putExtra(LAO_NAME, mViewModel.getCurrentLaoValue().getName());
-                intent.putExtra(OPENED_FROM, TAG);
                 startActivity(intent);
               }
             });

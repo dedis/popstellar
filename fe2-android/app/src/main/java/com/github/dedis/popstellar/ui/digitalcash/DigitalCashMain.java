@@ -25,6 +25,7 @@ public class DigitalCashMain extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashMain.class.getSimpleName();
 
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -32,6 +33,7 @@ public class DigitalCashMain extends AppCompatActivity {
 
     mViewModel = obtainViewModel(this);
 
+    setupFragment(R.id.fragment_digital_cash_home);
     setupNavigationBar();
     // Subscribe to "open home"
     mViewModel
