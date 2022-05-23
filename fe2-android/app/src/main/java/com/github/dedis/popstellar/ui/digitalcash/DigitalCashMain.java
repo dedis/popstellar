@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -24,6 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashMain extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashMain.class.getSimpleName();
+  public static final String OPENED_FROM_d = "OPENED_FROM";
+  public static final String LAO_ID_d = "LAO_ID";
+  public static final String LAO_NAME_d = "LAO_NAME";
 
 
   @Override
@@ -32,6 +36,11 @@ public class DigitalCashMain extends AppCompatActivity {
     setContentView(R.layout.digital_cash_main_activity);
 
     mViewModel = obtainViewModel(this);
+
+    if (getIntent().getExtras().get(OPENED_FROM_d).equals(LaoDetailActivity.class.getSimpleName())) {
+          mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID_d));
+          mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME_d))
+                  }
 
     setupFragment(R.id.fragment_digital_cash_home);
     setupNavigationBar();

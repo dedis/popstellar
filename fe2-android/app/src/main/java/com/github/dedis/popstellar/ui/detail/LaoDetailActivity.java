@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.detail;
 
+import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain.LAO_ID_d;
+import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain.LAO_NAME_d;
+import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain.OPENED_FROM_d;
 import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_ID;
 import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_NAME;
 import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
@@ -281,6 +284,9 @@ public class LaoDetailActivity extends AppCompatActivity {
               if (event != null) {
                 Intent intent = new Intent(this, DigitalCashMain.class);
                 Log.d(TAG, "Trying to open digital cash");
+                intent.putExtra(LAO_ID_d, mViewModel.getCurrentLaoValue().getId());
+                intent.putExtra(LAO_NAME_d, mViewModel.getCurrentLaoValue().getName());
+                intent.putExtra(OPENED_FROM_d, TAG);
                 startActivity(intent);
               }
             });
