@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/fragment_election"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/fragment_election"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   tools:context=".ui.detail.event.election.fragments.ElectionFragment">
@@ -20,21 +20,21 @@
     android:id="@+id/election_fragment_status"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/status_margin_top"
     android:text="@string/closed"
     android:textColor="@color/red"
-    android:layout_marginTop="@dimen/status_margin_top"
-    app:layout_constraintTop_toBottomOf="@id/election_fragment_title"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent" />
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/election_fragment_title" />
 
   <ImageView
     android:id="@+id/election_fragment_status_icon"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:src="@drawable/ic_lock"
-    app:layout_constraintTop_toTopOf="@id/election_fragment_status"
     app:layout_constraintBottom_toBottomOf="@id/election_fragment_status"
-    app:layout_constraintEnd_toStartOf="@id/election_fragment_status" />
+    app:layout_constraintEnd_toStartOf="@id/election_fragment_status"
+    app:layout_constraintTop_toTopOf="@id/election_fragment_status" />
 
   <ImageView
     android:id="@+id/start_time_icon"
@@ -96,29 +96,29 @@
     android:id="@+id/election_action_button"
     android:layout_width="@dimen/election_action_button_width"
     android:layout_height="@dimen/event_button_height"
-    android:enabled="false"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
     android:layout_margin="@dimen/event_button_margin"
     android:backgroundTint="@color/colorPrimary"
+    android:drawableStart="@drawable/ic_voting_action"
+    android:drawableTint="@color/white"
+    android:enabled="false"
     android:text="@string/vote"
     android:textColor="@color/white"
     android:textSize="@dimen/event_button_text_size"
-    android:drawableStart="@drawable/ic_voting_action"
-    android:drawableTint="@color/white" />
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
   <Button
     android:id="@+id/election_management_button"
     android:layout_width="@dimen/event_button_width"
     android:layout_height="@dimen/event_button_height"
-    app:layout_constraintBottom_toBottomOf="@id/election_action_button"
-    app:layout_constraintEnd_toStartOf="@id/election_action_button"
     android:layout_marginEnd="@dimen/inter_buttons_margin"
     android:backgroundTint="@color/green"
+    android:drawableStart="@drawable/ic_unlock"
+    android:drawableTint="@color/white"
     android:text="@string/start"
     android:textColor="@color/white"
     android:textSize="@dimen/event_button_text_size"
-    android:drawableTint="@color/white"
-    android:drawableStart="@drawable/ic_unlock" />
+    app:layout_constraintBottom_toBottomOf="@id/election_action_button"
+    app:layout_constraintEnd_toStartOf="@id/election_action_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

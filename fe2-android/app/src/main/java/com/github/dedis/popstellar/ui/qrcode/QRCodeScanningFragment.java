@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -128,15 +127,6 @@ public final class QRCodeScanningFragment extends Fragment {
         new QRFocusingProcessor(
             barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel)));
     return mQrCodeFragBinding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      Button back = requireActivity().findViewById(R.id.tab_back);
-      back.setOnClickListener(c -> ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
-    }
   }
 
   @Override
