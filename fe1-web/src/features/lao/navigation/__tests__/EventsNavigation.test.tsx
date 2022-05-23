@@ -12,7 +12,7 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
-import OrganizerEventsNavigation from '../OrganizerEventsNavigation';
+import EventsNavigation from '../EventsNavigation';
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
@@ -45,7 +45,7 @@ describe('OrganizerNavigation', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={OrganizerEventsNavigation} />
+          <MockNavigator component={EventsNavigation} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

@@ -52,6 +52,8 @@ namespace STRINGS {
 
   /* --- Lao Organizer Navigation Strings --- */
   export const navigation_lao_events_home = 'Events Home';
+  export const navigation_lao_events_home_title = 'Events';
+
   export const navigation_lao_events_create_event = 'Create Event';
   export const navigation_lao_events_creation_meeting = 'Create meeting';
   export const navigation_lao_events_creation_roll_call = 'Create roll call';

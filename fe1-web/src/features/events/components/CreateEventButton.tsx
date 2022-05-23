@@ -47,7 +47,7 @@ const CreateEventButton = () => {
       },
       (idx) => {
         if (idx !== undefined && idx < types.length) {
-          navigation.navigate(STRINGS.navigation_app_lao, {
+          navigation.push(STRINGS.navigation_app_lao, {
             screen: STRINGS.navigation_lao_events,
             params: {
               screen: types[idx].navigationNames.createEvent,

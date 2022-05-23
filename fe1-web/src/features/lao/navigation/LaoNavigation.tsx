@@ -16,7 +16,7 @@ import LaoHomeScreen, {
   LaoHomeScreenHeader,
   LaoHomeScreenHeaderRight,
 } from '../screens/LaoHomeScreen';
-import OrganizerEventsNavigation from './OrganizerEventsNavigation';
+import EventsNavigation from './EventsNavigation';
 
 const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
@@ -26,8 +26,6 @@ const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 const LaoNavigation: React.FC = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
-  const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
-
   const isOrganizer = useSelector(selectIsLaoOrganizer);
 
   // add the organizer or attendee screen depeding on the user
@@ -46,13 +44,13 @@ const LaoNavigation: React.FC = () => {
       {
         id: STRINGS.navigation_lao_events,
         tabBarIcon: EventIcon,
-        Component: isOrganizer ? OrganizerEventsNavigation : EventsScreen,
-        headerRight: isOrganizer ? CreateEventButton : undefined,
+        Component: isOrganizer ? EventsNavigation : EventsScreen,
+        headerShown: false,
         order: 0,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [passedScreens, CreateEventButton, isOrganizer]);
+  }, [passedScreens, isOrganizer]);
 
   return (
     <OrganizationTopTabNavigator.Navigator
