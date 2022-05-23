@@ -45,17 +45,17 @@ export interface Question {
 export interface Vote {
   id: string;
   question: string;
-  vote: number[];
+  vote: number;
 }
 
 export interface EncryptedVote {
   id: string;
   question: string;
-  vote: string[];
+  vote: string;
 }
 
 // This type ensures that for each question there is a unique set of option indices
-export type SelectedBallots = { [questionIndex: number]: Set<number> };
+export type SelectedBallots = { [questionIndex: number]: number };
 
 export interface RegisteredVote {
   createdAt: number;
