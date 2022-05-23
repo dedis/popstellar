@@ -21,12 +21,14 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   title: Typography.important as ViewStyle,
   sendContainer: {
+    maxWidth: '100%',
     height: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   } as ViewStyle,
   sendView: {
+    maxWidth: '100%',
     margin: 'auto',
   } as ViewStyle,
   input: {
