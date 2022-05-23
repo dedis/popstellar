@@ -15,7 +15,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 import ch.epfl.pop.model.objects.ElectionChannel.ElectionChannel
-import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
 
 /**
  * ElectionHandler object uses the db instance from the MessageHandler
@@ -63,11 +62,12 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //checks first if the election is created (i.e. if the channel election exists)
-    val askChannelExist = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
-    Await.ready(askChannelExist, duration).value.get match {
-      case Success(_) =>
-        val askWritePropagate: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-        Await.result(askWritePropagate, duration)
+    val combined = for {
+      _ <- dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+      _ <- dbAskWritePropagate(rpcMessage)
+    } yield ()
+    Await.ready(combined, duration).value.get match {
+      case Success(_) => Left(rpcMessage)
       case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
@@ -91,30 +91,18 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
       electionQuestionResults <- createElectionQuestionResults(electionChannel)
-      resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
       // propagate the endElection message
       _ <- dbAskWritePropagate(rpcMessage)
-      // read laoData
-      DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+      //data to be broadcast
+      resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
+      data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString)
       // create & propagate the resultMessage
-      resultMessage: Message = createResultMessage(resultElection, laoData /*, witnessSignatures*/)
-      _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, resultMessage)
+      _ <- dbBroadcast(rpcMessage, electionChannel, data, electionChannel)
     } yield ()
     Await.ready(combined, duration).value match {
-      case Some(Success(_)) =>
-        Left(rpcMessage)
-      case _ =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleEndElection unknown error", rpcMessage.getId))
+      case Some(Success(_)) => Left(rpcMessage)
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleEndElection unknown error", rpcMessage.getId))
     }
-  }
-
-  private def createResultMessage(resultElection: ResultElection, laoData: LaoData,
-                                  witnessSignatures: List[WitnessSignaturePair] = Nil): Message = {
-    val resultElectionB64: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString())
-    val signature: Signature = laoData.privateKey.signData(resultElectionB64)
-    val sender: PublicKey = laoData.publicKey
-    val messageId: Hash = Hash.fromStrings(resultElectionB64.toString, signature.toString)
-    Message(resultElectionB64, sender, signature, messageId, witnessSignatures, Some(resultElection))
   }
 
   private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
@@ -151,21 +139,3 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     } yield results.toList
   }
 }
-
-
-/*
-* val question = voteElection.question
-      voteElection.vote match {
-        case Some(List(index)) =>
-          val ballots = questionToBallots(question).toArray
-          val ballot = ballots.apply(index)
-          val questionResult = resultsTable(question)
-          resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
-        case _ =>
-      }
-      val results = resultsTable.map(tuple => {
-        val (qid, ballotToCount) = tuple
-        // build ElectionBallotVotes objects
-        val electionBallotVotes = ballotToCount.map(tuple => ElectionBallotVotes(tuple._1, tuple._2))
-        ElectionQuestionResult(qid, electionBallotVotes.toList)
-      })*/
