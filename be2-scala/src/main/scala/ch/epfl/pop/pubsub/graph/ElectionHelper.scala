@@ -6,11 +6,10 @@ import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadAck
 
 import scala.collection.mutable
 import scala.concurrent.Await
-import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * functions that are used in handlers and validators of election
@@ -26,7 +25,7 @@ object ElectionHelper extends AskPatternConstants {
   def getSetupMessage(electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): SetupElection =
     getAllMessage[SetupElection](electionChannel, dbActor).head._2
 
-  def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
+  /*def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
     var result: List[(Message, T)] = Nil
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
@@ -46,6 +45,25 @@ object ElectionHelper extends AskPatternConstants {
       case _ =>
     }
     result
+  }*/
+  def getAllMessage[T: Manifest](electionChannel: Channel, dbActor: AskableActorRef = DbActor.getInstance): List[(Message, T)] = {
+    var result: List[(Message, T)] = Nil
+    val combined = for {
+      readChannelDataAck <- dbActor ? DbActor.ReadChannelData(electionChannel)
+      channelData = readChannelDataAck.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData
+      messageId = Hash(Base64Data("")) // Fixme : comment this line and uncomment the line bellow
+      // messageId <- channelData.messages
+      readAck <- dbActor ? DbActor.Read(electionChannel, messageId)
+      message = readAck.asInstanceOf[DbActor.DbActorReadAck].message
+      if message.isDefined
+      _ = message.get.decodedData match {
+        case Some(t: T) => result = (message.get, t) :: result
+        case _ =>
+      }
+    } yield ()
+    Await.result(combined, duration) match {
+      case _ => result
+    }
   }
 
   /**
