@@ -41,7 +41,7 @@ func Test_Lao_Create(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func Test_Lao_Create_VerifyBadExample(t *testing.T) {
+func Test_Lao_Create_Verify(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file

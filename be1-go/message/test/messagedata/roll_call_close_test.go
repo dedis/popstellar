@@ -35,3 +35,11 @@ func Test_Roll_Call_Close(t *testing.T) {
 	require.Len(t, msg.Attendees, 1)
 	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.Attendees[0])
 }
+
+func Test_Roll_Call_Close_Interface_Functions(t *testing.T) {
+	var msg messagedata.RollCallClose
+
+	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
+	require.Equal(t, messagedata.RollCallActionClose, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

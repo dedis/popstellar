@@ -40,3 +40,11 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Len(t, msg.Votes[0].Vote, 1)
 	require.Equal(t, 0, msg.Votes[0].Vote[0])
 }
+
+func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
+	var msg messagedata.VoteCastVote
+
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

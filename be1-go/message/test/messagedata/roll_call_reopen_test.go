@@ -33,3 +33,11 @@ func Test_Roll_Call_ReOpen(t *testing.T) {
 	require.Equal(t, "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=", msg.Opens)
 	require.Equal(t, int64(1633099137), msg.OpenedAt)
 }
+
+func Test_Roll_Call_ReOpen_Interface_Functions(t *testing.T) {
+	var msg messagedata.RollCallReOpen
+
+	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
+	require.Equal(t, messagedata.RollCallActionReOpen, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

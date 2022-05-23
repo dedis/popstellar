@@ -39,3 +39,11 @@ func Test_Election_Result(t *testing.T) {
 	require.Equal(t, "No", msg.Questions[0].Result[1].BallotOption)
 	require.Equal(t, 0, msg.Questions[0].Result[1].Count)
 }
+
+func Test_Election_Result_Interface_Functions(t *testing.T) {
+	var msg messagedata.ElectionResult
+
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.ElectionActionResult, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

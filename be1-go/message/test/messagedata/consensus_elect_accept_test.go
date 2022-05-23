@@ -37,56 +37,39 @@ func Test_Consensus_Elect_Accept(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func Test_Consensus_Elect_Accept_Not_Base64_Instance(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_elect_accept", "wrong_elect_accept_not_base_64_instance.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "elect_accept", action)
-
+func Test_Consensus_Elect_Accept_Interface_Functions(t *testing.T) {
 	var msg messagedata.ConsensusElectAccept
 
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "elect_accept", msg.Action)
-	require.Equal(t, "@@@", msg.InstanceID)
-	require.Equal(t, "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=", msg.MessageID)
-	require.True(t, msg.Accept)
-
-	err = msg.Verify()
-	require.Error(t, err, "instance id is %s, should be base64URL encoded", msg.InstanceID)
+	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
+	require.Equal(t, messagedata.ConsensusActionElectAccept, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
 }
 
-func Test_Consensus_Elect_Accept_Not_Base64_Message(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_elect_accept", "wrong_elect_accept_not_base_64_message.json")
+func Test_Consensus_Elect_Accept_Verify(t *testing.T) {
+	var consensusElectAccept messagedata.ConsensusElectAccept
 
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
+	object, action := "consensus", "elect_accept"
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
+	getTestBadExample := func(file string) func(*testing.T) {
+		return func(t *testing.T) {
+			// read the bad example file
+			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "consensus_elect_accept", file))
+			require.NoError(t, err)
 
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "elect_accept", action)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
+			require.NoError(t, err)
 
-	var msg messagedata.ConsensusElectAccept
+			require.Equal(t, object, obj)
+			require.Equal(t, action, act)
 
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
+			err = json.Unmarshal(buf, &consensusElectAccept)
+			require.NoError(t, err)
 
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "elect_accept", msg.Action)
-	require.Equal(t, "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=", msg.InstanceID)
-	require.Equal(t, "@@@", msg.MessageID)
-	require.True(t, msg.Accept)
+			err = consensusElectAccept.Verify()
+			require.Error(t, err)
+		}
+	}
 
-	err = msg.Verify()
-	require.Error(t, err, "message id is %s, should be base64URL encoded", msg.MessageID)
+	t.Run("instance not base64", getTestBadExample("wrong_elect_accept_not_base_64_instance.json"))
+	t.Run("message not base64", getTestBadExample("wrong_elect_accept_not_base_64_message.json"))
 }

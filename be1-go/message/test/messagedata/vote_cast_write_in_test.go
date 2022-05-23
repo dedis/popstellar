@@ -38,3 +38,11 @@ func Test_Vote_Write_In(t *testing.T) {
 	require.Equal(t, "WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=", msg.Votes[0].Question)
 	require.Equal(t, "Computer Science", msg.Votes[0].WriteIn)
 }
+
+func Test_Vote_Cast_Write_In_Interface_Functions(t *testing.T) {
+	var msg messagedata.VoteCastWriteIn
+
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.VoteActionWriteIn, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

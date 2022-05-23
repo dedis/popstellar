@@ -2,8 +2,10 @@ package messagedata
 
 import (
 	"encoding/base64"
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"strconv"
+
+	"golang.org/x/xerrors"
 )
 
 // PostTransaction defines a message data
@@ -50,10 +52,18 @@ type UnlockScript struct {
 
 // Verify verifies that the PostTransaction message is valid
 func (message PostTransaction) Verify() error {
+	for _, out := range message.Transaction.Outputs {
+		if out.Value < 0 {
+			return answer.NewErrorf(-4, "transaction output value is %d, "+
+				"shouldn't be negative", out.Value)
+		}
+	}
+
 	// verify id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.TransactionID)
 	if err != nil {
-		return xerrors.Errorf("transaction id is %s, should be base64URL encoded", message.TransactionID)
+		return xerrors.Errorf("transaction id is %s, should be base64URL "+
+			"encoded", message.TransactionID)
 	}
 
 	locktime := strconv.Itoa(message.Transaction.Locktime)

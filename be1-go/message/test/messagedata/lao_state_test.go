@@ -44,3 +44,11 @@ func Test_Lao_State(t *testing.T) {
 	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.ModificationSignatures[0].Witness)
 	require.Equal(t, "XXX", msg.ModificationSignatures[0].Signature)
 }
+
+func Test_Lao_State_Interface_Functions(t *testing.T) {
+	var msg messagedata.LaoState
+
+	require.Equal(t, messagedata.LAOObject, msg.GetObject())
+	require.Equal(t, messagedata.LAOActionState, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

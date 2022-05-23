@@ -43,7 +43,7 @@ const (
 	RollCallActionClose  = "close"
 	RollCallActionCreate = "create"
 	RollCallActionOpen   = "open"
-	RollCallActionReopen = "reopen"
+	RollCallActionReOpen = "reopen"
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"

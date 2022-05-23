@@ -47,3 +47,11 @@ func Test_Election_Setup(t *testing.T) {
 	require.Equal(t, "No", msg.Questions[0].BallotOptions[1])
 	require.Equal(t, false, msg.Questions[0].WriteIn)
 }
+
+func Test_Election_Setup_Interface_Functions(t *testing.T) {
+	var msg messagedata.ElectionSetup
+
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.ElectionActionSetup, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

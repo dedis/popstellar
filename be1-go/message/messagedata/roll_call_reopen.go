@@ -18,7 +18,7 @@ func (RollCallReOpen) GetObject() string {
 
 // GetAction implements MessageData
 func (RollCallReOpen) GetAction() string {
-	return RollCallActionReopen
+	return RollCallActionReOpen
 }
 
 // NewEmpty implements MessageData

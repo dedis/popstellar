@@ -276,7 +276,7 @@ func Test_Send_Chirp(t *testing.T) {
 
 	msg2 := generalCha.Catchup(method.Catchup{ID: 0})
 
-	checkData := messagedata.ChirpBroadcast{
+	checkData := messagedata.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
 		ChirpID:   messagedata.Hash(buf64, "h"),
@@ -382,7 +382,7 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	msg := generalCha.Catchup(method.Catchup{ID: 0})
 
-	checkDataAdd := messagedata.ChirpBroadcast{
+	checkDataAdd := messagedata.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
 		ChirpID:   messagedata.Hash(buf64add, "h"),
@@ -393,7 +393,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	require.Nil(t, err)
 	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
 
-	checkDataDelete := messagedata.ChirpBroadcast{
+	checkDataDelete := messagedata.ChirpNotifyDelete{
 		Object:    "chirp",
 		Action:    "notify_delete",
 		ChirpID:   messagedata.Hash(buf64delete, "h"),

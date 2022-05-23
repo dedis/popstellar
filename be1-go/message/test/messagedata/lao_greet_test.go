@@ -37,9 +37,11 @@ func Test_Lao_Greet(t *testing.T) {
 	require.Equal(t, "wss://popdemo.dedis.ch:8000/witness-demo", msg.Peers[1].Address)
 }
 
-func Test_Greet_New_Empty(t *testing.T) {
+func Test_Lao_Greet_Interface_Functions(t *testing.T) {
 	var msg messagedata.LaoGreet
 
+	require.Equal(t, messagedata.LAOObject, msg.GetObject())
+	require.Equal(t, messagedata.LAOActionGreet, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
