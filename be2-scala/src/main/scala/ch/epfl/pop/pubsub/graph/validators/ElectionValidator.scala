@@ -101,7 +101,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
-  private def allVoteHaveValidIndex(votes:List[VoteElection], q2ballots:Map[Hash, List[String]]) =
+
+  private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]]) =
     votes.forall(
       voteElection => {
         val vote = voteElection.vote match {
@@ -211,6 +212,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
    * @return True if the hashes are the same, false otherwise
    */
   private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
-    Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
+    val sortedCastVotes: List[CastVoteElection] = castVotes.sortBy(_._1.message_id.toString.toLowerCase).map(_._2)
+    val voteElections: List[VoteElection] = sortedCastVotes.flatMap(_.votes)
+    val computedHash = Hash.fromStrings(voteElections.map(_.id.toString): _*)
+    computedHash == checkHash
   }
 }
