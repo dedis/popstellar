@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
@@ -50,6 +50,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val sender: PublicKey = message.sender
 
         val questions: List[ElectionQuestion] = data.questions
+
+        //checks if the question ids are valid wrt protocol
+        def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
+          questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
@@ -105,17 +109,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
-  private def allVoteHaveValidIndex(votes:List[VoteElection], q2ballots:Map[Hash, List[String]]) =
-    votes.forall(
-      voteElection => {
-        val vote = voteElection.vote match {
-          case Some(v :: _) => v
-          case _ => -1
-        }
-        // check if the ballot is available
-        vote < q2ballots(voteElection.question).size
-      }
-    )
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
@@ -126,7 +119,20 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val channel: Channel = rpcMessage.getParamsChannel
         val questions = getSetupMessage(channel, dbActorRef).questions
-        val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
+
+        //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
+        def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
+          val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
+          val questionsId: List[Hash] = questions.map(_.id)
+
+          votes.forall( vote => vote.vote match {
+            case Some(v :: _ ) =>
+              questionsId.contains(vote.question) &&
+                v < q2Ballots(vote.question).size &&
+                vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
+            case _ => false
+          })
+        }
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
@@ -134,16 +140,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected election id"))
         } else if ((channel.decodeChannelLaoId getOrElse HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
-          //  check it the question id exists
-        } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
-          Right(validationError(s"Incorrect parameter questionId"))
-        } else if (!allVoteHaveValidIndex(data.votes, q2Ballots)) {
-          Right(validationError(s"Incorrect parameter ballot"))
-          // check for question id duplication
-        } else if (data.votes.map(_.question).distinct.length != data.votes.length) {
-          Right(validationError(s"The castvote contains twice the same question id"))
-        } else if (!validateVoteId(data.votes, data.election)) {
-          Right(validationError("unexpected vote ids"))
+        } else if (!validateVoteElection(data.election, data.votes, questions)) {
+          Right(validationError(s"invalid votes"))
           // check open and end constraints
         } else if (getOpenMessage(channel).isEmpty) {
           Right(validationError(s"This election has not started yet"))
@@ -190,6 +188,11 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
+        //checks if the registered votes hash is valid
+        def validateRegisteredVotes(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
+          Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
+        }
+
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         else if (channel.extractChildChannel != data.election)
@@ -200,7 +203,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"invalid sender $sender"))
         else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!compareResults(getLastVotes(channel, dbActorRef), data.registered_votes))
+        else if (!validateRegisteredVotes(getLastVotes(channel, dbActorRef), data.registered_votes))
           Right(validationError(s"Incorrect verification hash"))
         else
           Left(rpcMessage)
@@ -208,27 +211,4 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
-
-  /**
-   *
-   * @param castVotes List of pairs of messages and castVote data
-   * @param checkHash The hash of the concatenated votes (i.e. registered_votes)
-   * @return True if the hashes are the same, false otherwise
-   */
-  private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
-    Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
-  }
-
-  private def validateVoteId(votes: List[VoteElection], election_id: Hash): Boolean = {
-    votes.forall(v => v.id == Hash.fromStrings("Vote", election_id.toString, v.question.toString, v.vote.get.head.toString))
-  }
-
-  /**
-   *
-   * @param questions list of questions
-   * @param election_id the id of the election
-   * @return true iff the question ids are valid wrt. Hash("Question", election_id, question)
-   */
-  private def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
-    questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
 }

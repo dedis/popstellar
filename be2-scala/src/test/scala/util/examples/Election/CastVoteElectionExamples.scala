@@ -79,15 +79,15 @@ object CastVoteElectionExamples {
     Some(workingCastVoteElection)
   )
 
-  val invalidVoteCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidVotes)
-  val DATA_CAST_VOTE_INVALID_VOTES: Hash = Hash(Base64Data.encode(invalidVoteCastVoteElection.toJson.toString))
+  val invalidVoteQuestionIdCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidVotes)
+  val DATA_CAST_VOTE_INVALID_VOTES: Hash = Hash(Base64Data.encode(invalidVoteQuestionIdCastVoteElection.toJson.toString))
   final val MESSAGE_CAST_VOTE_INVALID_VOTES: Message = new Message(
     DATA_CAST_VOTE_INVALID_VOTES.base64Data,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(invalidVoteCastVoteElection)
+    Some(invalidVoteQuestionIdCastVoteElection)
   )
 
   val invalidBallotCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, invalidBallot)
