@@ -28,6 +28,7 @@ func Test_UnmarshalData(t *testing.T) {
 	require.Error(t, err)
 
 	err = message.UnmarshalData(&electionSetup)
+	require.Error(t, err)
 
 	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
 
