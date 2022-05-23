@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -49,7 +50,7 @@ public class Election extends Event {
   private final Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name, ElectionVersion electionVersion) {
-    this.id = Election.generateElectionSetupId(laoId, creation, name);
+    id = Election.generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.results = new HashMap<>();
@@ -58,18 +59,40 @@ public class Election extends Event {
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
-    this.electionKey = null;
   }
 
   public static String getId() {
     return id;
   }
 
-  public void setId(String id) {
-    if (id == null) {
-      throw new IllegalArgumentException("election id shouldn't be null");
+  /**
+   * Encrypts the content of the votes using El-GamaL scheme
+   *
+   * @param votes list of votes to encrypt
+   * @return encrypted votes
+   */
+  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) throws CothorityCryptoException {
+    // We need to iterate over all election votes to encrypt them
+    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
+    for (ElectionVote vote : votes) {
+      // We are sure that each vote is unique per question following new specification
+      int voteIndice = vote.getVote();
+
+      // Get the two lsb byte from the indice
+      byte[] voteIndiceInBytes = new byte[2];
+      voteIndiceInBytes[0] = (byte) voteIndice;
+      voteIndiceInBytes[1] = (byte) (voteIndice >> 8);
+
+      // Create a public key and encrypt the indice
+      Base64URLData electionKeyToBase64 = new Base64URLData(getElectionKey());
+      ElectionPublicKey key = new ElectionPublicKey(electionKeyToBase64);
+      // Encrypt the indice
+      String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
+      ElectionEncryptedVote encryptedVote = new
+              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, getId());
+      encryptedVotes.add(encryptedVote);
     }
-    this.id = id;
+    return encryptedVotes;
   }
 
   public String getName() {
@@ -164,8 +187,11 @@ public class Election extends Event {
     this.channel = channel;
   }
 
-  public void setElectionKey(String electionKey){
-    this.electionKey=electionKey;
+  public void setId(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException("election id shouldn't be null");
+    }
+    Election.id = id;
   }
 
   public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
@@ -313,33 +339,8 @@ public class Election extends Event {
             "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex);
   }
 
-  /**
-   * Encrypts the content of the votes using El-GamaL scheme
-   *
-   * @param votes list of votes to encrypt
-   * @return encrypted votes
-   */
-  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) throws CothorityCryptoException {
-    // We need to iterate over all election votes to encrypt them
-    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
-    for (ElectionVote vote : votes) {
-      // We are sure that each vote is unique per question following new specification
-      int voteIndice = vote.getVote();
-
-      // Get the two lsb byte from the indice
-      byte[] voteIndiceInBytes = new byte[2];
-      voteIndiceInBytes[0] = (byte) voteIndice;
-      voteIndiceInBytes[1] = (byte) (voteIndice >> 8);
-
-      // Create a public key and encrypt the indice
-      ElectionPublicKey key = new ElectionPublicKey(getElectionKey());
-      // Encrypt the indice
-      String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
-      ElectionEncryptedVote encryptedVote = new
-              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, getId());
-      encryptedVotes.add(encryptedVote);
-    }
-    return encryptedVotes;
+  public void setElectionKey(String electionKey) {
+    Election.electionKey = electionKey;
   }
 
   @Override

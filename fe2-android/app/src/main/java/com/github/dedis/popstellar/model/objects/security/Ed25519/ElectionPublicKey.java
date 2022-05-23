@@ -3,10 +3,12 @@ package com.github.dedis.popstellar.model.objects.security.Ed25519;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
 import java.io.ByteArrayOutputStream;
+import java.security.SecureRandom;
 import java.util.Objects;
 
 import ch.epfl.dedis.lib.crypto.Ed25519;
 import ch.epfl.dedis.lib.crypto.Ed25519Point;
+import ch.epfl.dedis.lib.crypto.Ed25519Scalar;
 import ch.epfl.dedis.lib.crypto.Point;
 import ch.epfl.dedis.lib.crypto.Scalar;
 import ch.epfl.dedis.lib.exception.CothorityCryptoException;
@@ -22,11 +24,11 @@ public class ElectionPublicKey {
     // Point is generate with given public key
     private final Point point;
 
-    public ElectionPublicKey(@NonNull String publicKey) throws CothorityCryptoException {
+    public ElectionPublicKey(@NonNull Base64URLData publicKey) {
         try {
-            point = new Ed25519Point(publicKey);
+            point = new Ed25519Point(publicKey.getData());
         } catch (CothorityCryptoException e) {
-            throw new CothorityCryptoException("Could not create the point for ellyptic curve, please provide another key");
+            throw new IllegalArgumentException("Could not create the point for elliptic curve, please provide another key");
         }
         curve = new Ed25519();
     }
@@ -58,6 +60,14 @@ public class ElectionPublicKey {
     }
 
     /**
+     * Added this hash behavior by default
+     */
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getPoint().toString());
+    }
+
+    /**
      * Encrypts with ElGamal under Ed25519 curve
      *
      * @param message message a 2 byte integer corresponding to the chosen vote
@@ -78,8 +88,10 @@ public class ElectionPublicKey {
         Point M = Ed25519Point.embed(message);
         // ElGamal-encrypt the point to produce ciphertext (K,C).
         // k := cothority.Suite.Scalar().Pick(random.New()) -- ephemeral private key
-        // TODO generate a random scalar of prime order
-        Scalar k = Ed25519.prime_order;
+        // k is a random number of primer order
+        byte[] seed = new byte[Ed25519.field.getb() / 8];
+        (new SecureRandom()).nextBytes(seed);
+        Scalar k = new Ed25519Scalar(seed);
         // K = cothority.Suite.Point().Mul(k, nil)
         Point K = Ed25519Point.base().mul(k);
         // S := cothority.Suite.Point().Mul(k, public) -- ephemeral DH shared secret

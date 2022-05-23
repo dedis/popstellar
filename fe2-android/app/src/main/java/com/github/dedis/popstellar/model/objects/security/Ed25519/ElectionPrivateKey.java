@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+
 import java.nio.charset.StandardCharsets;
 
 import ch.epfl.dedis.lib.crypto.Ed25519Point;
@@ -11,8 +13,8 @@ import io.reactivex.annotations.NonNull;
 
 public class ElectionPrivateKey {
 
-    private static int MESSAGE_BYTE_SIZE = 64;
-    private static int HALF_MESSAGE_BYTE_SIZE = 32;
+    private static final int MESSAGE_BYTE_SIZE = 64;
+    private static final int HALF_MESSAGE_BYTE_SIZE = 32;
 
     // Scalar generated with the private key
     private final Ed25519Scalar scalar;
@@ -22,8 +24,8 @@ public class ElectionPrivateKey {
      *
      * @param privateKey private key used to decrypt
      */
-    public ElectionPrivateKey(String privateKey) {
-        scalar = new Ed25519Scalar(privateKey);
+    public ElectionPrivateKey(@NonNull Base64URLData privateKey) {
+        scalar = new Ed25519Scalar(privateKey.getData());
     }
 
     @Override
@@ -41,6 +43,14 @@ public class ElectionPrivateKey {
         }
         ElectionPrivateKey that = (ElectionPrivateKey) o;
         return that.getScalar().equals(getScalar());
+    }
+
+    /**
+     * Added this hash behavior by default
+     */
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getScalar().toString());
     }
 
     public Scalar getScalar() {

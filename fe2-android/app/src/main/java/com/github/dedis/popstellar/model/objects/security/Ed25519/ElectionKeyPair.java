@@ -1,13 +1,15 @@
 package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+
 import ch.epfl.dedis.lib.crypto.Ed25519Pair;
 import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import io.reactivex.annotations.NonNull;
 
 public class ElectionKeyPair {
 
-    private ElectionPrivateKey decryptionScheme;
-    private ElectionPublicKey encryptionScheme;
+    public ElectionPrivateKey decryptionScheme;
+    public ElectionPublicKey encryptionScheme;
 
     public ElectionKeyPair(@NonNull ElectionPublicKey encryptionScheme, @NonNull ElectionPrivateKey decryptionScheme) {
         this.decryptionScheme = decryptionScheme;
@@ -20,14 +22,17 @@ public class ElectionKeyPair {
      * @return ElectionKeyPair set (ElectionPublicKey=encryptionScheme,ElectionPrivateKey=encryptionScheme)
      * @throws CothorityCryptoException
      */
-    public static ElectionKeyPair generateKeyPair() throws CothorityCryptoException {
+    public static ElectionKeyPair generateKeyPair() {
 
+        //Generate at random using Ed25519Pair class
         Ed25519Pair keyPairScheme = new Ed25519Pair();
+        Base64URLData encodedPublic = new Base64URLData(keyPairScheme.point.toBytes());
+        Base64URLData privateKeyPrivate = new Base64URLData(keyPairScheme.scalar.toBytes());
 
         ElectionPublicKey draftEncScheme =
-                new ElectionPublicKey(keyPairScheme.point.toBytes().toString());
+                new ElectionPublicKey(encodedPublic);
         ElectionPrivateKey draftDecScheme =
-                new ElectionPrivateKey(keyPairScheme.scalar.toBytes().toString());
+                new ElectionPrivateKey(privateKeyPrivate);
 
         return new ElectionKeyPair(draftEncScheme, draftDecScheme);
 

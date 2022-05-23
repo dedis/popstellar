@@ -26,12 +26,16 @@ public class ElectionEncryptedVote {
    * @param electionId
    */
   public ElectionEncryptedVote(
-          @NonNull String questionId, @NonNull String encryptedVote, @NonNull Boolean writeInEnabled, @NonNull String encryptedWriteIn, @NonNull String electionId) {
+          @NonNull String questionId, @NonNull String encryptedVote, @NonNull Boolean writeInEnabled, String encryptedWriteIn, @NonNull String electionId) {
 
-      this.questionId = questionId;
-      this.id =
-              Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
-      this.vote = writeInEnabled ? null : encryptedVote;
+    this.questionId = questionId;
+    this.id =
+            Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
+    if (writeInEnabled == true) {
+      this.vote = null;
+    } else {
+      this.vote = encryptedVote;
+    }
   }
 
   @NonNull
