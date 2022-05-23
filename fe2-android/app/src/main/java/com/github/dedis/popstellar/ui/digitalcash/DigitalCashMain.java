@@ -39,7 +39,7 @@ public class DigitalCashMain extends AppCompatActivity {
 
     if (getIntent().getExtras().get(OPENED_FROM_d).equals(LaoDetailActivity.class.getSimpleName())) {
           mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID_d));
-          mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME_d))
+      mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME_d));
                   }
 
     setupFragment(R.id.fragment_digital_cash_home);
