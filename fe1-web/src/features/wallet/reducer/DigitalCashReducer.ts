@@ -94,7 +94,9 @@ const digitalCashSlice = createSlice({
         transactionMessage.inputs.forEach((input) => {
           const pubHash = Hash.fromString(input.script.publicKey).valueOf();
           rollCallState.balances[pubHash] = 0;
-          rollCallState.transactionsByPubHash[pubHash].clear();
+          if (rollCallState.transactionsByPubHash[pubHash]) {
+            rollCallState.transactionsByPubHash[pubHash].clear();
+          }
         });
 
         transactionMessage.outputs.forEach((output) => {

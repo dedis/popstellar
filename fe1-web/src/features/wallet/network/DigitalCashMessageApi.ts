@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { channelFromIds, getCoinChannel, Hash, KeyPair, PopToken, PublicKey } from "core/objects";
+import { getCoinChannel, Hash, KeyPair, PopToken, PublicKey } from "core/objects";
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 
@@ -23,19 +23,23 @@ export function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
-  laoId: string,
-  rcId: string,
+  laoId: Hash,
+  rcId: Hash,
 ): Promise<void> {
   // TODO: Should check total value, OVERFLOW
 
-  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(laoId, rcId, from.publicKey.valueOf());
+  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(
+    laoId.valueOf(),
+    rcId.valueOf(),
+    from.publicKey.valueOf(),
+  );
 
   if (!transactionStates) {
     console.warn(makeErr('no transaction out were found for this public key'));
     return Promise.resolve();
   }
 
-  const balance = getBalance(laoId, rcId, from.publicKey.valueOf());
+  const balance = getBalance(laoId.valueOf(), rcId.valueOf(), from.publicKey.valueOf());
 
   if (amount < 0 || amount > balance) {
     console.warn(makeErr('balance is not sufficient to send this amount'));
@@ -47,6 +51,7 @@ export function requestSendTransaction(
   const postTransactionMessage = new PostTransaction({
     transaction_id: transaction.transactionId,
     transaction: transaction.toJSON(),
+    rc_id: rcId,
   });
   const lao: Lao = OpenedLaoStore.get();
 
@@ -61,17 +66,20 @@ export function requestSendTransaction(
  * @param organizerKP the keypair of the organizer
  * @param to the destination public key
  * @param amount the value of the transaction
+ * @param rcId the roll call id in which the transaction happens
  */
 export function requestCoinbaseTransaction(
   organizerKP: KeyPair,
   to: PublicKey,
   amount: number,
+  rcId: Hash,
 ): Promise<void> {
   const transaction = Transaction.createCoinbase(organizerKP, to, amount);
 
   const postTransactionMessage = new PostTransaction({
     transaction_id: transaction.transactionId,
     transaction: transaction.toJSON(),
+    rc_id: rcId,
   });
 
   const lao: Lao = OpenedLaoStore.get();

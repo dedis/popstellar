@@ -134,7 +134,12 @@ const WalletHome = () => {
         modalVisible={sendModalVisible}
         setModalVisible={setSendModalVisible}
         send={(receiver: string, amount: number) => {
-          requestCoinbaseTransaction(KeyPairStore.get(), new PublicKey(receiver), amount);
+          requestCoinbaseTransaction(
+            KeyPairStore.get(),
+            new PublicKey(receiver),
+            amount,
+            tokens![selectedTokenIndex].rollCallId,
+          );
         }}
       />
       <View style={styles.smallPadding} />

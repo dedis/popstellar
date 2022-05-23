@@ -15,6 +15,8 @@ export class PostTransaction implements MessageData {
 
   public readonly transaction: TransactionJSON;
 
+  public readonly rc_id: Hash;
+
   constructor(msg: Partial<PostTransaction>) {
     if (!msg.transaction) {
       throw new ProtocolError(
@@ -29,6 +31,11 @@ export class PostTransaction implements MessageData {
       );
     }
     this.transaction_id = msg.transaction_id;
+
+    if (!msg.rc_id) {
+      throw new ProtocolError("Undefined 'rc_id' parameter encountered during 'PostTransaction'");
+    }
+    this.rc_id = msg.rc_id;
   }
 
   /**
