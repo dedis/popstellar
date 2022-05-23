@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
@@ -56,7 +56,7 @@ const categorizeEventsByTime = (time: number, events: EventState[]) => {
 };
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_home>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -117,7 +117,7 @@ const EventList = () => {
               navigation.navigate(STRINGS.navigation_app_lao, {
                 screen: STRINGS.navigation_lao_events,
                 params: {
-                  screen: STRINGS.navigation_lao_organizer_create_event,
+                  screen: STRINGS.navigation_lao_events_create_event,
                 },
               })
             }>

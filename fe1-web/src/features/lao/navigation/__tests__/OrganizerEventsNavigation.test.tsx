@@ -19,7 +19,7 @@ const contextValue = {
     EventList: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
-    organizerNavigationScreens: [
+    eventsNavigationScreens: [
       {
         id: 'screen1' as LaoFeature.OrganizerScreen['id'],
         title: 'a title',

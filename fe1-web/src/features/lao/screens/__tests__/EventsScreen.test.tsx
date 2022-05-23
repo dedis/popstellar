@@ -11,14 +11,14 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
-import AttendeeEventsScreen from '../AttendeeEventsScreen';
+import AttendeeEventsScreen from '../EventsScreen';
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 

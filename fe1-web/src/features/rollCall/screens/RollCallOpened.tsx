@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
@@ -43,7 +43,7 @@ const qrScannerStyles: ViewStyle = {
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_open_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -133,7 +133,7 @@ const RollCallOpened = () => {
 
     try {
       await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
-      navigation.navigate(STRINGS.navigation_lao_organizer_home);
+      navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
       toast.show(`Could not close roll call, error: ${err}`, {
         type: 'danger',

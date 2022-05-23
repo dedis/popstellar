@@ -43,8 +43,9 @@ export default EventMeeting;
 
 export const MeetingEventType: MeetingInterface['eventTypes']['0'] = {
   eventType: Meeting.EVENT_TYPE,
+  eventName: STRINGS.meeting_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_organizer_creation_meeting,
+    createEvent: STRINGS.navigation_lao_events_creation_meeting,
   },
   Component: EventMeeting as FunctionComponent<{
     eventId: string;

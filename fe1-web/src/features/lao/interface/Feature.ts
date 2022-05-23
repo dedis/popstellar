@@ -1,11 +1,14 @@
 import React from 'react';
 
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 
 export namespace LaoFeature {
-  export type OrganizerScreen = Omit<LaoScreen, 'id' | 'order' | 'headerRight' | 'tabBarIcon'> & {
-    id: keyof LaoOrganizerParamList;
+  export type OrganizerScreen = Omit<
+    LaoScreen,
+    'id' | 'order' | 'headerRight' | 'tabBarIcon' | 'headerShown'
+  > & {
+    id: keyof LaoEventsParamList;
   };
 
   export interface LaoScreen {

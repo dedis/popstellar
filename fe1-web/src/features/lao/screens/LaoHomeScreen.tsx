@@ -32,14 +32,6 @@ const LaoHomeScreen = () => {
 export default LaoHomeScreen;
 
 const styles = StyleSheet.create({
-  iconView: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  } as ViewStyle,
-  icon: {
-    marginLeft: Spacing.x1,
-  } as ViewStyle,
   header: {
     flex: 1,
     flexDirection: 'row',
@@ -94,19 +86,16 @@ export const LaoHomeScreenHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   return (
-    <View style={styles.iconView}>
-      <TouchableOpacity
-        style={styles.icon}
-        onPress={() =>
-          navigation.push(STRINGS.navigation_app_lao, {
-            screen: STRINGS.navigation_lao_notifications,
-            params: {
-              screen: STRINGS.navigation_notification_notifications,
-            },
-          })
-        }>
-        <NotificationIcon color={Color.inactive} size={Icon.size} />
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.push(STRINGS.navigation_app_lao, {
+          screen: STRINGS.navigation_lao_notifications,
+          params: {
+            screen: STRINGS.navigation_notification_notifications,
+          },
+        })
+      }>
+      <NotificationIcon color={Color.inactive} size={Icon.size} />
+    </TouchableOpacity>
   );
 };

@@ -46,7 +46,11 @@ const WalletNavigationHeaderRight = () => {
   const onPressOptions = () => {
     showActionSheetWithOptions(
       {
-        options: ['Logout', 'Toggle debug mode', 'Cancel'],
+        options: [
+          STRINGS.wallet_home_logout,
+          STRINGS.wallet_home_toggle_debug,
+          STRINGS.general_button_cancel,
+        ],
         cancelButtonIndex: 2,
       },
       (idx) => {

@@ -19,7 +19,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
@@ -32,7 +32,7 @@ import { requestCreateMeeting } from '../network/MeetingMessageApi';
 const DEFAULT_MEETING_DURATION = 3600;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_creation_meeting>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_creation_meeting>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -63,7 +63,7 @@ const CreateMeeting = ({ route }: any) => {
   const createMeeting = () => {
     requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
       .then(() => {
-        navigation.navigate(STRINGS.navigation_lao_organizer_home);
+        navigation.navigate(STRINGS.navigation_lao_events_home);
       })
       .catch((err) => {
         console.error('Could not create meeting, error:', err);

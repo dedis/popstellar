@@ -31,7 +31,7 @@ const contextValue = {
         Component: () => <Text>second screen</Text>,
       },
     ],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 

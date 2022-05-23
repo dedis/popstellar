@@ -51,12 +51,12 @@ namespace STRINGS {
   export const navigation_lao_home_identity = 'My identity';
 
   /* --- Lao Organizer Navigation Strings --- */
-  export const navigation_lao_organizer_home = 'Organizer Home';
-  export const navigation_lao_organizer_create_event = 'Create Event';
-  export const navigation_lao_organizer_creation_meeting = 'Create meeting';
-  export const navigation_lao_organizer_creation_roll_call = 'Create roll call';
-  export const navigation_lao_organizer_creation_election = 'Create election';
-  export const navigation_lao_organizer_open_roll_call = 'Open Roll-Call';
+  export const navigation_lao_events_home = 'Events Home';
+  export const navigation_lao_events_create_event = 'Create Event';
+  export const navigation_lao_events_creation_meeting = 'Create meeting';
+  export const navigation_lao_events_creation_roll_call = 'Create roll call';
+  export const navigation_lao_events_creation_election = 'Create election';
+  export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home_tab = 'Wallet Home';
@@ -159,9 +159,8 @@ namespace STRINGS {
   export const witness_name = 'Witnesses';
   export const witness_scan = 'Please scan the personal QR code of the witness to add';
 
-  /* --- Discussion creation Strings --- */
-  export const discussion_create_name = 'Name*';
-  export const discussion_create_open = 'discussion open';
+  /* --- Evoting Feature Strings --- */
+  export const election_event_name = 'Election';
 
   /* --- Election creation Strings --- */
   export const election_create_setup = 'Election Setup';
@@ -223,9 +222,12 @@ namespace STRINGS {
 
   /* --- Meeting creation Strings --- */
   export const meeting_create_name = 'Name*';
-  export const meeting_create_start_time = 'Start time= ';
-  export const meeting_create_finish_time = 'End time= ';
+  export const meeting_create_start_time = 'Start time:';
+  export const meeting_create_finish_time = 'End time:';
   export const meeting_create_location = 'Location';
+
+  /* --- Events Feature Strings --- */
+  export const events_create_event = 'Create';
 
   /* --- Notification screen Strings --- */
   export const notification_clear_all = 'Clear notifications';
@@ -273,9 +275,17 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_header = 'Your Wallet 🔒';
+  export const wallet_home_logout = 'Logout';
+  export const wallet_home_toggle_debug = 'Toggle debug mode';
 
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
+
+  /* --- Roll Call Feature Strings --- */
+  export const roll_call_event_name = 'Roll Call';
+
+  /* --- Meeting Feature Strings --- */
+  export const meeting_event_name = 'Meeting';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

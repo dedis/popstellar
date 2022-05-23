@@ -57,9 +57,10 @@ export const compose = (config: LaoCompositionConfiguration): LaoCompositionInte
     navigation,
     context: {
       EventList: config.EventList,
+      CreateEventButton: config.CreateEventButton,
       encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
       laoNavigationScreens: config.laoNavigationScreens,
-      organizerNavigationScreens: config.organizerNavigationScreens,
+      eventsNavigationScreens: config.eventsNavigationScreens,
     },
   };
 };

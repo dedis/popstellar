@@ -95,11 +95,12 @@ export interface EvotingInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
     createEvent:
-      | typeof STRINGS.navigation_lao_organizer_creation_meeting
-      | typeof STRINGS.navigation_lao_organizer_creation_roll_call
-      | typeof STRINGS.navigation_lao_organizer_creation_election;
+      | typeof STRINGS.navigation_lao_events_creation_meeting
+      | typeof STRINGS.navigation_lao_events_creation_roll_call
+      | typeof STRINGS.navigation_lao_events_creation_election;
   };
   Component: React.ComponentType<{
     eventId: string;

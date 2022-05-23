@@ -18,7 +18,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
@@ -32,8 +32,8 @@ const DEFAULT_ROLL_CALL_DURATION = 3600;
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
-    LaoOrganizerParamList,
-    typeof STRINGS.navigation_lao_organizer_creation_roll_call
+    LaoEventsParamList,
+    typeof STRINGS.navigation_lao_events_creation_roll_call
   >,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
@@ -110,7 +110,7 @@ const CreateRollCall = ({ route }: any) => {
       description,
     )
       .then(() => {
-        navigation.navigate(STRINGS.navigation_lao_organizer_home);
+        navigation.navigate(STRINGS.navigation_lao_events_home);
       })
       .catch((err) => {
         console.error('Could not create roll call, error:', err);

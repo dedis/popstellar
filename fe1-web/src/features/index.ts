@@ -125,6 +125,7 @@ export function configureFeatures() {
   const laoComposition = lao.compose({
     /* events */
     EventList: eventConfiguration.components.EventList,
+    CreateEventButton: eventConfiguration.components.CreateEventButton,
     /* connect */
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
@@ -145,25 +146,21 @@ export function configureFeatures() {
       },
       ...walletComposition.laoScreens,
     ],
-    organizerNavigationScreens: [
+    eventsNavigationScreens: [
       {
-        id: STRINGS.navigation_lao_organizer_create_event,
-        Component: eventConfiguration.screens.CreateEvent,
-      },
-      {
-        id: STRINGS.navigation_lao_organizer_creation_meeting,
+        id: STRINGS.navigation_lao_events_creation_meeting,
         Component: meetingConfiguration.screens.CreateMeeting,
       },
       {
-        id: STRINGS.navigation_lao_organizer_creation_roll_call,
+        id: STRINGS.navigation_lao_events_creation_roll_call,
         Component: rollCallConfiguration.screens.CreateRollCall,
       },
       {
-        id: STRINGS.navigation_lao_organizer_creation_election,
+        id: STRINGS.navigation_lao_events_creation_election,
         Component: evotingConfiguration.screens.CreateElection,
       },
       {
-        id: STRINGS.navigation_lao_organizer_open_roll_call,
+        id: STRINGS.navigation_lao_events_open_roll_call,
         Component: rollCallConfiguration.screens.RollCallOpened,
       },
     ],
@@ -206,6 +203,7 @@ export function configureFeatures() {
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
+      [meetingConfiguration.identifier]: meetingConfiguration.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,

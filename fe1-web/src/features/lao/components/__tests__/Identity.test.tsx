@@ -18,7 +18,7 @@ const contextValue = {
     EventList: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 

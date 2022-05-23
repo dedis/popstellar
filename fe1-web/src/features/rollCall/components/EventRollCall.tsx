@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import { QRCode, Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -22,7 +22,7 @@ import { RollCall, RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_home>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -114,7 +114,7 @@ const EventRollCall = (props: IPropTypes) => {
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_events,
         params: {
-          screen: STRINGS.navigation_lao_organizer_open_roll_call,
+          screen: STRINGS.navigation_lao_events_open_roll_call,
           params: { rollCallId: rollCall.id.toString() },
         },
       });
@@ -206,8 +206,9 @@ export default EventRollCall;
 
 export const RollCallEventType: RollCallInterface['eventTypes']['0'] = {
   eventType: RollCall.EVENT_TYPE,
+  eventName: STRINGS.roll_call_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_organizer_creation_roll_call,
+    createEvent: STRINGS.navigation_lao_events_creation_roll_call,
   },
   Component: EventRollCall as FunctionComponent<{
     eventId: string;

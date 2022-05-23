@@ -10,8 +10,8 @@ import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
-import { AttendeeEventsScreen } from '../screens';
+import { selectIsLaoOrganizer } from '../reducer';
+import { EventsScreen } from '../screens';
 import LaoHomeScreen, {
   LaoHomeScreenHeader,
   LaoHomeScreenHeaderRight,
@@ -26,20 +26,12 @@ const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 const LaoNavigation: React.FC = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
+  const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
-  const isWitness = useSelector(selectIsLaoWitness);
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
-    let Component: React.ComponentType<any>;
-
-    if (isOrganizer || isWitness) {
-      Component = OrganizerEventsNavigation;
-    } else {
-      Component = AttendeeEventsScreen;
-    }
-
     return [
       ...passedScreens,
       {
@@ -53,13 +45,14 @@ const LaoNavigation: React.FC = () => {
       } as LaoFeature.LaoScreen,
       {
         id: STRINGS.navigation_lao_events,
-        Component,
         tabBarIcon: EventIcon,
+        Component: isOrganizer ? OrganizerEventsNavigation : EventsScreen,
+        headerRight: isOrganizer ? CreateEventButton : undefined,
         order: 0,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [passedScreens, isOrganizer, isWitness]);
+  }, [passedScreens, CreateEventButton, isOrganizer]);
 
   return (
     <OrganizationTopTabNavigator.Navigator

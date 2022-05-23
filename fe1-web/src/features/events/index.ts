@@ -7,7 +7,6 @@ import {
   EVENT_FEATURE_IDENTIFIER,
 } from './interface';
 import { eventReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
-import * as screens from './screens';
 
 /**
  * Configures the events feature
@@ -17,7 +16,6 @@ export function configure(): EventInterface {
     identifier: EVENT_FEATURE_IDENTIFIER,
     functions,
     components: publicComponents,
-    screens,
     actionCreators: {
       addEvent,
       updateEvent,
