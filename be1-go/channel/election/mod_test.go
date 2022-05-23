@@ -323,7 +323,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	// gather results of election
-	results, err := gatherResults(electChannel.questions, nolog)
+	results, err := electChannel.gatherResults(electChannel.questions, nolog)
 	require.NoError(t, err)
 
 	// check that the result contains one question

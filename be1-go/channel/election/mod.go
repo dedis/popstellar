@@ -666,7 +666,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 					temp, _ := vote.index.(string)
 					index, err := c.decryptVote(temp)
 					if err != nil {
-						return resultElection, answer.NewErrorf()
+						c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
+						continue
 					}
 					numberOfVotesPerBallotOption[index]++
 				}
@@ -690,8 +691,27 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	return resultElection, nil
 }
 
-func (c *Channel) decryptVote(temp string) (int, error) {
-	panic("unimplemented")
+func (c *Channel) decryptVote(vote string) (int, error) {
+	votebuf, err := base64.URLEncoding.DecodeString(vote)
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded")
+	}
+	K := votebuf[:32]
+	C := votebuf[32:]
+
+	S := crypto.Suite.Point().Mul(c.secElectionKey, K)
+	data, err := crypto.Suite.Point().Sub(C, S).Data()
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote data is invalid")
+	}
+
+	index, err := strconv.Atoi(string(data))
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote should be an encrypted int but was %s", string(data))
+	}
+
+	return index, nil
+
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {

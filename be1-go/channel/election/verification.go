@@ -133,12 +133,25 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		var vs string
 		switch c.electionType {
 		case messagedata.OpenBallot:
-			v, _ := vote.Vote.(int)
+			v, ok := vote.Vote.(int)
+			if !ok {
+				return answer.NewErrorf(-4, "votes in open ballot should be int")
+			}
 			vs = string(v)
 		case messagedata.SecretBallot:
-			vs, _ = vote.Vote.(string)
-		default:
-			return answer.NewErrorf(-4, "vote id should be an int or string")
+			vs, ok = vote.Vote.(string)
+			if !ok {
+				return answer.NewErrorf(-4, "votes in secret ballot should be string")
+			}
+
+			temp, err := base64.URLEncoding.DecodeString(vs)
+			if err != nil {
+				return answer.NewErrorf(-4, "vote %d is %s, should be base64 encoded", i, vs)
+			}
+
+			if l := len(temp); l != 64 {
+				return answer.NewErrorf(-4, "vote %d should be 64 bytes long, but is %s", i, l)
+			}
 		}
 
 		hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
