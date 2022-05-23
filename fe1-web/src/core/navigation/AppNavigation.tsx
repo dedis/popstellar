@@ -55,7 +55,7 @@ AppNavigation.defaultProps = {};
 
 export type AppScreen = {
   id: keyof AppParamList;
-  title?: string | undefined;
+  title?: string;
   component: React.ComponentType;
 };
 
