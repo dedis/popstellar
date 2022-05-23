@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -8,9 +8,9 @@ import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { EventsHooks } from '../hooks';
-import { LaoEvent } from '../objects';
-import { selectEventsList } from '../reducer';
+import { EventHooks } from '../hooks';
+import { EventState } from '../objects';
+import { makeEventListSelector } from '../reducer';
 import Event from './Event';
 
 const styles = StyleSheet.create({
@@ -30,17 +30,17 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const categorizeEventsByTime = (time: Timestamp, events: LaoEvent[]) => {
-  const pastEvents: LaoEvent[] = [];
-  const currentEvents: LaoEvent[] = [];
-  const futureEvents: LaoEvent[] = [];
+const categorizeEventsByTime = (time: number, events: EventState[]) => {
+  const pastEvents: EventState[] = [];
+  const currentEvents: EventState[] = [];
+  const futureEvents: EventState[] = [];
 
-  events.forEach((e: LaoEvent) => {
-    if ((e.end && e.end.before(time)) || (!e.end && e.start.before(time))) {
+  events.forEach((e: EventState) => {
+    if ((e.end && e.end < time) || (!e.end && e.start < time)) {
       pastEvents.push(e);
       return;
     }
-    if (e.start.after(time)) {
+    if (e.start > time) {
       futureEvents.push(e);
       return;
     }
@@ -57,9 +57,16 @@ const categorizeEventsByTime = (time: Timestamp, events: LaoEvent[]) => {
  * Nested events should be in the children value of the parent event.
  */
 const EventList = () => {
-  const events = useSelector(selectEventsList);
+  const laoId = EventHooks.useCurrentLaoId();
+
+  if (!laoId) {
+    throw new Error('Cannot show an event list if you are not connected to a lao!');
+  }
+
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const events = useSelector(eventListSelector);
   const [pastEvents, currentEvents, futureEvents] = categorizeEventsByTime(
-    Timestamp.EpochNow(),
+    Timestamp.EpochNow().valueOf(),
     events,
   );
 
@@ -78,7 +85,7 @@ const EventList = () => {
     },
   ];
 
-  const isOrganizer = EventsHooks.useIsLaoOrganizer();
+  const isOrganizer = EventHooks.useIsLaoOrganizer();
 
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
@@ -109,7 +116,7 @@ const EventList = () => {
     <SectionList
       sections={data}
       keyExtractor={(item) => item.id.valueOf()}
-      renderItem={({ item }) => <Event event={item} />}
+      renderItem={({ item }) => <Event eventId={item.id} eventType={item.eventType} />}
       renderSectionHeader={({ section: { title } }) => renderSectionHeader(title)}
     />
   );

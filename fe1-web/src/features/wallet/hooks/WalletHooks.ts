@@ -1,8 +1,8 @@
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { WalletFeature, WalletReactContext, WALLET_FEATURE_IDENTIFIER } from '../interface';
+import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from '../interface';
 
 export namespace WalletHooks {
   export const useWalletContext = (): WalletReactContext => {
@@ -21,14 +21,7 @@ export namespace WalletHooks {
   export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
 
   /**
-   * Gets an event by type selector for a given event type
+   * Gets a map from laoIds to rollCall ids to rollCall instances
    */
-  export const useEventByTypeSelector = <T extends WalletFeature.Event>(eventType: string) => {
-    const { makeEventByTypeSelector } = useWalletContext();
-    return useMemo(
-      () =>
-        makeEventByTypeSelector(eventType) as (state: unknown) => Record<string, Record<string, T>>,
-      [makeEventByTypeSelector, eventType],
-    );
-  };
+  export const useRollCallsByLaoId = () => useWalletContext().useRollCallsByLaoId();
 }

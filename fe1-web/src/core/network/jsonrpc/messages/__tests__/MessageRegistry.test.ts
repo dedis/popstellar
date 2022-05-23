@@ -1,10 +1,14 @@
 import 'jest-extended';
 
-import { configureTestFeatures, mockPopToken } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockAddress,
+  mockChannel,
+  mockLaoIdHash,
+  mockPopToken,
+} from '__tests__/utils';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { channelFromIds, Timestamp } from 'core/objects';
-import { Lao, LaoState } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
+import { Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { MessageRegistry } from '..';
@@ -19,18 +23,6 @@ const messageData = new AddChirp({
   text: 'text',
   timestamp: new Timestamp(1607277600),
 });
-const channel = channelFromIds();
-const laoState: LaoState = {
-  id: 'mockLaoId',
-  name: 'MyLao',
-  creation: 1577833300,
-  last_modified: 1577833500,
-  organizer: 'organizerPublicKey',
-  witnesses: [],
-  server_addresses: [],
-};
-const getMock = jest.spyOn(OpenedLaoStore, 'get');
-getMock.mockImplementation(() => Lao.fromState(laoState));
 
 let registry: MessageRegistry;
 beforeEach(() => {
@@ -48,8 +40,8 @@ describe('MessageRegistry', () => {
   });
 
   it('should work correctly for handling message', async () => {
-    const message = Message.fromData(messageData, mockPopToken);
-    const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
+    const message = Message.fromData(messageData, mockPopToken, mockChannel);
+    const extMsg = ExtendedMessage.fromMessage(message, mockAddress, mockChannel);
 
     const mockHandle = jest.fn(() => true);
     const mockBuild = jest.fn();
@@ -67,15 +59,16 @@ describe('MessageRegistry', () => {
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 
-    registry.buildMessageData(messageData);
+    registry.buildMessageData(messageData, mockLaoIdHash);
 
     expect(mockHandle).not.toHaveBeenCalled();
     expect(mockBuild).toHaveBeenCalledTimes(1);
-    expect(mockBuild).toHaveBeenCalledWith(messageData);
+    expect(mockBuild).toHaveBeenCalledWith(messageData, mockLaoIdHash);
   });
 
   it('should throw an error when building an unsupported type of message', async () => {
-    const buildWrongMessage = () => registry.buildMessageData({ object: CHIRP, action: INVALID });
+    const buildWrongMessage = () =>
+      registry.buildMessageData({ object: CHIRP, action: INVALID }, mockLaoIdHash);
     expect(buildWrongMessage).toThrow(Error);
   });
 
