@@ -3,29 +3,25 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import EventIcon from 'core/components/icons/EventIcon';
-import IdentityIcon from 'core/components/icons/IdentityIcon';
+import HomeIcon from 'core/components/icons/HomeIcon';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Colors, Spacing } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
-import { AttendeeEventsScreen, Identity } from '../screens';
+import { AttendeeEventsScreen } from '../screens';
+import LaoHomeScreen, {
+  LaoHomeScreenHeader,
+  LaoHomeScreenHeaderRight,
+} from '../screens/LaoHomeScreen';
 import OrganizerEventsNavigation from './OrganizerEventsNavigation';
 
 const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 /**
  * Navigation when connected to a lao
- *
- * Displays the following components:
- *  - Home
- *  - Social Media
- *  - Lao tab (corresponding to user role)
- *  - Identity
- *  - Wallet
- *  - Name of the connected lao (fake link)
  */
 
 const LaoNavigation: React.FC = () => {
@@ -47,16 +43,19 @@ const LaoNavigation: React.FC = () => {
     return [
       ...passedScreens,
       {
-        id: STRINGS.navigation_lao_identity,
-        Component: Identity,
-        tabBarIcon: IdentityIcon,
-        order: 10000,
+        id: STRINGS.navigation_lao_home,
+        title: STRINGS.navigation_lao_lao_title,
+        headerTitle: LaoHomeScreenHeader,
+        Component: LaoHomeScreen,
+        headerRight: LaoHomeScreenHeaderRight,
+        tabBarIcon: HomeIcon,
+        order: -9999999,
       } as LaoFeature.LaoScreen,
       {
         id: STRINGS.navigation_lao_events,
         Component,
         tabBarIcon: EventIcon,
-        order: 20000,
+        order: 0,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
@@ -64,30 +63,37 @@ const LaoNavigation: React.FC = () => {
 
   return (
     <OrganizationTopTabNavigator.Navigator
-      initialRouteName={STRINGS.navigation_lao_events}
+      initialRouteName={STRINGS.navigation_lao_home}
       screenOptions={{
-        tabBarActiveTintColor: Colors.accent,
-        tabBarInactiveTintColor: Colors.inactive,
+        tabBarActiveTintColor: Color.accent,
+        tabBarInactiveTintColor: Color.inactive,
         headerLeftContainerStyle: {
           paddingLeft: Spacing.horizontalContentSpacing,
         },
         headerRightContainerStyle: {
           paddingRight: Spacing.horizontalContentSpacing,
         },
+        headerTitleStyle: Typography.topNavigationHeading,
         headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component, headerRight, tabBarIcon }) => (
-        <OrganizationTopTabNavigator.Screen
-          key={id}
-          name={id}
-          component={Component}
-          options={{
-            title: title || id,
-            headerRight,
-            tabBarIcon,
-          }}
-        />
-      ))}
+      {screens.map(
+        ({ id, title, headerTitle, Component, headerShown, headerRight, tabBarIcon }) => (
+          <OrganizationTopTabNavigator.Screen
+            key={id}
+            name={id}
+            component={Component}
+            options={{
+              title: title || id,
+              headerTitle: headerTitle || title || id,
+              headerRight,
+              tabBarIcon: tabBarIcon || undefined,
+              // hide the item if tabBarIcon is set to null
+              tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+              headerShown,
+            }}
+          />
+        ),
+      )}
     </OrganizationTopTabNavigator.Navigator>
   );
 };

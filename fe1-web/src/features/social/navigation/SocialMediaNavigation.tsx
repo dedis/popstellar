@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
-import { gray, popBlue } from 'core/styles/colors';
+import { gray, popBlue } from 'core/styles/color';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
 import { makeRollCallSelector } from 'features/rollCall/reducer';

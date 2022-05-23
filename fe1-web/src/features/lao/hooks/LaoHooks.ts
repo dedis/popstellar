@@ -40,7 +40,6 @@ export namespace LaoHooks {
 
   /**
    * Gets the lao navigation screens
-   * @returns The lao navigation screens
    */
   export const useLaoNavigationScreens = () => useLaoContext().laoNavigationScreens;
 

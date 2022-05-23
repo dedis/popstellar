@@ -9,6 +9,7 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
+  export const general_done = 'Done';
 
   /* --- User Roles --- */
   export const user_role_attendee = 'Attendee';
@@ -39,13 +40,15 @@ namespace STRINGS {
   export const navigation_notification_notifications_title = 'Notifications';
   export const navigation_notification_single_notification = 'Notification';
 
-  /* --- Lap Navigation Strings --- */
-  export const navigation_lao_home = 'Home';
-  export const navigation_lao_home_title = 'LAOs';
+  /* --- Lao Navigation Strings --- */
+  export const navigation_lao_home = 'Lao';
+  export const navigation_lao_lao_title = 'LAO';
   export const navigation_lao_notifications = 'Notifications';
   export const navigation_lao_events = 'Events';
-  export const navigation_lao_identity = 'My identity';
   export const navigation_lao_wallet = 'Wallet';
+
+  /* --- Lao Home Navigation Strings --- */
+  export const navigation_lao_home_identity = 'My identity';
 
   /* --- Lao Organizer Navigation Strings --- */
   export const navigation_lao_organizer_home = 'Organizer Home';
@@ -68,6 +71,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_profile = 'My Profile';
   export const social_media_navigation_tab_user_profile = 'User profile';
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
+
+  /* --- Lao Strings --- */
+  export const lao_properties_qr_code_description =
+    'The above QR Code can be used to connect to the LAO.';
+  export const lao_properties_id = 'Identifier';
+  export const lao_properties_your_role = 'Your role';
+  export const lao_properties_current_connections = 'You are currently connected to';
+  export const lao_properties_add_additional_connection = 'Add connection';
 
   /* --- Home Strings --- */
 

@@ -8,7 +8,7 @@ import { TextBlock, Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Typography, Views } from 'core/styles';
+import { Typography, ViewStyles } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -20,12 +20,12 @@ import { EventHooks } from '../hooks';
 
 const styleEvents = StyleSheet.create({
   view: {
-    ...Views.base,
+    ...View.base,
     flexDirection: 'row',
     zIndex: 3,
   } as ViewStyle,
   viewVertical: {
-    ...Views.base,
+    ...View.base,
     flexDirection: 'column',
     zIndex: 3,
   } as ViewStyle,

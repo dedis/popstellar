@@ -3,7 +3,7 @@ import React from 'react';
 import Blockies from 'react-blockies';
 
 import { PublicKey } from '../objects';
-import { popBlue } from '../styles/colors';
+import { popBlue } from '../styles/color';
 
 const ProfileIcon = (props: IPropTypes) => {
   const { publicKey, size, scale } = props;

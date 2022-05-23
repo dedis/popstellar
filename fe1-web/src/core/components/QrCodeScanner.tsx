@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import { Border, Colors, Spacing } from 'core/styles';
+import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
 import CameraReverseIcon from './icons/CameraReverseIcon';
@@ -16,7 +16,7 @@ import CameraReverseIcon from './icons/CameraReverseIcon';
 import '../platform/web-styles/qr-code-scanner.css';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
-  backgroundColor: Colors.contrast,
+  backgroundColor: Color.contrast,
   padding: Spacing.x05,
   borderRadius: Border.radius,
 };
@@ -90,7 +90,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <CameraReverseIcon color={Colors.accent} size={25} />
+              <CameraReverseIcon color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

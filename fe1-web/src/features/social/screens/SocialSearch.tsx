@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
+import { gray } from 'core/styles/color';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { makeRollCallAttendeesListSelector } from 'features/rollCall/reducer';
 import STRINGS from 'resources/strings';

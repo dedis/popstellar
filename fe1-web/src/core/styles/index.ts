@@ -1,7 +1,9 @@
 import * as Border from './border';
-import * as Colors from './colors';
+import * as Color from './color';
+import * as Icon from './icon';
+import * as Modal from './modal';
 import * as Spacing from './spacing';
 import * as Typography from './typography';
-import * as Views from './views';
+import * as View from './view';
 
-export { Border, Colors, Spacing, Typography, Views };
+export { Border, Color, Icon, Modal as ModalStyles, Spacing, Typography, View as ViewStyles };

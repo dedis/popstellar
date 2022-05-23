@@ -4,7 +4,7 @@ import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native'
 
 import STRINGS from 'resources/strings';
 
-import { Spacing, Typography, Views } from '../styles';
+import { Spacing, Typography, ViewStyles } from '../styles';
 import DeleteButton from './DeleteButton';
 
 /**
@@ -14,7 +14,7 @@ import DeleteButton from './DeleteButton';
 
 const styles = StyleSheet.create({
   view: {
-    ...Views.base,
+    ...View.base,
     flexDirection: 'row',
     zIndex: 3,
   } as ViewStyle,

@@ -8,7 +8,7 @@ import ScanIcon from 'core/components/icons/ScanIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { Colors, Spacing } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
@@ -63,14 +63,15 @@ const HomeNavigation = () => {
     <HomeNavigator.Navigator
       initialRouteName={STRINGS.navigation_home_home}
       screenOptions={{
-        tabBarActiveTintColor: Colors.accent,
-        tabBarInactiveTintColor: Colors.inactive,
+        tabBarActiveTintColor: Color.accent,
+        tabBarInactiveTintColor: Color.inactive,
         headerLeftContainerStyle: {
           paddingLeft: Spacing.horizontalContentSpacing,
         },
         headerRightContainerStyle: {
           paddingRight: Spacing.horizontalContentSpacing,
         },
+        headerTitleStyle: Typography.topNavigationHeading,
         headerTitleAlign: 'center',
       }}>
       {screens.map(({ id, title, Component, tabBarIcon, tabPress, headerLeft, headerRight }) => (

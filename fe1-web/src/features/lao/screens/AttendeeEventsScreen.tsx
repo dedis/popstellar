@@ -1,7 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 
-import { LaoProperties } from '../components';
 import { LaoHooks } from '../hooks';
 
 /**
@@ -13,7 +12,6 @@ const AttendeeEventsScreen = () => {
 
   return (
     <ScrollView>
-      <LaoProperties />
       <EventList />
     </ScrollView>
   );

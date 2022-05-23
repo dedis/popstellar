@@ -8,7 +8,7 @@ import { CopiableTextInput, Button } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { Colors, Typography } from 'core/styles';
+import { Color, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -19,7 +19,7 @@ import { WalletStore } from '../store';
 const styles = StyleSheet.create({
   welcomeView: {
     flex: 1,
-    backgroundColor: Colors.accent,
+    backgroundColor: Color.accent,
   } as ViewStyle,
   smallPadding: {
     padding: '1rem',

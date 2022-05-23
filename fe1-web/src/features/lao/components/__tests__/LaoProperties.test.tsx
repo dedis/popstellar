@@ -27,7 +27,7 @@ const contextValue = {
   } as LaoReactContext,
 };
 
-const LaoPropertiesScreen = () => <LaoProperties isInitiallyOpen />;
+const LaoPropertiesScreen = () => <LaoProperties />;
 
 describe('LaoProperties', () => {
   it('renders correctly as organizer', () => {

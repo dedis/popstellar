@@ -4,7 +4,7 @@ import { CheckBox } from 'react-native-elements';
 
 import { QRCode, TextBlock } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
-import { Colors, Spacing, Typography } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 /**
@@ -26,7 +26,7 @@ const Identity = () => {
     <TextInput
       style={[
         { ...Typography.baseCentered, marginBottom: Spacing.x1 } as TextStyle,
-        { color: toggleAnonymity ? Colors.gray : Colors.black },
+        { color: toggleAnonymity ? Color.gray : Color.black },
       ]}
       key={`input-${placeholder}`}
       placeholder={placeholder}

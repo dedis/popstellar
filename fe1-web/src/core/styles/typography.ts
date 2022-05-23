@@ -1,6 +1,6 @@
 import { TextStyle } from 'react-native';
 
-import { contrast, accent as accentColor, secondaryAccent as secondaryColor } from './colors';
+import { contrast, accent as accentColor, secondaryAccent as secondaryColor } from './color';
 import { x1 } from './spacing';
 
 export const base: TextStyle = {
@@ -32,6 +32,17 @@ export const heading: TextStyle = {
   lineHeight: 41,
   fontWeight: 'bold',
   marginBottom: x1,
+};
+
+export const topNavigationHeading: TextStyle = {
+  ...base,
+  fontWeight: '500',
+};
+
+export const pressable: TextStyle = {
+  ...base,
+  color: accentColor,
+  fontWeight: '500',
 };
 
 export const centered: TextStyle = {

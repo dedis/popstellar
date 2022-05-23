@@ -1,5 +1,3 @@
-import ListIcon from 'core/components/icons/ListIcon';
-import NotificationIcon from 'core/components/icons/NotificationIcon';
 import SocialMediaIcon from 'core/components/icons/SocialMediaIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { AppScreen } from 'core/navigation/AppNavigation';
@@ -132,24 +130,17 @@ export function configureFeatures() {
     /* navigation */
     laoNavigationScreens: [
       {
-        id: STRINGS.navigation_lao_home,
-        title: STRINGS.navigation_lao_home_title,
-        Component: homeComposition.screens.Home,
-        tabBarIcon: ListIcon,
-        order: -99999999,
-      },
-      {
         id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
         tabBarIcon: SocialMediaIcon,
-        order: 0,
+        order: 10000,
       },
       {
         id: STRINGS.navigation_lao_notifications,
         Component: notificationConfiguration.navigation.NotificationNavigation,
-        tabBarIcon: NotificationIcon,
-        order: 70000,
-        headerRight: notificationConfiguration.components.NotificationBadge,
+        headerShown: false,
+        tabBarIcon: null,
+        order: 0,
       },
       ...walletComposition.laoScreens,
     ],
@@ -157,27 +148,22 @@ export function configureFeatures() {
       {
         id: STRINGS.navigation_lao_organizer_create_event,
         Component: eventConfiguration.screens.CreateEvent,
-        order: 0,
       },
       {
         id: STRINGS.navigation_lao_organizer_creation_meeting,
         Component: meetingConfiguration.screens.CreateMeeting,
-        order: 10000,
       },
       {
         id: STRINGS.navigation_lao_organizer_creation_roll_call,
         Component: rollCallConfiguration.screens.CreateRollCall,
-        order: 20000,
       },
       {
         id: STRINGS.navigation_lao_organizer_creation_election,
         Component: evotingConfiguration.screens.CreateElection,
-        order: 30000,
       },
       {
         id: STRINGS.navigation_lao_organizer_open_roll_call,
         Component: rollCallConfiguration.screens.RollCallOpened,
-        order: 40000,
       },
     ],
   });

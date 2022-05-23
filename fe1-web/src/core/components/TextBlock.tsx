@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 
 import { Typography } from '../styles';
-import { black } from '../styles/colors';
+import { black } from '../styles/color';
 
 /**
  * Block of text that gets displayed

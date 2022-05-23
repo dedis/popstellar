@@ -1,5 +1,6 @@
 const spacingUnit = 16;
 
+export const x025 = 0.25 * spacingUnit;
 export const x05 = 0.5 * spacingUnit;
 export const x1 = spacingUnit;
 export const x2 = 2 * spacingUnit;

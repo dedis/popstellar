@@ -8,7 +8,7 @@ import TimeAgo from 'react-timeago';
 
 import { ConfirmModal, ProfileIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
+import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';

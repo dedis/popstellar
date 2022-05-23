@@ -8,7 +8,7 @@ import OptionsIcon from 'core/components/icons/OptionsIcon';
 import WalletIcon from 'core/components/icons/WalletIcon';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Colors } from 'core/styles';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { WalletFeature } from '../interface';
@@ -76,7 +76,7 @@ const WalletNavigationHeaderRight = () => {
 
   return (
     <TouchableOpacity onPress={onPressOptions}>
-      <OptionsIcon color={Colors.primary} size={25} />
+      <OptionsIcon color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

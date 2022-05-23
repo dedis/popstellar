@@ -14,7 +14,7 @@ import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamL
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
 import { Typography } from 'core/styles';
-import { gray } from 'core/styles/colors';
+import { gray } from 'core/styles/color';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 

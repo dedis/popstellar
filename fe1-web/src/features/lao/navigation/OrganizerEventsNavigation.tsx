@@ -19,17 +19,19 @@ const Stack = createStackNavigator<LaoOrganizerParamList>();
 export default function OrganizerEventsNavigation() {
   const screens = LaoHooks.useOrganizerNavigationScreens();
 
-  // sort screens by order before rendering them
-  screens.sort((a, b) => a.order - b.order);
-
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen name={STRINGS.navigation_lao_organizer_home} component={OrganizerScreen} />
-      {screens.map(({ id, title, Component }) => (
-        <Stack.Screen name={id} key={id} component={Component} options={{ title: title || id }} />
+      {screens.map(({ id, title, Component, headerShown }) => (
+        <Stack.Screen
+          name={id}
+          key={id}
+          component={Component}
+          options={{ title: title || id, headerShown }}
+        />
       ))}
     </Stack.Navigator>
   );

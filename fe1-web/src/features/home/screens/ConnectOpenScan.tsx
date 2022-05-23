@@ -11,7 +11,7 @@ import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { subscribeToChannel } from 'core/network';
-import { Colors, Spacing } from 'core/styles';
+import { Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -117,10 +117,7 @@ const ConnectOpenScan = () => {
       // subscribe to the lao channel on the new connection
       subscribeToChannel(channel, [connection]).then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
-          screen: STRINGS.navigation_lao_events,
-          params: {
-            screen: STRINGS.navigation_lao_organizer_home,
-          },
+          screen: STRINGS.navigation_lao_home,
         });
       });
     } catch (error) {
@@ -138,7 +135,7 @@ const ConnectOpenScan = () => {
         <View>
           <View style={styles.leftButtons}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <CloseIcon color={Colors.accent} size={25} />
+              <CloseIcon color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>
@@ -147,11 +144,11 @@ const ConnectOpenScan = () => {
             <TouchableOpacity
               style={styles.buttonMargin}
               onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
-              <CreateIcon color={Colors.accent} size={25} />
+              <CreateIcon color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
-              <CodeIcon color={Colors.accent} size={25} />
+              <CodeIcon color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

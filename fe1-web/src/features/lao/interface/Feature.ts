@@ -4,11 +4,14 @@ import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamL
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 
 export namespace LaoFeature {
-  export type OrganizerScreen = Omit<LaoScreen, 'id'> & { id: keyof LaoOrganizerParamList };
+  export type OrganizerScreen = Omit<LaoScreen, 'id' | 'order' | 'headerRight' | 'tabBarIcon'> & {
+    id: keyof LaoOrganizerParamList;
+  };
 
   export interface LaoScreen {
     id: keyof LaoParamList;
     title?: string;
+    headerTitle?: string | ((props: { children: string }) => React.ReactNode);
     Component: React.ComponentType<unknown>;
 
     /**
@@ -20,8 +23,11 @@ export namespace LaoFeature {
      */
     order: number;
 
+    headerShown?: boolean;
     headerRight?: HeaderComponent;
-    tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
+    tabBarIcon?:
+      | null
+      | ((props: { focused: boolean; color: string; size: number }) => React.ReactNode);
   }
 
   type HeaderComponent =

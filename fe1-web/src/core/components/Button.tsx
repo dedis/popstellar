@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { Border, Colors, Spacing } from '../styles';
+import { Border, Color, Spacing } from '../styles';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,13 +13,13 @@ const styles = StyleSheet.create({
   button: {
     padding: Spacing.x05,
 
-    borderColor: Colors.accent,
-    backgroundColor: Colors.accent,
+    borderColor: Color.accent,
+    backgroundColor: Color.accent,
     borderWidth: Border.width,
     borderRadius: Border.radius,
   } as ViewStyle,
   negative: {
-    borderColor: Colors.contrast,
+    borderColor: Color.contrast,
   } as ViewStyle,
 });
 
