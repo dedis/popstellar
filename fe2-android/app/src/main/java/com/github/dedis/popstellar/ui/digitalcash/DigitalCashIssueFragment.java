@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +41,6 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    //DigitalCashViewModel mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
     return mBinding.getRoot();
   }

@@ -42,11 +42,12 @@
       app:layout_constraintTop_toBottomOf="@id/digital_cash_issue_title">
       <AutoCompleteTextView
         android:id="@+id/digital_cash_issue_spinner_tv"
+        android:hint="@string/digital_cash_select_lao_member"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="none"
         />
-    </com.google.android.material.textfield.TextInputLayout>>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
       android:id="@+id/digital_cash_issue_or"
