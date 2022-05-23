@@ -1,5 +1,5 @@
 import { publish } from 'core/network';
-import { channelFromIds, KeyPair, PopToken, PublicKey } from 'core/objects';
+import { channelFromIds, getCoinChannel, Hash, KeyPair, PopToken, PublicKey } from "core/objects";
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 
@@ -52,7 +52,7 @@ export function requestSendTransaction(
 
   console.log(`Sending a transaction with id: ${transaction.transactionId.valueOf()}`);
 
-  return publish(channelFromIds(lao.id), postTransactionMessage);
+  return publish(getCoinChannel(lao.id), postTransactionMessage);
 }
 
 /**
@@ -78,5 +78,5 @@ export function requestCoinbaseTransaction(
 
   console.log(`Sending a coinbase transaction with id: ${transaction.transactionId.valueOf()}`);
 
-  return publish(channelFromIds(lao.id), postTransactionMessage);
+  return publish(getCoinChannel(lao.id), postTransactionMessage);
 }

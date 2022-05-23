@@ -16,7 +16,6 @@ import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 import { DigitalCashStore } from '../store';
-import { WalletFeature } from "../interface";
 
 const styles = StyleSheet.create({
   homeContainer: {
