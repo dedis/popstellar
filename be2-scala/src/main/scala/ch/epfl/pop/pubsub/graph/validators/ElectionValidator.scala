@@ -5,11 +5,13 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.objects.ElectionChannel.ElectionChannel
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.ElectionHelper.{getAllMessage, getLastVotes, getSetupMessage}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+
+import scala.concurrent.Await
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -123,7 +125,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val channel: Channel = rpcMessage.getParamsChannel
 
-        val questions = getSetupMessage(channel, dbActorRef).questions
+        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
         val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
 
         if (!validateTimestampStaleness(data.created_at)) {
@@ -157,13 +159,13 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =
-    getAllMessage[OpenElection](electionChannel, dbActorRef) match {
+    Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
       case _ => None
     }
 
   private def getEndMessage(electionChannel: Channel): Option[EndElection] =
-    getAllMessage[EndElection](electionChannel, dbActorRef) match {
+    Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
       case _ => None
     }
@@ -196,11 +198,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"invalid sender $sender"))
         else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!compareResults(getLastVotes(channel, dbActorRef), data.registered_votes))
+        else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes))
           Right(validationError(s"Incorrect verification hash"))
         else
           Left(rpcMessage)
-
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
