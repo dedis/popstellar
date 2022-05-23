@@ -175,6 +175,12 @@ public class DigitalCashViewModel extends AndroidViewModel
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
+  public List<PublicKey> getAttendeeList(String laoId) {
+    Lao lao = getLao(laoId);
+    if (lao == null) return Collections.emptyList();
+    else return (List<PublicKey>) lao.getPub_keyByHash().values();
+  }
+
   /**
    * Post a transaction to your channel
    *
@@ -207,9 +213,8 @@ public class DigitalCashViewModel extends AndroidViewModel
       String transaction_hash = "";
       int index = 0;
 
-      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject previous =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey());
+      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+        TransactionObject previous = lao.getTransactionByUser().get(token.getPublicKey());
         int totalvalue_send = 0;
         if (receivers.size() != values.size()) {
           throw new IllegalArgumentException("There not enough values for public keys ");
@@ -227,11 +232,9 @@ public class DigitalCashViewModel extends AndroidViewModel
         outputs.add(
             new Output(to_self, new ScriptOutput(TYPE, token.getPublicKey().computeHash())));
 
-        transaction_hash =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        transaction_hash = lao.getTransactionByUser().get(token.getPublicKey()).computeId();
         index =
-            getCurrentLao()
-                .getTransactionByUser()
+            lao.getTransactionByUser()
                 .get(token.getPublicKey())
                 .getIndexTransaction(token.getPublicKey());
       }

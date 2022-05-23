@@ -86,7 +86,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    // pub_keyByHash.put(organizer.computeHash(), organizer);
+    pub_keyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -171,7 +171,6 @@ public final class Lao {
    */
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     Iterator<PublicKey> iterator = attendees.iterator();
-    pub_keyByHash = new HashMap<>();
     //pub_keyByHash.put(organizer.computeHash(), organizer);
     while (iterator.hasNext()) {
       PublicKey current = iterator.next();

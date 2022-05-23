@@ -12,7 +12,7 @@
     android:src="@drawable/ic_social_media_profile_foreground" />
 
   <LinearLayout
-    android:layout_width="match_parent"
+    android:layout_width="257dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/margin_top"
     android:layout_marginEnd="@dimen/margin_top"
@@ -27,6 +27,19 @@
       android:textSize="@dimen/size_for_longer_text"
       android:textStyle="bold" />
 
+    <EditText
+      android:id="@+id/attendee_amount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:hint="Enter the amount "
+      android:inputType="number" />
+
   </LinearLayout>
+
+  <Button
+    android:id="@+id/attendee_send"
+    android:layout_width="62dp"
+    android:layout_height="@dimen/bottom_navigation_view_height"
+    android:text="@string/digital_cash_send" />
 
 </LinearLayout>

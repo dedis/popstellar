@@ -18,29 +18,31 @@
     android:layout_height="match_parent"
     tools:context=".ui.digitalcash.DigitalCashIssueFragment">
 
-    <TextView
-      android:id="@+id/textView_digital_cash_issue"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      android:text="@string/digital_cash_issue"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="vertical">
 
+      <TextView
+        android:id="@+id/textView_digital_cash_issue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/digital_cash_issue"
+        android:layout_gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/swipe_refresh_coin" />
+
       <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/swipe_refresh_chirps">
+        android:id="@+id/swipe_refresh_coin">
 
         <ListView
-          android:id="@+id/chirps_list"
+          android:id="@+id/coin_list"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:divider="@color/categoryTab"

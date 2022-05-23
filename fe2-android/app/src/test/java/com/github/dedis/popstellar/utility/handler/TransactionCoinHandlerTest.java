@@ -13,11 +13,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
@@ -59,8 +57,6 @@ public class TransactionCoinHandlerTest {
   private static final long openedAt = 1633099883;
   private Lao lao;
   private RollCall rollCall;
-  private Election election;
-  private ElectionQuestion electionQuestion;
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
