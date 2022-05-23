@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorAddWitnessMessage
@@ -36,7 +36,7 @@ case object WitnessHandler extends MessageHandler {
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle witness message $rpcMessage. Not a AddWitnessSignature message",
+        s"Unable to handle witness message $rpcMessage. Not an AddWitnessSignature message",
         rpcMessage.id
       ))
     }
