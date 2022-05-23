@@ -79,7 +79,6 @@ public class ElectionPrivateKey {
             K = new Ed25519Point(K_bytes);
             C = new Ed25519Point(C_bytes);
         } catch (CothorityCryptoException e) {
-            e.printStackTrace();
             throw new CothorityCryptoException("Could not create K Point while decrypting");
         }
 
