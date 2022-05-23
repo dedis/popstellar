@@ -21,10 +21,9 @@
       android:id="@+id/lao_detail_qr_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:elevation="8dp"
+      android:elevation="@dimen/qr_layout_elevation"
       android:visibility="gone"
-      android:layout_margin="40dp">
-
+      android:layout_margin="@dimen/qr_layout_margin">
 
       <ImageView
         android:id="@+id/channel_qr_code"
@@ -37,8 +36,8 @@
 
       <ImageView
         android:id="@+id/qr_icon_close"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/qr_close_icon_side"
+        android:layout_height="@dimen/qr_close_icon_side"
         android:src="@drawable/ic_cancel_cross"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +60,6 @@
         style="@style/title_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_text_small"
         android:text="@{view_model.getCurrentLaoName}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +69,7 @@
           android:id="@+id/qr_code_icon"
           android:layout_width="@dimen/qr_icon_side"
           android:layout_height="@dimen/qr_icon_side"
-          android:layout_marginStart="30dp"
+          android:layout_marginStart="@dimen/qr_icon_start_margin"
           app:tint="@color/colorPrimary"
           android:src="@drawable/ic_qr_code"
           app:layout_constraintBottom_toBottomOf="@id/lao_detail_title"
@@ -82,7 +80,7 @@
           android:id="@+id/event_list"
           android:layout_width="match_parent"
           android:layout_height="0dp"
-          android:layout_marginTop="40dp"
+          android:layout_marginTop="@dimen/container_top_margin"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/lao_detail_title" />
 
@@ -93,10 +91,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabSize="normal"
-        android:elevation="8dp"
+        android:elevation="@dimen/floating_action_button_elevation"
         android:visibility="@{view_model.isOrganizer()? View.VISIBLE : View.GONE}"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginEnd="@dimen/fab_margin_end"
         android:src="@drawable/ic_plus"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -106,13 +104,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_vote"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
         android:backgroundTint="@color/white"
         android:tint="@color/black"
         app:fabSize="mini"
-        app:borderWidth="1dp"
+        app:borderWidth="@dimen/fab_border_width"
         app:backgroundTint="@color/black"
-        android:elevation="8dp"
+        android:elevation="@dimen/floating_action_button_elevation"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
@@ -126,25 +124,25 @@
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginEnd="8dp"
+        android:textSize="@dimen/add_event_texts_size"
+        android:layout_marginEnd="@dimen/add_button_margin_end"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/add_election"
         app:layout_constraintBottom_toBottomOf="@id/add_election"
-        app:layout_constraintEnd_toStartOf="@id/add_election"/>
+        app:layout_constraintEnd_toStartOf="@id/add_election" />
 
       <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_roll_call"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_roll_call"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
         android:backgroundTint="@color/white"
-        app:borderWidth="1dp"
+        app:borderWidth="@dimen/fab_border_width"
         app:backgroundTint="@color/black"
         android:tint="@color/black"
         app:fabSize="mini"
-        android:elevation="8dp"
+        android:elevation="@dimen/floating_action_button_elevation"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
@@ -158,12 +156,12 @@
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginEnd="8dp"
+        android:textSize="@dimen/add_event_texts_size"
+        android:layout_marginEnd="@dimen/add_button_margin_end"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/add_roll_call"
         app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
-        app:layout_constraintEnd_toStartOf="@id/add_roll_call"/>
+        app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

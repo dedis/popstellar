@@ -17,7 +17,7 @@
     android:id="@+id/fragment_qrcode"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="8dp">
+    android:layout_margin="@dimen/container_margin">
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
@@ -41,22 +41,21 @@
 
       <com.github.dedis.popstellar.ui.qrcode.CameraPreview
         android:id="@+id/qr_camera_preview"
-        android:layout_width="240dp"
-        android:layout_height="300dp"
-        android:layout_marginEnd="48dp"
+        android:layout_width="@dimen/camera_width"
+        android:layout_height="@dimen/camera_height"
         app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scan_description" />
 
       <EditText
         android:id="@+id/manual_add_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/manual_add_top_margin"
         android:hint="@string/roll_call_add_manually_hint"
         android:textColor="@color/black"
-        android:textSize="14sp"
+        android:textSize="@dimen/manual_add_edit_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qr_camera_preview" />
@@ -68,23 +67,11 @@
         android:clickable="true"
         android:text="@string/add_caps"
         android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/manual_add_text_button_size"
         android:textStyle="bold"
-        android:layout_marginStart="16dp"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/manual_add_edit_text"
-        app:layout_constraintStart_toStartOf="@id/manual_add_edit_text"
-        app:layout_constraintEnd_toEndOf="@id/manual_add_edit_text" />
-
-      <!--      <ImageView-->
-      <!--        android:id="@+id/"-->
-      <!--        android:layout_width="40dp"-->
-      <!--        android:layout_height="40dp"-->
-      <!--        android:layout_marginStart="16dp"-->
-      <!--        app:tint="@color/green"-->
-      <!--        android:src="@drawable/ic_complete"-->
-      <!--        app:layout_constraintBottom_toBottomOf="@id/roll_call_manual_add_edit_text"-->
-      <!--        app:layout_constraintStart_toEndOf="@id/roll_call_manual_add_edit_text"-->
-      <!--        app:layout_constraintTop_toTopOf="@id/roll_call_manual_add_edit_text" />-->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/manual_add_edit_text" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -93,7 +80,7 @@
       android:layout_height="wrap_content"
       android:text="@string/close"
       android:visibility="gone"
-      android:layout_marginEnd="8dp"
+      android:layout_marginEnd="@dimen/camera_close_button_end_margin"
       style="@style/button_style"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent" />

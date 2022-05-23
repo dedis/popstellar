@@ -22,8 +22,7 @@
     android:layout_height="wrap_content"
     android:text="@string/closed"
     android:textColor="@color/red"
-    android:textSize="18dp"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="@dimen/status_margin_top"
     app:layout_constraintTop_toBottomOf="@id/election_fragment_title"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent" />
@@ -39,9 +38,9 @@
 
   <ImageView
     android:id="@+id/start_time_icon"
-    android:layout_width="30dp"
-    android:layout_height="30dp"
-    android:layout_marginTop="30dp"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/clock_icon_margin_top"
     android:src="@drawable/ic_time"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/election_fragment_status" />
@@ -51,7 +50,7 @@
     style="@style/explication_text_style"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
     android:text="@string/start"
     app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
     app:layout_constraintStart_toEndOf="@id/start_time_icon"
@@ -61,16 +60,16 @@
     android:id="@+id/election_fragment_start_time"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
     app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
     app:layout_constraintStart_toEndOf="@id/election_fragment_start_time_title"
     app:layout_constraintTop_toTopOf="@id/start_time_icon" />
 
   <ImageView
     android:id="@+id/end_time_icon"
-    android:layout_width="30dp"
-    android:layout_height="30dp"
-    android:layout_marginTop="10dp"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/in_between_clocks_icon_margin_top"
     android:src="@drawable/ic_time"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/start_time_icon" />
@@ -79,7 +78,7 @@
     style="@style/explication_text_style"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
     android:text="@string/end"
     app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
     app:layout_constraintStart_toEndOf="@id/end_time_icon"
@@ -95,30 +94,30 @@
 
   <Button
     android:id="@+id/election_action_button"
-    android:layout_width="110dp"
-    android:layout_height="48dp"
+    android:layout_width="@dimen/election_action_button_width"
+    android:layout_height="@dimen/event_button_height"
     android:enabled="false"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_margin="24dp"
+    android:layout_margin="@dimen/event_button_margin"
     android:backgroundTint="@color/colorPrimary"
-    android:text="Vote"
+    android:text="@string/vote"
     android:textColor="@color/white"
-    android:textSize="14sp"
+    android:textSize="@dimen/event_button_text_size"
     android:drawableStart="@drawable/ic_voting_action"
     android:drawableTint="@color/white" />
 
   <Button
     android:id="@+id/election_management_button"
-    android:layout_width="100dp"
-    android:layout_height="48dp"
+    android:layout_width="@dimen/event_button_width"
+    android:layout_height="@dimen/event_button_height"
     app:layout_constraintBottom_toBottomOf="@id/election_action_button"
     app:layout_constraintEnd_toStartOf="@id/election_action_button"
-    android:layout_marginEnd="8dp"
+    android:layout_marginEnd="@dimen/inter_buttons_margin"
     android:backgroundTint="@color/green"
     android:text="@string/start"
     android:textColor="@color/white"
-    android:textSize="14sp"
+    android:textSize="@dimen/event_button_text_size"
     android:drawableTint="@color/white"
     android:drawableStart="@drawable/ic_unlock" />
 

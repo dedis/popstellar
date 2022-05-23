@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
       android:id="@+id/event_card_view"
       android:layout_width="match_parent"
-      android:layout_height="55dp"
+      android:layout_height="@dimen/event_layout_card_view_height"
       android:clickable="true"
       android:foreground="?android:attr/selectableItemBackground"
       app:cardElevation="@dimen/card_view_elevation"
@@ -21,33 +21,32 @@
 
         <ImageView
           android:id="@+id/event_type_image"
-          android:layout_width="30dp"
-          android:layout_height="30dp"
-          android:layout_marginStart="24dp"
+          android:layout_width="@dimen/event_layout_type_image_side"
+          android:layout_height="@dimen/event_layout_type_image_side"
+          android:layout_marginStart="@dimen/event_layout_type_start_margin"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"
-          />
+          app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
           android:id="@+id/event_card_text_view"
           style="@style/explication_text_style"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="15dp"
+          android:layout_marginStart="@dimen/margin_text_small"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintStart_toEndOf="@id/event_type_image"
           android:textColor="@color/colorPrimaryDark"
           app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
+          android:layout_width="@dimen/event_layout_arrow_image_side"
+          android:layout_height="@dimen/event_layout_arrow_image_side"
           android:src="@drawable/ic_right_arrow"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
-          android:layout_marginEnd="8dp"/>
+          android:layout_marginEnd="@dimen/event_layout_arrow_end_margin" />
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

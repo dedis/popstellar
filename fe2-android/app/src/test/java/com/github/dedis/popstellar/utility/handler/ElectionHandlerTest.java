@@ -7,7 +7,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.annotation.UiThreadTest;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -210,7 +209,6 @@ public class ElectionHandlerTest extends TestCase {
     assertEquals(EventState.CLOSED, electionOpt.get().getState().getValue());
   }
 
-  @UiThreadTest
   @Test
   public void testHandleElectionOpen() throws DataHandlingException {
     OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);

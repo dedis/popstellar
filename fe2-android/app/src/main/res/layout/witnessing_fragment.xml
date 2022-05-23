@@ -21,16 +21,16 @@
     android:id="@+id/witnessing_tab_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:layout_marginHorizontal="8dp"
-    app:layout_constraintTop_toBottomOf="@id/witness_title"></com.google.android.material.tabs.TabLayout>
+    android:layout_marginTop="@dimen/tab_layout_top_margin"
+    android:layout_marginHorizontal="@dimen/container_margin"
+    app:layout_constraintTop_toBottomOf="@id/witness_title" />
 
   <androidx.viewpager2.widget.ViewPager2
     android:id="@+id/witnessing_view_pager"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/container_margin"
     app:layout_constraintTop_toBottomOf="@id/witnessing_tab_layout"
     app:layout_constraintBottom_toBottomOf="parent">
 
