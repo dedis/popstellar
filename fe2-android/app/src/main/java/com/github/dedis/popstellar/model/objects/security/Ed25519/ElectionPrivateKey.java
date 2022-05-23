@@ -14,10 +14,16 @@ public class ElectionPrivateKey {
     private static int MESSAGE_BYTE_SIZE = 64;
     private static int HALF_MESSAGE_BYTE_SIZE = 32;
 
+    // Scalar generated with the private key
     private final Ed25519Scalar scalar;
 
-    public ElectionPrivateKey(String publicKey) {
-        scalar = new Ed25519Scalar(publicKey);
+    /**
+     * Create an decryption scheme for 64 bytes message using a private key
+     *
+     * @param privateKey private key used to decrypt
+     */
+    public ElectionPrivateKey(String privateKey) {
+        scalar = new Ed25519Scalar(privateKey);
     }
 
     @Override
@@ -41,7 +47,17 @@ public class ElectionPrivateKey {
         return scalar;
     }
 
+    /**
+     * Decypt the given string using ElGamal
+     *
+     * @param message message to decrypt (64 byte length)
+     * @return byte array containing the decrypted message
+     * @throws CothorityCryptoException
+     */
     public byte[] decrypt(@NonNull String message) throws CothorityCryptoException {
+
+        // Follows this implementation:
+        // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L27-L31
 
         byte[] in_byte_message = message.getBytes(StandardCharsets.UTF_8);
         if (in_byte_message.length != MESSAGE_BYTE_SIZE) {
@@ -67,9 +83,9 @@ public class ElectionPrivateKey {
             throw new CothorityCryptoException("Could not create K Point while decrypting");
         }
 
+        // Substract and export data to get the original message
         Point S = K.mul(getScalar());
-        // TODO: add final subtraction for both S and C
-        return null;
+        return S.add(C.negate()).data();
     }
 
 

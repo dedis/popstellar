@@ -110,8 +110,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-reactivestreams:2.4.0"
     implementation 'androidx.test.espresso:espresso-intents:3.4.0'
     implementation files('libs/dedis-kyber.jar')
-    implementation files('libs/dedis-kyber.jar')
-    implementation files('libs/dedis-kyber.jar')
+
     // Hilt
     def hilt_version = "2.38.1"
     implementation "com.google.dagger:hilt-android:$hilt_version"
