@@ -1171,7 +1171,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     handleAttendeeAddition(barcode.rawValue);
-    }
+  }
 
   @Override
   public boolean addManually(String data) {

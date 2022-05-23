@@ -55,6 +55,14 @@ public class RollCallFragment extends Fragment {
     return new RollCallFragment(pk);
   }
 
+  public static RollCallFragment newInstance(RollCall rollCall) {
+    return new RollCallFragment(rollCall);
+  }
+
+  public RollCallFragment(RollCall rollCall) {
+    this.rollCall = rollCall;
+  }
+
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,8 +70,9 @@ public class RollCallFragment extends Fragment {
     View view = inflater.inflate(R.layout.roll_call_fragment, container, false);
 
     laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    rollCall = laoDetailViewModel.getCurrentRollCall();
-
+    if (rollCall == null) {
+      rollCall = laoDetailViewModel.getCurrentRollCall();
+    }
     managementButton = view.findViewById(R.id.roll_call_management_button);
     title = view.findViewById(R.id.roll_call_fragment_title);
     statusText = view.findViewById(R.id.roll_call_fragment_status);
@@ -107,6 +116,8 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
+    System.out.println("nullity of rc is " + (rollCall == null));
+    System.out.println(" nullity of state is " + (rollCall.getState()));
     EventState rcState = rollCall.getState().getValue();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 

@@ -73,7 +73,7 @@
     app:layout_constraintTop_toBottomOf="@id/start_time_icon" />
 
   <TextView
-    android:id="@+id/textView2"
+    android:id="@+id/roll_call_fragment_end_time_title"
     style="@style/explication_text_style"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

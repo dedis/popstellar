@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event.fragments;
+package com.github.dedis.popstellar.ui.detail.event.election;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
