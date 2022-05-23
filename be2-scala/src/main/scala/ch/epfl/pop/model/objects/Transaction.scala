@@ -27,10 +27,30 @@ final case class TxIn(
 )
 
 final case class Transaction(
-  Version: Int,
-  TxIn: List[TxIn],
-  TxOut: List[TxOut],
-  )
+  version: Int,
+  inputs: List[TxIn],
+  outputs: List[TxOut],
+  lockTime: Int,
+) {
+  lazy val transactionId = {
+    val strings = collection.mutable.ListBuffer.empty[String]
+    strings ++= inputs.foldRight(List.empty[String]) { (txin, acc) =>
+        txin.Script.Pubkey.base64Data.toString ::
+        txin.Script.Sig.toString ::
+        txin.Script.Type ::
+        txin.TxOutHash.toString ::
+        txin.TxOutIndex.toString :: acc
+      }
+    strings += lockTime.toString
+    strings ++= outputs.foldRight(List.empty[String]) { (txout, acc) =>
+        txout.Script.PubkeyHash.base64Data.toString ::
+        txout.Script.Type ::
+        txout.Value.toString :: acc
+      }
+    strings += version.toString
+    Hash.fromStrings(strings.toSeq: _*)
+  }
+}
 
 object Transaction extends Parsable {
   override def buildFromJson(payload: String): Transaction = payload.parseJson.asJsObject.convertTo[Transaction]

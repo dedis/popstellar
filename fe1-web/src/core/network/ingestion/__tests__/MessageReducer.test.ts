@@ -4,12 +4,14 @@ import { AnyAction } from 'redux';
 
 import {
   configureTestFeatures,
+  mockAddress,
+  mockChannel,
   mockPopToken,
   mockPrivateKey,
   mockPublicKey,
 } from '__tests__/utils';
 import { Message } from 'core/network/jsonrpc/messages';
-import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
+import { KeyPair, Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
@@ -42,9 +44,8 @@ const createExtendedMessage = () => {
     text: 'text',
     timestamp: new Timestamp(1607277600),
   });
-  const message = Message.fromData(messageData, keyPair);
-  const channel = channelFromIds();
-  return ExtendedMessage.fromMessage(message, channel, 'some address');
+  const message = Message.fromData(messageData, keyPair, mockChannel);
+  return ExtendedMessage.fromMessage(message, mockAddress, mockChannel);
 };
 
 beforeAll(configureTestFeatures);

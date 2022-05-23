@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.{OpenElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
-import ch.epfl.pop.model.network.method.message.data.cash._
+import ch.epfl.pop.model.network.method.message.data.coin._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._

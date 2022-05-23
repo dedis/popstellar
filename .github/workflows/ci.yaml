@@ -137,8 +137,14 @@ jobs:
         run: make check-fmt ; if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
 
       - name: Run check target
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
         run: |
           make check
+
+      - name: Run test target
+        if: ${{ matrix.platform == 'windows-latest' }}
+        run: |
+          make test
 
       - name: Run go vet
         run: |

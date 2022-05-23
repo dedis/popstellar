@@ -4,12 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
@@ -23,6 +17,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const protocolRelativePath string = "../../../protocol"
@@ -788,6 +789,11 @@ func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
+}
+
+// GetServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetServerAddress() string {
+	return ""
 }
 
 // Sign implements channel.HubFunctionalities

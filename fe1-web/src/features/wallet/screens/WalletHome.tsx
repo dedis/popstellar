@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
@@ -12,12 +11,12 @@ import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
-import { WalletFeature } from '../interface';
 import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 import { DigitalCashStore } from '../store';
+import { WalletFeature } from "../interface";
 
 const styles = StyleSheet.create({
   homeContainer: {
@@ -53,10 +52,7 @@ const WalletHome = () => {
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
 
-  const rollCallSelector = WalletHooks.useEventByTypeSelector<WalletFeature.RollCall>(
-    WalletFeature.EventType.ROLL_CALL,
-  );
-  const rollCalls = useSelector(rollCallSelector);
+  const rollCalls = WalletHooks.useRollCallsByLaoId();
 
   const laoId = WalletHooks.useCurrentLaoId();
 

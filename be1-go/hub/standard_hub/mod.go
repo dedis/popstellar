@@ -59,6 +59,8 @@ var suite = crypto.Suite
 type Hub struct {
 	hubType hub.HubType
 
+	serverAdress string
+
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
@@ -144,7 +146,7 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 }
 
 // NewHub returns a new Hub.
-func NewHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
+func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
@@ -158,6 +160,7 @@ func NewHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFacto
 
 	hub := Hub{
 		hubType:         hubType,
+		serverAdress:    serverAddress,
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
@@ -550,7 +553,10 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 			senderPubKey, h.GetPubKeyOwner())
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
+	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
+	if err != nil {
+		return answer.NewErrorf(-4, "failed to create the LAO: %v", err)
+	}
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
 
@@ -571,6 +577,11 @@ func (h *Hub) GetPubKeyOwner() kyber.Point {
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
+}
+
+// GetServerAddress implements channel.HubFunctionalities
+func (h *Hub) GetServerAddress() string {
+	return h.serverAdress
 }
 
 // Sign implements channel.HubFunctionalities

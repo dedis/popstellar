@@ -37,21 +37,21 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('Connect hooks', () => {
-  describe('ConnectHooks.useAddLaoServerAddress', () => {
+  describe('useAddLaoServerAddress', () => {
     it('should return the function for adding a lao server address', () => {
       const { result } = renderHook(() => ConnectHooks.useAddLaoServerAddress(), { wrapper });
       expect(result.current).toEqual(addLaoServerAddress);
     });
   });
 
-  describe('ConnectHooks.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the the current lao id', () => {
       const { result } = renderHook(() => ConnectHooks.useCurrentLaoId(), { wrapper });
       expect(result.current?.valueOf()).toEqual(mockLaoId);
     });
   });
 
-  describe('ConnectHooks.useGetLaoChannel', () => {
+  describe('useGetLaoChannel', () => {
     it('should return the function for getting a channel by lao id', () => {
       const { result } = renderHook(() => ConnectHooks.useGetLaoChannel(), { wrapper });
       expect(result.current).toEqual(getLaoChannel);

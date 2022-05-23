@@ -1,6 +1,7 @@
 import {
   Base64UrlData,
   Channel,
+  getLaoIdFromChannel,
   Hash,
   KeyPair,
   ProtocolError,
@@ -71,9 +72,6 @@ export class Message {
 
   public readonly witness_signatures: WitnessSignature[];
 
-  // Not part of the protocol, but convenient for processing of the message
-  public readonly channel?: Channel;
-
   // ECMAScript private field, not string-ified by JSON
   readonly #messageData: MessageData;
 
@@ -82,7 +80,7 @@ export class Message {
     return this.#messageData;
   }
 
-  constructor(msg: Partial<Message>) {
+  constructor(msg: Partial<Message>, channel: Channel) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
     }
@@ -120,7 +118,7 @@ export class Message {
       );
     }
     msg.witness_signatures.forEach((ws: WitnessSignature) => {
-      if (msg.data === undefined || !ws.verify(msg.data)) {
+      if (msg.message_id === undefined || !ws.verify(msg.message_id)) {
         throw new ProtocolError(
           `Invalid 'witness_signatures' parameter encountered: invalid signature from ${ws.signature}`,
         );
@@ -132,26 +130,38 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
-    if (msg.channel) {
-      this.channel = msg.channel;
-    }
-
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = messageRegistry.buildMessageData(dataObj);
+
+    let laoId: Hash | undefined;
+    try {
+      laoId = getLaoIdFromChannel(channel);
+    } catch {
+      // getLaoIdFromChannel throw an error if the channel does not contain a laoId
+      // this is the case if either the channel is invalid (which should not happen)
+      // or when a message is not sent on a subchannel of a lao
+      // there are messages for which this is standard behaviour such as the lao#create
+      // message and thus we do not want to throw an error but rather pass undefined
+      // as the laoId. The individual message constructors can then decide whether to
+      // use the laoId for validation
+      laoId = undefined;
+    }
+    this.#messageData = messageRegistry.buildMessageData(dataObj, laoId);
   }
 
-  public static fromJson(obj: any, channel?: Channel): Message {
-    return new Message({
-      data: new Base64UrlData(obj.data.toString()),
-      sender: new PublicKey(obj.sender.toString()),
-      signature: new Signature(obj.signature.toString()),
-      message_id: new Hash(obj.message_id.toString()),
-      witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
-        WitnessSignature.fromJson(ws),
-      ),
-      channel: channel,
-    });
+  public static fromJson(obj: any, channel: Channel): Message {
+    return new Message(
+      {
+        data: new Base64UrlData(obj.data.toString()),
+        sender: new PublicKey(obj.sender.toString()),
+        signature: new Signature(obj.signature.toString()),
+        message_id: new Hash(obj.message_id.toString()),
+        witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
+          WitnessSignature.fromJson(ws),
+        ),
+      },
+      channel,
+    );
   }
 
   /**
@@ -161,24 +171,29 @@ export class Message {
    *
    * @param data - The MessageData to be signed and hashed
    * @param senderKeyPair - The key pair of the sender
-   * @param witnessSignatures- The signatures of the witnesses
+   * @param channel - The channel the message was received on
+   * @param witnessSignatures - The signatures of the witnesses
    * @returns - The created message
    */
   public static fromData(
     data: MessageData,
     senderKeyPair: KeyPair,
+    channel: Channel,
     witnessSignatures?: WitnessSignature[],
   ): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const { publicKey, privateKey } = senderKeyPair;
     const signature = privateKey.sign(encodedDataJson);
 
-    return new Message({
-      data: encodedDataJson,
-      sender: publicKey,
-      signature: signature,
-      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
-    });
+    return new Message(
+      {
+        data: encodedDataJson,
+        sender: publicKey,
+        signature: signature,
+        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+        witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
+      },
+      channel,
+    );
   }
 }
