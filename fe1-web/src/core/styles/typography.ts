@@ -1,10 +1,16 @@
 import { TextStyle } from 'react-native';
 
-import { contrast, accent as accentColor, secondaryAccent as secondaryColor } from './color';
+import {
+  contrast,
+  accent as accentColor,
+  secondaryAccent as secondaryColor,
+  primary as primaryColor,
+} from './color';
 import { x1 } from './spacing';
 
 export const base: TextStyle = {
   textAlign: 'left',
+  color: primaryColor,
   fontSize: 20,
   lineHeight: 26,
 };

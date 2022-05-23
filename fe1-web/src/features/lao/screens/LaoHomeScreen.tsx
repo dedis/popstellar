@@ -18,8 +18,8 @@ import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
+import Identity from '../components/Identity';
 import { LaoHooks } from '../hooks';
-import Identity from './Identity';
 
 const LaoHomeScreen = () => {
   return (

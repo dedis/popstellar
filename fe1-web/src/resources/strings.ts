@@ -135,11 +135,22 @@ namespace STRINGS {
     'this box checked. If you wish to reveal your identity to other participants in the organization, you may ' +
     'un-check this box and enter the information you wish to reaveal below. You must enter identity information in ' +
     'order to play an Organizer or Witness role in an organization.';
+
+  export const identity_name_label = 'Name';
   export const identity_name_placeholder = 'Name';
+
+  export const identity_title_label = 'Title';
   export const identity_title_placeholder = 'Title';
+
+  export const identity_organization_label = 'Organization';
   export const identity_organization_placeholder = 'Organization';
+
+  export const identity_email_label = 'Email';
   export const identity_email_placeholder = 'Email';
+
+  export const identity_phone_label = 'Phone number';
   export const identity_phone_placeholder = 'Phone number';
+
   export const identity_qrcode_description = 'ID (Public Key):';
 
   /* --- WitnessScreen Strings --- */
