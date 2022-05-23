@@ -55,7 +55,8 @@
       app:layout_constraintBottom_toTopOf="@id/blank_space"
       android:layout_gravity="center_horizontal"
       android:inputType="text"
-      tools:layout_editor_absoluteY="305dp" />
+      tools:layout_editor_absoluteY="305dp"
+      android:autofillHints="Public Key receiver" />
 
     <Space
       android:id="@+id/blank_space"
@@ -78,7 +79,8 @@
       app:layout_constraintBottom_toTopOf="@id/blank_space_2"
       android:layout_gravity="center_horizontal"
       android:inputType="number"
-      tools:layout_editor_absoluteY="305dp" />
+      tools:layout_editor_absoluteY="305dp"
+      android:autofillHints="Amount" />
 
     <Space
       android:id="@+id/blank_space_2"
@@ -102,12 +104,23 @@
 
     <Space
       android:id="@+id/blank_space_3"
-      android:layout_width="50dp"
-      android:layout_height="50dp"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
+
       app:layout_constraintTop_toBottomOf="@id/send_button_coin" />
+
+    <Button
+      android:id="@+id/send_button_coin_2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Test"
+      android:layout_gravity="center_horizontal"
+      app:layout_constraintTop_toBottomOf="@id/blank_space_3"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

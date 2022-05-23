@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class DigitalCashSendFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
+    setupTestButton();
     // subscribe to "send coin" event
     digitalCashViewModel
         .getPostTransactionEvent()
@@ -73,6 +75,19 @@ public class DigitalCashSendFragment extends Fragment {
   private void setupSendCoinButton() {
     digitalCashSendFragmentBinding.sendButtonCoin.setOnClickListener(
         v -> digitalCashViewModel.setPostTransactionEvent());
+  }
+
+  private void setupTestButton() {
+    Log.d(String.valueOf(DigitalCashSendFragmentBinding.class), "Test send");
+    digitalCashSendFragmentBinding.sendButtonCoin.setOnClickListener(
+        v ->
+            digitalCashViewModel.postTransaction(
+                digitalCashViewModel
+                    .getAttendeeList(digitalCashViewModel.getLaoId().getValue())
+                    .get(0)
+                    .getEncoded(),
+                Collections.singletonList(1),
+                Instant.now().getEpochSecond()));
   }
 
   /** Function that permits to post transaction */
