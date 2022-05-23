@@ -1,17 +1,31 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorAddWitnessMessage
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
-case object WitnessHandler extends MessageHandler {
+/**
+ * WitnessHandler object uses the db instance from the MessageHandler
+ */
+object WitnessHandler extends MessageHandler {
+  final lazy val handlerInstance = new WitnessHandler(super.dbActor)
+  def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleWitnessMessage(rpcMessage)
+}
+
+
+class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  /**
+   *
+   * Overrides default DbActor with provided parameter
+   */
+  override final val dbActor: AskableActorRef = dbRef
 
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     val decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
@@ -21,18 +35,20 @@ case object WitnessHandler extends MessageHandler {
 
     rpcMessage.getParamsMessage match {
       case Some(_) =>
-        val combined = for {
           // add new witness signature to existing ones
-          DbActorAddWitnessMessage(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
-          //overwrites the message containing now the witness signature in the db
-          _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
-        } yield ()
-
-        Await.ready(combined, duration).value match {
-          case Some(Success(_)) => Left(rpcMessage)
-          case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-        }
+          val askAddWitness =  dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+          Await.ready(askAddWitness, duration).value match {
+            case Some(Success(DbActor.DbActorAddWitnessMessage(witnessMessage))) =>
+              //overwrites the message containing now the witness signature in the db
+              val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
+              Await.ready(askWritePropagate, duration).value.get match {
+                case Success(_) => Left(rpcMessage)
+                case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
+                case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
+              }
+            case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
+            case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
+          }
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,

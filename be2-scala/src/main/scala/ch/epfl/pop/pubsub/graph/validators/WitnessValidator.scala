@@ -1,15 +1,24 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Signature}
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{validateChannelType, validateOwner}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
+//Similarly to the handlers, we create a WitnessValidator object which creates a WitnessValidator class instance.
+//The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
+object WitnessValidator extends MessageDataContentValidator {
+  val witnessValidator = new WitnessValidator(DbActor.getInstance)
+  def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = witnessValidator.validateWitnessMessage(rpcMessage)
+}
 
-case object WitnessValidator extends MessageDataContentValidator {
+sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
+
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage", rpcMessage.id)
 
@@ -26,9 +35,9 @@ case object WitnessValidator extends MessageDataContentValidator {
         //not sure thought ..
         if (!signature.verify(sender, messageId.base64Data)) {
           Right(validationError("verification of the signature over the message id failed"))
-        } else if (!validateOwner(sender, channel)) {
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a WitnessMessage message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
