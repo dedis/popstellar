@@ -2,8 +2,6 @@ package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
-import org.bouncycastle.crypto.CryptoException;
-
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 
@@ -11,6 +9,7 @@ import ch.epfl.dedis.lib.crypto.Ed25519;
 import ch.epfl.dedis.lib.crypto.Ed25519Point;
 import ch.epfl.dedis.lib.crypto.Point;
 import ch.epfl.dedis.lib.crypto.Scalar;
+import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import io.reactivex.annotations.NonNull;
 
 /**
@@ -19,15 +18,15 @@ import io.reactivex.annotations.NonNull;
 public class ElectionPublicKey {
 
     // We use elliptic curve Ed25519 for encryption
-    public Ed25519 curve;
+    public final Ed25519 curve;
     // Point is generate with given public key
-    private Point point;
+    private final Point point;
 
-    public ElectionPublicKey(@NonNull String publicKey) throws CryptoException {
+    public ElectionPublicKey(@NonNull String publicKey) throws CothorityCryptoException {
         try {
             point = new Ed25519Point(publicKey);
-        } catch (Exception e) {
-            throw new CryptoException("Could not create the point for ellyptic curve, please provide another key");
+        } catch (CothorityCryptoException e) {
+            throw new CothorityCryptoException("Could not create the point for ellyptic curve, please provide another key");
         }
         curve = new Ed25519();
     }
@@ -36,6 +35,19 @@ public class ElectionPublicKey {
     public String toString() {
         return point.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ElectionPublicKey that = (ElectionPublicKey) o;
+        return that.getPoint().equals(getPoint());
+    }
+
 
     public Base64URLData toBase64() {
         return new Base64URLData(toString());
