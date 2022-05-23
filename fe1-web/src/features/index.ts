@@ -132,6 +132,7 @@ export function configureFeatures() {
       {
         id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
+        headerShown: false,
         tabBarIcon: SocialMediaIcon,
         order: 10000,
       },
