@@ -56,24 +56,7 @@ public class LaoDetailAnimation {
     Animation animation = new AlphaAnimation(from, to);
     animation.setInterpolator(new DecelerateInterpolator());
     animation.setDuration(duration);
-    animation.setAnimationListener(
-        new Animation.AnimationListener() {
-
-          @Override
-          public void onAnimationStart(Animation animation) {
-            // Do nothing
-          }
-
-          @Override
-          public void onAnimationEnd(Animation animation) {
-            v.setAlpha(to);
-          }
-
-          @Override
-          public void onAnimationRepeat(Animation animation) {
-            // do nothing
-          }
-        });
+    animation.setAnimationListener(fadeListener(v, to));
     v.startAnimation(animation);
   }
 
@@ -81,23 +64,26 @@ public class LaoDetailAnimation {
     Animation animation = new AlphaAnimation(from, to);
     animation.setInterpolator(new AccelerateInterpolator());
     animation.setDuration(duration);
-    animation.setAnimationListener(
-        new Animation.AnimationListener() {
-          @Override
-          public void onAnimationStart(Animation animation) {
-            // do nothing
-          }
-
-          @Override
-          public void onAnimationEnd(Animation animation) {
-            v.setAlpha(to);
-          }
-
-          @Override
-          public void onAnimationRepeat(Animation animation) {
-            // do nothing
-          }
-        });
+    animation.setAnimationListener(fadeListener(v, to));
     v.startAnimation(animation);
+  }
+
+  private static Animation.AnimationListener fadeListener(View v, float to) {
+    return new Animation.AnimationListener() {
+      @Override
+      public void onAnimationStart(Animation animation) {
+        // Do nothing
+      }
+
+      @Override
+      public void onAnimationEnd(Animation animation) {
+        v.setAlpha(to);
+      }
+
+      @Override
+      public void onAnimationRepeat(Animation animation) {
+        // Do nothing
+      }
+    };
   }
 }

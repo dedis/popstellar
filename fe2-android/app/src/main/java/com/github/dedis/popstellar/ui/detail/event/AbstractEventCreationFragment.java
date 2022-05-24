@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail.event;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,7 +34,6 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
-  public static final String TAG = AbstractEventCreationFragment.class.getSimpleName();
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
@@ -284,7 +282,6 @@ public abstract class AbstractEventCreationFragment extends Fragment {
    */
   public boolean computeTimesInSeconds() {
     if (startDate == null || startTime == null) {
-      Log.d(TAG, "start date is null");
       return false;
     }
     completeStartTime.set(
@@ -303,7 +300,6 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         showToast(R.string.past_date_not_allowed);
         startTime = null;
         startTimeEditText.setText("");
-        Log.d(TAG, "5 minutes not passing");
         return false;
       } else {
         // Else (if start is only a little in the past), set the start to creation

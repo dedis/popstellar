@@ -641,9 +641,6 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    Log.d(TAG, "rc id is " + currentRollCallId);
-    Log.d(TAG, "lao id is " + lao.getId());
-    Log.d(TAG, "attendees are" + attendees.toString());
 
     long end = Instant.now().getEpochSecond();
     Channel channel = lao.getChannel();
@@ -986,7 +983,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void toggleShowHideProperties() {
     boolean val = showProperties.getValue();
-    Log.d(TAG, "TOGGLED to " + val);
     showProperties.postValue(!val);
     mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
   }

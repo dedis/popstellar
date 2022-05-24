@@ -15,10 +15,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link WitnessesFragment#newInstance} factory method
- * to create an instance of this fragment.
- */
 public class WitnessesFragment extends Fragment {
 
 

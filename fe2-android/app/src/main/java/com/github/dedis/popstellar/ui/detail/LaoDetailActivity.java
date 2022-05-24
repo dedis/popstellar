@@ -137,7 +137,16 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
-    mViewModel.getCloseRollCallEvent().observe(this, booleanSingleEvent -> setupLaoFragment());
+    mViewModel
+        .getCloseRollCallEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupLaoFragment();
+              }
+            });
 
     subscribeWalletEvents();
 
@@ -153,20 +162,24 @@ public class LaoDetailActivity extends AppCompatActivity {
     // Subscribe to "open start election" event
     setupElectionStartFragment();
 
-    mViewModel.getOpenDigitalCashEvent().observe(this, booleanSingleEvent -> {
-        Boolean event = booleanSingleEvent.getContentIfNotHandled();
-        if (event != null){
-            openDigitalCash();
-        }
-    });
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                openDigitalCash();
+              }
+            });
   }
 
-    private void openDigitalCash() {
-      Intent intent = new Intent(this, DigitalCashMain.class);
-      startActivity(intent);
-    }
+  private void openDigitalCash() {
+    Intent intent = new Intent(this, DigitalCashMain.class);
+    startActivity(intent);
+  }
 
-    private void setupWitnessing() {
+  private void setupWitnessing() {
     mViewModel
         .getOpenWitnessing()
         .observe(
@@ -341,7 +354,6 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setupCreateRollCallFragment() {
     setCurrentFragment(R.id.fragment_create_roll_call_event, RollCallCreationFragment::newInstance);
   }
-
 
   private void setupScanFragmentWitness() {
     setCurrentFragment(R.id.qr_code, QRCodeScanningFragment::new);
