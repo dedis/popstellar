@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
@@ -15,9 +17,7 @@ import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
-import { useSelector } from "react-redux";
-import { DigitalCashLaoReducerState, getDigitalCashState, makeBalanceSelector } from "../reducer";
-import { makeRollCallSelector } from "../../rollCall/reducer";
+import { makeBalanceSelector } from '../reducer';
 
 const styles = StyleSheet.create({
   homeContainer: {
@@ -52,6 +52,8 @@ const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
   const [isDebug, setIsDebug] = useState(false);
+
+  const toast = useToast();
 
   const rollCalls = WalletHooks.useRollCallsByLaoId();
 
@@ -148,7 +150,12 @@ const WalletHome = () => {
             new PublicKey(receiver),
             amount,
             tokens![selectedTokenIndex].rollCallId,
-          );
+          )
+            .then(() => toast.show('Sent coinbase transaction'))
+            .catch((err) => {
+              console.error('Failed sending the transaction : ', err);
+            });
+          setSendModalVisible(false);
         }}
       />
       <View style={styles.smallPadding} />
