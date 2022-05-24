@@ -43,6 +43,14 @@ public class ElectionFragment extends Fragment {
   public ElectionFragment() { // required empty constructor
   }
 
+  public ElectionFragment(Election election) {
+    this.election = election;
+  }
+
+  public static ElectionFragment newInstance(Election election) {
+    return new ElectionFragment(election);
+  }
+
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +61,10 @@ public class ElectionFragment extends Fragment {
     actionButton = view.findViewById(R.id.election_action_button);
 
     laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    election = laoDetailViewModel.getCurrentElection();
+
+    if (election == null) {
+      election = laoDetailViewModel.getCurrentElection();
+    }
 
     setupElectionContent();
     setupTime(view);

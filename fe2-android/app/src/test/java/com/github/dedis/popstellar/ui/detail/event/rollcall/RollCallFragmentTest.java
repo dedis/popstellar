@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
-import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -75,8 +73,6 @@ public class RollCallFragmentTest {
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
   RollCall rollCall = new RollCall(LAO.getId(), CREATION, ROLL_CALL_TITLE);
-
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   @Inject GlobalNetworkManager networkManager;
   @Inject Gson gson;

@@ -9,11 +9,10 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-/** Created by David on 17.06.2015. */
 public class EventListDivider extends RecyclerView.ItemDecoration {
   public static final String TAG = EventListDivider.class.getSimpleName();
   private final Paint mPaint;
-  private int mHeightDp;
+  private final int mHeightDp;
 
   public EventListDivider(Context context) {
     this(context, Color.argb((int) (255 * 0.2), 0, 0, 0), 1f);
@@ -29,16 +28,6 @@ public class EventListDivider extends RecyclerView.ItemDecoration {
                 TypedValue.COMPLEX_UNIT_DIP, heightDp, context.getResources().getDisplayMetrics());
   }
 
-  //    @Override
-  //    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State
-  // state) {
-  //        if (hasDividerOnBottom(view, parent, state)) {
-  //            outRect.set(0, 0, 0, mHeightDp);
-  //        } else {
-  //            outRect.set(0,0,0, mHeightDp);
-  //        }
-  //    }
-
   private boolean hasDividerOnBottom(View view, RecyclerView parent, RecyclerView.State state) {
     int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewAdapterPosition();
     return position < state.getItemCount()
@@ -49,7 +38,6 @@ public class EventListDivider extends RecyclerView.ItemDecoration {
   public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
     for (int i = 0; i < parent.getChildCount(); i++) {
       View view = parent.getChildAt(i);
-      int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewAdapterPosition();
       if (hasDividerOnBottom(view, parent, state)) {
         c.drawRect(
             view.getLeft(),

@@ -116,8 +116,6 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
-    System.out.println("nullity of rc is " + (rollCall == null));
-    System.out.println(" nullity of state is " + (rollCall.getState()));
     EventState rcState = rollCall.getState().getValue();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
