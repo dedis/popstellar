@@ -2,11 +2,9 @@ package ch.epfl.pop.model.objects
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, SetupElection}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadAck
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,18 +19,16 @@ object ElectionChannel {
      * @tparam T type of data to extract from the election channel
      * @return Future of a list of tuple containing the message and the data extracted
      */
-    def extractMessages[T<: MessageData: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
+    def extractMessages[T: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
-        DbActor.DbActorReadChannelDataAck(channelData) <- dbActor ? DbActor.ReadChannelData(channel)
-        result <- Future.traverse(channelData.messages) { messageHash =>
-          for {
-            DbActorReadAck(Some(message)) <- dbActor ? DbActor.Read(channel, messageHash)
-          } yield message.decodedData match {
+        DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
+        result <- Future.traverse(messages.flatMap(message =>
+          message.decodedData match {
             case Some(t: T) => Some((message, t))
             case _ => None
-          }
-        }
-      } yield result.flatten
+          })
+        ) { message => Future(message) }
+      } yield result
     }
 
     /** returns the SetupElection message from the channel

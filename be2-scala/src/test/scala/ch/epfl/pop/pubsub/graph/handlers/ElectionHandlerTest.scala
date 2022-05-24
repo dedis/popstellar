@@ -4,16 +4,18 @@ import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.Election.CastVoteElectionExamples.{DATA_CAST_VOTE_MESSAGE, MESSAGE_CAST_VOTE_ELECTION_WORKING}
-import util.examples.Election.OpenElectionExamples.{DATA_OPEN_MESSAGE, MESSAGE_OPEN_ELECTION_WORKING}
-import util.examples.Election.SetupElectionExamples.{DATA_SET_UP_MESSAGE, MESSAGE_SETUPELECTION_WORKING}
+import util.examples.Election.CastVoteElectionExamples._
+import util.examples.Election.EndElectionExamples._
+import util.examples.Election.OpenElectionExamples._
+import util.examples.Election.SetupElectionExamples._
 import util.examples.Election._
-import util.examples.data.{CastVoteElectionMessages, EndElectionMessages, OpenElectionMessages, SetupElectionMessages}
+import util.examples.data._
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -36,6 +38,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
 
   private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
+  private final val messages: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_WORKING, MESSAGE_OPEN_ELECTION_WORKING, MESSAGE_END_ELECTION_WORKING)
 
   def mockDbWithNack: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -116,6 +119,10 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+
+        case DbActor.Catchup(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK-EndElection")
@@ -145,6 +152,10 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+
+        case DbActor.Catchup(_) =>
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
     system.actorOf(dbActorMock, "MockedDB-NACK-EndElection")
