@@ -3,7 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, Button } from 'core/components';
+import { TextBlock, TextInputLine, Button, Input } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
@@ -72,16 +72,22 @@ const Launch = () => {
     <ScreenWrapper>
       <View style={containerStyles.flex}>
         <View style={styles.viewTop}>
-          <TextBlock text={STRINGS.launch_description} />
-          <TextInputLine
+          <Text style={Typography.heading}>{STRINGS.launch_heading}</Text>
+
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.launch_organization_name}
+          </Text>
+          <Input
+            value={inputLaoName}
+            onChange={setInputLaoName}
             placeholder={STRINGS.launch_organization_name}
-            onChangeText={(input: string) => setInputLaoName(input)}
-            defaultValue={inputLaoName}
           />
-          <TextInputLine
+
+          <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.launch_address}</Text>
+          <Input
+            value={inputAddress}
+            onChange={setInputAddress}
             placeholder={STRINGS.launch_address}
-            onChangeText={(input: string) => setInputAddress(input)}
-            defaultValue={inputAddress}
           />
         </View>
         <View style={styles.viewBottom}>

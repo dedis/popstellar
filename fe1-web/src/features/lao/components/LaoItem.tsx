@@ -37,7 +37,7 @@ const LaoItem = ({ lao }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const handlePress = () => {
-    navigation.navigate(STRINGS.navigation_app_home, {
+    navigation.push(STRINGS.navigation_app_home, {
       screen: STRINGS.navigation_home_mock_connect,
       params: {
         screen: STRINGS.navigation_connect_confirm,
@@ -51,7 +51,7 @@ const LaoItem = ({ lao }: IPropTypes) => {
 
   return (
     <View style={styles.view}>
-      <TouchableOpacity onPress={() => handlePress()}>
+      <TouchableOpacity onPress={handlePress}>
         <Text style={styles.text}>{lao.name}</Text>
       </TouchableOpacity>
     </View>

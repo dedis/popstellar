@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextBlock, TextInputLine, Button } from 'core/components';
+import { Button, Input } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
@@ -87,26 +87,17 @@ const ConnectConfirm = () => {
   return (
     <ScreenWrapper>
       <View style={containerStyles.flex}>
-        <TextBlock text={STRINGS.connect_confirm_description} />
-        <TextInputLine
-          placeholder={STRINGS.connect_server_uri}
-          onChangeText={(input: string) => setServerUrl(input)}
-          defaultValue={serverUrl}
-        />
-        <TextInputLine
-          placeholder={STRINGS.connect_lao_id}
-          onChangeText={(input: string) => setLaoId(input)}
-          defaultValue={laoId}
-        />
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.connect_server_uri}
+        </Text>
+        <Input value={serverUrl} onChange={setServerUrl} placeholder={STRINGS.connect_server_uri} />
+
+        <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
+        <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
 
         <Button onPress={onButtonConfirm}>
           <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_confirm}
-          </Text>
-        </Button>
-        <Button onPress={navigation.goBack}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_cancel}
+            {STRINGS.connect_connect}
           </Text>
         </Button>
       </View>

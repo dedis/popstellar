@@ -110,18 +110,20 @@ namespace STRINGS {
   export const connect_scanning_fail = 'Invalid QRCode data';
 
   // Connecting Connect Strings
+  export const connect_connect = 'Connect';
   export const connect_connecting_title = 'Connecting';
   export const connect_connecting_uri = 'Connecting to URI';
   export const connect_connecting_validate = 'Simulate connection';
   export const connect_server_uri = 'Server URI';
+  export const connect_server_uri_placeholder = 'ws://127.0.0.1:9000/';
   export const connect_lao_id = 'LAO ID';
+  export const connect_lao_id_placeholder = 'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
 
   // Confirm Connect Strings
   export const connect_confirm_description = 'Connect to this local organization?';
 
   /* --- Launch Strings --- */
-  export const launch_description =
-    'To launch a new organization, please enter a name and an address';
+  export const launch_heading = 'Launch a new organization 🚀';
   export const launch_organization_name = 'Organization name';
   export const launch_address = 'Address';
   export const launch_button_launch = 'Launch';
