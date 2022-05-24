@@ -24,6 +24,8 @@
     android:elevation="8dp"
     android:src="@drawable/ic_plus"
     app:fabSize="normal"
+    android:backgroundTint="@color/colorPrimary"
+    android:tintMode="@color/white"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:contentDescription="@string/add_witness_description" />

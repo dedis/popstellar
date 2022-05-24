@@ -7,6 +7,7 @@
     android:id="@+id/fragment_cast_vote"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/container_margin"
     tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -56,13 +57,14 @@
       android:layout_width="match_parent"
       android:layout_height="@dimen/cast_vote_dynamic_height"
       app:layout_constraintBottom_toTopOf="@+id/swipe_indicator"
-      app:layout_constraintTop_toBottomOf="@id/guideline_title"></androidx.viewpager2.widget.ViewPager2>
+      app:layout_constraintTop_toBottomOf="@id/guideline_title"/>
 
     <me.relex.circleindicator.CircleIndicator3
       android:id="@+id/swipe_indicator"
       android:layout_width="match_parent"
       android:layout_height="@dimen/swipe_indicator_height"
       android:background="@color/colorPrimaryDark"
+      android:layout_marginBottom="@dimen/inter_buttons_margin"
       app:layout_constraintBottom_toTopOf="@+id/castVoteButton" />
 
     <Button
@@ -70,6 +72,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal|center"
+
       android:gravity="bottom"
       android:text="@string/button_text"
       app:layout_constraintBottom_toBottomOf="@+id/fragment_cast_vote"

@@ -34,6 +34,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -151,9 +152,21 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
+
+    mViewModel.getOpenDigitalCashEvent().observe(this, booleanSingleEvent -> {
+        Boolean event = booleanSingleEvent.getContentIfNotHandled();
+        if (event != null){
+            openDigitalCash();
+        }
+    });
   }
 
-  private void setupWitnessing() {
+    private void openDigitalCash() {
+      Intent intent = new Intent(this, DigitalCashMain.class);
+      startActivity(intent);
+    }
+
+    private void setupWitnessing() {
     mViewModel
         .getOpenWitnessing()
         .observe(

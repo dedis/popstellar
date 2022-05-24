@@ -965,6 +965,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
+  public  MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent(){
+    return mOpenDigitalCashEvent;
+  }
+
   public void endElectionEvent() {
     mEndElectionEvent.postValue(new SingleEvent<>(true));
   }

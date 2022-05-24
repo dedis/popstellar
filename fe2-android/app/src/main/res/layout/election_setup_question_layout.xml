@@ -75,6 +75,7 @@
     android:id="@+id/add_ballot_option"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/Theme.AppCompat"
     android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
     android:text="@string/add_ballot_options_button_text"
     app:layout_constraintStart_toStartOf="parent"
