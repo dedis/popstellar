@@ -203,7 +203,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     if (position == eventAccumulator + 2) {
       return PAST;
     }
-    return null;
+    throw new IllegalStateException("No event category");
   }
 
   @Override
