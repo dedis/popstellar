@@ -2,7 +2,10 @@ package ch.epfl.pop.model.objects
 
 import ch.epfl.dedis.lib.crypto.Ed25519Pair
 
-case class KeyPair(privateKey: PrivateKey, publicKey: PublicKey)
+case class KeyPair(privateKey: PrivateKey, publicKey: PublicKey) {
+  def elGamalDecrypt(messageB64: Base64Data): Base64Data = privateKey.elGamalDecrypt(messageB64)
+  def elGamalEncrypt(messageB64: Base64Data): Base64Data = publicKey.elGamalEncrypt(messageB64)
+}
 
 object KeyPair {
   def apply(): KeyPair = {
