@@ -43,7 +43,7 @@ public class EventListDivider extends RecyclerView.ItemDecoration {
             view.getLeft(),
             view.getBottom(),
             view.getRight(),
-            view.getBottom() + mHeightDp,
+            view.getBottom() + (float) mHeightDp,
             mPaint);
       }
     }
