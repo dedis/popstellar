@@ -46,7 +46,7 @@ export interface EventInterface extends FeatureInterface {
 
   components: {
     EventList: React.ComponentType<unknown>;
-    CreateEventButton: React.ComponentType<unknown>;
+    CreateEventButton: React.VFC<unknown>;
   };
 
   actionCreators: {

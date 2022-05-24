@@ -21,7 +21,7 @@ export interface LaoCompositionConfiguration {
 
   EventList: React.ComponentType<unknown>;
 
-  CreateEventButton: React.ComponentType<unknown>;
+  CreateEventButton: React.VFC<unknown>;
 
   /* connect */
 
