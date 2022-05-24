@@ -97,13 +97,14 @@
 
   <Button
     android:id="@+id/election_action_button"
-    android:layout_width="@dimen/election_action_button_width"
+    android:layout_width="wrap_content"
     android:layout_height="@dimen/event_button_height"
     android:layout_margin="@dimen/event_button_margin"
     android:backgroundTint="@color/colorPrimary"
     android:drawableStart="@drawable/ic_voting_action"
     android:drawableTint="@color/white"
     android:enabled="false"
+    android:drawablePadding="0dp"
     android:text="@string/vote"
     android:textColor="@color/white"
     android:textSize="@dimen/event_button_text_size"
@@ -112,7 +113,7 @@
 
   <Button
     android:id="@+id/election_management_button"
-    android:layout_width="@dimen/event_button_width"
+    android:layout_width="wrap_content"
     android:layout_height="@dimen/event_button_height"
     android:layout_marginEnd="@dimen/inter_buttons_margin"
     android:backgroundTint="@color/green"
