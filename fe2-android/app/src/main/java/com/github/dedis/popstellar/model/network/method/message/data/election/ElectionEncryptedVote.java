@@ -31,7 +31,7 @@ public class ElectionEncryptedVote {
     this.questionId = questionId;
     this.id =
             Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
-    if (writeInEnabled == true) {
+    if (writeInEnabled) {
       this.vote = null;
     } else {
       this.vote = encryptedVote;

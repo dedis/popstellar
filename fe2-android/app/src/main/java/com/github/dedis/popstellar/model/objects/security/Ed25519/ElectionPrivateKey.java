@@ -74,20 +74,20 @@ public class ElectionPrivateKey {
             throw new IllegalArgumentException("Your message to decrypt should contain exactly 64 bytes");
         }
         // Decompose into two bytes array for recuperating both C and K
-        byte[] K_bytes = new byte[HALF_MESSAGE_BYTE_SIZE];
-        byte[] C_bytes = new byte[HALF_MESSAGE_BYTE_SIZE];
+        byte[] Kbytes = new byte[HALF_MESSAGE_BYTE_SIZE];
+        byte[] Cbytes = new byte[HALF_MESSAGE_BYTE_SIZE];
         for (int i = 0; i < MESSAGE_BYTE_SIZE; i++) {
             if (i < HALF_MESSAGE_BYTE_SIZE) {
-                K_bytes[i] = in_byte_message[i];
+                Kbytes[i] = in_byte_message[i];
             } else {
-                C_bytes[i] = in_byte_message[i];
+                Cbytes[i] = in_byte_message[i];
             }
         }
         Ed25519Point K;
         Ed25519Point C;
         try {
-            K = new Ed25519Point(K_bytes);
-            C = new Ed25519Point(C_bytes);
+            K = new Ed25519Point(Kbytes);
+            C = new Ed25519Point(Cbytes);
         } catch (CothorityCryptoException e) {
             throw new CothorityCryptoException("Could not create K Point while decrypting");
         }

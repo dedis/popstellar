@@ -75,7 +75,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -364,21 +363,16 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote<ElectionVote> castVote = null;
+      CastVote castVote = null;
       CastVote<ElectionEncryptedVote> castEncryptedVote = null;
 
       // Construct the cast vote depending if the messages need to be encrypted or not
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        castVote = new CastVote(votes, election.getId(), lao.getId());
+        castVote = new CastVote<ElectionVote>(votes, election.getId(), lao.getId());
       } else {
-        try {
-          Log.d(TAG, "Encrypting the vote ...");
-          List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        } catch (CothorityCryptoException e) {
-          Log.d(TAG, "Something happened during happened during encryption");
-          Toast.makeText(getApplication(), "Something happened during happened during encryption", Toast.LENGTH_LONG)
-                  .show();
-        }
+        Log.d(TAG, "Encrypting the vote ...");
+        List<ElectionEncryptedVote> encryptedVotes = Election.encrypt(votes);
+        castVote = new CastVote<ElectionEncryptedVote>(encryptedVotes, election.getId(), lao.getId());
         Log.d(TAG, "Vote encrypted!");
       }
 

@@ -8,12 +8,21 @@ import io.reactivex.annotations.NonNull;
 
 public class ElectionKeyPair {
 
-    public ElectionPrivateKey decryptionScheme;
-    public ElectionPublicKey encryptionScheme;
+    private final ElectionPrivateKey decryptionScheme;
+    private final ElectionPublicKey encryptionScheme;
 
     public ElectionKeyPair(@NonNull ElectionPublicKey encryptionScheme, @NonNull ElectionPrivateKey decryptionScheme) {
         this.decryptionScheme = decryptionScheme;
         this.encryptionScheme = encryptionScheme;
+    }
+
+    //Set basic getters useful for encrypt/decrypt
+    public ElectionPrivateKey getDecryptionScheme() {
+        return decryptionScheme;
+    }
+
+    public ElectionPublicKey getEncryptionScheme() {
+        return encryptionScheme;
     }
 
     /**

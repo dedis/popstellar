@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import ch.epfl.dedis.lib.exception.CothorityCryptoException;
-
 public class Election extends Event {
 
   private Channel channel;
@@ -36,7 +34,7 @@ public class Election extends Event {
   private long start;
   private long end;
   private List<ElectionQuestion> electionQuestions;
-  public static String electionKey;
+  private static String electionKey;
   private final ElectionVersion electionVersion;
 
   // Map that associates each sender pk to their votes
@@ -61,17 +59,13 @@ public class Election extends Event {
     this.electionVersion = electionVersion;
   }
 
-  public static String getId() {
-    return id;
-  }
-
   /**
    * Encrypts the content of the votes using El-GamaL scheme
    *
    * @param votes list of votes to encrypt
    * @return encrypted votes
    */
-  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) throws CothorityCryptoException {
+  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
     // We need to iterate over all election votes to encrypt them
     List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
     for (ElectionVote vote : votes) {
@@ -89,10 +83,14 @@ public class Election extends Event {
       // Encrypt the indice
       String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
       ElectionEncryptedVote encryptedVote = new
-              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, getId());
+              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
       encryptedVotes.add(encryptedVote);
     }
     return encryptedVotes;
+  }
+
+  public static void setElectionKey(String electionKey) {
+    Election.electionKey = electionKey;
   }
 
   public String getName() {
@@ -187,11 +185,8 @@ public class Election extends Event {
     this.channel = channel;
   }
 
-  public void setId(String id) {
-    if (id == null) {
-      throw new IllegalArgumentException("election id shouldn't be null");
-    }
-    Election.id = id;
+  public String getId() {
+    return id;
   }
 
   public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
@@ -339,8 +334,11 @@ public class Election extends Event {
             "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex);
   }
 
-  public void setElectionKey(String electionKey) {
-    Election.electionKey = electionKey;
+  public static void setId(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException("election id shouldn't be null");
+    }
+    Election.id = id;
   }
 
   @Override
