@@ -97,7 +97,7 @@ public class ElectionStartFragment extends Fragment {
 
     setupTimerUpdate(election);
 
-    setupButtonListeners(binding, mLaoDetailViewModel, electionId);
+    setupButtonListeners(mLaoDetailViewModel, electionId);
 
     Lao lao = mLaoDetailViewModel.getCurrentLaoValue();
     List<ConsensusNode> nodes = lao.getNodes();
@@ -177,7 +177,6 @@ public class ElectionStartFragment extends Fragment {
   }
 
   private void setupButtonListeners(
-      ElectionStartFragmentBinding binding,
       LaoDetailViewModel mLaoDetailViewModel,
       String electionId) {
     electionStart.setOnClickListener(

@@ -148,7 +148,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -291,10 +290,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), channel, openElection)
             .subscribe(
-                () -> {
-                  Log.d(TAG, "opened election successfully");
-                  // stay on the election fragment for now
-                },
+                () -> Log.d(TAG, "opened election successfully")
+                // stay on the election fragment for now
+                ,
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_open_election));

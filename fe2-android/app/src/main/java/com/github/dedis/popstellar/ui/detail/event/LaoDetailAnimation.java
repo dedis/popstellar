@@ -14,42 +14,23 @@ import android.view.animation.DecelerateInterpolator;
  */
 public class LaoDetailAnimation {
 
+  private LaoDetailAnimation() {}
+
   public static boolean rotateFab(final View v, boolean rotate) {
-    v.animate()
-        .setDuration(200)
-        .setListener(
-            new AnimatorListenerAdapter() {
-              @Override
-              public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-              }
-            })
-        .rotation(rotate ? 135f : 0f);
+    v.animate().setDuration(200).rotation(rotate ? 135f : 0f);
     return rotate;
   }
 
-  public static boolean rotateExpand(final View view, boolean rotate){
+  public static boolean rotateExpand(final View view, boolean rotate) {
     view.animate().setDuration(300).rotation(rotate ? 180f : 0f);
-      return rotate;
-
+    return rotate;
   }
 
   public static void showIn(final View v) {
     v.setVisibility(View.VISIBLE);
     v.setAlpha(0f);
     v.setTranslationY(v.getHeight());
-    v.animate()
-        .setDuration(200)
-        .translationY(0)
-        .setListener(
-            new AnimatorListenerAdapter() {
-              @Override
-              public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-              }
-            })
-        .alpha(1f)
-        .start();
+    v.animate().setDuration(200).translationY(0).alpha(1f).start();
   }
 
   public static void showOut(final View v) {
@@ -77,8 +58,11 @@ public class LaoDetailAnimation {
     animation.setDuration(duration);
     animation.setAnimationListener(
         new Animation.AnimationListener() {
+
           @Override
-          public void onAnimationStart(Animation animation) {}
+          public void onAnimationStart(Animation animation) {
+            // not needed
+          }
 
           @Override
           public void onAnimationEnd(Animation animation) {
@@ -86,7 +70,9 @@ public class LaoDetailAnimation {
           }
 
           @Override
-          public void onAnimationRepeat(Animation animation) {}
+          public void onAnimationRepeat(Animation animation) {
+            // not needed
+          }
         });
     v.startAnimation(animation);
   }

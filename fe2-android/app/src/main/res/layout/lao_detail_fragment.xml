@@ -32,7 +32,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/qr_code_image_description" />
 
       <ImageView
         android:id="@+id/qr_icon_close"
@@ -40,7 +41,8 @@
         android:layout_height="@dimen/qr_close_icon_side"
         android:src="@drawable/ic_cancel_cross"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/close_qr_description" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -74,7 +76,8 @@
           android:src="@drawable/ic_qr_code"
           app:layout_constraintBottom_toBottomOf="@id/lao_detail_title"
           app:layout_constraintStart_toEndOf="@id/lao_detail_title"
-          app:layout_constraintTop_toTopOf="@id/lao_detail_title" />
+          app:layout_constraintTop_toTopOf="@id/lao_detail_title"
+          android:contentDescription="@string/qr_code_description" />
 
         <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/event_list"
@@ -97,7 +100,8 @@
         android:layout_marginEnd="@dimen/fab_margin_end"
         android:src="@drawable/ic_plus"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/add_event_description" />
 
       <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_election"
@@ -114,7 +118,8 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
-        app:layout_constraintBottom_toTopOf="@id/add_event" />
+        app:layout_constraintBottom_toTopOf="@id/add_event"
+        android:contentDescription="@string/add_election_description" />
 
       <TextView
         android:id="@+id/add_election_text"
@@ -146,7 +151,8 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/add_event"
         app:layout_constraintEnd_toEndOf="@id/add_event"
-        app:layout_constraintBottom_toTopOf="@id/add_election" />
+        app:layout_constraintBottom_toTopOf="@id/add_election"
+        android:contentDescription="@string/add_rc_description" />
 
       <TextView
         android:id="@+id/add_roll_call_text"

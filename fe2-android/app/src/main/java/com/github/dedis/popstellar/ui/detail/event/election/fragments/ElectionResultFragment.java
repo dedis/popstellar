@@ -22,8 +22,6 @@ import me.relex.circleindicator.CircleIndicator3;
 @AndroidEntryPoint
 public class ElectionResultFragment extends Fragment {
 
-  private LaoDetailViewModel mLaoDetailViewModel;
-
   public ElectionResultFragment() {
     // Required empty public constructor
   }
@@ -38,7 +36,7 @@ public class ElectionResultFragment extends Fragment {
     // Inflate the layout for this fragment
     ElectionResultFragmentBinding mElectionResultFragBinding =
         ElectionResultFragmentBinding.inflate(inflater, container, false);
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     TextView laoNameView = mElectionResultFragBinding.electionResultLaoName;
     TextView electionNameView = mElectionResultFragBinding.electionResultPresentationTitle;

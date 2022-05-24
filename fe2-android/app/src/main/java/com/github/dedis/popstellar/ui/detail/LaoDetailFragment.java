@@ -99,9 +99,7 @@ public class LaoDetailFragment extends Fragment {
       };
 
   private View.OnClickListener addEventLister(EventType type) {
-    return v -> {
-      mLaoDetailViewModel.chooseEventType(type);
-    };
+    return v -> mLaoDetailViewModel.chooseEventType(type);
   }
 
   @Override

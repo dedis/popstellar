@@ -26,21 +26,21 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;
   private final LifecycleOwner lifecycleOwner;
-  private final HashMap<EventCategory, List<Event>> eventsMap;
-  private static final boolean[] expanded = new boolean[3];
+  private final EnumMap<EventCategory, List<Event>> eventsMap;
+  private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
       List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
-    this.eventsMap = new HashMap<>();
+    this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
     this.eventsMap.put(FUTURE, new ArrayList<>());
@@ -98,7 +98,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    //    holder.setIsRecyclable(false);
     if (holder instanceof HeaderViewHolder) {
       EventCategory eventCategory = getHeaderCategory(position);
       HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -177,10 +176,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       }
       eventAccumulator += nbrOfFutureEvents;
     }
-    if (expanded[PAST.ordinal()]) {
-      if (position <= nbrOfPastEvents + eventAccumulator + 2) {
-        return eventsMap.get(PAST).get(position - eventAccumulator - 3);
-      }
+    if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 2) {
+      return eventsMap.get(PAST).get(position - eventAccumulator - 3);
     }
     return null;
   }

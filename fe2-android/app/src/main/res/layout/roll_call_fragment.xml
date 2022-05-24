@@ -32,7 +32,8 @@
     android:src="@drawable/ic_lock"
     app:layout_constraintBottom_toBottomOf="@id/roll_call_fragment_status"
     app:layout_constraintEnd_toStartOf="@id/roll_call_fragment_status"
-    app:layout_constraintTop_toTopOf="@id/roll_call_fragment_status" />
+    app:layout_constraintTop_toTopOf="@id/roll_call_fragment_status"
+    android:contentDescription="@string/status_icon_description" />
 
   <ImageView
     android:id="@+id/start_time_icon"
@@ -41,7 +42,8 @@
     android:layout_marginTop="@dimen/clock_icon_margin_top"
     android:src="@drawable/ic_time"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/roll_call_fragment_status" />
+    app:layout_constraintTop_toBottomOf="@id/roll_call_fragment_status"
+    android:contentDescription="@string/time_icon_description" />
 
   <TextView
     android:id="@+id/roll_call_fragment_start_time_title"
@@ -70,7 +72,8 @@
     android:layout_marginTop="@dimen/in_between_clocks_icon_margin_top"
     android:src="@drawable/ic_time"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/start_time_icon" />
+    app:layout_constraintTop_toBottomOf="@id/start_time_icon"
+    android:contentDescription="@string/time_icon_description" />
 
   <TextView
     android:id="@+id/roll_call_fragment_end_time_title"
@@ -98,7 +101,8 @@
     app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/roll_call_fragment_end_time" />
+    app:layout_constraintTop_toBottomOf="@+id/roll_call_fragment_end_time"
+    android:contentDescription="@string/rc_qr_description" />
 
   <Button
     android:id="@+id/roll_call_management_button"

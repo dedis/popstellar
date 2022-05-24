@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
   public static final String TAG = RollCallFragment.class.getSimpleName();
-  protected final SimpleDateFormat DATE_FORMAT =
+  private final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private RollCall rollCall;
@@ -92,17 +92,17 @@ public class RollCallFragment extends Fragment {
             case OPENED:
               // will add the scan to this fragment in the future
               laoDetailViewModel.closeRollCall();
+            case RESULTS_READY:
+              throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
           }
         };
 
     managementButton.setOnClickListener(listener);
+
     rollCall
         .getState()
-        .observe(
-            getViewLifecycleOwner(),
-            eventState -> {
-              setUpStateDependantContent();
-            });
+        .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
+
     ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     if (pk != null) {
       Log.d(TAG, "key displayed is " + pk.getEncoded());

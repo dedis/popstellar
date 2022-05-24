@@ -3,12 +3,6 @@
 
   <!-- Tabs -->
   <dimen name="guideline_horizontal_tab">0.08</dimen>
-  <dimen name="guideline_horizontal_bottom">0.92</dimen>
-  <dimen name="guideline_vertical_tab_home">0.20</dimen>
-  <dimen name="guideline_vertical_tab_connect">0.40</dimen>
-  <dimen name="guideline_vertical_tab_wallet">0.60</dimen>
-  <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
-  <dimen name="guideline_vertical_tab_digital_cash">0.80</dimen>
 
   <!-- Text -->
   <dimen name="margin_text">28dp</dimen>
@@ -19,18 +13,11 @@
   <dimen name="size_body">18sp</dimen>
   <dimen name="size_small">12sp</dimen>
   <dimen name="tab_lao_detail">13sp</dimen>
-  <dimen name="lao_name">36sp</dimen>
-  <dimen name="event_displayed_name">15sp</dimen>
-  <dimen name="date_text_event">15sp</dimen>
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
 
   <!-- Camera preview -->
   <dimen name="camera_preview_margin">20dp</dimen>
-  <dimen name="camera_preview_text_padding_top">50dp</dimen>
-  <dimen name="zero">0dp</dimen>
-  <dimen name="qr_rollcall_layout_width">400dp</dimen>
-  <dimen name="qr_rollcall_layout_height">600dp</dimen>
   <dimen name="qr_rollcall_img">320dp</dimen>
   <dimen name="margin_button">16dp</dimen>
   <dimen name="round_button_size">55dp</dimen>
@@ -47,22 +34,13 @@
   <!-- Button -->
   <dimen name="channel_qr_code_size">250dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
-  <dimen name="event_details_width">186dp</dimen>
   <dimen name="event_buttons_width">110dp</dimen>
 
   <!-- QR code -->
   <dimen name="event_buttons_height">43dp</dimen>
-  <dimen name="election_fragment_description_margin">140dp</dimen>
-  <dimen name="election_question_height">80dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
   <!-- Event -->
-  <dimen name="election_question_margin_top">10dp</dimen>
-  <dimen name="election_end_time_margin">90dp</dimen>
-  <dimen name="election_current_time_margin">127dp</dimen>
-  <dimen name="manage_election_scroll_view">50dp</dimen>
-  <dimen name="manage_election_linear_layout">275dp</dimen>
-  <dimen name="election_title_margin_start">15dp</dimen>
   <dimen name="election_setup_margin_text">16dp</dimen>
   <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
   <dimen name="election_setup_margin_top">16dp</dimen>

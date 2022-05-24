@@ -6,30 +6,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */
-public class WitnessListViewAdapter
-    extends RecyclerView.Adapter<WitnessListViewAdapter.WitnessViewHolder> {
-
-  private final LaoDetailViewModel viewModel;
+public class WitnessListAdapter extends RecyclerView.Adapter<WitnessListAdapter.WitnessViewHolder> {
 
   private List<PublicKey> witnesses;
 
-  private final LifecycleOwner lifecycleOwner;
-
-  public WitnessListViewAdapter(
-      List<PublicKey> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {
-    this.viewModel = viewModel;
+  public WitnessListAdapter(List<PublicKey> witness) {
     setList(witness);
-    lifecycleOwner = activity;
   }
 
   public void replaceList(List<PublicKey> witnesses) {
