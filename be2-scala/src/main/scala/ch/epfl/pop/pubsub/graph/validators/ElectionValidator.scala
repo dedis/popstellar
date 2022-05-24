@@ -132,20 +132,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
         val sender: PublicKey = message.sender
 
-        //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
-        def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
-          val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
-          val questionsId: List[Hash] = questions.map(_.id)
-
-          votes.forall( vote => vote.vote match {
-            case Some(v :: _ ) =>
-              questionsId.contains(vote.question) &&
-                v < q2Ballots(vote.question).size &&
-                vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
-            case _ => false
-          })
-        }
-
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (channel.extractChildChannel != data.election) {
@@ -168,6 +154,20 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+  }
+
+  //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
+  private def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
+    val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
+    val questionsId: List[Hash] = questions.map(_.id)
+
+    votes.forall( vote => vote.vote match {
+      case Some(v :: _ ) =>
+        questionsId.contains(vote.question) &&
+          v < q2Ballots(vote.question).size &&
+          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
+      case _ => false
+    })
   }
 
   private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =
