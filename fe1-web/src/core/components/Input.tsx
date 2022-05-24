@@ -6,6 +6,7 @@ import { Border, Color, Spacing, Typography } from 'core/styles';
 
 const styles = StyleSheet.create({
   input: {
+    flex: 1,
     backgroundColor: Color.contrast,
     borderRadius: Border.inputRadius,
     padding: Spacing.x05,

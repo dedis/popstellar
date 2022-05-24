@@ -1,20 +1,24 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
   ConfirmModal,
   DatePicker,
   DismissModal,
-  ParagraphBlock,
-  TextBlock,
-  TextInputLine,
   TextInputList,
   Button,
+  Input,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { onConfirmEventCreation } from 'core/functions/UI';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -29,13 +33,19 @@ const DEFAULT_ELECTION_DURATION = 3600;
 // for now only plurality voting is supported (2022-03-16, Tyratox)
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_creation_election>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 /**
  * UI to create an Election Event
  */
-
-const CreateElection = ({ route }: any) => {
-  const styles = route.params;
-  const navigation = useNavigation();
+const CreateElection = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -58,24 +68,25 @@ const CreateElection = ({ route }: any) => {
     const endDate = endTime.toDate();
 
     return (
-      <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
-          <ParagraphBlock text={STRINGS.election_create_start_time} />
-          <DatePicker
-            selected={startDate}
-            onChange={(date: Date) =>
-              onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_ELECTION_DURATION)
-            }
-          />
-        </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
-          <ParagraphBlock text={STRINGS.election_create_finish_time} />
-          <DatePicker
-            selected={endDate}
-            onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
-          />
-        </View>
-      </View>
+      <>
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.election_create_start_time}
+        </Text>
+        <DatePicker
+          selected={startDate}
+          onChange={(date: Date) =>
+            onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_ELECTION_DURATION)
+          }
+        />
+
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.election_create_finish_time}
+        </Text>
+        <DatePicker
+          selected={endDate}
+          onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
+        />
+      </>
     );
   };
 
@@ -110,7 +121,6 @@ const CreateElection = ({ route }: any) => {
       time,
     )
       .then(() => {
-        // @ts-ignore
         navigation.navigate(STRINGS.navigation_lao_events_home);
       })
       .catch((err) => {
@@ -124,27 +134,37 @@ const CreateElection = ({ route }: any) => {
   };
 
   return (
-    <ScrollView>
-      <TextBlock text={STRINGS.election_create_setup} bold />
-      <TextInputLine
-        placeholder={STRINGS.election_create_name}
-        onChangeText={(text: string) => {
-          setElectionName(text);
-        }}
+    <ScreenWrapper>
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.election_create_setup}
+      </Text>
+      <Input
+        value={electionName}
+        onChange={setElectionName}
+        placeholder={STRINGS.election_create_setup}
       />
+
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
       {questions.map((value, idx) => (
         <View key={idx.toString()}>
-          <TextInputLine
-            placeholder={STRINGS.election_create_question}
-            onChangeText={(text: string) =>
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.election_create_question} {idx + 1}
+          </Text>
+          <Input
+            value={questions[idx].question}
+            onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
               )
             }
+            placeholder={STRINGS.election_create_question_placeholder}
           />
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.election_create_ballot_options}
+          </Text>
           <TextInputList
+            placeholder={STRINGS.election_create_option_placeholder}
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
@@ -156,33 +176,27 @@ const CreateElection = ({ route }: any) => {
         </View>
       ))}
 
-      <View style={[styles.view, { zIndex: 'initial' }]}>
-        <Button onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            Add Question
-          </Text>
-        </Button>
-        <Button onPress={navigation.goBack}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_cancel}
-          </Text>
-        </Button>
-        <Button
-          onPress={() =>
-            onConfirmEventCreation(
-              startTime,
-              endTime,
-              createElection,
-              setModalStartIsVisible,
-              setModalEndIsVisible,
-            )
-          }
-          disabled={!buttonsVisibility}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_confirm}
-          </Text>
-        </Button>
-      </View>
+      <Button onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.election_create_add_question}
+        </Text>
+      </Button>
+
+      <Button
+        onPress={() =>
+          onConfirmEventCreation(
+            startTime,
+            endTime,
+            createElection,
+            setModalStartIsVisible,
+            setModalEndIsVisible,
+          )
+        }
+        disabled={!buttonsVisibility}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.general_button_confirm}
+        </Text>
+      </Button>
 
       <DismissModal
         visibility={modalEndIsVisible}
@@ -199,7 +213,7 @@ const CreateElection = ({ route }: any) => {
         buttonConfirmText={STRINGS.modal_button_start_now}
         buttonCancelText={STRINGS.modal_button_go_back}
       />
-    </ScrollView>
+    </ScreenWrapper>
   );
 };
 

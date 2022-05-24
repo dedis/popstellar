@@ -169,10 +169,16 @@ namespace STRINGS {
   export const election_create_name = 'Name*';
   export const election_create_start_time = 'Start time';
   export const election_create_finish_time = 'End time';
-  export const election_create_question = 'Question*';
+  export const election_create_question = 'Question';
+  export const election_create_question_placeholder = 'What is your favorite color?';
+  export const election_create_option_placeholder = 'Blue';
+
+  export const election_create_add_question = 'Add Question';
+
+  export const election_create_ballot_options = 'Ballot Options';
+
   export const election_create_voting_method = 'Voting method';
   export const election_create_ballot_option = 'Option';
-  export const election_create_ballot_options = 'Ballot Options';
   export const election_voting_method = 'Voting Method';
   export const election_method_Plurality = 'Plurality';
   export const election_method_Approval = 'Approval';
