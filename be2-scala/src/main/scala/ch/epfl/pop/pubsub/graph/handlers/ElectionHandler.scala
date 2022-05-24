@@ -14,7 +14,7 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
-import ch.epfl.pop.model.objects.ElectionChannel.ElectionChannel
+import ch.epfl.pop.model.objects.ElectionChannel._
 
 /**
  * ElectionHandler object uses the db instance from the MessageHandler

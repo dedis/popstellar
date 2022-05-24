@@ -6,14 +6,14 @@ import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, SetupElection}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.{DbActorReadAck, DbActorReadChannelDataAck}
+import ch.epfl.pop.storage.DbActor.DbActorReadAck
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 object ElectionChannel {
-  implicit class ElectionChannel(channel: Channel) extends AskPatternConstants {
+  implicit class ElectionChannelExtensionMethods(channel: Channel) extends AskPatternConstants {
 
     /**
      *
