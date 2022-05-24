@@ -33,12 +33,9 @@ Feature: Roll Call Open
           "action": "open",
           "update_id": '#(getRollCallOpenValidUpdateId)',
           "opens": '#(getRollCallOpenValidId)',
-          "opened_at": 1633099127
+          "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
-    * karate.log("------------4444444444444444------------------------")
-    * karate.log(validOpenRollCall)
-    * karate.log("------------4444444444444444------------------------")
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains VALID_MESSAGE
@@ -55,7 +52,7 @@ Feature: Roll Call Open
           "action": "open",
           "update_id": '#(getRollCallOpenValidUpdateId)',
           "opens": '#(getRollCallOpenValidId)',
-          "opened_at": 1633099127
+          "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
@@ -74,7 +71,7 @@ Feature: Roll Call Open
           "action": "open",
           "update_id": '#(getRollCallOpenInvalidUpdateId)',
           "opens": '#(getRollCallOpenValidId)',
-          "opened_at": 1633099127
+          "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
@@ -92,7 +89,7 @@ Feature: Roll Call Open
           "action": "open",
           "update_id": '#(getRollCallOpenInvalidUpdateId)',
           "opens": '#(getRollCallOpenValidId)',
-          "opened_at": 1633099127
+          "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
     When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)

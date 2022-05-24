@@ -106,7 +106,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCa
 		rollCallCreate.Name,
 	)
 	if rollCallCreate.ID != expectedID {
-		return xerrors.Errorf("%s|roll call id is %s, should be %s", strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""), rollCallCreate.ID, expectedID)
+		return xerrors.Errorf("roll call id is %s, should be %s", rollCallCreate.ID, expectedID)
 	}
 
 	// verify creation is positive

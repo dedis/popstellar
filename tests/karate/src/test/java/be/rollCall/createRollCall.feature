@@ -45,7 +45,6 @@ Feature: Create a Roll Call
   # an empty roll call name should result in an error message from the backend.
   Scenario: Roll Call Creation with empty name should return an error code
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    * def rollCallEmptyName = ""
     And def validCreateRollCall =
       """
         {
@@ -142,7 +141,6 @@ Feature: Create a Roll Call
   # a negative creation time should result in an error message from the backend.
   Scenario: Roll Call Creation with creation time is negative should return an error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    * def creationTimeNegative = -153
     And def validCreateRollCall =
       """
         {
