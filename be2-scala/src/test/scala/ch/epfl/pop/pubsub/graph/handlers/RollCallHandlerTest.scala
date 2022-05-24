@@ -82,7 +82,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
-  test("CreateRollCall should succeed if the roll call doesn't already exists in database") {
+  test("CreateRollCall should succeed if the roll call doesn't already exist in the database") {
     val mockedDB = mockDbRollCallNotCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall

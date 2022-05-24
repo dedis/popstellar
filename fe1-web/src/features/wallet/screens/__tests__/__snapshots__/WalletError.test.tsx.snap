@@ -393,7 +393,7 @@ exports[`Wallet error screen renders correctly 1`] = `
                                   ]
                                 }
                               >
-                                BACK TO WALLET HOME
+                                BACK TO WALLET SETUP
                               </Text>
                             </View>
                           </View>

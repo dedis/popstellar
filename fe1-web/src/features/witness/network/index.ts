@@ -21,5 +21,11 @@ export const configureNetwork = (config: WitnessConfiguration) => {
 
   // listen for new processable messages
   const store = getStore();
-  store.subscribe(makeWitnessStoreWatcher(store, afterMessageProcessingHandler(config.enabled)));
+  store.subscribe(
+    makeWitnessStoreWatcher(
+      store,
+      config.getCurrentLaoId,
+      afterMessageProcessingHandler(config.enabled, config.addNotification, config.getCurrentLao),
+    ),
+  );
 };

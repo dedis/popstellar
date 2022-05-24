@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.xs,
   } as TextStyle,
   textBold: {
-    ...Typography.important,
+    ...Typography.importantCentered,
   } as TextStyle,
 });
 

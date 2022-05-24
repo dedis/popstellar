@@ -59,7 +59,7 @@ const registeredVote: RegisteredVote = {
 };
 
 const questionResult: QuestionResult = {
-  id: '',
+  id: mockQuestionId.toString(),
   result: [
     { ballotOption: mockBallotOptions[0], count: 10 },
     { ballotOption: mockBallotOptions[1], count: 3 },

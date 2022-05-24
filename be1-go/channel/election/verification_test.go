@@ -156,8 +156,6 @@ func TestVerify_CastVote(t *testing.T) {
 	t.Run("lao id invalid hash", getTestBadExample("bad_vote_cast_vote_lao_invalid_hash.json"))
 	t.Run("election id invalid hash", getTestBadExample("bad_vote_cast_vote_election_invalid_hash.json"))
 	t.Run("created at negative", getTestBadExample("bad_vote_cast_vote_created_at_negative.json"))
-	t.Run("created at before start", getTestBadExample("bad_vote_cast_vote_created_at_before_start.json"))
-	t.Run("created at after end", getTestBadExample("bad_vote_cast_vote_created_at_after_end.json"))
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {
@@ -288,4 +286,11 @@ func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	// send election end to the channel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
+}
+
+func Test_Array_To_String(t *testing.T) {
+	a := []int{0, 1, 3, 5, 7, 9, 0}
+
+	require.Equal(t, "0,1,3,5,7,9,0", arrayToString(a, ","))
+	require.Equal(t, "0.1.3.5.7.9.0", arrayToString(a, "."))
 }

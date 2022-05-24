@@ -1,7 +1,12 @@
 import { Channel, channelFromIds, Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
-import { selectCurrentLao, selectCurrentLaoId, selectIsLaoWitness } from '../reducer';
+import {
+  selectCurrentLao,
+  selectCurrentLaoId,
+  selectIsLaoWitness,
+  getLaoById as getLaoByIdFromState,
+} from '../reducer';
 
 /**
  * Returns the current lao and throws an error if there is none
@@ -16,6 +21,12 @@ export const getCurrentLao = () => {
 
   return currentLao;
 };
+
+/**
+ * Returns the current lao and throws an error if there is none
+ * @returns The current lao
+ */
+export const getLaoById = (laoId: string) => getLaoByIdFromState(laoId, getStore().getState());
 
 /**
  * Returns the current lao id or undefined if there is none

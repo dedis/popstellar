@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   } as ViewStyle,
   textInput: {
-    ...Typography.base,
+    ...Typography.baseCentered,
     height: 40,
     margin: 12,
     borderWidth: 1,
