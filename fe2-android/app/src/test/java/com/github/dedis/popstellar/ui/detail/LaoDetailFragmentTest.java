@@ -9,6 +9,7 @@ import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageO
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addElectionButton;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addElectionText;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addEventButton;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addRollCallButton;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addRollCallText;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.connectQrCode;
@@ -26,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -83,6 +85,8 @@ public class LaoDetailFragmentTest {
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
 
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
+
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
 
@@ -99,6 +103,8 @@ public class LaoDetailFragmentTest {
               .thenReturn(BehaviorSubject.createDefault(LAO));
           when(repository.getAllLaos())
               .thenReturn(BehaviorSubject.createDefault(Arrays.asList(LAO)));
+
+          when(keyManager.getMainPublicKey()).thenReturn(PK);
         }
       };
 
@@ -128,11 +134,11 @@ public class LaoDetailFragmentTest {
     connectQrCode().check(matches(withQrCode(expectedQRCode)));
   }
 
-  //  @Test
-  //  public void addEventButtonIsDisplayedForOrganizer(){
-  //    when(keyManager.getMainPublicKey()).thenReturn(PK);
-  //    addEventButton().check(matches(isDisplayed()));
-  //  }
+  @Test
+  public void addEventButtonIsDisplayedForOrganizer() {
+    when(keyManager.getMainPublicKey()).thenReturn(PK);
+    addEventButton().check(matches(isDisplayed()));
+  }
 
   @Test
   public void addRCAndElectionButtonsAndTextsAreNotDisplayed() {
@@ -142,14 +148,14 @@ public class LaoDetailFragmentTest {
     addRollCallText().check(matches(not(isDisplayed())));
   }
 
-  //  @Test
-  //  public void addRCAndElectionButtonsAndTextsAreDisplayedWhenAddIsClicked(){
-  //    addEventButton().perform(click());
-  //    addElectionButton().check(matches(isDisplayed()));
-  //    addRollCallButton().check(matches(isDisplayed()));
-  //    addElectionText().check(matches(isDisplayed()));
-  //    addRollCallText().check(matches(isDisplayed()));
-  //  }
+  @Test
+  public void addRCAndElectionButtonsAndTextsAreDisplayedWhenAddIsClicked() {
+    addEventButton().perform(click());
+    addElectionButton().check(matches(isDisplayed()));
+    addRollCallButton().check(matches(isDisplayed()));
+    addElectionText().check(matches(isDisplayed()));
+    addRollCallText().check(matches(isDisplayed()));
+  }
 
   public void EventListIsDisplayed() {
     eventList().check(matches(isDisplayed()));
