@@ -111,31 +111,30 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       castsVotesElections = votesList.map(_._2)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      resultsTable = mutable.HashMap.from(for {
+    } yield {
+      val resultsTable = mutable.HashMap.from(for {
         (question, ballots) <- questionToBallots
       } yield question -> ballots.map(_ -> 0).toMap)
-      castVoteElection <- Future.traverse(castsVotesElections) { castVoteElection => {
-        for {
-          voteElection <- castVoteElection.votes
-          _ = voteElection.vote match {
-            case Some(List(index)) =>
-              val question = voteElection.question
-              val ballots = questionToBallots(question).toArray
-              val ballot = ballots.apply(index)
-              val questionResult = resultsTable(question)
-              resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
-            case _ =>
-          }
-        } {}
-        Future(Success(()))
+      for {
+        castVoteElection <- castsVotesElections
+        voteElection <- castVoteElection.votes
+      } {
+        voteElection.vote match {
+          case Some(List(index)) =>
+            val question = voteElection.question
+            val ballots = questionToBallots(question).toArray
+            val ballot = ballots.apply(index)
+            val questionResult = resultsTable(question)
+            resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
+          case _ =>
+        }
       }
-      }
-      results = resultsTable.map(tuple => {
-        val (qid, ballotToCount) = tuple
-        // build ElectionBallotVotes objects
-        val electionBallotVotes = ballotToCount.map(tuple => ElectionBallotVotes(tuple._1, tuple._2))
-        ElectionQuestionResult(qid, electionBallotVotes.toList)
-      })
-    } yield results.toList
+      List.from(for {
+        (qid, ballotToCount) <- resultsTable
+        electionBallotVotes = List.from(for {
+          (ballot, count) <- ballotToCount
+        } yield ElectionBallotVotes(ballot, count))
+      } yield ElectionQuestionResult(qid, electionBallotVotes))
+    }
   }
 }
