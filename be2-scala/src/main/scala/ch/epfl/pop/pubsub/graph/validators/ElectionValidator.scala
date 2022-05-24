@@ -6,10 +6,12 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.ElectionHelper.{getAllMessage, getLastVotes, getSetupMessage}
+import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+
+import scala.concurrent.Await
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -88,7 +90,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId: Hash = channel.extractChildChannel
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
@@ -107,6 +109,17 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+  private def allVoteHaveValidIndex(votes:List[VoteElection], q2ballots:Map[Hash, List[String]]) =
+    votes.forall(
+      voteElection => {
+        val vote = voteElection.vote match {
+          case Some(v :: _) => v
+          case _ => -1
+        }
+        // check if the ballot is available
+        vote < q2ballots(voteElection.question).size
+      }
+    )
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
@@ -116,7 +129,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
 
         val channel: Channel = rpcMessage.getParamsChannel
-        val questions = getSetupMessage(channel, dbActorRef).questions
+        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
         val sender: PublicKey = message.sender
 
         //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
@@ -158,13 +171,13 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =
-    getAllMessage[OpenElection](electionChannel, dbActorRef) match {
+    Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
       case _ => None
     }
 
   private def getEndMessage(electionChannel: Channel): Option[EndElection] =
-    getAllMessage[EndElection](electionChannel, dbActorRef) match {
+    Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
       case _ => None
     }
@@ -187,11 +200,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
 
-        //checks if the registered votes hash is valid
-        def validateRegisteredVotes(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
-          Hash.fromStrings(castVotes.sortBy(_._1.message_id.toString.toLowerCase).flatMap(_._2.votes).map(_.id.toString): _*) == checkHash
-        }
-
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         else if (channel.extractChildChannel != data.election)
@@ -202,12 +210,24 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"invalid sender $sender"))
         else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!validateRegisteredVotes(getLastVotes(channel, dbActorRef), data.registered_votes))
+        else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes))
           Right(validationError(s"Incorrect verification hash"))
         else
           Left(rpcMessage)
-
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+  }
+
+  /**
+   *
+   * @param castVotes List of pairs of messages and castVote data
+   * @param checkHash The hash of the concatenated votes (i.e. registered_votes)
+   * @return True if the hashes are the same, false otherwise
+   */
+  private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
+    val sortedCastVotes: List[CastVoteElection] = castVotes.sortBy(_._1.message_id.toString.toLowerCase).map(_._2)
+    val voteElections: List[VoteElection] = sortedCastVotes.flatMap(_.votes)
+    val computedHash = Hash.fromStrings(voteElections.map(_.id.toString): _*)
+    computedHash == checkHash
   }
 }

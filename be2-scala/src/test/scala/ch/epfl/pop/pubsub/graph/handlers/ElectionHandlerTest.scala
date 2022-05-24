@@ -88,37 +88,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
   }
 
-  def mockDbWithAckButNAckLaoData: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAck()
-
-        case DbActor.ReadLaoData(_) =>
-          system.log.info("Responding with a NAck")
-          sender() ! Status.Failure(DbActorNAckException(1, "error"))
-
-        case DbActor.ReadChannelData(_) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
-
-        case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
-
-        case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
-      }
-    })
-    system.actorOf(dbActorMock, "MockedDB-NACK-ReadLaoData-EndElection")
-  }
 
   def mockDbWithAckEndElection: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -156,18 +125,14 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.ReadLaoData(_) | DbActor.ReadChannelData(_) =>
           system.log.info(f"Received a message")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
 
-        case DbActor.ReadLaoData(_) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
-
-        case DbActor.ReadChannelData(_) =>
-          system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+        case DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info("Responding with an Ack")
+          sender() ! DbActor.DbActorAck()
 
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           system.log.info("Responding with a Ack")
@@ -272,16 +237,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val request = EndElectionMessages.endElection
 
     rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
-
-    system.stop(mockedDB.actorRef)
-  }
-
-  test("EndElection should fail if the database fails to retrieve messages in the lao") {
-    val mockedDB = mockDbWithAckButNAckLaoData
-    val rc = new ElectionHandler(mockedDB)
-    val request = EndElectionMessages.endElection
-
-    rc.handleEndElection(request) shouldBe an[Right[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
