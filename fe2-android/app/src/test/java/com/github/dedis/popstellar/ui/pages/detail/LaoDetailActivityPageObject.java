@@ -46,6 +46,16 @@ public class LaoDetailActivityPageObject {
     return R.id.fragment_witnessing;
   }
 
+  @IdRes
+  public static int castVoteFragmentId() {
+    return R.id.fragment_cast_vote;
+  }
+
+  @IdRes
+  public static int resultFragmentId() {
+    return R.id.fragment_election_result;
+  }
+
   public static int containerId() {
     return R.id.fragment_container_lao_detail;
   }
