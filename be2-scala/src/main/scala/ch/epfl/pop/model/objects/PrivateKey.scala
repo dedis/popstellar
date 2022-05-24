@@ -17,7 +17,7 @@ final case class PrivateKey(base64Data: Base64Data) {
     if (in_byte_message.length != MESSAGE_BYTE_SIZE) throw new IllegalArgumentException("Your message to decrypt should contain exactly 64 bytes")
     val Kbytes = new Array[Byte](HALF_MESSAGE_BYTE_SIZE)
     val Cbytes = new Array[Byte](HALF_MESSAGE_BYTE_SIZE)
-    for (i <- 0 until MESSAGE_BYTE_SIZE -1 )
+    for (i <- 0 until MESSAGE_BYTE_SIZE )
     {
       if (i < HALF_MESSAGE_BYTE_SIZE) Kbytes(i) = in_byte_message(i)
       else Cbytes(i-HALF_MESSAGE_BYTE_SIZE) = in_byte_message(i)
