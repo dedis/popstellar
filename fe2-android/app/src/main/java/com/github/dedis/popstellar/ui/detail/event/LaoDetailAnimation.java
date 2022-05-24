@@ -61,7 +61,7 @@ public class LaoDetailAnimation {
 
           @Override
           public void onAnimationStart(Animation animation) {
-            // not needed
+            // Do nothing
           }
 
           @Override
@@ -71,7 +71,7 @@ public class LaoDetailAnimation {
 
           @Override
           public void onAnimationRepeat(Animation animation) {
-            // not needed
+            // do nothing
           }
         });
     v.startAnimation(animation);
@@ -84,7 +84,9 @@ public class LaoDetailAnimation {
     animation.setAnimationListener(
         new Animation.AnimationListener() {
           @Override
-          public void onAnimationStart(Animation animation) {}
+          public void onAnimationStart(Animation animation) {
+            // do nothing
+          }
 
           @Override
           public void onAnimationEnd(Animation animation) {
@@ -92,7 +94,9 @@ public class LaoDetailAnimation {
           }
 
           @Override
-          public void onAnimationRepeat(Animation animation) {}
+          public void onAnimationRepeat(Animation animation) {
+            // do nothing
+          }
         });
     v.startAnimation(animation);
   }
