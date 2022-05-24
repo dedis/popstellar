@@ -190,11 +190,14 @@ namespace STRINGS {
   export const cast_vote = 'Cast Vote';
 
   /* --- Roll-call creation Strings --- */
-  export const roll_call_create_proposed_start = 'Proposed Start:';
-  export const roll_call_create_proposed_end = 'Proposed End:';
+  export const roll_call_create_proposed_start = 'Proposed Start';
+  export const roll_call_create_proposed_end = 'Proposed End';
+  export const roll_call_create_name = 'Name';
+  export const roll_call_create_name_placeholder = 'Real Life Captcha';
+  export const roll_call_create_location = 'Location';
+  export const roll_call_create_location_placeholder = 'BC410';
   export const roll_call_create_description = 'Description';
-  export const roll_call_create_location = 'Location*';
-  export const roll_call_create_name = 'Name*';
+  export const roll_call_create_description_placeholder = 'Are you a robot?';
 
   /* --- Roll-call open page Strings --- */
   export const roll_call_open = 'Open Roll-Call';
