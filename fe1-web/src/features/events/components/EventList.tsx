@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';

@@ -1,5 +1,3 @@
-import 'react-datepicker/dist/react-datepicker.css';
-
 import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -18,7 +16,7 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
@@ -31,10 +29,7 @@ import { requestCreateRollCall } from '../network';
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<
-    LaoEventsParamList,
-    typeof STRINGS.navigation_lao_events_creation_roll_call
-  >,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_creation_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>

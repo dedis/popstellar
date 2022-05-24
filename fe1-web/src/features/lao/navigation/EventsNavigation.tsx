@@ -2,7 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 

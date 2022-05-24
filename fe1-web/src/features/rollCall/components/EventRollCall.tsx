@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import { QRCode, Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';

@@ -2,7 +2,7 @@ import { NavigatorScreenParams } from '@react-navigation/core';
 
 import STRINGS from 'resources/strings';
 
-import { LaoEventsParamList } from './LaoOrganizerParamList';
+import { LaoEventsParamList } from './LaoEventsParamList';
 import { NotificationParamList } from './NotificationParamList';
 import { SocialParamList } from './SocialParamList';
 import { WalletParamList } from './WalletParamList';

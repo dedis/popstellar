@@ -1,5 +1,3 @@
-import 'react-datepicker/dist/react-datepicker.css';
-
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';

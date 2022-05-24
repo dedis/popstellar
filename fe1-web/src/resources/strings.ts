@@ -223,10 +223,12 @@ namespace STRINGS {
   export const poll_create_answer_type_one_of_n = 'Choose one of n';
 
   /* --- Meeting creation Strings --- */
-  export const meeting_create_name = 'Name*';
-  export const meeting_create_start_time = 'Start time:';
-  export const meeting_create_finish_time = 'End time:';
+  export const meeting_create_name = 'Name';
+  export const meeting_create_name_placeholder = 'Global PoP Meeting';
+  export const meeting_create_start_time = 'Start time';
+  export const meeting_create_finish_time = 'End time';
   export const meeting_create_location = 'Location';
+  export const meeting_create_location_placeholder = 'BC410';
 
   /* --- Events Feature Strings --- */
   export const events_create_event = 'Create';
@@ -288,6 +290,7 @@ namespace STRINGS {
 
   /* --- Meeting Feature Strings --- */
   export const meeting_event_name = 'Meeting';
+  export const meeting_create_meeting = 'Create meeting';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

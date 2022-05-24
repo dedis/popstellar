@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { LaoEventsParamList } from 'core/navigation/typing/LaoOrganizerParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 
 export namespace LaoFeature {
