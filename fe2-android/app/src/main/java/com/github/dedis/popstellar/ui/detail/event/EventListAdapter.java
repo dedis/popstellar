@@ -55,7 +55,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   /**
    * A helper method that places the events in the correct key-value pair according to state
    *
-   * @param events
+   * @param events the events to sort by state
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
@@ -93,7 +93,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
           LayoutInflater.from(parent.getContext()).inflate(R.layout.event_layout, parent, false);
       return new EventViewHolder(view);
     }
-    return null;
+    throw new IllegalStateException("Illegal view type");
   }
 
   @Override
