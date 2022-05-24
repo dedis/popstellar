@@ -22,7 +22,7 @@ export class Hash extends Base64UrlData {
   public static fromStringArray(...data: string[]): Hash {
     const str = data.map((item) => Hash.computeByteLength(item) + item).join('');
 
-    return this.fromString(str);
+    return Hash.fromString(str);
   }
 
   /**
@@ -37,7 +37,7 @@ export class Hash extends Base64UrlData {
     const bString = hash.update(data).array();
     const str = String.fromCharCode(...bString);
 
-    return Base64UrlData.encode(str, 'binary');
+    return new Hash(Base64UrlData.encode(str, 'binary').valueOf());
   }
 
   public equals(o: Hash): boolean {

@@ -20,7 +20,7 @@ export const handleWitnessMessage =
     const makeErr = (err: string) => `message/witness was not processed: ${err}`;
 
     const lao = getCurrentLao();
-    if (lao.id.valueOf() !== msg.laoId.valueOf()) {
+    if (msg.laoId && lao.id.valueOf() !== msg.laoId.valueOf()) {
       console.warn(
         makeErr(
           `lao id of the received message (${msg.laoId.valueOf()}) does not match the current lao id (${lao.id.valueOf()})`,

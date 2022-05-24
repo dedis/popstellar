@@ -48,7 +48,7 @@ export function generateToken(laoId: Hash, rollCallId: Hash | undefined): Promis
 /**
  * Retrieve the latest PoP token associated with the current LAO from the store.
  * @param getCurrentLao A function returning the current lao
- * @param getCurrentLao A function returning the current lao
+ * @param getRollCallById A function to get a roll call by its id
  * @remarks
  * Do not use it inside of a react component, this is meant to be used only where you
  * do not have access to reducers.
@@ -58,7 +58,7 @@ export function generateToken(laoId: Hash, rollCallId: Hash | undefined): Promis
 export const getCurrentPopTokenFromStore =
   (
     getCurrentLao: () => WalletFeature.Lao,
-    getEventById: (id: Hash) => WalletFeature.Event | undefined,
+    getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined,
   ) =>
   async (): Promise<PopToken> => {
     const lao = getCurrentLao();
@@ -68,10 +68,16 @@ export const getCurrentPopTokenFromStore =
       throw new Error('Cannot retrieve pop token: roll call id is undefined');
     }
 
-    const rollCall = getEventById(rollCallId) as WalletFeature.RollCall;
-    const token = await generateToken(lao.id, rollCallId);
-    if (rollCall.containsToken(token)) {
-      return token;
+    const rollCall = getRollCallById(rollCallId);
+    if (!rollCall) {
+      throw new Error(`Cannot retrieve pop token: did not find a roll call with id ${rollCallId}`);
     }
-    throw new Error('Cannot retrieve pop token: roll call does not contain this token');
+
+    const token = await generateToken(lao.id, rollCallId);
+
+    if (!rollCall.containsToken(token)) {
+      throw new Error('Cannot retrieve pop token: roll call does not contain this token');
+    }
+
+    return token;
   };
