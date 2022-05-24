@@ -155,7 +155,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
 
         case DbActor.Catchup(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorCatchupAck(messages)
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
     })
     system.actorOf(dbActorMock, "MockedDB-NACK-EndElection")

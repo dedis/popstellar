@@ -61,7 +61,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.LAO, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
   private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE))
   private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
-  private final val messages: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_WORKING, MESSAGE_OPEN_ELECTION_WORKING, MESSAGE_END_ELECTION_WORKING)
+  private final val messagesNotEnd: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_WORKING, MESSAGE_OPEN_ELECTION_WORKING)
+  private final val messages: List[Message] =  MESSAGE_END_ELECTION_WORKING :: messagesNotEnd
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -152,7 +153,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(messages)
+          sender() ! DbActor.DbActorCatchupAck(messagesNotEnd)
       }
     })
     system.actorOf(dbActorMock)
