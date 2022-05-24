@@ -57,7 +57,7 @@ export function configureFeatures() {
   const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
   const witnessConfiguration = witness.configure({
-    enabled: false,
+    enabled: true,
     messageRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,

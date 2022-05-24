@@ -85,7 +85,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
-        } else if (electionId !=  data.election) {
+        } else if (electionId != data.election) {
           Right(validationError("Unexpected election id"))
         } else if (laoId != data.lao) {
           Right(validationError("Unexpected lao id"))
