@@ -3,7 +3,7 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
@@ -123,3 +123,14 @@ export default {
 
 export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
+
+export const makeBalanceSelector = (laoId: Hash, rollCallId: Hash, publicKey: string) =>
+  createSelector(
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.byRCId,
+    (byRCId: Record<string, DigitalCashReducerState> | undefined) => {
+      if (byRCId && byRCId[rollCallId.valueOf()]) {
+        return byRCId[rollCallId.valueOf()].balances[Hash.fromString(publicKey).valueOf()] || 0;
+      }
+      return 0;
+    },
+  );

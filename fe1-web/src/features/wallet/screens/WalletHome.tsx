@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 
 import { QRCode, WideButtonView } from 'core/components';
@@ -15,7 +15,9 @@ import { requestCoinbaseTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
-import { DigitalCashStore } from '../store';
+import { useSelector } from "react-redux";
+import { DigitalCashLaoReducerState, getDigitalCashState, makeBalanceSelector } from "../reducer";
+import { makeRollCallSelector } from "../../rollCall/reducer";
 
 const styles = StyleSheet.create({
   homeContainer: {
@@ -55,6 +57,18 @@ const WalletHome = () => {
 
   const laoId = WalletHooks.useCurrentLaoId();
 
+  const balanceSelector = useMemo(() => {
+    if (!laoId || selectedTokenIndex === -1 || !tokens) {
+      return () => 0;
+    }
+    return makeBalanceSelector(
+      laoId,
+      tokens[selectedTokenIndex].rollCallId,
+      tokens[selectedTokenIndex].token.publicKey.valueOf(),
+    );
+  }, [tokens, laoId, selectedTokenIndex]);
+  const balance = useSelector(balanceSelector);
+
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
@@ -90,11 +104,6 @@ const WalletHome = () => {
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
       const selectedToken = tokens[selectedTokenIndex];
-      const balance = DigitalCashStore.getBalance(
-        selectedToken.laoId.valueOf(),
-        selectedToken.rollCallId.valueOf(),
-        selectedToken.token.publicKey.valueOf(),
-      );
       const rollCallName = `Roll Call name: ${selectedToken.rollCallName.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
