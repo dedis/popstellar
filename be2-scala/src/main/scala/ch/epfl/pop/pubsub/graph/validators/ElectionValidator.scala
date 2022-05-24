@@ -132,8 +132,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected election id"))
         } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
-        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
           //  check it the question id exists
         } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
           Right(validationError(s"Incorrect parameter questionId"))
