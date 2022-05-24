@@ -149,7 +149,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"This election has not started yet"))
         } else if (getEndMessage(channel).isDefined) {
           Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
+          //in case organizer is not int the attendees list, he still can cast a vote
+        } else if (!(validateOwner(message.sender, channel, dbActorRef) && validateAttendee(message.sender, channel, dbActorRef))) {
           Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
