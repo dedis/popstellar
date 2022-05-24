@@ -179,7 +179,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 2) {
       return eventsMap.get(PAST).get(position - eventAccumulator - 3);
     }
-    return null;
+    throw new IllegalStateException("no event matches");
   }
 
   private EventCategory getHeaderCategory(int position) {
