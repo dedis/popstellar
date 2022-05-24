@@ -389,63 +389,49 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Casting a vote with invalid Timestamp fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without valid PoP token fails") {
     val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid id fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_ID_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid lao id fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with wrong sender fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_OWNER_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_OWNER_RPC)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without Params does not work in validateCastVoteElection") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(RPC_NO_PARAMS)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateCastVoteElection(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
