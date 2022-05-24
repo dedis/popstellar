@@ -92,6 +92,7 @@ public class RollCallFragment extends Fragment {
             case OPENED:
               // will add the scan to this fragment in the future
               laoDetailViewModel.closeRollCall();
+              break;
             case RESULTS_READY:
               throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
           }
