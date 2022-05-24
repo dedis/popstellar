@@ -53,8 +53,7 @@ object ElectionChannel {
       extractMessages[CastVoteElection](dbActor).map{votes =>
         val attendeeIdToLastVote = mutable.Map[PublicKey, (Message, CastVoteElection)]()
         for ((message, castvote) <- votes) {
-          if (!attendeeIdToLastVote.contains(message.sender) ||
-            attendeeIdToLastVote(message.sender)._2.created_at < castvote.created_at) {
+          if (!attendeeIdToLastVote.contains(message.sender) || attendeeIdToLastVote(message.sender)._2.created_at < castvote.created_at) {
             attendeeIdToLastVote.update(message.sender, (message, castvote))
           }
         }

@@ -74,7 +74,6 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    // no need to propagate here, hence the use of dbAskWrite
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
