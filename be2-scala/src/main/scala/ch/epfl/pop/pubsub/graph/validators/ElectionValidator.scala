@@ -130,8 +130,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (channel.extractChildChannel != data.election) {
           Right(validationError("unexpected election id"))
-        } else if ((channel.decodeChannelLaoId getOrElse HASH_ERROR) != data.lao) {
+        } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
+        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
+          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
           //  check it the question id exists
         } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
           Right(validationError(s"Incorrect parameter questionId"))
@@ -184,7 +186,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
