@@ -45,8 +45,8 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   // FIXME: This is only set to ACTIVE for testing purposes of the witnessing feature
   [k(ROLL_CALL, CREATE), { type: WitnessingType.ACTIVE }],
   [k(ROLL_CALL, OPEN), { type: WitnessingType.ACTIVE }],
-  [k(ROLL_CALL, CLOSE), { type: WitnessingType.NO_WITNESSING }],
-  [k(ROLL_CALL, REOPEN), { type: WitnessingType.NO_WITNESSING }],
+  [k(ROLL_CALL, CLOSE), { type: WitnessingType.ACTIVE }],
+  [k(ROLL_CALL, REOPEN), { type: WitnessingType.ACTIVE }],
 
   // Election
   [k(ELECTION, SETUP), { type: WitnessingType.NO_WITNESSING }],
