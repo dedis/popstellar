@@ -1,11 +1,11 @@
 package ch.epfl.pop.model.objects
 
 import ch.epfl.dedis.lib.crypto.{Ed25519, Ed25519Point, Ed25519Scalar}
-import java.io.ByteArrayOutputStream
-import java.util.{Objects, Random}
+
+import java.util.Random
 
 final case class PublicKey(base64Data: Base64Data) {
-  val asPoint = new Ed25519Point(base64Data.decode())
+  private val asPoint = new Ed25519Point(base64Data.decode())
 
 
   def encrypt(messageB64: Base64Data): Base64Data = {
@@ -18,18 +18,7 @@ final case class PublicKey(base64Data: Base64Data) {
     val K = Ed25519Point.base.mul(k)
     val S = asPoint.mul(k)
     val C = S.add(M)
-    var result: Array[Byte] = null
-    try {
-      val output = new ByteArrayOutputStream
-      output.write(K.toBytes)
-      output.write(C.toBytes)
-      result = output.toByteArray
-    } catch {
-      case e: Exception =>
-        System.out.println("Something happened during the encryption, could concatenate the final result into a byte array")
-        result = null
-    }
-    if (Objects.isNull(result)) return null
+    val result: Array[Byte] = K.toBytes.concat(C.toBytes)
     Base64Data.encode(result)
   }
 

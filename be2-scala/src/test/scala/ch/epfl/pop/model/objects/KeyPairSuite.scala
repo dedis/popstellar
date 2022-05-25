@@ -7,6 +7,9 @@ class KeyPairSuite extends FunSuite with Matchers {
     val message = Base64Data.encode("Hello")
     val keypair = KeyPair()
     val encrypted = keypair.encrypt(message)
-    keypair.decrypt(encrypted) should equal(message)
+    val decrypted = keypair.decrypt(encrypted)
+    println(f"encrypted : ${encrypted.decodeToString()}")
+    println(f"decrypted : ${decrypted.decodeToString()}")
+    decrypted should equal(message)
   }
 }
