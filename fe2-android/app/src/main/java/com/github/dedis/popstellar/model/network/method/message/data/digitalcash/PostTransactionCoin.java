@@ -30,7 +30,7 @@ public class PostTransactionCoin extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(get_transaction_id(), get_transaction());
+    return java.util.Objects.hash(getTransactionId(), getTransaction());
   }
 
   @Override
@@ -52,11 +52,11 @@ public class PostTransactionCoin extends Data {
     return Action.POST_TRANSACTION.getAction();
   }
 
-  public Transaction get_transaction() {
+  public Transaction getTransaction() {
     return transaction;
   }
 
-  public String get_transaction_id() {
+  public String getTransactionId() {
     return transaction_id;
   }
 }

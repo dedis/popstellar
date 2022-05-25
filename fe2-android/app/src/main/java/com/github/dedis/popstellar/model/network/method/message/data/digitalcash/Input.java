@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-// "Object representing a transaction output to use as an input for this transaction"
+/**
+ * Object representing a transaction output to use as an input for this transaction
+ */
 public class Input {
   @SerializedName("tx_out_hash")
   private final String txOutHash; // Previous (to-be-used) transaction hash
@@ -13,28 +15,28 @@ public class Input {
   private final int txOutIndex; // index of the previous to-be-used transaction
 
   @SerializedName("script")
-  private Script_input script; // The script describing the unlock mechanism
+  private ScriptInput script; // The script describing the unlock mechanism
 
   /**
    * @param txOutHash Previous (to-be-used) transaction hash
    * @param txOutIndex index of the previous to-be-used transaction
    * @param script The script describing the unlock mechanism
    */
-  public Input(String txOutHash, int txOutIndex, Script_input script) {
+  public Input(String txOutHash, int txOutIndex, ScriptInput script) {
     this.script = script;
     this.txOutHash = txOutHash;
     this.txOutIndex = txOutIndex;
   }
 
-  public String get_tx_out_hash() {
+  public String getTxOutHash() {
     return txOutHash;
   }
 
-  public int get_tx_out_index() {
+  public int getTxOutIndex() {
     return txOutIndex;
   }
 
-  public Script_input get_script() {
+  public ScriptInput getScript() {
     return script;
   }
 
@@ -64,6 +66,6 @@ public class Input {
 
   @Override
   public int hashCode() {
-    return Objects.hash(get_tx_out_hash(), get_tx_out_index(), get_script());
+    return Objects.hash(getTxOutHash(), getTxOutIndex(), getScript());
   }
 }

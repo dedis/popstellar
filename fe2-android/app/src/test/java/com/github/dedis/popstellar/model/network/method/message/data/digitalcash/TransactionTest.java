@@ -18,13 +18,13 @@ public class TransactionTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
-  private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
   private static final int VALUE = 32;
   private static final String PUBKEYHASH = "2jmj7l5rSw0yVb-vlWAYkK-YBwk=";
-  private static final Script_output SCRIPT_TX_OUT = new Script_output(TYPE, PUBKEYHASH);
+  private static final ScriptOutput SCRIPT_TX_OUT = new ScriptOutput(TYPE, PUBKEYHASH);
   private static final Output TXOUT = new Output(VALUE, SCRIPT_TX_OUT);
 
   // List TXIN, List TXOUT
@@ -40,22 +40,22 @@ public class TransactionTest {
 
   @Test
   public void testGetVersion() {
-    assertEquals(VERSION, TRANSACTION.get_version());
+    assertEquals(VERSION, TRANSACTION.getVersion());
   }
 
   @Test
   public void testGetTxIns() {
-    assertEquals(TX_INS, TRANSACTION.get_inputs());
+    assertEquals(TX_INS, TRANSACTION.getInputs());
   }
 
   @Test
   public void testGetTxOuts() {
-    assertEquals(TX_OUTS, TRANSACTION.get_outputs());
+    assertEquals(TX_OUTS, TRANSACTION.getOutputs());
   }
 
   @Test
   public void testGetTimestamp() {
-    assertEquals(TIMESTAMP, TRANSACTION.get_lock_time());
+    assertEquals(TIMESTAMP, TRANSACTION.getLockTime());
   }
 
   @Test

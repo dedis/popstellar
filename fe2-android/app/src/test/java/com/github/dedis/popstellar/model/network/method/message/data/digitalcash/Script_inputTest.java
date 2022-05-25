@@ -10,29 +10,29 @@ public class Script_inputTest {
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
 
-  private static final Script_input SCRIPTTXIN = new Script_input(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
 
   @Test
   public void testGetType() {
-    assertEquals(TYPE, SCRIPTTXIN.get_type());
+    assertEquals(TYPE, SCRIPTTXIN.getType());
   }
 
   @Test
   public void testGetSig() {
-    assertEquals(SIG, SCRIPTTXIN.get_sig());
+    assertEquals(SIG, SCRIPTTXIN.getSig());
   }
 
   @Test
   public void testGetPub_key_recipient() {
-    assertEquals(PUBKEY, SCRIPTTXIN.get_pubkey());
+    assertEquals(PUBKEY, SCRIPTTXIN.getPubkey());
   }
 
   @Test
   public void testTestEquals() {
-    assertEquals(SCRIPTTXIN, new Script_input(TYPE, PUBKEY, SIG));
+    assertEquals(SCRIPTTXIN, new ScriptInput(TYPE, PUBKEY, SIG));
     String random = "random";
-    assertNotEquals(SCRIPTTXIN, new Script_input(random, PUBKEY, SIG));
-    assertNotEquals(SCRIPTTXIN, new Script_input(TYPE, random, SIG));
-    assertNotEquals(SCRIPTTXIN, new Script_input(TYPE, PUBKEY, random));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(random, PUBKEY, SIG));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(TYPE, random, SIG));
+    assertNotEquals(SCRIPTTXIN, new ScriptInput(TYPE, PUBKEY, random));
   }
 }
