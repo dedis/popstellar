@@ -7,6 +7,7 @@ import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.{BufferedSource, Source}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -71,7 +72,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val messageData = SetupElection.buildFromJson(example)
 
     val question = ElectionQuestion(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), "Is this project fun?", "Plurality", "Yes" :: "No" :: Nil, write_in = false)
-    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", "open-ballot", Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
+    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", OPEN_BALLOT, Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
 
     messageData shouldBe a[SetupElection]
     messageData should equal(expected)
@@ -105,11 +106,21 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/vote_cast_vote/vote_cast_vote.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
-    val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), List(0))
+    val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), 0)
     val expected = CastVoteElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Timestamp(1633098941L), votes :: Nil)
 
     messageData shouldBe a[CastVoteElection]
     messageData shouldEqualTo (expected)
+  }
+
+  test("Parser correctly decodes a KeyElection message data") {
+    val example: String = getExampleMessage("messageData/election_key/election_key.json")
+    val messageData = KeyElection.buildFromJson(example)
+
+    val expected = KeyElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), PublicKey(Base64Data("JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ")))
+
+    messageData shouldBe a[KeyElection]
+    messageData should equal(expected)
   }
 
   test("Parser correctly encodes/decodes a PostTransaction message data") {

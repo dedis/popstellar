@@ -5,11 +5,11 @@ import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, KeyPair}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -43,9 +43,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   override final val dbActor: AskableActorRef = dbRef
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
-    val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
+    val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
+    val electionId: Hash = data.id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     //need to write and propagate the election message
@@ -57,11 +57,25 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
-        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-        val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
-        val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-          dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+        //generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
+        data.version match {
+          case OPEN_BALLOT => Left(rpcMessage)
+          case SECRET_BALLOT =>
+            val keyPair = KeyPair()
+            val keyCombined = for {
+              _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
+              electionData <- dbActor ? DbActor.ReadElectionData(electionId)
+            } yield electionData
 
+            Await.ready(keyCombined, duration).value match {
+              case Some(Success(_)) =>
+                val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
+                val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
+                dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+              case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
+              case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+            }
+        }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
