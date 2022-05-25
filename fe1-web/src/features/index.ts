@@ -34,6 +34,8 @@ export function configureFeatures() {
     /* LAO FEATURE */
     /* lao: functions */
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+    useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,

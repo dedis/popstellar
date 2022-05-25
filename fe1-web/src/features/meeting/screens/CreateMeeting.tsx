@@ -23,6 +23,7 @@ import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamL
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
+import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -43,9 +44,7 @@ type NavigationProps = CompositeScreenProps<
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  */
-const CreateMeeting = ({ route }: any) => {
-  const styles = route.params;
-
+const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = MeetingHooks.useCurrentLaoId();
@@ -81,7 +80,7 @@ const CreateMeeting = ({ route }: any) => {
 
     return (
       <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+        <View style={[styles.view, styles.padding]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
           <DatePicker
             selected={startDate}
@@ -90,7 +89,7 @@ const CreateMeeting = ({ route }: any) => {
             }
           />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+        <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
           <DatePicker
             selected={endDate}

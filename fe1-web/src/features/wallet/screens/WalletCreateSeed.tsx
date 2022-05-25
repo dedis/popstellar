@@ -24,9 +24,6 @@ const styles = StyleSheet.create({
   smallPadding: {
     padding: '1rem',
   } as ViewStyle,
-  largePadding: {
-    padding: '2rem',
-  } as ViewStyle,
 });
 
 type NavigationProps = StackScreenProps<

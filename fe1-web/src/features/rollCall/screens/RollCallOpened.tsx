@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+// qr-scanner does *not* accept StyleSheet styles since it is *not*
+// a react native component but a web component using proper css
 const qrScannerStyles: ViewStyle = {
   width: '30%',
 };

@@ -5,7 +5,14 @@ import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 import STRINGS from 'resources/strings';
 
-import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../Election';
+import {
+  Election,
+  ElectionStatus,
+  Question,
+  RegisteredVote,
+  Vote,
+  ElectionVersion,
+} from '../Election';
 import { ElectionState } from '../index';
 
 let question1: Question;
@@ -36,7 +43,7 @@ const initializeData = () => {
   vote1 = {
     id: 'v1',
     question: 'q1',
-    vote: [0],
+    vote: 0,
   };
 
   registeredVotes = {
@@ -50,7 +57,7 @@ const initializeData = () => {
     id: 'electionId',
     lao: 'MyLao',
     name: 'MyElection',
-    version: 'version',
+    version: ElectionVersion.OPEN_BALLOT,
     createdAt: 1520255600,
     start: 1520255600,
     end: 1520275600,
@@ -67,7 +74,6 @@ const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
-const VERSION = 'version';
 
 beforeAll(() => {
   jest.useFakeTimers('modern');
@@ -85,7 +91,7 @@ describe('Election object', () => {
       id: ELECTION_ID.valueOf(),
       lao: mockLaoName,
       name: NAME,
-      version: VERSION,
+      version: ElectionVersion.OPEN_BALLOT,
       createdAt: TIMESTAMP_PAST1.valueOf(),
       start: TIMESTAMP_PAST1.valueOf(),
       end: TIMESTAMP_PAST2.valueOf(),
@@ -114,7 +120,7 @@ describe('Election object', () => {
         new Election({
           lao: mockLaoIdHash,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
@@ -130,7 +136,7 @@ describe('Election object', () => {
         new Election({
           id: ELECTION_ID,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
@@ -146,7 +152,7 @@ describe('Election object', () => {
         new Election({
           id: ELECTION_ID,
           lao: mockLaoIdHash,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
@@ -179,7 +185,7 @@ describe('Election object', () => {
           id: ELECTION_ID,
           lao: mockLaoIdHash,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
@@ -195,7 +201,7 @@ describe('Election object', () => {
           id: ELECTION_ID,
           lao: mockLaoIdHash,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
@@ -211,7 +217,7 @@ describe('Election object', () => {
           id: ELECTION_ID,
           lao: mockLaoIdHash,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
           questions: QUESTIONS,
@@ -226,7 +232,7 @@ describe('Election object', () => {
           id: ELECTION_ID,
           lao: mockLaoIdHash,
           name: NAME,
-          version: VERSION,
+          version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
@@ -241,7 +247,7 @@ describe('Election object', () => {
         id: ELECTION_ID,
         lao: mockLaoIdHash,
         name: NAME,
-        version: VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
@@ -252,7 +258,7 @@ describe('Election object', () => {
         id: ELECTION_ID,
         lao: mockLaoIdHash,
         name: NAME,
-        version: VERSION,
+        version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,

@@ -2,13 +2,13 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { TextBlock, Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Typography, Views } from 'core/styles';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -18,19 +18,6 @@ import { EventHooks } from '../hooks';
  * Navigation panels to help manoeuvre through events creation.
  */
 
-const styleEvents = StyleSheet.create({
-  view: {
-    ...Views.base,
-    flexDirection: 'row',
-    zIndex: 3,
-  } as ViewStyle,
-  viewVertical: {
-    ...Views.base,
-    flexDirection: 'column',
-    zIndex: 3,
-  } as ViewStyle,
-});
-
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoOrganizerParamList, typeof STRINGS.navigation_lao_organizer_home>,
   CompositeScreenProps<
@@ -38,7 +25,6 @@ type NavigationProps = CompositeScreenProps<
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
   >
 >;
-
 const CreateEvent = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const eventTypes = EventHooks.useEventTypes();
@@ -55,7 +41,6 @@ const CreateEvent = () => {
               screen: STRINGS.navigation_lao_events,
               params: {
                 screen: eventType.navigationNames.createEvent,
-                params: styleEvents,
               },
             })
           }>

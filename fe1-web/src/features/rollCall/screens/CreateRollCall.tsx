@@ -22,6 +22,7 @@ import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamL
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
+import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -47,9 +48,7 @@ type NavigationProps = CompositeScreenProps<
  * TODO Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
-const CreateRollCall = ({ route }: any) => {
-  const styles = route.params;
-
+const CreateRollCall = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
@@ -72,7 +71,7 @@ const CreateRollCall = ({ route }: any) => {
 
     return (
       <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+        <View style={[styles.view, styles.padding]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
             selected={startDate}
@@ -86,7 +85,7 @@ const CreateRollCall = ({ route }: any) => {
             }
           />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+        <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
           <DatePicker
             selected={endDate}

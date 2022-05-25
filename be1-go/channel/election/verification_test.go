@@ -12,7 +12,7 @@ import (
 
 func TestVerify_ElectionOpen(t *testing.T) {
 	// create the election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	// read the valid example file
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
@@ -66,7 +66,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 
 func TestVerify_ElectionOpen_already_open(t *testing.T) {
 	// create the opened election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
@@ -85,7 +85,7 @@ func TestVerify_ElectionOpen_already_open(t *testing.T) {
 
 func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	// create the terminated election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
@@ -104,7 +104,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 
 func TestVerify_CastVote(t *testing.T) {
 	// create the election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
 
 	// read the valid example file
@@ -151,16 +151,16 @@ func TestVerify_CastVote(t *testing.T) {
 		}
 	}
 
-	t.Run("lao id not base64", getTestBadExample("bad_vote_cast_vote_lao_not_base64.json"))
-	t.Run("election id noy base64", getTestBadExample("bad_vote_cast_vote_election_not_base64.json"))
-	t.Run("lao id invalid hash", getTestBadExample("bad_vote_cast_vote_lao_invalid_hash.json"))
-	t.Run("election id invalid hash", getTestBadExample("bad_vote_cast_vote_election_invalid_hash.json"))
-	t.Run("created at negative", getTestBadExample("bad_vote_cast_vote_created_at_negative.json"))
+	t.Run("lao id not base64", getTestBadExample("wrong_vote_cast_vote_lao_not_base64.json"))
+	t.Run("election id noy base64", getTestBadExample("wrong_vote_cast_vote_election_not_base64.json"))
+	t.Run("lao id invalid hash", getTestBadExample("wrong_vote_cast_vote_lao_invalid_hash.json"))
+	t.Run("election id invalid hash", getTestBadExample("wrong_vote_cast_vote_election_invalid_hash.json"))
+	t.Run("created at negative", getTestBadExample("wrong_vote_cast_vote_created_at_negative.json"))
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {
 	// create the non opened election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
 		"vote_cast_vote.json"))
@@ -178,7 +178,7 @@ func TestVerify_CastVote_not_open(t *testing.T) {
 
 func TestVerify_CastVote_already_closed(t *testing.T) {
 	// create the terminated election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
@@ -197,7 +197,7 @@ func TestVerify_CastVote_already_closed(t *testing.T) {
 
 func TestVerify_ElectionEnd(t *testing.T) {
 	// create the election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
 
 	// read the valid example file
@@ -253,7 +253,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 
 func TestVerify_ElectionEnd_not_open(t *testing.T) {
 	// create the non opened election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
 		"election_end.json"))
@@ -271,7 +271,7 @@ func TestVerify_ElectionEnd_not_open(t *testing.T) {
 
 func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	// create the terminated election channel
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",

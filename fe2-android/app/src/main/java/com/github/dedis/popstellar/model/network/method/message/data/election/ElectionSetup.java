@@ -25,33 +25,31 @@ public class ElectionSetup extends Data {
   @SerializedName(value = "end_time")
   private final long endTime;
 
-  private final String version;
+  @SerializedName("version")
+  private final ElectionVersion electionVersion;
+
   private final List<ElectionQuestion> questions;
 
   /**
-   * Constructor for a data setup Election Event
-   *
-   * @param name name of the Election
-   * @param creation of the Election
-   * @param start of the Election
-   * @param laoId id of the LAO
+   * @param writeIn         write in for questions
+   * @param name            name of the election
+   * @param creation        creation timestamp
+   * @param start           start timestamp
+   * @param end             end timestamp
+   * @param votingMethod    voting methods
+   * @param laoId           id of the LAO
+   * @param ballotOptions   ballot options
+   * @param questionList    list of questions
+   * @param electionVersion version of the election
    */
   public ElectionSetup(
-      String name,
-      long creation,
-      long start,
-      long end,
-      List<String> votingMethod,
-      List<Boolean> writeIn,
-      List<List<String>> ballotOptions,
-      List<String> questionList,
-      String laoId) {
+          List<Boolean> writeIn, String name, long creation, long start, long end, List<String> votingMethod, String laoId, List<List<String>> ballotOptions, List<String> questionList, ElectionVersion electionVersion) {
     if (name == null
-        || votingMethod == null
-        || writeIn == null
-        || ballotOptions == null
-        || questionList == null
-        || laoId == null) {
+            || votingMethod == null
+            || writeIn == null
+            || ballotOptions == null
+            || questionList == null
+            || laoId == null) {
       throw new IllegalArgumentException();
     }
     // we don't need to check if end < 0 or start < 0 as it is already covered by other statements
@@ -68,7 +66,7 @@ public class ElectionSetup extends Data {
     this.startTime = start;
     this.endTime = end;
     this.lao = laoId;
-    this.version = "1.0.0";
+    this.electionVersion = electionVersion;
     this.id = Election.generateElectionSetupId(laoId, createdAt, name);
     this.questions = new ArrayList<>();
     for (int i = 0; i < questionList.size(); i++) {
@@ -120,8 +118,8 @@ public class ElectionSetup extends Data {
     return lao;
   }
 
-  public String getVersion() {
-    return version;
+  public ElectionVersion getElectionVersion() {
+    return electionVersion;
   }
 
   @Override
@@ -134,6 +132,7 @@ public class ElectionSetup extends Data {
     }
     ElectionSetup that = (ElectionSetup) o;
     return getCreation() == that.getCreation()
+        && getElectionVersion() == that.getElectionVersion()
         && startTime == that.getStartTime()
         && java.util.Objects.equals(getId(), that.getId())
         && createdAt == that.getCreation()
@@ -150,15 +149,18 @@ public class ElectionSetup extends Data {
 
   @Override
   public String toString() {
-    return "ElectionSetup{"
-        + "id='"
-        + id
+    return "ElectionSetup={"
+        + "version='"
+        + electionVersion
         + '\''
-        + ", name='"
-        + name
+        + ", id='"
+        + id
         + '\''
         + ", lao='"
         + lao
+        + '\''
+        + ", name='"
+        + name
         + '\''
         + ", createdAt="
         + createdAt
@@ -166,9 +168,6 @@ public class ElectionSetup extends Data {
         + startTime
         + ", endTime="
         + endTime
-        + ", version='"
-        + version
-        + '\''
         + ", questions="
         + Arrays.toString(questions.toArray())
         + '}';
