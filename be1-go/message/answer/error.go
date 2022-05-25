@@ -30,57 +30,64 @@ func NewErrorf(code int, format string, values ...interface{}) *Error {
 }
 
 // NewInvalidActionError returns an error with the code -1 for an invalid action.
-func NewInvalidActionError(action string) *Error {
-	return &Error{
-		Code:        -1,
-		Description: fmt.Sprintf("invalid action: %s", action),
-	}
+func NewInvalidActionError(action string, values ...interface{}) *Error {
+	return NewErrorf(
+	-1,
+	"invalid action: "+ action,
+	values,
+	)
 }
 
 // NewInvalidObjectError returns an error with the code -1 for an invalid object.
-func NewInvalidObjectError(action string) *Error {
-	return &Error{
-		Code:        -1,
-		Description: fmt.Sprintf("invalid object: %s", action),
-	}
+func NewInvalidObjectError(action string, values ... interface{}) *Error {
+	return NewErrorf(
+		-1,
+		"invalid object: "+ action,
+		values,
+	)
 }
 
-// NewInvalidResourceError returns an error with -2 for an object with invalid ressources
-func NewInvalidResourceError(description string) *Error {
-	return &Error{
-		Code:        -2,
-		Description: fmt.Sprintf("invalid resource: %s", description),
-	}
+// NewInvalidResourceError returns an error with -2 for an object with invalid resources
+func NewInvalidResourceError(description string, values ... interface{}) *Error {
+	return NewErrorf(
+		-2,
+		"invalid resource: "+ description,
+		values,
+	)
 }
 
 // NewDuplicateResourceError returns an error with -3 for a resource that already exists
-func NewDuplicateResourceError(description string) *Error {
-	return &Error{
-		Code:        -3,
-		Description: fmt.Sprintf("duplicate resource: %s", description),
-	}
+func NewDuplicateResourceError(description string, values ... interface{}) *Error {
+	return NewErrorf(
+		-3,
+		"duplicate resource: "+ description,
+		values,
+	)
 }
 
 // NewInvalidMessageFieldError returns an error with -4 when a message field is bogus
-func NewInvalidMessageFieldError(description string) *Error {
-	return &Error{
-		Code:        -4,
-		Description: fmt.Sprintf("invalid message field: %s", description),
-	}
+func NewInvalidMessageFieldError(description string, values ... interface{}) *Error {
+	return NewErrorf(
+		-4,
+		"invalid message field: "+ description,
+		values,
+	)
 }
 
 // NewAccessDeniedError returns an error with -5 when an access is denied for the sender
-func NewAccessDeniedError(description string) *Error {
-	return &Error{
-		Code:        -5,
-		Description: fmt.Sprintf("access denied: %s", description),
-	}
+func NewAccessDeniedError(description string, values ... interface{}) *Error {
+	return NewErrorf(
+		-5,
+		"access denied: "+ description,
+		values,
+	)
 }
 
 // NewInternalServerError returns an error with -6 when there is an internal server error
-func NewInternalServerError(description string) *Error {
-	return &Error{
-		Code:        -6,
-		Description: fmt.Sprintf("internal server error: %s", description),
-	}
+func NewInternalServerError(description string, values ... interface{}) *Error {
+	return NewErrorf(
+		-6,
+		"internal server error: "+ description,
+		values,
+	)
 }
