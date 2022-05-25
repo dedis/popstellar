@@ -10,16 +10,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -33,12 +33,11 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >
-    Election Result
+    Election Results
   </Text>,
   <View>
     <Text
@@ -46,8 +45,7 @@ Array [
         Object {
           "fontSize": 20,
           "lineHeight": 26,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "textAlign": "left",
         }
       }
     >
@@ -666,8 +664,7 @@ Array [
         Object {
           "fontSize": 20,
           "lineHeight": 26,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "textAlign": "left",
         }
       }
     >
@@ -1293,16 +1290,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -1316,12 +1313,11 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >
-    Election Result
+    Election Results
   </Text>,
   <View>
     <Text
@@ -1329,8 +1325,7 @@ Array [
         Object {
           "fontSize": 20,
           "lineHeight": 26,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "textAlign": "left",
         }
       }
     >
@@ -1949,8 +1944,7 @@ Array [
         Object {
           "fontSize": 20,
           "lineHeight": 26,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "textAlign": "left",
         }
       }
     >
@@ -2576,16 +2570,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -2658,7 +2652,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2674,7 +2668,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2711,7 +2705,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2727,7 +2721,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2754,16 +2748,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -2836,7 +2830,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2852,7 +2846,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2889,7 +2883,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2905,7 +2899,7 @@ Array [
           style={
             Object {
               "fontSize": 16,
-              "marginHorizontal": 32,
+              "marginHorizontal": 16,
               "textAlign": "center",
             }
           }
@@ -2989,16 +2983,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -3502,16 +3496,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -3984,20 +3978,20 @@ Array [
     <Text
       style={
         Object {
-          "marginHorizontal": 10,
+          "marginHorizontal": 16,
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -4018,20 +4012,20 @@ Array [
     <Text
       style={
         Object {
-          "marginHorizontal": 10,
+          "marginHorizontal": 16,
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -4056,16 +4050,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -4079,8 +4073,7 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >
@@ -4091,8 +4084,7 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >
@@ -4111,16 +4103,16 @@ Array [
         }
       }
     >
-      Start:
+      Start: 
       <time
         dateTime="2020-12-31T23:00:00.000Z"
         title="2020-12-31 23:00"
       >
         1 year ago
       </time>
+      
 
-
-      End:
+      End: 
       <time
         dateTime="2021-01-01T23:00:00.000Z"
         title="2021-01-01 23:00"
@@ -4134,8 +4126,7 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >
@@ -4146,8 +4137,7 @@ Array [
       Object {
         "fontSize": 20,
         "lineHeight": 26,
-        "marginHorizontal": 10,
-        "textAlign": "center",
+        "textAlign": "left",
       }
     }
   >

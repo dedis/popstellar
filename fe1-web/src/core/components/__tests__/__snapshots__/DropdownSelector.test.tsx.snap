@@ -6,8 +6,8 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
     Object {
       "alignItems": "center",
       "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
     }
   }
 >
@@ -48,8 +48,8 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
     Object {
       "alignItems": "center",
       "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
     }
   }
 >
@@ -90,8 +90,8 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
     Object {
       "alignItems": "center",
       "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
     }
   }
 >

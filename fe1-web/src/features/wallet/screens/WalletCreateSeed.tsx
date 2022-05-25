@@ -21,9 +21,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.accent,
   } as ViewStyle,
-  smallPadding: {
-    padding: '1rem',
-  } as ViewStyle,
 });
 
 type NavigationProps = StackScreenProps<

@@ -3,7 +3,7 @@ import React from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TimeDisplay, WideButtonView } from 'core/components';
+import { Button, TimeDisplay } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
@@ -12,7 +12,7 @@ import { Election } from '../objects';
 
 const styles = StyleSheet.create({
   textOptions: {
-    marginHorizontal: Spacing.s,
+    marginHorizontal: Spacing.x1,
     fontSize: 16,
     textAlign: 'center',
   } as TextStyle,
@@ -50,7 +50,13 @@ const ElectionNotStarted = ({ election, questions, isOrganizer }: IPropTypes) =>
         )}
         renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
       />
-      {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
+      {isOrganizer && (
+        <Button onPress={onOpenElection}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            Open election
+          </Text>
+        </Button>
+      )}
     </>
   );
 };

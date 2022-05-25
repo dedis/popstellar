@@ -1,24 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { Text } from 'react-native';
 
 import { TimeDisplay } from 'core/components';
 import { Typography } from 'core/styles';
 
 import { Election } from '../objects';
 
-const styles = StyleSheet.create({
-  text: {
-    ...Typography.baseCentered,
-  } as TextStyle,
-});
-
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
     <>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      <Text style={styles.text}>Election Terminated</Text>
-      <Text style={styles.text}>Waiting for result</Text>
+      <Text style={Typography.base}>Election Terminated</Text>
+      <Text style={Typography.base}>Waiting for result</Text>
     </>
   );
 };
