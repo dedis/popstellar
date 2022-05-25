@@ -21,6 +21,11 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
 
+  override def afterAll(): Unit = {
+    // Stops the testKit
+    TestKit.shutdownActorSystem(system)
+  }
+
   //arrange
   final val message: Message = Message(
     data = Base64Data("eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9"),
@@ -30,23 +35,18 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     witness_signatures = List.empty
   )
 
-  val witnessSignature: Signature = Signature(Base64Data.encode("witnessSignature"))
-  val witnessMessage: Message = message.addWitnessSignature(WitnessSignaturePair(message.sender, witnessSignature))
-
-  override def afterAll(): Unit = {
-    // Stops the testKit
-    TestKit.shutdownActorSystem(system)
-  }
+  final val witnessSignature: Signature = Signature(Base64Data.encode("witnessSignature"))
+  final val witnessMessage: Message = message.addWitnessSignature(WitnessSignaturePair(message.sender, witnessSignature))
 
   def mockDbWithNack: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteAndPropagate =>
+        case DbActor.WriteAndPropagate(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
 
-        case DbActor.AddWitnessSignature =>
+        case DbActor.AddWitnessSignature(_, _, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
@@ -60,14 +60,14 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
   def mockDbWithAck: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteAndPropagate =>
+        case DbActor.WriteAndPropagate(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
-        case DbActor.AddWitnessSignature =>
+        case DbActor.AddWitnessSignature(_, _, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActorAddWitnessMessage(witnessMessage)
+          sender() ! DbActor.DbActorAddWitnessMessage(witnessMessage)
         case x =>
           system.log.info(s"Received - error $x")
       }
@@ -78,11 +78,11 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
   def mockDbWithNackAddWitnessSignature: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteAndPropagate =>
+        case DbActor.WriteAndPropagate(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
-        case DbActor.AddWitnessSignature =>
+        case DbActor.AddWitnessSignature(_, _, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))

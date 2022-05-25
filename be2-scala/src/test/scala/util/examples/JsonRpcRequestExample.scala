@@ -8,6 +8,7 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
 import util.examples.MessageExample._
+import util.examples.Witness.WitnessMessageExamples._
 import util.examples.socialMedia.AddChirpExamples._
 import util.examples.socialMedia.AddReactionExamples._
 import util.examples.socialMedia.DeleteChirpExamples._
@@ -130,6 +131,15 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongId, id)
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
+
+  //for WitnessMessage testing
+  private final val laoChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId"))
+  private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)
+  private final val paramsWithWitnessMessageWrongSignature: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_SIGNATURE)
+  private final val paramsWithWitnessMessageWrongOwner: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_OWNER)
+  final val WITNESS_MESSAGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessage, id)
+  final val WITNESS_MESSAGE_WRONG_SIGNATURE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessageWrongSignature, id)
+  final val WITNESS_MESSAGE_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessageWrongOwner, id)
 
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)

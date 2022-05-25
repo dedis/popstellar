@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.data.traits.WitnessMessagesTrait
 
 /**
- * Generates high level Witness Messages from protocol folder
+ * Generates high level Election Messages from protocol folder
  * For content validation: all the params are required
  */
 object WitnessMessages extends WitnessMessagesTrait {
@@ -18,4 +18,3 @@ object WitnessMessages extends WitnessMessagesTrait {
   final val witnessMessage: JsonRpcRequest = getJsonRPCRequestFromFile("message_witness.json")()
 
 }
-
