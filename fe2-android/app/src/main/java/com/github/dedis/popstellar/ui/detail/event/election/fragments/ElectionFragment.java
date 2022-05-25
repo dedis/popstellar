@@ -124,13 +124,15 @@ public class ElectionFragment extends Fragment {
 
   private void setupElectionContent() {
     EventState electionState = election.getState().getValue();
-    boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
     TextView title = view.findViewById(R.id.election_fragment_title);
     title.setText(election.getName());
 
     // Only the organizer may start or end an election
-    managementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
+    managementButton.setVisibility(
+        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
+            ? View.VISIBLE
+            : View.GONE);
 
     ImageView statusIcon = view.findViewById(R.id.election_fragment_status_icon);
     TextView statusText = view.findViewById(R.id.election_fragment_status);

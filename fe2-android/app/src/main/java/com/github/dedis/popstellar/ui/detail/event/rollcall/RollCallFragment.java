@@ -111,7 +111,9 @@ public class RollCallFragment extends Fragment {
       qrCode.setImageBitmap(myBitmap);
     }
     qrCode.setVisibility(
-        laoDetailViewModel.isOrganizer().getValue() ? View.INVISIBLE : View.VISIBLE);
+        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
+            ? View.INVISIBLE
+            : View.VISIBLE);
 
     return view;
   }
