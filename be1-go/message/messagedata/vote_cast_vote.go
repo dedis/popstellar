@@ -61,7 +61,6 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 
 	return answer.NewErrorf(-4, "failed unmarshalling vote")
 
-	
 	// SOLUTION 2
 
 	var vTemp raw
