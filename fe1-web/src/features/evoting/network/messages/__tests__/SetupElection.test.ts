@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -75,7 +75,7 @@ describe('SetupElection', () => {
         version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId,
         lao: mockLaoIdHash,
-        name: mockLaoName,
+        name: mockElectionName,
         created_at: TIMESTAMP,
         start_time: TIMESTAMP,
         end_time: CLOSE_TIMESTAMP,
@@ -86,7 +86,7 @@ describe('SetupElection', () => {
 
     it('should be parsed correctly from Json', () => {
       const obj = JSON.parse(setupElectionOpenBallotJson);
-      const msg = SetupElection.fromJson(obj);
+      const msg = SetupElection.fromJson(obj, mockLaoIdHash);
 
       expect(msg.id).toBeInstanceOf(Hash);
       expect(msg.lao).toBeInstanceOf(Hash);
@@ -103,14 +103,14 @@ describe('SetupElection', () => {
         action: ActionType.NOTIFY_ADD,
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
-        name: mockLaoName,
+        name: mockElectionName,
         version: ElectionVersion.OPEN_BALLOT,
         created_at: TIMESTAMP.valueOf(),
         start_time: TIMESTAMP.valueOf(),
         end_time: CLOSE_TIMESTAMP.valueOf(),
         questions: [mockQuestionObject1, mockQuestionObject2],
       };
-      const createFromJson = () => SetupElection.fromJson(obj);
+      const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
       expect(createFromJson).toThrow(ProtocolError);
     });
 
@@ -121,13 +121,13 @@ describe('SetupElection', () => {
         version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId.toString(),
         lao: mockLaoIdHash.toString(),
-        name: mockLaoName,
+        name: mockElectionName,
         created_at: TIMESTAMP.valueOf(),
         start_time: TIMESTAMP.valueOf(),
         end_time: CLOSE_TIMESTAMP.valueOf(),
         questions: [mockQuestionObject1, mockQuestionObject2],
       };
-      const createFromJson = () => SetupElection.fromJson(obj);
+      const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
       expect(createFromJson).toThrow(ProtocolError);
     });
 
@@ -139,7 +139,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: undefined as unknown as Hash,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -157,7 +157,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: undefined as unknown as Hash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -193,7 +193,7 @@ describe('SetupElection', () => {
               version: undefined as unknown as string,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -211,7 +211,7 @@ describe('SetupElection', () => {
               version: '1.0.0',
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -229,7 +229,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: undefined as unknown as Timestamp,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -247,7 +247,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: undefined as unknown as Timestamp,
               end_time: CLOSE_TIMESTAMP,
@@ -265,7 +265,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: undefined as unknown as Timestamp,
@@ -283,7 +283,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
@@ -301,7 +301,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP_BEFORE,
               end_time: CLOSE_TIMESTAMP,
@@ -319,7 +319,7 @@ describe('SetupElection', () => {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
               lao: mockLaoIdHash,
-              name: mockLaoName,
+              name: mockElectionName,
               created_at: TIMESTAMP_BEFORE,
               start_time: TIMESTAMP,
               end_time: TIMESTAMP_BEFORE,
@@ -339,7 +339,7 @@ describe('SetupElection', () => {
           version: ElectionVersion.OPEN_BALLOT,
           id: mockElectionId,
           lao: mockLaoIdHash,
-          name: mockLaoName,
+          name: mockElectionName,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,

@@ -691,7 +691,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleElectionResultMessage(
-          getEventByIdDummymockGetEventById,
+          mockGetEventById,
           mockUpdateEvent,
           mockGetLaoOrganizerBackendPublicKey,
         )({

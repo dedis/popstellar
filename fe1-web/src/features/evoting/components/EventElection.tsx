@@ -22,7 +22,7 @@ const EventElection = (props: IPropTypes) => {
   const election = useSelector(selectElection);
 
   if (!election) {
-    throw new Error(`Could not find a roll call with id ${electionId}`);
+    throw new Error(`Could not find an election with id ${electionId}`);
   }
 
   const questions = useMemo(

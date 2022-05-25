@@ -9,26 +9,24 @@ import {
   messageRegistryInstance,
   mockReduxAction,
   mockLaoId,
-  mockLaoName,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EventTags, Hash, Timestamp } from 'core/objects';
 import { addEvent } from 'features/events/reducer';
 import {
   mockElectionNotStarted,
   mockElectionOpened,
   mockElectionResults,
   mockElectionTerminated,
+  openedSecretBallotElection,
 } from 'features/evoting/__tests__/utils';
 import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
-import { Election, ElectionStatus, ElectionVersion, Question } from 'features/evoting/objects';
+import { Election, ElectionStatus } from 'features/evoting/objects';
 import {
   addElection,
   electionKeyReducer,
   electionReducer,
   updateElection,
 } from 'features/evoting/reducer';
-import STRINGS from 'resources/strings';
 
 import EventElection from '../EventElection';
 
@@ -36,47 +34,6 @@ const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),
   electionStatus: 'undefined' as ElectionStatus,
 });
-
-const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
-
-const mockElectionId = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-
-const mockQuestion = 'Mock Question 1';
-const mockQuestionId = Hash.fromStringArray(
-  EventTags.QUESTION,
-  mockElectionId.toString(),
-  mockQuestion,
-);
-const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
-
-const question: Question = {
-  id: mockQuestionId.toString(),
-  question: mockQuestion,
-  voting_method: STRINGS.election_method_Plurality,
-  ballot_options: mockBallotOptions,
-  write_in: false,
-};
-
-const openedSecretBallotElection = new Election({
-  lao: mockLaoIdHash,
-  id: mockElectionId,
-  name: 'An election',
-  version: ElectionVersion.SECRET_BALLOT,
-  createdAt: TIMESTAMP,
-  start: TIMESTAMP,
-  end: CLOSE_TIMESTAMP,
-  questions: [question],
-  electionStatus: ElectionStatus.OPENED,
-  registeredVotes: [],
-});
-
-// endregion
 
 // mocks
 const mockStore = createStore(combineReducers({ ...electionReducer, ...electionKeyReducer }));
@@ -244,6 +201,10 @@ describe('EventElection', () => {
   });
 
   describe('Secret ballot election', () => {
+    beforeAll(() => {
+      mockStore.dispatch(updateElection(openedSecretBallotElection.toState()));
+    });
+
     it('renders correctly for an organizer', () => {
       const component = render(
         <Provider store={mockStore}>

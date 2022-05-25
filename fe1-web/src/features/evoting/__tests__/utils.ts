@@ -174,6 +174,19 @@ export const mockElectionResultQuestions: ElectionResult['questions'] = [
   },
 ];
 
+export const openedSecretBallotElection = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: ElectionVersion.SECRET_BALLOT,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
+  electionStatus: ElectionStatus.OPENED,
+  registeredVotes: [],
+});
+
 export const mockElectionKeyString = 'uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=';
 export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyString);
 export const mockElectionKey = new ElectionPublicKey(mockElectionKeyString);
