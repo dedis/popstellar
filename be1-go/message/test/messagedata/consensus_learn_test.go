@@ -82,4 +82,5 @@ func Test_Consensus_Learn_Verify(t *testing.T) {
 	t.Run("acceptor is not base64", getTestBadExample("wrong_learn_not_base_64_acceptor.json"))
 	t.Run("instance is not base64", getTestBadExample("wrong_learn_not_base_64_instance.json"))
 	t.Run("message is not base64", getTestBadExample("wrong_learn_not_base_64_message.json"))
+	t.Run("created at is negative", getTestBadExample("wrong_learn_negative_created_at.json"))
 }

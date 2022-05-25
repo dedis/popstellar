@@ -76,4 +76,5 @@ func Test_Consensus_Propose_Verify(t *testing.T) {
 	t.Run("proposed try is negative", getTestBadExample("wrong_propose_negative_proposed_try.json"))
 	t.Run("instance is not base64", getTestBadExample("wrong_propose_not_base_64_instance.json"))
 	t.Run("message is not base64", getTestBadExample("wrong_propose_not_base_64_message.json"))
+	t.Run("acceptor is not base64", getTestBadExample("wrong_propose_not_base_64_acceptor.json"))
 }

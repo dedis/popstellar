@@ -77,4 +77,5 @@ func Test_Consensus_Elect_Verify(t *testing.T) {
 
 	t.Run("created at is negative", getTestBadExample("wrong_elect_negative_created_at.json"))
 	t.Run("instance is not base64", getTestBadExample("wrong_elect_not_base_64_instance.json"))
+	t.Run("instance id not wrong", getTestBadExample("wrong_elect_invalid_instance.json"))
 }

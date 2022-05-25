@@ -2,6 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
+
 	"golang.org/x/xerrors"
 )
 
@@ -33,7 +34,7 @@ func (message LaoUpdate) Verify() error {
 
 	// verify LastModified is positive
 	if message.LastModified < 0 {
-		return xerrors.Errorf("lao creation is %d, should be minimum 0", message.LastModified)
+		return xerrors.Errorf("last modified is %d, should be minimum 0", message.LastModified)
 	}
 
 	// verify all witnesses are base64URL encoded

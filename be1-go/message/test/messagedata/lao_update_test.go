@@ -76,4 +76,5 @@ func Test_Lao_Update_Verify(t *testing.T) {
 	t.Run("name is empty", getTestBadExample("bad_lao_update_empty_name.json"))
 	t.Run("is is not base64", getTestBadExample("bad_lao_update_id_not_base64.json"))
 	t.Run("witness is not base64", getTestBadExample("bad_lao_update_witness_not_base64.json"))
+	t.Run("last modified is negative", getTestBadExample("bad_lao_update_negative_last_modified.json"))
 }
