@@ -56,7 +56,6 @@ export const centered: TextStyle = {
 };
 
 export const important: TextStyle = {
-  ...base,
   fontWeight: 'bold',
 };
 

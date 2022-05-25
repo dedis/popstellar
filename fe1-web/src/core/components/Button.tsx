@@ -18,17 +18,34 @@ const styles = StyleSheet.create({
     borderWidth: Border.width,
     borderRadius: Border.radius,
   } as ViewStyle,
+  disabled: {
+    borderColor: Color.inactive,
+    backgroundColor: Color.inactive,
+  } as ViewStyle,
   negative: {
     borderColor: Color.contrast,
+  } as ViewStyle,
+  disabledNegative: {
+    borderColor: Color.inactive,
+    backgroundColor: Color.inactive,
   } as ViewStyle,
 });
 
 const Button = (props: IPropTypes) => {
   const { onPress, disabled, children, negative } = props;
 
+  const viewStyles = [styles.button];
+  if (negative && disabled) {
+    viewStyles.push(styles.disabledNegative);
+  } else if (negative) {
+    viewStyles.push(styles.negative);
+  } else if (disabled) {
+    viewStyles.push(styles.disabled);
+  }
+
   return (
     <TouchableOpacity containerStyle={styles.container} onPress={disabled ? undefined : onPress}>
-      <View style={negative ? [styles.button, styles.negative] : styles.button}>{children}</View>
+      <View style={viewStyles}>{children}</View>
     </TouchableOpacity>
   );
 };

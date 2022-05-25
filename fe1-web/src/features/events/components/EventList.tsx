@@ -1,22 +1,16 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { Timestamp } from 'core/objects';
-import { Spacing } from 'core/styles';
+import { List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EventHooks } from '../hooks';
 import { EventState } from '../objects';
 import { makeEventListSelector } from '../reducer';
 import EventListItem from './EventListItem';
-
-const styles = StyleSheet.create({
-  listItem: {
-    paddingHorizontal: Spacing.horizontalContentSpacing,
-  } as ViewStyle,
-});
 
 const categorizeEventsByTime = (time: number, events: EventState[]) => {
   const pastEvents: EventState[] = [];
@@ -63,7 +57,7 @@ const EventList = () => {
   return (
     <View>
       <ListItem.Accordion
-        containerStyle={styles.listItem}
+        containerStyle={List.listItem}
         content={
           <ListItem.Content>
             <ListItem.Title>
@@ -78,7 +72,7 @@ const EventList = () => {
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={styles.listItem}
+        containerStyle={List.listItem}
         content={
           <ListItem.Content>
             <ListItem.Title>
@@ -93,7 +87,7 @@ const EventList = () => {
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={styles.listItem}
+        containerStyle={List.listItem}
         content={
           <ListItem.Content>
             <ListItem.Title>

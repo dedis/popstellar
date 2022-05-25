@@ -113,9 +113,6 @@ const CreateRollCall = () => {
 
   return (
     <ScreenWrapper>
-      {/* see archive branches for date picker used for native apps */}
-      {Platform.OS === 'web' && buildDatePickerWeb()}
-
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.roll_call_create_name}
       </Text>
@@ -135,13 +132,16 @@ const CreateRollCall = () => {
       />
 
       <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.roll_call_create_description}
+        {STRINGS.roll_call_description}
       </Text>
       <Input
         value={rollCallDescription}
         onChange={setRollCallDescription}
         placeholder={STRINGS.roll_call_create_description_placeholder}
       />
+
+      {/* see archive branches for date picker used for native apps */}
+      {Platform.OS === 'web' && buildDatePickerWeb()}
 
       <Button
         onPress={() =>

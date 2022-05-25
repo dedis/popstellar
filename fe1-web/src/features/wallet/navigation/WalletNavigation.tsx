@@ -1,4 +1,3 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
@@ -6,6 +5,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import OptionsIcon from 'core/components/icons/OptionsIcon';
 import WalletIcon from 'core/components/icons/WalletIcon';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Color, Icon } from 'core/styles';
@@ -39,43 +39,31 @@ type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_
 const WalletNavigationHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  const { showActionSheetWithOptions } = useActionSheet();
+  const showActionSheet = useActionSheet();
 
   const [isDebug, setIsDebug] = useState(false);
 
   const onPressOptions = () => {
-    showActionSheetWithOptions(
+    showActionSheet([
       {
-        options: [
-          STRINGS.wallet_home_logout,
-          STRINGS.wallet_home_toggle_debug,
-          STRINGS.general_button_cancel,
-        ],
-        cancelButtonIndex: 2,
+        displayName: STRINGS.wallet_home_logout,
+        action: () => {
+          forget();
+          navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
+        },
       },
-      (idx) => {
-        switch (idx) {
-          case 0:
-            // logout
-            forget();
-            navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-            break;
-          case 1:
-            // toggle debug mode
-            if (isDebug) {
-              clearDummyWalletState();
-              setIsDebug(false);
-            } else {
-              createDummyWalletState().then(() => setIsDebug(true));
-            }
-            break;
-          case 2:
-          default:
-            // cancel
-            break;
-        }
+      {
+        displayName: STRINGS.wallet_home_toggle_debug,
+        action: () => {
+          if (isDebug) {
+            clearDummyWalletState();
+            setIsDebug(false);
+          } else {
+            createDummyWalletState().then(() => setIsDebug(true));
+          }
+        },
       },
-    );
+    ]);
   };
 
   return (

@@ -48,7 +48,7 @@ const ConnectOpenScan = () => {
   const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
 
-  // this is needed as otherwise the camera will stay turned on
+  // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
 
   // re-enable scanner on focus events

@@ -1,23 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import MeetingIcon from 'core/components/icons/MeetingIcon';
 import { Timestamp } from 'core/objects';
-import { Color, Icon, Spacing } from 'core/styles';
+import { Color, Icon, List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { MeetingInterface } from '../interface';
 import { Meeting } from '../objects';
 import { makeMeetingSelector } from '../reducer';
-
-const styles = StyleSheet.create({
-  icon: {
-    marginRight: Spacing.x1,
-  } as ViewStyle,
-});
 
 const getSubtitle = (meeting: Meeting): string => {
   const now = Timestamp.EpochNow();
@@ -49,7 +43,7 @@ const MeetingListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={styles.icon}>
+      <View style={List.listIcon}>
         <MeetingIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>

@@ -61,8 +61,8 @@ namespace STRINGS {
   export const navigation_lao_events_create_event = 'Create Event';
   export const navigation_lao_events_create_meeting = 'Create Meeting';
   export const navigation_lao_events_view_single_meeting = 'Single Meeting';
-  export const navigation_lao_events_create_roll_call = 'Create Roll Call';
-  export const navigation_lao_events_view_single_roll_call = 'Single Roll Call';
+  export const navigation_lao_events_create_roll_call = 'Create Roll-Call';
+  export const navigation_lao_events_view_single_roll_call = 'Single Roll-Call';
   export const navigation_lao_events_create_election = 'Create Election';
   export const navigation_lao_events_view_single_election = 'Single Election';
   export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
@@ -103,11 +103,11 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
-  export const attendees_of_last_roll_call = 'Attendees of last roll call';
+  export const attendees_of_last_roll_call = 'Attendees of last roll-call';
   export const follow_button = 'Follow';
   export const profile_button = 'Profile';
   export const social_media_your_profile_unavailable =
-    'You do not have a social media profile yet, be sure to have participated in a roll call.';
+    'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
   export const modal_chirp_deletion_description = 'Are you sure you want to delete this chirp?';
 
@@ -208,24 +208,32 @@ namespace STRINGS {
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
 
+  /* --- General Roll-call Strings --- */
+
+  export const roll_call_description = 'Description';
+  export const roll_call_location = 'Location';
+
   /* --- Roll-call creation Strings --- */
+
   export const roll_call_create_proposed_start = 'Proposed Start';
   export const roll_call_create_proposed_end = 'Proposed End';
   export const roll_call_create_name = 'Name';
   export const roll_call_create_name_placeholder = 'Real Life Captcha';
-  export const roll_call_create_location = 'Location';
+
   export const roll_call_create_location_placeholder = 'BC410';
-  export const roll_call_create_description = 'Description';
+
   export const roll_call_create_description_placeholder = 'Are you a robot?';
 
-  /* --- Roll-call open page Strings --- */
+  /* --- Roll-call Single View Strings --- */
+
   export const roll_call_open = 'Open Roll-Call';
   export const roll_call_reopen = 'Re-open Roll-Call';
+  export const roll_call_close = 'Close Roll-Call';
 
   /* --- Roll-call scanning Strings --- */
   export const roll_call_scan_attendees = 'Scan Attendees';
   export const roll_call_scan_description =
-    'Please scan each participant’s Roll-call QR code exactly once.';
+    'Please scan each participant’s Roll-call QR code once.';
   export const roll_call_scan_participant = 'participant scanned';
   export const roll_call_scan_close = 'Close Roll-Call';
   export const roll_call_scan_close_confirmation = 'Do you confirm to close the roll-call ?';
@@ -308,10 +316,10 @@ namespace STRINGS {
   export const wallet_home_toggle_debug = 'Toggle debug mode';
 
   export const no_tokens_in_wallet =
-    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
+    'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';
 
-  /* --- Roll Call Feature Strings --- */
-  export const roll_call_event_name = 'Roll Call';
+  /* --- Roll-Call Feature Strings --- */
+  export const roll_call_event_name = 'Roll-Call';
 
   /* --- Meeting Feature Strings --- */
   export const meeting_event_name = 'Meeting';

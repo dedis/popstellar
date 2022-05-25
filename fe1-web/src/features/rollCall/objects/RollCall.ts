@@ -54,11 +54,11 @@ export class RollCall {
   public readonly attendees?: PublicKey[];
 
   public get start() {
-    return this.openedAt ?? this.proposedStart;
+    return this.openedAt || this.proposedStart;
   }
 
   public get end() {
-    return this.closedAt ?? this.proposedEnd;
+    return this.closedAt || this.proposedEnd;
   }
 
   /* Not yet implemented:
@@ -105,6 +105,9 @@ export class RollCall {
     this.proposedEnd = obj.proposedEnd;
     this.status = obj.status;
     this.attendees = obj.attendees;
+
+    this.openedAt = obj.openedAt;
+    this.closedAt = obj.closedAt;
   }
 
   /**

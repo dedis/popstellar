@@ -11,20 +11,29 @@ const styles = StyleSheet.create({
     borderRadius: Border.inputRadius,
     padding: Spacing.x05,
   },
+  border: {
+    borderWidth: 1,
+    borderColor: Color.primary,
+  },
   disabled: {
     color: Color.gray,
   },
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, enabled } = props;
+  const { value, placeholder, onChange, enabled, border } = props;
+
+  const inputStyles = [Typography.paragraph, styles.input];
+  if (!enabled) {
+    inputStyles.push(styles.disabled);
+  }
+
+  if (border) {
+    inputStyles.push(styles.border);
+  }
   return (
     <TextInput
-      style={
-        enabled
-          ? [Typography.paragraph, styles.input]
-          : [Typography.paragraph, styles.input, styles.disabled]
-      }
+      style={inputStyles}
       editable={enabled || false}
       value={value}
       placeholder={placeholder || ''}
@@ -35,6 +44,7 @@ const Input = (props: IPropTypes) => {
 
 const propTypes = {
   enabled: PropTypes.bool,
+  border: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
@@ -43,6 +53,7 @@ Input.propTypes = propTypes;
 Input.defaultProps = {
   placeholder: '',
   enabled: true,
+  border: false,
   onChange: undefined,
 };
 

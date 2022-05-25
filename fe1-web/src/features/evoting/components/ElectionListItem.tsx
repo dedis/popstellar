@@ -1,22 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import ElectionIcon from 'core/components/icons/ElectionIcon';
-import { Color, Icon, Spacing } from 'core/styles';
+import { Color, Icon, List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EvotingInterface } from '../interface';
 import { Election, ElectionStatus } from '../objects';
 import { makeElectionSelector } from '../reducer';
-
-const styles = StyleSheet.create({
-  icon: {
-    marginRight: Spacing.x1,
-  } as ViewStyle,
-});
 
 const getSubtitle = (election: Election): string => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
@@ -48,7 +42,7 @@ const ElectionListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={styles.icon}>
+      <View style={List.listIcon}>
         <ElectionIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>

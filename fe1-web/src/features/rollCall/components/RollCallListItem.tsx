@@ -1,22 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import RollCallIcon from 'core/components/icons/RollCallIcon';
-import { Color, Icon, Spacing } from 'core/styles';
+import { Color, Icon, List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { RollCallInterface } from '../interface';
 import { RollCall, RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
-
-const styles = StyleSheet.create({
-  icon: {
-    marginRight: Spacing.x1,
-  } as ViewStyle,
-});
 
 const getSubtitle = (rollCall: RollCall): string => {
   if (rollCall.status === RollCallStatus.CREATED) {
@@ -46,7 +40,7 @@ const RollCallListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={styles.icon}>
+      <View style={List.listIcon}>
         <RollCallIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>

@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, Text } from 'react-native';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-import { Typography } from 'core/styles';
+import { ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import modalStyles from '../styles/stylesheets/modalStyles';
 import Button from './Button';
-import TextInputLine from './TextInputLine';
+import Input from './Input';
+import ModalHeader from './ModalHeader';
 
 /**
  * A modal used to ask for the confirmation or cancellation of the user.
@@ -21,7 +22,6 @@ const ConfirmModal = (props: IPropTypes) => {
     title,
     description,
     buttonConfirmText,
-    buttonCancelText,
     onConfirmPress,
     hasTextInput,
     textInputPlaceholder,
@@ -30,36 +30,36 @@ const ConfirmModal = (props: IPropTypes) => {
   const [textInput, setTextInput] = useState('');
 
   return (
-    <Modal visible={visibility} transparent>
-      <View style={modalStyles.modalView}>
-        <View style={modalStyles.titleView}>
-          <Text style={modalStyles.modalTitle}>{title}</Text>
-        </View>
-        <Text style={modalStyles.modalDescription}>{description}</Text>
+    <Modal
+      transparent
+      presentationStyle="formSheet"
+      visible={visibility}
+      onRequestClose={() => {
+        setVisibility(!visibility);
+      }}>
+      <TouchableWithoutFeedback
+        containerStyle={ModalStyles.modalBackground}
+        onPress={() => {
+          setVisibility(!visibility);
+        }}
+      />
+      <ScrollView style={ModalStyles.modalContainer}>
+        <ModalHeader onClose={() => setVisibility(!visibility)}>{title}</ModalHeader>
+        <Text style={Typography.paragraph}>{description}</Text>
         {hasTextInput ? (
-          <TextInputLine
-            onChangeText={(input) => setTextInput(input)}
+          <Input
+            value={textInput}
+            onChange={setTextInput}
             placeholder={textInputPlaceholder}
+            border
           />
         ) : null}
-        <View style={modalStyles.buttonView}>
-          <Button onPress={() => onConfirmPress(textInput)}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {buttonConfirmText}
-            </Text>
-          </Button>
-
-          <Button
-            onPress={() => {
-              setVisibility(!visibility);
-              setTextInput('');
-            }}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {buttonCancelText}
-            </Text>
-          </Button>
-        </View>
-      </View>
+        <Button onPress={() => onConfirmPress(textInput)}>
+          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            {buttonConfirmText}
+          </Text>
+        </Button>
+      </ScrollView>
     </Modal>
   );
 };
@@ -69,7 +69,6 @@ const propTypes = {
   setVisibility: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  buttonCancelText: PropTypes.string,
   buttonConfirmText: PropTypes.string,
   onConfirmPress: PropTypes.func.isRequired,
   hasTextInput: PropTypes.bool,
@@ -79,7 +78,6 @@ const propTypes = {
 ConfirmModal.propTypes = propTypes;
 
 ConfirmModal.defaultProps = {
-  buttonCancelText: STRINGS.general_button_cancel,
   buttonConfirmText: STRINGS.general_button_confirm,
   hasTextInput: false,
   textInputPlaceholder: '',
@@ -90,7 +88,6 @@ type IPropTypes = {
   setVisibility: Function;
   title: string;
   description: string;
-  buttonCancelText: string;
   buttonConfirmText: string;
   onConfirmPress: Function;
   hasTextInput: boolean;
