@@ -34,15 +34,15 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
   <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
 );
 
-describe('E-Voting hooks', () => {
-  describe('EvotingHooks.useCurrentLao', () => {
+describe('EvotingHooks', () => {
+  describe('useCurrentLao', () => {
     it('should return the current lao', () => {
       const { result } = renderHook(() => EvotingHooks.useCurrentLao(), { wrapper });
       expect(result.current).toEqual(mockLao);
     });
   });
 
-  describe('EvotingHooks.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);

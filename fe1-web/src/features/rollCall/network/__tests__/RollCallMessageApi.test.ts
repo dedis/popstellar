@@ -4,13 +4,12 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   defaultMessageDataFields,
-  mockLao,
   mockLaoId,
+  mockLaoIdHash,
 } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 import * as msApi from '../RollCallMessageApi';
@@ -60,7 +59,7 @@ const checkDataCreateRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    OpenedLaoStore.get().id.toString(),
+    mockLaoId.toString(),
     data.creation.toString(),
     data.name,
   );
@@ -82,7 +81,7 @@ const checkDataOpenRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    OpenedLaoStore.get().id.toString(),
+    mockLaoId.toString(),
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -103,7 +102,7 @@ const checkDataReopenRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    OpenedLaoStore.get().id.toString(),
+    mockLaoId.toString(),
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -132,7 +131,7 @@ const checkDataCloseRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    OpenedLaoStore.get().id.toString(),
+    mockLaoId,
     data.closes.toString(),
     data.closed_at.toString(),
   );
@@ -145,17 +144,23 @@ beforeAll(() => {
 
 beforeEach(() => {
   publishMock.mockClear();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('MessageApi', () => {
   it('should create the correct request for requestCreateRollCall without description', async () => {
-    await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
+    await msApi.requestCreateRollCall(
+      mockLaoIdHash,
+      mockEventName,
+      mockLocation,
+      mockStartTime,
+      mockEndTime,
+    );
   });
 
   it('should create the correct request for requestCreateRollCall with description', async () => {
     const mockDescription = 'random description';
     await msApi.requestCreateRollCall(
+      mockLaoIdHash,
       mockEventName,
       mockLocation,
       mockStartTime,
@@ -170,7 +175,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestOpenRollCall without start time', async () => {
-    await msApi.requestOpenRollCall(mockRollCallId);
+    await msApi.requestOpenRollCall(mockLaoIdHash, mockRollCallId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -179,7 +184,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestOpenRollCall with start time', async () => {
-    await msApi.requestOpenRollCall(mockRollCallId, mockStartTime);
+    await msApi.requestOpenRollCall(mockLaoIdHash, mockRollCallId, mockStartTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -188,7 +193,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestReopenRollCall without start time', async () => {
-    await msApi.requestReopenRollCall(mockRollCallId);
+    await msApi.requestReopenRollCall(mockLaoIdHash, mockRollCallId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -197,7 +202,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestReopenRollCall with start time', async () => {
-    await msApi.requestReopenRollCall(mockRollCallId, mockStartTime);
+    await msApi.requestReopenRollCall(mockLaoIdHash, mockRollCallId, mockStartTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -206,7 +211,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestCloseRollCall without attendees', async () => {
-    await msApi.requestCloseRollCall(mockRollCallId, []);
+    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, []);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -220,7 +225,7 @@ describe('MessageApi', () => {
       'BEW-uVz_NG_prXFuaKrI9Ae0EbBLGWehLQ8aLZFWY4w=',
     ].map((a) => new PublicKey(a));
 
-    await msApi.requestCloseRollCall(mockRollCallId, attendeePks);
+    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, attendeePks);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -230,7 +235,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestCloseRollCall with end time', async () => {
-    await msApi.requestCloseRollCall(mockRollCallId, [], mockEndTime);
+    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, [], mockEndTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];

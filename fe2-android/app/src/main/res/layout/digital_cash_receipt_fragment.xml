@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <variable
+      name="view_model"
+      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_digital_cash_receipt"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.digitalcash.DigitalCashReceiptFragment">
+
+    <TextView
+      android:id="@+id/digital_cash_receipt_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      style="@style/title_style"
+      android:text="@string/digital_cash_receipt"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_receipt_beneficiary"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/digital_cash_receipt_beneficiary"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      style="@style/style_border"
+      android:text="@string/digital_cash_beneficiary_address"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_receipt_amount"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_receipt_title" />
+
+    <TextView
+      android:id="@+id/digital_cash_receipt_amount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      style="@style/style_border"
+      android:text="@string/digital_cash_amount_empty"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_receipt_qr"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_receipt_beneficiary" />
+
+    <ImageView
+      android:id="@+id/digital_cash_receipt_qr"
+      android:contentDescription="@string/digital_cash_content_description_qr_receipt"
+      android:layout_width="@dimen/qr_digital_cash"
+      android:layout_height="@dimen/qr_digital_cash"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_receipt_amount" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

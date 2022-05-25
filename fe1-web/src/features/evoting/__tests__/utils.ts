@@ -65,7 +65,7 @@ export const mockQuestions: Question[] = [mockQuestionObject1, mockQuestionObjec
 export const mockRegisteredVotes: RegisteredVote[] = [
   {
     createdAt: 0,
-    messageId: '0',
+    messageId: 'b',
     sender: 'sender 1',
     votes: [
       { id: 'id1', question: 'q1', vote: 0 },
@@ -74,7 +74,7 @@ export const mockRegisteredVotes: RegisteredVote[] = [
   },
   {
     createdAt: 1,
-    messageId: '1',
+    messageId: 'a',
     sender: 'sender 2',
     votes: [
       { id: 'id3', question: 'q3', vote: 0 },
@@ -180,3 +180,20 @@ export const mockElectionKey = new ElectionPublicKey(mockElectionKeyString);
 
 export const mockElectionPrivateKeyString = 'o1EESXAvTFD34Ss29FVohukOximnyn/qf/PdZu2HCQw=';
 export const mockEncodedElectionPrivateKey = new Base64UrlData(mockElectionPrivateKeyString);
+
+export const mockElectionResults = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: mockElectionName,
+  version: ElectionVersion.OPEN_BALLOT,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
+  electionStatus: ElectionStatus.RESULT,
+  registeredVotes: mockRegisteredVotes,
+  questionResult: mockElectionResultQuestions.map((q) => ({
+    id: q.id,
+    result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+  })),
+});

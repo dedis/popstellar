@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
@@ -10,14 +10,12 @@ import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { makeEventGetter } from 'features/events/reducer';
-import { selectCurrentLao } from 'features/lao/reducer';
-import * as Wallet from 'features/wallet/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { RollCallHooks } from '../hooks';
 import { requestCloseRollCall } from '../network';
-import { RollCall } from '../objects';
+import { makeRollCallSelector } from '../reducer';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -50,13 +48,16 @@ const RollCallOpened = () => {
   const [attendeePopTokens, updateAttendeePopTokens] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const lao = useSelector(selectCurrentLao);
 
-  if (!lao) {
+  const laoId = RollCallHooks.useCurrentLaoId();
+  const generateToken = RollCallHooks.useGenerateToken();
+
+  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallID), [rollCallID]);
+  const rollCall = useSelector(rollCallSelector);
+
+  if (!laoId) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
   }
-
-  const rollCall = useSelector(makeEventGetter(lao.id, rollCallID)) as RollCall;
 
   if (!rollCall) {
     throw new Error('Impossible to open a Roll Call that does not exist');
@@ -122,7 +123,7 @@ const RollCallOpened = () => {
     }
 
     try {
-      await requestCloseRollCall(rollCall.idAlias, attendeesList);
+      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
       navigation.navigate(STRINGS.organizer_navigation_tab_home);
     } catch (err) {
       toast.show(`Could not close roll call, error: ${err}`, {
@@ -135,15 +136,15 @@ const RollCallOpened = () => {
 
   // This will run only when the state changes
   useEffect(() => {
-    if (!lao?.id) {
+    if (!laoId) {
       return;
     }
 
     // Add the token of the organizer as soon as we open the roll call
-    Wallet.generateToken(lao.id, rollCall.id)
+    generateToken(laoId, rollCall.id)
       .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))
       .catch(handleError);
-  }, [lao, rollCall, addAttendeePopToken, handleError]);
+  }, [laoId, generateToken, rollCall, addAttendeePopToken, handleError]);
 
   return (
     <View style={containerStyles.flex}>
