@@ -10,7 +10,7 @@ final case class PrivateKey(base64Data: Base64Data) {
   def decrypt(messageB64: Base64Data): Base64Data = {
     val message = messageB64.decode()
     if (message.length != MESSAGE_BYTE_SIZE)
-      throw new IllegalArgumentException("Your message to decrypt should contain exactly 64 bytes")
+      throw new IllegalArgumentException(s"Your message to decrypt should contain exactly $MESSAGE_BYTE_SIZE bytes")
     val Kbytes = message.slice(0, HALF_MESSAGE_BYTE_SIZE)
     val Cbytes = message.slice(HALF_MESSAGE_BYTE_SIZE, MESSAGE_BYTE_SIZE)
     val K: Ed25519Point = new Ed25519Point(Kbytes)
@@ -26,6 +26,7 @@ final case class PrivateKey(base64Data: Base64Data) {
     Signature(Base64Data.encode(ed.sign(data.decode())))
   }
 }
+
 object PrivateKey {
   protected val MESSAGE_BYTE_SIZE: Int = 64
   protected val HALF_MESSAGE_BYTE_SIZE: Int = 32
