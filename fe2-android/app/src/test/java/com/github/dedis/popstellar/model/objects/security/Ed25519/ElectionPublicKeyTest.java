@@ -7,6 +7,21 @@ public class ElectionPublicKeyTest {
 
     @Test
     public void testToString() {
+
+        ElectionKeyPair keys = ElectionKeyPair.generateKeyPair();
+        ElectionPublicKey publicKey = keys.getEncryptionScheme();
+        ElectionPrivateKey privateKey = keys.getDecryptionScheme();
+
+        int val = 2;
+        byte[] voteIndiceInBytes = {(byte) val, (byte) (val >> 8)};
+        String encrypted = publicKey.encrypt(voteIndiceInBytes);
+        System.out.println(encrypted);
+        try {
+            privateKey.decrypt(encrypted);
+            System.out.println(val);
+        } catch (Exception e) {
+            System.out.println("eee");
+        }
     }
 
     @Test

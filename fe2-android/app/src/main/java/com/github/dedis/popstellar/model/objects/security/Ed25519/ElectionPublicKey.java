@@ -114,7 +114,7 @@ public class ElectionPublicKey {
             return null;
         }
         Base64URLData encodedResult = new Base64URLData(result);
-        return encodedResult.toString();
+        return encodedResult.getEncoded();
     }
 
 

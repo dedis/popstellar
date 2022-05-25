@@ -2,8 +2,6 @@ package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
-import java.nio.charset.StandardCharsets;
-
 import ch.epfl.dedis.lib.crypto.Ed25519Point;
 import ch.epfl.dedis.lib.crypto.Ed25519Scalar;
 import ch.epfl.dedis.lib.crypto.Point;
@@ -66,10 +64,11 @@ public class ElectionPrivateKey {
      */
     public byte[] decrypt(@NonNull String message) throws CothorityCryptoException {
 
+        Base64URLData decoded = new Base64URLData(message);
         // Follows this implementation:
         // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L27-L31
-
-        byte[] in_byte_message = message.getBytes(StandardCharsets.UTF_8);
+        //byte[] in_byte_message = decoded.getBytes(StandardCharsets.UTF_8);
+        byte[] in_byte_message = decoded.getData();
         if (in_byte_message.length != MESSAGE_BYTE_SIZE) {
             throw new IllegalArgumentException("Your message to decrypt should contain exactly 64 bytes");
         }
@@ -80,7 +79,7 @@ public class ElectionPrivateKey {
             if (i < HALF_MESSAGE_BYTE_SIZE) {
                 Kbytes[i] = in_byte_message[i];
             } else {
-                Cbytes[i] = in_byte_message[i];
+                Cbytes[i - HALF_MESSAGE_BYTE_SIZE] = in_byte_message[i];
             }
         }
         Ed25519Point K;
@@ -89,7 +88,7 @@ public class ElectionPrivateKey {
             K = new Ed25519Point(Kbytes);
             C = new Ed25519Point(Cbytes);
         } catch (CothorityCryptoException e) {
-            throw new CothorityCryptoException("Could not create K Point while decrypting");
+            throw new IllegalArgumentException("Could not create K Point while decrypting");
         }
 
         // Substract and export data to get the original message

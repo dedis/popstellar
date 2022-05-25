@@ -73,9 +73,7 @@ public class Election extends Event {
       int voteIndice = vote.getVote();
 
       // Get the two lsb byte from the indice
-      byte[] voteIndiceInBytes = new byte[2];
-      voteIndiceInBytes[0] = (byte) voteIndice;
-      voteIndiceInBytes[1] = (byte) (voteIndice >> 8);
+      byte[] voteIndiceInBytes = {(byte) voteIndice, (byte) (voteIndice >> 8)};
 
       // Create a public key and encrypt the indice
       Base64URLData electionKeyToBase64 = new Base64URLData(getElectionKey());
