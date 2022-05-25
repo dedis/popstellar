@@ -7,7 +7,7 @@ import java.util.Objects;
 // Object representing an output of this transaction
 public class Output {
   @SerializedName("value")
-  private final int value; // the value of the output transaction, expressed in miniLAOs
+  private final long value; // the value of the output transaction, expressed in miniLAOs
 
   @SerializedName("script")
   private final Script_output script; // The script describing the TxOut unlock mechanism
@@ -16,12 +16,12 @@ public class Output {
    * @param value the value of the output transaction, expressed in miniLAOs
    * @param script The script describing the TxOut unlock mechanism
    */
-  public Output(int value, Script_output script) {
+  public Output(long value, Script_output script) {
     this.value = value;
     this.script = script;
   }
 
-  public int get_value() {
+  public long get_value() {
     return value;
   }
 
