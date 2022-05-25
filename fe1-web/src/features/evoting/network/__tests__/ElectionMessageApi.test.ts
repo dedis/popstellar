@@ -71,16 +71,19 @@ describe('requestCreateElection', () => {
     expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);
     expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-    const setupElectionMessage = new SetupElection({
-      lao: mockElectionNotStarted.lao,
-      id: mockElectionNotStarted.id,
-      name: mockElectionNotStarted.name,
-      version: mockElectionNotStarted.version,
-      created_at: mockElectionNotStarted.createdAt,
-      start_time: mockElectionNotStarted.start,
-      end_time: mockElectionNotStarted.end,
-      questions: mockElectionNotStarted.questions,
-    });
+    const setupElectionMessage = new SetupElection(
+      {
+        lao: mockElectionNotStarted.lao,
+        id: mockElectionNotStarted.id,
+        name: mockElectionNotStarted.name,
+        version: mockElectionNotStarted.version,
+        created_at: mockElectionNotStarted.createdAt,
+        start_time: mockElectionNotStarted.start,
+        end_time: mockElectionNotStarted.end,
+        questions: mockElectionNotStarted.questions,
+      },
+      mockLaoIdHash,
+    );
 
     expect(publish).toHaveBeenLastCalledWith(mockChannel, setupElectionMessage);
     expect(publish).toHaveBeenCalledTimes(1);

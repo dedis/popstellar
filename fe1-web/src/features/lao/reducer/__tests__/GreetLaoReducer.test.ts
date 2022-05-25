@@ -1,6 +1,6 @@
 import { AnyAction } from 'redux';
 
-import { mockLaoId } from '__tests__/utils';
+import { mockChannel, mockLaoId } from '__tests__/utils';
 import { messageReducerPath, MessageReducerState } from 'core/network/ingestion';
 
 import {
@@ -84,6 +84,7 @@ describe('GreetLaoReducer', () => {
                 sender: '',
                 signature: '',
                 witness_signatures: [{ signature: 'mockSignature', witness: 'mockWitness' }],
+                channel: mockChannel,
               },
               [mockMessageId2]: {
                 message_id: mockMessageId2,
@@ -94,6 +95,7 @@ describe('GreetLaoReducer', () => {
                 sender: '',
                 signature: '',
                 witness_signatures: [{ signature: 'mockSignature2', witness: 'mockWitness2' }],
+                channel: mockChannel,
               },
             },
           } as MessageReducerState,

@@ -1,7 +1,6 @@
-import { KeyPairStore } from 'core/keypair';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { channelFromIds, getLastPartOfChannel } from 'core/objects';
+import { channelFromIds, getLastPartOfChannel, Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
@@ -22,19 +21,23 @@ import { OpenElection } from './messages/OpenElection';
 export const handleElectionKeyMessage =
   (getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey']) =>
   (msg: ProcessableMessage) => {
+    const makeErr = (err: string) => `election#key was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.KEY
     ) {
-      console.warn('handleElectionKeyMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `election/key was not processed: ${err}`;
-
     // obtain the lao id from the channel
-    if (!msg.channel) {
-      console.warn(makeErr('No channel found in message'));
+    if (!msg.laoId) {
+      console.warn(makeErr('message was not sent on a lao subchannel'));
       return false;
     }
 
@@ -64,22 +67,31 @@ export const handleElectionKeyMessage =
 
 /**
  * Returns a function that handles an ElectionSetup message by setting up the election in the current Lao.
- *
- * @param addEvent - A function creating a redux action to add a new event to the store of the currently active lao
+ * @param addElection - A function to add a new election
  */
 export const handleElectionSetupMessage =
-  (addEvent: EvotingConfiguration['addEvent']) =>
+  (addElection: (laoId: Hash | string, election: Election) => void) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `election#setup was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.SETUP
     ) {
-      console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
+      return false;
+    }
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
     const elecMsg = msg.messageData as SetupElection;
-    elecMsg.validate(msg.laoId);
 
     // check if the election version is supported by the frontend
     if (
@@ -113,34 +125,44 @@ export const handleElectionSetupMessage =
       console.error('Could not subscribe to Election channel, error:', err);
     });
 
-    dispatch(addEvent(msg.laoId, election.toState()));
+    addElection(msg.laoId, election);
     return true;
   };
 
 /**
  * Returns a function that handles an ElectionOpen message by opening the election.
- *
- * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
- * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
+ * @param getElectionById - A function get an election by its id
+ * @param updateElection - A function to update an election
  */
 export const handleElectionOpenMessage =
   (
-    getEventById: EvotingConfiguration['getEventById'],
-    updateEvent: EvotingConfiguration['updateEvent'],
+    getElectionById: (electionId: Hash | string) => Election | undefined,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
     console.log('Handling Election open message');
+
+    const makeErr = (err: string) => `election#open was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.OPEN
     ) {
-      console.warn('handleElectionOpenMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/open was not processed: ${err}`;
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const electionOpenMsg = msg.messageData as OpenElection;
-    const election = getEventById(electionOpenMsg.election) as Election;
+    const election = getElectionById(electionOpenMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -148,47 +170,45 @@ export const handleElectionOpenMessage =
 
     // Change election status here such that it will change the election display in the event list
     election.electionStatus = ElectionStatus.OPENED;
-    dispatch(updateEvent(msg.laoId, election.toState()));
+    updateElection(election);
     return true;
   };
 
 /**
  * Returns a function that handles a CastVote message being sent during an election.
- *
- * @param getCurrentLao - A function returning the current lao
- * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
- * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
+ * @param getElectionById - A function get an election by its id
+ * @param updateElection - A function to update an election
  */
 export const handleCastVoteMessage =
   (
-    getCurrentLao: EvotingConfiguration['getCurrentLao'],
-    getEventById: EvotingConfiguration['getEventById'],
-    updateEvent: EvotingConfiguration['updateEvent'],
+    getElectionById: (electionId: Hash | string) => Election | undefined,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `election#cast-vote was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.CAST_VOTE
     ) {
-      console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/cast-vote was not processed: ${err}`;
-    const lao = getCurrentLao();
 
-    const myPublicKey = KeyPairStore.getPublicKey();
-    const isOrganizer = lao.organizer.equals(myPublicKey);
-    const isWitness = lao.witnesses.some((w) => w.equals(myPublicKey));
-    if (!isOrganizer && !isWitness) {
-      // Then current user is an attendee and doesn't have to store the votes
-      return true;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
     }
 
     const castVoteMsg = msg.messageData as CastVote;
 
-    const election = getEventById(castVoteMsg.election) as Election;
+    const election = getElectionById(castVoteMsg.election) as Election;
     if (!election) {
-      console.warn(makeErr('No active election to register vote '));
+      console.warn(makeErr('No active election to register vote'));
       return false;
     }
 
@@ -209,34 +229,45 @@ export const handleCastVoteMessage =
     } else {
       election.registeredVotes = [...election.registeredVotes, currentVote];
     }
-    dispatch(updateEvent(msg.laoId, election.toState()));
+
+    updateElection(election);
     return true;
   };
 
 /**
  * Returns a function that handles an ElectionEnd message by ending the election.
- *
- * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
- * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
+ * @param getElectionById - A function get an election by its id
+ * @param updateElection - A function to update an election
  */
 export const handleElectionEndMessage =
   (
-    getEventById: EvotingConfiguration['getEventById'],
-    updateEvent: EvotingConfiguration['updateEvent'],
+    getElectionById: (electionId: Hash | string) => Election | undefined,
+    updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage) => {
     console.log('Handling Election end message');
+
+    const makeErr = (err: string) => `election#end was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.END
     ) {
-      console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
-    const makeErr = (err: string) => `election/end was not processed: ${err}`;
+
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     const ElectionEndMsg = msg.messageData as EndElection;
-    const election = getEventById(ElectionEndMsg.election) as Election;
+    const election = getElectionById(ElectionEndMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -244,33 +275,41 @@ export const handleElectionEndMessage =
 
     // Change election status here such that it will change the election display in the event list
     election.electionStatus = ElectionStatus.TERMINATED;
-    dispatch(updateEvent(msg.laoId, election.toState()));
+    updateElection(election);
     return true;
   };
 
 /**
  * Returns a function that handles an ElectionResult message by updating the election's state with its results.
- *
- * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
- * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
+ * @param getElectionById - A function get an election by its id
+ * @param updateElection - A function to update an election
  * @param getLaoOrganizerBackendPublicKey - A function returning the public key of the lao organizer's backend
  */
 export const handleElectionResultMessage =
   (
-    getEventById: EvotingConfiguration['getEventById'],
-    updateEvent: EvotingConfiguration['updateEvent'],
+    getElectionById: (electionId: Hash | string) => Election | undefined,
+    updateElection: (election: Election) => void,
     getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey'],
   ) =>
   (msg: ProcessableMessage) => {
+    const makeErr = (err: string) => `election#result was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.RESULT
     ) {
-      console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const makeErr = (err: string) => `election/Result was not processed: ${err}`;
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
 
     if (!msg.channel) {
       console.warn(makeErr('No channel found in message'));
@@ -292,7 +331,7 @@ export const handleElectionResultMessage =
 
     const electionId = getLastPartOfChannel(msg.channel);
     const electionResultMessage = msg.messageData as ElectionResult;
-    const election = getEventById(electionId) as Election;
+    const election = getElectionById(electionId) as Election;
     if (!election) {
       console.warn(makeErr('No active election for the result'));
       return false;
@@ -304,6 +343,6 @@ export const handleElectionResultMessage =
     }));
 
     election.electionStatus = ElectionStatus.RESULT;
-    dispatch(updateEvent(msg.laoId, election.toState()));
+    updateElection(election);
     return true;
   };
