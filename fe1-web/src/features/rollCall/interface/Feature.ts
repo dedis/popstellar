@@ -1,3 +1,5 @@
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { NavigationScreen } from 'core/navigation/typing/Screen';
 import { Hash, PublicKey } from 'core/objects';
 
 export namespace RollCallFeature {
@@ -13,5 +15,9 @@ export namespace RollCallFeature {
 
     start: number;
     end?: number;
+  }
+
+  export interface LaoEventScreen extends NavigationScreen {
+    id: keyof LaoEventsParamList;
   }
 }

@@ -46,9 +46,22 @@ export default function EventsNavigation() {
           headerRight: isOrganizer ? CreateEventButton : undefined,
         }}
       />
-      {screens.map(({ id, title, Component }) => (
-        <Stack.Screen name={id} key={id} component={Component} options={{ title: title || id }} />
-      ))}
+      {screens.map(
+        ({ id, title, headerTitle, headerLeft, headerRight, headerShown, Component }) => (
+          <Stack.Screen
+            name={id}
+            key={id}
+            component={Component}
+            options={{
+              title: title || id,
+              headerTitle: headerTitle || title || id,
+              headerLeft,
+              headerRight,
+              headerShown,
+            }}
+          />
+        ),
+      )}
     </Stack.Navigator>
   );
 }

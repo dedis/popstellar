@@ -25,6 +25,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
+import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';
 
@@ -34,7 +35,7 @@ const DEFAULT_ELECTION_DURATION = 3600;
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_creation_election>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_election>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -136,12 +137,12 @@ const CreateElection = () => {
   return (
     <ScreenWrapper>
       <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.election_create_setup}
+        {STRINGS.election_create_name}
       </Text>
       <Input
         value={electionName}
         onChange={setElectionName}
-        placeholder={STRINGS.election_create_setup}
+        placeholder={STRINGS.election_create_name_placeholder}
       />
 
       {/* see archive branches for date picker used for native apps */}
@@ -218,3 +219,8 @@ const CreateElection = () => {
 };
 
 export default CreateElection;
+
+export const CreateElectionScreen: EvotingFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_create_election,
+  Component: CreateElection,
+};

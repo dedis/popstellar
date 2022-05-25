@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 import EventIcon from 'core/components/icons/EventIcon';
 import HomeIcon from 'core/components/icons/HomeIcon';
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -68,7 +69,16 @@ const LaoNavigation: React.FC = () => {
         headerTitleAlign: 'center',
       }}>
       {screens.map(
-        ({ id, title, headerTitle, Component, headerShown, headerRight, tabBarIcon }) => (
+        ({
+          id,
+          title,
+          headerTitle,
+          Component,
+          headerShown,
+          headerLeft,
+          headerRight,
+          tabBarIcon,
+        }) => (
           <OrganizationTopTabNavigator.Screen
             key={id}
             name={id}
@@ -76,6 +86,7 @@ const LaoNavigation: React.FC = () => {
             options={{
               title: title || id,
               headerTitle: headerTitle || title || id,
+              headerLeft,
               headerRight,
               tabBarIcon: tabBarIcon || undefined,
               // hide the item if tabBarIcon is set to null
@@ -90,3 +101,8 @@ const LaoNavigation: React.FC = () => {
 };
 
 export default LaoNavigation;
+
+export const LaoNavigationAppScreen: AppScreen = {
+  id: STRINGS.navigation_app_lao,
+  Component: LaoNavigation,
+};

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import DatePickerElement from 'react-datepicker';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -10,15 +10,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const ONE_MINUTE_IN_SECONDS = 60;
 
-const CustomInput = (props: CustomInputIPropTypes) => {
+const CustomInput = forwardRef((props: CustomInputIPropTypes, ref: any) => {
   const { value, onClick } = props;
 
   return (
-    <TouchableOpacity onPress={onClick || undefined}>
+    <TouchableOpacity onPress={onClick || undefined} ref={ref}>
       <Input value={value || ''} enabled />
     </TouchableOpacity>
   );
-};
+});
 
 const customInputPropTypes = {
   value: PropTypes.string,

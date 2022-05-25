@@ -3,6 +3,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
+import MockNavigator from '__tests__/components/MockNavigator';
 import {
   mockLao,
   mockLaoIdHash,
@@ -22,7 +23,7 @@ import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import { Election, ElectionStatus } from 'features/evoting/objects';
 import { addElection, electionReducer, updateElection } from 'features/evoting/reducer';
 
-import EventElection from '../EventElection';
+import ViewSingleElection from '../ViewSingleElection';
 
 const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),
@@ -52,7 +53,7 @@ const contextValue = {
   },
 };
 
-describe('EventElection', () => {
+describe('ViewSingleElection', () => {
   describe('Not started election', () => {
     beforeAll(() => {
       mockStore.dispatch(updateElection(mockElectionNotStarted.toState()));
@@ -62,7 +63,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionNotStarted.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionNotStarted.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -73,7 +77,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionNotStarted.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionNotStarted.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -90,7 +97,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionOpened.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionOpened.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -101,7 +111,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionOpened.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionOpened.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -118,7 +131,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionTerminated.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionTerminated.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -129,7 +145,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionTerminated.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionTerminated.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -146,7 +165,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionResults.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionResults.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -157,7 +179,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={mockElectionResults.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: mockElectionResults.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -174,7 +199,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={undefinedElection.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: undefinedElection.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -185,7 +213,10 @@ describe('EventElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={undefinedElection.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: undefinedElection.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();

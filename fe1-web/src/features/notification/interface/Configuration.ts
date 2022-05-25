@@ -6,6 +6,7 @@ import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
 import { NotificationState } from '../reducer/NotificationReducer';
+import { NotificationFeature } from './Feature';
 
 export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';
 
@@ -17,9 +18,7 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
     NotificationBadge: () => React.ReactNode;
   };
 
-  navigation: {
-    NotificationNavigation: React.ComponentType<unknown>;
-  };
+  laoScreens: NotificationFeature.LaoScreen[];
 
   actionCreators: {
     addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;

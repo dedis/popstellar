@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     ...Typography.baseCentered,
   } as TextStyle,
   view: {
-    ...View.base,
+    ...ViewStyles.base,
     flexDirection: 'column',
     zIndex: 3,
   } as ViewStyle,

@@ -17,6 +17,7 @@ import LaoNavigation from '../LaoNavigation';
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
+    CreateEventButton: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [
       {

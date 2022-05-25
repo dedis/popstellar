@@ -17,18 +17,17 @@ import EventsNavigation from '../EventsNavigation';
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
+    CreateEventButton: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
     eventsNavigationScreens: [
       {
-        id: 'screen1' as LaoFeature.OrganizerScreen['id'],
+        id: 'screen1' as LaoFeature.LaoEventScreen['id'],
         title: 'a title',
-        order: 2,
         Component: () => <Text>first screen</Text>,
       },
       {
-        id: 'screen2' as LaoFeature.OrganizerScreen['id'],
-        order: -2,
+        id: 'screen2' as LaoFeature.LaoEventScreen['id'],
         Component: () => <Text>second screen</Text>,
       },
     ],

@@ -95,11 +95,16 @@ interface EventType {
   eventName: string;
   navigationNames: {
     createEvent:
-      | typeof STRINGS.navigation_lao_events_creation_meeting
-      | typeof STRINGS.navigation_lao_events_creation_roll_call
-      | typeof STRINGS.navigation_lao_events_creation_election;
+      | typeof STRINGS.navigation_lao_events_create_meeting
+      | typeof STRINGS.navigation_lao_events_create_roll_call
+      | typeof STRINGS.navigation_lao_events_create_election;
+
+    screenSingle:
+      | typeof STRINGS.navigation_lao_events_view_single_meeting
+      | typeof STRINGS.navigation_lao_events_view_single_roll_call
+      | typeof STRINGS.navigation_lao_events_view_single_election;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

@@ -1,6 +1,5 @@
 import SocialMediaIcon from 'core/components/icons/SocialMediaIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
-import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
@@ -137,32 +136,13 @@ export function configureFeatures() {
         tabBarIcon: SocialMediaIcon,
         order: 10000,
       },
-      {
-        id: STRINGS.navigation_lao_notifications,
-        Component: notificationConfiguration.navigation.NotificationNavigation,
-        headerShown: false,
-        tabBarIcon: null,
-        order: 0,
-      },
+      ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
     ],
     eventsNavigationScreens: [
-      {
-        id: STRINGS.navigation_lao_events_creation_meeting,
-        Component: meetingConfiguration.screens.CreateMeeting,
-      },
-      {
-        id: STRINGS.navigation_lao_events_creation_roll_call,
-        Component: rollCallConfiguration.screens.CreateRollCall,
-      },
-      {
-        id: STRINGS.navigation_lao_events_creation_election,
-        Component: evotingConfiguration.screens.CreateElection,
-      },
-      {
-        id: STRINGS.navigation_lao_events_open_roll_call,
-        Component: rollCallConfiguration.screens.RollCallOpened,
-      },
+      ...meetingConfiguration.laoEventScreens,
+      ...rollCallConfiguration.laoEventScreens,
+      ...evotingConfiguration.laoEventScreens,
     ],
   });
 
@@ -192,10 +172,7 @@ export function configureFeatures() {
       screens: [
         ...homeComposition.appScreens,
         ...walletComposition.appScreens,
-        {
-          id: STRINGS.navigation_app_lao,
-          component: laoComposition.navigation.LaoNavigation,
-        } as AppScreen,
+        ...laoComposition.appScreens,
       ],
     },
     context: {

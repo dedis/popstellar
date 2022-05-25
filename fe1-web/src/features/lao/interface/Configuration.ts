@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
@@ -41,7 +42,7 @@ export interface LaoCompositionConfiguration {
   /**
    * The screens that should additionally be included in the lao events navigation
    */
-  eventsNavigationScreens: LaoFeature.OrganizerScreen[];
+  eventsNavigationScreens: LaoFeature.LaoEventScreen[];
 }
 
 /**
@@ -175,10 +176,7 @@ export type LaoReactContext = Pick<
 >;
 
 export interface LaoCompositionInterface extends FeatureInterface {
-  /* navigation */
-  navigation: {
-    LaoNavigation: React.ComponentType<unknown>;
-  };
-  /* react context */
+  appScreens: AppScreen[];
+
   context: LaoReactContext;
 }

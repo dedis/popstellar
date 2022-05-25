@@ -149,5 +149,5 @@ export default WalletCreateSeed;
 export const WalletCreateSeedScreen: AppScreen = {
   id: STRINGS.navigation_app_wallet_create_seed,
   title: STRINGS.navigation_app_wallet_create_seed,
-  component: WalletCreateSeed,
+  Component: WalletCreateSeed,
 };

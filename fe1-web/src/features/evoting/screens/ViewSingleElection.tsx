@@ -1,25 +1,26 @@
-import PropTypes from 'prop-types';
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { CheckboxList, TimeDisplay, Button } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import BarChartDisplay from '../components/BarChartDisplay';
 import { EvotingHooks } from '../hooks';
-import { EvotingInterface } from '../interface';
+import { EvotingFeature } from '../interface';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
-import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
+import { ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import { makeElectionSelector } from '../reducer';
-import BarChartDisplay from './BarChartDisplay';
-
-/**
- * Component used to display a Election event in the LAO event list
- */
 
 const styles = StyleSheet.create({
   text: {
@@ -36,8 +37,17 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const EventElection = (props: IPropTypes) => {
-  const { eventId: electionId, isOrganizer } = props;
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_election>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
+const ViewSingleElection = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { eventId: electionId, isOrganizer } = route.params;
 
   const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
   const election = useSelector(selectElection);
@@ -185,34 +195,31 @@ const EventElection = (props: IPropTypes) => {
   };
 
   return (
-    <>
+    <ScreenWrapper>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
       {getElectionDisplay(election.electionStatus)}
-    </>
+    </ScreenWrapper>
   );
 };
 
-const propTypes = {
-  eventId: PropTypes.string.isRequired,
-  isOrganizer: PropTypes.bool,
+export default ViewSingleElection;
+
+export const ViewSingleElectionScreenHeader = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { eventId: electionId } = route.params;
+
+  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
+  const election = useSelector(selectElection);
+
+  if (!election) {
+    throw new Error(`Could not find a roll call with id ${electionId}`);
+  }
+
+  return <Text style={Typography.topNavigationHeading}>{election.name}</Text>;
 };
-EventElection.propTypes = propTypes;
-EventElection.defaultProps = {
-  isOrganizer: false,
-};
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-export default EventElection;
-
-export const ElectionEventType: EvotingInterface['eventTypes']['0'] = {
-  eventType: Election.EVENT_TYPE,
-  eventName: STRINGS.election_event_name,
-  navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_creation_election,
-  },
-  Component: EventElection as FunctionComponent<{
-    eventId: string;
-    isOrganizer: boolean | null | undefined;
-  }>,
+export const ViewSingleElectionScreen: EvotingFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_view_single_election,
+  Component: ViewSingleElection,
+  headerTitle: ViewSingleElectionScreenHeader,
 };

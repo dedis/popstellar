@@ -10,6 +10,10 @@ namespace STRINGS {
   export const general_no = 'No';
   export const general_add = 'Add';
   export const general_done = 'Done';
+  export const general_starting_at = 'Supposed to start at';
+  export const general_ending_at = 'Supposed to end at';
+  export const general_ended_at = 'Ended at';
+  export const general_ongoing = 'Ongoing';
 
   /* --- User Roles --- */
   export const user_role_attendee = 'Attendee';
@@ -55,9 +59,12 @@ namespace STRINGS {
   export const navigation_lao_events_home_title = 'Events';
 
   export const navigation_lao_events_create_event = 'Create Event';
-  export const navigation_lao_events_creation_meeting = 'Create meeting';
-  export const navigation_lao_events_creation_roll_call = 'Create roll call';
-  export const navigation_lao_events_creation_election = 'Create election';
+  export const navigation_lao_events_create_meeting = 'Create Meeting';
+  export const navigation_lao_events_view_single_meeting = 'Single Meeting';
+  export const navigation_lao_events_create_roll_call = 'Create Roll Call';
+  export const navigation_lao_events_view_single_roll_call = 'Single Roll Call';
+  export const navigation_lao_events_create_election = 'Create Election';
+  export const navigation_lao_events_view_single_election = 'Single Election';
   export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
@@ -168,7 +175,8 @@ namespace STRINGS {
 
   /* --- Election creation Strings --- */
   export const election_create_setup = 'Election Setup';
-  export const election_create_name = 'Name*';
+  export const election_create_name = 'Name';
+  export const election_create_name_placeholder = 'Election Q1 2022';
   export const election_create_start_time = 'Start time';
   export const election_create_finish_time = 'End time';
   export const election_create_question = 'Question';
@@ -243,6 +251,9 @@ namespace STRINGS {
 
   /* --- Events Feature Strings --- */
   export const events_create_event = 'Create';
+  export const events_list_past = 'Past';
+  export const events_list_current = 'Current';
+  export const events_list_upcoming = 'Upcoming';
 
   /* --- Notification screen Strings --- */
   export const notification_clear_all = 'Clear notifications';

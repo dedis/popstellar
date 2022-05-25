@@ -1,46 +1,15 @@
-import React from 'react';
-
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { NavigationScreen, NavigationTabScreen } from 'core/navigation/typing/Screen';
 
 export namespace LaoFeature {
-  export type OrganizerScreen = Omit<
-    LaoScreen,
-    'id' | 'order' | 'headerRight' | 'tabBarIcon' | 'headerShown'
-  > & {
+  export interface LaoEventScreen extends NavigationScreen {
     id: keyof LaoEventsParamList;
-  };
-
-  export interface LaoScreen {
-    id: keyof LaoParamList;
-    title?: string;
-    headerTitle?: string | ((props: { children: string }) => React.ReactNode);
-    Component: React.ComponentType<unknown>;
-
-    /**
-     * This number is here to order the screens.
-     * The numbers have to be unique, otherwise an error will be thrown.
-     * In order to be able to insert screens in between two existing screens,
-     * do *not* use numbers 1,2,3,... but rather ones with big gaps in between,
-     * e.g. -9999999999, -1000, -10, 0, 100, ... etc.
-     */
-    order: number;
-
-    headerShown?: boolean;
-    headerRight?: HeaderComponent;
-    tabBarIcon?:
-      | null
-      | ((props: { focused: boolean; color: string; size: number }) => React.ReactNode);
   }
 
-  type HeaderComponent =
-    | ((props: {
-        tintColor?: string;
-        pressColor?: string;
-        pressOpacity?: number;
-        labelVisible?: boolean;
-      }) => React.ReactNode)
-    | undefined;
+  export interface LaoScreen extends NavigationTabScreen {
+    id: keyof LaoParamList;
+  }
 
   export interface LaoConnection {
     server: string;

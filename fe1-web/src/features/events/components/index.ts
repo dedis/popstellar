@@ -1,7 +1,7 @@
 import CreateEventButton from './CreateEventButton';
 import EventList from './EventList';
 
-export { default as Event } from './Event';
+export { default as EventListItem } from './EventListItem';
 
 export const publicComponents = {
   EventList,

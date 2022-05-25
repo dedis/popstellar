@@ -33,7 +33,7 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
         start: electionState.start,
-        end: electionState.start,
+        end: electionState.end,
       }),
     );
   };
@@ -47,7 +47,7 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
         start: electionState.start,
-        end: electionState.start,
+        end: electionState.end,
       }),
     );
   };

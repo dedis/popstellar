@@ -1,13 +1,13 @@
-import { CompositeScreenProps } from '@react-navigation/core';
+import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import PropTypes from 'prop-types';
-import React, { useEffect, useState, FunctionComponent, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { QRCode, Button } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
@@ -16,24 +16,22 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
-import { RollCallInterface } from '../interface';
+import { RollCallFeature } from '../interface';
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
-import { RollCall, RollCallStatus } from '../objects';
+import { RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_home>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
   >
 >;
 
-/**
- * Component used to display a RollCall event in the LAO event list
- */
-const EventRollCall = (props: IPropTypes) => {
-  const { eventId: rollCallId, isOrganizer } = props;
+const ViewSingleRollCall = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { eventId: rollCallId, isOrganizer } = route.params;
 
   const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
   const rollCall = useSelector(selectRollCall);
@@ -43,6 +41,7 @@ const EventRollCall = (props: IPropTypes) => {
   }
 
   const navigation = useNavigation<NavigationProps['navigation']>();
+
   const toast = useToast();
 
   const laoId = RollCallHooks.useCurrentLaoId();
@@ -183,35 +182,31 @@ const EventRollCall = (props: IPropTypes) => {
   };
 
   return (
-    <>
+    <ScreenWrapper>
       <Text>Roll Call</Text>
       {getRollCallDisplay(rollCall.status)}
-    </>
+    </ScreenWrapper>
   );
 };
 
-const propTypes = {
-  eventId: PropTypes.string.isRequired,
-  isOrganizer: PropTypes.bool,
+export default ViewSingleRollCall;
+
+export const ViewSingleMeetingScreenHeader = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { eventId: rollCallId } = route.params;
+
+  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const rollCall = useSelector(selectRollCall);
+
+  if (!rollCall) {
+    throw new Error(`Could not find a roll call with id ${rollCallId}`);
+  }
+
+  return <Text style={Typography.topNavigationHeading}>{rollCall.name}</Text>;
 };
-EventRollCall.propTypes = propTypes;
 
-EventRollCall.defaultProps = {
-  isOrganizer: false,
-};
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-export default EventRollCall;
-
-export const RollCallEventType: RollCallInterface['eventTypes']['0'] = {
-  eventType: RollCall.EVENT_TYPE,
-  eventName: STRINGS.roll_call_event_name,
-  navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_creation_roll_call,
-  },
-  Component: EventRollCall as FunctionComponent<{
-    eventId: string;
-    isOrganizer: boolean | null | undefined;
-  }>,
+export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_view_single_roll_call,
+  Component: ViewSingleRollCall,
+  headerTitle: ViewSingleMeetingScreenHeader,
 };

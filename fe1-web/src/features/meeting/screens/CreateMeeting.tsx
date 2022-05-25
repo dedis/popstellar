@@ -18,6 +18,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { MeetingHooks } from '../hooks';
+import { MeetingFeature } from '../interface';
 import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
 });
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_creation_meeting>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_meeting>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -160,3 +161,8 @@ const CreateMeeting = () => {
 };
 
 export default CreateMeeting;
+
+export const CreateMeetingScreen: MeetingFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_create_meeting,
+  Component: CreateMeeting,
+};

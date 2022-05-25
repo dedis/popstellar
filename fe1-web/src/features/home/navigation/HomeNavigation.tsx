@@ -74,20 +74,36 @@ const HomeNavigation = () => {
         headerTitleStyle: Typography.topNavigationHeading,
         headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component, tabBarIcon, tabPress, headerLeft, headerRight }) => (
-        <HomeNavigator.Screen
-          key={id}
-          name={id}
-          component={Component}
-          listeners={{ tabPress }}
-          options={{
-            title: title || id,
-            tabBarIcon,
-            headerLeft,
-            headerRight,
-          }}
-        />
-      ))}
+      {screens.map(
+        ({
+          id,
+          title,
+          headerTitle,
+          headerShown,
+          Component,
+          tabBarIcon,
+          tabPress,
+          headerLeft,
+          headerRight,
+        }) => (
+          <HomeNavigator.Screen
+            key={id}
+            name={id}
+            component={Component}
+            listeners={{ tabPress }}
+            options={{
+              title: title || id,
+              headerTitle: headerTitle || title || id,
+              headerLeft,
+              headerRight,
+              tabBarIcon: tabBarIcon || undefined,
+              // hide the item if tabBarIcon is set to null
+              tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+              headerShown,
+            }}
+          />
+        ),
+      )}
     </HomeNavigator.Navigator>
   );
 };
@@ -97,5 +113,5 @@ export default HomeNavigation;
 export const HomeNavigationScreen: AppScreen = {
   id: STRINGS.navigation_app_home,
   title: STRINGS.navigation_app_home,
-  component: HomeNavigation,
+  Component: HomeNavigation,
 };

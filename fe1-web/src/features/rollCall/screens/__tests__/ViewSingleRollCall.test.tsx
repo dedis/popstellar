@@ -19,7 +19,7 @@ import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
 import { RollCall, RollCallStatus } from '../../objects';
-import EventRollCall from '../EventRollCall';
+import ViewSingleRollCall from '../ViewSingleRollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -91,13 +91,13 @@ describe('EventRollCall', () => {
   it('should correctly render', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => (
-      <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer={false} />
-    );
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={Screen} />
+          <MockNavigator
+            component={ViewSingleRollCall}
+            params={{ eventId: mockRollCallCreated.id.valueOf(), isOrganizer: false }}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -108,11 +108,13 @@ describe('EventRollCall', () => {
   it('should call requestOpenRollCall when the open button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={Screen} />
+          <MockNavigator
+            component={ViewSingleRollCall}
+            params={{ eventId: mockRollCallCreated.id.valueOf(), isOrganizer: true }}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -125,11 +127,13 @@ describe('EventRollCall', () => {
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
 
-    const Screen = () => <EventRollCall eventId={mockRollCallClosed.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={Screen} />
+          <MockNavigator
+            component={ViewSingleRollCall}
+            params={{ eventId: mockRollCallClosed.id.valueOf(), isOrganizer: true }}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -142,11 +146,13 @@ describe('EventRollCall', () => {
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
     mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
 
-    const Screen = () => <EventRollCall eventId={mockRollCallOpened.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={Screen} />
+          <MockNavigator
+            component={ViewSingleRollCall}
+            params={{ eventId: mockRollCallOpened.id.valueOf(), isOrganizer: true }}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );

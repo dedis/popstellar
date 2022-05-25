@@ -18,6 +18,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
+import { RollCallFeature } from '../interface';
 import { requestCloseRollCall } from '../network';
 import { makeRollCallSelector } from '../reducer';
 
@@ -197,3 +198,8 @@ const RollCallOpened = () => {
 };
 
 export default RollCallOpened;
+
+export const RollCallOpenedScreen: RollCallFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_open_roll_call,
+  Component: RollCallOpened,
+};

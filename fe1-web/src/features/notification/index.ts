@@ -5,7 +5,7 @@ import {
   NotificationConfigurationInterface,
   NOTIFICATION_FEATURE_IDENTIFIER,
 } from './interface/Configuration';
-import NotificationNavigation from './navigation/NotificationNavigation';
+import { NotificationNavigationScreen } from './navigation';
 import {
   addNotification,
   discardNotifications,
@@ -20,9 +20,7 @@ export const configure = (): NotificationConfigurationInterface => ({
     NotificationBadge,
   },
 
-  navigation: {
-    NotificationNavigation,
-  },
+  laoScreens: [NotificationNavigationScreen],
 
   actionCreators: {
     addNotification,

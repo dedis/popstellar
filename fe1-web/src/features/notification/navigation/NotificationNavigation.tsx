@@ -5,6 +5,7 @@ import { NotificationParamList } from 'core/navigation/typing/NotificationParamL
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { NotificationFeature } from '../interface/Feature';
 import NotificationScreen from '../screens/NotificationScreen';
 import SingleNotificationScreen from '../screens/SingleNotificationScreen';
 
@@ -40,3 +41,11 @@ const NotificationNavigation = () => {
 };
 
 export default NotificationNavigation;
+
+export const NotificationNavigationScreen: NotificationFeature.LaoScreen = {
+  id: STRINGS.navigation_lao_notifications,
+  Component: NotificationNavigation,
+  headerShown: false,
+  tabBarIcon: null,
+  order: 0,
+};

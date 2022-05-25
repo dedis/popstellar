@@ -92,8 +92,5 @@ export interface HomeInterface extends FeatureInterface {
      */
     encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
   };
-  screens: {
-    Home: React.ComponentType<any>;
-  };
   context: HomeReactContext;
 }

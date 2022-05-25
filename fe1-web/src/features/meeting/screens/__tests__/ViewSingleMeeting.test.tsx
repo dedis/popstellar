@@ -3,6 +3,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
+import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import EventReducer, { addEvent } from 'features/events/reducer/EventReducer';
@@ -11,7 +12,7 @@ import { MeetingReactContext, MEETING_FEATURE_IDENTIFIER } from 'features/meetin
 import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 
 import { Meeting } from '../../objects/Meeting';
-import EventMeeting from '../EventMeeting';
+import ViewSingleMeeting from '../ViewSingleMeeting';
 
 beforeAll(() => {
   jest.useFakeTimers('modern');
@@ -35,12 +36,15 @@ const contextValue = {
   } as MeetingReactContext,
 };
 
-describe('EventMeeting', () => {
+describe('ViewSingleMeeting', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <EventMeeting eventId={mockMeeting.id.valueOf()} />
+          <MockNavigator
+            component={ViewSingleMeeting}
+            params={{ eventId: mockMeeting.id.valueOf(), isOrganizer: false }}
+          />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

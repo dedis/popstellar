@@ -17,7 +17,7 @@ const EventList = jest.fn();
 const CreateEventButton = jest.fn();
 
 const laoNavigationScreens: LaoFeature.LaoScreen[] = [];
-const organizerNavigationScreens: LaoFeature.OrganizerScreen[] = [];
+const organizerNavigationScreens: LaoFeature.LaoEventScreen[] = [];
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
