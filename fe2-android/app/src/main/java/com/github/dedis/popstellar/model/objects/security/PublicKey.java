@@ -50,7 +50,7 @@ public class PublicKey extends Base64URLData {
       byte[] hash = digest.digest(this.getEncoded().getBytes(StandardCharsets.UTF_8));
       return Base64.getUrlEncoder().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
-      System.err.println("Something is wrong by hashing the String element ");
+      Log.e(TAG, "Something is wrong by hashing the String element ");
       throw new IllegalArgumentException("Error in computing the hash in public key");
     }
   }

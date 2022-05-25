@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class PostTransactionCoin extends Data {
   @SerializedName(value = "transaction_id")
-  private final String transaction_id; // TxOutHash SHA256 over base64encode(transaction)
+  private final String transactionId; // TxOutHash SHA256 over base64encode(transaction)
 
   @SerializedName(value = "transaction")
   private final Transaction transaction; // the transaction object // String
@@ -17,7 +17,7 @@ public class PostTransactionCoin extends Data {
    */
   public PostTransactionCoin(Transaction transaction) {
     this.transaction = transaction;
-    this.transaction_id = transaction.computeId();
+    this.transactionId = transaction.computeId();
   }
 
   @Override
@@ -36,7 +36,7 @@ public class PostTransactionCoin extends Data {
   @Override
   public String toString() {
     return "PostTransactionCoin{ transaction_id="
-        + transaction_id
+        + transactionId
         + "transaction="
         + transaction
         + '}';
@@ -57,6 +57,6 @@ public class PostTransactionCoin extends Data {
   }
 
   public String getTransactionId() {
-    return transaction_id;
+    return transactionId;
   }
 }
