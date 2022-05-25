@@ -694,10 +694,21 @@ func (c *Channel) gatherResults(questions map[string]*question,
 func (c *Channel) decryptVote(vote string) (int, error) {
 	votebuf, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded")
+		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
 	}
-	K := votebuf[:32]
-	C := votebuf[32:]
+
+	K := crypto.Suite.Point()
+	C := crypto.Suite.Point()
+
+	err = K.UnmarshalBinary(votebuf[:32])
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+	}
+
+	err = C.UnmarshalBinary(votebuf[32:])
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+	}
 
 	S := crypto.Suite.Point().Mul(c.secElectionKey, K)
 	data, err := crypto.Suite.Point().Sub(C, S).Data()
@@ -711,7 +722,6 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	}
 
 	return index, nil
-
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {

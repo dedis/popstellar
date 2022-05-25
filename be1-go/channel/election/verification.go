@@ -137,7 +137,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 			if !ok {
 				return answer.NewErrorf(-4, "votes in open ballot should be int")
 			}
-			vs = string(v)
+			vs = fmt.Sprintf("%d", v)
 		case messagedata.SecretBallot:
 			vs, ok = vote.Vote.(string)
 			if !ok {
@@ -150,7 +150,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 			}
 
 			if l := len(temp); l != 64 {
-				return answer.NewErrorf(-4, "vote %d should be 64 bytes long, but is %s", i, l)
+				return answer.NewErrorf(-4, "vote %d should be 64 bytes long, but is %d", i, l)
 			}
 		}
 

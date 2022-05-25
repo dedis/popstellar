@@ -37,7 +37,6 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=", msg.Votes[0].ID)
 	require.Equal(t, "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=", msg.Votes[0].Question)
 
-	require.Len(t, msg.Votes[0].Vote, 1)
 	require.Equal(t, 0, msg.Votes[0].Vote)
 }
 
@@ -69,9 +68,8 @@ func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
 			require.Error(t, err)
 		}
 	}
-	
+
 	t.Run("vote is an array", testWithWrongType([]int{0}))
 	t.Run("vote is a boolean", testWithWrongType(false))
-	t.Run("vote is a float", testWithWrongType(3.4))
 	t.Run("vote is a float", testWithWrongType(3.4))
 }

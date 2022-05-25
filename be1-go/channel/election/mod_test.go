@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"go.dedis.ch/kyber/v3/util/random"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 )
@@ -459,6 +460,29 @@ func Test_Sending_Election_Key(t *testing.T) {
 	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
 }
 
+func Test_Decrypt(t *testing.T) {
+	// create secret ballot election channel: election with one question
+	electChannel, _ := newFakeChannel(t, true)
+
+	msg := []byte("1")
+
+	K, C := electChannel.Encrypt(electChannel.pubElectionKey, msg)
+
+	kBuf, err := K.MarshalBinary()
+
+	require.NoError(t, err)
+
+	cBuf, err := C.MarshalBinary()
+	require.NoError(t, err)
+
+	buf := append(kBuf, cBuf...)
+
+	index, err := electChannel.decryptVote(base64.URLEncoding.EncodeToString(buf))
+	require.NoError(t, err)
+
+	require.Equal(t, 1, index)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -670,4 +694,15 @@ func (f *fakeSocket) SendError(id *int, err error) {
 
 func (f *fakeSocket) ID() string {
 	return f.id
+}
+
+// Encrypt performs the ElGamal encryption algorithm to test decryption
+func (c *Channel) Encrypt(public kyber.Point, msg []byte) (K, C kyber.Point) {
+	M := crypto.Suite.Point().Embed(msg, random.New())
+
+	k := crypto.Suite.Scalar().Pick(random.New())
+	K = crypto.Suite.Point().Mul(k, nil)
+	S := crypto.Suite.Point().Mul(k, public)
+	C = S.Add(S, M)
+	return
 }

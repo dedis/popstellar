@@ -25,19 +25,30 @@ type Vote struct {
 	Vote     interface{} `json:"vote"`
 }
 
+type raw struct {
+	ID       string      `json:"id"`
+	Question string      `json:"question"`
+	Vote     interface{} `json:"vote"`
+}
+
 // UnmarshalJSON solves that Vote.Vote can be int or string
 func (v *Vote) UnmarshalJSON(b []byte) error {
-	var vote Vote
-	if err := json.Unmarshal(b, &vote); err != nil {
+	var vTemp raw
+	if err := json.Unmarshal(b, &vTemp); err != nil {
 		return err
 	}
 
-	switch vote.Vote.(type) {
-	case int, string:
-		*v = Vote(vote)
+	switch vTemp.Vote.(type) {
+	case float64:
+		f, _ := vTemp.Vote.(float64)
+		i := int(f)
+		*v = Vote{vTemp.ID, vTemp.Question, i}
+		return nil
+	case string:
+		*v = Vote(vTemp)
 		return nil
 	default:
-		return answer.NewErrorf(-4, "invalid vote type, should be int or string")
+		return answer.NewErrorf(-4, "invalid vote type, should be int or string but was %v", vTemp.Vote)
 	}
 }
 
