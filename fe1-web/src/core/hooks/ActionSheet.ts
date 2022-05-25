@@ -18,7 +18,7 @@ export const useActionSheet = () => {
     showActionSheetWithOptions(
       {
         options: [...options.map((o) => o.displayName), STRINGS.general_button_cancel],
-        cancelButtonIndex: options.length - 1,
+        cancelButtonIndex: options.length,
       },
       (idx) => {
         if (idx !== undefined && idx < options.length) {

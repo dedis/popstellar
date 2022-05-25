@@ -257,7 +257,7 @@ const CreateElection = () => {
           onConfirmEventCreation(
             startTime,
             endTime,
-            createElection,
+            onCreateElection,
             setModalStartIsVisible,
             setModalEndIsVisible,
           )
@@ -279,9 +279,8 @@ const CreateElection = () => {
         setVisibility={setModalStartIsVisible}
         title={STRINGS.modal_event_creation_failed}
         description={STRINGS.modal_event_starts_in_past}
-        onConfirmPress={() => onCreateElection()}
+        onConfirmPress={onCreateElection}
         buttonConfirmText={STRINGS.modal_button_start_now}
-        buttonCancelText={STRINGS.modal_button_go_back}
       />
     </ScreenWrapper>
   );

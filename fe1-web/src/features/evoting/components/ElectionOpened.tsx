@@ -6,6 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { Button, CheckboxList, TimeDisplay } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -56,7 +57,7 @@ const ElectionOpened = ({ election, questions, isOrganizer }: IPropTypes) => {
   };
 
   return (
-    <>
+    <ScreenWrapper>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
       {
         // in case the election is a secret ballot election, tell the
@@ -97,7 +98,7 @@ const ElectionOpened = ({ election, questions, isOrganizer }: IPropTypes) => {
           <Text>{STRINGS.election_wait_for_election_key}</Text>
         )
       }
-    </>
+    </ScreenWrapper>
   );
 };
 

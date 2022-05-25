@@ -3,6 +3,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { TimeDisplay } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
 
 import { Election, QuestionResult } from '../objects';
@@ -10,7 +11,7 @@ import BarChartDisplay from './BarChartDisplay';
 
 const ElectionResult = ({ election }: IPropTypes) => {
   return (
-    <>
+    <ScreenWrapper>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
       <Text style={Typography.base}>Election Results</Text>
       {election.questionResult &&
@@ -24,7 +25,7 @@ const ElectionResult = ({ election }: IPropTypes) => {
             </View>
           ) : null;
         })}
-    </>
+    </ScreenWrapper>
   );
 };
 
