@@ -26,7 +26,7 @@ object WitnessMessageExamples {
     Base64Data.encode(workingWitnessMessage.toJson.toString),
     SENDER,
     SIGNATURE,
-    Hash(Base64Data("")),
+    MESSAGE_ID,
     List.empty,
     Some(workingWitnessMessage)
   )
@@ -36,7 +36,7 @@ object WitnessMessageExamples {
     Base64Data.encode(wrongSignatureWitnessMessage.toJson.toString),
     SENDER,
     SIGNATURE,
-    Hash(Base64Data("")),
+    MESSAGE_ID,
     List.empty,
     Some(wrongSignatureWitnessMessage)
   )
@@ -45,7 +45,7 @@ object WitnessMessageExamples {
     Base64Data.encode(workingWitnessMessage.toJson.toString),
     invalidSender,
     SIGNATURE,
-    Hash(Base64Data("")),
+    MESSAGE_ID,
     List.empty,
     Some(workingWitnessMessage)
   )
