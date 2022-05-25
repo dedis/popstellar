@@ -1,12 +1,8 @@
 import { Hash, Timestamp } from 'core/objects';
 
-import { EvotingFeature } from '../interface/Feature';
-
 /**
  * Object to represent an election and all its components.
  */
-
-export const ELECTION_EVENT_TYPE = 'ELECTION';
 
 export enum ElectionStatus {
   NOT_STARTED = 'not started',
@@ -20,7 +16,8 @@ export enum ElectionVersion {
   SECRET_BALLOT = 'SECRET_BALLOT',
 }
 
-export interface ElectionState extends EvotingFeature.EventState {
+export interface ElectionState {
+  id: string;
   lao: string;
   name: string;
   version: ElectionVersion;
@@ -45,17 +42,17 @@ export interface Question {
 export interface Vote {
   id: string;
   question: string;
-  vote: number[];
+  vote: number;
 }
 
 export interface EncryptedVote {
   id: string;
   question: string;
-  vote: string[];
+  vote: string;
 }
 
 // This type ensures that for each question there is a unique set of option indices
-export type SelectedBallots = { [questionIndex: number]: Set<number> };
+export type SelectedBallots = { [questionIndex: number]: number };
 
 export interface RegisteredVote {
   createdAt: number;
@@ -75,6 +72,8 @@ export interface QuestionResult {
 }
 
 export class Election {
+  public static EVENT_TYPE = 'ELECTION';
+
   public readonly lao: Hash;
 
   public readonly id: Hash;
@@ -173,10 +172,6 @@ export class Election {
    * Creates an ElectionState from the current Election object.
    */
   public toState(): ElectionState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      eventType: ELECTION_EVENT_TYPE,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 }

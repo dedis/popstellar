@@ -71,9 +71,9 @@ describe('handleLaoGreet', () => {
     });
 
     const msg = ExtendedMessage.fromMessage(
-      ExtendedMessage.fromData(greetLaoMsg, mockKeyPair),
-      mockChannel,
+      ExtendedMessage.fromData(greetLaoMsg, mockKeyPair, mockChannel),
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -118,9 +118,10 @@ describe('makeLaoGreetStoreWatcher', () => {
           frontend: mockPopToken.publicKey,
         }),
         mockKeyPair,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -143,9 +144,10 @@ describe('makeLaoGreetStoreWatcher', () => {
           frontend: mockPopToken.publicKey,
         }),
         mockKeyPair,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -156,9 +158,10 @@ describe('makeLaoGreetStoreWatcher', () => {
           signature: mockKeyPair.privateKey.sign(msg.message_id),
         }),
         mockKeyPair,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -181,9 +184,10 @@ describe('makeLaoGreetStoreWatcher', () => {
           frontend: mockPopToken.publicKey,
         }),
         mockPopToken,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -195,9 +199,9 @@ describe('makeLaoGreetStoreWatcher', () => {
 
     const extendedWitnessMessage = ExtendedMessage.fromMessage(
       // mockKeyPair is the organizer of mockLao
-      ExtendedMessage.fromData(witnessMessage, mockKeyPair),
-      mockChannel,
+      ExtendedMessage.fromData(witnessMessage, mockKeyPair, mockChannel),
       mockAddress,
+      mockChannel,
       t,
     );
 

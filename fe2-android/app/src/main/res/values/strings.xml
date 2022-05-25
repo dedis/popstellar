@@ -211,6 +211,22 @@
   <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_receipt">RECEIPT</string>
+  <string name="digital_cash_send_button">Send</string>
+  <string name="digital_cash_amount">Amount</string>
+  <string name="digital_cash_address">Address</string>
+  <string name="digital_cash_laocoindefault">LAOcoin: 0.00</string>
+  <string name="digital_cash_amount_empty">Amount: 0.00</string>
+  <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
+  <string name="digital_cash_my_address">My Address: address</string>
+  <string name="digital_cash_issue_button">Issue</string>
+  <string name="digital_cash_select_1">All LAO members</string>
+  <string name="digital_cash_select_2">All LAO attendees</string>
+  <string name="digital_cash_select_3">All LAO witnesses</string>
+  <string name="digital_cash_or">OR</string>
+  <string name="digital_cash_content_description_qr_receipt">Receipt qr code transaction</string>
+  <string name="digital_cash_content_description_qr_receive">Receive qr code transaction</string>
+  <string name="digital_cash_select_lao_member">Select LAO Member</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>

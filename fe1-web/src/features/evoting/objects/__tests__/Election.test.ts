@@ -7,7 +7,6 @@ import STRINGS from 'resources/strings';
 
 import {
   Election,
-  ELECTION_EVENT_TYPE,
   ElectionStatus,
   Question,
   RegisteredVote,
@@ -44,7 +43,7 @@ const initializeData = () => {
   vote1 = {
     id: 'v1',
     question: 'q1',
-    vote: [0],
+    vote: 0,
   };
 
   registeredVotes = {
@@ -56,7 +55,6 @@ const initializeData = () => {
 
   electionState = {
     id: 'electionId',
-    eventType: ELECTION_EVENT_TYPE,
     lao: 'MyLao',
     name: 'MyElection',
     version: ElectionVersion.OPEN_BALLOT,
@@ -91,7 +89,6 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: ELECTION_EVENT_TYPE,
       lao: mockLaoName,
       name: NAME,
       version: ElectionVersion.OPEN_BALLOT,
