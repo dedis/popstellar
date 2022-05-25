@@ -1,1 +1,1 @@
-export * from './EventsHooks';
+export * from './EventHooks';

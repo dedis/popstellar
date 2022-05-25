@@ -2,17 +2,22 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { EventsReactContext, EVENTS_FEATURE_IDENTIFIER } from '../interface';
+import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from '../interface';
 
-export namespace EventsHooks {
-  export const useEventsContext = (): EventsReactContext => {
+export namespace EventHooks {
+  export const useEventsContext = (): EventReactContext => {
     const featureContext = useContext(FeatureContext);
     // assert that the evoting context exists
-    if (!(EVENTS_FEATURE_IDENTIFIER in featureContext)) {
+    if (!(EVENT_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Events context could not be found!');
     }
-    return featureContext[EVENTS_FEATURE_IDENTIFIER] as EventsReactContext;
+    return featureContext[EVENT_FEATURE_IDENTIFIER] as EventReactContext;
   };
+
+  /**
+   * Gets the current lao id
+   */
+  export const useCurrentLaoId = () => useEventsContext().useCurrentLaoId();
 
   /**
    * Gets whether the current user is organizer of the current lao
@@ -24,5 +29,5 @@ export namespace EventsHooks {
    * Gets the list of registrered event type components
    * @returns The list of registered event type components
    */
-  export const useEventTypeComponents = () => useEventsContext().eventTypeComponents;
+  export const useEventTypes = () => useEventsContext().eventTypes;
 }

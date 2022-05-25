@@ -2,6 +2,7 @@ import 'jest-extended';
 
 import {
   configureTestFeatures,
+  mockChannel,
   mockKeyPair,
   mockLao,
   mockLaoId,
@@ -26,7 +27,7 @@ describe('Message', () => {
       timestamp: new Timestamp(1607277600),
     });
 
-    const m = Message.fromData(messageData, mockPopToken);
+    const m = Message.fromData(messageData, mockPopToken, mockChannel);
 
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const signature = mockPopToken.privateKey.sign(encodedDataJson);
@@ -42,7 +43,7 @@ describe('Message', () => {
       registered_votes: new Hash('1234'),
     });
 
-    const m = await Message.fromData(messageData, mockKeyPair);
+    const m = Message.fromData(messageData, mockKeyPair, mockChannel);
 
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const signature = mockKeyPair.privateKey.sign(encodedDataJson);

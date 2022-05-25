@@ -29,7 +29,7 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('WitnessHooks', () => {
-  describe('WitnessHooks.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the correct value', () => {
       const { result } = renderHook(() => WitnessHooks.useCurrentLaoId(), {
         wrapper,
@@ -38,7 +38,7 @@ describe('WitnessHooks', () => {
     });
   });
 
-  describe('WitnessHooks.useDiscardNotifications', () => {
+  describe('useDiscardNotifications', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => WitnessHooks.useDiscardNotifications(), {
         wrapper,
@@ -47,7 +47,7 @@ describe('WitnessHooks', () => {
     });
   });
 
-  describe('WitnessHooks.useMarkNotificationAsRead', () => {
+  describe('useMarkNotificationAsRead', () => {
     it('should return the correct function', () => {
       const { result } = renderHook(() => WitnessHooks.useMarkNotificationAsRead(), {
         wrapper,
@@ -56,7 +56,7 @@ describe('WitnessHooks', () => {
     });
   });
 
-  describe('WitnessHooks.useIsEnabled', () => {
+  describe('useIsEnabled', () => {
     it('should return the correct value', () => {
       const { result } = renderHook(() => WitnessHooks.useIsEnabled(), {
         wrapper,
