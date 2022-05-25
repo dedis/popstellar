@@ -3,10 +3,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import android.util.Log;
+
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class TransactionTest {
   // Version
