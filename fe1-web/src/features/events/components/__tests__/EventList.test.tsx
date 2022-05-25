@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getEventById } from 'features/events/functions';
 import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from 'features/events/interface';
@@ -57,6 +57,7 @@ const getContextValue = (isOrganizer: boolean) => ({
     addEvent,
     updateEvent,
     getEventById,
+    useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
   } as EvotingReactContext,
   [MEETING_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,

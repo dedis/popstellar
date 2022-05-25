@@ -16,6 +16,7 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -29,6 +30,8 @@ const (
 	failedToBroadcast  = "failed to broadcast message: %v"
 )
 
+var suite = crypto.Suite
+
 // Channel is used to handle election messages.
 type Channel struct {
 	sockets   channel.Sockets
@@ -36,6 +39,13 @@ type Channel struct {
 	channelID string
 
 	// *baseChannel
+
+	// Type of election channel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
+	electionType string
+
+	// Keys of the election if secret ballot, nil otherwise
+	pubElectionKey kyber.Point
+	secElectionKey kyber.Scalar
 
 	// Starting time of the election
 	start int64
@@ -106,25 +116,27 @@ type attendees struct {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
+func NewChannel(channelPath string, msg message.Message, msgData messagedata.ElectionSetup,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+	log zerolog.Logger, organizerPubKey kyber.Point) (channel.Channel, error) {
 
 	log = log.With().Str("channel", "election").Logger()
 
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
+	pubKey, secKey := generateKeys()
 
 	newChannel := &Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
-		start:      msgData.StartTime,
-		end:        msgData.EndTime,
-		started:    false,
-		terminated: false,
-		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
+		electionType:   msgData.Version,
+		pubElectionKey: pubKey,
+		secElectionKey: secKey,
+		start:          msgData.StartTime,
+		end:            msgData.EndTime,
+		started:        false,
+		terminated:     false,
+		questions:      getAllQuestionsForElectionChannel(msgData.Questions),
 
 		attendees: &attendees{
 			store: attendeesMap,
@@ -137,9 +149,20 @@ func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
 		organiserPubKey: organizerPubKey,
 	}
 
-	newChannel.registry = newChannel.NewElectionRegistry()
+	newChannel.registry = newChannel.newElectionRegistry()
 
-	return newChannel
+	newChannel.inbox.StoreMessage(msg)
+
+	if newChannel.electionType != messagedata.SecretBallot {
+		return newChannel, nil
+	}
+
+	err := newChannel.createAndSendElectionKey()
+	if err != nil {
+		err = xerrors.Errorf("failed to send the election key: %v", err)
+	}
+
+	return newChannel, err
 }
 
 // ---
@@ -235,8 +258,8 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	return nil
 }
 
-// NewElectionRegistry creates a new registry for the election channel
-func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
+// newElectionRegistry creates a new registry for the election channel
+func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
 	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
@@ -486,6 +509,79 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.sockets.SendToAll(buf)
 
 	return nil
+}
+
+// createAndSendElectionKey creates and sends the election#key message
+func (c *Channel) createAndSendElectionKey() error {
+	// Marshalls the election key
+	ekBuf, err := c.pubElectionKey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the election key: %v", err)
+	}
+
+	msgData := messagedata.ElectionKey{
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
+		Election: c.getElectionID(),
+		Key:      base64.URLEncoding.EncodeToString(ekBuf),
+	}
+
+	// Marshalls the message data
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the data: %v", err)
+	}
+
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	// Marshalls the server public key
+	pk := c.hub.GetPubKeyServ()
+	skBuf, err := pk.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the server key: %v", err)
+	}
+
+	// Sign the data
+	signatureBuf, err := c.hub.Sign(dataBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
+	electionKeyMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(skBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = c.broadcastToAllClients(electionKeyMsg)
+	if err != nil {
+		return xerrors.Errorf(failedToBroadcast, err)
+	}
+
+	c.inbox.StoreMessage(electionKeyMsg)
+
+	return nil
+}
+
+// getElectionID extracts and returns the electionID from the channelID
+func (c *Channel) getElectionID() string {
+	// split channel to [lao id, election id]
+	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+
+	return IDs[1]
+}
+
+// generateKeys generates and returns a key pair
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
 }
 
 // isPresent checks if a key representing a user is present in

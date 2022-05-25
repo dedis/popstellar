@@ -633,8 +633,11 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees,
+	electionCh, err := election.NewChannel(channelPath, msg, setupMsg, c.attendees,
 		c.hub, c.log, c.organizerPubKey)
+	if err != nil {
+		return xerrors.Errorf("failed to create the election: %v", err)
+	}
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)

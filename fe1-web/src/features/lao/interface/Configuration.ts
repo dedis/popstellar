@@ -3,7 +3,7 @@ import { AnyAction, Reducer } from 'redux';
 
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, Hash } from 'core/objects';
+import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { Lao } from '../objects';
@@ -107,6 +107,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The current lao id or undefined if there is none
      */
     useCurrentLaoId: () => Hash | undefined;
+
+    /**
+     * Returns the public key of the organizer's backend for a given lao id
+     * @param laoId The lao id for which the key should be retrieved
+     * @returns The public key or undefined if there is none
+     */
+    useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
   };
 
   /* functions */
@@ -128,6 +135,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The current lao id or undefined if there is none
      */
     getCurrentLaoId: () => Hash | undefined;
+
+    /**
+     * Gets the organizer backend's public key for a given lao
+     * @param laoId The lao id
+     * @returns The organizer's backend public key for the given lao or undefined if it is not known
+     */
+    getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
 
     /**
      * Sends a network request to create a new lao and returns

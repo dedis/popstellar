@@ -18,9 +18,15 @@ export type NonMethodKeys<T> = { [P in keyof T]: T[P] extends Function ? never :
  * Given a type T, this picks all keys selected by NonMethodKeys<T> which are exactly
  * the keys that do not have a method as their value
  */
-export type RemoveMethods<T> = Pick<T, NonMethodKeys<T>>;
+export type OmitMethods<T> = Pick<T, NonMethodKeys<T>>;
 
-export type MessageDataProperties<T> = Omit<RemoveMethods<T>, 'object' | 'action'>;
+export type MessageDataProperties<T> = Omit<OmitMethods<T>, 'object' | 'action'>;
+
+/**
+ * Given a type T and K, this sets all properties of type K in T to the type they have in K
+ * This can be used to extend a type or to overwrite types of the parent type
+ */
+export type ExtendType<T, K> = Omit<T, keyof K> & K;
 
 /**
  * Checks whether a given value is defined (not null or undefined)

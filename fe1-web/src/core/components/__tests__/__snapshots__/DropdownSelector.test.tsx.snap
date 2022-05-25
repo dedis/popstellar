@@ -1,0 +1,127 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DropdownSelector renders correclty with an invalid preselected value 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "flex": 1,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
+    }
+  }
+>
+  <RNCPicker
+    items={
+      Array [
+        Object {
+          "label": "some label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some value",
+        },
+        Object {
+          "label": "some other label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some other value",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`DropdownSelector renders correctly with preselected value 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "flex": 1,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
+    }
+  }
+>
+  <RNCPicker
+    items={
+      Array [
+        Object {
+          "label": "some label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some value",
+        },
+        Object {
+          "label": "some other label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some other value",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`DropdownSelector renders correctly without preselected value 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "flex": 1,
+      "marginHorizontal": 80,
+      "marginVertical": 16,
+    }
+  }
+>
+  <RNCPicker
+    items={
+      Array [
+        Object {
+          "label": "some label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some value",
+        },
+        Object {
+          "label": "some other label",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": "some other value",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;

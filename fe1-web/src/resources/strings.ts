@@ -177,6 +177,8 @@ namespace STRINGS {
   export const election_create_setup = 'Election Setup';
   export const election_create_name = 'Name';
   export const election_create_name_placeholder = 'Election Q1 2022';
+  export const election_create_version_open_ballot = 'Open Ballot';
+  export const election_create_version_secret_ballot = 'Secret Ballot';
   export const election_create_start_time = 'Start time';
   export const election_create_finish_time = 'End time';
   export const election_create_question = 'Question';
@@ -192,7 +194,7 @@ namespace STRINGS {
   export const election_voting_method = 'Voting Method';
   export const election_method_Plurality = 'Plurality';
   export const election_method_Approval = 'Approval';
-  export const election_version_identifier = '1.0.0';
+  export const election_wait_for_election_key = 'Waiting for the election key to be broadcasted';
 
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';

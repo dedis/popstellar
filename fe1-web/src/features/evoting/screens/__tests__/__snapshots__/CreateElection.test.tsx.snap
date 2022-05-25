@@ -348,6 +348,45 @@ exports[`CreateElection renders correctly 1`] = `
                               }
                             }
                           />
+                          <View
+                            style={
+                              Object {
+                                "alignItems": "center",
+                                "flex": 1,
+                                "marginHorizontal": 80,
+                                "marginVertical": 16,
+                              }
+                            }
+                          >
+                            <RNCPicker
+                              items={
+                                Array [
+                                  Object {
+                                    "label": "Open Ballot",
+                                    "testID": undefined,
+                                    "textColor": undefined,
+                                    "value": "OPEN_BALLOT",
+                                  },
+                                  Object {
+                                    "label": "Secret Ballot",
+                                    "testID": undefined,
+                                    "textColor": undefined,
+                                    "value": "SECRET_BALLOT",
+                                  },
+                                ]
+                              }
+                              onChange={[Function]}
+                              selectedIndex={0}
+                              style={
+                                Array [
+                                  Object {
+                                    "height": 216,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            />
+                          </View>
                           <View>
                             <TextInput
                               defaultValue=""
@@ -425,9 +464,15 @@ exports[`CreateElection renders correctly 1`] = `
                           <View
                             style={
                               Array [
-                                undefined,
                                 Object {
-                                  "zIndex": "initial",
+                                  "alignContent": "center",
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                  "zIndex": 3,
+                                },
+                                Object {
+                                  "zIndex": 0,
                                 },
                               ]
                             }

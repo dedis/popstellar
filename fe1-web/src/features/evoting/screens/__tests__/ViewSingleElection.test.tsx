@@ -18,10 +18,16 @@ import {
   mockElectionOpened,
   mockElectionResults,
   mockElectionTerminated,
+  openedSecretBallotElection,
 } from 'features/evoting/__tests__/utils';
 import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import { Election, ElectionStatus } from 'features/evoting/objects';
-import { addElection, electionReducer, updateElection } from 'features/evoting/reducer';
+import {
+  addElection,
+  electionKeyReducer,
+  electionReducer,
+  updateElection,
+} from 'features/evoting/reducer';
 
 import ViewSingleElection from '../ViewSingleElection';
 
@@ -30,7 +36,8 @@ const undefinedElection = Election.fromState({
   electionStatus: 'undefined' as ElectionStatus,
 });
 
-const mockStore = createStore(combineReducers({ ...electionReducer }));
+// mocks
+const mockStore = createStore(combineReducers({ ...electionReducer, ...electionKeyReducer }));
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: Election.EVENT_TYPE,
@@ -217,6 +224,34 @@ describe('ViewSingleElection', () => {
               component={ViewSingleElection}
               params={{ eventId: undefinedElection.id.valueOf(), isOrganizer: false }}
             />
+          </FeatureContext.Provider>
+        </Provider>,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('Secret ballot election', () => {
+    beforeAll(() => {
+      mockStore.dispatch(updateElection(openedSecretBallotElection.toState()));
+    });
+
+    it('renders correctly for an organizer', () => {
+      const component = render(
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection eventId={openedSecretBallotElection.id.valueOf()} isOrganizer />
+          </FeatureContext.Provider>
+        </Provider>,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('renders correctly for an attendee', () => {
+      const component = render(
+        <Provider store={mockStore}>
+          <FeatureContext.Provider value={contextValue}>
+            <EventElection eventId={openedSecretBallotElection.id.valueOf()} />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();

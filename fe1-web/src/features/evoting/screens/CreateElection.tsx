@@ -12,6 +12,7 @@ import {
   TextInputList,
   Button,
   Input,
+  DropdownSelector,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -27,7 +28,7 @@ import STRINGS from 'resources/strings';
 import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { Question } from '../objects';
+import { ElectionVersion, Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -42,27 +43,118 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+// the type used for storing questions in the react state
+// does not yet contain the id of the questions, this is computed
+// only on creation of the election
+// ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
+type NewQuestion = Omit<Question, 'id' | 'write_in'>;
+
+const EMPTY_QUESTION: NewQuestion = {
+  question: '',
+  voting_method: VOTING_METHOD,
+  ballot_options: [''],
+};
+
+const MIN_BALLOT_OPTIONS = 2;
+
+/**
+ * Some helper functions
+ */
+
+/**
+ * Checks whether a given newly created question is invalid
+ * @param question The question to check
+ */
+const isQuestionInvalid = (question: NewQuestion): boolean =>
+  question.question === '' || question.ballot_options.length < MIN_BALLOT_OPTIONS;
+
+/**
+ * Creates a new election based on the given values and returns the related request promise
+ * @param laoId The id of the lao in which the new election should be created
+ * @param version The version of the lection that should be created
+ * @param electionName The name of the election
+ * @param questions The questions created in the UI
+ * @param startTime The start time of the election
+ * @param endTime The end time of the election
+ * @returns The promise returned by the requestCreateElection() function
+ */
+const createElection = (
+  laoId: Hash,
+  version: ElectionVersion,
+  electionName: string,
+  questions: NewQuestion[],
+  startTime: Timestamp,
+  endTime: Timestamp,
+) => {
+  // get the current time
+  const now = Timestamp.EpochNow();
+
+  // compute the id for the new election
+  const electionId = Hash.fromStringArray(
+    EventTags.ELECTION,
+    laoId.toString(),
+    now.toString(),
+    electionName,
+  );
+
+  // compute the id for all questions and add the write_in property
+  const questionsWithId = questions.map((item) => ({
+    ...item,
+    id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
+    // for now the write_in feature is disabled (2022-03-16, Tyratox)
+    write_in: false,
+  }));
+
+  return requestCreateElection(
+    laoId,
+    electionName,
+    version,
+    startTime,
+    endTime,
+    questionsWithId,
+    now,
+  );
+};
+
 /**
  * UI to create an Election Event
  */
 const CreateElection = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
+  const currentLao = EvotingHooks.useCurrentLao();
 
-  const [startTime, setStartTime] = useState(Timestamp.EpochNow());
-  const [endTime, setEndTime] = useState(
+  // form data for the new election
+  const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
+  const [endTime, setEndTime] = useState<Timestamp>(
     Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
   );
-  const [electionName, setElectionName] = useState('');
-  const minBallotOptions = 2;
+  const [electionName, setElectionName] = useState<string>('');
 
-  const emptyQuestion = { question: '', voting_method: VOTING_METHOD, ballot_options: [''] };
-  const [questions, setQuestions] = useState([emptyQuestion]);
-  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
-  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
-  const time = Timestamp.EpochNow();
+  const [questions, setQuestions] = useState<NewQuestion[]>([EMPTY_QUESTION]);
+  const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
 
-  const currentLao = EvotingHooks.useCurrentLao();
+  // UI state
+  const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
+
+  // Confirm button only clickable when the Name, Question and 2 Ballot options have values
+  const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
+
+  const onCreateElection = () => {
+    createElection(currentLao.id, version, electionName, questions, startTime, endTime)
+      .then(() => {
+        navigation.navigate(STRINGS.navigation_lao_events_home);
+      })
+      .catch((err) => {
+        console.error('Could not create Election, error:', err);
+        toast.show(`Could not create Election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  };
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();
@@ -91,49 +183,6 @@ const CreateElection = () => {
     );
   };
 
-  const electionId = Hash.fromStringArray(
-    EventTags.ELECTION,
-    currentLao.id.toString(),
-    time.toString(),
-    electionName,
-  );
-  const getQuestionObjects = (): Question[] =>
-    questions.map((item) => ({
-      ...item,
-      id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
-      // for now the write_in feature is disabled (2022-03-16, Tyratox)
-      write_in: false,
-    }));
-
-  const isInvalid = (obj: Question): boolean =>
-    obj.question === '' || obj.ballot_options.length < minBallotOptions;
-
-  // Confirm button only clickable when the Name, Question and 2 Ballot options have values
-  const buttonsVisibility: boolean = electionName !== '' && !getQuestionObjects().some(isInvalid);
-
-  const createElection = () => {
-    requestCreateElection(
-      currentLao.id,
-      electionName,
-      STRINGS.election_version_identifier,
-      startTime,
-      endTime,
-      getQuestionObjects(),
-      time,
-    )
-      .then(() => {
-        navigation.navigate(STRINGS.navigation_lao_events_home);
-      })
-      .catch((err) => {
-        console.error('Could not create Election, error:', err);
-        toast.show(`Could not create Election, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
   return (
     <ScreenWrapper>
       <Text style={[Typography.paragraph, Typography.important]}>
@@ -144,7 +193,24 @@ const CreateElection = () => {
         onChange={setElectionName}
         placeholder={STRINGS.election_create_name_placeholder}
       />
-
+      <DropdownSelector
+        selected={version}
+        onChange={(value) => {
+          if (value) {
+            setVersion(value as ElectionVersion);
+          }
+        }}
+        options={[
+          {
+            value: ElectionVersion.OPEN_BALLOT,
+            label: STRINGS.election_create_version_open_ballot,
+          },
+          {
+            value: ElectionVersion.SECRET_BALLOT,
+            label: STRINGS.election_create_version_secret_ballot,
+          },
+        ]}
+      />
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
       {questions.map((value, idx) => (
@@ -177,7 +243,7 @@ const CreateElection = () => {
         </View>
       ))}
 
-      <Button onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}>
+      <Button onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         <Text style={[Typography.base, Typography.centered, Typography.negative]}>
           {STRINGS.election_create_add_question}
         </Text>
@@ -210,7 +276,7 @@ const CreateElection = () => {
         setVisibility={setModalStartIsVisible}
         title={STRINGS.modal_event_creation_failed}
         description={STRINGS.modal_event_starts_in_past}
-        onConfirmPress={() => createElection()}
+        onConfirmPress={() => onCreateElection()}
         buttonConfirmText={STRINGS.modal_button_start_now}
         buttonCancelText={STRINGS.modal_button_go_back}
       />

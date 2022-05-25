@@ -1,13 +1,15 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import com.google.crypto.tink.subtle.Ed25519Sign
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -28,6 +30,8 @@ object ElectionHandler extends MessageHandler {
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleResultElection(rpcMessage)
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleEndElection(rpcMessage)
+
+  def handleKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleKeyElection(rpcMessage)
 }
 
 class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
@@ -48,13 +52,24 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val combined = for {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
+      _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
     } yield ()
 
     Await.ready(combined, duration).value match {
-      case Some(Success(_)) => Left(rpcMessage)
+      case Some(Success(_)) =>
+        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+        val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
+        val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
+          dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
+  }
+
+  def handleKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {

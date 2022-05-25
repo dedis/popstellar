@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, Text } from 'react-native';
 
 import { QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -12,16 +12,11 @@ import * as Wallet from '../objects';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
-  smallPadding: {
-    padding: '1rem',
-  } as ViewStyle,
   tokenSelectContainer: {
     flexDirection: 'row',
     marginTop: 30,
     marginBottom: 20,
   } as ViewStyle,
-  textBase: Typography.base as TextStyle,
-  textImportant: Typography.important as TextStyle,
 });
 
 /**

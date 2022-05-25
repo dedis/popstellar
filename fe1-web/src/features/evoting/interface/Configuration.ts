@@ -2,11 +2,16 @@ import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
-import { ElectionReducerState, ELECTION_REDUCER_PATH } from '../reducer/ElectionReducer';
+import {
+  ElectionKeyReducerState,
+  ELECTION_KEY_REDUCER_PATH,
+  ElectionReducerState,
+  ELECTION_REDUCER_PATH,
+} from '../reducer';
 import { EvotingFeature } from './Feature';
 
 export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
@@ -35,6 +40,13 @@ export interface EvotingConfiguration {
    */
   useCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Given a lao id, this function returns the public key of the backend
+   * @param laoId The id of the lao
+   * @returns The public key of the lao organizer's backend or undefined if none is known
+   */
+  useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
   /* Event related functions */
 
   /**
@@ -60,6 +72,13 @@ export interface EvotingConfiguration {
    * @returns The event or undefined if none was found
    */
   getEventById: (id: Hash) => EvotingFeature.EventState | undefined;
+
+  /**
+   * Given a lao id, this function returns the public key of the backend
+   * @param laoId The id of the lao
+   * @returns The public key or undefined if none is known
+   */
+  getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
 }
 
 /**
@@ -70,6 +89,7 @@ export type EvotingReactContext = Pick<
   /* lao */
   | 'useCurrentLao'
   | 'useCurrentLaoId'
+  | 'useLaoOrganizerBackendPublicKey'
   /* events */
   | 'getEventById'
   | 'addEvent'
@@ -87,6 +107,7 @@ export interface EvotingInterface extends FeatureInterface {
   context: EvotingReactContext;
 
   reducers: {
+    [ELECTION_KEY_REDUCER_PATH]: Reducer<ElectionKeyReducerState>;
     [ELECTION_REDUCER_PATH]: Reducer<ElectionReducerState>;
   };
 }

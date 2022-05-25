@@ -499,7 +499,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -515,7 +515,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -552,7 +552,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -568,7 +568,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -1243,7 +1243,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -1259,7 +1259,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -1296,7 +1296,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }
@@ -1312,7 +1312,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     style={
                                       Object {
                                         "fontSize": 16,
-                                        "marginHorizontal": 32,
+                                        "marginHorizontal": 16,
                                         "textAlign": "center",
                                       }
                                     }

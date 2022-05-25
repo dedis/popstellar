@@ -30,10 +30,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
   } as ViewStyle,
-  viewPublishChirp: {
-    marginTop: 50,
-    justifyContent: 'center',
-  } as ViewStyle,
   textInput: {
     fontSize: 18,
     padding: 10,
