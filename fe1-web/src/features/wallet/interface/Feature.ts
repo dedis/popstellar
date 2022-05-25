@@ -14,19 +14,6 @@ export namespace WalletFeature {
     readonly id: string;
 
     readonly idAlias?: string;
-
-    readonly name: string;
-
-    readonly start: number;
-
-    readonly end?: number;
-  }
-
-  export interface Event {
-    id: Hash;
-    readonly name: string;
-
-    toState(): EventState;
   }
 
   export enum EventType {
@@ -37,10 +24,10 @@ export namespace WalletFeature {
     CLOSED,
   }
 
-  export interface RollCallState extends EventState {}
+  export interface RollCall {
+    id: Hash;
+    name: string;
 
-  export interface RollCall extends Event {
-    toState: () => RollCallState;
     containsToken(token: PopToken | undefined): boolean;
   }
 }
