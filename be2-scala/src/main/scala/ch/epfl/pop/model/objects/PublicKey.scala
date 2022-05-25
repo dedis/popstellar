@@ -3,6 +3,7 @@ package ch.epfl.pop.model.objects
 import ch.epfl.dedis.lib.crypto.{Ed25519, Ed25519Point, Ed25519Scalar}
 
 import java.security.SecureRandom
+import PublicKey._
 
 final case class PublicKey(base64Data: Base64Data) {
   private val asPoint = new Ed25519Point(base64Data.decode())
@@ -10,7 +11,7 @@ final case class PublicKey(base64Data: Base64Data) {
 
   def encrypt(messageB64: Base64Data): Base64Data = {
     val message = messageB64.decode()
-    if (message.length > 29) throw new IllegalArgumentException("The message should contain at maximum 29 bytes")
+    if (message.length > MAX_MESSAGE_LENGTH) throw new IllegalArgumentException("The message should contain at maximum 29 bytes")
     val M = Ed25519Point.embed(message)
     val seed = new Array[Byte](Ed25519.field.getb / 8)
     new SecureRandom().nextBytes(seed)
@@ -23,4 +24,8 @@ final case class PublicKey(base64Data: Base64Data) {
   }
 
   def equals(that: PublicKey): Boolean = base64Data == that.base64Data
+}
+
+object PublicKey {
+  protected val MAX_MESSAGE_LENGTH = 29
 }
