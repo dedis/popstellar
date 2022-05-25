@@ -20,9 +20,21 @@ type VoteCastVote struct {
 
 // Vote defines a vote of a cast vote
 type Vote struct {
-	ID       string      `json:"id"`
-	Question string      `json:"question"`
-	Vote     interface{} `json:"vote"`
+	ID       string
+	Question string
+	Vote     interface{}
+}
+
+type openVote struct {
+	ID       string `json:"id"`
+	Question string `json:"question"`
+	Vote     int    `json:"vote"`
+}
+
+type secretVote struct {
+	ID       string `json:"id"`
+	Question string `json:"question"`
+	Vote     string `json:"vote"`
 }
 
 type raw struct {
@@ -33,6 +45,24 @@ type raw struct {
 
 // UnmarshalJSON solves that Vote.Vote can be int or string
 func (v *Vote) UnmarshalJSON(b []byte) error {
+	// SOLUTION 1
+
+	var open openVote
+	if err := json.Unmarshal(b, &open); err == nil {
+		*v = Vote{open.ID, open.Question, open.Vote}
+		return nil
+	}
+
+	var secret secretVote
+	if err := json.Unmarshal(b, &secret); err == nil {
+		*v = Vote{secret.ID, secret.Question, secret.Vote}
+		return nil
+	}
+
+	return answer.NewErrorf(-4, "failed unmarshalling vote")
+
+	// SOLUTION 2
+
 	var vTemp raw
 	if err := json.Unmarshal(b, &vTemp); err != nil {
 		return err
