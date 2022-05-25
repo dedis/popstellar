@@ -125,7 +125,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (channel.extractChildChannel != data.election) {
           Right(validationError("unexpected election id"))
-        } else if ((channel.decodeChannelLaoId getOrElse HASH_ERROR) != data.lao) {
+        } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
         } else if (!validateVoteElection(data.election, data.votes, questions)) {
           Right(validationError(s"invalid votes"))
@@ -187,7 +187,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        val laoId: Hash = channel.decodeChannelLaoId getOrElse HASH_ERROR
+        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.created_at))
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))

@@ -1,15 +1,5 @@
 package ch.epfl.pop.model.objects
 
-import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, SetupElection}
-import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadChannelDataAck
-
-import scala.collection.mutable
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.util.{Success, Try}
 
 
