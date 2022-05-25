@@ -18,7 +18,6 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
-import com.github.dedis.popstellar.utility.Constants;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -47,8 +46,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
           boolean areFieldsFilled =
               !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
           Log.d(TAG, "areFeils is " + areFieldsFilled);
-          setButtonEnabling(confirmButton, areFieldsFilled);
-          setButtonEnabling(openButton, areFieldsFilled);
+          confirmButton.setEnabled(areFieldsFilled);
+          openButton.setEnabled(areFieldsFilled);
         }
 
         @Override
@@ -79,8 +78,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     openButton = mFragBinding.rollCallOpen;
     confirmButton = mFragBinding.rollCallConfirm;
-    setButtonEnabling(confirmButton, false);
-    setButtonEnabling(openButton, false);
+    confirmButton.setEnabled(false);
+    openButton.setEnabled(false);
 
     mFragBinding.setLifecycleOwner(getActivity());
 
@@ -153,11 +152,5 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel.createNewRollCall(
         title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
-  }
-
-  private void setButtonEnabling(Button button, boolean enabled) {
-    button.setAlpha(
-        enabled ? Constants.ENABLED_OPAQUE_ALPHA : Constants.DISABLED_TRANSPARENCY_ALPHA);
-    button.setEnabled(enabled);
   }
 }

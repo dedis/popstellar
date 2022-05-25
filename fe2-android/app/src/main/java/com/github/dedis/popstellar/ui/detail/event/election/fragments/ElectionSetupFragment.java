@@ -183,7 +183,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // We "deactivate" the button on click, to prevent the user from creating multiple
           // elections at once
           submitButton.setEnabled(false);
-          //   setButtonEnabling(submitButton, false);
 
           // When submitting, we compute the timestamps for the selected start and end time
           if (!computeTimesInSeconds()) {
