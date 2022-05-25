@@ -105,7 +105,6 @@ public class LaoDetailFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
     setupQrCodeIconButton();
     setUpQrCloseButton();
     setupEventListAdapter();
@@ -192,6 +191,7 @@ public class LaoDetailFragment extends Fragment {
       laoDetailQrLayout.setVisibility(View.VISIBLE);
     } else {
       LaoDetailAnimation.fadeOut(laoDetailQrLayout, 1.0f, 0.0f, 500);
+      laoDetailQrLayout.setVisibility(View.GONE);
     }
   }
 }

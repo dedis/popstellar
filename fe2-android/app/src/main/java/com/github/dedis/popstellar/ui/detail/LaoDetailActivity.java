@@ -266,7 +266,6 @@ public class LaoDetailActivity extends AppCompatActivity {
       if (fragment instanceof LaoDetailFragment) {
         openHome();
       } else {
-        setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
         navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
       }
       return true;

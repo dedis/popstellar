@@ -28,9 +28,21 @@ public class LaoDetailAnimation {
 
   public static void showIn(final View v) {
     v.setVisibility(View.VISIBLE);
-    v.setAlpha(0f);
+    // v.setAlpha(0f);
     v.setTranslationY(v.getHeight());
-    v.animate().setDuration(200).translationY(0).alpha(1f).start();
+    v.animate()
+        .setDuration(200)
+        .translationY(0)
+        .setListener(
+            new AnimatorListenerAdapter() {
+              @Override
+              public void onAnimationEnd(Animator animation) {
+                v.setAlpha(1f);
+                super.onAnimationEnd(animation);
+              }
+            })
+        .alpha(1f)
+        .start();
   }
 
   public static void showOut(final View v) {
@@ -45,6 +57,7 @@ public class LaoDetailAnimation {
               @Override
               public void onAnimationEnd(Animator animation) {
                 v.setVisibility(View.GONE);
+                v.setAlpha(0f);
                 super.onAnimationEnd(animation);
               }
             })
