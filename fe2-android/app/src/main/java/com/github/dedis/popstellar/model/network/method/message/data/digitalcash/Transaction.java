@@ -59,7 +59,7 @@ public class Transaction {
 
   public String computeId() {
     // Make a list all the string in the transaction
-    List<String> collectTransaction = new ArrayList<String>();
+    List<String> collectTransaction = new ArrayList<>();
     // Add them in lexicographic order
 
     // Inputs
@@ -85,9 +85,9 @@ public class Transaction {
       Output currentTxout = outputs.get(i);
       // Script
       // PubKeyHash
-      collectTransaction.add(currentTxout.getScript().get_pubkey_hash());
+      collectTransaction.add(currentTxout.getScript().getPubkeyHash());
       // Type
-      collectTransaction.add(currentTxout.getScript().get_type());
+      collectTransaction.add(currentTxout.getScript().getType());
       // Value
       collectTransaction.add(String.valueOf(currentTxout.getValue()));
     }
