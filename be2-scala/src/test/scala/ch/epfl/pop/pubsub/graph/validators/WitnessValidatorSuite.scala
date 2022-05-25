@@ -105,7 +105,6 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
-  //not quite sure how to verify the signature
   test("Witnessing a message with wrong signature fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
