@@ -193,6 +193,9 @@ const CreateElection = () => {
         onChange={setElectionName}
         placeholder={STRINGS.election_create_name_placeholder}
       />
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.election_create_version}
+      </Text>
       <DropdownSelector
         selected={version}
         onChange={(value) => {

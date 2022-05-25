@@ -177,6 +177,7 @@ namespace STRINGS {
   export const election_create_setup = 'Election Setup';
   export const election_create_name = 'Name';
   export const election_create_name_placeholder = 'Election Q1 2022';
+  export const election_create_version = 'Election Type';
   export const election_create_version_open_ballot = 'Open Ballot';
   export const election_create_version_secret_ballot = 'Secret Ballot';
   export const election_create_start_time = 'Start time';
