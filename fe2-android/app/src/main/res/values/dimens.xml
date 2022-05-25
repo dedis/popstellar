@@ -71,7 +71,6 @@
 
   <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
-  <dimen name="election_action_button_width">110dp</dimen>
 
   <!-- Election setup dimensions -->
   <dimen name="election_setup_titles_margin_start">140dp</dimen>

@@ -55,9 +55,7 @@
     <item name="android:background">@drawable/border</item>
     <item name="android:paddingHorizontal">30dp</item>
   </style>
-  <style name="button_style_material" parent="Widget.AppCompat.Button">
 
-  </style>
 
   <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
     <item name="android:paddingLeft">8dp</item>
@@ -68,6 +66,6 @@
     <item name="android:insetBottom">0dp</item>
     <item name="android:minWidth">80dp</item>
     <item name="android:minHeight">0dp</item>
-    <item name="android:textSize">16dp</item>
+    <item name="android:textSize">16sp</item>
   </style>
 </resources>
