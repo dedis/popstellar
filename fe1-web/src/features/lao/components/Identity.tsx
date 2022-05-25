@@ -4,7 +4,7 @@ import { CheckBox } from 'react-native-elements';
 
 import { Input, QRCode } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
-import { Spacing, Typography } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 /**
@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
     padding: Spacing.x05,
     marginLeft: 0,
     marginRight: 0,
-    backgroundColor: 'transparent',
-    border: 0,
+    backgroundColor: Color.transparent,
+    borderWidth: 0,
   },
   checkbox: {
     padding: 0,

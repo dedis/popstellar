@@ -8,8 +8,7 @@ import { useSelector } from 'react-redux';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import { dispatch } from 'core/redux';
-import { Typography } from 'core/styles';
-import { black } from 'core/styles/colors';
+import { Color, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
@@ -34,7 +33,7 @@ const NotificationScreenStyles = StyleSheet.create({
   notificationItem: {
     paddingTop: 16,
     paddingBottom: 16,
-    borderBottomColor: black,
+    borderBottomColor: Color.black,
     borderBottomWidth: 1,
   } as ViewStyle,
 

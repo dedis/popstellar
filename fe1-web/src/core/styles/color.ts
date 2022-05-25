@@ -14,6 +14,8 @@ export const error = '#e74c3c';
 
 export const inactive = '#8E8E8E';
 
+export const transparent = 'transparent';
+
 export const blue = '#2196F3';
 export const red = 'red';
 export const black = 'black';

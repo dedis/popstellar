@@ -240,7 +240,10 @@ describe('ViewSingleElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={openedSecretBallotElection.id.valueOf()} isOrganizer />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: openedSecretBallotElection.id.valueOf(), isOrganizer: true }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();
@@ -251,7 +254,10 @@ describe('ViewSingleElection', () => {
       const component = render(
         <Provider store={mockStore}>
           <FeatureContext.Provider value={contextValue}>
-            <EventElection eventId={openedSecretBallotElection.id.valueOf()} />
+            <MockNavigator
+              component={ViewSingleElection}
+              params={{ eventId: openedSecretBallotElection.id.valueOf(), isOrganizer: false }}
+            />
           </FeatureContext.Provider>
         </Provider>,
       ).toJSON();

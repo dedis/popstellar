@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { Timestamp } from 'core/objects';
-import { Spacing, Typography } from 'core/styles';
+import { Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EventHooks } from '../hooks';
@@ -13,20 +13,6 @@ import { makeEventListSelector } from '../reducer';
 import EventListItem from './EventListItem';
 
 const styles = StyleSheet.create({
-  flexBox: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  } as ViewStyle,
-  buttonMatcher: {
-    ...Typography.baseCentered,
-    paddingLeft: Spacing.x3,
-    opacity: 0,
-  } as TextStyle,
-  expandButton: {
-    ...Typography.baseCentered,
-    paddingRight: Spacing.x3,
-  } as TextStyle,
   listItem: {
     paddingHorizontal: Spacing.horizontalContentSpacing,
   } as ViewStyle,

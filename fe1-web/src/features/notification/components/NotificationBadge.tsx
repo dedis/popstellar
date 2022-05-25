@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { red } from 'core/styles/colors';
+import { Color } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 
 import { NotificationHooks } from '../hooks';
@@ -14,7 +14,7 @@ const NotificationBadgeStyles = StyleSheet.create({
     margin: 4,
     width: 18,
     height: 18,
-    backgroundColor: red,
+    backgroundColor: Color.red,
     borderRadius: 50,
   } as ViewStyle,
 });
