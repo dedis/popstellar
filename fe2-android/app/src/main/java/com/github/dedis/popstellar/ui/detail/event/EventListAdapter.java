@@ -265,7 +265,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     notifyDataSetChanged();
   }
 
-  private static class EventViewHolder extends RecyclerView.ViewHolder {
+  public static class EventViewHolder extends RecyclerView.ViewHolder {
     private final TextView eventTitle;
     private final ImageView eventIcon;
     private final CardView eventCard;
@@ -278,7 +278,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
   }
 
-  private static class HeaderViewHolder extends RecyclerView.ViewHolder {
+  public static class HeaderViewHolder extends RecyclerView.ViewHolder {
     private final TextView headerTitle;
     private final ImageView expandIcon;
     private final ConstraintLayout headerLayout;
