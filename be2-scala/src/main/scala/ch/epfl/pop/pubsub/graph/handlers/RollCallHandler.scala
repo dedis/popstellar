@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, LaoData, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -86,7 +86,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               case Some(_) =>
                 val combined = for {
                   _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
-                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message)
+                  _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
                 } yield ()
 
                 Await.ready(combined, duration).value match {

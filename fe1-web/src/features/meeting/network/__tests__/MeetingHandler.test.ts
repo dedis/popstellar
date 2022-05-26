@@ -1,8 +1,6 @@
 import { mockChannel, mockKeyPair, mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, EventTags, Hash, Signature, Timestamp } from 'core/objects';
-import { dispatch } from 'core/redux';
-import { MeetingFeature } from 'features/meeting/interface';
 import { Meeting } from 'features/meeting/objects';
 
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from '../MeetingHandler';
@@ -22,16 +20,36 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
-const mockAddEvent = jest.fn((laoId: string | Hash, meeting: MeetingFeature.EventState) => ({
-  type: 'add-event',
-  laoId: laoId.valueOf(),
-  meeting,
-}));
-const mockUpdateEvent = jest.fn((laoId: string | Hash, meeting: MeetingFeature.EventState) => ({
-  type: 'update-event',
-  laoId: laoId.valueOf(),
-  meeting,
-}));
+const mockAddEvent = jest.fn();
+const mockUpdateEvent = jest.fn();
+
+const mockMeetingName = 'a meeting';
+const mockMeetingId = Hash.fromStringArray(
+  EventTags.MEETING,
+  mockLaoId.toString(),
+  TIMESTAMP.toString(),
+  mockMeetingName,
+);
+
+const mockMeeting = new Meeting({
+  id: mockMeetingId,
+  name: mockMeetingName,
+  location: 'some loc',
+  creation: TIMESTAMP,
+  start: TIMESTAMP,
+  end: undefined,
+  extra: {},
+});
+
+const mockNewMeeting = new Meeting({
+  id: mockMeetingId,
+  name: mockMeetingName,
+  location: 'some other loc',
+  creation: TIMESTAMP,
+  start: TIMESTAMP,
+  end: undefined,
+  extra: {},
+});
 
 jest.mock('core/redux', () => {
   const actualModule = jest.requireActual('core/redux');
@@ -71,42 +89,48 @@ describe('MeetingHandler', () => {
       ).toBeFalse();
     });
 
-    it('should dispatch the correct action and return true on success', () => {
-      const meetingName = 'a meeting';
-      const meetingId = Hash.fromStringArray(
-        EventTags.MEETING,
-        mockLaoId.toString(),
-        TIMESTAMP.toString(),
-        meetingName,
-      );
-
-      const meeting = new Meeting({
-        id: meetingId,
-        name: meetingName,
-        location: 'some loc',
-        creation: TIMESTAMP,
-        start: TIMESTAMP,
-        end: undefined,
-        extra: {},
-      });
-
+    it('should return false if the message is not received on a lao channel', () => {
       expect(
         handleMeetingCreateMessage(mockAddEvent)({
           ...mockMessageData,
-          messageData: new CreateMeeting({
-            id: meeting.id,
-            name: meeting.name,
-            creation: meeting.creation,
-            location: meeting.location,
-            start: meeting.start,
-            end: meeting.end,
-            extra: meeting.extra,
-          }),
+          laoId: undefined,
+          messageData: new CreateMeeting(
+            {
+              id: mockMeeting.id,
+              name: mockMeeting.name,
+              creation: mockMeeting.creation,
+              location: mockMeeting.location,
+              start: mockMeeting.start,
+              end: mockMeeting.end,
+              extra: mockMeeting.extra,
+            },
+            mockLaoIdHash,
+          ),
+        } as ProcessableMessage),
+      ).toBeFalse();
+    });
+
+    it('should dispatch the correct action and return true on success', () => {
+      expect(
+        handleMeetingCreateMessage(mockAddEvent)({
+          ...mockMessageData,
+          messageData: new CreateMeeting(
+            {
+              id: mockMeeting.id,
+              name: mockMeeting.name,
+              creation: mockMeeting.creation,
+              location: mockMeeting.location,
+              start: mockMeeting.start,
+              end: mockMeeting.end,
+              extra: mockMeeting.extra,
+            },
+            mockLaoIdHash,
+          ),
         } as ProcessableMessage),
       ).toBeTrue();
 
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith(mockAddEvent(mockLaoId, meeting.toState()));
+      expect(mockAddEvent).toHaveBeenCalledTimes(1);
+      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoIdHash, mockMeeting);
     });
   });
 
@@ -143,6 +167,31 @@ describe('MeetingHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleMeetingStateMessage(
+          () => mockLao,
+          jest.fn(() => mockMeeting),
+          mockUpdateEvent,
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new StateMeeting({
+            id: mockNewMeeting.id,
+            name: mockNewMeeting.name,
+            creation: mockNewMeeting.creation,
+            location: mockNewMeeting.location,
+            start: mockNewMeeting.start,
+            end: mockNewMeeting.end,
+            extra: mockNewMeeting.extra,
+            last_modified: TIMESTAMP,
+            modification_id: mockNewMeeting.id,
+            modification_signatures: [],
+          }),
+        } as ProcessableMessage),
+      ).toBeFalse();
+    });
+
     it('should return false if there is no active lao', () => {
       expect(
         handleMeetingStateMessage(
@@ -160,35 +209,7 @@ describe('MeetingHandler', () => {
     });
 
     it('should dispatch the correct action and return true on success', () => {
-      const meetingName = 'a meeting';
-      const meetingId = Hash.fromStringArray(
-        EventTags.MEETING,
-        mockLaoId.toString(),
-        TIMESTAMP.toString(),
-        meetingName,
-      );
-
-      const oldMeeting = new Meeting({
-        id: meetingId,
-        name: meetingName,
-        location: 'some loc',
-        creation: TIMESTAMP,
-        start: TIMESTAMP,
-        end: undefined,
-        extra: {},
-      });
-
-      const newMeeting = new Meeting({
-        id: meetingId,
-        name: meetingName,
-        location: 'some other loc',
-        creation: TIMESTAMP,
-        start: TIMESTAMP,
-        end: undefined,
-        extra: {},
-      });
-
-      const mockGetEventById = jest.fn(() => oldMeeting);
+      const mockGetEventById = jest.fn(() => mockMeeting);
 
       expect(
         handleMeetingStateMessage(
@@ -198,22 +219,22 @@ describe('MeetingHandler', () => {
         )({
           ...mockMessageData,
           messageData: new StateMeeting({
-            id: newMeeting.id,
-            name: newMeeting.name,
-            creation: newMeeting.creation,
-            location: newMeeting.location,
-            start: newMeeting.start,
-            end: newMeeting.end,
-            extra: newMeeting.extra,
+            id: mockNewMeeting.id,
+            name: mockNewMeeting.name,
+            creation: mockNewMeeting.creation,
+            location: mockNewMeeting.location,
+            start: mockNewMeeting.start,
+            end: mockNewMeeting.end,
+            extra: mockNewMeeting.extra,
             last_modified: TIMESTAMP,
-            modification_id: newMeeting.id,
+            modification_id: mockNewMeeting.id,
             modification_signatures: [],
           }),
         } as ProcessableMessage),
       ).toBeTrue();
 
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith(mockUpdateEvent(mockLaoId, newMeeting.toState()));
+      expect(mockUpdateEvent).toHaveBeenCalledTimes(1);
+      expect(mockUpdateEvent).toHaveBeenCalledWith(mockNewMeeting);
     });
   });
 });

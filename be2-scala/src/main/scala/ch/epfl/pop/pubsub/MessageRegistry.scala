@@ -4,8 +4,8 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
-import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
+import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
@@ -60,6 +60,7 @@ object MessageRegistry {
     register.add((ObjectType.LAO, ActionType.CREATE), createSchemaVerifier("dataCreateLao.json"), CreateLao.buildFromJson, LaoValidator.validateCreateLao, LaoHandler.handleCreateLao)
     register.add((ObjectType.LAO, ActionType.STATE), createSchemaVerifier("dataStateLao.json"), StateLao.buildFromJson, LaoValidator.validateStateLao, LaoHandler.handleStateLao)
     register.add((ObjectType.LAO, ActionType.UPDATE_PROPERTIES), createSchemaVerifier("dataUpdateLao.json"), UpdateLao.buildFromJson, LaoValidator.validateUpdateLao, LaoHandler.handleUpdateLao)
+    register.add((ObjectType.LAO, ActionType.GREET), createSchemaVerifier("dataGreetLao.json"), GreetLao.buildFromJson, LaoValidator.validateGreetLao, LaoHandler.handleGreetLao)
 
     // data meeting
     register.add((ObjectType.MEETING, ActionType.CREATE), createSchemaVerifier("dataCreateMeeting.json"), CreateMeeting.buildFromJson, MeetingValidator.validateCreateMeeting, MeetingHandler.handleCreateMeeting)
@@ -91,7 +92,7 @@ object MessageRegistry {
     register.add((ObjectType.REACTION, ActionType.DELETE), createSchemaVerifier("dataDeleteReaction.json"), DeleteReaction.buildFromJson, SocialMediaValidator.validateDeleteReaction, SocialMediaHandler.handleDeleteReaction)
 
     // data digital cash
-    register.add((ObjectType.TRANSACTION, ActionType.POST), createSchemaVerifier("dataCashTransaction.json"), PostTransaction.buildFromJson, CashValidator.validatePostTransaction, CashHandler.handlePostTransaction)
+    register.add((ObjectType.COIN, ActionType.POST_TRANSACTION), createSchemaVerifier("dataPostTransactionCoin.json"), PostTransaction.buildFromJson, CoinValidator.validatePostTransaction, CoinHandler.handlePostTransaction)
 
     new MessageRegistry(register.get)
   }

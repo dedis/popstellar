@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.cash._
+import ch.epfl.pop.model.network.method.message.data.coin._
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
@@ -129,6 +129,39 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val createLaoFormat: JsonFormat[CreateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, PublicKey, List[PublicKey], CreateLao](CreateLao.apply, "id", "name", "creation", "organizer", "witnesses"))
   implicit val stateLaoFormat: JsonFormat[StateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, Timestamp, PublicKey, List[PublicKey], Hash, List[WitnessSignaturePair], StateLao](StateLao.apply, "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"))
   implicit val updateLaoFormat: JsonFormat[UpdateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, List[PublicKey], UpdateLao](UpdateLao.apply, "id", "name", "last_modified", "witnesses"))
+
+  implicit object GreetLaoFormat extends RootJsonFormat[GreetLao] {
+    final private val PARAM_LAO: String = "lao"
+    final private val PARAM_FRONTEND: String = "frontend"
+    final private val PARAM_ADDRESS: String = "address"
+    final private val PARAM_PEERS: String = "peers"
+
+    override def read(json: JsValue): GreetLao = {
+      val jsonObject: JsObject = json.asJsObject
+      jsonObject.getFields(PARAM_LAO, PARAM_FRONTEND, PARAM_ADDRESS, PARAM_PEERS) match {
+        case Seq(lao@JsString(_), frontend@JsString(_), JsString(address), JsArray(peers)) =>
+          GreetLao(
+            lao.convertTo[Hash],
+            frontend.convertTo[PublicKey],
+            address,
+            peers.map(_.convertTo[String]).toList
+          )
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a GreetLao object")
+      }
+    }
+
+    override def write(obj: GreetLao): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
+        PARAM_LAO -> obj.lao.toJson,
+        PARAM_FRONTEND -> obj.frontend.toJson,
+        PARAM_ADDRESS -> obj.address.toJson,
+        PARAM_PEERS -> obj.peers.toJson
+      )
+      JsObject(jsObjectContent)
+    }
+  }
 
   implicit object CreateMeetingFormat extends RootJsonFormat[CreateMeeting] {
     final private val PARAM_ID: String = "id"
@@ -266,7 +299,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val addReactionFormat: JsonFormat[AddReaction] = annotateHeader(jsonFormat[String, Hash, Timestamp, AddReaction](AddReaction.apply, "reaction_codepoint", "chirp_id", "timestamp"))
   implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp"))
 
-  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, PostTransaction](PostTransaction.apply, "transaction")
+  implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, Hash, PostTransaction](PostTransaction.apply, "transaction", "transaction_id")
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
