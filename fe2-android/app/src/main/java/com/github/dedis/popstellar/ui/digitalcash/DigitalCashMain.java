@@ -24,12 +24,19 @@ public class DigitalCashMain extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashMain.class.getSimpleName();
 
+  public static final String LAO_ID = "LAO_ID";
+  public static final String LAO_NAME = "LAO_NAME";
+  public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.digital_cash_main_activity);
 
     mViewModel = obtainViewModel(this);
+    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+    mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+    // mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
 
     setupNavigationBar();
     // Subscribe to "open home"

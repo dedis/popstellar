@@ -6,8 +6,12 @@ import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +174,7 @@ public class TransactionObject {
     return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
   }
 
+
   /**
    * Function that given a Public Key gives the miniLaoCoin received
    *
@@ -197,6 +202,60 @@ public class TransactionObject {
     return miniLao;
   }
 
+  public String computeId() {
+    // Make a list all the string in the transaction
+    List<String> collect_transaction = new ArrayList<String>();
+    // Add them in lexicographic order
+
+    // Inputs
+    for (int i = 0; i < inputs.size(); i++) {
+      InputObject currentTxin = inputs.get(i);
+      // Script
+      // PubKey
+      collect_transaction.add(currentTxin.getScript().getPubkey());
+      // Sig
+      collect_transaction.add(currentTxin.getScript().getSig());
+      // Type
+      collect_transaction.add(currentTxin.getScript().getType());
+      // TxOutHash
+      collect_transaction.add(currentTxin.getTxOutHash());
+      // TxOutIndex
+      collect_transaction.add(String.valueOf(currentTxin.getTxOutIndex()));
+    }
+
+    // lock_time
+    collect_transaction.add(String.valueOf(lockTime));
+    // Outputs
+    for (int i = 0; i < outputs.size(); i++) {
+      OutputObject currentTxout = outputs.get(i);
+      // Script
+      // PubKeyHash
+      collect_transaction.add(currentTxout.getScript().getPubkeyHash());
+      // Type
+      collect_transaction.add(currentTxout.getScript().getType());
+      // Value
+      collect_transaction.add(String.valueOf(currentTxout.getValue()));
+    }
+    // Version
+    collect_transaction.add(String.valueOf(version));
+
+    String concat = "";
+    for (int i = 0; i < collect_transaction.size(); i++) {
+      String to_add = collect_transaction.get(i);
+      concat = concat.concat(String.valueOf(to_add.length()) + to_add);
+    }
+
+    MessageDigest digest = null;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(concat.getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(hash);
+    } catch (NoSuchAlgorithmException e) {
+      System.err.println("Something is wrong");
+      throw new IllegalArgumentException("Error in the computation of the transaction id");
+    }
+  }
+
   /**
    * Function that return the index of the output for a given key in this Transaction
    *
@@ -217,5 +276,7 @@ public class TransactionObject {
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
   }
+
+
 
 }

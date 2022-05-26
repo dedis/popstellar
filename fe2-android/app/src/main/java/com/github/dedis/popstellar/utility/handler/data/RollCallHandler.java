@@ -125,13 +125,14 @@ public final class RollCallHandler {
     RollCall rollCall = rollCallOptional.get();
     rollCall.setEnd(closeRollCall.getClosedAt());
     rollCall.setId(updateId);
+    lao.setLastRollcall(rollCall.getId());
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
-
 
     lao.updateRollCall(closes, rollCall);
     lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+
 
     // Subscribe to the social media channels
     // Subscribe to the digital cash channels

@@ -230,6 +230,14 @@ public class LaoDetailViewModel extends AndroidViewModel
     disposables = new CompositeDisposable();
   }
 
+  public String getCurrentRollCallId() {
+    return this.currentRollCallId;
+  }
+
+  public Set<PublicKey> getAttendees() {
+    return this.attendees;
+  }
+
   /**
    * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
    * or was the organizer

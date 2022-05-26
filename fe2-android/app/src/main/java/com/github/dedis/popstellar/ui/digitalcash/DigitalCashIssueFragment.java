@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
+  private DigitalCashViewModel mViewModel;
 
   public DigitalCashIssueFragment() {
     // not implemented yet
@@ -40,7 +41,8 @@ public class DigitalCashIssueFragment extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
     return mBinding.getRoot();
   }
@@ -48,8 +50,20 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    List<String> myArray = Arrays.asList("Option 1", "Option 2", "Option 3", "Option 4");
+
+    List<String> myArray =
+        (List<String>)
+            mViewModel
+                .getCurrentLao()
+                .getRollCall(mViewModel.getCurrentLao().getLastRollcall())
+                .get()
+                .getAttendees()
+                .stream()
+                .map(Base64URLData::getEncoded);
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
+
+  ///** Function that permits to post transaction */
+  //private void postTransaction() {}
 }

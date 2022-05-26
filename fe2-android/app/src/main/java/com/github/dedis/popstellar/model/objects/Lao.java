@@ -43,11 +43,12 @@ public final class Lao {
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   // Some useful map for the digital cash
-  private Map<String, PublicKey> pub_keyByHash;
+  private Map<String, PublicKey> pubKeyByHash;
   // Map for the history
   private Map<PublicKey, List<TransactionObject>> transaction_historyByUser;
   // Map for the the public_key last transaction
   private Map<PublicKey, TransactionObject> transactionByUser;
+  private String lastRollcall = "";
 
   public Lao(String id) {
     if (id == null) {
@@ -70,7 +71,7 @@ public final class Lao {
     // initialize the maps :
     this.transaction_historyByUser = new HashMap<>();
     this.transactionByUser = new HashMap<>();
-    this.pub_keyByHash = new HashMap<>();
+    this.pubKeyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -84,7 +85,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -169,11 +170,11 @@ public final class Lao {
    */
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     Iterator<PublicKey> iterator = attendees.iterator();
-    pub_keyByHash = new HashMap<>();
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    pubKeyByHash = new HashMap<>();
+    pubKeyByHash.put(organizer.computeHash(), organizer);
     while (iterator.hasNext()) {
       PublicKey current = iterator.next();
-      pub_keyByHash.put(current.computeHash(), current);
+      pubKeyByHash.put(current.computeHash(), current);
     }
     // also update the history and the current transaction per attendees
     // both map have to be set to empty again
@@ -191,14 +192,14 @@ public final class Lao {
     if (this.getRollCalls().values().isEmpty()) {
       throw new IllegalStateException("A transaction need a roll call creation ");
     }
-    if (this.pub_keyByHash.isEmpty()) {
+    if (this.pubKeyByHash.isEmpty()) {
       throw new IllegalStateException("A transaction need attendees !");
     }
 
     // Contained in the receiver there are also the sender
     // which has to be in the list of attendees of the roll call
     Iterator<PublicKey> receivers_ite =
-        transaction_object.getReceiversTransaction(pub_keyByHash).iterator();
+        transaction_object.getReceiversTransaction(pubKeyByHash).iterator();
     while (receivers_ite.hasNext()) {
       PublicKey current = receivers_ite.next();
       // Add the transaction in the current state  / for the sender and the receiver
@@ -392,8 +393,8 @@ public final class Lao {
     return transactionByUser;
   }
 
-  public Map<String, PublicKey> getPub_keyByHash() {
-    return pub_keyByHash;
+  public Map<String, PublicKey> getPubKeyByHash() {
+    return pubKeyByHash;
   }
 
   public Map<MessageID, Chirp> getAllChirps() {
@@ -453,5 +454,13 @@ public final class Lao {
         + ", electInstances="
         + messageIdToElectInstance.values()
         + '}';
+  }
+
+  public String getLastRollcall() {
+    return lastRollcall;
+  }
+
+  public void setLastRollcall(String lastRollcall) {
+    this.lastRollcall = lastRollcall;
   }
 }

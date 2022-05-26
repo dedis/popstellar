@@ -256,7 +256,6 @@
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
-
   <string name="generic_error">An error occurred\n%1$s</string>
   <string name="error_sending_chirp">Could not send the chirp\n%1$s</string>
   <string name="error_retrieve_own_token">Could not retrieve your own PoP Token\n%1$s</string>
@@ -275,6 +274,7 @@
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
+  <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
