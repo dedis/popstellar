@@ -1,27 +1,24 @@
 package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 public class ElectionPublicKeyTest {
 
 
+    private final ElectionKeyPair mockEncodedKey =
+            ElectionKeyPair.generateKeyPair();
+
+    private final String mockElectionKeyString = "uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=";
+    private final Base64URLData mockEncodedElectionKey = new Base64URLData(mockElectionKeyString.getBytes(StandardCharsets.UTF_8));
+    ElectionPublicKey mockElectionKey = new ElectionPublicKey(mockEncodedElectionKey);
+
     @Test
-    public void testToString() {
-
-        ElectionKeyPair keys = ElectionKeyPair.generateKeyPair();
-        ElectionPublicKey publicKey = keys.getEncryptionScheme();
-        ElectionPrivateKey privateKey = keys.getDecryptionScheme();
-
-        int val = 2;
-        byte[] voteIndiceInBytes = {(byte) val, (byte) (val >> 8)};
-        String encrypted = publicKey.encrypt(voteIndiceInBytes);
-        System.out.println(encrypted);
-        try {
-            privateKey.decrypt(encrypted);
-            System.out.println(val);
-        } catch (Exception e) {
-            System.out.println("eee");
-        }
+    public void toStringTest() {
+        System.out.println(mockElectionKey.toString());
     }
 
     @Test

@@ -17,13 +17,12 @@ public class ElectionKeyPairTest {
     private final ElectionPublicKey electionPublicKey = encryptionKeys.getEncryptionScheme();
     private final ElectionPrivateKey electionPrivateKey = encryptionKeys.getDecryptionScheme();
 
-    @Test
+    @Test(expected = Test.None.class /* no exception expected */)
     public void testKeyGeneration() {
         assertNotEquals(null, encryptionKeys);
         assertNotEquals(null, encryptionKeys.getEncryptionScheme());
         assertNotEquals(null, encryptionKeys.getDecryptionScheme());
     }
-
 
     @Test
     public void simpleEncryptionDecryptionScheme() {
@@ -34,6 +33,7 @@ public class ElectionKeyPairTest {
         // Encrypt
         String encryptedData = electionPublicKey.encrypt(valueToByte);
         try {
+            // Decrypt
             byte[] decryptedData = electionPrivateKey.decrypt(encryptedData);
             Log.d("Private base64 encoded key : ", new Base64URLData(electionPrivateKey.toString()).getData().toString());
             Log.d("Public base64 encoded key : ", new Base64URLData(electionPublicKey.toString()).getData().toString());
@@ -43,6 +43,5 @@ public class ElectionKeyPairTest {
         } catch (CothorityCryptoException e) {
         } // Exception should not catch anything
     }
-
 
 }

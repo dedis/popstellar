@@ -24,9 +24,9 @@ public class ElectionPublicKey {
     // Point is generate with given public key
     private final Point point;
 
-    public ElectionPublicKey(@NonNull Base64URLData publicKey) {
+    public ElectionPublicKey(@NonNull Base64URLData base64publicKey) {
         try {
-            point = new Ed25519Point(publicKey.getData());
+            point = new Ed25519Point(base64publicKey.getData());
         } catch (CothorityCryptoException e) {
             throw new IllegalArgumentException("Could not create the point for elliptic curve, please provide another key");
         }
