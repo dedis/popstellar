@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
+import { Button } from 'core/components';
 import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
+import { Typography } from 'core/styles';
 import PROPS_TYPE from 'resources/Props';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
 import { removeMessageToWitness } from '../reducer';
+import WitnessIcon from './WitnessIcon';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
@@ -69,8 +71,16 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     <View>
       <Text>{JSON.stringify(notification)}</Text>
       <Text>{JSON.stringify(message)}</Text>
-      <Button title="Witness Message" onPress={onWitness} />
-      <Button title="Decline Message" onPress={onDecline} />
+      <Button onPress={onWitness}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          Witness Message
+        </Text>
+      </Button>
+      <Button onPress={onDecline}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          Decline Message
+        </Text>
+      </Button>
     </View>
   );
 };
@@ -111,4 +121,6 @@ export const WitnessNotificationType = {
     notification: WitnessFeature.Notification;
     navigateToNotificationScreen: () => void;
   }>,
+
+  Icon: WitnessIcon,
 };

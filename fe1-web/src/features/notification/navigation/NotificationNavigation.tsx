@@ -6,7 +6,7 @@ import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationFeature } from '../interface/Feature';
-import NotificationScreen from '../screens/NotificationScreen';
+import NotificationScreen, { NotificationScreenRightHeader } from '../screens/NotificationScreen';
 import SingleNotificationScreen from '../screens/SingleNotificationScreen';
 
 const NotificationStackNavigator = createStackNavigator<NotificationParamList>();
@@ -30,6 +30,7 @@ const NotificationNavigation = () => {
         component={NotificationScreen}
         options={{
           title: STRINGS.navigation_notification_notifications_title,
+          headerRight: NotificationScreenRightHeader,
         }}
       />
       <NotificationStackNavigator.Screen

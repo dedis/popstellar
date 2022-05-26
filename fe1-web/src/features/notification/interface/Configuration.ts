@@ -57,6 +57,14 @@ export interface NotificationCompositionConfiguration {
       notification: NotificationState;
       navigateToNotificationScreen: () => void;
     }>;
+
+    /**
+     * Renders an icon for this notification type
+     */
+    Icon: React.ComponentType<{
+      color: string;
+      size: number;
+    }>;
   }[];
 }
 

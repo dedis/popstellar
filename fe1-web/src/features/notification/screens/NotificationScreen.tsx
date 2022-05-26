@@ -1,14 +1,18 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Button } from 'react-native-elements';
+import React, { useMemo, useState } from 'react';
+import { View } from 'react-native';
+import { ListItem } from 'react-native-elements';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import ReactTimeago from 'react-timeago';
 
+import OptionsIcon from 'core/components/icons/OptionsIcon';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import { dispatch } from 'core/redux';
-import { Color, Typography } from 'core/styles';
+import { Color, Icon, List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
@@ -16,31 +20,7 @@ import {
   discardNotifications,
   makeReadNotificationsSelector,
   makeUnreadNotificationsSelector,
-  NotificationState,
 } from '../reducer';
-
-interface ListSeparatorItem {
-  key: string;
-  title: string;
-}
-
-interface NotificationItem extends NotificationState {
-  key: string;
-  isLastItem: boolean;
-}
-
-const NotificationScreenStyles = StyleSheet.create({
-  notificationItem: {
-    paddingTop: 16,
-    paddingBottom: 16,
-    borderBottomColor: Color.black,
-    borderBottomWidth: 1,
-  } as ViewStyle,
-
-  lastNotificationItem: {
-    borderBottomWidth: 0,
-  } as ViewStyle,
-});
 
 type NavigationProps = StackScreenProps<
   NotificationParamList,
@@ -48,44 +28,18 @@ type NavigationProps = StackScreenProps<
 >;
 
 /**
- * Renders a single item in the list of notifications which can either be
- * a notification or a heading separating different sets of notifications
- */
-const NotificationScreenListItem = ({ item }: { item: ListSeparatorItem | NotificationItem }) => {
-  const navigation = useNavigation<NavigationProps['navigation']>();
-
-  if ('id' in item) {
-    // notification
-    return (
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate<'Notification'>(STRINGS.navigation_notification_single_notification, {
-            notificationId: item.id,
-          })
-        }>
-        <View
-          style={
-            item.isLastItem
-              ? [
-                  NotificationScreenStyles.notificationItem,
-                  NotificationScreenStyles.lastNotificationItem,
-                ]
-              : NotificationScreenStyles.notificationItem
-          }>
-          <Text>{item.title}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-  // separator
-  return <Text style={Typography.important}>{item.title}</Text>;
-};
-
-/**
  * The notification screen component displaying the list of read and unread notifications
  */
 const NotificationScreen = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+
   const laoId = NotificationHooks.useCurrentLaoId();
+
+  const [showUnreadNotification, setShowUnreadNotification] = useState(true);
+  const [showReadNotification, setShowReadNotification] = useState(false);
+
+  const notificationTypes = NotificationHooks.useNotificationTypes();
+
   const selectUnreadNotifications = useMemo(
     () => makeUnreadNotificationsSelector(laoId.valueOf()),
     [laoId],
@@ -97,58 +51,105 @@ const NotificationScreen = () => {
   const unreadNotifications = useSelector(selectUnreadNotifications);
   const readNotifications = useSelector(selectReadNotifications);
 
-  // prepare the list of notifications for passing it to a FlatList component
-  // by adding properties for styling as well as adding headings in betweeen
-  const notificationData = useMemo(() => {
-    const addKey = (n: NotificationState): NotificationItem => ({
-      ...n,
-      key: n.id.toString(),
-      isLastItem: false,
-    });
+  return (
+    <ScreenWrapper>
+      <View style={List.container}>
+        <ListItem.Accordion
+          containerStyle={List.item}
+          content={
+            <ListItem.Content>
+              <ListItem.Title>Notifications</ListItem.Title>
+            </ListItem.Content>
+          }
+          onPress={() => setShowUnreadNotification(!showUnreadNotification)}
+          isExpanded={showUnreadNotification}>
+          {unreadNotifications.map((notification) => {
+            const NotificationType = notificationTypes.find((t) => t.isOfType(notification));
 
-    const read: NotificationItem[] = unreadNotifications.map(addKey);
-    const unread: NotificationItem[] = readNotifications.map(addKey);
+            if (!NotificationType) {
+              console.error('Unregistered notification type', notification);
+              throw new Error('Unregistered notification type');
+            }
 
-    // these will be the items inside the FlatList component
-    const items: (ListSeparatorItem | NotificationItem)[] = [];
+            return (
+              <ListItem
+                key={notification.id}
+                containerStyle={List.item}
+                onPress={() =>
+                  navigation.navigate<'Notification'>(
+                    STRINGS.navigation_notification_single_notification,
+                    {
+                      notificationId: notification.id,
+                    },
+                  )
+                }>
+                <View style={List.icon}>
+                  <NotificationType.Icon size={Icon.size} color={Color.primary} />
+                </View>
+                <ListItem.Content>
+                  <ListItem.Title>{notification.title}</ListItem.Title>
+                  <ListItem.Subtitle>
+                    <ReactTimeago date={notification.timestamp * 1000} />
+                  </ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            );
+          })}
+        </ListItem.Accordion>
+        <ListItem.Accordion
+          containerStyle={List.item}
+          content={
+            <ListItem.Content>
+              <ListItem.Title>Read Notifications</ListItem.Title>
+            </ListItem.Content>
+          }
+          onPress={() => setShowReadNotification(!showReadNotification)}
+          isExpanded={showReadNotification}>
+          {readNotifications.map((notification) => (
+            <ListItem
+              key={notification.id}
+              containerStyle={List.item}
+              onPress={() =>
+                navigation.navigate<'Notification'>(
+                  STRINGS.navigation_notification_single_notification,
+                  {
+                    notificationId: notification.id,
+                  },
+                )
+              }>
+              <View style={List.iconPlaceholder} />
+              <ListItem.Content>
+                <ListItem.Title>{notification.title}</ListItem.Title>
+                <ListItem.Subtitle>
+                  <ReactTimeago date={notification.timestamp} />
+                </ListItem.Subtitle>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </ListItem.Accordion>
+      </View>
+    </ScreenWrapper>
+  );
+};
 
-    // add heading before the unread notifications if there are any
-    if (unread.length > 0) {
-      // set isLastItem property that allows having different styles
-      unread[unread.length - 1].isLastItem = true;
+export default NotificationScreen;
 
-      // the key property has to be unique. all notification keys are numbers so
-      // use a string starting with characters for separators
-      items.push(
-        { key: 'seperator:unread', title: 'Notifications' } as ListSeparatorItem,
-        ...unread,
-      );
-    }
-
-    // add heading before the read notifications if there are any
-    if (read.length > 0) {
-      // set isLastItem property that allows having different styles
-      read[read.length - 1].isLastItem = true;
-
-      // the key property has to be unique. all notification keys are numbers so
-      // use a string starting with characters for separators
-      items.push(
-        { key: 'seperator:read', title: 'Read Notifications' } as ListSeparatorItem,
-        ...read,
-      );
-    }
-
-    if (new Set(items.map((i) => i.key)).size !== items.length) {
-      console.debug('items:', items);
-      throw new Error(
-        'The keys of the items passed to the FlatList in NotificationScreen do not have unique keys!',
-      );
-    }
-
-    return items;
-  }, [unreadNotifications, readNotifications]);
-
+export const NotificationScreenRightHeader = () => {
+  const showActionSheet = useActionSheet();
   const notificationTypes = NotificationHooks.useNotificationTypes();
+
+  const laoId = NotificationHooks.useCurrentLaoId();
+
+  const selectUnreadNotifications = useMemo(
+    () => makeUnreadNotificationsSelector(laoId.valueOf()),
+    [laoId],
+  );
+  const selectReadNotifications = useMemo(
+    () => makeReadNotificationsSelector(laoId.valueOf()),
+    [laoId],
+  );
+  const unreadNotifications = useSelector(selectUnreadNotifications);
+  const readNotifications = useSelector(selectReadNotifications);
 
   const onClearNotifications = () => {
     const allNotifications = [...unreadNotifications, ...readNotifications];
@@ -171,15 +172,13 @@ const NotificationScreen = () => {
   };
 
   return (
-    <ScreenWrapper>
-      <FlatList
-        data={notificationData}
-        keyExtractor={(item) => item.key}
-        renderItem={({ item }) => <NotificationScreenListItem item={item} />}
-      />
-      <Button title={STRINGS.notification_clear_all} onPress={onClearNotifications} />
-    </ScreenWrapper>
+    <TouchableOpacity
+      onPress={() =>
+        showActionSheet([
+          { displayName: STRINGS.notification_clear_all, action: onClearNotifications },
+        ])
+      }>
+      <OptionsIcon color={Color.inactive} size={Icon.size} />
+    </TouchableOpacity>
   );
 };
-
-export default NotificationScreen;
