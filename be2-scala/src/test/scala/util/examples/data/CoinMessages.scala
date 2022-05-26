@@ -13,7 +13,7 @@ import util.examples.data.traits.CoinMessagesTrait
  */
 object PostTransactionMessages extends CoinMessagesTrait {
 
-  override val action: ActionType = ActionType.POST
+  override val action: ActionType = ActionType.POST_TRANSACTION
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "coin")
 
   final val postTransaction: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction.json")()
