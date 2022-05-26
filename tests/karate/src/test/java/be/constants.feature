@@ -150,6 +150,14 @@ Feature: Constants
           return "nas8r4aF0wq9ad4isfp4nsfiMFPMPS9sdsF8lsd8sopfd0="
         }
       """
+
+    # In the specification there is a Pubkey that will never be used by am attendee so we use
+    # it as a supreme source of digital coin distribution (will maybe change later)
+    * def createIssuancePubKey = function(){ return "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+    # The signature is constant since the backend will not check it either way, it is the front end's
+    # job to perform is check so we can leave it as a constant value
+    * def createSignatureForCoinIssuance = function() { return "CAFEBABE" }
+
     * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
     * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
     * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
@@ -173,6 +181,11 @@ Feature: Constants
     * def getInvalidVoteId = call createInvalidVoteId
     * def getValidRegisteredVotes = call createValidRegisteredVotes
     * def getInvalidRegisteredVotes = call createInvalidRegisteredVotes
+
+    * def getCoinIssuancePubKey = call createIssuancePubKey
+    * def getCreateSignatureForCoinIssuance = call createSignatureForCoinIssuance
+    * def getValidOutputs =   [{ "value": 32, "script": { "type": "P2PKH", "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk=" } }]
+    * def getInvalidOutputs = [{ "value": 32, "script": { "type": "P2PKH", "pubkey_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=" } }]
 
     * def INVALID_ACTION =          {error: {code: -1, description: '#string'}}
     * def INVALID_RESOURCE =        {error: {code: -2, description: '#string'}}

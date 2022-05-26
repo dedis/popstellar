@@ -16,10 +16,10 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * string laoChannel =  "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     * string cashChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin"
 
-  Scenario: Valid transaction
+  Scenario: Valid transaction: issue 32 mini-Laos to an attendee
     Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
     And def validTransaction =
       """
@@ -34,17 +34,11 @@ Feature: Create a Roll Call
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": '#(getCoinIssuancePubKey)',
+                  "sig": '#(getCreateSignatureForCoinIssuance)'
                 }
               }],
-              "outputs": [{
-                "value": 32,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
-                }
-              }],
+              "outputs": '#(getValidOutputs)',
               "lock_time": 0
             }
         }
@@ -54,14 +48,14 @@ Feature: Create a Roll Call
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
-  Scenario: Post transaction with an invalid transaction id should fail
+  Scenario: Transfer valid amount should work
     Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
     And def validTransfer =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "lCCBbko3JyV5RT6zlIJVv1IpyST3Kc5wByzXvOsyLic=",
             "transaction": {
               "version": 1,
               "inputs": [{
@@ -70,14 +64,14 @@ Feature: Create a Roll Call
                 "script": {
                   "type": "P2PKH",
                   "pubkey": "2jmj7l5rSw0yVb-vlWAYkK-YBwk=",
-                  "sig": "CAFEBABE"
+                  "sig": '#(getCreateSignatureForCoinIssuance)'
                 }
               }],
               "outputs": [{
-                "value": 32,
+                "value": 20,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBRk="
                 }
               }],
               "lock_time": 0
@@ -85,14 +79,14 @@ Feature: Create a Roll Call
         }
       """
     When frontend.publish(JSON.stringify(validTransfer), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
+    And json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
-  Scenario: Payment to another attendee once you have money should work
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')
-    And def invalidTransaction =
-    """
+  Scenario: Post transaction with invalid transaction id should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+    And def validTransaction =
+      """
         {
             "object": "coin",
             "action": "post_transaction",
@@ -104,22 +98,19 @@ Feature: Create a Roll Call
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": '#(getCoinIssuancePubKey)',
+                  "sig": '#(getCreateSignatureForCoinIssuance)'
                 }
               }],
-              "outputs": [{
-                "value": 32,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
-                }
-              }],
+              "outputs": '#(getValidOutputs)',
               "lock_time": 0
             }
         }
       """
-
+    When frontend.publish(JSON.stringify(validTransaction), cashChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
+    Then match answer contains VALID_MESSAGE
+    And match frontend.receiveNoMoreResponses() == true
 
   Scenario: Post transaction with invalid tx_out_hash should fail
     Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
@@ -128,7 +119,7 @@ Feature: Create a Roll Call
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "fcDVZofQwuSUs5jz_LXGRtSz-xAV8ss4axY4GsHWnVM=",
             "transaction": {
               "version": 1,
               "inputs": [{
@@ -136,34 +127,28 @@ Feature: Create a Roll Call
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": '#(getCoinIssuancePubKey)',
+                  "sig": '#(getCreateSignatureForCoinIssuance)'
                 }
               }],
-              "outputs": [{
-                "value": 32,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
-                }
-              }],
+              "outputs": '#(getValidOutputs)',
               "lock_time": 0
             }
         }
       """
     When frontend.publish(JSON.stringify(invalidTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
-    Then match answer contains VALID_MESSAGE
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))
+    Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
-  Scenario: Post transaction with invalid output pubkey should fail
+  Scenario: Post transaction with invalid output pubKey should fail
     Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
     And def invalidTransaction =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "S-UTUqrPfUVw8Ywv6AOb7Qv0M01s7-BcYCSa4SIl9bQ=",
             "transaction": {
               "version": 1,
               "inputs": [{
@@ -171,22 +156,16 @@ Feature: Create a Roll Call
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": '#(getCoinIssuancePubKey)',
+                  "sig": '#(getCreateSignatureForCoinIssuance)'
                 }
               }],
-              "outputs": [{
-                "value": 32,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU="
-                }
-              }],
+              "outputs": '#(getInvalidOutputs)',
               "lock_time": 0
             }
         }
       """
     When frontend.publish(JSON.stringify(invalidTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
-    Then match answer contains VALID_MESSAGE
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))
+    Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
