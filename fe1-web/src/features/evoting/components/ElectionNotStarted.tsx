@@ -16,7 +16,15 @@ import { openElection } from '../network/ElectionMessageApi';
 import { Election } from '../objects';
 
 const ElectionNotStarted = ({ election }: IPropTypes) => {
-  const [openQuestionIndex, setOpenQuestionIndex] = useState(0);
+  const [isQuestionOpen, setIsQuestionOpen] = useState(
+    election.questions.reduce((obj, question) => {
+      // this makes the reduce efficient. creating a new object
+      // in every iteration is not necessary
+      // eslint-disable-next-line no-param-reassign
+      obj[question.id] = true;
+      return obj;
+    }, {} as Record<string, boolean | undefined>),
+  );
 
   return (
     <ScreenWrapper>
@@ -39,23 +47,23 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
 
       <Text style={[Typography.paragraph, Typography.important]}>Questions</Text>
 
-      <View style={List.listContainer}>
-        {election.questions.map((question, index) => (
+      <View style={List.container}>
+        {election.questions.map((question) => (
           <ListItem.Accordion
             key={question.id}
-            containerStyle={List.listItem}
+            containerStyle={List.item}
             content={
               <ListItem.Content>
                 <ListItem.Title>{question.question}</ListItem.Title>
               </ListItem.Content>
             }
-            onPress={() => setOpenQuestionIndex(index)}
-            isExpanded={index === openQuestionIndex}>
+            onPress={() =>
+              setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
+            }
+            isExpanded={!!isQuestionOpen[question.id]}>
             {question.ballot_options.map((ballotOption) => (
-              <ListItem key={ballotOption} containerStyle={List.listItem}>
-                <View style={List.listIcon}>
-                  <ListItem.CheckBox size={Icon.size} disabled />
-                </View>
+              <ListItem key={ballotOption} containerStyle={List.item}>
+                <View style={List.iconPlaceholder} />
                 <ListItem.Content>
                   <ListItem.Title>{ballotOption}</ListItem.Title>
                 </ListItem.Content>
@@ -104,7 +112,7 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
 
   return (
     <TouchableOpacity
-      onPress={() => showActionSheet([{ displayName: 'Open election', action: onOpenElection }])}>
+      onPress={() => showActionSheet([{ displayName: 'Open Election', action: onOpenElection }])}>
       <OptionsIcon color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );

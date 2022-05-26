@@ -177,9 +177,9 @@ const ViewSingleRollCall = () => {
       {getRollCallDisplay(rollCall.status)}
 
       {(rollCall.attendees || attendeePopTokens) && (
-        <View style={List.listContainer}>
+        <View style={List.container}>
           <ListItem.Accordion
-            containerStyle={List.listItem}
+            containerStyle={List.item}
             content={
               <ListItem.Content>
                 <ListItem.Title>Attendees</ListItem.Title>
@@ -187,8 +187,8 @@ const ViewSingleRollCall = () => {
             }
             isExpanded>
             {(rollCall.attendees || attendeePopTokens || []).map((token) => (
-              <ListItem key={token.valueOf()} containerStyle={List.listItem}>
-                <View style={List.listIcon}>
+              <ListItem key={token.valueOf()} containerStyle={List.item}>
+                <View style={List.icon}>
                   <QrCodeIcon color={Color.primary} size={Icon.size} />
                 </View>
                 <ListItem.Content>

@@ -57,7 +57,7 @@ const EventList = () => {
   return (
     <View>
       <ListItem.Accordion
-        containerStyle={List.listItem}
+        containerStyle={List.item}
         content={
           <ListItem.Content>
             <ListItem.Title>
@@ -72,7 +72,7 @@ const EventList = () => {
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={List.listItem}
+        containerStyle={List.item}
         content={
           <ListItem.Content>
             <ListItem.Title>
@@ -87,7 +87,7 @@ const EventList = () => {
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={List.listItem}
+        containerStyle={List.item}
         content={
           <ListItem.Content>
             <ListItem.Title>

@@ -13,7 +13,7 @@ import STRINGS from 'resources/strings';
 import ElectionNotStarted, {
   ElectionNotStartedRightHeader,
 } from '../components/ElectionNotStarted';
-import ElectionOpened from '../components/ElectionOpened';
+import ElectionOpened, { ElectionOpenedRightHeader } from '../components/ElectionOpened';
 import ElectionResult from '../components/ElectionResult';
 import ElectionTerminated from '../components/ElectionTerminated';
 import { EvotingFeature } from '../interface';
@@ -30,7 +30,7 @@ type NavigationProps = CompositeScreenProps<
 
 const ViewSingleElection = () => {
   const route = useRoute<NavigationProps['route']>();
-  const { eventId: electionId, isOrganizer } = route.params;
+  const { eventId: electionId } = route.params;
 
   const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
   const election = useSelector(selectElection);
@@ -39,16 +39,11 @@ const ViewSingleElection = () => {
     throw new Error(`Could not find an election with id ${electionId}`);
   }
 
-  const questions = useMemo(
-    () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
-    [election.questions],
-  );
-
   switch (election.electionStatus) {
     case ElectionStatus.NOT_STARTED:
       return <ElectionNotStarted election={election} />;
     case ElectionStatus.OPENED:
-      return <ElectionOpened election={election} questions={questions} isOrganizer={isOrganizer} />;
+      return <ElectionOpened election={election} />;
     case ElectionStatus.TERMINATED:
       return <ElectionTerminated election={election} />;
     case ElectionStatus.RESULT:
@@ -89,7 +84,7 @@ export const ViewSinglRollCallScreenRightHeader = () => {
     case ElectionStatus.NOT_STARTED:
       return <ElectionNotStartedRightHeader election={election} isOrganizer={isOrganizer} />;
     case ElectionStatus.OPENED:
-      return null;
+      return <ElectionOpenedRightHeader election={election} isOrganizer={isOrganizer} />;
     case ElectionStatus.TERMINATED:
       return null;
     case ElectionStatus.RESULT:

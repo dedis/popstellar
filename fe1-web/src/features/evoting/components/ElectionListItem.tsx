@@ -3,6 +3,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
+import ReactTimeago from 'react-timeago';
 
 import ElectionIcon from 'core/components/icons/ElectionIcon';
 import { Color, Icon, List } from 'core/styles';
@@ -12,22 +13,25 @@ import { EvotingInterface } from '../interface';
 import { Election, ElectionStatus } from '../objects';
 import { makeElectionSelector } from '../reducer';
 
-const getSubtitle = (election: Election): string => {
+const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
-    return `${STRINGS.general_starting_at} ${election.start
-      .toDate()
-      .toLocaleDateString()} ${election.start.toDate().toLocaleTimeString()}`;
+    return (
+      <ListItem.Subtitle>
+        {STRINGS.general_starting_at} <ReactTimeago date={election.start.valueOf() * 1000} />
+      </ListItem.Subtitle>
+    );
   }
 
   if (election.electionStatus === ElectionStatus.OPENED) {
-    return `${STRINGS.general_ongoing}, ${STRINGS.general_ending_at} ${election.end
-      .toDate()
-      .toLocaleDateString()} ${election.end.toDate().toLocaleTimeString()}`;
+    return (
+      <ListItem.Subtitle>
+        {STRINGS.general_ongoing}, {STRINGS.general_ending_at}{' '}
+        <ReactTimeago date={election.end.valueOf() * 1000} />
+      </ListItem.Subtitle>
+    );
   }
 
-  return `${STRINGS.general_ended_at} ${election.end.toDate().toLocaleDateString()} ${election.end
-    .toDate()
-    .toLocaleTimeString()}`;
+  return <ListItem.Subtitle>{STRINGS.general_closed}</ListItem.Subtitle>;
 };
 
 const ElectionListItem = (props: IPropTypes) => {
@@ -42,12 +46,12 @@ const ElectionListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={List.listIcon}>
+      <View style={List.icon}>
         <ElectionIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
         <ListItem.Title>{election.name}</ListItem.Title>
-        <ListItem.Subtitle>{getSubtitle(election)}</ListItem.Subtitle>
+        <Subtitle election={election} />
       </ListItem.Content>
       <ListItem.Chevron />
     </>

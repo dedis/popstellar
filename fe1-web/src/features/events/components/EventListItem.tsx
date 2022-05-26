@@ -34,7 +34,7 @@ const EventListItem = (props: IPropTypes) => {
 
   return EventType ? (
     <ListItem
-      containerStyle={List.listItem}
+      containerStyle={List.item}
       bottomDivider
       onPress={() =>
         navigation.push(STRINGS.navigation_app_lao, {
@@ -51,7 +51,7 @@ const EventListItem = (props: IPropTypes) => {
       <EventType.ListItemComponent eventId={eventId} isOrganizer={isOrganizer} />
     </ListItem>
   ) : (
-    <ListItem containerStyle={List.listItem} bottomDivider>
+    <ListItem containerStyle={List.item} bottomDivider>
       <ListItem.Content>
         <ListItem.Title>{`Event type '${eventType}' was not registered!`}</ListItem.Title>
       </ListItem.Content>

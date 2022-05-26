@@ -43,7 +43,7 @@ const MeetingListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={List.listIcon}>
+      <View style={List.icon}>
         <MeetingIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>

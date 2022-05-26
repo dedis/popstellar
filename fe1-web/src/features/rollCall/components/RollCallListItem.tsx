@@ -40,7 +40,7 @@ const RollCallListItem = (props: IPropTypes) => {
 
   return (
     <>
-      <View style={List.listIcon}>
+      <View style={List.icon}>
         <RollCallIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>

@@ -10,9 +10,11 @@ namespace STRINGS {
   export const general_no = 'No';
   export const general_add = 'Add';
   export const general_done = 'Done';
-  export const general_starting_at = 'Supposed to start at';
-  export const general_ending_at = 'Supposed to end at';
+  export const general_starting_at = 'Supposed to start';
+  export const general_ending_at = 'Supposed to end';
   export const general_ended_at = 'Ended at';
+
+  export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
 
   /* --- User Roles --- */
