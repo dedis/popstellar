@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.pages.detail;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import androidx.annotation.IdRes;
@@ -25,10 +26,20 @@ public class LaoDetailActivityPageObject {
     return onView(withId(R.id.lao_detail_identity_menu));
   }
 
+  public static ViewInteraction socialMediaButton() {
+    return onView(withId(R.id.lao_detail_social_media_menu));
+  }
 
+  public static ViewInteraction digitalCashButton() {
+    return onView(withId(R.id.lao_detail_digital_cash_menu));
+  }
 
   public static ViewInteraction witnessButton() {
     return onView(withId(R.id.lao_detail_witnessing_menu));
+  }
+
+  public static ViewInteraction toolBarBackButton() {
+    return onView(withContentDescription("Navigate up"));
   }
 
   @IdRes
@@ -44,16 +55,6 @@ public class LaoDetailActivityPageObject {
   @IdRes
   public static int witnessingFragmentId() {
     return R.id.fragment_witnessing;
-  }
-
-  @IdRes
-  public static int castVoteFragmentId() {
-    return R.id.fragment_cast_vote;
-  }
-
-  @IdRes
-  public static int resultFragmentId() {
-    return R.id.fragment_election_result;
   }
 
   public static int containerId() {
