@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * Object representing a transaction output to use as an input for this transaction
  */
-public class Input {
+public final class Input {
   @SerializedName("tx_out_hash")
   private final String txOutHash; // Previous (to-be-used) transaction hash
 

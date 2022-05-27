@@ -5,7 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-public class PostTransactionCoin extends Data {
+public final class PostTransactionCoin extends Data {
   @SerializedName(value = "transaction_id")
   private final String transactionId; // TxOutHash SHA256 over base64encode(transaction)
 

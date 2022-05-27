@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // Object representing an output of this transaction
-public class Output {
+public final class Output {
   @SerializedName("value")
   private final long value; // the value of the output transaction, expressed in miniLAOs
 

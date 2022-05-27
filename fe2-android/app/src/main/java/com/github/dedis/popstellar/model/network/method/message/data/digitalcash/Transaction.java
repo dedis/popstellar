@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * The transaction object
  */
-public class Transaction {
+public final class Transaction {
   @SerializedName(value = "version")
   private final int version; // The version of the transaction inputs
 

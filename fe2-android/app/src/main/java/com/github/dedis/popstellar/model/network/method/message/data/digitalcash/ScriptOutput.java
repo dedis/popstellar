@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // The script describing the TxOut unlock mechanism
-public class ScriptOutput {
+public final class ScriptOutput {
   @SerializedName("type")
   private final String type; // Type of script
 

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // The script describing the unlock mechanism
-public class ScriptInput {
+public final class ScriptInput {
   @SerializedName("type")
   private final String type; // The script describing the unlock mechanism
 
