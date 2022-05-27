@@ -114,9 +114,9 @@ export class Transaction {
     amount: number,
     inputTransactions: TransactionState[],
   ): Transaction {
-    const fromPublicKeyHash = Hash.fromString(from.publicKey.valueOf());
+    const fromPublicKeyHash = Hash.fromPublicKey(from.publicKey);
 
-    const toPublicKeyHash = Hash.fromString(to.valueOf());
+    const toPublicKeyHash = Hash.fromPublicKey(to);
 
     const outputTo = {
       value: amount,
@@ -180,7 +180,7 @@ export class Transaction {
    * @param amount the amount to send
    */
   public static createCoinbase(organizerKP: KeyPair, to: PublicKey, amount: number): Transaction {
-    const toPublicKeyHash = Hash.fromString(to.valueOf());
+    const toPublicKeyHash = Hash.fromPublicKey(to);
 
     const outputTo = {
       value: amount,
@@ -232,7 +232,7 @@ export class Transaction {
   ): Omit<TransactionInputState, 'script'>[] => {
     return transactions.flatMap((tr) =>
       tr.outputs
-        .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromString(pk).valueOf())
+        .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf())
         .map((output, index) => {
           return {
             txOutHash: tr.transactionId!.valueOf(),
