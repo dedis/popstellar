@@ -66,6 +66,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	if err != nil {
 		h.log.Err(err).Msg("invalid lao#create message")
 		sock.SendError(&publish.ID, err)
+		return err
 	}
 
 	err = h.createLao(publish.Params.Message, laoCreate, sock)
@@ -309,11 +310,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 			expectedMessageID, messageID)
 	}
 
-	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
-	if alreadyReceived {
-		h.log.Info().Msg("message was already received")
-		return publish.ID, nil
-	}
+	err = h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
 
 	if err != nil {
 		return -1, xerrors.Errorf("failed to broadcast message: %v", err)

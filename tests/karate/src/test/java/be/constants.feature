@@ -37,7 +37,7 @@ Feature: Constants
     * def rollCallValidName = function() {return "Roll Call "}
 
     * def getLaoValidName = call laoValidName
-    * def getLaoInvalidName = call laoValidName
+    * def getLaoEmptyName = call laoInvalidName
     * def getRolCallValidName = call rollCallValidName
 
     * def getLaoValidCreationTime = call laoValidCreationTime
@@ -152,7 +152,7 @@ Feature: Constants
       """
     * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
     * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
-    * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+    * def getLaoIdEmptyName = constructLaoId(getLaoEmptyName, getLaoValidCreationTime)
 
     * def getRollCallValidId = constructRollCallId(getLaoValid, getRolCallValidName, getRollCallValidCreationTime)
     * def getRollCallInvalidId = constructRollCallId(getLaoValid, getLaoValidName,  getRollCallInvalidCreationTime)
