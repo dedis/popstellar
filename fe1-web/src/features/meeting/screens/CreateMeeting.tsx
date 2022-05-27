@@ -154,7 +154,6 @@ const CreateMeeting = () => {
         description={STRINGS.modal_event_starts_in_past}
         onConfirmPress={() => createMeeting()}
         buttonConfirmText={STRINGS.modal_button_start_now}
-        buttonCancelText={STRINGS.modal_button_go_back}
       />
     </ScreenWrapper>
   );

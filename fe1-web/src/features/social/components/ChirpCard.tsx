@@ -191,7 +191,6 @@ const ChirpCard = (props: IPropTypes) => {
         description={STRINGS.modal_chirp_deletion_description}
         onConfirmPress={() => deleteChirp()}
         buttonConfirmText={STRINGS.general_yes}
-        buttonCancelText={STRINGS.general_no}
       />
     </>
   );

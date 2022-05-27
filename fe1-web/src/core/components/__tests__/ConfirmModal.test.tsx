@@ -52,7 +52,6 @@ describe('ConfirmModal', () => {
         title={TITLE}
         description={DESCRIPTION}
         onConfirmPress={() => onConfirmPress()}
-        buttonCancelText={CANCEL}
       />,
     );
     const cancelButton = getByText(CANCEL);

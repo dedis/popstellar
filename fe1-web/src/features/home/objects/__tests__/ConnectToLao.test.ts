@@ -9,12 +9,12 @@ import { ConnectToLao } from '../ConnectToLao';
 const serverUrl = 'ws://127.0.0.1:9000/organizer/client';
 
 const sampleConnectToLao: Partial<ConnectToLao> = {
-  server: serverUrl,
+  servers: [serverUrl],
   lao: mockLaoId,
 };
 
 const dataConnectToLao = `{
-  "server": "${serverUrl}",
+  "servers": ["${serverUrl}"],
   "lao": "${mockLaoId}"
   }`;
 
@@ -54,7 +54,7 @@ describe('ConnectToLao', () => {
     it('should throw an error if lao id is undefined', () => {
       const wrongObj = () =>
         new ConnectToLao({
-          server: serverUrl,
+          servers: [serverUrl],
         });
       expect(wrongObj).toThrow(ProtocolError);
     });
