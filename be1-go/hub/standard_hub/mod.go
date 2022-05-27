@@ -555,7 +555,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 
 	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError( "failed to create the LAO: %v", err)
+		return answer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
 	}
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
