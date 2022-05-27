@@ -24,14 +24,15 @@ object CreateRollCallExamples {
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
-  val workingCreatRollCall: CreateRollCall = CreateRollCall(R_ID, NAME, NOT_STALE_CREATION, NOT_STALE_PROPOSED_START, NOT_STALE_PROPOSED_END, "", None)
+  val workingCreateRollCall: CreateRollCall = CreateRollCall(R_ID, NAME, NOT_STALE_CREATION, NOT_STALE_PROPOSED_START, NOT_STALE_PROPOSED_END, "", None)
+  final val DATA_CREATE_ROLL_CALL: Hash = Hash(Base64Data.encode(workingCreateRollCall.toJson.toString))
   final val MESSAGE_CREATE_ROLL_CALL_WORKING: Message = new Message(
-    Base64Data.encode(workingCreatRollCall.toJson.toString),
+    DATA_CREATE_ROLL_CALL.base64Data,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(workingCreatRollCall)
+    Some(workingCreateRollCall)
   )
 
   val wrongTimestampCreateRollCall: CreateRollCall = CreateRollCall(R_ID, NAME, invalidTimestamp, NOT_STALE_PROPOSED_START, NOT_STALE_PROPOSED_END, "", None)

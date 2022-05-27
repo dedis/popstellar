@@ -24,8 +24,9 @@ object OpenRollCallExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID, OPENS, NOT_STALE_OPENED_AT)
+  final val DATA_OPEN_ROLL_CALL: Base64Data = Base64Data.encode(workingOpenRollCall.toJson.toString)
   final val MESSAGE_OPEN_ROLL_CALL_WORKING: Message = new Message(
-    Base64Data.encode(workingOpenRollCall.toJson.toString),
+    DATA_OPEN_ROLL_CALL,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
@@ -52,6 +53,28 @@ object OpenRollCallExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(wrongIdOpenRollCall)
+  )
+
+  val wrongOpensOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID, invalidId, NOT_STALE_OPENED_AT)
+  final val DATA_OPEN_ROLL_CALL_WRONG_OPENS: Base64Data = Base64Data.encode(wrongOpensOpenRollCall.toJson.toString)
+  final val MESSAGE_OPEN_ROLL_CALL_WRONG_OPENS: Message = new Message(
+    DATA_OPEN_ROLL_CALL_WRONG_OPENS,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongOpensOpenRollCall)
+  )
+
+  val validOpensOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID, CloseRollCallExamples.UPDATE_ID, NOT_STALE_OPENED_AT)
+  final val DATA_OPEN_ROLL_CALL_VALID_OPENS: Base64Data = Base64Data.encode(validOpensOpenRollCall.toJson.toString)
+  final val MESSAGE_OPEN_ROLL_CALL_VALID_OPENS: Message = new Message(
+    DATA_OPEN_ROLL_CALL_VALID_OPENS,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(validOpensOpenRollCall)
   )
 
   val wrongSenderOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID, OPENS, NOT_STALE_OPENED_AT)
