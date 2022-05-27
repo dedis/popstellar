@@ -68,7 +68,7 @@ public class Transaction {
       // PubKey
       collectTransaction.add(currentTxin.getScript().getPubkey().getEncoded());
       // Sig
-      collectTransaction.add(currentTxin.getScript().getSig());
+      collectTransaction.add(currentTxin.getScript().getSig().getEncoded());
       // Type
       collectTransaction.add(currentTxin.getScript().getType());
       // TxOutHash

@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
@@ -14,7 +15,7 @@ public class ScriptInput {
   private final PublicKey pubKeyRecipient; // The recipient’s public key
 
   @SerializedName("sig")
-  private String sig; // Signature on all txins and txouts using the recipient's private key
+  private Signature sig; // Signature on all txins and txouts using the recipient's private key
   // Transaction //with all txin txout
 
   /**
@@ -22,17 +23,17 @@ public class ScriptInput {
    * @param pubKeyRecipient The recipient’s public key
    * @param sig Signature on all txins and txouts using the recipient's private key
    */
-  public ScriptInput(String type, PublicKey pubKeyRecipient, String sig) {
+  public ScriptInput(String type, PublicKey pubKeyRecipient, Signature sig) {
     this.type = type;
     this.pubKeyRecipient = pubKeyRecipient;
     this.sig = sig;
   }
 
-  public String getSig() {
+  public Signature getSig() {
     return sig;
   }
 
-  public void setSig(String sig) {
+  public void setSig(Signature sig) {
     this.sig = sig;
   }
 
