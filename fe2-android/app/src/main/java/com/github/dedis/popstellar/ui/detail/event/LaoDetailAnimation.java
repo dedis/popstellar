@@ -28,7 +28,7 @@ public class LaoDetailAnimation {
 
   public static void showIn(final View v) {
     v.setVisibility(View.VISIBLE);
-    // v.setAlpha(0f);
+    v.setAlpha(0f);
     v.setTranslationY(v.getHeight());
     v.animate()
         .setDuration(200)
