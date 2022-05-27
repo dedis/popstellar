@@ -172,12 +172,14 @@ Feature: Constants
                                      questionId.getBytes(), vote.getBytes())
         }
       """
+    # The argument "0" represents the index of the ballot option Yes
     * def createIsThisProjectFunVoteIdVoteYes =
       """
         function(){
           return createIsThisProjectFunVoteId("0")
         }
       """
+    # The argument "1" represents the index of the ballot option No
     * def createIsThisProjectFunVoteIdVoteNo =
       """
         function(){

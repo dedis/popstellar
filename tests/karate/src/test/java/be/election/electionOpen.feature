@@ -1,9 +1,3 @@
-
-CODE CLIMATE OPTIONS
-Show issues
-Show test coverage
-Highlight covered lines
-
 @env=go,scala
 Feature: Open an Election
   Background:
