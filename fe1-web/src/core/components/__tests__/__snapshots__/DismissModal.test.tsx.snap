@@ -28,6 +28,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         style={
           Object {
             "alignSelf": "flex-start",
+            "color": "#000",
             "fontSize": 20,
             "fontWeight": "bold",
             "lineHeight": 26,
@@ -45,6 +46,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
       style={
         Object {
           "alignSelf": "flex-start",
+          "color": "#000",
           "fontSize": 20,
           "lineHeight": 26,
           "marginHorizontal": 10,
@@ -91,19 +93,22 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         >
           <View
             style={
-              Object {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 16,
-                "borderWidth": 1,
-                "padding": 8,
-              }
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 16,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
             }
           >
             <Text
               style={
                 Array [
                   Object {
+                    "color": "#000",
                     "fontSize": 20,
                     "lineHeight": 26,
                     "textAlign": "left",
@@ -155,6 +160,7 @@ exports[`DismissModal renders correctly 1`] = `
         style={
           Object {
             "alignSelf": "flex-start",
+            "color": "#000",
             "fontSize": 20,
             "fontWeight": "bold",
             "lineHeight": 26,
@@ -172,6 +178,7 @@ exports[`DismissModal renders correctly 1`] = `
       style={
         Object {
           "alignSelf": "flex-start",
+          "color": "#000",
           "fontSize": 20,
           "lineHeight": 26,
           "marginHorizontal": 10,
@@ -218,19 +225,22 @@ exports[`DismissModal renders correctly 1`] = `
         >
           <View
             style={
-              Object {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 16,
-                "borderWidth": 1,
-                "padding": 8,
-              }
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 16,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
             }
           >
             <Text
               style={
                 Array [
                   Object {
+                    "color": "#000",
                     "fontSize": 20,
                     "lineHeight": 26,
                     "textAlign": "left",

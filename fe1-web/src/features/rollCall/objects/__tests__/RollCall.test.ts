@@ -62,7 +62,9 @@ describe('RollCall object', () => {
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
+      openedAt: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
+      closedAt: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES,
     };

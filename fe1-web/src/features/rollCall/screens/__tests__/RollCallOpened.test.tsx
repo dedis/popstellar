@@ -33,6 +33,7 @@ jest.mock('@react-navigation/core', () => {
     ...actualNavigation,
     useNavigation: () => ({
       navigate: () => {},
+      addListener: () => {},
     }),
   };
 });

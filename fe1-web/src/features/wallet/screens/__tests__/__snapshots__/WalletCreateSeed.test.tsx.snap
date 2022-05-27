@@ -345,6 +345,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 style={
                                   Array [
                                     Object {
+                                      "color": "#000",
                                       "fontSize": 32,
                                       "fontWeight": "bold",
                                       "lineHeight": 41,
@@ -363,6 +364,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 style={
                                   Array [
                                     Object {
+                                      "color": "#000",
                                       "fontSize": 20,
                                       "lineHeight": 26,
                                       "marginBottom": 16,
@@ -379,6 +381,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               <Text
                                 style={
                                   Object {
+                                    "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
@@ -489,6 +492,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                       Object {
                                         "borderRadius": 16,
                                         "borderWidth": 1,
+                                        "color": "#000",
                                         "flexGrow": 1,
                                         "fontSize": 20,
                                         "lineHeight": 26,
@@ -526,6 +530,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               <Text
                                 style={
                                   Object {
+                                    "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
@@ -606,6 +611,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -666,6 +672,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",

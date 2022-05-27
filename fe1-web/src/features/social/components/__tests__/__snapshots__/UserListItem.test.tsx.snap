@@ -80,19 +80,22 @@ exports[`UserListItem renders correctly 1`] = `
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -145,19 +148,26 @@ exports[`UserListItem renders correctly 1`] = `
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                  Object {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -260,19 +270,26 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                  Object {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -323,19 +340,22 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",

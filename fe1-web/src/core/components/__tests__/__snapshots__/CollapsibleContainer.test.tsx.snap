@@ -37,6 +37,7 @@ exports[`CollapsibleContainer container can be opened 1`] = `
         style={
           Array [
             Object {
+              "color": "#000",
               "fontSize": 20,
               "lineHeight": 26,
               "marginHorizontal": 10,
@@ -101,6 +102,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
         style={
           Array [
             Object {
+              "color": "#000",
               "fontSize": 20,
               "lineHeight": 26,
               "marginHorizontal": 10,
@@ -159,6 +161,7 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
         style={
           Array [
             Object {
+              "color": "#000",
               "fontSize": 20,
               "lineHeight": 26,
               "marginHorizontal": 10,

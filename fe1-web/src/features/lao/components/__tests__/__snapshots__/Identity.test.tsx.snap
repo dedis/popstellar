@@ -334,15 +334,15 @@ exports[`Identity renders correctly 1`] = `
                         onStartShouldSetResponder={[Function]}
                         style={
                           Object {
-                            "backgroundColor": "#fafafa",
+                            "backgroundColor": "transparent",
                             "borderColor": "#ededed",
                             "borderRadius": 3,
-                            "borderWidth": 1,
+                            "borderWidth": 0,
                             "margin": 5,
-                            "marginLeft": 10,
-                            "marginRight": 10,
+                            "marginLeft": 0,
+                            "marginRight": 0,
                             "opacity": 1,
-                            "padding": 10,
+                            "padding": 8,
                           }
                         }
                         testID="checkbox"
@@ -374,15 +374,46 @@ exports[`Identity renders correctly 1`] = `
                       <Text
                         style={
                           Object {
-                            "color": "black",
-                            "fontSize": 25,
+                            "color": "#000",
+                            "fontSize": 20,
                             "lineHeight": 26,
-                            "marginHorizontal": 10,
-                            "textAlign": "center",
+                            "marginBottom": 16,
+                            "textAlign": "left",
                           }
                         }
                       >
                         You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
+                      </Text>
+                      <Text
+                        style={
+                          Object {
+                            "color": "#000",
+                            "fontSize": 20,
+                            "lineHeight": 26,
+                            "marginBottom": 16,
+                            "textAlign": "left",
+                          }
+                        }
+                      >
+                        You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
+                      </Text>
+                      <Text
+                        style={
+                          Array [
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "fontWeight": "bold",
+                            },
+                          ]
+                        }
+                      >
+                        Name
                       </Text>
                       <TextInput
                         editable={false}
@@ -390,94 +421,196 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Array [
                             Object {
+                              "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
                               "marginBottom": 16,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "backgroundColor": "#fff",
+                              "borderRadius": 8,
+                              "flex": 1,
+                              "padding": 8,
                             },
                             Object {
                               "color": "gray",
                             },
                           ]
                         }
+                        value=""
                       />
+                      <Text
+                        style={
+                          Array [
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "fontWeight": "bold",
+                            },
+                          ]
+                        }
+                      >
+                        Title
+                      </Text>
                       <TextInput
                         editable={false}
                         placeholder="Title"
                         style={
                           Array [
                             Object {
+                              "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
                               "marginBottom": 16,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "backgroundColor": "#fff",
+                              "borderRadius": 8,
+                              "flex": 1,
+                              "padding": 8,
                             },
                             Object {
                               "color": "gray",
                             },
                           ]
                         }
+                        value=""
                       />
+                      <Text
+                        style={
+                          Array [
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "fontWeight": "bold",
+                            },
+                          ]
+                        }
+                      >
+                        Organization
+                      </Text>
                       <TextInput
                         editable={false}
                         placeholder="Organization"
                         style={
                           Array [
                             Object {
+                              "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
                               "marginBottom": 16,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "backgroundColor": "#fff",
+                              "borderRadius": 8,
+                              "flex": 1,
+                              "padding": 8,
                             },
                             Object {
                               "color": "gray",
                             },
                           ]
                         }
+                        value=""
                       />
+                      <Text
+                        style={
+                          Array [
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "fontWeight": "bold",
+                            },
+                          ]
+                        }
+                      >
+                        Email
+                      </Text>
                       <TextInput
-                        autoCompleteType="email"
                         editable={false}
-                        keyboardType="email-address"
                         placeholder="Email"
                         style={
                           Array [
                             Object {
+                              "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
                               "marginBottom": 16,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "backgroundColor": "#fff",
+                              "borderRadius": 8,
+                              "flex": 1,
+                              "padding": 8,
                             },
                             Object {
                               "color": "gray",
                             },
                           ]
                         }
+                        value=""
                       />
+                      <Text
+                        style={
+                          Array [
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "fontWeight": "bold",
+                            },
+                          ]
+                        }
+                      >
+                        Phone number
+                      </Text>
                       <TextInput
-                        autoCompleteType="tel"
-                        dataDetectorTypes="phoneNumber"
                         editable={false}
-                        keyboardType="phone-pad"
                         placeholder="Phone number"
                         style={
                           Array [
                             Object {
+                              "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
                               "marginBottom": 16,
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                              "textAlign": "left",
+                            },
+                            Object {
+                              "backgroundColor": "#fff",
+                              "borderRadius": 8,
+                              "flex": 1,
+                              "padding": 8,
                             },
                             Object {
                               "color": "gray",
                             },
                           ]
                         }
+                        value=""
                       />
                     </View>
                   </View>

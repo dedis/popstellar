@@ -342,6 +342,149 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                               ]
                             }
                           >
+                            <View
+                              pointerEvents="box-none"
+                              style={
+                                Object {
+                                  "zIndex": 1,
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityElementsHidden={false}
+                                importantForAccessibility="auto"
+                                onLayout={[Function]}
+                                pointerEvents="box-none"
+                                style={null}
+                              >
+                                <View
+                                  pointerEvents="box-none"
+                                  style={
+                                    Object {
+                                      "bottom": 0,
+                                      "left": 0,
+                                      "opacity": 1,
+                                      "position": "absolute",
+                                      "right": 0,
+                                      "top": 0,
+                                      "zIndex": 0,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    collapsable={false}
+                                    nativeID="animatedComponent"
+                                    style={
+                                      Object {
+                                        "backgroundColor": "rgb(255, 255, 255)",
+                                        "borderBottomColor": "rgb(216, 216, 216)",
+                                        "flex": 1,
+                                        "shadowColor": "rgb(216, 216, 216)",
+                                        "shadowOffset": Object {
+                                          "height": 0.5,
+                                          "width": 0,
+                                        },
+                                        "shadowOpacity": 0.85,
+                                        "shadowRadius": 0,
+                                      }
+                                    }
+                                  />
+                                </View>
+                                <View
+                                  collapsable={false}
+                                  nativeID="animatedComponent"
+                                  pointerEvents="box-none"
+                                  style={
+                                    Object {
+                                      "height": 44,
+                                      "maxHeight": undefined,
+                                      "minHeight": undefined,
+                                      "opacity": undefined,
+                                      "transform": undefined,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    pointerEvents="none"
+                                    style={
+                                      Object {
+                                        "height": 0,
+                                      }
+                                    }
+                                  />
+                                  <View
+                                    pointerEvents="box-none"
+                                    style={
+                                      Object {
+                                        "alignItems": "stretch",
+                                        "flex": 1,
+                                        "flexDirection": "row",
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "alignItems": "flex-start",
+                                          "flexBasis": 0,
+                                          "flexGrow": 1,
+                                          "justifyContent": "center",
+                                          "marginStart": 0,
+                                          "opacity": 1,
+                                          "paddingLeft": 48,
+                                        }
+                                      }
+                                    />
+                                    <View
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "justifyContent": "center",
+                                          "marginHorizontal": 16,
+                                          "maxWidth": 718,
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text
+                                        accessibilityRole="header"
+                                        aria-level="1"
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
+                                        numberOfLines={1}
+                                        onLayout={[Function]}
+                                        style={
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "fontWeight": "500",
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          }
+                                        }
+                                      >
+                                        Events
+                                      </Text>
+                                    </View>
+                                    <View
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "alignItems": "flex-end",
+                                          "flexBasis": 0,
+                                          "flexGrow": 1,
+                                          "justifyContent": "center",
+                                          "marginEnd": 0,
+                                          "opacity": 1,
+                                          "paddingRight": 48,
+                                        }
+                                      }
+                                    />
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
                             <RNSScreenContainer
                               onLayout={[Function]}
                               style={
@@ -433,7 +576,6 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     style={
                                       Object {
                                         "flex": 1,
-                                        "marginTop": 0,
                                       }
                                     }
                                   >
@@ -489,76 +631,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                             }
                                           >
                                             <RCTScrollView>
-                                              <View>
-                                                <View
-                                                  style={
-                                                    Object {
-                                                      "borderRadius": 5,
-                                                      "borderWidth": 1,
-                                                      "marginBottom": 16,
-                                                      "marginHorizontal": 32,
-                                                      "marginTop": 16,
-                                                      "padding": 16,
-                                                    }
-                                                  }
-                                                >
-                                                  <View>
-                                                    <View
-                                                      accessible={true}
-                                                      collapsable={false}
-                                                      focusable={true}
-                                                      nativeID="animatedComponent"
-                                                      onClick={[Function]}
-                                                      onResponderGrant={[Function]}
-                                                      onResponderMove={[Function]}
-                                                      onResponderRelease={[Function]}
-                                                      onResponderTerminate={[Function]}
-                                                      onResponderTerminationRequest={[Function]}
-                                                      onStartShouldSetResponder={[Function]}
-                                                      style={
-                                                        Object {
-                                                          "opacity": 1,
-                                                        }
-                                                      }
-                                                    >
-                                                      <View>
-                                                        <Text
-                                                          style={
-                                                            Object {
-                                                              "color": "black",
-                                                              "fontSize": 25,
-                                                              "fontWeight": "bold",
-                                                              "lineHeight": 26,
-                                                              "marginHorizontal": 10,
-                                                              "textAlign": "center",
-                                                            }
-                                                          }
-                                                        >
-                                                          Lao Properties
-                                                        </Text>
-                                                        <Text
-                                                          style={
-                                                            Array [
-                                                              Object {
-                                                                "fontSize": 20,
-                                                                "lineHeight": 26,
-                                                                "marginHorizontal": 10,
-                                                                "textAlign": "center",
-                                                              },
-                                                              Object {
-                                                                "position": "absolute",
-                                                                "right": 0,
-                                                              },
-                                                            ]
-                                                          }
-                                                        >
-                                                          &lt;
-                                                        </Text>
-                                                      </View>
-                                                    </View>
-                                                  </View>
-                                                </View>
-                                              </View>
+                                              <View />
                                             </RCTScrollView>
                                           </View>
                                         </View>
@@ -568,19 +641,6 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                 </View>
                               </RNSScreen>
                             </RNSScreenContainer>
-                            <View
-                              pointerEvents="box-none"
-                              style={
-                                Object {
-                                  "height": 44,
-                                  "left": 0,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                  "zIndex": 1,
-                                }
-                              }
-                            />
                           </View>
                         </View>
                       </View>

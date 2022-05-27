@@ -22,7 +22,7 @@ describe('ConnectToLao', () => {
   it('should be created correctly from JSON', () => {
     expect(new ConnectToLao(sampleConnectToLao)).toBeJsonEqual(sampleConnectToLao);
     const temp = {
-      server: serverUrl,
+      servers: [serverUrl],
       lao: mockLaoId,
     };
     expect(new ConnectToLao(temp)).toBeJsonEqual(temp);

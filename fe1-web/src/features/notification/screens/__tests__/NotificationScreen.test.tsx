@@ -16,6 +16,7 @@ import {
   notificationReducer,
 } from 'features/notification/reducer';
 import { WitnessNotificationType } from 'features/witness/components';
+import { WitnessFeature } from 'features/witness/interface';
 
 import NotificationScreen from '../NotificationScreen';
 
@@ -33,7 +34,7 @@ mockStore.dispatch(
     laoId: mockLaoId,
     title: 'a notification',
     timestamp: 0,
-    type: 'mock-notification',
+    type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   }),
 );
 mockStore.dispatch(
@@ -41,7 +42,7 @@ mockStore.dispatch(
     laoId: mockLaoId,
     title: 'another notification',
     timestamp: 1,
-    type: 'mock-notification',
+    type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   }),
 );
 mockStore.dispatch(markNotificationAsRead({ laoId: mockLaoId, notificationId: 0 }));
