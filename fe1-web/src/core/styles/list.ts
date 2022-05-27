@@ -1,9 +1,9 @@
 import { ViewStyle } from 'react-native';
 
-import { horizontalContentSpacing, x1 } from './spacing';
+import { contentSpacing, x1 } from './spacing';
 
 export const item: ViewStyle = {
-  paddingHorizontal: horizontalContentSpacing,
+  paddingHorizontal: contentSpacing,
 };
 
 /**
@@ -14,8 +14,12 @@ export const hiddenItem: ViewStyle = {
   display: 'none',
 };
 
+export const top: ViewStyle = {
+  marginTop: -contentSpacing,
+};
+
 export const container: ViewStyle = {
-  marginHorizontal: -horizontalContentSpacing,
+  marginHorizontal: -contentSpacing,
 };
 
 export const icon: ViewStyle = {

@@ -83,10 +83,10 @@ const SocialMediaNavigation = () => {
         tabBarActiveTintColor: Color.accent,
         tabBarInactiveTintColor: Color.inactive,
         headerLeftContainerStyle: {
-          paddingLeft: Spacing.horizontalContentSpacing,
+          paddingLeft: Spacing.contentSpacing,
         },
         headerRightContainerStyle: {
-          paddingRight: Spacing.horizontalContentSpacing,
+          paddingRight: Spacing.contentSpacing,
         },
         headerTitleStyle: Typography.topNavigationHeading,
         headerTitleAlign: 'center',

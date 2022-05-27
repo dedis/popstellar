@@ -10,14 +10,13 @@ import CreateIcon from 'core/components/icons/CreateIcon';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
-import { subscribeToChannel } from 'core/network';
+import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
-import { connectTo } from './ConnectConfirm';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -94,12 +93,12 @@ const ConnectOpenScan = () => {
       setShowScanner(false);
 
       console.info(
-        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.server}'.`,
+        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.servers}'.`,
       );
 
       // connect to the lao
-      const connection = connectTo(connectToLao.server);
-      if (!connection) {
+      const connections = connectToLao.servers.map((server) => getNetworkManager().connect(server));
+      if (connections.length === 0) {
         return;
       }
 
@@ -115,7 +114,7 @@ const ConnectOpenScan = () => {
       }
 
       // subscribe to the lao channel on the new connection
-      subscribeToChannel(channel, [connection]).then(() => {
+      subscribeToChannel(channel, connections).then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_home,
         });

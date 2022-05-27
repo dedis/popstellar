@@ -7,7 +7,7 @@ import { Spacing } from 'core/styles';
 
 const styles = StyleSheet.create({
   view: {
-    padding: Spacing.horizontalContentSpacing,
+    padding: Spacing.contentSpacing,
   } as ViewStyle,
 });
 

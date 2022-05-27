@@ -30,7 +30,7 @@ export interface LaoCompositionConfiguration {
    * Given the lao server address and the lao id, this computes the data
    * that is encoded in a QR code that can be used to connect to a LAO
    */
-  encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
+  encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
 
   /* other */
 

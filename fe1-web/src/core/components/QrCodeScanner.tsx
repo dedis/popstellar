@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   uiContainer: {
     flex: 1,
     flexDirection: 'column',
-    margin: Spacing.horizontalContentSpacing,
+    margin: Spacing.contentSpacing,
   },
   buttonContainer: {
     flexDirection: 'column',

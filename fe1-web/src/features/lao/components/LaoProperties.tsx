@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { Button, QRCode } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { getNetworkManager } from 'core/network';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -53,10 +54,7 @@ const LaoProperties = () => {
   return (
     <View style={styles.container}>
       <View style={styles.qrCodeContainer}>
-        <QRCode
-          value={encodeLaoConnection(lao.server_addresses[0] || '', lao.id.toString())}
-          visibility
-        />
+        <QRCode value={encodeLaoConnection(lao.server_addresses, lao.id.toString())} visibility />
       </View>
       <Text style={Typography.paragraph}>{STRINGS.lao_properties_qr_code_description}</Text>
 
@@ -85,6 +83,18 @@ const LaoProperties = () => {
       <Button onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
         <Text style={[Typography.base, Typography.centered, Typography.negative]}>
           {STRINGS.lao_properties_add_additional_connection}
+        </Text>
+      </Button>
+
+      <Button
+        onPress={() => {
+          getNetworkManager().disconnectFromAll();
+          navigation.navigate(STRINGS.navigation_app_home, {
+            screen: STRINGS.navigation_home_home,
+          });
+        }}>
+        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+          {STRINGS.lao_properties_disconnect}
         </Text>
       </Button>
     </View>

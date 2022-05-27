@@ -9,7 +9,6 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -23,21 +22,6 @@ import { HomeHooks } from '../hooks';
  *
  * TODO Make the confirm button make the action require in the UI specification
  */
-
-/**
- * Connects to the given server URL.
- *
- * @param serverUrl
- */
-export function connectTo(serverUrl: string): NetworkConnection | undefined {
-  try {
-    const { href } = new URL(serverUrl); // validate
-    return getNetworkManager().connect(href);
-  } catch (err) {
-    console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
-    return undefined;
-  }
-}
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_confirm>,
@@ -57,12 +41,9 @@ const ConnectConfirm = () => {
   const getLaoChannel = HomeHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
-    const connection = connectTo(serverUrl);
-    if (!connection) {
-      return;
-    }
-
     try {
+      const connection = getNetworkManager().connect(serverUrl);
+
       const channel = getLaoChannel(laoId);
       if (!channel) {
         throw new Error('The given LAO ID is invalid');

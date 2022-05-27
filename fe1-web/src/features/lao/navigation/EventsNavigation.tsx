@@ -28,10 +28,10 @@ export default function EventsNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerLeftContainerStyle: {
-          paddingLeft: Spacing.horizontalContentSpacing,
+          paddingLeft: Spacing.contentSpacing,
         },
         headerRightContainerStyle: {
-          paddingRight: Spacing.horizontalContentSpacing,
+          paddingRight: Spacing.contentSpacing,
         },
         headerTitleStyle: Typography.topNavigationHeading,
         headerTitleAlign: 'center',

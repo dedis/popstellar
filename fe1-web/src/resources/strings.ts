@@ -18,6 +18,7 @@ namespace STRINGS {
   export const general_ongoing = 'Ongoing';
 
   /* --- User Roles --- */
+  export const user_role = 'Role';
   export const user_role_attendee = 'Attendee';
   export const user_role_organizer = 'Organizer';
   export const user_role_witness = 'Witness';
@@ -90,6 +91,7 @@ namespace STRINGS {
   export const lao_properties_your_role = 'Your role';
   export const lao_properties_current_connections = 'You are currently connected to';
   export const lao_properties_add_additional_connection = 'Add connection';
+  export const lao_properties_disconnect = 'Disconnect';
 
   /* --- Home Strings --- */
 
