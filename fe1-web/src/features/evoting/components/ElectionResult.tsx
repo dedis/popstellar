@@ -58,17 +58,20 @@ const ElectionResult = ({ election }: IPropTypes) => {
                   })
                 }
                 isExpanded={!!isQuestionOpen[question.id]}>
-                {questionResult.result
-                  .sort((a, b) => a.count - b.count)
-                  .map((ballotOption) => (
-                    <ListItem key={ballotOption.ballotOption} containerStyle={List.item}>
-                      <View style={List.iconPlaceholder} />
-                      <ListItem.Content style={styles.ballotOptionResult}>
-                        <ListItem.Title>{ballotOption.ballotOption}</ListItem.Title>
-                        <ListItem.Title>{ballotOption.count}</ListItem.Title>
-                      </ListItem.Content>
-                    </ListItem>
-                  ))}
+                {
+                  // create a copy since sort() mutates the original object but the election but be immutable
+                  [...questionResult.result]
+                    .sort((a, b) => a.count - b.count)
+                    .map((ballotOption) => (
+                      <ListItem key={ballotOption.ballotOption} containerStyle={List.item}>
+                        <View style={List.iconPlaceholder} />
+                        <ListItem.Content style={styles.ballotOptionResult}>
+                          <ListItem.Title>{ballotOption.ballotOption}</ListItem.Title>
+                          <ListItem.Title>{ballotOption.count}</ListItem.Title>
+                        </ListItem.Content>
+                      </ListItem>
+                    ))
+                }
               </ListItem.Accordion>
             );
           })}
