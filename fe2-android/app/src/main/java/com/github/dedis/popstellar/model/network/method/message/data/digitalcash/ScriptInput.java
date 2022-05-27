@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
@@ -10,7 +11,7 @@ public class ScriptInput {
   private final String type; // The script describing the unlock mechanism
 
   @SerializedName("pubkey")
-  private final String pubKeyRecipient; // The recipient’s public key
+  private final PublicKey pubKeyRecipient; // The recipient’s public key
 
   @SerializedName("sig")
   private String sig; // Signature on all txins and txouts using the recipient's private key
@@ -21,7 +22,7 @@ public class ScriptInput {
    * @param pubKeyRecipient The recipient’s public key
    * @param sig Signature on all txins and txouts using the recipient's private key
    */
-  public ScriptInput(String type, String pubKeyRecipient, String sig) {
+  public ScriptInput(String type, PublicKey pubKeyRecipient, String sig) {
     this.type = type;
     this.pubKeyRecipient = pubKeyRecipient;
     this.sig = sig;
@@ -39,7 +40,7 @@ public class ScriptInput {
     return type;
   }
 
-  public String getPubkey() {
+  public PublicKey getPubkey() {
     return pubKeyRecipient;
   }
 

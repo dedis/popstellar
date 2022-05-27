@@ -25,7 +25,7 @@ public class Transaction {
   @SerializedName("lock_time")
   private final long lockTime; // LockTime
 
-  /** TODO
+  /**
    * Transaction constructor
    * @param version The version of the transaction inputs
    * @param inputs [Array[Objects]] array of output transactions to use as inputs
@@ -66,7 +66,7 @@ public class Transaction {
     for (Input currentTxin : inputs) {
       // Script
       // PubKey
-      collectTransaction.add(currentTxin.getScript().getPubkey());
+      collectTransaction.add(currentTxin.getScript().getPubkey().getEncoded());
       // Sig
       collectTransaction.add(currentTxin.getScript().getSig());
       // Type

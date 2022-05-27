@@ -3,6 +3,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import org.junit.Test;
 
 public class InputTest {
@@ -13,7 +15,7 @@ public class InputTest {
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
 
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), SIG);
 
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
@@ -39,6 +41,6 @@ public class InputTest {
     assertNotEquals(TXIN, new Input(random, TX_OUT_INDEX, SCRIPTTXIN));
     assertNotEquals(TXIN, new Input(Tx_OUT_HASH, 4, SCRIPTTXIN));
     assertNotEquals(
-        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new ScriptInput(random, PUBKEY, SIG)));
+        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new ScriptInput(random, new PublicKey(PUBKEY), SIG)));
   }
 }
