@@ -1,6 +1,6 @@
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { getCoinChannel, getReactionChannel, getUserSocialChannel, Hash } from "core/objects";
+import { getCoinChannel, getReactionChannel, getUserSocialChannel, Hash } from 'core/objects';
 import { AsyncDispatch, dispatch } from 'core/redux';
 
 import { RollCallConfiguration } from '../interface';

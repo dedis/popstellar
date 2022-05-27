@@ -232,7 +232,9 @@ export class Transaction {
   ): Omit<TransactionInputState, 'script'>[] => {
     return transactions.flatMap((tr) =>
       tr.outputs
-        .filter((output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf())
+        .filter(
+          (output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf(),
+        )
         .map((output, index) => {
           return {
             txOutHash: tr.transactionId!.valueOf(),
