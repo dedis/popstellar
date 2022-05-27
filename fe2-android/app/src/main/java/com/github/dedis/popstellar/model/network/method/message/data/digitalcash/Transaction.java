@@ -25,7 +25,7 @@ public class Transaction {
   @SerializedName("lock_time")
   private final long lockTime; // LockTime
 
-  /**
+  /** TODO
    * Transaction constructor
    * @param version The version of the transaction inputs
    * @param inputs [Array[Objects]] array of output transactions to use as inputs
@@ -34,8 +34,8 @@ public class Transaction {
    */
   public Transaction(int version, List<Input> inputs, List<Output> outputs, long lockTime) {
     this.version = version;
-    this.inputs = Collections.checkedList(inputs, Input.class);
-    this.outputs = Collections.checkedList(outputs, Output.class);
+    this.inputs = Collections.unmodifiableList(inputs);
+    this.outputs = Collections.unmodifiableList(outputs);
     this.lockTime = lockTime;
     // change the sig for all the inputs
 
@@ -46,11 +46,11 @@ public class Transaction {
   }
 
   public List<Input> getInputs() {
-    return Collections.checkedList(inputs, Input.class);
+    return inputs;
   }
 
   public List<Output> getOutputs() {
-    return Collections.checkedList(outputs, Output.class);
+    return outputs;
   }
 
   public long getLockTime() {
@@ -63,8 +63,7 @@ public class Transaction {
     // Add them in lexicographic order
 
     // Inputs
-    for (int i = 0; i < inputs.size(); i++) {
-      Input currentTxin = inputs.get(i);
+    for (Input currentTxin : inputs) {
       // Script
       // PubKey
       collectTransaction.add(currentTxin.getScript().getPubkey());
@@ -81,8 +80,7 @@ public class Transaction {
     // lock_time
     collectTransaction.add(String.valueOf(lockTime));
     // Outputs
-    for (int i = 0; i < outputs.size(); i++) {
-      Output currentTxout = outputs.get(i);
+    for (Output currentTxout : outputs) {
       // Script
       // PubKeyHash
       collectTransaction.add(currentTxout.getScript().getPubkeyHash());
