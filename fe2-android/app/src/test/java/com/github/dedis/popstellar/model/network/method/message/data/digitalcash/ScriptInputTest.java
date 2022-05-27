@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.Signature;
 
 import org.junit.Test;
 
-public class Script_inputTest {
+public class ScriptInputTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
