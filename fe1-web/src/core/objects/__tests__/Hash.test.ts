@@ -30,3 +30,13 @@ test('Hash equals work properly', () => {
   expect(hash1.equals(hash2)).toBe(true);
   expect(hash1.equals(hash3)).toBe(false);
 });
+
+test('Hash from public key works properly', () => {
+  const hash1: Hash = Hash.fromPublicKey('J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=');
+  const hash2: Hash = Hash.fromPublicKey('oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
+
+  const expectedHash1 = '-_qR4IHwsiq50raa8jURNArds54=';
+  const expectedHash2 = 'SGnNfF533PBEUMYPMqBSQY83z5U=';
+  expect(hash1.valueOf()).toEqual(expectedHash1);
+  expect(hash2.valueOf()).toEqual(expectedHash2);
+});
