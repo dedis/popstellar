@@ -1266,9 +1266,14 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 >
                                   Supposed to start
                                    
-                                  06/05/2021
-                                  01:00:00
-                                  , 
+                                  <time
+                                    dateTime="2021-05-07T03:20:00.000Z"
+                                    title="2021-05-07 03:20"
+                                  >
+                                    1 year ago
+                                  </time>
+                                  ,
+                                   
                                   location
                                 </Text>
                               </View>
@@ -2744,9 +2749,14 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 >
                                   Supposed to start
                                    
-                                  06/05/2021
-                                  01:00:00
-                                  , 
+                                  <time
+                                    dateTime="2021-05-07T03:20:00.000Z"
+                                    title="2021-05-07 03:20"
+                                  >
+                                    1 year ago
+                                  </time>
+                                  ,
+                                   
                                   location
                                 </Text>
                               </View>
