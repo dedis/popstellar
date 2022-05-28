@@ -106,7 +106,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (validateOpens(laoId, data.opens)) {
+        } else if (!validateOpens(laoId, data.opens)) {
           Right(validationError("unexpected id 'opens'"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
@@ -163,7 +163,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (validateCloses(laoId, data.closes)) {
+        } else if (!validateCloses(laoId, data.closes)) {
           Right(validationError("unexpected id 'closes'"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))

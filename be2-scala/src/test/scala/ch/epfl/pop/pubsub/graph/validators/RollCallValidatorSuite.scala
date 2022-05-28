@@ -47,8 +47,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataRight: ChannelData = ChannelData(ObjectType.ROLL_CALL, List.empty)
+  private final val channelDataWrong: ChannelData = ChannelData(ObjectType.INVALID, List.empty)
+  private final val channelDataRight: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
   private final val rollcallDataOpen: RollCallData = RollCallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
   private final val rollcallDataClose: RollCallData = RollCallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
@@ -62,6 +62,20 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
         case DbActor.ReadRollCallData(_) =>
           sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataCreate)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  private def mockDbWrongToken: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -196,7 +210,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
   }
 
   test("Close Roll Call should fail with wrong attendees") {
-    val dbActorRef = mockDbWorkingOpen
+    val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_ATTENDEES_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)

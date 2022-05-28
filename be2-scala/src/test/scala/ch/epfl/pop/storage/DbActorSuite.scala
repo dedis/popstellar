@@ -461,7 +461,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(MESSAGE)
   }
 
-  test("createRollcallData effectively creates a new channel for RollcallData") {
+  test("createRollCallData effectively creates a new channel for RollCallData") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
@@ -478,7 +478,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.elements(rollcallChannel) should equal(RollCallData(updateId, ActionType.CREATE).toJsonString)
   }
 
-  test("createRollcallData does not overwrite channels on duplicates") {
+  test("createRollCallData does not overwrite channels on duplicates") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
@@ -501,7 +501,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.elements(rollcallChannel) should equal(RollCallData(updateId, ActionType.CREATE).toJsonString)
   }
 
-  test("writeRollcallData succeeds for both new and updated data") {
+  test("writeRollCallData succeeds for both new and updated data") {
     //arrange
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
@@ -540,7 +540,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     actualRollcallData2.update_id should equal(OpenRollCallExamples.UPDATE_ID)
   }
 
-  test("readRollcallData succeeds for existing RollcallData") {
+  test("readRollCallData succeeds for existing RollCallData") {
     //arrange
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
     val updateId: Hash = Hash(Base64Data.encode("updateId"))
