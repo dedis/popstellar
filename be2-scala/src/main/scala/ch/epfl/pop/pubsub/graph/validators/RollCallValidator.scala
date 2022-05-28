@@ -41,7 +41,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
    * @return       Rollcall Data of the channel
    */
   private def getRollCallData(laoId: Hash): Option[RollCallData] = {
-    val ask = dbActor ? DbActor.ReadRollCallData(laoId)
+    val ask = dbActorRef ? DbActor.ReadRollCallData(laoId)
     Await.ready(ask, duration).value match {
       case Some(Success(DbActorReadRollCallDataAck(rollcallData))) => Some(rollcallData)
       case _ => None

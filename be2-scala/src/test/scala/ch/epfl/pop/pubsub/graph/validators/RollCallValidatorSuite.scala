@@ -289,8 +289,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
 
   test("Open Roll Call should succeed with valid opens id after closing a roll call") {
     val dbActorRef = mockDbWorkingClose
-    val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)
-    message should equal(Left(OPEN_ROLL_CALL_RPC))
+    val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_VALID_OPENS_RPC)
+    message should equal(Left(OPEN_ROLL_CALL_VALID_OPENS_RPC))
     system.stop(dbActorRef.actorRef)
   }
 }

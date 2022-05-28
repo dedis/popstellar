@@ -18,6 +18,7 @@ object OpenRollCallExamples {
   final val NOT_STALE_OPENED_AT = Timestamp(1649089861L)
   final val OPENS: Hash = R_ID
   final val UPDATE_ID: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, OPENS.toString, NOT_STALE_OPENED_AT.toString)
+  final val UPDATE_ID2: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, CloseRollCallExamples.UPDATE_ID.toString, NOT_STALE_OPENED_AT.toString)
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
@@ -66,7 +67,7 @@ object OpenRollCallExamples {
     Some(wrongOpensOpenRollCall)
   )
 
-  val validOpensOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID, CloseRollCallExamples.UPDATE_ID, NOT_STALE_OPENED_AT)
+  val validOpensOpenRollCall: OpenRollCall = OpenRollCall(UPDATE_ID2, CloseRollCallExamples.UPDATE_ID, NOT_STALE_OPENED_AT)
   final val DATA_OPEN_ROLL_CALL_VALID_OPENS: Base64Data = Base64Data.encode(validOpensOpenRollCall.toJson.toString)
   final val MESSAGE_OPEN_ROLL_CALL_VALID_OPENS: Message = new Message(
     DATA_OPEN_ROLL_CALL_VALID_OPENS,
