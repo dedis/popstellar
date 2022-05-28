@@ -321,13 +321,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   }
 
   implicit object RollcallDataFormat extends JsonFormat[RollcallData] {
-    final private val PARAM_LAO_ID: String = "lao_id"
     final private val PARAM_UPDATE_ID: String = "update_id"
     final private val PARAM_STATE: String = "state"
 
-    override def read(json: JsValue): RollcallData = json.asJsObject().getFields(PARAM_LAO_ID, PARAM_UPDATE_ID, PARAM_STATE) match {
-      case Seq(laoId@JsString(_), updateId@JsString(_), state@JsString(_)) => RollcallData(
-        laoId.convertTo[Hash],
+    override def read(json: JsValue): RollcallData = json.asJsObject().getFields(PARAM_UPDATE_ID, PARAM_STATE) match {
+      case Seq(updateId@JsString(_), state@JsString(_)) => RollcallData(
         updateId.convertTo[Hash],
         state.convertTo[ActionType]
       )
@@ -335,7 +333,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: RollcallData): JsValue = JsObject(
-      PARAM_LAO_ID -> obj.lao_id.toJson,
       PARAM_UPDATE_ID -> obj.update_id.toJson,
       PARAM_STATE -> obj.state.toJson
     )
