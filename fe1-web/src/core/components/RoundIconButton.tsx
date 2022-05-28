@@ -1,3 +1,4 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -10,34 +11,47 @@ import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
  * Ref: https://icons.expo.fyi/
  */
 const RoundIconButton = (props: IRoundButtonPropTypes) => {
-  const { type, name, onClick } = props;
-  const family = type || Buttons.defaultButtonIconFamily;
+  const { children, onClick } = props;
+
   return (
     <TouchableOpacity style={circularButtonStyles.roundButton} onPress={onClick}>
-      {React.createElement(family, {
-        name: name,
-        size: Buttons.defaultButtonIconSize,
-        color: Buttons.defaultButtonIconColor,
-      })}
+      {children}
     </TouchableOpacity>
   );
 };
 
 const roundButtonPropTypes = {
-  type: PropTypes.string,
-  name: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
   onClick: PropTypes.func.isRequired,
 };
+RoundIconButton.propTypes = roundButtonPropTypes;
+
 type IRoundButtonPropTypes = PropTypes.InferProps<typeof roundButtonPropTypes>;
 
 export const BackRoundButton = (props: IButtonPropTypes) => {
   const { onClick } = props;
-  return <RoundIconButton name="arrowleft" onClick={onClick} />;
+  return (
+    <RoundIconButton onClick={onClick}>
+      <AntDesign
+        name="arrowleft"
+        size={Buttons.defaultButtonIconSize}
+        color={Buttons.defaultButtonIconColor}
+      />
+    </RoundIconButton>
+  );
 };
 
 export const LogoutRoundButton = (props: IButtonPropTypes) => {
   const { onClick } = props;
-  return <RoundIconButton name="logout" onClick={onClick} />;
+  return (
+    <RoundIconButton onClick={onClick}>
+      <AntDesign
+        name="logout"
+        size={Buttons.defaultButtonIconSize}
+        color={Buttons.defaultButtonIconColor}
+      />
+    </RoundIconButton>
+  );
 };
 
 const buttonPropTypes = {
