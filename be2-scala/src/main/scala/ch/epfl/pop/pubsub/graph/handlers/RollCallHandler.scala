@@ -90,7 +90,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           } yield ()
 
         Await.ready (ask, duration).value match {
-          case Some (Success (_) ) => Left (rpcRequest)
+          case Some (Success (_) ) => Left(rpcRequest)
           case Some (Failure (ex: DbActorNAckException) ) => Right (PipelineError (ex.code, s"handleOpenRollCall failed : ${ex.message}", rpcRequest.getId) )
           case reply => Right (PipelineError (ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId) )
         }
@@ -102,8 +102,24 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
-    Await.result(ask, duration)
+    rpcRequest.getParamsMessage match {
+      case Some(message: Message) =>
+        val laoId: Hash = rpcRequest.extractLaoId
+        val ask = for {
+          _ <- dbAskWritePropagate(rpcRequest)
+          _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
+        } yield ()
+
+        Await.ready (ask, duration).value match {
+          case Some (Success (_) ) => Left(rpcRequest)
+          case Some (Failure (ex: DbActorNAckException) ) => Right (PipelineError (ex.code, s"handleReOpenRollCall failed : ${ex.message}", rpcRequest.getId) )
+          case reply => Right (PipelineError (ErrorCodes.SERVER_ERROR.id, s"handleRepenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId) )
+        }
+      case _ =>
+        Right(
+          PipelineError(ErrorCodes.SERVER_ERROR.id, "The server is doing something unexpected", rpcRequest.getId)
+        )
+    }
   }
 
   def handleCloseRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
@@ -137,7 +153,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               ))
               case Some(_) =>
                 val combined = for {
-                  _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
                   _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
                   _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
                 } yield ()

@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN}
+import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN, REOPEN}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, RollCallData}
@@ -179,7 +179,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
   private def validateCloses(laoId: Hash, closes: Hash): Boolean = {
     val rollcallData: Option[RollCallData] = getRollCallData(laoId)
     rollcallData match {
-      case Some(data) => data.state == OPEN && data.update_id == closes
+      case Some(data) => (data.state == OPEN && data.update_id == closes) || (data.state == REOPEN && data.update_id == closes)
       case _ => false
     }
   }
