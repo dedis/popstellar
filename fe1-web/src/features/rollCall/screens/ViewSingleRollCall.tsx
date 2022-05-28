@@ -334,7 +334,9 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   };
 
   return (
-    <TouchableOpacity onPress={() => showActionSheet(getActionOptions(rollCall.status))}>
+    <TouchableOpacity
+      onPress={() => showActionSheet(getActionOptions(rollCall.status))}
+      testID="roll-call-options">
       <OptionsIcon color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );

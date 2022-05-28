@@ -160,19 +160,14 @@ const RollCallOpened = () => {
           <View>
             <View style={styles.leftButtons}>
               <TouchableOpacity
+                testID="roll-call-open-stop-scanning"
                 onPress={() =>
-                  navigation.navigate(STRINGS.navigation_app_lao, {
-                    screen: STRINGS.navigation_lao_events,
-                    params: {
-                      screen: STRINGS.navigation_lao_events_view_single_roll_call,
-                      params: {
-                        eventId: rollCallId,
-                        /* this screen is only reachable for organizers */
-                        isOrganizer: true,
-                        /* pass the just scanned pop tokens back to the single view screen */
-                        attendeePopTokens: [...attendeePopTokens],
-                      },
-                    },
+                  navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
+                    eventId: rollCallId,
+                    /* this screen is only reachable for organizers */
+                    isOrganizer: true,
+                    /* pass the just scanned pop tokens back to the single view screen */
+                    attendeePopTokens: [...attendeePopTokens],
                   })
                 }>
                 <CloseIcon color={Color.accent} size={Icon.size} />
@@ -181,7 +176,9 @@ const RollCallOpened = () => {
           </View>
           <View>
             <View style={styles.rightButtons}>
-              <TouchableOpacity onPress={() => setInputModalIsVisible(true)}>
+              <TouchableOpacity
+                onPress={() => setInputModalIsVisible(true)}
+                testID="roll-call-open-add-manually">
                 <AddPersonIcon color={Color.accent} size={Icon.size} />
               </TouchableOpacity>
             </View>

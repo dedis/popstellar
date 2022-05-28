@@ -1,9 +1,8 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { mockNavigate } from '__mocks__/useNavigationMock';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -15,11 +14,9 @@ import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/roll
 import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
-import STRINGS from 'resources/strings';
 
-import { requestOpenRollCall, requestReopenRollCall } from '../../network';
 import { RollCall, RollCallStatus } from '../../objects';
-import ViewSingleRollCall from '../ViewSingleRollCall';
+import ViewSingleRollCall, { ViewSinglRollCallScreenRightHeader } from '../ViewSingleRollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -44,18 +41,7 @@ const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
   };
 };
 
-const mockRollCallClosed = RollCall.fromState(createStateWithStatus(RollCallStatus.CLOSED));
 const mockRollCallCreated = RollCall.fromState(createStateWithStatus(RollCallStatus.CREATED));
-const mockRollCallOpened = RollCall.fromState(createStateWithStatus(RollCallStatus.OPENED));
-
-jest.mock('features/rollCall/network', () => {
-  const actualNetwork = jest.requireActual('features/rollCall/network');
-  return {
-    ...actualNetwork,
-    requestOpenRollCall: jest.fn(() => Promise.resolve()),
-    requestReopenRollCall: jest.fn(() => Promise.resolve()),
-  };
-});
 
 // set up mock store
 const mockStore = createStore(
@@ -104,61 +90,23 @@ describe('EventRollCall', () => {
 
     expect(obj.toJSON()).toMatchSnapshot();
   });
+});
 
-  it('should call requestOpenRollCall when the open button is clicked', () => {
+describe('ViewSinglRollCallScreenRightHeader', () => {
+  it('should correctly render', () => {
     mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
     const obj = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
-            component={ViewSingleRollCall}
+            component={ViewSinglRollCallScreenRightHeader}
             params={{ eventId: mockRollCallCreated.id.valueOf(), isOrganizer: true }}
           />
         </FeatureContext.Provider>
       </Provider>,
     );
 
-    const openRollCallButton = obj.getByText(STRINGS.roll_call_open);
-    fireEvent.press(openRollCallButton);
-    expect(requestOpenRollCall).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call requestReopenRollCall when the reopen button is clicked', () => {
-    mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
-
-    const obj = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator
-            component={ViewSingleRollCall}
-            params={{ eventId: mockRollCallClosed.id.valueOf(), isOrganizer: true }}
-          />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-
-    const reopenRollCallButton = obj.getByText(STRINGS.roll_call_reopen);
-    fireEvent.press(reopenRollCallButton);
-    expect(requestReopenRollCall).toHaveBeenCalledTimes(1);
-  });
-
-  it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
-    mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
-
-    const obj = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator
-            component={ViewSingleRollCall}
-            params={{ eventId: mockRollCallOpened.id.valueOf(), isOrganizer: true }}
-          />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-
-    const scanAttendeesButton = obj.getByText(STRINGS.roll_call_scan_attendees);
-    fireEvent.press(scanAttendeesButton);
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(obj.toJSON()).toMatchSnapshot();
   });
 });

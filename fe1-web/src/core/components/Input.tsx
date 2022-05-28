@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, enabled, border } = props;
+  const { value, placeholder, onChange, enabled, border, testID } = props;
 
   const inputStyles = [Typography.paragraph, styles.input];
   if (!enabled) {
@@ -38,6 +38,7 @@ const Input = (props: IPropTypes) => {
       value={value}
       placeholder={placeholder || ''}
       onChangeText={enabled ? onChange : undefined}
+      testID={testID || undefined}
     />
   );
 };
@@ -48,6 +49,7 @@ const propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
+  testID: PropTypes.string,
 };
 Input.propTypes = propTypes;
 Input.defaultProps = {
@@ -55,6 +57,7 @@ Input.defaultProps = {
   enabled: true,
   border: false,
   onChange: undefined,
+  testID: undefined,
 };
 
 type IPropTypes = Omit<PropTypes.InferProps<typeof propTypes>, 'onChange'> & {

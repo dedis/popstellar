@@ -32,7 +32,6 @@ const ConfirmModal = (props: IPropTypes) => {
   return (
     <Modal
       transparent
-      presentationStyle="formSheet"
       visible={visibility}
       onRequestClose={() => {
         setVisibility(!visibility);
@@ -48,13 +47,14 @@ const ConfirmModal = (props: IPropTypes) => {
         <Text style={Typography.paragraph}>{description}</Text>
         {hasTextInput ? (
           <Input
+            testID="confirm-modal-input"
             value={textInput}
             onChange={setTextInput}
             placeholder={textInputPlaceholder}
             border
           />
         ) : null}
-        <Button onPress={() => onConfirmPress(textInput)}>
+        <Button onPress={() => onConfirmPress(textInput)} testID="confirm-modal-confirm">
           <Text style={[Typography.base, Typography.centered, Typography.negative]}>
             {buttonConfirmText}
           </Text>

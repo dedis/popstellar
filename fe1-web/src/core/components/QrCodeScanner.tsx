@@ -66,20 +66,18 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     });
   };
 
-  if (!showCamera) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.camera}>
-        <QrReader
-          delay={300}
-          onError={handleError}
-          onScan={handleScan}
-          facingMode={facingMode}
-          className="qr-code-scanner"
-        />
+        {showCamera && (
+          <QrReader
+            delay={300}
+            onError={handleError}
+            onScan={handleScan}
+            facingMode={facingMode}
+            className="qr-code-scanner"
+          />
+        )}
       </View>
       <View style={styles.uiContainer}>
         <View style={styles.children}>{children}</View>

@@ -612,7 +612,6 @@ exports[`CreateMeeting renders correctly 1`] = `
                           <Modal
                             hardwareAccelerated={false}
                             onRequestClose={[Function]}
-                            presentationStyle="formSheet"
                             transparent={true}
                             visible={false}
                           >
@@ -694,6 +693,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                                         "right": 0,
                                       }
                                     }
+                                    testID="modal-header-close"
                                   >
                                     <View
                                       accessible={true}
@@ -748,6 +748,7 @@ What do you want to do ?
                                       "width": "100%",
                                     }
                                   }
+                                  testID="confirm-modal-confirm"
                                 >
                                   <View
                                     accessible={true}

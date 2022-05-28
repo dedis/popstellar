@@ -314,10 +314,164 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                         }
                       }
                     >
+                      <View
+                        style={
+                          Object {
+                            "flex": 1,
+                            "overflow": "hidden",
+                          }
+                        }
+                      >
+                        <View
+                          style={
+                            Object {
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                              "zIndex": 0,
+                            }
+                          }
+                        >
+                          <View />
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "flex": 1,
+                              "flexDirection": "column",
+                              "margin": 48,
+                            }
+                          }
+                        >
+                          <View
+                            style={
+                              Object {
+                                "bottom": 0,
+                                "flex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                  "justifyContent": "space-between",
+                                }
+                              }
+                            >
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-stop-scanning"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text />
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-add-manually"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text />
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                focusable={true}
+                                onClick={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  Object {
+                                    "alignSelf": "flex-end",
+                                    "marginLeft": "auto",
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <Text />
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
                       <Modal
                         hardwareAccelerated={false}
                         onRequestClose={[Function]}
-                        presentationStyle="formSheet"
                         transparent={true}
                         visible={false}
                       >
@@ -343,8 +497,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                         >
                           <View
                             accessible={true}
-                            collapsable={false}
-                            nativeID="animatedComponent"
                             style={Object {}}
                           />
                         </RNGestureHandlerButton>
@@ -399,11 +551,10 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                     "right": 0,
                                   }
                                 }
+                                testID="modal-header-close"
                               >
                                 <View
                                   accessible={true}
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "opacity": 1,
@@ -464,6 +615,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   },
                                 ]
                               }
+                              testID="confirm-modal-input"
                               value=""
                             />
                             <RNGestureHandlerButton
@@ -479,11 +631,10 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   "width": "100%",
                                 }
                               }
+                              testID="confirm-modal-confirm"
                             >
                               <View
                                 accessible={true}
-                                collapsable={false}
-                                nativeID="animatedComponent"
                                 style={
                                   Object {
                                     "opacity": 1,
@@ -856,10 +1007,221 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                         }
                       }
                     >
+                      <View
+                        style={
+                          Object {
+                            "flex": 1,
+                            "overflow": "hidden",
+                          }
+                        }
+                      >
+                        <View
+                          style={
+                            Object {
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                              "zIndex": 0,
+                            }
+                          }
+                        >
+                          <View />
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "flex": 1,
+                              "flexDirection": "column",
+                              "margin": 48,
+                            }
+                          }
+                        >
+                          <View
+                            style={
+                              Object {
+                                "bottom": 0,
+                                "flex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                  "justifyContent": "space-between",
+                                }
+                              }
+                            >
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-stop-scanning"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#3742fa",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-add-manually"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#3742fa",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                focusable={true}
+                                onClick={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  Object {
+                                    "alignSelf": "flex-end",
+                                    "marginLeft": "auto",
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <Text
+                                  allowFontScaling={false}
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#3742fa",
+                                        "fontSize": 25,
+                                      },
+                                      undefined,
+                                      Object {
+                                        "fontFamily": "ionicons",
+                                        "fontStyle": "normal",
+                                        "fontWeight": "normal",
+                                      },
+                                      Object {},
+                                    ]
+                                  }
+                                >
+                                  
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
                       <Modal
                         hardwareAccelerated={false}
                         onRequestClose={[Function]}
-                        presentationStyle="formSheet"
                         transparent={true}
                         visible={false}
                       >
@@ -939,6 +1301,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                     "right": 0,
                                   }
                                 }
+                                testID="modal-header-close"
                               >
                                 <View
                                   accessible={true}
@@ -1002,6 +1365,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   },
                                 ]
                               }
+                              testID="confirm-modal-input"
                               value=""
                             />
                             <RNGestureHandlerButton
@@ -1017,6 +1381,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   "width": "100%",
                                 }
                               }
+                              testID="confirm-modal-confirm"
                             >
                               <View
                                 accessible={true}

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 });
 
 const Button = (props: IPropTypes) => {
-  const { onPress, disabled, children, negative } = props;
+  const { onPress, disabled, children, negative, testID } = props;
 
   const viewStyles = [styles.button];
   if (negative && disabled) {
@@ -44,7 +44,10 @@ const Button = (props: IPropTypes) => {
   }
 
   return (
-    <TouchableOpacity containerStyle={styles.container} onPress={disabled ? undefined : onPress}>
+    <TouchableOpacity
+      containerStyle={styles.container}
+      onPress={disabled ? undefined : onPress}
+      testID={testID || undefined}>
       <View style={viewStyles}>{children}</View>
     </TouchableOpacity>
   );
@@ -55,6 +58,7 @@ const propTypes = {
   disabled: PropTypes.bool,
   negative: PropTypes.bool,
   children: PropTypes.node,
+  testID: PropTypes.string,
 };
 Button.propTypes = propTypes;
 
@@ -62,6 +66,7 @@ Button.defaultProps = {
   disabled: false,
   negative: false,
   children: null,
+  testID: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

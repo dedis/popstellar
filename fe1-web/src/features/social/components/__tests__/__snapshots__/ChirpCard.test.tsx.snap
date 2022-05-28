@@ -123,7 +123,6 @@ Array [
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
-    presentationStyle="formSheet"
     transparent={true}
     visible={false}
   >
@@ -205,6 +204,7 @@ Array [
                 "right": 0,
               }
             }
+            testID="modal-header-close"
           >
             <View
               accessible={true}
@@ -258,6 +258,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -523,7 +524,6 @@ Array [
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
-    presentationStyle="formSheet"
     transparent={true}
     visible={false}
   >
@@ -605,6 +605,7 @@ Array [
                 "right": 0,
               }
             }
+            testID="modal-header-close"
           >
             <View
               accessible={true}
@@ -658,6 +659,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -948,7 +950,6 @@ Array [
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
-    presentationStyle="formSheet"
     transparent={true}
     visible={false}
   >
@@ -1030,6 +1031,7 @@ Array [
                 "right": 0,
               }
             }
+            testID="modal-header-close"
           >
             <View
               accessible={true}
@@ -1083,6 +1085,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -1373,7 +1376,6 @@ Array [
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
-    presentationStyle="formSheet"
     transparent={true}
     visible={false}
   >
@@ -1455,6 +1457,7 @@ Array [
                 "right": 0,
               }
             }
+            testID="modal-header-close"
           >
             <View
               accessible={true}
@@ -1508,6 +1511,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -1773,7 +1777,6 @@ Array [
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
-    presentationStyle="formSheet"
     transparent={true}
     visible={false}
   >
@@ -1855,6 +1858,7 @@ Array [
                 "right": 0,
               }
             }
+            testID="modal-header-close"
           >
             <View
               accessible={true}
@@ -1908,6 +1912,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}

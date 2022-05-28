@@ -57,7 +57,6 @@ export const LaoHomeScreenHeader = () => {
 
       <Modal
         transparent
-        presentationStyle="formSheet"
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
