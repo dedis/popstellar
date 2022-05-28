@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -12,9 +11,7 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
-import util.examples.RollCall.CloseRollCallExamples._
 import util.examples.RollCall.CreateRollCallExamples.{SENDER, _}
-import util.examples.RollCall.OpenRollCallExamples._
 
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -51,10 +48,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataRight: ChannelData = ChannelData(ObjectType.ROLL_CALL, List.empty)
-  private final val catchupCreateOpen: List[Message] = List(MESSAGE_CREATE_ROLL_CALL_WORKING, MESSAGE_OPEN_ROLL_CALL_WORKING)
-  private final val catcupCreateCloseOpen: List[Message] = List(MESSAGE_CREATE_ROLL_CALL_WORKING, MESSAGE_CLOSE_ROLL_CALL_WORKING, MESSAGE_OPEN_ROLL_CALL_VALID_OPENS)
-  private final val catchupCreateOpenClose: List[Message] = List(MESSAGE_CREATE_ROLL_CALL_WORKING, MESSAGE_OPEN_ROLL_CALL_WORKING, MESSAGE_CLOSE_ROLL_CALL_WORKING)
-
 
   private def mockDbWrongToken: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -63,8 +56,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catchupCreateOpenClose)
       }
     })
     system.actorOf(dbActorMock)
@@ -77,8 +68,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catchupCreateOpenClose)
       }
     })
     system.actorOf(dbActorMock)
@@ -91,8 +80,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catchupCreateOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -105,8 +92,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catchupCreateOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -119,8 +104,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catcupCreateCloseOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -133,8 +116,6 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(catchupCreateOpenClose)
       }
     })
     system.actorOf(dbActorMock)

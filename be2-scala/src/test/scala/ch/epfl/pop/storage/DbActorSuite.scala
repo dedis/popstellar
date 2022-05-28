@@ -4,12 +4,15 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.ActionType.{ActionType, CREATE}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
+import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
 
 import scala.concurrent.Await
 
@@ -438,4 +441,100 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(MESSAGE)
   }
 
+  test("createRollcallData effectively creates a new channel for RollcallData") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+    val laoId: Hash = Hash(Base64Data.encode("laoId"))
+    val updateId: Hash = Hash(Base64Data.encode("updateId"))
+    val rollcallChannel: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+
+      storage.size should equal (0)
+
+    dbActor ! DbActor.CreateRollcallData(laoId, updateId, ActionType.CREATE); sleep()
+
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+  }
+
+  test("createRollcallData does not overwrite channels on duplicates") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+    val laoId: Hash = Hash(Base64Data.encode("laoId"))
+    val updateId: Hash = Hash(Base64Data.encode("updateId"))
+    val rollcallChannel: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+
+    storage.size should equal (0)
+
+    dbActor ! DbActor.CreateRollcallData(laoId, updateId, ActionType.CREATE); sleep()
+
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+
+    dbActor ! DbActor.CreateRollcallData(laoId, updateId, ActionType.CREATE); sleep()
+
+    storage.size should equal (1)
+    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+  }
+
+  test("writeRollcallData succeeds for both new and updated data") {
+    //arrange
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+    val laoId: Hash = Hash(Base64Data.encode("laoId"))
+    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+
+    val messageRollcall: Message = CreateRollCallExamples.MESSAGE_CREATE_ROLL_CALL_WORKING
+
+    storage.size should equal (0)
+
+    //act (1)
+    dbActor ! DbActor.WriteRollcallData(laoId, messageRollcall); sleep()
+
+    //assert
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+
+    val actualRollcallData: RollcallData = RollcallData.buildFromJson(storage.elements(rollcallKey))
+
+    actualRollcallData.state should equal (ActionType.CREATE)
+    actualRollcallData.update_id should equal (CreateRollCallExamples.R_ID)
+
+    //act (2)
+    val messageRollcall2: Message = OpenRollCallExamples.MESSAGE_OPEN_ROLL_CALL_WORKING
+    dbActor ! DbActor.WriteRollcallData(laoId, messageRollcall2); sleep()
+
+    //assert (2)
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
+
+    val actualRollcallData2: RollcallData = RollcallData.buildFromJson(storage.elements(rollcallKey))
+
+    actualRollcallData2.state should equal (ActionType.OPEN)
+    actualRollcallData2.update_id should equal (OpenRollCallExamples.UPDATE_ID)
+  }
+
+  test("readRollcallData succeeds for existing RollcallData") {
+    //arrange
+    val laoId: Hash = Hash(Base64Data.encode("laoId"))
+    val updateId: Hash = Hash(Base64Data.encode("updateId"))
+    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+    val rollcallData: RollcallData = RollcallData(laoId, updateId, ActionType.CREATE)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    initialStorage.write((rollcallKey, rollcallData.toJsonString))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    //act
+    val ask = dbActor ? DbActor.ReadRollcallData(laoId)
+    val answer = Await.result(ask, duration)
+
+    //assert
+    answer shouldBe a[DbActor.DbActorReadRollcallDataAck]
+
+    val readRollcallData: RollcallData = answer.asInstanceOf[DbActor.DbActorReadRollcallDataAck].rollcallData
+
+    readRollcallData.state should equal (ActionType.CREATE)
+    readRollcallData.update_id should equal (updateId)
+  }
 }
