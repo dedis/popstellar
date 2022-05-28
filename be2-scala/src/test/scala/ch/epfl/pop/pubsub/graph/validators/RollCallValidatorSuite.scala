@@ -4,13 +4,14 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
+import util.examples.RollCall.{CloseRollCallExamples, CreateRollCallExamples, OpenRollCallExamples}
 import util.examples.RollCall.CreateRollCallExamples.{SENDER, _}
 
 import java.io.File
@@ -48,26 +49,19 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataRight: ChannelData = ChannelData(ObjectType.ROLL_CALL, List.empty)
+  private final val rollcallDataCreate: RollcallData = RollcallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
+  private final val rollcallDataOpen: RollcallData = RollcallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
+  private final val rollcallDataClose: RollcallData = RollcallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
 
-  private def mockDbWrongToken: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
-        case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
-
-  private def mockDbWrongChannel: AskableActorRef = {
+  private def mockDbWrongChannelCreate: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataCreate)
       }
     })
     system.actorOf(dbActorMock)
@@ -80,42 +74,64 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataOpen)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbWorkingCreateOpen: AskableActorRef = {
+  private def mockDbWrongChannelClose: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataClose)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  private def mockDbWorkingCreate: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataCreate)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbWorkingCreateCloseOpen: AskableActorRef = {
+  private def mockDbWorkingOpen: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataOpen)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbWorkingCreateOpenClose: AskableActorRef = {
+  private def mockDbWorkingClose: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadRollcallData(_) =>
+          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataClose)
       }
     })
     system.actorOf(dbActorMock)
@@ -123,42 +139,42 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   //Create RollCall
   test("Create Roll Call works as intended") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_RPC)
     message should equal(Left(CREATE_ROLL_CALL_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Create Roll Call should fail with invalid Timestamp") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Create Roll Call should fail with invalid Timestamp order") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_WRONG_TIMESTAMP_ORDER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Create Roll Call should fail with invalid id") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Create Roll Call should fail with wrong sender") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_WRONG_SENDER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Create Roll Call should fail with wrong type of channel") {
-    val dbActorRef = mockDbWrongChannel
+    val dbActorRef = mockDbWrongChannelCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
@@ -166,63 +182,63 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   //Close RollCall
   test("Close Roll Call works as intended") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_RPC)
     message should equal(Left(CLOSE_ROLL_CALL_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with invalid Timestamp") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with invalid update id") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with duplicate attendees") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_DUPLICATE_ATTENDEES_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with wrong attendees") {
-    val dbActorRef = mockDbWrongToken
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_ATTENDEES_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with wrong sender") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_SENDER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail if it is already closed") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_ALREADY_CLOSED_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with wrong type of channel") {
-    val dbActorRef = mockDbWrongChannel
+    val dbActorRef = mockDbWrongChannelOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Close Roll Call should fail with wrong closes id") {
-    val dbActorRef = mockDbWorkingCreateOpenClose
+    val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_WRONG_CLOSES_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
@@ -230,49 +246,49 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   //Open RollCall
   test("Open Roll Call works as intended") {
-    val dbActorRef = mockDbWorkingCreateOpen
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)
     message should equal(Left(OPEN_ROLL_CALL_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Open Roll Call should fail with invalid Timestamp") {
-    val dbActorRef = mockDbWorkingCreateOpen
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
-  test("Open Roll Call should fail with invalid id") {
-    val dbActorRef = mockDbWorkingCreateOpen
+  test("Open Roll Call should fail with invalid update id") {
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_WRONG_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Open Roll Call should fail with wrong sender") {
-    val dbActorRef = mockDbWorkingCreateOpen
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_WRONG_SENDER_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Open Roll Call should fail with wrong type of channel") {
-    val dbActorRef = mockDbWrongChannelOpen
+    val dbActorRef = mockDbWrongChannelCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Open Roll Call should fail with wrong opens id") {
-    val dbActorRef = mockDbWorkingCreateOpen
+    val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_WRONG_OPENS_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Open Roll Call should succeed with valid opens id after closing a roll call") {
-    val dbActorRef = mockDbWorkingCreateCloseOpen
+    val dbActorRef = mockDbWorkingClose
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
