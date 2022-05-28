@@ -69,7 +69,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-
+  private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent = new MutableLiveData<>();
   /*
    * Dependencies for this class
    */
@@ -104,8 +104,18 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
+  public LiveData<SingleEvent<Boolean>> getpostTransactionEvent() {
+    return postTransactionEvent;
+  }
+
+  public void postTransactionEvent() {
+    postTransactionEvent.postValue(new SingleEvent<>(true));
+  }
+
+
   /*
    * Getters for MutableLiveData instances declared above
+   *
    */
   public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
@@ -163,7 +173,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(Map<PublicKey, Integer> receiverandvalue, long locktime) {
+  public void postTransaction(Map<PublicKey,Long> receiverandvalue, long locktime) {
     Log.d(TAG, "Post a transaction");
     Lao lao = getCurrentLao();
     if (lao == null) {
@@ -175,7 +185,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       PoPToken token = keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
-      for (Map.Entry<PublicKey, Integer> current : receiverandvalue.entrySet()) {
+      for (Map.Entry<PublicKey, Long> current : receiverandvalue.entrySet()) {
         Output add_output =
             new Output(current.getValue(), new ScriptOutput(TYPE, current.getKey().computeHash()));
         outputs.add(add_output);

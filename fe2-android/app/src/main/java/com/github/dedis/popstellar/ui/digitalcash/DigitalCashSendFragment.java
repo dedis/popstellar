@@ -64,7 +64,7 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
               .show();
     } else {
-      mViewModel.postTransaction(receiver, Instant.now().getEpochSecond());
+      //mViewModel.postTransaction(mViewModel.getCurrentLao().getOrganizer(), Instant.now().getEpochSecond());
       mBinding.digitalCashSendSend.setOnClickListener(
               clicked -> mViewModel.openReceipt()
       );

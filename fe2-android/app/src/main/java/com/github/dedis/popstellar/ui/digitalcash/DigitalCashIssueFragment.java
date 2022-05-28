@@ -13,7 +13,10 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,19 +54,35 @@ public class DigitalCashIssueFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
+    setupSendCoinButton();
+
+    mViewModel.getpostTransactionEvent().observe(
+         getViewLifecycleOwner(),
+         booleanEvent -> {
+           Boolean event = booleanEvent.getContentIfNotHandled();
+           if (event != null){
+             postTransaction();
+           }
+         }
+    );
+
     List<String> myArray =
-        (List<String>)
+            Collections.singletonList(
             mViewModel
-                .getCurrentLao()
-                .getRollCall(mViewModel.getCurrentLao().getLastRollcall())
-                .get()
-                .getAttendees()
-                .stream()
-                .map(Base64URLData::getEncoded);
+                .getCurrentLao().getOrganizer().getEncoded());
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
 
+  private void setupSendCoinButton(){
+    mBinding.digitalCashIssueIssue.setOnClickListener(
+            v -> mViewModel.postTransactionEvent()
+    );
+  }
+
   ///** Function that permits to post transaction */
-  //private void postTransaction() {}
+  private void postTransaction() {
+    long amount = Long.getLong(mBinding.digitalCashIssueAmount.getText().toString());
+    mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount), Instant.now().getEpochSecond());
+  }
 }

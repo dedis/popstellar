@@ -48,7 +48,6 @@ public final class Lao {
   private Map<PublicKey, List<TransactionObject>> transaction_historyByUser;
   // Map for the the public_key last transaction
   private Map<PublicKey, TransactionObject> transactionByUser;
-  private String lastRollcall = "";
 
   public Lao(String id) {
     if (id == null) {
@@ -454,13 +453,5 @@ public final class Lao {
         + ", electInstances="
         + messageIdToElectInstance.values()
         + '}';
-  }
-
-  public String getLastRollcall() {
-    return lastRollcall;
-  }
-
-  public void setLastRollcall(String lastRollcall) {
-    this.lastRollcall = lastRollcall;
   }
 }
