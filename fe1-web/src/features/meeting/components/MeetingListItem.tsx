@@ -15,6 +15,7 @@ import { makeMeetingSelector } from '../reducer';
 
 const getSubtitle = (meeting: Meeting): string => {
   const now = Timestamp.EpochNow();
+  const location = meeting.location ? `, ${meeting.location}` : '';
 
   if (meeting.start.after(now)) {
     return `${STRINGS.general_starting_at} ${meeting.start
@@ -25,12 +26,12 @@ const getSubtitle = (meeting: Meeting): string => {
   }
 
   if (!meeting.end || meeting.end.after(now)) {
-    return `${STRINGS.general_ongoing}${meeting.location ? `, ${meeting.location}` : ''}`;
+    return `${STRINGS.general_ongoing}${location}`;
   }
 
   return `${STRINGS.general_ended_at} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
     .toDate()
-    .toLocaleTimeString()}${meeting.location ? `, ${meeting.location}` : ''}`;
+    .toLocaleTimeString()}${location}`;
 };
 
 const MeetingListItem = (props: IPropTypes) => {
