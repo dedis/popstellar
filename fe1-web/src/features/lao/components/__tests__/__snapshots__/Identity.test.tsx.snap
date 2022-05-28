@@ -417,7 +417,7 @@ exports[`Identity renders correctly 1`] = `
                       </Text>
                       <TextInput
                         editable={false}
-                        placeholder="Name"
+                        placeholder="John Doe"
                         style={
                           Array [
                             Object {
@@ -460,7 +460,7 @@ exports[`Identity renders correctly 1`] = `
                       </Text>
                       <TextInput
                         editable={false}
-                        placeholder="Title"
+                        placeholder="LAO Organizer"
                         style={
                           Array [
                             Object {
@@ -503,7 +503,7 @@ exports[`Identity renders correctly 1`] = `
                       </Text>
                       <TextInput
                         editable={false}
-                        placeholder="Organization"
+                        placeholder="DEDIS Lab"
                         style={
                           Array [
                             Object {
@@ -546,7 +546,7 @@ exports[`Identity renders correctly 1`] = `
                       </Text>
                       <TextInput
                         editable={false}
-                        placeholder="Email"
+                        placeholder="john.doe@epfl.ch"
                         style={
                           Array [
                             Object {
@@ -589,7 +589,7 @@ exports[`Identity renders correctly 1`] = `
                       </Text>
                       <TextInput
                         editable={false}
-                        placeholder="Phone number"
+                        placeholder="+41 12 345 67 89"
                         style={
                           Array [
                             Object {

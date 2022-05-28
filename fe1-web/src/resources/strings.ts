@@ -152,19 +152,19 @@ namespace STRINGS {
     'order to play an Organizer or Witness role in an organization.';
 
   export const identity_name_label = 'Name';
-  export const identity_name_placeholder = 'Name';
+  export const identity_name_placeholder = 'John Doe';
 
   export const identity_title_label = 'Title';
-  export const identity_title_placeholder = 'Title';
+  export const identity_title_placeholder = 'LAO Organizer';
 
   export const identity_organization_label = 'Organization';
-  export const identity_organization_placeholder = 'Organization';
+  export const identity_organization_placeholder = 'DEDIS Lab';
 
   export const identity_email_label = 'Email';
-  export const identity_email_placeholder = 'Email';
+  export const identity_email_placeholder = 'john.doe@epfl.ch';
 
   export const identity_phone_label = 'Phone number';
-  export const identity_phone_placeholder = 'Phone number';
+  export const identity_phone_placeholder = '+41 12 345 67 89';
 
   export const identity_qrcode_description = 'ID (Public Key):';
 
