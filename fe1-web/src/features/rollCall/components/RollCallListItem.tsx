@@ -17,7 +17,7 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
   if (rollCall.status === RollCallStatus.CREATED) {
     return (
       <>
-        {STRINGS.general_starting_at} ${rollCall.start.toDate().toLocaleDateString()}
+        {STRINGS.general_starting_at} {rollCall.start.toDate().toLocaleDateString()}
         {rollCall.start.toDate().toLocaleTimeString()}, {rollCall.location}
       </>
     );

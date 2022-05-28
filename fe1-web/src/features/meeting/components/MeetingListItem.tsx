@@ -19,16 +19,18 @@ const getSubtitle = (meeting: Meeting): string => {
   if (meeting.start.after(now)) {
     return `${STRINGS.general_starting_at} ${meeting.start
       .toDate()
-      .toLocaleDateString()} ${meeting.start.toDate().toLocaleTimeString()}, ${meeting.location}`;
+      .toLocaleDateString()} ${meeting.start.toDate().toLocaleTimeString()}${
+      meeting.location ? `, ${meeting.location}` : ''
+    }`;
   }
 
   if (!meeting.end || meeting.end.after(now)) {
-    return `${STRINGS.general_ongoing}, ${meeting.location}`;
+    return `${STRINGS.general_ongoing}${meeting.location ? `, ${meeting.location}` : ''}`;
   }
 
   return `${STRINGS.general_ended_at} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
     .toDate()
-    .toLocaleTimeString()}, ${meeting.location}`;
+    .toLocaleTimeString()}${meeting.location ? `, ${meeting.location}` : ''}`;
 };
 
 const MeetingListItem = (props: IPropTypes) => {
