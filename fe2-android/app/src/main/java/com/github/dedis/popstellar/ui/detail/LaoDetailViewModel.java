@@ -232,8 +232,8 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
    * or was the organizer
    *
-   * @param lao
-   * @param rollcall
+   * @param lao the lao considered
+   * @param rollcall the roll-call considered
    * @return boolean saying whether user attended or organized the given roll call
    */
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
@@ -962,7 +962,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
-  public  MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent(){
+  public MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
     return mOpenDigitalCashEvent;
   }
 

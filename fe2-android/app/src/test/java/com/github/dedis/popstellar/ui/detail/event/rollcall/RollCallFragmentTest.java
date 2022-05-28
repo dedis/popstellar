@@ -72,7 +72,7 @@ public class RollCallFragmentTest {
   private static final DateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
-  RollCall rollCall = new RollCall(LAO.getId(), CREATION, ROLL_CALL_TITLE);
+  private final RollCall ROLL_CALL = new RollCall(LAO.getId(), CREATION, ROLL_CALL_TITLE);
 
   @Inject GlobalNetworkManager networkManager;
   @Inject Gson gson;
@@ -100,13 +100,13 @@ public class RollCallFragmentTest {
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
-          rollCall.setState(EventState.CLOSED);
-          rollCall.setLocation(LOCATION);
-          rollCall.setStart(ROLL_CALL_START);
-          rollCall.setLocation(LOCATION);
-          rollCall.setEnd(ROLL_CALL_END);
-          rollCall.setDescription(ROLL_CALL_DESC);
-          rollCall.setState(EventState.CREATED);
+          ROLL_CALL.setState(EventState.CLOSED);
+          ROLL_CALL.setLocation(LOCATION);
+          ROLL_CALL.setStart(ROLL_CALL_START);
+          ROLL_CALL.setLocation(LOCATION);
+          ROLL_CALL.setEnd(ROLL_CALL_END);
+          ROLL_CALL.setDescription(ROLL_CALL_DESC);
+          ROLL_CALL.setState(EventState.CREATED);
         }
       };
 
@@ -120,7 +120,7 @@ public class RollCallFragmentTest {
               .build(),
           containerId(),
           RollCallFragment.class,
-          () -> RollCallFragment.newInstance(rollCall));
+          () -> RollCallFragment.newInstance(ROLL_CALL));
 
   @Test
   public void rollCallTitleMatches() {
@@ -134,8 +134,8 @@ public class RollCallFragmentTest {
 
   @Test
   public void datesDisplayedMatches() {
-    Date startTime = new Date(rollCall.getStartTimestampInMillis());
-    Date endTime = new Date(rollCall.getEndTimestampInMillis());
+    Date startTime = new Date(ROLL_CALL.getStartTimestampInMillis());
+    Date endTime = new Date(ROLL_CALL.getEndTimestampInMillis());
     String startTimeText = DATE_FORMAT.format(startTime);
     String endTimeText = DATE_FORMAT.format(endTime);
 
@@ -154,7 +154,7 @@ public class RollCallFragmentTest {
   }
 
   private void openRollCall() {
-    rollCall.setState(EventState.OPENED);
+    ROLL_CALL.setState(EventState.OPENED);
   }
 
   @Test
@@ -170,7 +170,7 @@ public class RollCallFragmentTest {
   }
 
   private void closeRollCall() {
-    rollCall.setState(EventState.CLOSED);
+    ROLL_CALL.setState(EventState.CLOSED);
   }
 
   @Test
