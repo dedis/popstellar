@@ -454,7 +454,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal (1)
-    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+    storage.elements(rollcallChannel) should equal (RollcallData(updateId, ActionType.CREATE).toJsonString)
   }
 
   test("createRollcallData does not overwrite channels on duplicates") {
@@ -470,12 +470,12 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal (1)
-    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+    storage.elements(rollcallChannel) should equal (RollcallData(updateId, ActionType.CREATE).toJsonString)
 
     dbActor ! DbActor.CreateRollcallData(laoId, updateId, ActionType.CREATE); sleep()
 
     storage.size should equal (1)
-    storage.elements(rollcallChannel) should equal (RollcallData(laoId, updateId, ActionType.CREATE).toJsonString)
+    storage.elements(rollcallChannel) should equal (RollcallData(updateId, ActionType.CREATE).toJsonString)
   }
 
   test("writeRollcallData succeeds for both new and updated data") {
@@ -520,7 +520,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
     val updateId: Hash = Hash(Base64Data.encode("updateId"))
     val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
-    val rollcallData: RollcallData = RollcallData(laoId, updateId, ActionType.CREATE)
+    val rollcallData: RollcallData = RollcallData(updateId, ActionType.CREATE)
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((rollcallKey, rollcallData.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))

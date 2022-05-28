@@ -187,7 +187,7 @@ final case class DbActor(
   private def createRollcallData(laoId: Hash, updateId: Hash, state: ActionType): Unit = {
     val channel = Channel(s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}")
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> RollcallData(laoId, updateId, state).toJsonString
+      val pair = channel.toString -> RollcallData(updateId, state).toJsonString
       storage.write(pair)
     }
   }
@@ -206,7 +206,7 @@ final case class DbActor(
     this.synchronized {
       val rollcallData: RollcallData = Try(readRollcallData(laoId)) match {
         case Success(data) => data
-        case Failure(_) => RollcallData(laoId, null, null)
+        case Failure(_) => RollcallData(null, null)
       }
       val rollcallDataKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
       storage.write(rollcallDataKey -> rollcallData.updateWith(message).toJsonString)
@@ -428,7 +428,7 @@ object DbActor {
    * Request to read the rollcallData of the LAO, with key laoId
    *
    * @param laoId    the channel we need the Rollcall's data for
-   * @param message  rollcall message sent through the channel 
+   * @param message  rollcall message sent through the channel
    */
   final case class WriteRollcallData(laoId: Hash, message: Message) extends Event
 
