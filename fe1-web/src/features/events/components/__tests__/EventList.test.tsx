@@ -35,6 +35,9 @@ import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import EventList from '../EventList';
 
+jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
+jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
+
 const mockStore = createStore(
   combineReducers({
     ...eventReducer,

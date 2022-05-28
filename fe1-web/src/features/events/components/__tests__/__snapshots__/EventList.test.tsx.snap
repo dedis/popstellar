@@ -1108,7 +1108,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                   testID="listItemTitle"
                                 >
-                                  Ended at 01/01/2021 00:00:00, on earth
+                                  Ended at 2022-05-28 00:00:00, on earth
                                 </Text>
                               </View>
                               <View
@@ -2550,7 +2550,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                   testID="listItemTitle"
                                 >
-                                  Ended at 01/01/2021 00:00:00, on earth
+                                  Ended at 2022-05-28 00:00:00, on earth
                                 </Text>
                               </View>
                               <View
