@@ -46,7 +46,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
-        case DbActor.CreateRollcallData(_, _, _) | DbActor.WriteRollcallData(_, _) =>
+        case DbActor.CreateRollCallData(_, _, _) | DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -69,9 +69,10 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
-        case DbActor.CreateRollcallData(_, _, _) | DbActor.WriteRollcallData(_, _) =>
+        case DbActor.CreateRollCallData(_, _, _) | DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
         case x =>
           system.log.info(s"Received - error $x")
       }

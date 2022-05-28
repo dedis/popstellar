@@ -6,8 +6,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.{ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
@@ -184,29 +183,29 @@ final case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def createRollcallData(laoId: Hash, updateId: Hash, state: ActionType): Unit = {
+  private def createRollCallData(laoId: Hash, updateId: Hash, state: ActionType): Unit = {
     val channel = Channel(s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}")
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> RollcallData(updateId, state).toJsonString
+      val pair = channel.toString -> RollCallData(updateId, state).toJsonString
       storage.write(pair)
     }
   }
 
   @throws [DbActorNAckException]
-  private def readRollcallData(laoId: Hash): RollcallData = {
+  private def readRollCallData(laoId: Hash): RollCallData = {
     Try(storage.read(s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}")) match {
-      case Success(Some(json)) => RollcallData.buildFromJson(json)
+      case Success(Some(json)) => RollCallData.buildFromJson(json)
       case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadElectionData for election $laoId not in the database")
       case Failure(ex) => throw ex
     }
   }
 
   @throws [DbActorNAckException]
-  private def writeRollcallData(laoId: Hash, message: Message): Unit = {
+  private def writeRollCallData(laoId: Hash, message: Message): Unit = {
     this.synchronized {
-      val rollcallData: RollcallData = Try(readRollcallData(laoId)) match {
+      val rollcallData: RollCallData = Try(readRollCallData(laoId)) match {
         case Success(data) => data
-        case Failure(_) => RollcallData(null, null)
+        case Failure(_) => RollCallData(null, null)
       }
       val rollcallDataKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
       storage.write(rollcallDataKey -> rollcallData.updateWith(message).toJsonString)
@@ -292,23 +291,23 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case CreateRollcallData(laoId, updateId, state) =>
+    case CreateRollCallData(laoId, updateId, state) =>
       log.info(s"Actor $self (db) received an CreateRollcallData request for lao '$laoId'")
-      Try(createRollcallData(laoId, updateId, state)) match {
+      Try(createRollCallData(laoId, updateId, state)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadRollcallData(laoId) =>
+    case ReadRollCallData(laoId) =>
       log.info(s"Actor $self (db) received an ReadRollcallData request for lao '$laoId'")
-      Try(readRollcallData(laoId)) match {
-        case Success(rollcallData) => sender() ! DbActorReadRollcallDataAck(rollcallData)
+      Try(readRollCallData(laoId)) match {
+        case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteRollcallData(laoId, message) =>
+    case WriteRollCallData(laoId, message) =>
       log.info(s"Actor $self (db) received a WriteLaoData request for LAO id $laoId")
-      Try(writeRollcallData(laoId, message)) match {
+      Try(writeRollCallData(laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -422,7 +421,7 @@ object DbActor {
    * @param laoId
    * the channel we need the Rollcall's data for
    */
-  final case class ReadRollcallData(laoId: Hash) extends Event
+  final case class ReadRollCallData(laoId: Hash) extends Event
 
   /**
    * Request to read the rollcallData of the LAO, with key laoId
@@ -430,7 +429,7 @@ object DbActor {
    * @param laoId    the channel we need the Rollcall's data for
    * @param message  rollcall message sent through the channel
    */
-  final case class WriteRollcallData(laoId: Hash, message: Message) extends Event
+  final case class WriteRollCallData(laoId: Hash, message: Message) extends Event
 
   /**
    * Request to create election data in the db with an id and a keypair
@@ -439,7 +438,7 @@ object DbActor {
    * @param updateId the updateId of the last rollcall message
    * @param state    the state of the last rollcall message, i.e., CREATE, OPEN or CLOSE
    */
-  final case class CreateRollcallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
+  final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
@@ -482,7 +481,7 @@ object DbActor {
    *
    * @param rollcallData requested channel data
    */
-  final case class DbActorReadRollcallDataAck(rollcallData: RollcallData) extends DbActorMessage
+  final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
 
   /**
    * Response for a general db actor ACK

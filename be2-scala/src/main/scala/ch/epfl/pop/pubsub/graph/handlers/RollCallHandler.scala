@@ -56,7 +56,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
             }
             _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
             _ <- dbAskWritePropagate(rpcRequest)
-            _ <- dbActor ? DbActor.CreateRollcallData(laoId, data.id, data.action)
+            _ <- dbActor ? DbActor.CreateRollCallData(laoId, data.id, data.action)
           } yield ()
 
         Await.ready(ask, duration).value match {
@@ -80,13 +80,13 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           for {
             //check if the roll call already exists to open it
             _ <- dbActor ? DbActor.ChannelExists(channel) transformWith {
-              case Success(_) => Future()
+              case Success(_) => Future {}
               case _ => Future {
                 throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall does not exist in db")
               }
             }
             _ <- dbAskWritePropagate(rpcRequest)
-            _ <- dbActor ? DbActor.WriteRollcallData(laoId, message)
+            _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
           } yield ()
 
         Await.ready (ask, duration).value match {
@@ -139,7 +139,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 val combined = for {
                   _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
                   _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
-                  _ <- dbActor ? DbActor.WriteRollcallData(laoChannel.get, message)
+                  _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
                 } yield ()
 
                 Await.ready(combined, duration).value match {

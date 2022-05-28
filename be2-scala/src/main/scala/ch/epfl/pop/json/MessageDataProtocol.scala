@@ -320,19 +320,19 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   }
 
-  implicit object RollcallDataFormat extends JsonFormat[RollcallData] {
+  implicit object RollcallDataFormat extends JsonFormat[RollCallData] {
     final private val PARAM_UPDATE_ID: String = "update_id"
     final private val PARAM_STATE: String = "state"
 
-    override def read(json: JsValue): RollcallData = json.asJsObject().getFields(PARAM_UPDATE_ID, PARAM_STATE) match {
-      case Seq(updateId@JsString(_), state@JsString(_)) => RollcallData(
+    override def read(json: JsValue): RollCallData = json.asJsObject().getFields(PARAM_UPDATE_ID, PARAM_STATE) match {
+      case Seq(updateId@JsString(_), state@JsString(_)) => RollCallData(
         updateId.convertTo[Hash],
         state.convertTo[ActionType]
       )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RollcallData object")
     }
 
-    override def write(obj: RollcallData): JsValue = JsObject(
+    override def write(obj: RollCallData): JsValue = JsObject(
       PARAM_UPDATE_ID -> obj.update_id.toJson,
       PARAM_STATE -> obj.state.toJson
     )

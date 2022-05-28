@@ -18,7 +18,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
-class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestActorSystem"))
+class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestActorSystem"))
   with FunSuiteLike
   with ImplicitSender
   with Matchers with BeforeAndAfterAll with AskPatternConstants {
@@ -49,9 +49,9 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataRight: ChannelData = ChannelData(ObjectType.ROLL_CALL, List.empty)
-  private final val rollcallDataCreate: RollcallData = RollcallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
-  private final val rollcallDataOpen: RollcallData = RollcallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
-  private final val rollcallDataClose: RollcallData = RollcallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
+  private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
+  private final val rollcallDataOpen: RollCallData = RollCallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
+  private final val rollcallDataClose: RollCallData = RollCallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
 
   private def mockDbWrongChannelCreate: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -60,8 +60,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataCreate)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataCreate)
       }
     })
     system.actorOf(dbActorMock)
@@ -74,22 +74,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataOpen)
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
-
-  private def mockDbWrongChannelClose: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
-        case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataClose)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -102,8 +88,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataCreate)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataCreate)
       }
     })
     system.actorOf(dbActorMock)
@@ -116,8 +102,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataOpen)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataOpen)
       }
     })
     system.actorOf(dbActorMock)
@@ -130,8 +116,8 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.ReadRollcallData(_) =>
-          sender() ! DbActor.DbActorReadRollcallDataAck(rollcallDataClose)
+        case DbActor.ReadRollCallData(_) =>
+          sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataClose)
       }
     })
     system.actorOf(dbActorMock)
@@ -290,7 +276,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Open Roll Call should succeed with valid opens id after closing a roll call") {
     val dbActorRef = mockDbWorkingClose
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message should equal(Left(OPEN_ROLL_CALL_RPC))
     system.stop(dbActorRef.actorRef)
   }
 }

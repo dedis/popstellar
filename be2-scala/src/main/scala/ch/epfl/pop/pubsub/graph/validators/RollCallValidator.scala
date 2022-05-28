@@ -6,11 +6,11 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, RollcallData}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, RollCallData}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadRollcallDataAck
+import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
 
 import scala.concurrent.Await
 import scala.util.Success
@@ -40,10 +40,10 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
    * @param laoId  LAO id of the channel
    * @return       Rollcall Data of the channel
    */
-  private def getRollcallData(laoId: Hash): Option[RollcallData] = {
-    val ask = dbActor ? DbActor.ReadRollcallData(laoId)
+  private def getRollCallData(laoId: Hash): Option[RollCallData] = {
+    val ask = dbActor ? DbActor.ReadRollCallData(laoId)
     Await.ready(ask, duration).value match {
-      case Some(Success(DbActorReadRollcallDataAck(rollcallData))) => Some(rollcallData)
+      case Some(Success(DbActorReadRollCallDataAck(rollcallData))) => Some(rollcallData)
       case _ => None
     }
   }
@@ -120,7 +120,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def validateOpens(laoId: Hash, opens: Hash): Boolean = {
-    val rollcallData: Option[RollcallData] = getRollcallData(laoId)
+    val rollcallData: Option[RollCallData] = getRollCallData(laoId)
     rollcallData match {
       case Some(data) =>
         (data.state == CREATE && data.update_id == opens) || (data.state == CLOSE && data.update_id == opens)
@@ -177,7 +177,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def validateCloses(laoId: Hash, closes: Hash): Boolean = {
-    val rollcallData: Option[RollcallData] = getRollcallData(laoId)
+    val rollcallData: Option[RollCallData] = getRollCallData(laoId)
     rollcallData match {
       case Some(data) => data.state == OPEN && data.update_id == closes
       case _ => false
