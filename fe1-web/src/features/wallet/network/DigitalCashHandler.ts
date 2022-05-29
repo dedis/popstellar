@@ -3,7 +3,6 @@ import { Hash } from 'core/objects';
 
 import { Transaction } from '../objects/transaction';
 import { PostTransaction } from './messages';
-import { WalletHooks } from "../hooks";
 
 /**
  * Handle a PostTransaction message.

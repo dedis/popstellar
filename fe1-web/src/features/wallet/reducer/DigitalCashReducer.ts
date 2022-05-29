@@ -114,6 +114,11 @@ const digitalCashSlice = createSlice({
         });
 
         transactionMessage.outputs.forEach((output) => {
+          console.log(
+            `Balance is = ${rollCallState.balances[output.script.publicKeyHash]} for ${
+              output.script.publicKeyHash
+            }`,
+          );
           if (!rollCallState.balances[output.script.publicKeyHash]) {
             rollCallState.balances[output.script.publicKeyHash] = 0;
           }
@@ -129,7 +134,7 @@ const digitalCashSlice = createSlice({
   },
 });
 export const { addTransaction } = digitalCashSlice.actions;
-export const digitalCashReducer = digitalCashSlice.reducer;
+export const digitalCashReduce = digitalCashSlice.reducer;
 
 export default {
   [DIGITAL_CASH_REDUCER_PATH]: digitalCashSlice.reducer,

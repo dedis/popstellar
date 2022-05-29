@@ -182,7 +182,9 @@ export class Transaction {
    */
   public static createCoinbase(organizerKP: KeyPair, to: PublicKey, amount: number): Transaction {
     const toPublicKeyHash = Hash.fromPublicKey(to);
-
+    console.log(
+      `Creating coinbase transaction for :${toPublicKeyHash.valueOf()} with amount = ${amount.toString()}`,
+    );
     const outputTo = {
       value: amount,
       script: {
