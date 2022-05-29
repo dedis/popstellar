@@ -205,6 +205,36 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
     PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
     Log.d(TAG, postTransactionCoin.toString());
+
+    Channel channel =
+        getCurrentLao()
+            .getChannel()
+            .subChannel(COIN)
+            .subChannel(the_keys.getPublicKey().getEncoded());
+    Log.d(TAG, channel.toString());
+    Log.d(TAG, PUBLISH_MESSAGE);
+
+    MessageGeneral msg = new MessageGeneral(the_keys, postTransactionCoin, gson);
+    Log.d(TAG, msg.toString());
+
+    Disposable disposable =
+        networkManager
+            .getMessageSender()
+            .publish(the_keys, channel, postTransactionCoin)
+            .subscribe(
+                () -> {
+                  Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
+                  Toast.makeText(
+                          getApplication().getApplicationContext(),
+                          "Post Transaction!",
+                          Toast.LENGTH_LONG)
+                      .show();
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_post_transaction));
+
+    disposables.add(disposable);
   }
 
   /**
