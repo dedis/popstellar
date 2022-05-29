@@ -352,11 +352,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                             }
                           }
                         >
-                          <AntDesign
-                            color="white"
-                            name="arrowleft"
-                            size={25}
-                          />
+                          <Text />
                         </View>
                         <View
                           style={

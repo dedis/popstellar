@@ -1,79 +1,70 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RoundIconButton back version renders correctly 1`] = `
-<View
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  nativeID="animatedComponent"
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    Object {
-      "alignContent": "center",
-      "alignItems": "center",
-      "backgroundColor": "#2196F3",
-      "borderRadius": 30,
-      "height": 65,
-      "justifyContent": "center",
-      "opacity": 1,
-      "shadowColor": "gray",
-      "shadowOffset": Object {
-        "height": 2,
-        "width": 2,
-      },
-      "width": 65,
+exports[`RoundIconButtons render correctly 1`] = `
+Array [
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    nativeID="animatedComponent"
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignContent": "center",
+        "alignItems": "center",
+        "backgroundColor": "#2196F3",
+        "borderRadius": 30,
+        "height": 65,
+        "justifyContent": "center",
+        "opacity": 1,
+        "shadowColor": "gray",
+        "shadowOffset": Object {
+          "height": 2,
+          "width": 2,
+        },
+        "width": 65,
+      }
     }
-  }
->
-  <AntDesign
-    color="white"
-    name="arrowleft"
-    size={25}
-  />
-</View>
-`;
-
-exports[`RoundIconButton logout version renders correctly 1`] = `
-<View
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  nativeID="animatedComponent"
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    Object {
-      "alignContent": "center",
-      "alignItems": "center",
-      "backgroundColor": "#2196F3",
-      "borderRadius": 30,
-      "height": 65,
-      "justifyContent": "center",
-      "opacity": 1,
-      "shadowColor": "gray",
-      "shadowOffset": Object {
-        "height": 2,
-        "width": 2,
-      },
-      "width": 65,
+  >
+    <Text />
+  </View>,
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    nativeID="animatedComponent"
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignContent": "center",
+        "alignItems": "center",
+        "backgroundColor": "#2196F3",
+        "borderRadius": 30,
+        "height": 65,
+        "justifyContent": "center",
+        "opacity": 1,
+        "shadowColor": "gray",
+        "shadowOffset": Object {
+          "height": 2,
+          "width": 2,
+        },
+        "width": 65,
+      }
     }
-  }
->
-  <AntDesign
-    color="white"
-    name="logout"
-    size={25}
-  />
-</View>
+  >
+    <Text />
+  </View>,
+]
 `;

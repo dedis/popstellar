@@ -2,9 +2,9 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import { mockKeyPair, mockLao, mockRC } from '__tests__/utils';
+import { PopToken } from 'core/objects';
+import { RollCallToken } from 'features/wallet/objects/RollCallToken';
 
-import { PopToken } from '../../../../core/objects';
-import { RollCallToken } from '../../objects/RollCallToken';
 import { RollCallTokensDropDown } from '../index';
 
 const mockToken = PopToken.fromState(mockKeyPair.toState());
