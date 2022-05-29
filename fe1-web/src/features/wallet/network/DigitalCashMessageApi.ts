@@ -26,7 +26,6 @@ export function requestSendTransaction(
   laoId: Hash,
   rcId: Hash,
 ): Promise<void> {
-  // TODO: Should check total value, OVERFLOW
 
   const transactionStates = DigitalCashStore.getTransactionsByPublicKey(
     laoId.valueOf(),

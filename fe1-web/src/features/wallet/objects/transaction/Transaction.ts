@@ -249,7 +249,7 @@ export class Transaction {
    * @param inputs
    * @param outputs
    */
-  private static concatenateTxData = (
+  public static concatenateTxData = (
     inputs: Omit<TransactionInputState, 'script'>[],
     outputs: TransactionOutputState[],
   ) => {

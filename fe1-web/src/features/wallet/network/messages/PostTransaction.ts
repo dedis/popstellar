@@ -11,10 +11,13 @@ export class PostTransaction implements MessageData {
 
   public readonly action: ActionType = ActionType.POST_TRANSACTION;
 
+  // the transaction hash of this transaction object
   public readonly transaction_id: Hash;
 
+  // The transaction to send in the JSON format
   public readonly transaction: TransactionJSON;
 
+  // The roll call id of this transaction
   public readonly rc_id: Hash;
 
   constructor(msg: Partial<PostTransaction>) {

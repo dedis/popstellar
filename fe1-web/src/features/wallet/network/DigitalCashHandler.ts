@@ -1,5 +1,5 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
+import { Base64UrlData, Hash, PublicKey } from "core/objects";
 
 import { Transaction } from '../objects/transaction';
 import { PostTransaction } from './messages';
@@ -34,3 +34,25 @@ export const handleTransactionPost =
     addTransaction(msg.laoId, tx.rc_id, transaction);
     return true;
   };
+
+/**
+ * Verifies the validity of the information contained in the message
+ * by checking the transaction inputs signature
+ * @param transactionMessage the transaction message to verify
+ * @param publicKey the public key to use to verify the transaction signatures
+ */
+const isTransactionValid = (transactionMessage: PostTransaction, publicKey: PublicKey) => {
+  const transaction = Transaction.fromJSON(
+    transactionMessage.transaction,
+    transactionMessage.transaction_id.valueOf(),
+  );
+
+  const dataString = Transaction.concatenateTxData(
+    transaction.inputs.map((input) => input.toState()),
+    transaction.outputs.map((output) => output.toState()),
+  );
+
+  return transaction.inputs.some(
+    (input) => !input.script.signature.verify(publicKey, Base64UrlData.encode(dataString)),
+  );
+};
