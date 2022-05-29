@@ -16,7 +16,13 @@ export * from './DigitalCashMessageApi';
  */
 export function configureNetwork(registry: MessageRegistry) {
   const addTransactionToState = (laoId: Hash, rcId: Hash, transaction: Transaction) => {
-    dispatch(addTransaction(laoId, rcId, transaction.toState()));
+    dispatch(
+      addTransaction({
+        laoId: laoId.valueOf(),
+        rollCallId: rcId.valueOf(),
+        transactionMessage: transaction.toState(),
+      }),
+    );
   };
 
   registry.add(

@@ -1,7 +1,7 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 
-import { Transaction } from '../objects/transaction';
+import { Transaction, TransactionState } from '../objects/transaction';
 import { PostTransaction } from './messages';
 
 /**

@@ -7,7 +7,12 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import { TransactionState } from '../objects/transaction';
+import {
+  Transaction,
+  TransactionInput,
+  TransactionOutput,
+  TransactionState,
+} from '../objects/transaction';
 
 interface DigitalCashReducerState {
   /**
@@ -54,82 +59,67 @@ const digitalCashSlice = createSlice({
      * Adds a transaction to the state
      * We are trusting information of the transaction object, we do not verify it
      */
-    addTransaction: {
-      prepare(
-        laoId: Hash | string,
-        rollCallId: Hash | string,
-        transactionMessage: TransactionState,
-      ): any {
-        return {
-          payload: {
-            laoId: laoId.valueOf(),
-            rollCallId: rollCallId.valueOf(),
-            transactionMessage: transactionMessage,
-          },
+    addTransaction: (
+      state,
+      action: PayloadAction<{
+        laoId: string;
+        rollCallId: string;
+        transactionMessage: TransactionState;
+      }>,
+    ) => {
+      const { laoId, rollCallId, transactionMessage } = action.payload;
+
+      /**
+       * If state is empty for given lao or roll call, we should create the initial objects
+       */
+      if (!(laoId in state.byLaoId)) {
+        state.byLaoId[laoId] = {
+          byRCId: {},
         };
-      },
-      reducer(
-        state,
-        action: PayloadAction<{
-          laoId: string;
-          rollCallId: string;
-          transactionMessage: TransactionState;
-        }>,
-      ) {
-        const { laoId, rollCallId, transactionMessage } = action.payload;
+      }
 
-        /**
-         * If state is empty for given lao or roll call, we should create the initial objects
-         */
-        if (!(laoId in state.byLaoId)) {
-          state.byLaoId[laoId] = {
-            byRCId: {},
-          };
+      if (!(rollCallId in state.byLaoId[laoId])) {
+        state.byLaoId[laoId].byRCId[rollCallId] = {
+          balances: {},
+          transactions: [],
+          transactionsByHash: {},
+          transactionsByPubHash: {},
+        };
+      }
+
+      const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
+
+      rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
+      rollCallState.transactions.push(transactionMessage);
+
+      /**
+       * Invariant for the digital cash implementation:
+       * Every input of a public key used in an input will be spent in the outputs
+       */
+      transactionMessage.inputs.forEach((input) => {
+        const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
+        rollCallState.balances[pubHash] = 0;
+        if (rollCallState.transactionsByPubHash[pubHash]) {
+          rollCallState.transactionsByPubHash[pubHash].clear();
         }
+      });
 
-        if (!(rollCallId in state.byLaoId[laoId])) {
-          state.byLaoId[laoId].byRCId[rollCallId] = {
-            balances: {},
-            transactions: [],
-            transactionsByHash: {},
-            transactionsByPubHash: {},
-          };
+      transactionMessage.outputs.forEach((output) => {
+        console.log(
+          `Balance was = ${rollCallState.balances[output.script.publicKeyHash.valueOf()]} for ${
+            output.script.publicKeyHash
+          }`,
+        );
+        if (!rollCallState.balances[output.script.publicKeyHash.valueOf()]) {
+          rollCallState.balances[output.script.publicKeyHash.valueOf()] = 0;
         }
-
-        const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
-
-        rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
-        rollCallState.transactions.push(transactionMessage);
-
-        /**
-         * Invariant for the digital cash implementation:
-         * Every input of a public key used in an input will be spent in the outputs
-         */
-        transactionMessage.inputs.forEach((input) => {
-          const pubHash = Hash.fromString(input.script.publicKey).valueOf();
-          rollCallState.balances[pubHash] = 0;
-          if (rollCallState.transactionsByPubHash[pubHash]) {
-            rollCallState.transactionsByPubHash[pubHash].clear();
-          }
-        });
-
-        transactionMessage.outputs.forEach((output) => {
-          console.log(
-            `Balance was = ${rollCallState.balances[output.script.publicKeyHash]} for ${
-              output.script.publicKeyHash
-            }`,
+        rollCallState.balances[output.script.publicKeyHash.valueOf()] += output.value;
+        if (rollCallState.transactionsByPubHash[output.script.publicKeyHash.valueOf()]) {
+          rollCallState.transactionsByPubHash[output.script.publicKeyHash.valueOf()].add(
+            transactionMessage,
           );
-          if (!rollCallState.balances[output.script.publicKeyHash]) {
-            rollCallState.balances[output.script.publicKeyHash] = 0;
-          }
-          rollCallState.balances[output.script.publicKeyHash] += output.value;
-          if (rollCallState.transactionsByPubHash[output.script.publicKeyHash]) {
-            rollCallState.transactionsByPubHash[output.script.publicKeyHash].add(
-              transactionMessage,
-            );
-          }
-        });
-      },
+        }
+      });
     },
   },
 });
