@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { List } from 'core/styles';
+import { List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -23,7 +23,7 @@ type NavigationProps = CompositeScreenProps<
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
 >;
 
-const LaoItem = ({ lao }: IPropTypes) => {
+const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
@@ -71,14 +71,23 @@ const LaoItem = ({ lao }: IPropTypes) => {
     }
   };
 
+  const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
+
   return (
-    <ListItem key={lao.id.valueOf()} containerStyle={List.item} onPress={onPress} bottomDivider>
+    <ListItem
+      key={lao.id.valueOf()}
+      containerStyle={listStyle}
+      style={listStyle}
+      onPress={onPress}
+      bottomDivider>
       <ListItem.Content>
-        <ListItem.Title>{lao.name}</ListItem.Title>
-        <ListItem.Subtitle>
+        <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>
+        <ListItem.Subtitle style={Typography.small}>
           {STRINGS.user_role}: {role}
         </ListItem.Subtitle>
-        <ListItem.Subtitle>{lao.server_addresses.join(', ')}</ListItem.Subtitle>
+        <ListItem.Subtitle style={Typography.small}>
+          {lao.server_addresses.join(', ')}
+        </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>
@@ -87,6 +96,8 @@ const LaoItem = ({ lao }: IPropTypes) => {
 
 const propTypes = {
   lao: PropTypes.instanceOf(Lao).isRequired,
+  isFirstItem: PropTypes.bool.isRequired,
+  isLastItem: PropTypes.bool.isRequired,
 };
 LaoItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

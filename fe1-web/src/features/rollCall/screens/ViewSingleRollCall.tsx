@@ -156,6 +156,8 @@ const ViewSingleRollCall = () => {
     }
   };
 
+  const popTokens = rollCall.attendees || attendeePopTokens;
+
   return (
     <ScreenWrapper>
       {rollCall.description && (
@@ -176,26 +178,32 @@ const ViewSingleRollCall = () => {
 
       {getRollCallDisplay(rollCall.status)}
 
-      {(rollCall.attendees || attendeePopTokens) && (
+      {popTokens && (
         <View style={List.container}>
           <ListItem.Accordion
-            containerStyle={List.item}
+            containerStyle={List.accordionItem}
             content={
               <ListItem.Content>
-                <ListItem.Title>Attendees</ListItem.Title>
+                <ListItem.Title style={[Typography.base, Typography.important]}>
+                  Attendees
+                </ListItem.Title>
               </ListItem.Content>
             }
             isExpanded>
-            {(rollCall.attendees || attendeePopTokens || []).map((token) => (
-              <ListItem key={token.valueOf()} containerStyle={List.item}>
-                <View style={List.icon}>
-                  <QrCodeIcon color={Color.primary} size={Icon.size} />
-                </View>
-                <ListItem.Content>
-                  <ListItem.Title>{token.valueOf()}</ListItem.Title>
-                </ListItem.Content>
-              </ListItem>
-            ))}
+            {popTokens.map((token, idx) => {
+              const listStyle = List.getListItemStyles(idx === 0, idx === popTokens.length - 1);
+
+              return (
+                <ListItem key={token.valueOf()} containerStyle={listStyle} style={listStyle}>
+                  <View style={List.icon}>
+                    <QrCodeIcon color={Color.primary} size={Icon.size} />
+                  </View>
+                  <ListItem.Content>
+                    <ListItem.Title style={Typography.base}>{token.valueOf()}</ListItem.Title>
+                  </ListItem.Content>
+                </ListItem>
+              );
+            })}
           </ListItem.Accordion>
         </View>
       )}

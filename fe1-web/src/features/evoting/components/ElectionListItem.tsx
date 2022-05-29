@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import ElectionIcon from 'core/components/icons/ElectionIcon';
-import { Color, Icon, List } from 'core/styles';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EvotingInterface } from '../interface';
@@ -50,7 +50,7 @@ const ElectionListItem = (props: IPropTypes) => {
         <ElectionIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
-        <ListItem.Title>{election.name}</ListItem.Title>
+        <ListItem.Title style={Typography.base}>{election.name}</ListItem.Title>
         <Subtitle election={election} />
       </ListItem.Content>
       <ListItem.Chevron />

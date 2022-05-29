@@ -130,10 +130,12 @@ const ElectionOpened = ({ election }: IPropTypes) => {
         {election.questions.map((question, questionIndex) => (
           <ListItem.Accordion
             key={question.id}
-            containerStyle={List.item}
+            containerStyle={List.accordionItem}
             content={
               <ListItem.Content>
-                <ListItem.Title>{question.question}</ListItem.Title>
+                <ListItem.Title style={[Typography.base, Typography.important]}>
+                  {question.question}
+                </ListItem.Title>
               </ListItem.Content>
             }
             onPress={() =>
@@ -154,7 +156,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
                   />
                 </View>
                 <ListItem.Content>
-                  <ListItem.Title>{ballotOption}</ListItem.Title>
+                  <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
                 </ListItem.Content>
               </ListItem>
             ))}

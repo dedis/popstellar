@@ -45,10 +45,12 @@ const ElectionResult = ({ election }: IPropTypes) => {
             return (
               <ListItem.Accordion
                 key={question.id}
-                containerStyle={List.item}
+                containerStyle={List.accordionItem}
                 content={
                   <ListItem.Content>
-                    <ListItem.Title>{question.question}</ListItem.Title>
+                    <ListItem.Title style={[Typography.base, Typography.important]}>
+                      {question.question}
+                    </ListItem.Title>
                   </ListItem.Content>
                 }
                 onPress={() =>
@@ -62,15 +64,29 @@ const ElectionResult = ({ election }: IPropTypes) => {
                   // create a copy since sort() mutates the original object but the election but be immutable
                   [...questionResult.result]
                     .sort((a, b) => a.count - b.count)
-                    .map((ballotOption) => (
-                      <ListItem key={ballotOption.ballotOption} containerStyle={List.item}>
-                        <View style={List.iconPlaceholder} />
-                        <ListItem.Content style={styles.ballotOptionResult}>
-                          <ListItem.Title>{ballotOption.ballotOption}</ListItem.Title>
-                          <ListItem.Title>{ballotOption.count}</ListItem.Title>
-                        </ListItem.Content>
-                      </ListItem>
-                    ))
+                    .map((ballotOption, idx) => {
+                      const listStyles = List.getListItemStyles(
+                        idx === 0,
+                        idx === questionResult.result.length - 1,
+                      );
+
+                      return (
+                        <ListItem
+                          key={ballotOption.ballotOption}
+                          containerStyle={listStyles}
+                          style={listStyles}>
+                          <View style={List.iconPlaceholder} />
+                          <ListItem.Content style={styles.ballotOptionResult}>
+                            <ListItem.Title style={Typography.base}>
+                              {ballotOption.ballotOption}
+                            </ListItem.Title>
+                            <ListItem.Title style={Typography.base}>
+                              {ballotOption.count}
+                            </ListItem.Title>
+                          </ListItem.Content>
+                        </ListItem>
+                      );
+                    })
                 }
               </ListItem.Accordion>
             );

@@ -12,7 +12,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import { dispatch } from 'core/redux';
-import { Color, Icon, List } from 'core/styles';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
@@ -55,15 +55,17 @@ const NotificationScreen = () => {
     <ScreenWrapper>
       <View style={List.container}>
         <ListItem.Accordion
-          containerStyle={List.item}
+          containerStyle={List.accordionItem}
           content={
             <ListItem.Content>
-              <ListItem.Title>Notifications</ListItem.Title>
+              <ListItem.Title style={[Typography.base, Typography.important]}>
+                Notifications
+              </ListItem.Title>
             </ListItem.Content>
           }
           onPress={() => setShowUnreadNotification(!showUnreadNotification)}
           isExpanded={showUnreadNotification}>
-          {unreadNotifications.map((notification) => {
+          {unreadNotifications.map((notification, idx) => {
             const NotificationType = notificationTypes.find((t) => t.isOfType(notification));
 
             if (!NotificationType) {
@@ -71,10 +73,16 @@ const NotificationScreen = () => {
               throw new Error('Unregistered notification type');
             }
 
+            const listStyle = List.getListItemStyles(
+              idx === 0,
+              idx === unreadNotifications.length - 1,
+            );
+
             return (
               <ListItem
                 key={notification.id}
-                containerStyle={List.item}
+                containerStyle={listStyle}
+                style={listStyle}
                 onPress={() =>
                   navigation.navigate<'Notification'>(
                     STRINGS.navigation_notification_single_notification,
@@ -87,8 +95,8 @@ const NotificationScreen = () => {
                   <NotificationType.Icon size={Icon.size} color={Color.primary} />
                 </View>
                 <ListItem.Content>
-                  <ListItem.Title>{notification.title}</ListItem.Title>
-                  <ListItem.Subtitle>
+                  <ListItem.Title style={Typography.base}>{notification.title}</ListItem.Title>
+                  <ListItem.Subtitle style={Typography.small}>
                     <ReactTimeago date={notification.timestamp * 1000} />
                   </ListItem.Subtitle>
                 </ListItem.Content>
@@ -97,35 +105,54 @@ const NotificationScreen = () => {
           })}
         </ListItem.Accordion>
         <ListItem.Accordion
-          containerStyle={List.item}
+          containerStyle={List.accordionItem}
           content={
             <ListItem.Content>
-              <ListItem.Title>Read Notifications</ListItem.Title>
+              <ListItem.Title style={[Typography.base, Typography.important]}>
+                Read Notifications
+              </ListItem.Title>
             </ListItem.Content>
           }
           onPress={() => setShowReadNotification(!showReadNotification)}
           isExpanded={showReadNotification}>
-          {readNotifications.map((notification) => (
-            <ListItem
-              key={notification.id}
-              containerStyle={List.item}
-              onPress={() =>
-                navigation.navigate<'Notification'>(
-                  STRINGS.navigation_notification_single_notification,
-                  {
-                    notificationId: notification.id,
-                  },
-                )
-              }>
-              <View style={List.iconPlaceholder} />
-              <ListItem.Content>
-                <ListItem.Title>{notification.title}</ListItem.Title>
-                <ListItem.Subtitle>
-                  <ReactTimeago date={notification.timestamp} />
-                </ListItem.Subtitle>
-              </ListItem.Content>
-            </ListItem>
-          ))}
+          {readNotifications.map((notification, idx) => {
+            const NotificationType = notificationTypes.find((t) => t.isOfType(notification));
+
+            if (!NotificationType) {
+              console.error('Unregistered notification type', notification);
+              throw new Error('Unregistered notification type');
+            }
+
+            const listStyle = List.getListItemStyles(
+              idx === 0,
+              idx === readNotifications.length - 1,
+            );
+
+            return (
+              <ListItem
+                key={notification.id}
+                containerStyle={listStyle}
+                style={listStyle}
+                onPress={() =>
+                  navigation.navigate<'Notification'>(
+                    STRINGS.navigation_notification_single_notification,
+                    {
+                      notificationId: notification.id,
+                    },
+                  )
+                }>
+                <View style={List.icon}>
+                  <NotificationType.Icon size={Icon.size} color={Color.primary} />
+                </View>
+                <ListItem.Content>
+                  <ListItem.Title style={Typography.base}>{notification.title}</ListItem.Title>
+                  <ListItem.Subtitle style={Typography.small}>
+                    <ReactTimeago date={notification.timestamp} />
+                  </ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            );
+          })}
         </ListItem.Accordion>
       </View>
     </ScreenWrapper>

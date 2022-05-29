@@ -51,24 +51,31 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
         {election.questions.map((question) => (
           <ListItem.Accordion
             key={question.id}
-            containerStyle={List.item}
+            containerStyle={List.accordionItem}
+            style={List.accordionItem}
             content={
               <ListItem.Content>
-                <ListItem.Title>{question.question}</ListItem.Title>
+                <ListItem.Title style={[Typography.base, Typography.important]}>
+                  {question.question}
+                </ListItem.Title>
               </ListItem.Content>
             }
             onPress={() =>
               setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
             }
             isExpanded={!!isQuestionOpen[question.id]}>
-            {question.ballot_options.map((ballotOption) => (
-              <ListItem key={ballotOption} containerStyle={List.item}>
-                <View style={List.iconPlaceholder} />
-                <ListItem.Content>
-                  <ListItem.Title>{ballotOption}</ListItem.Title>
-                </ListItem.Content>
-              </ListItem>
-            ))}
+            {question.ballot_options.map((ballotOption, idx) => {
+              const listStyles = List.getListItemStyles(idx === 0, idx === ballotOption.length - 1);
+
+              return (
+                <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
+                  <View style={List.iconPlaceholder} />
+                  <ListItem.Content>
+                    <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
+                  </ListItem.Content>
+                </ListItem>
+              );
+            })}
           </ListItem.Accordion>
         ))}
       </View>

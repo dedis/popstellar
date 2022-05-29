@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import RollCallIcon from 'core/components/icons/RollCallIcon';
-import { Color, Icon, List } from 'core/styles';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { RollCallInterface } from '../interface';
@@ -54,8 +54,8 @@ const RollCallListItem = (props: IPropTypes) => {
         <RollCallIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
-        <ListItem.Title>{rollCall.name}</ListItem.Title>
-        <ListItem.Subtitle>
+        <ListItem.Title style={Typography.base}>{rollCall.name}</ListItem.Title>
+        <ListItem.Subtitle style={Typography.small}>
           <Subtitle rollCall={rollCall} />
         </ListItem.Subtitle>
       </ListItem.Content>

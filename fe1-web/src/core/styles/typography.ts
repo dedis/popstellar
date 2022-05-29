@@ -15,6 +15,11 @@ export const base: TextStyle = {
   lineHeight: 26,
 };
 
+export const small: TextStyle = {
+  fontSize: 16,
+  lineHeight: 20,
+};
+
 export const accent: TextStyle = {
   color: accentColor,
 };

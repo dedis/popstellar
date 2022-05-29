@@ -4,7 +4,7 @@ import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { Timestamp } from 'core/objects';
-import { List } from 'core/styles';
+import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EventHooks } from '../hooks';
@@ -55,50 +55,71 @@ const EventList = () => {
   );
 
   return (
-    <View>
+    <View style={List.container}>
       <ListItem.Accordion
-        containerStyle={List.item}
+        containerStyle={List.accordionItem}
+        style={List.accordionItem}
         content={
           <ListItem.Content>
-            <ListItem.Title>
+            <ListItem.Title style={[Typography.base, Typography.important]}>
               {STRINGS.events_list_upcoming} ({futureEvents.length})
             </ListItem.Title>
           </ListItem.Content>
         }
         isExpanded={showUpcoming}
         onPress={() => setShowUpcoming(!showUpcoming)}>
-        {futureEvents.map((event) => (
-          <EventListItem key={event.id} eventId={event.id} eventType={event.eventType} />
+        {futureEvents.map((event, idx) => (
+          <EventListItem
+            key={event.id}
+            eventId={event.id}
+            eventType={event.eventType}
+            isFirstItem={idx === 0}
+            isLastItem={idx === futureEvents.length - 1}
+          />
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={List.item}
+        containerStyle={List.accordionItem}
+        style={List.accordionItem}
         content={
           <ListItem.Content>
-            <ListItem.Title>
+            <ListItem.Title style={[Typography.base, Typography.important]}>
               {STRINGS.events_list_current} ({currentEvents.length})
             </ListItem.Title>
           </ListItem.Content>
         }
         isExpanded={showCurrent}
         onPress={() => setShowCurrent(!showCurrent)}>
-        {currentEvents.map((event) => (
-          <EventListItem key={event.id} eventId={event.id} eventType={event.eventType} />
+        {currentEvents.map((event, idx) => (
+          <EventListItem
+            key={event.id}
+            eventId={event.id}
+            eventType={event.eventType}
+            isFirstItem={idx === 0}
+            isLastItem={idx === currentEvents.length - 1}
+          />
         ))}
       </ListItem.Accordion>
       <ListItem.Accordion
-        containerStyle={List.item}
+        containerStyle={List.accordionItem}
+        style={List.accordionItem}
         content={
           <ListItem.Content>
-            <ListItem.Title>
+            <ListItem.Title style={[Typography.base, Typography.important]}>
               {STRINGS.events_list_past} ({pastEvents.length})
             </ListItem.Title>
           </ListItem.Content>
         }
         isExpanded={showPast}
         onPress={() => setShowPast(!showPast)}>
-        {pastEvents.map((event) => (
-          <EventListItem key={event.id} eventId={event.id} eventType={event.eventType} />
+        {pastEvents.map((event, idx) => (
+          <EventListItem
+            key={event.id}
+            eventId={event.id}
+            eventType={event.eventType}
+            isFirstItem={idx === 0}
+            isLastItem={idx === pastEvents.length - 1}
+          />
         ))}
       </ListItem.Accordion>
     </View>

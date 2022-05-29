@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+
+import ScreenWrapper from 'core/components/ScreenWrapper';
 
 import { LaoHooks } from '../hooks';
 
@@ -11,9 +12,9 @@ const AttendeeEventsScreen = () => {
   const EventList = LaoHooks.useEventListComponent();
 
   return (
-    <ScrollView>
+    <ScreenWrapper>
       <EventList />
-    </ScrollView>
+    </ScreenWrapper>
   );
 };
 

@@ -7,7 +7,7 @@ import { ListItem } from 'react-native-elements';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { List } from 'core/styles';
+import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { EventHooks } from '../hooks';
@@ -21,7 +21,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 const EventListItem = (props: IPropTypes) => {
-  const { eventId, eventType } = props;
+  const { eventId, eventType, isFirstItem, isLastItem } = props;
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
@@ -34,7 +34,8 @@ const EventListItem = (props: IPropTypes) => {
 
   return EventType ? (
     <ListItem
-      containerStyle={List.item}
+      containerStyle={List.getListItemStyles(isFirstItem, isLastItem)}
+      style={List.getListItemStyles(isFirstItem, isLastItem)}
       bottomDivider
       onPress={() =>
         navigation.push(STRINGS.navigation_app_lao, {
@@ -51,9 +52,10 @@ const EventListItem = (props: IPropTypes) => {
       <EventType.ListItemComponent eventId={eventId} isOrganizer={isOrganizer} />
     </ListItem>
   ) : (
-    <ListItem containerStyle={List.item} bottomDivider>
+    <ListItem containerStyle={[List.item, List.firstItem, List.lastItem]} bottomDivider>
       <ListItem.Content>
-        <ListItem.Title>{`Event type '${eventType}' was not registered!`}</ListItem.Title>
+        <ListItem.Title
+          style={Typography.base}>{`Event type '${eventType}' was not registered!`}</ListItem.Title>
       </ListItem.Content>
     </ListItem>
   );
@@ -62,6 +64,8 @@ const EventListItem = (props: IPropTypes) => {
 const propTypes = {
   eventId: PropTypes.string.isRequired,
   eventType: PropTypes.string.isRequired,
+  isFirstItem: PropTypes.bool.isRequired,
+  isLastItem: PropTypes.bool.isRequired,
 };
 EventListItem.propTypes = propTypes;
 

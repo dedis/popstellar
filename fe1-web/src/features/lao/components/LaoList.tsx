@@ -14,9 +14,14 @@ const LaoList = () => {
   const laos = useSelector(selectLaosList);
 
   return (
-    <View style={[List.container, List.top]}>
-      {laos.map((lao) => (
-        <LaoItem key={lao.id.valueOf()} lao={lao} />
+    <View style={List.container}>
+      {laos.map((lao, idx) => (
+        <LaoItem
+          key={lao.id.valueOf()}
+          lao={lao}
+          isFirstItem={idx === 0}
+          isLastItem={idx === laos.length - 1}
+        />
       ))}
     </View>
   );

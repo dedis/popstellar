@@ -16,6 +16,8 @@ export const inactive = '#8E8E8E';
 
 export const transparent = 'transparent';
 
+export const background = 'rgb(242, 242, 242)';
+
 export const blue = '#2196F3';
 export const red = 'red';
 export const black = 'black';

@@ -1,9 +1,39 @@
 import { ViewStyle } from 'react-native';
 
+import { radius } from './border';
+import { contrast, background } from './color';
 import { contentSpacing, x1 } from './spacing';
 
 export const item: ViewStyle = {
-  paddingHorizontal: contentSpacing,
+  backgroundColor: contrast,
+};
+
+export const accordionItem: ViewStyle = {
+  backgroundColor: background,
+  paddingLeft: 0,
+};
+
+export const firstItem: ViewStyle = {
+  borderTopLeftRadius: radius,
+  borderTopRightRadius: radius,
+};
+
+export const lastItem: ViewStyle = {
+  borderBottomLeftRadius: radius,
+  borderBottomRightRadius: radius,
+};
+
+export const getListItemStyles = (isFirstItem: boolean, isLastItem: boolean) => {
+  const listItemStyles = [item];
+
+  if (isFirstItem) {
+    listItemStyles.push(firstItem);
+  }
+  if (isLastItem) {
+    listItemStyles.push(lastItem);
+  }
+
+  return listItemStyles;
 };
 
 /**
@@ -19,7 +49,7 @@ export const top: ViewStyle = {
 };
 
 export const container: ViewStyle = {
-  marginHorizontal: -contentSpacing,
+  borderRadius: radius,
 };
 
 export const icon: ViewStyle = {

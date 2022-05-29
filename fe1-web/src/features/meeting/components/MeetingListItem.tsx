@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 import MeetingIcon from 'core/components/icons/MeetingIcon';
 import { Timestamp } from 'core/objects';
-import { Color, Icon, List } from 'core/styles';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { MeetingInterface } from '../interface';
@@ -50,8 +50,8 @@ const MeetingListItem = (props: IPropTypes) => {
         <MeetingIcon color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
-        <ListItem.Title>{meeting.name}</ListItem.Title>
-        <ListItem.Subtitle>{getSubtitle(meeting)}</ListItem.Subtitle>
+        <ListItem.Title style={Typography.base}>{meeting.name}</ListItem.Title>
+        <ListItem.Subtitle style={Typography.small}>{getSubtitle(meeting)}</ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />
     </>
