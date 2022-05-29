@@ -98,6 +98,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    // We handle the individual view of the recycler differently if it is a header or an event
     if (holder instanceof HeaderViewHolder) {
       EventCategory eventCategory = getHeaderCategory(position);
       HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -117,13 +118,19 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
           break;
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
+
+      // Expansion/Collapse part
       headerLayout.setOnClickListener(
           view -> {
             headerLayout.setEnabled(false);
+
             boolean value = expanded[eventCategory.ordinal()];
             expanded[eventCategory.ordinal()] = !value;
             LaoDetailAnimation.rotateExpand(expandIcon, !value);
+
+            // When we expand/collapse the items changed so we need to recompute the view
             notifyDataSetChanged();
+
             headerLayout.setEnabled(true);
           });
     } else if (holder instanceof EventViewHolder) {
@@ -133,6 +140,10 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
   }
 
+  /**
+   * Handle event content, that is setting icon based on RC/Election type, setting the name And
+   * setting an appropriate listener based on the type
+   */
   private void handleEventContent(EventViewHolder eventViewHolder, Event event) {
     if (event.getType().equals(EventType.ELECTION)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
@@ -158,6 +169,11 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
   }
 
+  /**
+   * Get the event at the indicated position. The computations are there to account for
+   * expanded/collapsed sections and the fact that some elements are headers The caller must make
+   * sure the position is occupied by an event or this will throw an exception
+   */
   private Event getEvent(int position) {
     int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
     int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
@@ -182,6 +198,11 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     throw new IllegalStateException("no event matches");
   }
 
+  /**
+   * Get the header at the indicated position. The computations are there to account for
+   * expanded/collapsed sections and the fact that some elements are headers The caller must make
+   * sure the position is occupied by a header or this will throw an exception
+   */
   private EventCategory getHeaderCategory(int position) {
     int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
     int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
@@ -222,7 +243,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     if (expanded[PAST.ordinal()]) {
       eventAccumulator += nbrOfPastEvents;
     }
-    return eventAccumulator + 3; // The number of events + the 3 sub-headers
+    return eventAccumulator + 3; // The number expanded of events + the 3 sub-headers
   }
 
   @Override
@@ -256,10 +277,11 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   private void setList(List<Event> events) {
     for (EventCategory category : EventCategory.values()) {
       for (Event event : eventsMap.get(category)) {
+        // When we get new events we remove observers of old ones
         event.getState().removeObservers(lifecycleOwner);
       }
     }
-    events.forEach(
+    events.forEach( // Adding a listener to each event's state, when changed we update the UI
         event -> event.getState().observe(lifecycleOwner, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
