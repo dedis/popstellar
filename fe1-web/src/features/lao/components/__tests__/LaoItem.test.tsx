@@ -19,7 +19,9 @@ describe('LaoItem', () => {
 
     const component = render(
       <Provider store={mockStore}>
-        <MockNavigator component={() => <LaoItem lao={mockLao} />} />
+        <MockNavigator
+          component={() => <LaoItem lao={mockLao} isFirstItem={false} isLastItem={false} />}
+        />
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
@@ -34,7 +36,9 @@ describe('LaoItem', () => {
 
     const component = render(
       <Provider store={mockStore}>
-        <MockNavigator component={() => <LaoItem lao={mockLao} />} />
+        <MockNavigator
+          component={() => <LaoItem lao={mockLao} isFirstItem={false} isLastItem={false} />}
+        />
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
@@ -47,7 +51,9 @@ describe('LaoItem', () => {
 
     const component = render(
       <Provider store={mockStore}>
-        <MockNavigator component={() => <LaoItem lao={mockLao} />} />
+        <MockNavigator
+          component={() => <LaoItem lao={mockLao} isFirstItem={false} isLastItem={false} />}
+        />
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
