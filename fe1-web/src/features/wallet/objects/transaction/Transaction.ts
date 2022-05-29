@@ -7,6 +7,7 @@ import {
   TransactionOutputJSON,
   TransactionOutputState,
 } from './TransactionOutput';
+import { PostTransaction } from "../../network/messages";
 
 export interface TransactionJSON {
   version: number;
@@ -242,6 +243,32 @@ export class Transaction {
           };
         }),
     );
+  };
+
+  /**
+   * Verifies the validity of the transaction
+   * by checking the transaction inputs signature
+   * @param transaction the transaction to verify
+   * @param organizerPublicKey the organizer's public key of the lao
+   */
+  public static isTransactionValid = (transaction: Transaction, organizerPublicKey: PublicKey) => {
+    const isCoinbase = transaction.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
+
+    // Reconstruct data signed on
+    const dataString = Transaction.concatenateTxData(
+      transaction.inputs.map((input) => input.toState()),
+      transaction.outputs.map((output) => output.toState()),
+    );
+
+    return !transaction.inputs.some((input) => {
+      if (isCoinbase && input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
+        return true;
+      }
+      return !input.script.signature.verify(
+        input.script.publicKey,
+        Base64UrlData.encode(dataString),
+      );
+    });
   };
 
   /**

@@ -1,9 +1,9 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, Hash, PublicKey } from "core/objects";
-import STRINGS from 'resources/strings';
+import { Hash } from 'core/objects';
 
 import { Transaction } from '../objects/transaction';
 import { PostTransaction } from './messages';
+import { WalletHooks } from "../hooks";
 
 /**
  * Handle a PostTransaction message.
@@ -35,31 +35,3 @@ export const handleTransactionPost =
     addTransaction(msg.laoId, tx.rc_id, transaction);
     return true;
   };
-
-/**
- * Verifies the validity of the information contained in the message
- * by checking the transaction inputs signature
- * @param transactionMessage the transaction message to verify
- * @param organizerPublicKey the organizer's public key of the lao
- */
-const isTransactionValid = (transactionMessage: PostTransaction, organizerPublicKey: PublicKey) => {
-  const transaction = Transaction.fromJSON(
-    transactionMessage.transaction,
-    transactionMessage.transaction_id.valueOf(),
-  );
-
-  const isCoinbase = transaction.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
-
-  // Reconstruct data signed on
-  const dataString = Transaction.concatenateTxData(
-    transaction.inputs.map((input) => input.toState()),
-    transaction.outputs.map((output) => output.toState()),
-  );
-
-  return !transaction.inputs.some((input) => {
-    if (isCoinbase && input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
-      return true;
-    }
-    return !input.script.signature.verify(input.script.publicKey, Base64UrlData.encode(dataString));
-  });
-};
