@@ -34,6 +34,8 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
+  private final int ONE_HOUR = 1000 * 60 * 60;
+
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
@@ -59,7 +61,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   public void setDateAndTimeView(View view) {
     long currentMillis = System.currentTimeMillis();
-    long suggestedEndMillis = currentMillis + 1000 * 60 * 60; // Adding one hour
+    long suggestedEndMillis = currentMillis + ONE_HOUR; // Adding one hour
     startDate = new GregorianCalendar();
     startTime = new GregorianCalendar();
     Date dCurrent =
