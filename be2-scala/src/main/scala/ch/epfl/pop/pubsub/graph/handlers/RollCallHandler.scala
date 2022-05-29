@@ -38,6 +38,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   override final val dbActor: AskableActorRef = dbRef
 
   private val unknownAnswer: String = "Database actor returned an unknown answer"
+  private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     rpcRequest.getParamsMessage match {
@@ -66,7 +67,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         }
       case _ =>
         Right(
-          PipelineError(ErrorCodes.SERVER_ERROR.id, "The server is doing something unexpected", rpcRequest.getId)
+          PipelineError(ErrorCodes.SERVER_ERROR.id, serverUnexpectedAnswer, rpcRequest.getId)
         )
     }
   }
@@ -96,7 +97,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         }
       case _ =>
         Right(
-          PipelineError(ErrorCodes.SERVER_ERROR.id, "The server is doing something unexpected", rpcRequest.getId)
+          PipelineError(ErrorCodes.SERVER_ERROR.id, serverUnexpectedAnswer, rpcRequest.getId)
         )
     }
   }
@@ -117,7 +118,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         }
       case _ =>
         Right(
-          PipelineError(ErrorCodes.SERVER_ERROR.id, "The server is doing something unexpected", rpcRequest.getId)
+          PipelineError(ErrorCodes.SERVER_ERROR.id, serverUnexpectedAnswer, rpcRequest.getId)
         )
     }
   }
