@@ -15,8 +15,16 @@ interface DigitalCashReducerState {
    */
   balances: Record<string, number>;
 
+  /**
+   * Every transaction received for this roll call
+   */
   transactions: TransactionState[];
+
+  /**
+   * Transactions by their transaction hash (transaction id)
+   */
   transactionsByHash: Record<string, TransactionState>;
+
   /**
    * A mapping between public key hashes and a set of the transactions which contain this hash
    * in one or more of their TxOuts
@@ -70,6 +78,9 @@ const digitalCashSlice = createSlice({
       ) {
         const { laoId, rollCallId, transactionMessage } = action.payload;
 
+        /**
+         * If state is empty for given lao or roll call, we should create the initial objects
+         */
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
             byRCId: {},
@@ -90,7 +101,10 @@ const digitalCashSlice = createSlice({
         rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
         rollCallState.transactions.push(transactionMessage);
 
-        // Invariant: Every inputs of a public key used in an input will be spent in the outputs
+        /**
+         * Invariant for the digital cash implementation:
+         * Every input of a public key used in an input will be spent in the outputs
+         */
         transactionMessage.inputs.forEach((input) => {
           const pubHash = Hash.fromString(input.script.publicKey).valueOf();
           rollCallState.balances[pubHash] = 0;
@@ -124,6 +138,12 @@ export default {
 export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
 
+/**
+ * Balance selector
+ * @param laoId the lao in which to search for the balance
+ * @param rollCallId the roll call in which to search for the balance
+ * @param publicKey the public key that possesses this balance
+ */
 export const makeBalanceSelector = (laoId: Hash, rollCallId: Hash, publicKey: string) =>
   createSelector(
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.byRCId,
