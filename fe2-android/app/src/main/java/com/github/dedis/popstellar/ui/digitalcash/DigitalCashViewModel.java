@@ -22,7 +22,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -83,18 +84,22 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   private final LiveData<List<Lao>> mLAOs;
 
+  private final Wallet wallet;
+
   @Inject
   public DigitalCashViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    this.wallet = wallet;
     mLAOs = LiveDataReactiveStreams.fromPublisher(this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
     //laoRepository.getLaoById().putIfAbsent(mLaoId.getValue(), new LAOState());
     disposables = new CompositeDisposable();
@@ -170,6 +175,38 @@ public class DigitalCashViewModel extends AndroidViewModel {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
+  /** Post Transaction Test Try To follow the message */
+  public void postTransactionTest(Map<String, String> PublicKeyAmount, Long time)
+      throws KeyException {
+    Log.d(TAG, "Post a transaction Test");
+    Log.d(TAG, getCurrentLao().toString());
+    Log.d(TAG, keyManager.getMainKeyPair().toString());
+    KeyPair the_keys = keyManager.getMainKeyPair();
+
+    List<Output> outputs =
+        Collections.singletonList(
+            new Output((long) 0, new ScriptOutput(TYPE, the_keys.getPublicKey().computeHash())));
+    String transaction_hash = "-";
+    int index = 0;
+
+    String sig =
+        Transaction.computeSigOutputsPairTxOutHashAndIndex(
+            the_keys, outputs, Collections.singletonMap(transaction_hash, index));
+    Transaction transaction =
+        new Transaction(
+            VERSION,
+            Collections.singletonList(
+                new Input(
+                    transaction_hash,
+                    index,
+                    new ScriptInput(TYPE, the_keys.getPublicKey().getEncoded(), sig))),
+            outputs,
+            time);
+
+    PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
+    Log.d(TAG, postTransactionCoin.toString());
+  }
+
   /**
    * Post a transaction to your channel
    *
@@ -207,15 +244,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       String transaction_hash = "";
       int index = 0;
 
-      //if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
+      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
         transaction_hash = "somehash";
-           // getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
         index = '0';
-            //getCurrentLao()
-               // .getTransactionByUser()
-               // .get(token.getPublicKey())
-               // .getIndexTransaction(token.getPublicKey());
-      //}
+        getCurrentLao()
+            .getTransactionByUser()
+            .get(token.getPublicKey())
+            .getIndexTransaction(token.getPublicKey());
+      }
       String sig =
           Transaction.computeSigOutputsPairTxOutHashAndIndex(
               token, outputs, Collections.singletonMap(transaction_hash, index));

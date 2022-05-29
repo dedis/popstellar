@@ -5,9 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,12 +13,12 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -62,15 +60,28 @@ public class DigitalCashIssueFragment extends Fragment {
 
     setupSendCoinButton();
 
-    mViewModel.getpostTransactionEvent().observe(
-         getViewLifecycleOwner(),
-         booleanEvent -> {
-           Boolean event = booleanEvent.getContentIfNotHandled();
-           if (event != null){
-             postTransaction();
-           }
-         }
-    );
+    mViewModel
+        .getpostTransactionEvent()
+        .observe(
+            getViewLifecycleOwner(),
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
+                Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+                String current_public_key_selected =
+                    String.valueOf(mBinding.digitalCashIssueSpinner.getPlaceholderText());
+                Log.d(
+                    this.getClass().toString(),
+                    "place holder text is " + current_public_key_selected);
+                try {
+                  postTransaction(
+                      Collections.singletonMap(current_public_key_selected, current_amount));
+                } catch (KeyException e) {
+                  e.printStackTrace();
+                }
+              }
+            });
 
     List<String> myArray = mViewModel.getAttendeesFromTheRollCallList();
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
@@ -84,14 +95,15 @@ public class DigitalCashIssueFragment extends Fragment {
   }
 
   /// ** Function that permits to post transaction */
-  private void postTransaction() {
+  private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
     //if (mBinding.digitalCashIssueAmount.getText() == null) {
       //Toast.makeText(this.requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
     //} else {
       //String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
       Log.d(this.getClass().toString(), "Try to send a transaction");
-      Log.d(this.getClass().toString(), "The amount in our edit text is ");
-      //long amount = 0 ;
+    Log.d(this.getClass().toString(), PublicKeyAmount.entrySet().toString());
+    // long amount = 0 ;
+    mViewModel.postTransactionTest(PublicKeyAmount, Instant.now().getEpochSecond());
       //mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount),
           //Instant.now().getEpochSecond());
    // }
