@@ -115,7 +115,7 @@ const digitalCashSlice = createSlice({
 
         transactionMessage.outputs.forEach((output) => {
           console.log(
-            `Balance is = ${rollCallState.balances[output.script.publicKeyHash]} for ${
+            `Balance was = ${rollCallState.balances[output.script.publicKeyHash]} for ${
               output.script.publicKeyHash
             }`,
           );
@@ -154,7 +154,7 @@ export const makeBalanceSelector = (laoId: Hash, rollCallId: Hash, publicKey: st
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.byRCId,
     (byRCId: Record<string, DigitalCashReducerState> | undefined) => {
       if (byRCId && byRCId[rollCallId.valueOf()]) {
-        return byRCId[rollCallId.valueOf()].balances[Hash.fromString(publicKey).valueOf()] || 0;
+        return byRCId[rollCallId.valueOf()].balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
       }
       return 0;
     },
