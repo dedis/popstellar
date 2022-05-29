@@ -78,7 +78,7 @@ const digitalCashSlice = createSlice({
         };
       }
 
-      if (!(rollCallId in state.byLaoId[laoId])) {
+      if (!(rollCallId in state.byLaoId[laoId].byRCId)) {
         state.byLaoId[laoId].byRCId[rollCallId] = {
           balances: {},
           transactions: [],
@@ -105,11 +105,6 @@ const digitalCashSlice = createSlice({
       });
 
       transactionMessage.outputs.forEach((output) => {
-        console.log(
-          `Balance was = ${rollCallState.balances[output.script.publicKeyHash.valueOf()]} for ${
-            output.script.publicKeyHash
-          }`,
-        );
         if (!rollCallState.balances[output.script.publicKeyHash.valueOf()]) {
           rollCallState.balances[output.script.publicKeyHash.valueOf()] = 0;
         }

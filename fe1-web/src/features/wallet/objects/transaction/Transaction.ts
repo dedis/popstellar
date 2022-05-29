@@ -7,7 +7,6 @@ import {
   TransactionOutputJSON,
   TransactionOutputState,
 } from './TransactionOutput';
-import { PostTransaction } from "../../network/messages";
 
 export interface TransactionJSON {
   version: number;
