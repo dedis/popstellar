@@ -434,7 +434,7 @@ exports[`EventRollCall should correctly render 1`] = `
                           <View
                             style={
                               Object {
-                                "marginHorizontal": -48,
+                                "borderRadius": 16,
                               }
                             }
                           >
@@ -443,11 +443,11 @@ exports[`EventRollCall should correctly render 1`] = `
                                 style={
                                   Object {
                                     "alignItems": "center",
-                                    "backgroundColor": "#ffffff",
+                                    "backgroundColor": "rgb(242, 242, 242)",
                                     "borderColor": "#bcbbc1",
                                     "flexDirection": "row",
                                     "padding": 14,
-                                    "paddingHorizontal": 48,
+                                    "paddingLeft": 0,
                                   }
                                 }
                                 testID="padView"
@@ -529,8 +529,11 @@ exports[`EventRollCall should correctly render 1`] = `
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
-                                        "color": "#242424",
-                                        "fontSize": 17,
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "fontWeight": "bold",
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
                                       }
                                     }
                                     testID="listItemTitle"
@@ -592,16 +595,29 @@ exports[`EventRollCall should correctly render 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
-                                      "backgroundColor": "#ffffff",
+                                      "backgroundColor": "#fff",
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
-                                      "paddingHorizontal": 48,
                                     }
                                   }
                                   testID="padView"
@@ -699,8 +715,10 @@ exports[`EventRollCall should correctly render 1`] = `
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
-                                          "color": "#242424",
-                                          "fontSize": 17,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
                                         }
                                       }
                                       testID="listItemTitle"
@@ -710,16 +728,29 @@ exports[`EventRollCall should correctly render 1`] = `
                                   </View>
                                 </View>
                               </View>
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
-                                      "backgroundColor": "#ffffff",
+                                      "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
-                                      "paddingHorizontal": 48,
                                     }
                                   }
                                   testID="padView"
@@ -817,8 +848,10 @@ exports[`EventRollCall should correctly render 1`] = `
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
-                                          "color": "#242424",
-                                          "fontSize": 17,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
                                         }
                                       }
                                       testID="listItemTitle"

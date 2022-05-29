@@ -314,7 +314,16 @@ exports[`AttendeeScreen renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView>
+                      <RCTScrollView
+                        collapsable={false}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
+                        style={
+                          Object {
+                            "padding": 48,
+                          }
+                        }
+                      >
                         <View />
                       </RCTScrollView>
                     </View>

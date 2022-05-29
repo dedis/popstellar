@@ -314,7 +314,13 @@ exports[`EventList renders correctly for attendees 1`] = `
                         }
                       }
                     >
-                      <View>
+                      <View
+                        style={
+                          Object {
+                            "borderRadius": 16,
+                          }
+                        }
+                      >
                         <View
                           accessible={true}
                           focusable={true}
@@ -325,16 +331,22 @@ exports[`EventList renders correctly for attendees 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -416,8 +428,11 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -492,16 +507,22 @@ exports[`EventList renders correctly for attendees 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -583,8 +604,11 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -659,16 +683,22 @@ exports[`EventList renders correctly for attendees 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -750,8 +780,11 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -826,17 +859,29 @@ exports[`EventList renders correctly for attendees 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -927,8 +972,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -989,17 +1036,23 @@ exports[`EventList renders correctly for attendees 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -1090,8 +1143,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -1103,7 +1158,8 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -1145,17 +1201,29 @@ exports[`EventList renders correctly for attendees 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -1246,8 +1314,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -1259,7 +1329,8 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -1630,7 +1701,13 @@ exports[`EventList renders correctly for organizers 1`] = `
                         }
                       }
                     >
-                      <View>
+                      <View
+                        style={
+                          Object {
+                            "borderRadius": 16,
+                          }
+                        }
+                      >
                         <View
                           accessible={true}
                           focusable={true}
@@ -1641,16 +1718,22 @@ exports[`EventList renders correctly for organizers 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -1732,8 +1815,11 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -1830,16 +1916,22 @@ exports[`EventList renders correctly for organizers 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -1921,8 +2013,11 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -2019,16 +2114,22 @@ exports[`EventList renders correctly for organizers 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "paddingLeft": 0,
+                            }
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "rgb(242, 242, 242)",
                                 "borderColor": "#bcbbc1",
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
+                                "paddingLeft": 0,
                               }
                             }
                             testID="padView"
@@ -2110,8 +2211,11 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -2208,17 +2312,29 @@ exports[`EventList renders correctly for organizers 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -2328,8 +2444,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2412,17 +2530,23 @@ exports[`EventList renders correctly for organizers 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -2532,8 +2656,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2545,7 +2671,8 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2609,17 +2736,29 @@ exports[`EventList renders correctly for organizers 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
+                              ]
+                            }
                           >
                             <View
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#ffffff",
+                                  "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
                                   "padding": 14,
-                                  "paddingHorizontal": 48,
                                 }
                               }
                               testID="padView"
@@ -2729,8 +2868,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 17,
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2742,7 +2883,8 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"

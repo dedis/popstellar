@@ -316,14 +316,9 @@ exports[`LaoList renders correctly with no item 1`] = `
                     >
                       <View
                         style={
-                          Array [
-                            Object {
-                              "marginHorizontal": -48,
-                            },
-                            Object {
-                              "marginTop": -48,
-                            },
-                          ]
+                          Object {
+                            "borderRadius": 16,
+                          }
                         }
                       />
                     </View>
@@ -655,14 +650,9 @@ exports[`LaoList renders correctly with one item 1`] = `
                     >
                       <View
                         style={
-                          Array [
-                            Object {
-                              "marginHorizontal": -48,
-                            },
-                            Object {
-                              "marginTop": -48,
-                            },
-                          ]
+                          Object {
+                            "borderRadius": 16,
+                          }
                         }
                       >
                         <View
@@ -675,17 +665,35 @@ exports[`LaoList renders correctly with one item 1`] = `
                           onResponderTerminate={[Function]}
                           onResponderTerminationRequest={[Function]}
                           onStartShouldSetResponder={[Function]}
+                          style={
+                            Array [
+                              Object {
+                                "backgroundColor": "#fff",
+                              },
+                              Object {
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                              },
+                              Object {
+                                "borderBottomLeftRadius": 16,
+                                "borderBottomRightRadius": 16,
+                              },
+                            ]
+                          }
                         >
                           <View
                             style={
                               Object {
                                 "alignItems": "center",
-                                "backgroundColor": "#ffffff",
+                                "backgroundColor": "#fff",
+                                "borderBottomLeftRadius": 16,
+                                "borderBottomRightRadius": 16,
                                 "borderBottomWidth": 0.5,
                                 "borderColor": "#bcbbc1",
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
                                 "flexDirection": "row",
                                 "padding": 14,
-                                "paddingHorizontal": 48,
                               }
                             }
                             testID="padView"
@@ -767,8 +775,10 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
-                                    "color": "#242424",
-                                    "fontSize": 17,
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                                 testID="listItemTitle"
@@ -780,7 +790,8 @@ exports[`LaoList renders correctly with one item 1`] = `
                                   Object {
                                     "backgroundColor": "transparent",
                                     "color": "#242424",
-                                    "fontSize": 15,
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
                                   }
                                 }
                                 testID="listItemTitle"
@@ -794,7 +805,8 @@ exports[`LaoList renders correctly with one item 1`] = `
                                   Object {
                                     "backgroundColor": "transparent",
                                     "color": "#242424",
-                                    "fontSize": 15,
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
                                   }
                                 }
                                 testID="listItemTitle"

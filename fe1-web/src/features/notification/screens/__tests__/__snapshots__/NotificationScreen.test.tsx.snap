@@ -328,7 +328,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                           <View
                             style={
                               Object {
-                                "marginHorizontal": -48,
+                                "borderRadius": 16,
                               }
                             }
                           >
@@ -347,11 +347,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "alignItems": "center",
-                                    "backgroundColor": "#ffffff",
+                                    "backgroundColor": "rgb(242, 242, 242)",
                                     "borderColor": "#bcbbc1",
                                     "flexDirection": "row",
                                     "padding": 14,
-                                    "paddingHorizontal": 48,
+                                    "paddingLeft": 0,
                                   }
                                 }
                                 testID="padView"
@@ -433,8 +433,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
-                                        "color": "#242424",
-                                        "fontSize": 17,
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "fontWeight": "bold",
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
                                       }
                                     }
                                     testID="listItemTitle"
@@ -506,16 +509,34 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 onResponderTerminate={[Function]}
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
                               >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
-                                      "backgroundColor": "#ffffff",
+                                      "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
-                                      "paddingHorizontal": 48,
                                     }
                                   }
                                   testID="padView"
@@ -613,8 +634,10 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
-                                          "color": "#242424",
-                                          "fontSize": 17,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
                                         }
                                       }
                                       testID="listItemTitle"
@@ -626,7 +649,8 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         Object {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
-                                          "fontSize": 15,
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
                                         }
                                       }
                                       testID="listItemTitle"
@@ -657,11 +681,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "alignItems": "center",
-                                    "backgroundColor": "#ffffff",
+                                    "backgroundColor": "rgb(242, 242, 242)",
                                     "borderColor": "#bcbbc1",
                                     "flexDirection": "row",
                                     "padding": 14,
-                                    "paddingHorizontal": 48,
+                                    "paddingLeft": 0,
                                   }
                                 }
                                 testID="padView"
@@ -743,8 +767,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
-                                        "color": "#242424",
-                                        "fontSize": 17,
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "fontWeight": "bold",
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
                                       }
                                     }
                                     testID="listItemTitle"
@@ -816,16 +843,34 @@ exports[`NotificationScreen renders correctly 1`] = `
                                 onResponderTerminate={[Function]}
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
                               >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
-                                      "backgroundColor": "#ffffff",
+                                      "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
-                                      "paddingHorizontal": 48,
                                     }
                                   }
                                   testID="padView"
@@ -836,7 +881,9 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         "marginRight": 16,
                                       }
                                     }
-                                  />
+                                  >
+                                    <Text />
+                                  </View>
                                   <View
                                     style={
                                       Object {
@@ -921,8 +968,10 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
-                                          "color": "#242424",
-                                          "fontSize": 17,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
                                         }
                                       }
                                       testID="listItemTitle"
@@ -934,7 +983,8 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         Object {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
-                                          "fontSize": 15,
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
                                         }
                                       }
                                       testID="listItemTitle"
