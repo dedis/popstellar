@@ -16,17 +16,16 @@ const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
  * @param from the popToken to send it with
  * @param to the destination public key
  * @param amount the value of the transaction
- * @param laoId the lao id of the roll call
  * @param rcId the id of the roll call in which to send the transaction
+ * @param laoId the id of the lao in which to send the transaction
  */
 export function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
-  laoId: Hash,
   rcId: Hash,
+  laoId: Hash,
 ): Promise<void> {
-
   const transactionStates = DigitalCashStore.getTransactionsByPublicKey(
     laoId.valueOf(),
     rcId.valueOf(),
@@ -52,11 +51,10 @@ export function requestSendTransaction(
     transaction: transaction.toJSON(),
     rc_id: rcId,
   });
-  const lao: Lao = OpenedLaoStore.get();
 
   console.log(`Sending a transaction with id: ${transaction.transactionId.valueOf()}`);
 
-  return publish(getCoinChannel(lao.id), postTransactionMessage);
+  return publish(getCoinChannel(laoId), postTransactionMessage);
 }
 
 /**
@@ -66,12 +64,14 @@ export function requestSendTransaction(
  * @param to the destination public key
  * @param amount the value of the transaction
  * @param rcId the roll call id in which the transaction happens
+ * @param laoId the lao id in which to send the transaction
  */
 export function requestCoinbaseTransaction(
   organizerKP: KeyPair,
   to: PublicKey,
   amount: number,
   rcId: Hash,
+  laoId: Hash,
 ): Promise<void> {
   const transaction = Transaction.createCoinbase(organizerKP, to, amount);
 
@@ -81,9 +81,7 @@ export function requestCoinbaseTransaction(
     rc_id: rcId,
   });
 
-  const lao: Lao = OpenedLaoStore.get();
-
   console.log(`Sending a coinbase transaction with id: ${transaction.transactionId.valueOf()}`);
 
-  return publish(getCoinChannel(lao.id), postTransactionMessage);
+  return publish(getCoinChannel(laoId), postTransactionMessage);
 }

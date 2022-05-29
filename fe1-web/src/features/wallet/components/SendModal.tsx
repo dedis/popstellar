@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Button, Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Button, Modal, StyleSheet, Switch, Text, View, ViewStyle } from "react-native";
 import { Input } from 'react-native-elements';
 
 import { Typography } from 'core/styles';
@@ -42,12 +42,13 @@ const styles = StyleSheet.create({
  */
 const SendModal = (props: IPropTypes) => {
   const { modalVisible, setModalVisible, send } = props;
+  const [isCoinbase, setIsCoinbase] = useState(false);
   const [receiverPK, setReceiverPK] = useState('');
   const [amount, setAmount] = useState(0);
 
   const switchModalVisibility = () => setModalVisible(!modalVisible);
   const onPressSend = () => {
-    send(receiverPK, amount);
+    send(receiverPK, amount, isCoinbase);
   };
   return (
     <Modal animationType="slide" visible={modalVisible} onRequestClose={switchModalVisibility}>
@@ -68,6 +69,13 @@ const SendModal = (props: IPropTypes) => {
                 style={styles.input}
                 label={STRINGS.wallet_send_amount_label}
                 onChangeText={(text) => setAmount(Number.parseInt(text, 10))}
+              />
+              <Switch
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={isCoinbase ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={() => setIsCoinbase(!isCoinbase)}
+                value={isCoinbase}
               />
               <Button title={STRINGS.wallet_send_title} onPress={onPressSend} />
             </View>

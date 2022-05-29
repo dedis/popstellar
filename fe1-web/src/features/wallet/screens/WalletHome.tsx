@@ -13,7 +13,7 @@ import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
 import { WalletHooks } from '../hooks';
-import { requestCoinbaseTransaction } from '../network';
+import { requestCoinbaseTransaction, requestSendTransaction } from '../network';
 import * as Wallet from '../objects';
 import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -144,17 +144,32 @@ const WalletHome = () => {
       <SendModal
         modalVisible={sendModalVisible}
         setModalVisible={setSendModalVisible}
-        send={(receiver: string, amount: number) => {
-          requestCoinbaseTransaction(
-            KeyPairStore.get(),
-            new PublicKey(receiver),
-            amount,
-            tokens![selectedTokenIndex].rollCallId,
-          )
-            .then(() => toast.show('Sent coinbase transaction'))
-            .catch((err) => {
-              console.error('Failed sending the transaction : ', err);
-            });
+        send={(receiver: string, amount: number, isCoinbase: boolean) => {
+          if (isCoinbase) {
+            requestCoinbaseTransaction(
+              KeyPairStore.get(),
+              new PublicKey(receiver),
+              amount,
+              tokens![selectedTokenIndex].rollCallId,
+              laoId!
+            )
+              .then(() => toast.show('Sent coinbase transaction'))
+              .catch((err) => {
+                console.error('Failed sending the transaction : ', err);
+              });
+          } else {
+            requestSendTransaction(
+              tokens![selectedTokenIndex].token,
+              new PublicKey(receiver),
+              amount,
+              tokens![selectedTokenIndex].rollCallId,
+              laoId!
+            )
+              .then(() => toast.show('Sent transaction'))
+              .catch((err) => {
+                console.error('Failed sending the transaction : ', err);
+              });
+          }
           setSendModalVisible(false);
         }}
       />
