@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -34,8 +35,11 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -64,10 +68,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
 
-  private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent = new MutableLiveData<>();
   /*
@@ -78,6 +80,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
+
+  private final LiveData<List<Lao>> mLAOs;
 
   @Inject
   public DigitalCashViewModel(
@@ -91,11 +95,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    mLAOs = LiveDataReactiveStreams.fromPublisher(this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+    //laoRepository.getLaoById().putIfAbsent(mLaoId.getValue(), new LAOState());
     disposables = new CompositeDisposable();
-
-    mLAOs =
-        LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -174,15 +176,22 @@ public class DigitalCashViewModel extends AndroidViewModel {
    * <p>Publish a Message General containing a PostTransaction data
    */
   public void postTransaction(Map<PublicKey,Long> receiverandvalue, long locktime) {
+    Log.d(TAG, String.valueOf(mLAOs.getValue().size()));
+
     Log.d(TAG, "Post a transaction");
+
     Lao lao = getCurrentLao();
-    if (lao == null) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
-    }
+
+    //Lao lao = mLAOs.getValue().get(0);
+    //if (lao == null) {
+      //Log.e(TAG, LAO_FAILURE_MESSAGE);
+      //return;
+    //}
 
     try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
+      //Lao lao = getCurrentLao();
+      PoPToken token =
+              keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
       for (Map.Entry<PublicKey, Long> current : receiverandvalue.entrySet()) {
@@ -198,15 +207,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       String transaction_hash = "";
       int index = 0;
 
-      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
-        transaction_hash =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
-        index =
-            getCurrentLao()
-                .getTransactionByUser()
-                .get(token.getPublicKey())
-                .getIndexTransaction(token.getPublicKey());
-      }
+      //if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
+        transaction_hash = "somehash";
+           // getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        index = '0';
+            //getCurrentLao()
+               // .getTransactionByUser()
+               // .get(token.getPublicKey())
+               // .getIndexTransaction(token.getPublicKey());
+      //}
       String sig =
           Transaction.computeSigOutputsPairTxOutHashAndIndex(
               token, outputs, Collections.singletonMap(transaction_hash, index));
@@ -253,9 +262,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
   }
 
-  public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
-  }
 
   public LiveData<String> getLaoId() {
     return mLaoId;
@@ -265,32 +271,64 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mLaoName;
   }
 
-  public LiveData<String> getRollCallId() {
-    return mRollCallId;
-  }
-
   public void setLaoId(String laoId) {
     this.mLaoId.setValue(laoId);
+  }
+
+  public void setRollCallId(String rollCallId){
+    Log.d(TAG, "Set the rollcall Id : " + rollCallId);
+    this.mRollCallId.setValue(rollCallId);
+  }
+
+  public LiveData<String> getRollCallId(){
+    return mRollCallId;
   }
 
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
   }
 
-  public void setRollCallId(String rollCallId) {
-    this.mRollCallId.setValue(rollCallId);
+  public LAORepository getLaoRepository() {
+    return laoRepository;
   }
 
   @Nullable
   public Lao getCurrentLao() {
+    Log.d(TAG, "search the lao with id :" + getLaoId().getValue());
     return getLao(getLaoId().getValue());
   }
 
   @Nullable
+  public Set<PublicKey> getAttendeesFromTheRollCall(){
+    return getCurrentLao().getRollCall(getRollCallId().getValue()).get().getAttendees();
+  }
+
+  @Nullable
+  public PublicKey getOrganizer(){
+    return getCurrentLao().getOrganizer();
+  }
+
+  @Nullable
+  public List<String> getAttendeesFromTheRollCallList(){
+    List<String> list = Collections.EMPTY_LIST;
+    Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
+    while (pub.hasNext()){
+      String current = pub.next().getEncoded();
+      list.add(current);
+    }
+    Log.d(TAG, "put the list of attendees " + Objects.requireNonNull(getCurrentLao()).toString());
+    //list.add(getCurrentLao().getOrganizer().getEncoded());
+    return list;
+  }
+
+  @Nullable
   private Lao getLao(String laoId) {
+    //mLAOs.getValue().iterator()
+    Log.d(TAG, "Search in the LAO Repository");
     LAOState laoState = laoRepository.getLaoById().get(laoId);
     if (laoState == null) return null;
-
+    Log.d(TAG,"A LAO was found :)");
+    Log.d(TAG, laoState.getLao().toString());
     return laoState.getLao();
   }
 }

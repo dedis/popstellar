@@ -1,10 +1,13 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,10 +22,13 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
  * method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
@@ -66,10 +72,7 @@ public class DigitalCashIssueFragment extends Fragment {
          }
     );
 
-    List<String> myArray =
-            Collections.singletonList(
-            mViewModel
-                .getCurrentLao().getOrganizer().getEncoded());
+    List<String> myArray = mViewModel.getAttendeesFromTheRollCallList();
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
@@ -80,9 +83,17 @@ public class DigitalCashIssueFragment extends Fragment {
     );
   }
 
-  ///** Function that permits to post transaction */
+  /// ** Function that permits to post transaction */
   private void postTransaction() {
-    long amount = Long.getLong(mBinding.digitalCashIssueAmount.getText().toString());
-    mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount), Instant.now().getEpochSecond());
+    //if (mBinding.digitalCashIssueAmount.getText() == null) {
+      //Toast.makeText(this.requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
+    //} else {
+      //String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
+      Log.d(this.getClass().toString(), "Try to send a transaction");
+      Log.d(this.getClass().toString(), "The amount in our edit text is ");
+      //long amount = 0 ;
+      //mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount),
+          //Instant.now().getEpochSecond());
+   // }
   }
 }

@@ -11,6 +11,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,6 +28,8 @@ public class DigitalCashMain extends AppCompatActivity {
 
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
+  public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
+  //public static final String LAO = "LAO";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,8 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
     mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
     mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+    mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
+
 
     setupNavigationBar();
     // Subscribe to "open home"
