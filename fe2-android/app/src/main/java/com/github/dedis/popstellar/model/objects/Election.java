@@ -34,7 +34,7 @@ public class Election extends Event {
   private long start;
   private long end;
   private List<ElectionQuestion> electionQuestions;
-  // Election is generated via Kyber and is encoded in Base64
+  // Election public key is generated via Kyber and is encoded in Base64
   // decoding it is required before actually starting using it
   private String electionKey;
   // Either OPEN_BALLOT or SECRET_BALLOT
@@ -54,7 +54,7 @@ public class Election extends Event {
   private final Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name, ElectionVersion electionVersion) {
-    id = Election.generateElectionSetupId(laoId, creation, name);
+    id = generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.results = new HashMap<>();
