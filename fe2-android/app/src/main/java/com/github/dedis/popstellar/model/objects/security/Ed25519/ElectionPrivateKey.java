@@ -15,7 +15,8 @@ public class ElectionPrivateKey {
     private static final int HALF_MESSAGE_BYTE_SIZE = 32;
 
     // Scalar generated with the private key
-    private final Ed25519Scalar scalar;
+    @NonNull
+    private final Ed25519Scalar privateKey;
 
     /**
      * Create an decryption scheme for 64 bytes message using a private key
@@ -23,12 +24,12 @@ public class ElectionPrivateKey {
      * @param privateKey private key used to decrypt
      */
     public ElectionPrivateKey(@NonNull Base64URLData privateKey) {
-        scalar = new Ed25519Scalar(privateKey.getData());
+        this.privateKey = new Ed25519Scalar(privateKey.getData());
     }
 
     @Override
     public String toString() {
-        return scalar.toString();
+        return privateKey.toString();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class ElectionPrivateKey {
             return false;
         }
         ElectionPrivateKey that = (ElectionPrivateKey) o;
-        return that.getScalar().equals(getScalar());
+        return that.getPrivateKey().equals(getPrivateKey());
     }
 
     /**
@@ -48,19 +49,20 @@ public class ElectionPrivateKey {
      */
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getScalar().toString());
+        return java.util.Objects.hash(getPrivateKey().toString());
     }
 
-    public Scalar getScalar() {
-        return scalar;
+    @NonNull
+    public Scalar getPrivateKey() {
+        return privateKey;
     }
 
     /**
      * Decypt the given string using ElGamal
      *
-     * @param message message to decrypt (64 byte length)
+     * @param message message encrypted in Base64 to decrypt (64 byte length)
      * @return byte array containing the decrypted message
-     * @throws CothorityCryptoException
+     * @throws CothorityCryptoException if problem while transforming final data into a byte array
      */
     public byte[] decrypt(@NonNull String message) throws CothorityCryptoException {
 
@@ -91,8 +93,8 @@ public class ElectionPrivateKey {
             throw new IllegalArgumentException("Could not create K Point while decrypting");
         }
 
-        // Substract and export data to get the original message
-        Point S = K.mul(getScalar());
+        // Export data to get the original message
+        Point S = K.mul(getPrivateKey());
         return S.add(C.negate()).data();
     }
 

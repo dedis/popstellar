@@ -32,8 +32,7 @@ public class ElectionKeyPair {
      * @throws CothorityCryptoException
      */
     public static ElectionKeyPair generateKeyPair() {
-
-        //Generate at random using Ed25519Pair class
+        // Generate at random using Ed25519Pair class
         Ed25519Pair keyPairScheme = new Ed25519Pair();
         Base64URLData encodedPublic = new Base64URLData(keyPairScheme.point.toBytes());
         Base64URLData privateKeyPrivate = new Base64URLData(keyPairScheme.scalar.toBytes());
@@ -44,7 +43,6 @@ public class ElectionKeyPair {
                 new ElectionPrivateKey(privateKeyPrivate);
 
         return new ElectionKeyPair(draftEncScheme, draftDecScheme);
-
     }
 
 }

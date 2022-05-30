@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.objects.security.Ed25519;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -22,11 +23,11 @@ public class ElectionPublicKey {
     // We use elliptic curve Ed25519 for encryption
     public final Ed25519 curve;
     // Point is generate with given public key
-    private final Point point;
+    private final Point publicKey;
 
     public ElectionPublicKey(@NonNull Base64URLData base64publicKey) {
         try {
-            point = new Ed25519Point(base64publicKey.getData());
+            publicKey = new Ed25519Point(base64publicKey.getData());
         } catch (CothorityCryptoException e) {
             throw new IllegalArgumentException("Could not create the point for elliptic curve, please provide another key");
         }
@@ -35,7 +36,7 @@ public class ElectionPublicKey {
 
     @Override
     public String toString() {
-        return point.toString();
+        return publicKey.toString();
     }
 
     @Override
@@ -47,16 +48,26 @@ public class ElectionPublicKey {
             return false;
         }
         ElectionPublicKey that = (ElectionPublicKey) o;
-        return that.getPoint().equals(getPoint());
+        return that.getPublicKey().equals(getPublicKey());
     }
 
+    /**
+     * @return the string encoded public key in Base64 format
+     */
+    public String encodeToBase64() {
+        Base64URLData encodedKey = new Base64URLData(publicKey.toBytes());
+        return encodedKey.getEncoded();
+    }
 
+    /**
+     * @return the public key in Base64 format (not encoded)
+     */
     public Base64URLData toBase64() {
-        return new Base64URLData(toString());
+        return new Base64URLData(publicKey.toBytes());
     }
 
-    private Point getPoint() {
-        return point;
+    public Point getPublicKey() {
+        return publicKey;
     }
 
     /**
@@ -64,7 +75,7 @@ public class ElectionPublicKey {
      */
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getPoint().toString());
+        return java.util.Objects.hash(getPublicKey().toString());
     }
 
     /**
@@ -95,18 +106,19 @@ public class ElectionPublicKey {
         // K = cothority.Suite.Point().Mul(k, nil)
         Point K = Ed25519Point.base().mul(k);
         // S := cothority.Suite.Point().Mul(k, public) -- ephemeral DH shared secret
-        Point S = getPoint().mul(k);
+        Point S = getPublicKey().mul(k);
         // C = S.Add(S, M)  -- message blinded with secret
         Point C = S.add(M);
 
-        //Concat K and C and encodes it in Base64
+        // Concat K and C and encodes it in Base64
         byte[] result;
+        // IO exception no testable
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             output.write(K.toBytes());
             output.write(C.toBytes());
             result = output.toByteArray();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Something happened during the encryption, could concatenate the final result into a byte array");
             result = null;
         }
