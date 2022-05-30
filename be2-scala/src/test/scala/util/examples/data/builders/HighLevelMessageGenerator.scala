@@ -163,7 +163,7 @@ object HighLevelMessageGenerator {
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         //Digital cash
-        case (ObjectType.TRANSACTION, ActionType.POST) =>
+        case (ObjectType.COIN, ActionType.POST_TRANSACTION) =>
           messageData = PostTransaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
