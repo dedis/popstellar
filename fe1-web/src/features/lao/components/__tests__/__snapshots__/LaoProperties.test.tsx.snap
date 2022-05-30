@@ -322,47 +322,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           }
                         }
                       >
-                        <View
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "flex": 1,
-                                  "justifyContent": "space-evenly",
-                                },
-                                Object {
-                                  "justifyContent": "flex-start",
-                                  "padding": 10,
-                                },
-                              ]
-                            }
-                          >
-                            <qr code
-                              size={160}
-                              value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\",\\"servers\\":[]}"
-                            />
-                          </View>
-                        </View>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          The above QR Code can be used to connect to the LAO.
-                        </Text>
                         <Text
                           style={
                             Object {
@@ -964,47 +923,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           }
                         }
                       >
-                        <View
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "flex": 1,
-                                  "justifyContent": "space-evenly",
-                                },
-                                Object {
-                                  "justifyContent": "flex-start",
-                                  "padding": 10,
-                                },
-                              ]
-                            }
-                          >
-                            <qr code
-                              size={160}
-                              value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\",\\"servers\\":[]}"
-                            />
-                          </View>
-                        </View>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          The above QR Code can be used to connect to the LAO.
-                        </Text>
                         <Text
                           style={
                             Object {
@@ -1606,47 +1524,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           }
                         }
                       >
-                        <View
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "flex": 1,
-                                  "justifyContent": "space-evenly",
-                                },
-                                Object {
-                                  "justifyContent": "flex-start",
-                                  "padding": 10,
-                                },
-                              ]
-                            }
-                          >
-                            <qr code
-                              size={160}
-                              value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\",\\"servers\\":[]}"
-                            />
-                          </View>
-                        </View>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          The above QR Code can be used to connect to the LAO.
-                        </Text>
                         <Text
                           style={
                             Object {

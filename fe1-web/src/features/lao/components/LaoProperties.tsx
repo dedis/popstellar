@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { Button, QRCode } from 'core/components';
+import { Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { getNetworkManager } from 'core/network';
@@ -17,9 +17,6 @@ import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
 const styles = StyleSheet.create({
   container: {
     marginTop: Spacing.x1,
-    marginBottom: Spacing.x1,
-  },
-  qrCodeContainer: {
     marginBottom: Spacing.x1,
   },
 });
@@ -46,18 +43,11 @@ const LaoProperties = () => {
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
-
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const isWitness = useSelector(selectIsLaoWitness);
 
   return (
     <View style={styles.container}>
-      <View style={styles.qrCodeContainer}>
-        <QRCode value={encodeLaoConnection(lao.server_addresses, lao.id.toString())} visibility />
-      </View>
-      <Text style={Typography.paragraph}>{STRINGS.lao_properties_qr_code_description}</Text>
-
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
         {'\n'}

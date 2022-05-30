@@ -85,8 +85,7 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
-  export const lao_properties_qr_code_description =
-    'The above QR Code can be used to connect to the LAO.';
+  export const lao_qr_code_title = 'Connection QR Code';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
   export const lao_properties_current_connections = 'You are currently connected to';

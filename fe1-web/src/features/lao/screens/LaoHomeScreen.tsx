@@ -8,8 +8,10 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
-import DropdownIcon from 'core/components/icons/DropdownIcon';
+import { QRCode } from 'core/components';
+import InfoIcon from 'core/components/icons/InfoIcon';
 import NotificationIcon from 'core/components/icons/NotificationIcon';
+import QrCodeIcon from 'core/components/icons/QrCodeIcon';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -37,8 +39,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   } as ViewStyle,
-  dropdownIcon: {
+  infoIcon: {
     marginLeft: Spacing.x025,
+  },
+  buttons: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  notificationButton: {
+    marginLeft: Spacing.x1,
+  },
+  qrCodeContainer: {
+    marginTop: Spacing.x2,
+    marginBottom: Spacing.x1,
   },
 });
 
@@ -50,8 +64,8 @@ export const LaoHomeScreenHeader = () => {
     <>
       <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
         <Text style={Typography.topNavigationHeading}>{lao.name}</Text>
-        <View style={styles.dropdownIcon}>
-          <DropdownIcon color={Color.primary} size={Icon.size} />
+        <View style={styles.infoIcon}>
+          <InfoIcon color={Color.primary} size={Icon.size} />
         </View>
       </TouchableOpacity>
 
@@ -84,17 +98,56 @@ type NavigationProps = CompositeScreenProps<
 export const LaoHomeScreenHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const lao = LaoHooks.useCurrentLao();
+  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
+
   return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.push(STRINGS.navigation_app_lao, {
-          screen: STRINGS.navigation_lao_notifications,
-          params: {
-            screen: STRINGS.navigation_notification_notifications,
-          },
-        })
-      }>
-      <NotificationIcon color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    <>
+      <View style={styles.buttons}>
+        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+          <QrCodeIcon color={Color.inactive} size={Icon.size} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          containerStyle={styles.notificationButton}
+          onPress={() =>
+            navigation.push(STRINGS.navigation_app_lao, {
+              screen: STRINGS.navigation_lao_notifications,
+              params: {
+                screen: STRINGS.navigation_notification_notifications,
+              },
+            })
+          }>
+          <NotificationIcon color={Color.inactive} size={Icon.size} />
+        </TouchableOpacity>
+
+        <Modal
+          transparent
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}>
+          <TouchableWithoutFeedback
+            containerStyle={ModalStyles.modalBackground}
+            onPress={() => {
+              setModalVisible(!modalVisible);
+            }}
+          />
+          <ScrollView style={ModalStyles.modalContainer}>
+            <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
+              {STRINGS.lao_qr_code_title}
+            </ModalHeader>
+
+            <View style={styles.qrCodeContainer}>
+              <QRCode
+                value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
+                visibility
+              />
+            </View>
+          </ScrollView>
+        </Modal>
+      </View>
+    </>
   );
 };

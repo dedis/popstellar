@@ -3,44 +3,43 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import QRCodeDisplay from 'react-qr-code';
 
-import containerStyles from '../styles/stylesheets/containerStyles';
-
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'center',
   } as ViewStyle,
 });
+
+const qrCodeStyles = { height: 'auto', maxWidth: '300px', width: '100%' };
 
 /**
  * Creates and displays a QR code with the public key of the current user
  */
 const QRCode = (props: IPropTypes) => {
-  const { value, visibility, size } = props;
+  const { value, visibility } = props;
 
   // Displays a QR code with the Public key of the current user
   return visibility ? (
-    <View style={[containerStyles.anchoredCenter, styles.container]}>
-      <QRCodeDisplay value={value} size={size} />
+    <View style={styles.container}>
+      {/* The typescript prop type for QRCodeDisplay is wrong
+        @ts-ignore */}
+      <QRCodeDisplay value={value} size={256} style={qrCodeStyles} viewBox="0 0 256 256" />
     </View>
   ) : null;
 };
 
 const propTypes = {
   visibility: PropTypes.bool.isRequired,
-  size: PropTypes.number,
   value: PropTypes.string,
 };
 QRCode.propTypes = propTypes;
 
 QRCode.defaultProps = {
-  size: 160, // Size of the QR code in pixels
   value: '',
 };
 
 type IPropTypes = {
   visibility: boolean;
-  size: number;
   value: string;
 };
 
