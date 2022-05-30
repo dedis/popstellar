@@ -65,6 +65,11 @@ export interface WalletCompositionConfiguration {
     [laoId: string]: { [rollCallId: string]: WalletFeature.RollCall };
   };
 
+  /**
+   * Returns a map from laoIds to names
+   */
+  useNamesByLaoId: () => { [laoId: string]: string };
+
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 }
 
@@ -75,6 +80,7 @@ export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
   /* lao */
   | 'useCurrentLaoId'
+  | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
 >;

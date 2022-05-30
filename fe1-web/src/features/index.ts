@@ -72,6 +72,7 @@ export function configureFeatures() {
     keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,

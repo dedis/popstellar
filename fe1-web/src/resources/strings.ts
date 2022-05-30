@@ -71,10 +71,11 @@ namespace STRINGS {
   export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
-  export const navigation_wallet_home_tab = 'Wallet Home';
-  export const navigation_wallet_setup_tab = 'Wallet Setup';
+  export const navigation_wallet_home = 'Wallet Home';
+  export const navigation_wallet_home_title = 'Wallet';
+  export const navigation_wallet_setup = 'Wallet Setup';
   export const navigation_wallet_show_seed = 'New Wallet';
-  export const navigation_wallet_synced = 'My Wallet';
+  export const navigation_wallet_single_roll_call = 'Roll Call';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
@@ -314,9 +315,14 @@ namespace STRINGS {
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
 
   /* --- Wallet Home Screen Strings --- */
-  export const wallet_home_header = 'Your Wallet 🔒';
+  export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
+
+  export const wallet_single_roll_call_description =
+    'You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.';
+  export const wallet_single_roll_call_pop_token = 'Your PoP token';
+  export const wallet_single_roll_call_copy_pop_token = 'Copy to Clipboard';
 
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';

@@ -24,4 +24,9 @@ export namespace WalletHooks {
    * Gets a map from laoIds to rollCall ids to rollCall instances
    */
   export const useRollCallsByLaoId = () => useWalletContext().useRollCallsByLaoId();
+
+  /**
+   * Gets a map from laoIds to names
+   */
+  export const useNamesByLaoId = () => useWalletContext().useNamesByLaoId();
 }

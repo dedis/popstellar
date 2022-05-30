@@ -42,6 +42,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
       useCurrentLao: hooks.LaoHooks.useCurrentLao,
       useCurrentLaoId: hooks.LaoHooks.useCurrentLaoId,
       useLaoOrganizerBackendPublicKey: hooks.LaoHooks.useLaoOrganizerBackendPublicKey,
+      useNamesByLaoId: hooks.LaoHooks.useNamesByLaoId,
     },
     functions,
     reducers: {

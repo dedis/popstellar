@@ -11,6 +11,7 @@ import {
   selectCurrentLaoId,
   selectIsLaoOrganizer,
   selectIsLaoWitness,
+  selectLaoIdToNameMap,
   selectLaosList,
   selectLaosMap,
 } from '../reducer';
@@ -105,4 +106,6 @@ export namespace LaoHooks {
     const selector = useMemo(() => makeLaoOrganizerBackendPublicKeySelector(laoId), [laoId]);
     return useSelector(selector);
   };
+
+  export const useNamesByLaoId = () => useSelector(selectLaoIdToNameMap);
 }

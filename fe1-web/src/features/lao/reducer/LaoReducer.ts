@@ -242,6 +242,16 @@ export const selectCurrentLaoId = createSelector(
     currentId ? new Hash(currentId) : undefined,
 );
 
+export const selectLaoIdToNameMap = createSelector(
+  // First input: current LAO id
+  (state) => getLaosState(state).byId,
+  (byId: Record<string, LaoState>): Record<string, string> =>
+    Object.keys(byId).reduce((obj, laoId) => {
+      obj[laoId] = byId[laoId].name;
+      return obj;
+    }, {} as Record<string, string>),
+);
+
 export const selectLaoIdsList = createSelector(
   // Input: sorted LAO ids list
   (state) => getLaosState(state).allIds,

@@ -114,6 +114,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The public key or undefined if there is none
      */
     useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
+    /**
+     * Returns a map from lao id to the respective name
+     */
+    useNamesByLaoId: () => { [laoId: string]: string };
   };
 
   /* functions */
