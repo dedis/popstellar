@@ -41,9 +41,7 @@ const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer
 mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 mockStore.dispatch(connectToLao(mockLao.toState()));
 
-// react-navigation has a problem that makes this test always fail
-// https://github.com/satya164/react-native-tab-view/issues/1104
-describe.skip('LaoNavigation', () => {
+describe('LaoNavigation', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>

@@ -12,7 +12,7 @@ import { MeetingReactContext, MEETING_FEATURE_IDENTIFIER } from 'features/meetin
 import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 
 import { Meeting } from '../../objects/Meeting';
-import ViewSingleMeeting from '../ViewSingleMeeting';
+import ViewSingleMeeting, { ViewSingleMeetingScreenHeader } from '../ViewSingleMeeting';
 
 beforeAll(() => {
   jest.useFakeTimers('modern');
@@ -43,6 +43,22 @@ describe('ViewSingleMeeting', () => {
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
             component={ViewSingleMeeting}
+            params={{ eventId: mockMeeting.id.valueOf(), isOrganizer: false }}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('ViewSingleMeetingScreenHeader', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator
+            component={ViewSingleMeetingScreenHeader}
             params={{ eventId: mockMeeting.id.valueOf(), isOrganizer: false }}
           />
         </FeatureContext.Provider>

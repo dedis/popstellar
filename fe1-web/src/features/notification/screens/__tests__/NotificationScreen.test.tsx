@@ -18,7 +18,7 @@ import {
 import { WitnessNotificationType } from 'features/witness/components';
 import { WitnessFeature } from 'features/witness/interface';
 
-import NotificationScreen from '../NotificationScreen';
+import NotificationScreen, { NotificationScreenRightHeader } from '../NotificationScreen';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
@@ -53,6 +53,19 @@ describe('NotificationScreen', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={NotificationScreen} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('NotificationScreenRightHeader', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={NotificationScreenRightHeader} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

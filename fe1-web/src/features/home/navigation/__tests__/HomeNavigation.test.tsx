@@ -25,9 +25,7 @@ const contextValue = {
   } as HomeReactContext,
 };
 
-// react-navigation has a problem that makes this test always fail
-// https://github.com/satya164/react-native-tab-view/issues/1104
-describe.skip('HomeNavigation', () => {
+describe('HomeNavigation', () => {
   it('renders correctly', () => {
     const component = render(
       <FeatureContext.Provider value={contextValue}>

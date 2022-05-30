@@ -29,7 +29,7 @@ import {
   updateElection,
 } from 'features/evoting/reducer';
 
-import ViewSingleElection from '../ViewSingleElection';
+import ViewSingleElection, { ViewSingleElectionScreenHeader } from '../ViewSingleElection';
 
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
@@ -64,207 +64,83 @@ const contextValue = {
 };
 
 describe('ViewSingleElection', () => {
-  describe('Not started election', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(mockElectionNotStarted.toState()));
+  const testRender = (election: Election, isOrganizer: boolean) => () => {
+    mockStore.dispatch(updateElection(election.toState()));
+
+    const obj = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator
+            component={ViewSingleElection}
+            params={{ eventId: election.id.valueOf(), isOrganizer }}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    expect(obj.toJSON()).toMatchSnapshot();
+  };
+
+  describe('renders correctly', () => {
+    describe('organizers', () => {
+      it('not started election', testRender(mockElectionNotStarted, true));
+      it('opened election', testRender(mockElectionOpened, true));
+      it('terminated election', testRender(mockElectionTerminated, true));
+      it('election with results', testRender(mockElectionResults, true));
+      it('undefined election status', testRender(undefinedElection, true));
+
+      it('open secret ballot election', testRender(openedSecretBallotElection, true));
     });
 
-    it('renders correctly for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionNotStarted.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
+    describe('non organizers', () => {
+      it('not started election', testRender(mockElectionNotStarted, false));
+      it('opened election', testRender(mockElectionOpened, false));
+      it('terminated election', testRender(mockElectionTerminated, false));
+      it('election with results', testRender(mockElectionResults, false));
+      it('undefined election status', testRender(undefinedElection, false));
 
-    it('renders correctly for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionNotStarted.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('Opened election', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(mockElectionOpened.toState()));
-    });
-
-    it('renders correctly for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionOpened.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-
-    it('renders correctly for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionOpened.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
+      it('open secret ballot election', testRender(openedSecretBallotElection, false));
     });
   });
+});
 
-  describe('Terminated election where the results are not yet available', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(mockElectionTerminated.toState()));
+describe('ViewSinglRollCallScreenRightHeader', () => {
+  const testRender = (election: Election, isOrganizer: boolean) => () => {
+    mockStore.dispatch(updateElection(election.toState()));
+
+    const obj = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator
+            component={ViewSingleElectionScreenHeader}
+            params={{ eventId: election.id.valueOf(), isOrganizer }}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    expect(obj.toJSON()).toMatchSnapshot();
+  };
+
+  describe('renders correctly', () => {
+    describe('organizers', () => {
+      it('not started election', testRender(mockElectionNotStarted, true));
+      it('opened election', testRender(mockElectionOpened, true));
+      it('terminated election', testRender(mockElectionTerminated, true));
+      it('election with results', testRender(mockElectionResults, true));
+      it('undefined election status', testRender(undefinedElection, true));
+
+      it('open secret ballot election', testRender(openedSecretBallotElection, true));
     });
 
-    it('renders correctly for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionTerminated.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
+    describe('non organizers', () => {
+      it('not started election', testRender(mockElectionNotStarted, false));
+      it('opened election', testRender(mockElectionOpened, false));
+      it('terminated election', testRender(mockElectionTerminated, false));
+      it('election with results', testRender(mockElectionResults, false));
+      it('undefined election status', testRender(undefinedElection, false));
 
-    it('renders correctly for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionTerminated.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('Finished election where the results are available', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(mockElectionResults.toState()));
-    });
-
-    it('renders correctly for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionResults.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-
-    it('renders correctly for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: mockElectionResults.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('Undefined election status', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(undefinedElection.toState()));
-    });
-
-    it('renders null for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: undefinedElection.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-
-    it('renders null for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: undefinedElection.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('Secret ballot election', () => {
-    beforeAll(() => {
-      mockStore.dispatch(updateElection(openedSecretBallotElection.toState()));
-    });
-
-    it('renders correctly for an organizer', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: openedSecretBallotElection.id.valueOf(), isOrganizer: true }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-
-    it('renders correctly for an attendee', () => {
-      const component = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleElection}
-              params={{ eventId: openedSecretBallotElection.id.valueOf(), isOrganizer: false }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
+      it('open secret ballot election', testRender(openedSecretBallotElection, false));
     });
   });
 });
