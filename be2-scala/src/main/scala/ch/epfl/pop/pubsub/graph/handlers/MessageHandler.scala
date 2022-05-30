@@ -7,6 +7,7 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Has
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -67,25 +68,26 @@ trait MessageHandler extends AskPatternConstants {
    * @param channel          : the Channel in which we read the data
    * @param broadcastData    : the message data we broadcast converted to Base64Data
    * @param broadcastChannel : the Channel in which we broadcast
+   * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
-  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
-    val askLaoData = dbActor ? DbActor.ReadLaoData(channel)
+  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): Future[GraphMessage] = {
+    val m: Message = rpcMessage.getParamsMessage.getOrElse(
+      return Future {
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
+      }
+    )
 
-    Await.ready(askLaoData, duration).value match {
-      case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
-        val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
-        val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-        val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+    val combined = for {
+      DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
+      broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
+      broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
+      broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+      _ <- dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
+    } yield ()
 
-        val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
-        Await.ready(askWritePropagate, duration).value.get match {
-          case Success(_) => Left(rpcMessage)
-          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
-        }
-
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
+    combined.transformWith {
+      case Success(_) => Future(Left(rpcMessage))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
     }
   }
 }
