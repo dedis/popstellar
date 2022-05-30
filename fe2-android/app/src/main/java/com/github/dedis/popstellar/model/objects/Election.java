@@ -28,7 +28,7 @@ import java.util.TreeMap;
 public class Election extends Event {
 
   private Channel channel;
-  private final String id;
+  private String id;
   private String name;
   private long creation;
   private long start;
@@ -138,11 +138,11 @@ public class Election extends Event {
     return messageMap;
   }
 
-  public static void setId(String id) {
+  public void setId(String id) {
     if (id == null) {
       throw new IllegalArgumentException("election id shouldn't be null");
     }
-    id = id;
+    this.id = id;
   }
 
   public void putOpenBallotVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {

@@ -125,6 +125,7 @@ public class ElectionHandlerTest extends TestCase {
     election.setChannel(lao.getChannel().subChannel(election.getId()));
     electionEncrypted.setStart(Instant.now().getEpochSecond());
     electionEncrypted.setEnd(Instant.now().getEpochSecond() + 21L);
+    electionEncrypted.setId("election2");
     electionEncrypted.setChannel(lao.getChannel().subChannel(electionEncrypted.getId()));
 
     electionQuestion =
@@ -135,6 +136,7 @@ public class ElectionHandlerTest extends TestCase {
             new HashMap<String, Election>() {
               {
                 put(election.getId(), election);
+                put(electionEncrypted.getId(), electionEncrypted);
               }
         });
 

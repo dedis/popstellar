@@ -83,7 +83,7 @@ public class ElectionTest {
   @Test
   public void settingNullParametersThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> election.setName(null));
-    assertThrows(IllegalArgumentException.class, () -> Election.setId(null));
+    assertThrows(IllegalArgumentException.class, () -> election.setId(null));
   }
 
   @Test
@@ -100,7 +100,7 @@ public class ElectionTest {
 
   @Test
   public void settingAndGettingReturnsCorrespondingId() {
-    Election.setId(id);
+    election.setId(id);
     assertThat(election.getId(), is(id));
   }
 
