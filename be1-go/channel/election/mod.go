@@ -658,17 +658,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 		if question.method == "Plurality" {
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
-				switch c.electionType {
-				case messagedata.OpenBallot:
-					index, _ := vote.index.(int)
-					numberOfVotesPerBallotOption[index]++
-				case messagedata.SecretBallot:
-					temp, _ := vote.index.(string)
-					index, err := c.decryptVote(temp)
-					if err != nil {
-						c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
-						continue
-					}
+				index, err := c.getVoteIndex(vote)
+				if err == nil {
 					numberOfVotesPerBallotOption[index]++
 				}
 			}
@@ -689,6 +680,24 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	}
 
 	return resultElection, nil
+}
+
+func (c *Channel) getVoteIndex(vote validVote) (int, error) {
+	switch m := c.electionType; m {
+	case messagedata.OpenBallot:
+		index, _ := vote.index.(int)
+		return index, nil
+	case messagedata.SecretBallot:
+		temp, _ := vote.index.(string)
+		index, err := c.decryptVote(temp)
+		if err != nil {
+			c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
+			return index, err
+		}
+		return index, nil
+	default:
+		return -1, answer.NewErrorf(-6, "election type shouldn't be %s", m)
+	}
 }
 
 func (c *Channel) decryptVote(vote string) (int, error) {

@@ -125,39 +125,9 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	}
 
 	for i, vote := range castVote.Votes {
-		qs, ok := c.questions[vote.Question]
-		if !ok {
-			return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
-		}
-
-		var vs string
-		switch c.electionType {
-		case messagedata.OpenBallot:
-			v, ok := vote.Vote.(int)
-			if !ok {
-				return answer.NewErrorf(-4, "votes in open ballot should be int")
-			}
-			vs = fmt.Sprintf("%d", v)
-		case messagedata.SecretBallot:
-			vs, ok = vote.Vote.(string)
-			if !ok {
-				return answer.NewErrorf(-4, "votes in secret ballot should be string")
-			}
-
-			temp, err := base64.URLEncoding.DecodeString(vs)
-			if err != nil {
-				return answer.NewErrorf(-4, "vote %d is %s, should be base64 encoded", i, vs)
-			}
-
-			if l := len(temp); l != 64 {
-				return answer.NewErrorf(-4, "vote %d should be 64 bytes long, but is %d", i, l)
-			}
-		}
-
-		hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
-
-		if vote.ID != hash {
-			return xerrors.Errorf("vote ID of vote %d is incorrect", i)
+		err := c.verifyVote(vote, electionID)
+		if err != nil {
+			return xerrors.Errorf("failed to validate vote %d: %v", i, err)
 		}
 	}
 
@@ -271,6 +241,44 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 		return xerrors.Errorf("registered votes is %s, should be sorted and equal to %s",
 			electionEnd.RegisteredVotes,
 			validVotesHash)
+	}
+
+	return nil
+}
+
+func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
+	qs, ok := c.questions[vote.Question]
+	if !ok {
+		return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
+	}
+
+	var vs string
+	switch c.electionType {
+	case messagedata.OpenBallot:
+		v, ok := vote.Vote.(int)
+		if !ok {
+			return answer.NewErrorf(-4, "votes in open ballot should be int")
+		}
+		vs = fmt.Sprintf("%d", v)
+	case messagedata.SecretBallot:
+		vs, ok = vote.Vote.(string)
+		if !ok {
+			return answer.NewErrorf(-4, "votes in secret ballot should be string")
+		}
+
+		temp, err := base64.URLEncoding.DecodeString(vs)
+		if err != nil {
+			return answer.NewErrorf(-4, "vote should be base64 encoded")
+		}
+
+		if l := len(temp); l != 64 {
+			return answer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", l)
+		}
+	}
+
+	hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
+	if vote.ID != hash {
+		return xerrors.Errorf("vote ID is incorrect")
 	}
 
 	return nil
