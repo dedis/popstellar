@@ -201,7 +201,7 @@ public class ElectionTest {
   public void testAndSetElectionKey() {
     String key = "key";
     election.setElectionKey("key");
-    assertThat(key, is(Election.getElectionKey()));
+    assertThat(key, is(election.getElectionKey()));
   }
 
   @Test

@@ -17,7 +17,7 @@ public class ElectionKeyPairTest {
     private final ElectionPublicKey electionPublicKey = encryptionKeys.getEncryptionScheme();
     private final ElectionPrivateKey electionPrivateKey = encryptionKeys.getDecryptionScheme();
 
-    @Test(expected = Test.None.class /* no exception expected */)
+    @Test
     public void testKeyGeneration() {
         assertNotEquals(null, encryptionKeys);
         assertNotEquals(null, encryptionKeys.getEncryptionScheme());

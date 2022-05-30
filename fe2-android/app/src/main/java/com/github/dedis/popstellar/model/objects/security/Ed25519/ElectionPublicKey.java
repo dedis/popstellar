@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
 import java.io.ByteArrayOutputStream;
@@ -20,8 +22,6 @@ import io.reactivex.annotations.NonNull;
  */
 public class ElectionPublicKey {
 
-    // We use elliptic curve Ed25519 for encryption
-    public final Ed25519 curve;
     // Point is generate with given public key
     private final Point publicKey;
 
@@ -31,7 +31,6 @@ public class ElectionPublicKey {
         } catch (CothorityCryptoException e) {
             throw new IllegalArgumentException("Could not create the point for elliptic curve, please provide another key");
         }
-        curve = new Ed25519();
     }
 
     @Override
@@ -119,7 +118,7 @@ public class ElectionPublicKey {
             output.write(C.toBytes());
             result = output.toByteArray();
         } catch (IOException e) {
-            System.out.println("Something happened during the encryption, could concatenate the final result into a byte array");
+            Log.d("Encryption: ", "Something happened during the encryption, could concatenate the final result into a byte array");
             result = null;
         }
         if (Objects.isNull(result)) {

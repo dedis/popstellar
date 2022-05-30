@@ -363,16 +363,16 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote castVote = null;
+      CastVote<ElectionVote> castOpenBallotVote = null;
       CastVote<ElectionEncryptedVote> castEncryptedVote = null;
 
       // Construct the cast vote depending if the messages need to be encrypted or not
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        castVote = new CastVote<ElectionVote>(votes, election.getId(), lao.getId());
+        castOpenBallotVote = new CastVote<>(votes, election.getId(), lao.getId());
       } else {
         Log.d(TAG, "Encrypting the vote ...");
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        castVote = new CastVote<ElectionEncryptedVote>(encryptedVotes, election.getId(), lao.getId());
+        castEncryptedVote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
         Log.d(TAG, "Vote encrypted!");
       }
 
@@ -381,7 +381,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       Disposable disposable =
               networkManager
                       .getMessageSender()
-                      .publish(token, electionChannel, castVote)
+                      .publish(token, electionChannel,
+                              election.getElectionVersion() == ElectionVersion.OPEN_BALLOT ? castOpenBallotVote : castEncryptedVote)
                       .doFinally(this::openLaoDetail)
                       .subscribe(
                               () -> {

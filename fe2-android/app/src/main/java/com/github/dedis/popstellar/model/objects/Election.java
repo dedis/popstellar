@@ -36,7 +36,7 @@ public class Election extends Event {
   private List<ElectionQuestion> electionQuestions;
   // Election is generated via Kyber and is encoded in Base64
   // decoding it is required before actually starting using it
-  private static String electionKey;
+  private String electionKey;
   // Either OPEN_BALLOT or SECRET_BALLOT
   private final ElectionVersion electionVersion;
 
@@ -66,8 +66,8 @@ public class Election extends Event {
     this.electionVersion = electionVersion;
   }
 
-  public void setElectionKey(String electionKey) {
-    Election.electionKey = electionKey;
+  public String getElectionKey() {
+    return electionKey;
   }
 
   public String getName() {
@@ -85,8 +85,8 @@ public class Election extends Event {
     return electionVersion;
   }
 
-  public static String getElectionKey() {
-    return electionKey;
+  public void setElectionKey(String electionKey) {
+    this.electionKey = electionKey;
   }
 
   public long getCreation() {

@@ -252,7 +252,7 @@ public class ElectionHandlerTest extends TestCase {
     messageHandler.handleMessage(
             laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
-    assertEquals(key, Election.getElectionKey());
+    assertEquals(key, election.getElectionKey());
   }
 
   @Test
