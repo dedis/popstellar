@@ -34,7 +34,7 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
-  private final int ONE_HOUR = 1000 * 60 * 60;
+  private static final int ONE_HOUR = 1000 * 60 * 60;
 
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);

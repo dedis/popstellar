@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
   public static final String TAG = RollCallFragment.class.getSimpleName();
-  private final SimpleDateFormat DATE_FORMAT =
+  private static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private RollCall rollCall;

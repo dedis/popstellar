@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class ElectionFragment extends Fragment {
 
-  private final SimpleDateFormat DATE_FORMAT =
+  private static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private Election election;
