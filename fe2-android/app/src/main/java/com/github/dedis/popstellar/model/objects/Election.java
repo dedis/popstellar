@@ -34,11 +34,17 @@ public class Election extends Event {
   private long start;
   private long end;
   private List<ElectionQuestion> electionQuestions;
+  // Election is generated via Kyber and is encoded in Base64
+  // decoding it is required before actually starting using it
   private static String electionKey;
+  // Either OPEN_BALLOT or SECRET_BALLOT
   private final ElectionVersion electionVersion;
 
-  // Map that associates each sender pk to their votes
-  private final Map<PublicKey, List<ElectionVote>> voteMap;
+  // Map that associates each sender pk to their open ballot votes
+  private final Map<PublicKey, List<ElectionVote>> openVoteMap;
+  // Map that associates each sender pk to their encrypted votes
+  private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteMap;
+
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
@@ -53,41 +59,14 @@ public class Election extends Event {
     this.creation = creation;
     this.results = new HashMap<>();
     this.electionQuestions = new ArrayList<>();
-    this.voteMap = new HashMap<>();
+    this.openVoteMap = new HashMap<>();
+    this.encryptedVoteMap = new HashMap<>();
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
   }
 
-  /**
-   * Encrypts the content of the votes using El-GamaL scheme
-   *
-   * @param votes list of votes to encrypt
-   * @return encrypted votes
-   */
-  public static List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
-    // We need to iterate over all election votes to encrypt them
-    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
-    for (ElectionVote vote : votes) {
-      // We are sure that each vote is unique per question following new specification
-      int voteIndice = vote.getVote();
-
-      // Get the two lsb byte from the indice
-      byte[] voteIndiceInBytes = {(byte) voteIndice, (byte) (voteIndice >> 8)};
-
-      // Create a public key and encrypt the indice
-      Base64URLData electionKeyToBase64 = new Base64URLData(getElectionKey());
-      ElectionPublicKey key = new ElectionPublicKey(electionKeyToBase64);
-      // Encrypt the indice
-      String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
-      ElectionEncryptedVote encryptedVote = new
-              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
-      encryptedVotes.add(encryptedVote);
-    }
-    return encryptedVotes;
-  }
-
-  public static void setElectionKey(String electionKey) {
+  public void setElectionKey(String electionKey) {
     Election.electionKey = electionKey;
   }
 
@@ -159,18 +138,32 @@ public class Election extends Event {
     return messageMap;
   }
 
-  public void putVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {
+  public void putOpenBallotVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {
     if (senderPk == null) {
       throw new IllegalArgumentException("Sender public key cannot be null.");
     }
     if (votes == null || votes.isEmpty()) {
-      throw new IllegalArgumentException("votes cannot be null or empty");
+      throw new IllegalArgumentException("Open ballot votes cannot be null or empty");
     }
     // The list must be sorted by order of question ids
     List<ElectionVote> votesCopy = new ArrayList<>(votes);
     votesCopy.sort(Comparator.comparing(ElectionVote::getQuestionId));
-    voteMap.put(senderPk, votesCopy);
+    openVoteMap.put(senderPk, votesCopy);
   }
+
+  public void putEncryptedVotesBySender(PublicKey senderPk, List<ElectionEncryptedVote> votes) {
+    if (senderPk == null) {
+      throw new IllegalArgumentException("Sender public key cannot be null.");
+    }
+    if (votes == null || votes.isEmpty()) {
+      throw new IllegalArgumentException("Encrypted votes cannot be null or empty");
+    }
+    // The list must be sorted by order of question ids
+    List<ElectionEncryptedVote> votesCopy = new ArrayList<>(votes);
+    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getQuestionId));
+    encryptedVoteMap.put(senderPk, votesCopy);
+  }
+
 
   public void putSenderByMessageId(PublicKey senderPk, MessageID messageId) {
     if (senderPk == null || messageId == null) {
@@ -215,7 +208,7 @@ public class Election extends Event {
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
     for (PublicKey senderPk : messageMap.values()) {
-      for (ElectionVote vote : voteMap.get(senderPk)) {
+      for (ElectionVote vote : openVoteMap.get(senderPk)) {
         listOfVoteIds.add(vote.getId());
       }
     }
@@ -339,6 +332,34 @@ public class Election extends Event {
     Election.id = id;
   }
 
+  /**
+   * Encrypts the content of the votes using El-GamaL scheme
+   *
+   * @param votes list of votes to encrypt
+   * @return encrypted votes
+   */
+  public List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
+    // We need to iterate over all election votes to encrypt them
+    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
+    for (ElectionVote vote : votes) {
+      // We are sure that each vote is unique per question following new specification
+      int voteIndice = vote.getVote();
+
+      // Get the two lsb byte from the indice
+      byte[] voteIndiceInBytes = {(byte) voteIndice, (byte) (voteIndice >> 8)};
+
+      // Create a public key and encrypt the indice
+      Base64URLData electionKeyToBase64 = new Base64URLData(getElectionKey());
+      ElectionPublicKey key = new ElectionPublicKey(electionKeyToBase64);
+      // Encrypt the indice
+      String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
+      ElectionEncryptedVote encryptedVote = new
+              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
+      encryptedVotes.add(encryptedVote);
+    }
+    return encryptedVotes;
+  }
+
   @Override
   public String toString() {
     return "Election{"
@@ -349,24 +370,24 @@ public class Election extends Event {
             + id
             + '\''
             + ", name='"
-        + name
-        + '\''
-        + ", creation="
-        + creation
-        + ", start="
-        + start
-        + ", end="
-        + end
-        + ", electionQuestions="
-        + Arrays.toString(electionQuestions.toArray())
-        + ", voteMap="
-        + voteMap
-        + ", messageMap="
-        + messageMap
-        + ", state="
-        + state
-        + ", results="
-        + results
-        + '}';
+            + name
+            + '\''
+            + ", creation="
+            + creation
+            + ", start="
+            + start
+            + ", end="
+            + end
+            + ", electionQuestions="
+            + Arrays.toString(electionQuestions.toArray())
+            + ", voteMap="
+            + openVoteMap
+            + ", messageMap="
+            + messageMap
+            + ", state="
+            + state
+            + ", results="
+            + results
+            + '}';
   }
 }

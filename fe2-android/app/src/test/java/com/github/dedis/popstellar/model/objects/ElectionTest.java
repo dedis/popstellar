@@ -4,17 +4,24 @@ import static com.github.dedis.popstellar.model.network.method.message.data.elec
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -22,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 
 public class ElectionTest {
 
@@ -40,8 +49,8 @@ public class ElectionTest {
           "my question",
           "Plurality",
           false,
-          Arrays.asList("candidate1", "candidate2"),
-          "my election id");
+              Arrays.asList("candidate1", "candidate2"),
+              "my election id");
   private final String name = "my election name";
   private final String id = "my election id";
   private final long startTime = 0;
@@ -50,10 +59,31 @@ public class ElectionTest {
   private final Election election =
           new Election("lao id", Instant.now().getEpochSecond(), name, OPEN_BALLOT);
 
+  // Add some vote for decryption/encryption testing purposes
+  private final String questionId1 = " myQuestion1";
+  private final String laoId = "lao";
+
+  // Set up a open ballot election
+  private final ElectionVote electionVote1 =
+          new ElectionVote(questionId1, 1, false, null, id);
+  private final List<ElectionVote> electionVotes = Arrays.asList(electionVote1);
+
+  // Generate public key and populate the election key field
+  ElectionKeyPair encryptionKeys = ElectionKeyPair.generateKeyPair();
+  ElectionPublicKey electionPublicKey = encryptionKeys.getEncryptionScheme();
+  ElectionPrivateKey electionPrivateKey = encryptionKeys.getDecryptionScheme();
+
+  // Required to test encryption
+  @Before
+  public void setUp() {
+    Base64URLData encodedKey = new Base64URLData(electionPublicKey.getPublicKey().toBytes());
+    election.setElectionKey(encodedKey.getEncoded());
+  }
+
   @Test
   public void settingNullParametersThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> election.setName(null));
-    assertThrows(IllegalArgumentException.class, () -> election.setId(null));
+    assertThrows(IllegalArgumentException.class, () -> Election.setId(null));
   }
 
   @Test
@@ -70,7 +100,7 @@ public class ElectionTest {
 
   @Test
   public void settingAndGettingReturnsCorrespondingId() {
-    election.setId(id);
+    Election.setId(id);
     assertThat(election.getId(), is(id));
   }
 
@@ -120,10 +150,10 @@ public class ElectionTest {
               Arrays.asList(
                       new ElectionVote("c", 3, false, "", "my election id"),
                       new ElectionVote("d", 4, false, "", "my election id"));
-    election.putVotesBySender(SENDER_2, votes2);
+    election.putOpenBallotVotesBySender(SENDER_2, votes2);
     election.putSenderByMessageId(SENDER_1, MESSAGE_ID_1);
     election.putSenderByMessageId(SENDER_2, MESSAGE_ID_2);
-    election.putVotesBySender(SENDER_1, votes1);
+    election.putOpenBallotVotesBySender(SENDER_1, votes1);
     String hash =
         Hash.hash(
             votes1.get(1).getId(),
@@ -171,6 +201,27 @@ public class ElectionTest {
   public void testAndSetElectionKey() {
     String key = "key";
     election.setElectionKey("key");
-    assertThat(key, is(election.getElectionKey()));
+    assertThat(key, is(Election.getElectionKey()));
   }
+
+  @Test
+  public void electionEncryptionProcess() {
+    // First encrypt
+    List<ElectionEncryptedVote> encryptedVotes = election.encrypt(electionVotes);
+
+    // Compare results
+    for (int i = 0; i < encryptedVotes.size(); i++) {
+      ElectionEncryptedVote e = encryptedVotes.get(i);
+      ElectionVote o = electionVotes.get(i);
+      try {
+        byte[] decryptedData = electionPrivateKey.decrypt(e.getVote());
+        // Pad the result
+        int decryptedINt = ((decryptedData[1] & 0xff) << 8) | (decryptedData[0] & 0xff);
+        int openVoteIndice = o.getVote();
+        assertEquals(openVoteIndice, decryptedINt);
+      } catch (CothorityCryptoException exception) {
+      } // Shouldnt do anythig
+    }
+  }
+
 }

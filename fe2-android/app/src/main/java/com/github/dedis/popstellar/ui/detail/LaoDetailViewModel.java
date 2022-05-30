@@ -371,7 +371,7 @@ public class LaoDetailViewModel extends AndroidViewModel
         castVote = new CastVote<ElectionVote>(votes, election.getId(), lao.getId());
       } else {
         Log.d(TAG, "Encrypting the vote ...");
-        List<ElectionEncryptedVote> encryptedVotes = Election.encrypt(votes);
+        List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
         castVote = new CastVote<ElectionEncryptedVote>(encryptedVotes, election.getId(), lao.getId());
         Log.d(TAG, "Vote encrypted!");
       }
