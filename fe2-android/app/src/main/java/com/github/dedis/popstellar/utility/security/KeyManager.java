@@ -79,7 +79,9 @@ public class KeyManager {
     return keyPair.getPublicKey();
   }
 
-  /** @return the deice keypair */
+  /**
+   * @return the device keypair
+   */
   public KeyPair getMainKeyPair() {
     return keyPair;
   }
