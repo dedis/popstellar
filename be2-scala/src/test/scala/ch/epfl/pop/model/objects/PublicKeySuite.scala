@@ -16,7 +16,7 @@ class PublicKeySuite extends FunSuite with Matchers {
     for (suffix <- Seq("", "2")) {
       val Seq(JsString(pubkeyData), JsString(pubkeyHash)) = data.asJsObject.getFields(s"publicKey$suffix", s"publicKeyHash$suffix")
       val pubkey = PublicKey(Base64Data(pubkeyData))
-      pubkey.hash should equal(Base64Data(pubkeyHash))
+      pubkey.hash.base64Data should equal(Base64Data(pubkeyHash))
     }
   }
 }
