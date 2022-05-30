@@ -1,25 +1,18 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { Button } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { getNetworkManager } from 'core/network';
-import { Spacing, Typography } from 'core/styles';
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: Spacing.x1,
-    marginBottom: Spacing.x1,
-  },
-});
 
 const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   if (isOrganizer) {
@@ -47,7 +40,7 @@ const LaoProperties = () => {
   const isWitness = useSelector(selectIsLaoWitness);
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
         {'\n'}

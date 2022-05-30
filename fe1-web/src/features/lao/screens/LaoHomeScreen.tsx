@@ -50,10 +50,6 @@ const styles = StyleSheet.create({
   notificationButton: {
     marginLeft: Spacing.x1,
   },
-  qrCodeContainer: {
-    marginTop: Spacing.x2,
-    marginBottom: Spacing.x1,
-  },
 });
 
 export const LaoHomeScreenHeader = () => {
@@ -139,7 +135,7 @@ export const LaoHomeScreenHeaderRight = () => {
               {STRINGS.lao_qr_code_title}
             </ModalHeader>
 
-            <View style={styles.qrCodeContainer}>
+            <View>
               <QRCode
                 value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
                 visibility

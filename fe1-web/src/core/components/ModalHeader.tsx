@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { ModalStyles, Typography } from 'core/styles';
+import { ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 const styles = StyleSheet.create({
@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    marginBottom: Spacing.x1,
   } as ViewStyle,
   title: {
     ...ModalStyles.modalTitle,

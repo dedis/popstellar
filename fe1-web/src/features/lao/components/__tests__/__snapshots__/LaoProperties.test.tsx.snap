@@ -314,14 +314,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                         }
                       }
                     >
-                      <View
-                        style={
-                          Object {
-                            "marginBottom": 16,
-                            "marginTop": 16,
-                          }
-                        }
-                      >
+                      <View>
                         <Text
                           style={
                             Object {
@@ -915,14 +908,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                         }
                       }
                     >
-                      <View
-                        style={
-                          Object {
-                            "marginBottom": 16,
-                            "marginTop": 16,
-                          }
-                        }
-                      >
+                      <View>
                         <Text
                           style={
                             Object {
@@ -1516,14 +1502,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                         }
                       }
                     >
-                      <View
-                        style={
-                          Object {
-                            "marginBottom": 16,
-                            "marginTop": 16,
-                          }
-                        }
-                      >
+                      <View>
                         <Text
                           style={
                             Object {

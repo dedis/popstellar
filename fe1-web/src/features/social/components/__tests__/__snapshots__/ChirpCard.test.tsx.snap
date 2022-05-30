@@ -173,6 +173,7 @@ Array [
               "alignItems": "center",
               "flexDirection": "row",
               "justifyContent": "center",
+              "marginBottom": 16,
               "width": "100%",
             }
           }
@@ -574,6 +575,7 @@ Array [
               "alignItems": "center",
               "flexDirection": "row",
               "justifyContent": "center",
+              "marginBottom": 16,
               "width": "100%",
             }
           }
@@ -1000,6 +1002,7 @@ Array [
               "alignItems": "center",
               "flexDirection": "row",
               "justifyContent": "center",
+              "marginBottom": 16,
               "width": "100%",
             }
           }
@@ -1426,6 +1429,7 @@ Array [
               "alignItems": "center",
               "flexDirection": "row",
               "justifyContent": "center",
+              "marginBottom": 16,
               "width": "100%",
             }
           }
@@ -1827,6 +1831,7 @@ Array [
               "alignItems": "center",
               "flexDirection": "row",
               "justifyContent": "center",
+              "marginBottom": 16,
               "width": "100%",
             }
           }

@@ -662,6 +662,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                                       "alignItems": "center",
                                       "flexDirection": "row",
                                       "justifyContent": "center",
+                                      "marginBottom": 16,
                                       "width": "100%",
                                     }
                                   }
