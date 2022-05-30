@@ -12,6 +12,14 @@ import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import LaoHomeScreen, { LaoHomeScreenHeader, LaoHomeScreenHeaderRight } from '../LaoHomeScreen';
 
+jest.mock('react-qr-code', () => {
+  const MockQrCode = (props: any) => `[QrCode ${JSON.stringify(props)}]`;
+  return {
+    __esModule: true,
+    default: MockQrCode,
+  };
+});
+
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
