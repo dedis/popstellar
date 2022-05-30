@@ -28,7 +28,7 @@ import java.util.TreeMap;
 public class Election extends Event {
 
   private Channel channel;
-  private static String id;
+  private final String id;
   private String name;
   private long creation;
   private long start;
@@ -41,9 +41,9 @@ public class Election extends Event {
   private final ElectionVersion electionVersion;
 
   // Map that associates each sender pk to their open ballot votes
-  private final Map<PublicKey, List<ElectionVote>> openVoteMap;
+  private final Map<PublicKey, List<ElectionVote>> openVoteByPublicKey;
   // Map that associates each sender pk to their encrypted votes
-  private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteMap;
+  private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey;
 
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
@@ -54,13 +54,13 @@ public class Election extends Event {
   private final Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name, ElectionVersion electionVersion) {
-    id = generateElectionSetupId(laoId, creation, name);
+    this.id = generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.results = new HashMap<>();
     this.electionQuestions = new ArrayList<>();
-    this.openVoteMap = new HashMap<>();
-    this.encryptedVoteMap = new HashMap<>();
+    this.openVoteByPublicKey = new HashMap<>();
+    this.encryptedVoteByPublicKey = new HashMap<>();
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
@@ -138,6 +138,13 @@ public class Election extends Event {
     return messageMap;
   }
 
+  public static void setId(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException("election id shouldn't be null");
+    }
+    id = id;
+  }
+
   public void putOpenBallotVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {
     if (senderPk == null) {
       throw new IllegalArgumentException("Sender public key cannot be null.");
@@ -148,20 +155,7 @@ public class Election extends Event {
     // The list must be sorted by order of question ids
     List<ElectionVote> votesCopy = new ArrayList<>(votes);
     votesCopy.sort(Comparator.comparing(ElectionVote::getQuestionId));
-    openVoteMap.put(senderPk, votesCopy);
-  }
-
-  public void putEncryptedVotesBySender(PublicKey senderPk, List<ElectionEncryptedVote> votes) {
-    if (senderPk == null) {
-      throw new IllegalArgumentException("Sender public key cannot be null.");
-    }
-    if (votes == null || votes.isEmpty()) {
-      throw new IllegalArgumentException("Encrypted votes cannot be null or empty");
-    }
-    // The list must be sorted by order of question ids
-    List<ElectionEncryptedVote> votesCopy = new ArrayList<>(votes);
-    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getQuestionId));
-    encryptedVoteMap.put(senderPk, votesCopy);
+    openVoteByPublicKey.put(senderPk, votesCopy);
   }
 
 
@@ -197,32 +191,17 @@ public class Election extends Event {
     return end;
   }
 
-  /**
-   * Computes the hash for the registered votes, when terminating an election (sorted by message
-   * id's alphabetical order)
-   *
-   * @return the hash of all registered votes
-   */
-  public String computerRegisteredVotes() {
-    List<String> listOfVoteIds = new ArrayList<>();
-    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
-    // messageIds
-    for (PublicKey senderPk : messageMap.values()) {
-      if (getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        for (ElectionVote vote : openVoteMap.get(senderPk)) {
-          listOfVoteIds.add(vote.getId());
-        }
-      } else {
-        for (ElectionEncryptedVote vote : encryptedVoteMap.get(senderPk)) {
-          listOfVoteIds.add(vote.getId());
-        }
-      }
+  public void putEncryptedVotesBySender(PublicKey senderPk, List<ElectionEncryptedVote> votes) {
+    if (senderPk == null) {
+      throw new IllegalArgumentException("Sender public key cannot be null.");
     }
-    if (listOfVoteIds.isEmpty()) {
-      return "";
-    } else {
-      return Hash.hash(listOfVoteIds.toArray(new String[0]));
+    if (votes == null || votes.isEmpty()) {
+      throw new IllegalArgumentException("Encrypted votes cannot be null or empty");
     }
+    // The list must be sorted by order of question ids
+    List<ElectionEncryptedVote> votesCopy = new ArrayList<>(votes);
+    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getQuestionId));
+    encryptedVoteByPublicKey.put(senderPk, votesCopy);
   }
 
   public void setResults(List<ElectionResultQuestion> electionResultsQuestions) {
@@ -331,11 +310,32 @@ public class Election extends Event {
             "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex);
   }
 
-  public static void setId(String id) {
-    if (id == null) {
-      throw new IllegalArgumentException("election id shouldn't be null");
+  /**
+   * Computes the hash for the registered votes, when terminating an election (sorted by message
+   * id's alphabetical order)
+   *
+   * @return the hash of all registered votes
+   */
+  public String computerRegisteredVotes() {
+    List<String> listOfVoteIds = new ArrayList<>();
+    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
+    // messageIds
+    for (PublicKey senderPk : messageMap.values()) {
+      if (getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+        for (ElectionVote vote : openVoteByPublicKey.get(senderPk)) {
+          listOfVoteIds.add(vote.getId());
+        }
+      } else {
+        for (ElectionEncryptedVote vote : encryptedVoteByPublicKey.get(senderPk)) {
+          listOfVoteIds.add(vote.getId());
+        }
+      }
     }
-    Election.id = id;
+    if (listOfVoteIds.isEmpty()) {
+      return "";
+    } else {
+      return Hash.hash(listOfVoteIds.toArray(new String[0]));
+    }
   }
 
   /**
@@ -387,7 +387,7 @@ public class Election extends Event {
             + ", electionQuestions="
             + Arrays.toString(electionQuestions.toArray())
             + ", voteMap="
-            + openVoteMap
+            + openVoteByPublicKey
             + ", messageMap="
             + messageMap
             + ", state="

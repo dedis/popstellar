@@ -370,10 +370,10 @@ public class LaoDetailViewModel extends AndroidViewModel
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
         castOpenBallotVote = new CastVote<>(votes, election.getId(), lao.getId());
       } else {
-        Log.d(TAG, "Encrypting the vote ...");
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
         castEncryptedVote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
-        Log.d(TAG, "Vote encrypted!");
+        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
+                .show();
       }
 
       Channel electionChannel = election.getChannel();

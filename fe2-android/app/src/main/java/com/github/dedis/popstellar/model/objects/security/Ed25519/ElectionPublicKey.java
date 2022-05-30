@@ -74,7 +74,7 @@ public class ElectionPublicKey {
      */
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getPublicKey().toString());
+        return Objects.hash(getPublicKey().toString());
     }
 
     /**
@@ -93,20 +93,15 @@ public class ElectionPublicKey {
         // An example for embedding was found here:
         // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/external/js/kyber/spec/group/edwards25519/point.spec.ts#L203
 
-        // M := cothority.Suite.Point().Embed(message, random.New())
         // Proper embedding with overflowing byte array (len > 32) will need to be changed later
         Point M = Ed25519Point.embed(message);
+
         // ElGamal-encrypt the point to produce ciphertext (K,C).
-        // k := cothority.Suite.Scalar().Pick(random.New()) -- ephemeral private key
-        // k is a random number of primer order
         byte[] seed = new byte[Ed25519.field.getb() / 8];
         (new SecureRandom()).nextBytes(seed);
         Scalar k = new Ed25519Scalar(seed);
-        // K = cothority.Suite.Point().Mul(k, nil)
         Point K = Ed25519Point.base().mul(k);
-        // S := cothority.Suite.Point().Mul(k, public) -- ephemeral DH shared secret
         Point S = getPublicKey().mul(k);
-        // C = S.Add(S, M)  -- message blinded with secret
         Point C = S.add(M);
 
         // Concat K and C and encodes it in Base64

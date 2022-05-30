@@ -3,12 +3,14 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
-public class ElectionVote{
+import java.util.Objects;
+
+public class ElectionVote {
 
   @SerializedName(value = "id")
   private final String id;
 
-   // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
+  // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
   @SerializedName(value = "question")
   private final String questionId; // id of the question
 
@@ -60,14 +62,14 @@ public class ElectionVote{
       return false;
     }
     ElectionVote that = (ElectionVote) o;
-    return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getVote(), that.getVote());
+    return Objects.equals(getQuestionId(), that.getQuestionId())
+            && Objects.equals(getId(), that.getId())
+            && Objects.equals(getVote(), that.getVote());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getId(), getVote(), getQuestionId());
+    return Objects.hash(getId(), getVote(), getQuestionId());
   }
 
   @Override

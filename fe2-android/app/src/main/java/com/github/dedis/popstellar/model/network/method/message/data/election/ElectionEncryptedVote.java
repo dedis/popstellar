@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class ElectionEncryptedVote {
 
   // Id of the object ElectionVote :
@@ -67,9 +69,9 @@ public class ElectionEncryptedVote {
       return false;
     }
     ElectionEncryptedVote that = (ElectionEncryptedVote) o;
-    return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
-            && java.util.Objects.equals(getId(), that.getId())
-            && java.util.Objects.equals(getVote(), that.getVote());
+    return Objects.equals(getQuestionId(), that.getQuestionId())
+            && Objects.equals(getId(), that.getId())
+            && Objects.equals(getVote(), that.getVote());
   }
 
   @Override
