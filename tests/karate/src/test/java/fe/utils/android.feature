@@ -11,10 +11,10 @@ Feature: android page object
     # ================= Page Object Start ====================
 
     # Tab buttons
-    * def tab_home_selector = '#com.github.dedis.popstellar:id/tab_home'
-    * def tab_connect_selector = '#com.github.dedis.popstellar:id/tab_connect'
-    * def tab_launch_selector = '#com.github.dedis.popstellar:id/tab_launch'
-    * def tab_wallet_selector = '#com.github.dedis.popstellar:id/tab_wallet'
+    * def tab_home_selector = '#com.github.dedis.popstellar:id/home_home_menu'
+    * def tab_connect_selector = '#com.github.dedis.popstellar:id/home_connect_menu'
+    * def tab_launch_selector = '#com.github.dedis.popstellar:id/home_launch_menu'
+    * def tab_wallet_selector = '#com.github.dedis.popstellar:id/home_wallet_menu'
 
     # Launch tab
     * def tab_launch_lao_name_selector = '#com.github.dedis.popstellar:id/entry_box_launch'
@@ -25,7 +25,11 @@ Feature: android page object
     * def tab_wallet_confirm_selector = '#com.github.dedis.popstellar:id/button_confirm_seed'
 
     # Lao Event List
-    * def add_event_selector = '#com.github.dedis.popstellar:id/add_future_event_button'
+    * def add_event_selector = '#com.github.dedis.popstellar:id/add_event'
+    * def add_roll_call_selector = '#com.github.dedis.popstellar:id/add_roll_call'
+    * def roll_call_title_selector = '#com.github.dedis.popstellar:id/roll_call_title_text'
+    * def roll_call_open_selector = '#com.github.dedis.popstellar:id/roll_call_open'
+    * def roll_call_close_confirm_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization

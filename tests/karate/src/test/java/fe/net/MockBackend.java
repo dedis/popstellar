@@ -1,5 +1,6 @@
 package fe.net;
 
+import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 
@@ -12,6 +13,8 @@ import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.util.concurrent.*;
 import java.util.function.Function;
+
+import static common.utils.JsonUtils.getJSON;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -27,6 +30,10 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   // Can be null if no reply should be sent back.
   private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
+  private Json laoCreationMessageData;
+
+  private static final String VALID_CATCHUP_REPLY_TEMPLATE =
+      "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":[]}";
 
   public MockBackend(MessageQueue queue, int port) {
     this.queue = queue;
@@ -59,11 +66,36 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   @Override
   protected void channelRead0(
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
-    logger.info("message received : {}", frame.text());
-    queue.onNewMsg(frame.text());
+    String frameText = frame.text();
+    logger.info("message received : {}", frameText);
+    queue.onNewMsg(frameText);
+    Json json = Json.of(frame.text());
 
-    // Send back the reply
-    if (replyProducer != null) send(replyProducer.apply(frame.text()));
+
+    if (json.get("method").equals("publish")){
+      Json paramJson = getJSON(json, "params");
+  //    logger.info("params is {}", paramJson);
+//      if (param == null){
+//        logger.info("params is null");
+//      }
+      Json msg = getJSON(paramJson, "message");
+  //    logger.info("msg is {}", msg);
+      laoCreationMessageData = msg;
+    }
+
+    if (json.get("method").equals("catchup") && laoCreationMessageData != null){
+      if (json.toString().contains("consensus")){
+        if (replyProducer != null) send(replyProducer.apply(frameText));
+      } else {
+        String replaceId =
+            VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) json.get("id")));
+        String toSend = replaceId.replace("[]", "[" + laoCreationMessageData.toString() + "]");
+        send(toSend);
+      }
+    } else {
+      // Send back the reply
+      if (replyProducer != null) send(replyProducer.apply(frameText));
+    }
   }
 
   public int getPort() {
@@ -102,5 +134,27 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   public MessageBuffer getBuffer() {
     return queue;
+  }
+
+  public String getPublishMessage() {
+    String text = queue.takeTimeout(5000);
+    if (!text.toLowerCase().contains("publish")) {
+      logger.info("getPublishMessage : {}", text);
+      throw new IllegalStateException();
+    }
+    Json json = Json.of(text);
+    Json paramJson = getJSON(json, "params");
+    logger.info("params is {}", paramJson);
+
+    Json msg = getJSON(paramJson, "message");
+    logger.info("msg is {}", msg);
+
+    String replaceId =
+        VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) json.get("id")));
+    return replaceId.replace("[]", "[" + msg.toString() + "]");
+  }
+
+  public void clearBuffer() {
+    queue.clear();
   }
 }
