@@ -220,7 +220,7 @@ public class ElectionTest {
         int openVoteIndice = o.getVote();
         assertEquals(openVoteIndice, decryptedINt);
       } catch (CothorityCryptoException exception) {
-      } // Shouldnt do anythig
+      } // Shouldn't do anything
     }
   }
 

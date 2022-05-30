@@ -208,8 +208,14 @@ public class Election extends Event {
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
     for (PublicKey senderPk : messageMap.values()) {
-      for (ElectionVote vote : openVoteMap.get(senderPk)) {
-        listOfVoteIds.add(vote.getId());
+      if (getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+        for (ElectionVote vote : openVoteMap.get(senderPk)) {
+          listOfVoteIds.add(vote.getId());
+        }
+      } else {
+        for (ElectionEncryptedVote vote : encryptedVoteMap.get(senderPk)) {
+          listOfVoteIds.add(vote.getId());
+        }
       }
     }
     if (listOfVoteIds.isEmpty()) {
