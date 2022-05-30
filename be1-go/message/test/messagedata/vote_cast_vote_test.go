@@ -64,7 +64,7 @@ func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
 			buf, err = json.Marshal(msg)
 			require.NoError(t, err)
 
-			err = json.Unmarshal(buf, msg)
+			err = json.Unmarshal(buf, &msg)
 			require.Error(t, err)
 		}
 	}

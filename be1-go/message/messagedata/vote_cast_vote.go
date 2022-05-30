@@ -41,6 +41,9 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 	switch t := vTemp.Vote.(type) {
 	case float64:
 		i := int(t)
+		if float64(i) != t {
+			return answer.NewErrorf(-4, "invalid vote type, should be int but was float")
+		}
 		*v = Vote{vTemp.ID, vTemp.Question, i}
 		return nil
 	case string:
