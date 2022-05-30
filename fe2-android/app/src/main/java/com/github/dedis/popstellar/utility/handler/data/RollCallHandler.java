@@ -96,6 +96,23 @@ public final class RollCallHandler {
     lao.updateRollCall(opens, rollCall);
 
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
+    try {
+      PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
+      context
+              .getMessageSender()
+              .subscribe(channel.subChannel("coin").subChannel(token.getPublicKey().getEncoded()))
+              .subscribe();
+
+
+    } catch (InvalidPoPTokenException e) {
+      Log.i(TAG, "PROBLEME channel coin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    } catch (KeyException e) {
+      Log.e(
+              TAG,
+              "PROBLEME channel coin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+              e);
+    }
+
   }
 
   /**
@@ -141,6 +158,8 @@ public final class RollCallHandler {
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
+
+
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {

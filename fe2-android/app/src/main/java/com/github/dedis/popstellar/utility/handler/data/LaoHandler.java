@@ -68,7 +68,8 @@ public final class LaoHandler {
               () -> Log.d(TAG, "subscription to consensus channel was a success"),
               error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
     }
-    laoRepository.updateNodes(channel);
+    // should we create a coin channel here ?
+       laoRepository.updateNodes(channel);
   }
 
   /**
