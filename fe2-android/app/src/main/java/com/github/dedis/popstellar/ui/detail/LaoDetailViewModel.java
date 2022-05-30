@@ -376,7 +376,6 @@ public class LaoDetailViewModel extends AndroidViewModel
         Log.d(TAG, "Vote encrypted!");
       }
 
-      //TODO differentiate both votes and send
       Channel electionChannel = election.getChannel();
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =

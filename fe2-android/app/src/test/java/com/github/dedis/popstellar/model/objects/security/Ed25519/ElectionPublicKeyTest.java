@@ -33,7 +33,7 @@ public class ElectionPublicKeyTest {
 
     @Test
     public void toStringTest() {
-        String format = keyPairScheme.toString();
+        String format = keyPairScheme.point.toString();
         assertEquals(format, validEncryptionScheme.toString());
     }
 
