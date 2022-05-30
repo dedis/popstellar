@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class ElectionFragment extends Fragment {
 
-  private static final SimpleDateFormat DATE_FORMAT =
+  private final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private Election election;
@@ -75,7 +75,6 @@ public class ElectionFragment extends Fragment {
             case CREATED:
               // When implemented across all subsystems go into start election fragment which
               // implements consensus
-              // laoDetailViewModel.openStartElection(true);
               new AlertDialog.Builder(getContext())
                   .setTitle(R.string.confirm_title)
                   .setMessage(R.string.election_confirm_open)
