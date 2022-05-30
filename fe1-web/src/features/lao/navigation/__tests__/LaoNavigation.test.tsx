@@ -14,6 +14,14 @@ import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import LaoNavigation from '../LaoNavigation';
 
+jest.mock('react-qr-code', () => {
+  const MockQrCode = (props: any) => `[QrCode ${JSON.stringify(props)}]`;
+  return {
+    __esModule: true,
+    default: MockQrCode,
+  };
+});
+
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
