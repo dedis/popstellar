@@ -22,8 +22,9 @@ object OpenElectionExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingOpenElection: OpenElection = OpenElection(LAO_ID, ELECTION_ID, NOT_STALE_OPENED_AT)
+  final val DATA_OPEN_MESSAGE: Hash = Hash(Base64Data.encode(workingOpenElection.toJson.toString))
   final val MESSAGE_OPEN_ELECTION_WORKING: Message = new Message(
-    Base64Data.encode(workingOpenElection.toJson.toString),
+    DATA_OPEN_MESSAGE.base64Data,
     SENDER_ELECTION,
     SIGNATURE,
     Hash(Base64Data("")),

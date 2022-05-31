@@ -42,7 +42,9 @@ describe('ElectionPublicKey', () => {
     it('returns false if the point is different', () => {
       const key1 = new ElectionPublicKey(mockEncodedElectionKey);
       const p = ed25519.point().pick();
-      const key2 = new ElectionPublicKey(new Base64UrlData(p.marshalBinary().toString('base64')));
+      const key2 = new ElectionPublicKey(
+        new Base64UrlData(p.marshalBinary().toString('base64url')),
+      );
       expect(key1.equals(key2)).toBeFalse();
     });
   });
@@ -51,7 +53,7 @@ describe('ElectionPublicKey', () => {
     it('produces output of the correct form', () => {
       const key = new ElectionPublicKey(mockEncodedElectionKey);
       const encryptedData = key.encrypt(Buffer.from('x', 'utf-8'));
-      const b = Buffer.from(encryptedData, 'base64');
+      const b = Buffer.from(encryptedData, 'base64url');
 
       expect(Buffer.byteLength(b)).toEqual(64);
 
@@ -65,7 +67,7 @@ describe('ElectionPublicKey', () => {
   it('Decoding reconstructs the correct Ed25519 point', () => {
     const p = ed25519.point().pick();
     const electionKey = new ElectionPublicKey(
-      new Base64UrlData(p.marshalBinary().toString('base64')),
+      new Base64UrlData(p.marshalBinary().toString('base64url')),
     );
 
     expect(electionKey.point.equals(p)).toBeTrue();

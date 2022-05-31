@@ -20,7 +20,7 @@ export class ElectionPrivateKey {
   }
 
   toString(): string {
-    return this.scalar.marshalBinary().toString('base64');
+    return this.scalar.marshalBinary().toString('base64url');
   }
 
   toBase64(): Base64UrlData {

@@ -43,7 +43,9 @@ describe('ElectionPrivateKey', () => {
     it('returns false if the scalar is different', () => {
       const key1 = new ElectionPrivateKey(mockEncodedElectionPrivateKey);
       const p = ed25519.scalar().pick() as Ed25519Scalar;
-      const key2 = new ElectionPrivateKey(new Base64UrlData(p.marshalBinary().toString('base64')));
+      const key2 = new ElectionPrivateKey(
+        new Base64UrlData(p.marshalBinary().toString('base64url')),
+      );
       expect(key1.equals(key2)).toBeFalse();
     });
   });
@@ -51,7 +53,7 @@ describe('ElectionPrivateKey', () => {
   it('Decoding reconstructs the correct Ed25519 scalar', () => {
     const p = ed25519.scalar().pick() as Ed25519Scalar;
     const electionKey = new ElectionPrivateKey(
-      new Base64UrlData(p.marshalBinary().toString('base64')),
+      new Base64UrlData(p.marshalBinary().toString('base64url')),
     );
 
     expect(electionKey.scalar.equals(p)).toBeTrue();
