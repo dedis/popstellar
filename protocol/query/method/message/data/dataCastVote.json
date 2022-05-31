@@ -45,7 +45,7 @@
                             },
                             "vote": {
                                 "description": "index corresponding to the ballot_option",
-                                "type": ["integer", "string"],
+                                "type": "integer",
                                 "$comment": "index of the option to vote for"
                             }
                         }
