@@ -72,7 +72,7 @@ Feature: Create a pop LAO
           "action": "create",
           "id": '#(getLaoValid)',
           "name": "LAO",
-          "creation": 1633035721,
+          "creation": '#(getLaoValidCreationTime)',
           "organizer": '#(getOrganizer)',
           "witnesses": []
         }
@@ -99,4 +99,24 @@ Feature: Create a pop LAO
     When frontend.publish(JSON.stringify(laoCreateRequest), channel)
     And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
     Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
+  Scenario: Create Lao with different public key from the organizer should fail with error response
+    Given def laoCreateRequest =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(getLaoValid)',
+          "name": "LAO",
+          "creation": 1633035721,
+          "organizer": '#(getOrganizer)',
+          "witnesses": []
+        }
+      """
+
+    * frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    Then match answer contains ACCESS_DENIED
     And match frontend.receiveNoMoreResponses() == true

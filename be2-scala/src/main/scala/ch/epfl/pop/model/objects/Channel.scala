@@ -2,6 +2,7 @@ package ch.epfl.pop.model.objects
 
 import scala.util.{Success, Try}
 
+
 final case class Channel(channel: String) {
 
   /**
@@ -48,20 +49,22 @@ object Channel {
   final val CHANNEL_SEPARATOR: Char = '/'
   final val DATA_SEPARATOR: Char = '#'
   final val ROOT_CHANNEL: Channel = Channel(s"${CHANNEL_SEPARATOR}root")
-  final val ROOT_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}root${CHANNEL_SEPARATOR}"
+  final val ROOT_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}root$CHANNEL_SEPARATOR"
 
   private def channelRegex: String = "^/root(/[^/]+)*$"
 
   final val LAO_DATA_LOCATION: String = s"${DATA_SEPARATOR}laodata"
 
-  final val SOCIAL_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}social${CHANNEL_SEPARATOR}"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}social$CHANNEL_SEPARATOR"
   final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"
   final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
   def apply(channel: String): Channel = {
-    if (channel.trim.length == 0 || !channel.matches(channelRegex)) {
+    if (channel.trim.isEmpty || !channel.matches(channelRegex)) {
       throw new IllegalArgumentException("The channel name is invalid")
     }
     new Channel(channel)
   }
+
 }
+

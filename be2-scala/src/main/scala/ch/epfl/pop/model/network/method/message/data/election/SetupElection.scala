@@ -4,6 +4,7 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
+import ch.epfl.pop.model.network.method.message.data.election.VersionType.VersionType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
@@ -12,7 +13,7 @@ final case class SetupElection(
                                 id: Hash,
                                 loa: Hash,
                                 name: String,
-                                version: String,
+                                version: VersionType,
                                 created_at: Timestamp,
                                 start_time: Timestamp,
                                 end_time: Timestamp,
@@ -27,7 +28,7 @@ object SetupElection extends Parsable {
              id: Hash,
              loa: Hash,
              name: String,
-             version: String,
+             version: VersionType,
              created_at: Timestamp,
              start_time: Timestamp,
              end_time: Timestamp,
