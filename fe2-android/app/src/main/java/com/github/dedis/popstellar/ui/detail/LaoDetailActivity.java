@@ -308,7 +308,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                 intent.putExtra(
                     DigitalCashMain.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
                 Log.d(TAG,"Set the LAO Name : "+  mViewModel.getCurrentLaoValue().getName() );
-                intent.putExtra(DigitalCashMain.ROLL_CALL_ID, mViewModel.getCurrentRollCallId());
+                intent.putExtra(DigitalCashMain.ROLL_CALL_ID, mViewModel.getCurrentLaoValue().getLastRollCallclosed());
                 startActivity(intent);
               }
             });

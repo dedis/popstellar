@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -92,26 +93,8 @@ public final class RollCallHandler {
     // We might be opening a closed one
     rollCall.setEnd(0);
     rollCall.setId(updateId);
-
     lao.updateRollCall(opens, rollCall);
-
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
-    try {
-      PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
-      context
-              .getMessageSender()
-              .subscribe(channel.subChannel("coin").subChannel(token.getPublicKey().getEncoded()))
-              .subscribe();
-      Log.d(TAG, "Manage to create the channel ");
-    } catch (InvalidPoPTokenException e) {
-      Log.i(TAG, "PROBLEME channel coin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    } catch (KeyException e) {
-      Log.e(
-              TAG,
-              "PROBLEME channel coin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-              e);
-    }
-
   }
 
   /**
@@ -144,6 +127,7 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
+    lao.setLastRollCallclosed(updateId);
     lao.updateRollCall(closes, rollCall);
     lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));

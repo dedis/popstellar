@@ -30,6 +30,7 @@ public final class Lao {
   private MessageID modificationId;
   private Set<PublicKey> witnesses;
   private final Map<MessageID, WitnessMessage> witnessMessages;
+  private String lastRollCallclosed = "";
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses
@@ -453,5 +454,13 @@ public final class Lao {
         + ", electInstances="
         + messageIdToElectInstance.values()
         + '}';
+  }
+
+  public String getLastRollCallclosed() {
+    return lastRollCallclosed;
+  }
+
+  public void setLastRollCallclosed(String lastRollCallclosed) {
+    this.lastRollCallclosed = lastRollCallclosed;
   }
 }

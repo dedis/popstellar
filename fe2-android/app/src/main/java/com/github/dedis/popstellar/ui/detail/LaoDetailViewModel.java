@@ -207,7 +207,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final CompositeDisposable disposables;
   private final Gson gson;
   private final Wallet wallet;
-  private String currentRollCallId = ""; // used to know which roll call to close
+  private String currentRollCallId = "";// used to know which roll call to close
+  private String lastRollCallClosedId = "";
   private Set<PublicKey> attendees = new HashSet<>();
   private Set<PublicKey> witnesses =
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
@@ -1305,5 +1306,13 @@ public class LaoDetailViewModel extends AndroidViewModel
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
     }
+  }
+
+  public String getLastRollCallClosedId() {
+    return lastRollCallClosedId;
+  }
+
+  public void setLastRollCallClosedId(String lastRollCallClosedId) {
+    this.lastRollCallClosedId = lastRollCallClosedId;
   }
 }
