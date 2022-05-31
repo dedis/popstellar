@@ -65,7 +65,10 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
             }
             isExpanded={!!isQuestionOpen[question.id]}>
             {question.ballot_options.map((ballotOption, idx) => {
-              const listStyles = List.getListItemStyles(idx === 0, idx === ballotOption.length - 1);
+              const listStyles = List.getListItemStyles(
+                idx === 0,
+                idx === question.ballot_options.length - 1,
+              );
 
               return (
                 <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>

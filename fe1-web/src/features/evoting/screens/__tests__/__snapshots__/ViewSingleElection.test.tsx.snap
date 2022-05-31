@@ -6172,6 +6172,10 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     Object {
                                       "backgroundColor": "#fff",
                                     },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
                                   ]
                                 }
                               >
@@ -6180,6 +6184,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -6624,6 +6630,10 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     Object {
                                       "backgroundColor": "#fff",
                                     },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
                                   ]
                                 }
                               >
@@ -6632,6 +6642,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -12496,6 +12508,10 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     Object {
                                       "backgroundColor": "#fff",
                                     },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
                                   ]
                                 }
                               >
@@ -12504,6 +12520,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -12926,6 +12944,10 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     Object {
                                       "backgroundColor": "#fff",
                                     },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
                                   ]
                                 }
                               >
@@ -12934,6 +12956,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
