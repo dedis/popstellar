@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
 import EventIcon from 'core/components/icons/EventIcon';
 import HomeIcon from 'core/components/icons/HomeIcon';
@@ -11,8 +10,6 @@ import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectIsLaoOrganizer } from '../reducer';
-import { EventsScreen } from '../screens';
 import LaoHomeScreen, {
   LaoHomeScreenHeader,
   LaoHomeScreenHeaderRight,
@@ -27,7 +24,6 @@ const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 const LaoNavigation: React.FC = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
-  const isOrganizer = useSelector(selectIsLaoOrganizer);
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
@@ -45,13 +41,13 @@ const LaoNavigation: React.FC = () => {
       {
         id: STRINGS.navigation_lao_events,
         tabBarIcon: EventIcon,
-        Component: isOrganizer ? EventsNavigation : EventsScreen,
+        Component: EventsNavigation,
         headerShown: false,
         order: 0,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [passedScreens, isOrganizer]);
+  }, [passedScreens]);
 
   return (
     <OrganizationTopTabNavigator.Navigator
