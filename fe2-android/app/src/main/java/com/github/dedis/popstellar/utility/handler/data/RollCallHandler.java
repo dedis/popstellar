@@ -102,8 +102,7 @@ public final class RollCallHandler {
               .getMessageSender()
               .subscribe(channel.subChannel("coin").subChannel(token.getPublicKey().getEncoded()))
               .subscribe();
-
-
+      Log.d(TAG, "Manage to create the channel ");
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "PROBLEME channel coin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     } catch (KeyException e) {
