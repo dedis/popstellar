@@ -15,7 +15,7 @@ export class ElectionPublicKey {
   }
 
   toString(): string {
-    return this.point.marshalBinary().toString('base64');
+    return this.point.marshalBinary().toString('base64url');
   }
 
   toBase64(): Base64UrlData {
@@ -52,6 +52,6 @@ export class ElectionPublicKey {
     // C = S.Add(S, M)                                  // message blinded with secret
     const C = S.add(S, M);
 
-    return Buffer.concat([K.marshalBinary(), C.marshalBinary()]).toString('base64');
+    return Buffer.concat([K.marshalBinary(), C.marshalBinary()]).toString('base64url');
   }
 }
