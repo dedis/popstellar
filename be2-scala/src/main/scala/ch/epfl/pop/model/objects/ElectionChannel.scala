@@ -56,5 +56,20 @@ object ElectionChannel {
         attendeeIdToLastVote.values.toList
       }
     }
+
+    /**
+     * return index of the vote
+     *
+     * @param electionData the electiondata containing keys if need to decrypt
+     * @param vote         None if not voted, Some(Left(Int)) for non open ballots Right(Base64Data) for encrypted vote
+     * @return The index of the ballot, -1 if not voted
+     */
+    def getVoteIndex(electionData: ElectionData, vote: Option[Either[Int, Base64Data]]): Int =
+      vote match {
+        case Some(Left(index)) => index
+        case Some(Right(encryptedVote)) =>
+          electionData.keyPair.decrypt(encryptedVote).decodeToString().toInt
+        case _ => -1
+      }
   }
 }

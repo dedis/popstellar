@@ -1,23 +1,22 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
-import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
+import ch.epfl.pop.json.MessageDataProtocol.{KeyElectionFormat, resultElectionFormat}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
-import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 /**
  * ElectionHandler object uses the db instance from the MessageHandler
@@ -52,12 +51,14 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
     val electionId: Hash = data.id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
+    val keyPair = KeyPair()
 
     //need to write and propagate the election message
     val combined = for {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
+      _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
     } yield ()
 
     Await.ready(combined, duration).value match {
@@ -66,20 +67,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
         data.version match {
           case OPEN_BALLOT => Left(rpcMessage)
           case SECRET_BALLOT =>
-            val keyPair = KeyPair()
-            val keyCombined = for {
-              _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
-              electionData <- dbActor ? DbActor.ReadElectionData(electionId)
-            } yield electionData
-
-            Await.ready(keyCombined, duration).value match {
-              case Some(Success(_)) =>
-                val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
-                val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel), duration)
-              case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
-              case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-            }
+            val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
+            val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
+            Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel), duration)
         }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
@@ -140,7 +130,6 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       votesList <- electionChannel.getLastVotes(dbActor)
       castsVotesElections = votesList.map(_._2)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
-      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
     } yield {
       val resultsTable = mutable.HashMap.from(for {
@@ -149,29 +138,22 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       for {
         castVoteElection <- castsVotesElections
         voteElection <- castVoteElection.votes
+        DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+        voteIndex = electionChannel.getVoteIndex(electionData, voteElection.vote)
+        if voteIndex >= 0
       } {
         val question = voteElection.question
         val ballots = questionToBallots(question).toArray
-        val voteIndex = voteElection.vote match {
-          case Some(Left(voteIndex)) =>
-            voteIndex
-          case Some(Right(encryptedVote)) =>
-            electionData.keyPair.decrypt(encryptedVote).decodeToString().toInt
-          case _ =>
-            -1
-        }
-        if (voteIndex >= 0) {
-          val ballot = ballots.apply(voteIndex)
-          val questionResult = resultsTable(question)
-          resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
-        }
+        val ballot = ballots.apply(voteIndex)
+        val questionResult = resultsTable(question)
+        resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
       }
-      List.from(for {
+      (for {
         (qid, ballotToCount) <- resultsTable
         electionBallotVotes = List.from(for {
           (ballot, count) <- ballotToCount
         } yield ElectionBallotVotes(ballot, count))
-      } yield ElectionQuestionResult(qid, electionBallotVotes))
+      } yield ElectionQuestionResult(qid, electionBallotVotes)).toList
     }
   }
 }
