@@ -21,18 +21,8 @@ object VoteElection extends Parsable {
 
   def apply(id: Hash, question: Hash, vote: Base64Data): VoteElection = new VoteElection(id, question, Some(Right(vote)), None)
 
-  def apply(id: Hash, question: Hash, writeIn: String): VoteElection = new VoteElection(id, question, None, Some(writeIn))
-
-  def apply(
-             id: Hash,
-             question: Hash,
-             vote: Option[Int],
-             write_in: Option[String]
-           ): VoteElection =
-    vote match {
-      case Some(i) => new VoteElection(id, question, Some(Left(i)), write_in)
-      case _ => new VoteElection(id, question, None, write_in)
-    }
+  def apply(id: Hash, question: Hash, vote: Option[Either[Int, Base64Data]], writeInOpt: Option[String]): VoteElection =
+    new VoteElection(id, question, vote, writeInOpt)
 
   override def buildFromJson(payload: String): VoteElection = payload.parseJson.asJsObject.convertTo[VoteElection]
 }
