@@ -7779,13 +7779,27 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
@@ -7958,12 +7972,26 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   </View>
                                 </View>
                               </View>
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -8327,13 +8355,27 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
@@ -8506,12 +8548,26 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   </View>
                                 </View>
                               </View>
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -14006,13 +14062,27 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
@@ -14164,12 +14234,26 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   </View>
                                 </View>
                               </View>
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
@@ -14512,13 +14596,27 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderColor": "#bcbbc1",
+                                      "borderTopLeftRadius": 16,
+                                      "borderTopRightRadius": 16,
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
@@ -14670,12 +14768,26 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   </View>
                                 </View>
                               </View>
-                              <View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                    },
+                                    Object {
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
+                                    },
+                                  ]
+                                }
+                              >
                                 <View
                                   style={
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
+                                      "borderBottomLeftRadius": 16,
+                                      "borderBottomRightRadius": 16,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
