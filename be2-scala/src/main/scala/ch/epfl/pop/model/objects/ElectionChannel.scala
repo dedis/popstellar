@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection,
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
 
+import java.nio.ByteBuffer
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -66,10 +67,12 @@ object ElectionChannel {
      */
     def getVoteIndex(electionData: ElectionData, vote: Option[Either[Int, Base64Data]]): Int =
       vote match {
-        case Some(Left(index)) => index
+        case Some(Left(index)) =>
+          index
         case Some(Right(encryptedVote)) =>
-          electionData.keyPair.decrypt(encryptedVote).decodeToString().toInt
-        case _ => -1
+          ByteBuffer.wrap(Array[Byte](0, 0).concat(electionData.keyPair.decrypt(encryptedVote).decode())).getInt
+        case _ =>
+          -1
       }
   }
 }

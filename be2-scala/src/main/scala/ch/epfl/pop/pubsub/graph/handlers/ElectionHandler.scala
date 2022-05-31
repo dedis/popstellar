@@ -131,6 +131,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       castsVotesElections = votesList.map(_._2)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
+      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
     } yield {
       val resultsTable = mutable.HashMap.from(for {
         (question, ballots) <- questionToBallots
@@ -138,9 +139,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       for {
         castVoteElection <- castsVotesElections
         voteElection <- castVoteElection.votes
-        DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
         voteIndex = electionChannel.getVoteIndex(electionData, voteElection.vote)
-        if voteIndex >= 0
       } {
         val question = voteElection.question
         val ballots = questionToBallots(question).toArray
