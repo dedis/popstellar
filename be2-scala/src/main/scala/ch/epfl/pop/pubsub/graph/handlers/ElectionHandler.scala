@@ -17,6 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 import ch.epfl.pop.model.objects.ElectionChannel._
+import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 /**
  * ElectionHandler object uses the db instance from the MessageHandler
@@ -75,7 +76,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
               case Some(Success(_)) =>
                 val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
                 val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-                dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel), duration)
               case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
               case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
             }
@@ -108,7 +109,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.result(ask, duration)
   }
 
-   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
@@ -139,6 +140,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       votesList <- electionChannel.getLastVotes(dbActor)
       castsVotesElections = votesList.map(_._2)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
+      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
     } yield {
       val resultsTable = mutable.HashMap.from(for {
@@ -148,14 +150,20 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
         castVoteElection <- castsVotesElections
         voteElection <- castVoteElection.votes
       } {
-        voteElection.vote match {
-          case Some(List(index)) =>
-            val question = voteElection.question
-            val ballots = questionToBallots(question).toArray
-            val ballot = ballots.apply(index)
-            val questionResult = resultsTable(question)
-            resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
+        val question = voteElection.question
+        val ballots = questionToBallots(question).toArray
+        val voteIndex = voteElection.vote match {
+          case Some(Left(voteIndex)) =>
+            voteIndex
+          case Some(Right(encryptedVote)) =>
+            electionData.keyPair.decrypt(encryptedVote).decodeToString().toInt
           case _ =>
+            -1
+        }
+        if (voteIndex >= 0) {
+          val ballot = ballots.apply(voteIndex)
+          val questionResult = resultsTable(question)
+          resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
         }
       }
       List.from(for {

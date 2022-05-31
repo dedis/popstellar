@@ -6,12 +6,30 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, KeyPair, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
+import akka.pattern.AskableActorRef
+import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
+import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
+import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
+
+import scala.collection.mutable
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
+import ch.epfl.pop.model.objects.ElectionChannel._
+import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -131,14 +149,15 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]]) =
+  private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]], keypair: KeyPair) =
     votes.forall { voteElection =>
       val vote = voteElection.vote match {
-        case Some(v :: _) => v
+        case Some(Left(index)) => index
+        case Some(Right(encryptedVote)) => keypair.decrypt(encryptedVote).decodeToString().toInt
         case _ => -1
       }
       // check if the ballot is available
-      vote < q2ballots(voteElection.question).size
+      0 <= vote && vote < q2ballots(voteElection.question).size
     }
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -150,36 +169,38 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val channel: Channel = rpcMessage.getParamsChannel
 
-        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
-        val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
-
-        if (!validateTimestampStaleness(data.created_at)) {
-          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        } else if (channel.extractChildChannel != data.election) {
-          Right(validationError("unexpected election id"))
-        } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
-          Right(validationError("unexpected lao id"))
-          //  check it the question id exists
-        } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
-          Right(validationError(s"Incorrect parameter questionId"))
-        } else if (!allVoteHaveValidIndex(data.votes, q2Ballots)) {
-          Right(validationError(s"Incorrect parameter ballot"))
-          // check for question id duplication
-        } else if (data.votes.map(_.question).distinct.length != data.votes.length) {
-          Right(validationError(s"The castvote contains twice the same question id"))
-          // check open and end constraints
-        } else if (getOpenMessage(channel).isEmpty) {
-          Right(validationError(s"This election has not started yet"))
-        } else if (getEndMessage(channel).isDefined) {
-          Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
-        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
+        val combined = for {
+          setupMessage <- channel.getSetupMessage(dbActorRef)
+          questions = setupMessage.questions
+          DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+          q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
         }
-
+        yield if (!validateTimestampStaleness(data.created_at))
+          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
+        else if (channel.extractChildChannel != data.election)
+          Right(validationError("unexpected election id"))
+        else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao)
+          Right(validationError("unexpected lao id"))
+        //  check it the question id exists
+        else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question)))
+          Right(validationError(s"Incorrect parameter questionId"))
+        else if (!allVoteHaveValidIndex(data.votes, q2Ballots, electionData.keyPair))
+          Right(validationError(s"Incorrect parameter ballot"))
+        // check for question id duplication
+        else if (data.votes.map(_.question).distinct.length != data.votes.length)
+          Right(validationError(s"The castvote contains twice the same question id"))
+        // check open and end constraints
+        else if (getOpenMessage(channel).isEmpty)
+          Right(validationError(s"This election has not started yet"))
+        else if (getEndMessage(channel).isDefined)
+          Right(validationError(s"This election has already ended"))
+        else if (!validateAttendee(message.sender, channel, dbActorRef))
+          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
+        else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
+          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
+        else
+          Left(rpcMessage)
+        Await.result(combined, duration)
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
