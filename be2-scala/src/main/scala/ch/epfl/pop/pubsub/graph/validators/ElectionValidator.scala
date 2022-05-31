@@ -6,30 +6,14 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, KeyPair, PublicKey}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 import scala.concurrent.Await
-import akka.pattern.AskableActorRef
-import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
-import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.VersionType._
-import ch.epfl.pop.model.network.method.message.data.election._
-import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
-
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success}
-import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -149,15 +133,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]], keypair: KeyPair) =
+  private def allVoteHaveValidIndex(channel:Channel, votes: List[VoteElection], q2ballots: Map[Hash, List[String]], electionData: ElectionData) =
     votes.forall { voteElection =>
-      val vote = voteElection.vote match {
-        case Some(Left(index)) => index
-        case Some(Right(encryptedVote)) => keypair.decrypt(encryptedVote).decodeToString().toInt
-        case _ => -1
-      }
-      // check if the ballot is available
-      0 <= vote && vote < q2ballots(voteElection.question).size
+      val voteIndex = channel.getVoteIndex(electionData, voteElection.vote)
+      0 <= voteIndex && voteIndex < q2ballots(voteElection.question).size
     }
 
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -184,7 +163,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         //  check it the question id exists
         else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question)))
           Right(validationError(s"Incorrect parameter questionId"))
-        else if (!allVoteHaveValidIndex(data.votes, q2Ballots, electionData.keyPair))
+        else if (!allVoteHaveValidIndex(channel, data.votes, q2Ballots, electionData))
           Right(validationError(s"Incorrect parameter ballot"))
         // check for question id duplication
         else if (data.votes.map(_.question).distinct.length != data.votes.length)
