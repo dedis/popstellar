@@ -987,7 +987,8 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2459,7 +2460,8 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"

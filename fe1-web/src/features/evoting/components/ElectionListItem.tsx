@@ -16,7 +16,7 @@ import { makeElectionSelector } from '../reducer';
 const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
     return (
-      <ListItem.Subtitle>
+      <ListItem.Subtitle style={Typography.small}>
         {STRINGS.general_starting_at} <ReactTimeago date={election.start.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
@@ -24,14 +24,14 @@ const Subtitle = ({ election }: { election: Election }) => {
 
   if (election.electionStatus === ElectionStatus.OPENED) {
     return (
-      <ListItem.Subtitle>
+      <ListItem.Subtitle style={Typography.small}>
         {STRINGS.general_ongoing}, {STRINGS.general_ending_at}{' '}
         <ReactTimeago date={election.end.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
   }
 
-  return <ListItem.Subtitle>{STRINGS.general_closed}</ListItem.Subtitle>;
+  return <ListItem.Subtitle style={Typography.small}>{STRINGS.general_closed}</ListItem.Subtitle>;
 };
 
 const ElectionListItem = (props: IPropTypes) => {
