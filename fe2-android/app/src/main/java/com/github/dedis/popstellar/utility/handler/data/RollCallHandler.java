@@ -142,7 +142,7 @@ public final class RollCallHandler {
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
 
-      context.getMessageSender().subscribe(channel.subChannel("coin/")).subscribe();
+      context.getMessageSender().subscribe(channel.subChannel("coin")).subscribe();
 
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
