@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -187,7 +188,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
     List<Output> outputs =
         Collections.singletonList(
             new Output((long) 0, new ScriptOutput(TYPE, the_keys.getPublicKey().computeHash())));
-    String transaction_hash = "-";
+    Base64URLData tran_hash = new Base64URLData("WESOME");
+    String transaction_hash = (tran_hash).getEncoded();
     int index = 0;
 
     String sig =
@@ -380,7 +382,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   @Nullable
   public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-    List<String> list = Collections.EMPTY_LIST;
+    List<String> list = new ArrayList<>();
     Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
     while (pub.hasNext()){
       String current = pub.next().getEncoded();

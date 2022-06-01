@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.google.gson.annotations.SerializedName;
 
 public class PostTransactionCoin extends Data {
