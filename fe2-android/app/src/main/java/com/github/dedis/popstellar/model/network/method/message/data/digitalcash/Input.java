@@ -36,6 +36,7 @@ public final class Input {
     return txOutIndex;
   }
 
+
   public ScriptInput getScript() {
     return script;
   }

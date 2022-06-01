@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // The script describing the unlock mechanism
+
 public final class ScriptInput {
   @SerializedName("type")
   private final String type; // The script describing the unlock mechanism
