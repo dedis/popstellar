@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import { Border, Color, Icon as IconStyles, Spacing } from 'core/styles';
+import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
 // FIXME: Remove CSS imports in order to support native apps
@@ -12,7 +12,7 @@ import { FOUR_SECONDS } from 'resources/const';
 // because they load an external dependency (jsQR) that somehow does not properly load
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
-import Icon from './Icon';
+import PoPIcon from './PoPIcon';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
   backgroundColor: Color.contrast,
@@ -87,7 +87,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <Icon name="cameraReverse" color={Color.accent} size={IconStyles.size} />
+              <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

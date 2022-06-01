@@ -1,86 +1,136 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Color, Icon } from 'core/styles';
 import { ExtendType } from 'core/types';
 
 type IoniconNames = keyof typeof Ionicons['glyphMap'];
 
-type Ionicon = {
+type IonIcon = {
   iconName: IoniconNames;
   IconFamily: typeof Ionicons;
 };
 
+type MaterialIconNames = keyof typeof MaterialIcons['glyphMap'];
+
+type MaterialIcon = {
+  iconName: MaterialIconNames;
+  IconFamily: typeof MaterialIcons;
+};
+
 const iconNameMap = {
-  'camera-reverse': {
+  addPerson: {
+    iconName: 'ios-person-add',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   close: {
     iconName: 'ios-close',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   code: {
     iconName: 'ios-code',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   copy: {
     iconName: 'ios-copy',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   create: {
     iconName: 'ios-create',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
+  delete: {
+    iconName: 'ios-trash',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  dropdown: {
+    iconName: 'ios-chevron-down',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  election: {
+    iconName: 'how-to-vote',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   event: {
     iconName: 'ios-calendar',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   home: {
     iconName: 'ios-home',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   identity: {
     iconName: 'ios-person',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
+  info: {
+    iconName: 'ios-information-circle-outline',
+    IconFamily: Ionicons,
+  } as IonIcon,
   list: {
     iconName: 'ios-list',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
+  meeting: {
+    iconName: 'ios-calendar',
+    IconFamily: Ionicons,
+  } as IonIcon,
   notification: {
     iconName: 'ios-notifications',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   options: {
     iconName: 'ios-ellipsis-horizontal',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
+  qrCode: {
+    iconName: 'ios-qr-code',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  rollCall: {
+    iconName: 'ios-hand-left',
+    IconFamily: Ionicons,
+  } as IonIcon,
   scan: {
     iconName: 'ios-scan',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   settings: {
     iconName: 'ios-cog',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   socialMedia: {
     iconName: 'ios-people',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
   wallet: {
     iconName: 'ios-wallet',
     IconFamily: Ionicons,
-  } as Ionicon,
+  } as IonIcon,
+  warning: {
+    iconName: 'ios-warning',
+    IconFamily: Ionicons,
+  } as IonIcon,
 };
 
 const styles = StyleSheet.create({
   focused: {},
 });
 
-const Icon = ({ name, color, size, focused }: IconPropTypes) => {
-  const Entry = iconNameMap[name];
+const PoPIcon = ({ name, color, size, focused }: IconPropTypes) => {
+  // we need to cast it here to a more generic type due to limitations
+  // in the static type checking
+  const Entry = iconNameMap[name] as {
+    iconName: string;
+    IconFamily: React.ComponentType<{ name: string; size: number; color: string }>;
+  };
 
   if (!Entry) {
     throw new Error(`Unkown icon name ${name}`);
@@ -95,27 +145,36 @@ const Icon = ({ name, color, size, focused }: IconPropTypes) => {
 
 const iconPropTypes = {
   name: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired,
+  color: PropTypes.string,
+  size: PropTypes.number,
   focused: PropTypes.bool,
 };
 
-Icon.propTypes = iconPropTypes;
-Icon.defaultProps = {
+PoPIcon.propTypes = iconPropTypes;
+PoPIcon.defaultProps = {
   focused: false,
+  color: Color.primary,
+  size: Icon.size,
 };
 
 type IconPropTypes = ExtendType<
   PropTypes.InferProps<typeof iconPropTypes>,
   {
     name: keyof typeof iconNameMap;
+    color: string;
+    size: number;
   }
 >;
 
-export default Icon;
+export default PoPIcon;
 
 export const makeIcon = (name: keyof typeof iconNameMap) => {
-  const Entry = iconNameMap[name];
+  // we need to cast it here to a more generic type due to limitations
+  // in the static type checking
+  const Entry = iconNameMap[name] as {
+    iconName: string;
+    IconFamily: React.ComponentType<{ name: string; size: number; color: string }>;
+  };
 
   if (!Entry) {
     throw new Error(`Unkown icon name ${name}`);

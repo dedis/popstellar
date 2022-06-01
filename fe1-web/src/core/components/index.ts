@@ -27,4 +27,4 @@ export { default as TimeDisplay } from './TimeDisplay';
 export { default as Input } from './Input';
 export { default as PoPButton } from './PoPButton';
 export { default as PoPTextButton } from './PoPTextButton';
-export { default as Icon } from './Icon';
+export { default as PoPIcon } from './PoPIcon';
