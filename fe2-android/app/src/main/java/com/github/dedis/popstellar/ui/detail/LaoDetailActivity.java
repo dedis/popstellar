@@ -6,7 +6,6 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Button;
 
@@ -19,7 +18,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
@@ -43,7 +41,6 @@ import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -304,11 +301,13 @@ public class LaoDetailActivity extends AppCompatActivity {
                 Log.d(TAG, "Trying to open digital cash");
 
                 intent.putExtra(DigitalCashMain.LAO_ID, mViewModel.getCurrentLaoValue().getId());
-                Log.d(TAG,"Set the LAO id for digital cash: " + mViewModel.getCurrentLaoValue().getId());
+                Log.d(
+                    TAG,
+                    "Set the LAO id for digital cash: " + mViewModel.getCurrentLaoValue().getId());
                 intent.putExtra(
                     DigitalCashMain.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
-                Log.d(TAG,"Set the LAO Name : "+  mViewModel.getCurrentLaoValue().getName() );
-                intent.putExtra(DigitalCashMain.ROLL_CALL_ID, mViewModel.getCurrentLaoValue().getLastRollCallclosed());
+                Log.d(TAG, "Set the LAO Name : " + mViewModel.getCurrentLaoValue().getName());
+                intent.putExtra(DigitalCashMain.ROLL_CALL_ID, mViewModel.getCurrentRollCallId());
                 startActivity(intent);
               }
             });

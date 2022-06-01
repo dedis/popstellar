@@ -10,7 +10,6 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -137,11 +136,13 @@ public final class RollCallHandler {
     // Subscribe to the digital cash channels
     try {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
+
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
 
+      context.getMessageSender().subscribe(channel.subChannel("coin/")).subscribe();
 
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");

@@ -67,16 +67,15 @@ public class DigitalCashIssueFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
-                Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+                // String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
+                // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
                 String current_public_key_selected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getPlaceholderText());
                 Log.d(
                     this.getClass().toString(),
                     "place holder text is " + current_public_key_selected);
                 try {
-                  postTransaction(
-                      Collections.singletonMap(current_public_key_selected, current_amount));
+                  postTransaction(Collections.singletonMap(current_public_key_selected, "10"));
                 } catch (KeyException e) {
                   e.printStackTrace();
                 }
@@ -96,12 +95,13 @@ public class DigitalCashIssueFragment extends Fragment {
 
   /// ** Function that permits to post transaction */
   private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
-    //if (mBinding.digitalCashIssueAmount.getText() == null) {
-      //Toast.makeText(this.requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
-    //} else {
-      //String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
-      Log.d(this.getClass().toString(), "Try to send a transaction");
+    // if (mBinding.digitalCashIssueAmount.getText() == null) {
+    // Toast.makeText(this.requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
+    // } else {
+    // String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
+    Log.d(this.getClass().toString(), "Try to send a transaction");
     Log.d(this.getClass().toString(), PublicKeyAmount.entrySet().toString());
+
     // long amount = 0 ;
     mViewModel.postTransactionTest(PublicKeyAmount, Instant.now().getEpochSecond());
       //mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount),

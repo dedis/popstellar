@@ -181,8 +181,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     Log.d(TAG, "Post a transaction Test");
     Log.d(TAG, getCurrentLao().toString());
     Log.d(TAG, keyManager.getMainKeyPair().toString());
-    KeyPair the_keys = keyManager.getValidPoPToken(getCurrentLao()
-            ,getCurrentLao().getRollCall(getRollCallId().getValue()).get());
+    KeyPair the_keys = keyManager.getMainKeyPair();
 
     List<Output> outputs =
         Collections.singletonList(
@@ -212,6 +211,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
             .getChannel()
             .subChannel(COIN);
     Log.d(TAG, channel.toString());
+
+    laoRepository.updateNodes(channel);
+
     Log.d(TAG, PUBLISH_MESSAGE);
 
     MessageGeneral msg = new MessageGeneral(the_keys, postTransactionCoin, gson);
