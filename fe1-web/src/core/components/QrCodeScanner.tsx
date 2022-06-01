@@ -7,13 +7,12 @@ import QrReader from 'react-qr-reader';
 import { Border, Colors, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
-import CameraReverseIcon from './icons/CameraReverseIcon';
-
 // FIXME: Remove CSS imports in order to support native apps
 // At the time of writing expo-camera nor expo-barcode-scanner work in web builds
 // because they load an external dependency (jsQR) that somehow does not properly load
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
+import Icon from './Icon';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
   backgroundColor: Colors.contrast,
@@ -90,7 +89,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <CameraReverseIcon color={Colors.accent} size={25} />
+              <Icon name="camera-reverse" color={Colors.accent} size={25} />
             </TouchableOpacity>
           </View>
         </View>

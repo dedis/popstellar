@@ -3,8 +3,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
-import ListIcon from 'core/components/icons/ListIcon';
-import ScanIcon from 'core/components/icons/ScanIcon';
+import { makeIcon } from 'core/components/Icon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
@@ -40,7 +39,7 @@ const HomeNavigation = () => {
         id: STRINGS.navigation_home_home,
         title: STRINGS.home_navigation_title,
         Component: Home,
-        tabBarIcon: ListIcon,
+        tabBarIcon: makeIcon('list'),
         order: -99999999,
       } as HomeFeature.HomeScreen,
       {
@@ -52,7 +51,7 @@ const HomeNavigation = () => {
           e.preventDefault();
           navigation.navigate(STRINGS.navigation_app_connect);
         },
-        tabBarIcon: ScanIcon,
+        tabBarIcon: makeIcon('scan'),
         order: -10000,
       } as HomeFeature.HomeScreen,
       // sort screens by order before rendering them

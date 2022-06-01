@@ -390,7 +390,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text />
+                                    <View>
+                                      <Text />
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -423,7 +425,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text />
+                                    <View>
+                                      <Text />
+                                    </View>
                                   </View>
                                   <View
                                     accessible={true}
@@ -443,7 +447,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text />
+                                    <View>
+                                      <Text />
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -486,7 +492,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <Text />
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                             </View>
                           </View>

@@ -520,7 +520,9 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
                                 >
-                                  <Text />
+                                  <View>
+                                    <Text />
+                                  </View>
                                 </View>
                               </View>
                               <Text

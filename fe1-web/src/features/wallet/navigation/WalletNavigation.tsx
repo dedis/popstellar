@@ -4,8 +4,8 @@ import { createStackNavigator, StackScreenProps } from '@react-navigation/stack'
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import OptionsIcon from 'core/components/icons/OptionsIcon';
-import WalletIcon from 'core/components/icons/WalletIcon';
+import { Icon } from 'core/components';
+import { makeIcon } from 'core/components/Icon';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Colors } from 'core/styles';
@@ -76,7 +76,7 @@ const WalletNavigationHeaderRight = () => {
 
   return (
     <TouchableOpacity onPress={onPressOptions}>
-      <OptionsIcon color={Colors.primary} size={25} />
+      <Icon name="options" color={Colors.primary} size={25} />
     </TouchableOpacity>
   );
 };
@@ -84,7 +84,7 @@ const WalletNavigationHeaderRight = () => {
 export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.LaoScreen = {
   id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
-  tabBarIcon: WalletIcon,
+  tabBarIcon: makeIcon('wallet'),
   order: 99999999,
   headerRight: () => <WalletNavigationHeaderRight />,
 };
