@@ -56,9 +56,9 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const toast = useToast();
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
-  const handleError = (err: string) => {
+  const handleError = (err: string | Error) => {
     console.error(err);
-    toast.show(err, {
+    toast.show(err.toString(), {
       type: 'danger',
       placement: 'top',
       duration: FOUR_SECONDS,

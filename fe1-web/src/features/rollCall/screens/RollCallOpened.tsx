@@ -75,7 +75,7 @@ const RollCallOpened = () => {
   }
 
   const handleError = useCallback(
-    (err: any) => {
+    (err: string | Error) => {
       console.error(err.toString());
       toast.show(err.toString(), {
         type: 'danger',
