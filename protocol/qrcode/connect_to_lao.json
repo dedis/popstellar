@@ -6,15 +6,11 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "servers": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "string",
-                "format": "uri-reference",
-                "pattern": "^(http|ws)s?://.*",
-                "description": "The organizer's server URL"
-            }
+        "server": {
+            "type": "string",
+            "format": "uri-reference",
+            "pattern": "^(http|ws)s?://.*",
+            "description": "The organizer's server URL"
         },
         "lao": {
             "type": "string",
@@ -22,5 +18,5 @@
             "description": "The id of the LAO"
         }
     },
-    "required": ["servers", "lao"]
+    "required": ["server", "lao"]
 }

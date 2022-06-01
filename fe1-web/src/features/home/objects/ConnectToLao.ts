@@ -37,6 +37,16 @@ export class ConnectToLao {
 
     return new ConnectToLao({
       ...obj,
+      /* in the future the qr code should encode a list of servers */
+      servers: [obj.server],
+    });
+  }
+
+  public toJson(): string {
+    return JSON.stringify({
+      lao: this.lao,
+      /* in the future the qr code should encode a list of servers */
+      server: this.servers[0],
     });
   }
 }

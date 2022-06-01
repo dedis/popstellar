@@ -14,7 +14,7 @@ const sampleConnectToLao: Partial<ConnectToLao> = {
 };
 
 const dataConnectToLao = `{
-  "servers": ["${serverUrl}"],
+  "server": "${serverUrl}",
   "lao": "${mockLaoId}"
   }`;
 
