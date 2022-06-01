@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
   public static final String TAG = RollCallFragment.class.getSimpleName();
-  private final SimpleDateFormat DATE_FORMAT =
+  private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private RollCall rollCall;
@@ -181,8 +181,8 @@ public class RollCallFragment extends Fragment {
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
     Date endTime = new Date(rollCall.getEndTimestampInMillis());
 
-    startTimeDisplay.setText(DATE_FORMAT.format(startTime));
-    endTimeDisplay.setText(DATE_FORMAT.format(endTime));
+    startTimeDisplay.setText(dateFormat.format(startTime));
+    endTimeDisplay.setText(dateFormat.format(endTime));
   }
 
   private Drawable getDrawableFromContext(int id) {

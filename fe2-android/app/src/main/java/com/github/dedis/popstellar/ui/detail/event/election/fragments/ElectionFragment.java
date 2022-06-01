@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class ElectionFragment extends Fragment {
 
-  private final SimpleDateFormat DATE_FORMAT =
+  private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private Election election;
@@ -222,8 +222,8 @@ public class ElectionFragment extends Fragment {
     Date startTime = new Date(election.getStartTimestampInMillis());
     Date endTime = new Date(election.getEndTimestampInMillis());
 
-    startTimeDisplay.setText(DATE_FORMAT.format(startTime));
-    endTimeDisplay.setText(DATE_FORMAT.format(endTime));
+    startTimeDisplay.setText(dateFormat.format(startTime));
+    endTimeDisplay.setText(dateFormat.format(endTime));
   }
 
   private void setButtonEnabling(Button button, boolean enabled) {
