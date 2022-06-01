@@ -68,15 +68,18 @@ public class DigitalCashIssueFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                // String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
+                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
                 // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+
                 String current_public_key_selected =
-                    String.valueOf(mBinding.digitalCashIssueSpinner.getPlaceholderText());
+                    String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
                 Log.d(
                     this.getClass().toString(),
                     "place holder text is " + current_public_key_selected);
                 try {
-                  postTransaction(Collections.singletonMap(current_public_key_selected, "10"));
+                  postTransaction(
+                      Collections.singletonMap(current_public_key_selected, current_amount));
+                  mViewModel.openHome();
                 } catch (KeyException e) {
                   e.printStackTrace();
                 }
@@ -107,10 +110,10 @@ public class DigitalCashIssueFragment extends Fragment {
     // } else {
     // String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
     Log.d(this.getClass().toString(), "Try to send a transaction");
-    Log.d(this.getClass().toString(), PublicKeyAmount.entrySet().toString());
-
+    Log.d(this.getClass().toString(), "The values are :" + PublicKeyAmount.values().toString());
+    Log.d(this.getClass().toString(), "The keys are : " + PublicKeyAmount.keySet().toString());
     // long amount = 0 ;
-    mViewModel.postTransactionTest(PublicKeyAmount, Instant.now().getEpochSecond());
+    mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
       //mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount),
           //Instant.now().getEpochSecond());
    // }

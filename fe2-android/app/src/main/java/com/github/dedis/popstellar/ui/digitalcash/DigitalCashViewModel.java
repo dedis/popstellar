@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
@@ -23,7 +22,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -33,6 +31,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -47,7 +46,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -83,11 +81,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
-
-  private final LiveData<List<Lao>> mLAOs;
-
-  private final Wallet wallet;
-
   @Inject
   public DigitalCashViewModel(
       @NonNull Application application,
@@ -101,9 +94,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
-    this.wallet = wallet;
-    mLAOs = LiveDataReactiveStreams.fromPublisher(this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
-    //laoRepository.getLaoById().putIfAbsent(mLaoId.getValue(), new LAOState());
     disposables = new CompositeDisposable();
   }
 
@@ -188,8 +178,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
     List<Output> outputs =
         Collections.singletonList(
             new Output((long) 0, new ScriptOutput(TYPE, the_keys.getPublicKey().computeHash())));
-    Base64URLData tran_hash = new Base64URLData("WESOME");
-    String transaction_hash = (tran_hash).getEncoded();
+
+    String transaction_hash = Hash.hash("string");
     int index = 0;
 
     String sig =
@@ -242,23 +232,31 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.add(disposable);
   }
 
+  public PublicKey getPublicKeyOutString(String encodedpub) throws Exception {
+    Iterator<PublicKey> ite = getAttendeesFromTheRollCall().iterator();
+    while (ite.hasNext()) {
+      PublicKey current = ite.next();
+      if (current.getEncoded().equals(encodedpub)) {
+        return current;
+      }
+    }
+    throw new Exception("Don't find the key");
+  }
+
   /**
    * Post a transaction to your channel
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(Map<PublicKey,Long> receiverandvalue, long locktime) {
-    Log.d(TAG, String.valueOf(mLAOs.getValue().size()));
-
+  public void postTransaction(Map<String, String> receiverandvalue, long locktime) {
     Log.d(TAG, "Post a transaction");
 
     Lao lao = getCurrentLao();
 
-    //Lao lao = mLAOs.getValue().get(0);
-    //if (lao == null) {
-      //Log.e(TAG, LAO_FAILURE_MESSAGE);
-      //return;
-    //}
+    if (lao == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
 
     try {
       //Lao lao = getCurrentLao();
@@ -266,9 +264,17 @@ public class DigitalCashViewModel extends AndroidViewModel {
               keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
-      for (Map.Entry<PublicKey, Long> current : receiverandvalue.entrySet()) {
-        Output add_output =
-            new Output(current.getValue(), new ScriptOutput(TYPE, current.getKey().computeHash()));
+      for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
+        PublicKey pub = null;
+        try {
+          pub = getPublicKeyOutString(current.getKey());
+        } catch (Exception e) {
+          e.printStackTrace();
+          Log.d(TAG, "Error on the key to whom we send !");
+        }
+        long amount = Long.valueOf(current.getValue());
+
+        Output add_output = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
         outputs.add(add_output);
       }
 
@@ -276,7 +282,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       // First there would be only one Input
 
       // Case no transaction before
-      String transaction_hash = "";
+      String transaction_hash = Hash.hash("none");
       int index = 0;
 
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
@@ -304,8 +310,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
       PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
 
-      Channel channel =
-          lao.getChannel().subChannel(COIN).subChannel(token.getPublicKey().getEncoded());
+      Channel channel = lao.getChannel().subChannel(COIN);
 
       Log.d(TAG, PUBLISH_MESSAGE);
 
@@ -323,15 +328,25 @@ public class DigitalCashViewModel extends AndroidViewModel {
                             "Post Transaction!",
                             Toast.LENGTH_LONG)
                         .show();
+                    Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
+                    Log.d(
+                        TAG,
+                        "The transaction history " + lao.getTransaction_historyByUser().toString());
                   },
                   error ->
                       ErrorUtils.logAndShow(
                           getApplication(), TAG, error, R.string.error_post_transaction));
 
       disposables.add(disposable);
+
+
+
+
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
+
+
   }
 
 
@@ -362,6 +377,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public LAORepository getLaoRepository() {
     return laoRepository;
+  }
+
+  public KeyManager getKeyManager() {
+    return keyManager;
   }
 
   @Nullable
