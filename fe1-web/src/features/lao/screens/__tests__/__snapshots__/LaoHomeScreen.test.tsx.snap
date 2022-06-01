@@ -993,7 +993,9 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                               }
                             }
                           >
-                            <Text />
+                            <View>
+                              <Text />
+                            </View>
                           </View>
                         </View>
                       </RNGestureHandlerButton>
@@ -1734,26 +1736,28 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                               }
                             }
                           >
-                            <Text
-                              allowFontScaling={false}
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#8E8E8E",
-                                    "fontSize": 25,
-                                  },
-                                  undefined,
-                                  Object {
-                                    "fontFamily": "ionicons",
-                                    "fontStyle": "normal",
-                                    "fontWeight": "normal",
-                                  },
-                                  Object {},
-                                ]
-                              }
-                            >
-                              
-                            </Text>
+                            <View>
+                              <Text
+                                allowFontScaling={false}
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#8E8E8E",
+                                      "fontSize": 25,
+                                    },
+                                    undefined,
+                                    Object {
+                                      "fontFamily": "ionicons",
+                                      "fontStyle": "normal",
+                                      "fontWeight": "normal",
+                                    },
+                                    Object {},
+                                  ]
+                                }
+                              >
+                                
+                              </Text>
+                            </View>
                           </View>
                         </RNGestureHandlerButton>
                         <RNGestureHandlerButton
@@ -1779,26 +1783,28 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                               }
                             }
                           >
-                            <Text
-                              allowFontScaling={false}
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#8E8E8E",
-                                    "fontSize": 25,
-                                  },
-                                  undefined,
-                                  Object {
-                                    "fontFamily": "ionicons",
-                                    "fontStyle": "normal",
-                                    "fontWeight": "normal",
-                                  },
-                                  Object {},
-                                ]
-                              }
-                            >
-                              
-                            </Text>
+                            <View>
+                              <Text
+                                allowFontScaling={false}
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#8E8E8E",
+                                      "fontSize": 25,
+                                    },
+                                    undefined,
+                                    Object {
+                                      "fontFamily": "ionicons",
+                                      "fontStyle": "normal",
+                                      "fontWeight": "normal",
+                                    },
+                                    Object {},
+                                  ]
+                                }
+                              >
+                                
+                              </Text>
+                            </View>
                           </View>
                         </RNGestureHandlerButton>
                         <Modal

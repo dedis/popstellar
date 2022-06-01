@@ -167,7 +167,7 @@ export class CastVote implements MessageData {
           // write 2 bytes using big endian
           buffer.writeIntBE(selectedOptionIndex, 0, 2);
 
-          const encryptedOptionIndex = electionKey.encrypt(buffer);
+          const encryptedOptionIndex = electionKey.encrypt(buffer).valueOf();
 
           return {
             // generate the vote id based on the **encrypted** option indices

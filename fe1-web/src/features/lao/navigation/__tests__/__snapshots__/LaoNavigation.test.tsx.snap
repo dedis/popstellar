@@ -825,7 +825,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                               }
                                             }
                                           >
-                                            <Text />
+                                            <View>
+                                              <Text />
+                                            </View>
                                           </View>
                                         </View>
                                       </RNGestureHandlerButton>
@@ -1255,7 +1257,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                               }
                                             }
                                           >
-                                            <Text />
+                                            <View>
+                                              <Text />
+                                            </View>
                                           </View>
                                         </RNGestureHandlerButton>
                                         <RNGestureHandlerButton
@@ -1281,7 +1285,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                               }
                                             }
                                           >
-                                            <Text />
+                                            <View>
+                                              <Text />
+                                            </View>
                                           </View>
                                         </RNGestureHandlerButton>
                                         <Modal
@@ -1537,7 +1543,11 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View
+                                    style={Object {}}
+                                  >
+                                    <Text />
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -1557,7 +1567,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View>
+                                    <Text />
+                                  </View>
                                 </View>
                               </View>
                               <Text
@@ -1787,7 +1799,11 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View
+                                    style={Object {}}
+                                  >
+                                    <Text />
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -1807,7 +1823,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View>
+                                    <Text />
+                                  </View>
                                 </View>
                               </View>
                               <Text

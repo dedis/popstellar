@@ -8,9 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { QRCode } from 'core/components';
-import OptionsIcon from 'core/components/icons/OptionsIcon';
-import QrCodeIcon from 'core/components/icons/QrCodeIcon';
+import { PoPIcon, QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -196,7 +194,7 @@ const ViewSingleRollCall = () => {
               return (
                 <ListItem key={token.valueOf()} containerStyle={listStyle} style={listStyle}>
                   <View style={List.icon}>
-                    <QrCodeIcon color={Color.primary} size={Icon.size} />
+                    <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>
                   <ListItem.Content>
                     <ListItem.Title style={Typography.base}>{token.valueOf()}</ListItem.Title>
@@ -345,7 +343,7 @@ export const ViewSinglRollCallScreenRightHeader = () => {
     <TouchableOpacity
       onPress={() => showActionSheet(getActionOptions(rollCall.status))}
       testID="roll-call-options">
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

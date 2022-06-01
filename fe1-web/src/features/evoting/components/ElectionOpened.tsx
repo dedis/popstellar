@@ -7,9 +7,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import { Button } from 'core/components';
-import OptionsIcon from 'core/components/icons/OptionsIcon';
-import WarningIcon from 'core/components/icons/WarningIcon';
+import { PoPIcon, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Border, Color, Icon, List, Spacing, Typography } from 'core/styles';
@@ -90,7 +88,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
     <ScreenWrapper>
       {election.version === ElectionVersion.OPEN_BALLOT && (
         <View style={[styles.warning, styles.openBallot]}>
-          <WarningIcon color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>
               Warning
@@ -105,7 +103,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
       {election.version === ElectionVersion.SECRET_BALLOT && (
         <View style={[styles.warning, styles.secretBallot]}>
-          <WarningIcon color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>Notice</Text>
             <Text style={[Typography.base, Typography.negative]}>
@@ -142,33 +140,41 @@ const ElectionOpened = ({ election }: IPropTypes) => {
               setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
             }
             isExpanded={!!isQuestionOpen[question.id]}>
-            {question.ballot_options.map((ballotOption, ballotOptionIndex) => (
-              <ListItem
-                key={ballotOption}
-                containerStyle={isQuestionOpen[question.id] ? List.item : List.hiddenItem}>
-                <View style={List.icon}>
-                  <ListItem.CheckBox
-                    size={Icon.size}
-                    checked={selectedBallots[questionIndex] === ballotOptionIndex}
-                    onPress={() =>
-                      setSelectedBallots({ ...selectedBallots, [questionIndex]: ballotOptionIndex })
-                    }
-                  />
-                </View>
-                <ListItem.Content>
-                  <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
-                </ListItem.Content>
-              </ListItem>
-            ))}
+            {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
+              const listStyle = List.getListItemStyles(
+                ballotOptionIndex === 0,
+                ballotOptionIndex === question.ballot_options.length - 1,
+              );
+
+              if (!isQuestionOpen[question.id]) {
+                listStyle.push(List.hiddenItem);
+              }
+
+              return (
+                <ListItem key={ballotOption} containerStyle={listStyle} style={listStyle}>
+                  <View style={List.icon}>
+                    <ListItem.CheckBox
+                      size={Icon.size}
+                      checked={selectedBallots[questionIndex] === ballotOptionIndex}
+                      onPress={() =>
+                        setSelectedBallots({
+                          ...selectedBallots,
+                          [questionIndex]: ballotOptionIndex,
+                        })
+                      }
+                    />
+                  </View>
+                  <ListItem.Content>
+                    <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
+                  </ListItem.Content>
+                </ListItem>
+              );
+            })}
           </ListItem.Accordion>
         ))}
       </View>
 
-      <Button onPress={onCastVote}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.cast_vote}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
     </ScreenWrapper>
   );
 };
@@ -210,11 +216,9 @@ export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
   return (
     <TouchableOpacity
       onPress={() =>
-        showActionSheet([
-          { displayName: 'Terminate Election / Tally Votes', action: onTerminateElection },
-        ])
+        showActionSheet([{ displayName: STRINGS.election_end, action: onTerminateElection }])
       }>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

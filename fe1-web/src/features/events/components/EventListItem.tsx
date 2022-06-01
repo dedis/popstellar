@@ -32,10 +32,12 @@ const EventListItem = (props: IPropTypes) => {
     return eventTypes.find((c) => c.eventType === eventType);
   }, [eventType, eventTypes]);
 
+  const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
+
   return EventType ? (
     <ListItem
-      containerStyle={List.getListItemStyles(isFirstItem, isLastItem)}
-      style={List.getListItemStyles(isFirstItem, isLastItem)}
+      containerStyle={listStyle}
+      style={listStyle}
       bottomDivider
       onPress={() =>
         navigation.push(STRINGS.navigation_app_lao, {

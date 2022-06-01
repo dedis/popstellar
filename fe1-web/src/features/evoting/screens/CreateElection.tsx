@@ -10,9 +10,9 @@ import {
   DatePicker,
   DismissModal,
   TextInputList,
-  Button,
   Input,
   DropdownSelector,
+  PoPTextButton,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -246,13 +246,11 @@ const CreateElection = () => {
         </View>
       ))}
 
-      <Button onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.election_create_add_question}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
+        {STRINGS.election_create_add_question}
+      </PoPTextButton>
 
-      <Button
+      <PoPTextButton
         onPress={() =>
           onConfirmEventCreation(
             startTime,
@@ -263,10 +261,8 @@ const CreateElection = () => {
           )
         }
         disabled={!buttonsVisibility}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.general_button_confirm}
-        </Text>
-      </Button>
+        {STRINGS.general_button_confirm}
+      </PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}

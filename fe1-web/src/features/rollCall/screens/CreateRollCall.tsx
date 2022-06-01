@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Platform, Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ConfirmModal, DatePicker, DismissModal, Button, Input } from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { onConfirmEventCreation } from 'core/functions/UI';
@@ -143,7 +143,7 @@ const CreateRollCall = () => {
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
 
-      <Button
+      <PoPTextButton
         onPress={() =>
           onConfirmEventCreation(
             proposedStartTime,
@@ -154,10 +154,8 @@ const CreateRollCall = () => {
           )
         }
         disabled={!buttonsVisibility}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.general_button_confirm}
-        </Text>
-      </Button>
+        {STRINGS.general_button_confirm}
+      </PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}

@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-
     marginVertical: Spacing.x1,
   } as ViewStyle,
   textInput: {
@@ -24,7 +23,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     borderWidth: Border.width,
     borderRadius: Border.radius,
-
     padding: Spacing.x05,
     marginRight: Spacing.x1,
   } as TextStyle,

@@ -5,7 +5,7 @@ import { ListItem } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 
-import OptionsIcon from 'core/components/icons/OptionsIcon';
+import { PoPIcon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Color, Icon, List, Typography } from 'core/styles';
@@ -65,7 +65,10 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
             }
             isExpanded={!!isQuestionOpen[question.id]}>
             {question.ballot_options.map((ballotOption, idx) => {
-              const listStyles = List.getListItemStyles(idx === 0, idx === ballotOption.length - 1);
+              const listStyles = List.getListItemStyles(
+                idx === 0,
+                idx === question.ballot_options.length - 1,
+              );
 
               return (
                 <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
@@ -119,8 +122,10 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
 
   return (
     <TouchableOpacity
-      onPress={() => showActionSheet([{ displayName: 'Open Election', action: onOpenElection }])}>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      onPress={() =>
+        showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
+      }>
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

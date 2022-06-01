@@ -613,26 +613,28 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -765,26 +767,28 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -1551,26 +1555,28 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -1703,26 +1709,28 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -10851,26 +10859,28 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -11003,26 +11013,28 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -20151,26 +20163,28 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -20303,26 +20317,28 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -21051,26 +21067,28 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -21203,26 +21221,28 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -21967,7 +21987,9 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text />
+                                    <View>
+                                      <Text />
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -22100,7 +22122,9 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text />
+                                    <View>
+                                      <Text />
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -22808,26 +22832,28 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -22960,26 +22986,28 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -23687,26 +23715,28 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -23839,26 +23869,28 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 25,
-                                          },
-                                          undefined,
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                    >
-                                      
-                                    </Text>
+                                    <View>
+                                      <Text
+                                        allowFontScaling={false}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 25,
+                                            },
+                                            undefined,
+                                            Object {
+                                              "fontFamily": "ionicons",
+                                              "fontStyle": "normal",
+                                              "fontWeight": "normal",
+                                            },
+                                            Object {},
+                                          ]
+                                        }
+                                      >
+                                        
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -25611,26 +25643,28 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers closed r
                             }
                           }
                         >
-                          <Text
-                            allowFontScaling={false}
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#8E8E8E",
-                                  "fontSize": 25,
-                                },
-                                undefined,
-                                Object {
-                                  "fontFamily": "ionicons",
-                                  "fontStyle": "normal",
-                                  "fontWeight": "normal",
-                                },
-                                Object {},
-                              ]
-                            }
-                          >
-                            
-                          </Text>
+                          <View>
+                            <Text
+                              allowFontScaling={false}
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "fontSize": 25,
+                                  },
+                                  undefined,
+                                  Object {
+                                    "fontFamily": "ionicons",
+                                    "fontStyle": "normal",
+                                    "fontWeight": "normal",
+                                  },
+                                  Object {},
+                                ]
+                              }
+                            >
+                              
+                            </Text>
+                          </View>
                         </View>
                       </RNGestureHandlerButton>
                     </View>
@@ -25979,26 +26013,28 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers created 
                             }
                           }
                         >
-                          <Text
-                            allowFontScaling={false}
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#8E8E8E",
-                                  "fontSize": 25,
-                                },
-                                undefined,
-                                Object {
-                                  "fontFamily": "ionicons",
-                                  "fontStyle": "normal",
-                                  "fontWeight": "normal",
-                                },
-                                Object {},
-                              ]
-                            }
-                          >
-                            
-                          </Text>
+                          <View>
+                            <Text
+                              allowFontScaling={false}
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "fontSize": 25,
+                                  },
+                                  undefined,
+                                  Object {
+                                    "fontFamily": "ionicons",
+                                    "fontStyle": "normal",
+                                    "fontWeight": "normal",
+                                  },
+                                  Object {},
+                                ]
+                              }
+                            >
+                              
+                            </Text>
+                          </View>
                         </View>
                       </RNGestureHandlerButton>
                     </View>
@@ -26347,26 +26383,28 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers opened r
                             }
                           }
                         >
-                          <Text
-                            allowFontScaling={false}
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#8E8E8E",
-                                  "fontSize": 25,
-                                },
-                                undefined,
-                                Object {
-                                  "fontFamily": "ionicons",
-                                  "fontStyle": "normal",
-                                  "fontWeight": "normal",
-                                },
-                                Object {},
-                              ]
-                            }
-                          >
-                            
-                          </Text>
+                          <View>
+                            <Text
+                              allowFontScaling={false}
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "fontSize": 25,
+                                  },
+                                  undefined,
+                                  Object {
+                                    "fontFamily": "ionicons",
+                                    "fontStyle": "normal",
+                                    "fontWeight": "normal",
+                                  },
+                                  Object {},
+                                ]
+                              }
+                            >
+                              
+                            </Text>
+                          </View>
                         </View>
                       </RNGestureHandlerButton>
                     </View>
@@ -26715,26 +26753,28 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers re-opene
                             }
                           }
                         >
-                          <Text
-                            allowFontScaling={false}
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#8E8E8E",
-                                  "fontSize": 25,
-                                },
-                                undefined,
-                                Object {
-                                  "fontFamily": "ionicons",
-                                  "fontStyle": "normal",
-                                  "fontWeight": "normal",
-                                },
-                                Object {},
-                              ]
-                            }
-                          >
-                            
-                          </Text>
+                          <View>
+                            <Text
+                              allowFontScaling={false}
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "fontSize": 25,
+                                  },
+                                  undefined,
+                                  Object {
+                                    "fontFamily": "ionicons",
+                                    "fontStyle": "normal",
+                                    "fontWeight": "normal",
+                                  },
+                                  Object {},
+                                ]
+                              }
+                            >
+                              
+                            </Text>
+                          </View>
                         </View>
                       </RNGestureHandlerButton>
                     </View>

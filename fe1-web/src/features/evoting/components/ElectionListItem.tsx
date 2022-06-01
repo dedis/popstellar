@@ -5,7 +5,7 @@ import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import ElectionIcon from 'core/components/icons/ElectionIcon';
+import { PoPIcon } from 'core/components';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -16,7 +16,7 @@ import { makeElectionSelector } from '../reducer';
 const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
     return (
-      <ListItem.Subtitle>
+      <ListItem.Subtitle style={Typography.small}>
         {STRINGS.general_starting_at} <ReactTimeago date={election.start.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
@@ -24,14 +24,14 @@ const Subtitle = ({ election }: { election: Election }) => {
 
   if (election.electionStatus === ElectionStatus.OPENED) {
     return (
-      <ListItem.Subtitle>
+      <ListItem.Subtitle style={Typography.small}>
         {STRINGS.general_ongoing}, {STRINGS.general_ending_at}{' '}
         <ReactTimeago date={election.end.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
   }
 
-  return <ListItem.Subtitle>{STRINGS.general_closed}</ListItem.Subtitle>;
+  return <ListItem.Subtitle style={Typography.small}>{STRINGS.general_closed}</ListItem.Subtitle>;
 };
 
 const ElectionListItem = (props: IPropTypes) => {
@@ -47,7 +47,7 @@ const ElectionListItem = (props: IPropTypes) => {
   return (
     <>
       <View style={List.icon}>
-        <ElectionIcon color={Color.primary} size={Icon.size} />
+        <PoPIcon name="election" color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{election.name}</ListItem.Title>

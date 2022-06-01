@@ -17,7 +17,6 @@ Feature: Create a Roll Call
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
@@ -110,7 +109,7 @@ Feature: Create a Roll Call
     * string rootChannel = "/root"
     When frontend.publish(JSON.stringify(validCreateRollCall), rootChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
-    Then match answer contains INTERNAL_SERVER_ERROR
+    Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
 
@@ -124,7 +123,7 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
+          "id": '#(getRollCallValidId(rollCallName, creationTime))',
           "name": "Roll Call ",
           "creation": 1633098853,
           "proposed_start": 1633099155,
@@ -147,9 +146,9 @@ Feature: Create a Roll Call
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
+          "id": '#(getRollCallValidId(rollCallName, creationTimeNegative))',
           "name": "Roll Call ",
-          "creation":-153,
+          "creation": -153,
           "proposed_start": 1633099125,
           "proposed_end": 1633099140,
           "location": "EPFL",
@@ -166,12 +165,13 @@ Feature: Create a Roll Call
   # from the backend.
   Scenario: Roll Call Creation with creation time < proposed start should return and error
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def smallCreationTime = 1633099055
     And def validCreateRollCall =
       """
         {
           "object": "roll_call",
           "action": "create",
-          "id": '#(getRollCallValidId)',
+          "id": '#(getRollCallValidId(rollCallName, smallCreationTime))',
           "name": "Roll Call ",
           "creation": 1633099055,
           "proposed_start": 1633099155,

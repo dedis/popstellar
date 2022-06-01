@@ -5,7 +5,7 @@ import { Pressable } from 'react-native';
 import { Color } from 'core/styles';
 
 import { getNavigator } from '../platform/Navigator';
-import CopyIcon from './icons/CopyIcon';
+import PoPIcon from './PoPIcon';
 
 /**
  * Copy to clipboard button
@@ -14,7 +14,7 @@ import CopyIcon from './icons/CopyIcon';
 function CopyButton({ data, negative }: IPropTypes) {
   return (
     <Pressable onPress={() => getNavigator().clipboard.writeText(data)}>
-      <CopyIcon color={negative ? Color.contrast : Color.primary} size={26} />
+      <PoPIcon name="copy" color={negative ? Color.contrast : Color.primary} size={26} />
     </Pressable>
   );
 }

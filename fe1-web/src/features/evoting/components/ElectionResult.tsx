@@ -5,6 +5,7 @@ import { ListItem } from 'react-native-elements';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { List, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { Election, QuestionResult } from '../objects';
 
@@ -29,7 +30,7 @@ const ElectionResult = ({ election }: IPropTypes) => {
 
   return (
     <ScreenWrapper>
-      <Text style={Typography.heading}>Election Results</Text>
+      <Text style={Typography.heading}>{STRINGS.election_results}</Text>
 
       <View style={List.container}>
         {election.questionResult &&

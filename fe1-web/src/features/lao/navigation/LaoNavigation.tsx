@@ -1,9 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
-import EventIcon from 'core/components/icons/EventIcon';
-import HomeIcon from 'core/components/icons/HomeIcon';
+import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
@@ -11,8 +9,6 @@ import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectIsLaoOrganizer } from '../reducer';
-import { EventsScreen } from '../screens';
 import LaoHomeScreen, {
   LaoHomeScreenHeader,
   LaoHomeScreenHeaderRight,
@@ -27,7 +23,6 @@ const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 const LaoNavigation: React.FC = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
-  const isOrganizer = useSelector(selectIsLaoOrganizer);
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
@@ -39,19 +34,19 @@ const LaoNavigation: React.FC = () => {
         headerTitle: LaoHomeScreenHeader,
         Component: LaoHomeScreen,
         headerRight: LaoHomeScreenHeaderRight,
-        tabBarIcon: HomeIcon,
+        tabBarIcon: makeIcon('home'),
         order: -9999999,
       } as LaoFeature.LaoScreen,
       {
         id: STRINGS.navigation_lao_events,
-        tabBarIcon: EventIcon,
-        Component: isOrganizer ? EventsNavigation : EventsScreen,
+        tabBarIcon: makeIcon('event'),
+        Component: EventsNavigation,
         headerShown: false,
         order: 0,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [passedScreens, isOrganizer]);
+  }, [passedScreens]);
 
   return (
     <OrganizationTopTabNavigator.Navigator

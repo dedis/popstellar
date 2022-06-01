@@ -6,9 +6,9 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import Button from './Button';
 import Input from './Input';
 import ModalHeader from './ModalHeader';
+import PoPTextButton from './PoPTextButton';
 
 /**
  * A modal used to ask for the confirmation or cancellation of the user.
@@ -54,11 +54,9 @@ const ConfirmModal = (props: IPropTypes) => {
             border
           />
         ) : null}
-        <Button onPress={() => onConfirmPress(textInput)} testID="confirm-modal-confirm">
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {buttonConfirmText}
-          </Text>
-        </Button>
+        <PoPTextButton onPress={() => onConfirmPress(textInput)} testID="confirm-modal-confirm">
+          {buttonConfirmText}
+        </PoPTextButton>
       </ScrollView>
     </Modal>
   );

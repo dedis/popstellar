@@ -6,4 +6,4 @@ import { ConnectToLao } from '../objects';
  * @returns Encoded LAO connection
  */
 export const encodeLaoConnectionForQRCode = (servers: string[], laoId: string): string =>
-  JSON.stringify(new ConnectToLao({ servers, lao: laoId }));
+  new ConnectToLao({ servers, lao: laoId }).toJson();

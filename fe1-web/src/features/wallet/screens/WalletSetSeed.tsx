@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextInputLine, Button } from 'core/components';
+import { TextInputLine, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -68,18 +68,14 @@ const WalletSetSeed = () => {
             onChangeText={(input: string) => setSeed(input)}
             negative
           />
-          <Button onPress={() => initWallet()} negative>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_restore_using_known_seed}
-            </Text>
-          </Button>
-          <Button
+          <PoPTextButton onPress={() => initWallet()} negative>
+            {STRINGS.wallet_restore_using_known_seed}
+          </PoPTextButton>
+          <PoPTextButton
             onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_create_seed)}
             negative>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_previous_seed_not_known}
-            </Text>
-          </Button>
+            {STRINGS.wallet_previous_seed_not_known}
+          </PoPTextButton>
         </View>
       </ScreenWrapper>
     </View>

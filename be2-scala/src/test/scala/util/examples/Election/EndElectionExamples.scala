@@ -16,15 +16,16 @@ object EndElectionExamples {
   final val ID: Hash = Hash(Base64Data.encode("election"))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
-  final val REGISTERED_VOTES: Hash = Hash(Base64Data("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU"))
+  final val REGISTERED_VOTES: Hash = Hash.fromStrings("KNRSAzia1ngjKZPwBpHQIYssS33VBl3eP5LWDUikAh4=")
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingEndElection: EndElection = EndElection(LAO_ID, ID, NOT_STALE_CREATED_AT, REGISTERED_VOTES)
+  final val DATA_END_ELECTION_MESSAGE: Hash = Hash(Base64Data.encode(workingEndElection.toJson.toString))
   final val MESSAGE_END_ELECTION_WORKING: Message = new Message(
-    Base64Data.encode(workingEndElection.toJson.toString),
+    DATA_END_ELECTION_MESSAGE.base64Data,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),

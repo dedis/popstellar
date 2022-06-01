@@ -893,7 +893,9 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <Text />
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                               <View
                                 style={
@@ -987,7 +989,8 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -1064,7 +1067,9 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <Text />
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                               <View
                                 style={
@@ -1235,7 +1240,9 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <Text />
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                               <View
                                 style={
@@ -2346,26 +2353,28 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  allowFontScaling={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 25,
-                                      },
-                                      undefined,
-                                      Object {
-                                        "fontFamily": "material",
-                                        "fontStyle": "normal",
-                                        "fontWeight": "normal",
-                                      },
-                                      Object {},
-                                    ]
-                                  }
-                                >
-                                  
-                                </Text>
+                                <View>
+                                  <Text
+                                    allowFontScaling={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 25,
+                                        },
+                                        undefined,
+                                        Object {
+                                          "fontFamily": "material",
+                                          "fontStyle": "normal",
+                                          "fontWeight": "normal",
+                                        },
+                                        Object {},
+                                      ]
+                                    }
+                                  >
+                                    
+                                  </Text>
+                                </View>
                               </View>
                               <View
                                 style={
@@ -2459,7 +2468,8 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     Object {
                                       "backgroundColor": "transparent",
                                       "color": "#242424",
-                                      "fontSize": 15,
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
                                     }
                                   }
                                   testID="listItemTitle"
@@ -2558,26 +2568,28 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  allowFontScaling={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 25,
-                                      },
-                                      undefined,
-                                      Object {
-                                        "fontFamily": "ionicons",
-                                        "fontStyle": "normal",
-                                        "fontWeight": "normal",
-                                      },
-                                      Object {},
-                                    ]
-                                  }
-                                >
-                                  
-                                </Text>
+                                <View>
+                                  <Text
+                                    allowFontScaling={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 25,
+                                        },
+                                        undefined,
+                                        Object {
+                                          "fontFamily": "ionicons",
+                                          "fontStyle": "normal",
+                                          "fontWeight": "normal",
+                                        },
+                                        Object {},
+                                      ]
+                                    }
+                                  >
+                                    
+                                  </Text>
+                                </View>
                               </View>
                               <View
                                 style={
@@ -2770,26 +2782,28 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  allowFontScaling={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 25,
-                                      },
-                                      undefined,
-                                      Object {
-                                        "fontFamily": "ionicons",
-                                        "fontStyle": "normal",
-                                        "fontWeight": "normal",
-                                      },
-                                      Object {},
-                                    ]
-                                  }
-                                >
-                                  
-                                </Text>
+                                <View>
+                                  <Text
+                                    allowFontScaling={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 25,
+                                        },
+                                        undefined,
+                                        Object {
+                                          "fontFamily": "ionicons",
+                                          "fontStyle": "normal",
+                                          "fontWeight": "normal",
+                                        },
+                                        Object {},
+                                      ]
+                                    }
+                                  >
+                                    
+                                  </Text>
+                                </View>
                               </View>
                               <View
                                 style={

@@ -683,7 +683,11 @@ exports[`HomeNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View
+                                    style={Object {}}
+                                  >
+                                    <Text />
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -703,7 +707,9 @@ exports[`HomeNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View>
+                                    <Text />
+                                  </View>
                                 </View>
                               </View>
                               <Text
@@ -793,7 +799,11 @@ exports[`HomeNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View
+                                    style={Object {}}
+                                  >
+                                    <Text />
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -813,7 +823,9 @@ exports[`HomeNavigation renders correctly 1`] = `
                                     ]
                                   }
                                 >
-                                  <Text />
+                                  <View>
+                                    <Text />
+                                  </View>
                                 </View>
                               </View>
                               <Text

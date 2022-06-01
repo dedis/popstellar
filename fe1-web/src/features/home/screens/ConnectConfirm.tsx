@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { Button, Input } from 'core/components';
+import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
@@ -76,11 +76,7 @@ const ConnectConfirm = () => {
         <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
         <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
 
-        <Button onPress={onButtonConfirm}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.connect_connect}
-          </Text>
-        </Button>
+        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.connect_connect}</PoPTextButton>
       </View>
     </ScreenWrapper>
   );

@@ -4,7 +4,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { Button } from 'core/components';
+import { PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { getNetworkManager } from 'core/network';
@@ -63,23 +63,19 @@ const LaoProperties = () => {
         <Text>{lao.server_addresses.join(', ')}</Text>
       </Text>
 
-      <Button onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.lao_properties_add_additional_connection}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
+        {STRINGS.lao_properties_add_additional_connection}
+      </PoPTextButton>
 
-      <Button
+      <PoPTextButton
         onPress={() => {
           getNetworkManager().disconnectFromAll();
           navigation.navigate(STRINGS.navigation_app_home, {
             screen: STRINGS.navigation_home_home,
           });
         }}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.lao_properties_disconnect}
-        </Text>
-      </Button>
+        {STRINGS.lao_properties_disconnect}
+      </PoPTextButton>
     </View>
   );
 };
