@@ -1377,7 +1377,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                         ]
                                       }
                                     >
-                                      Open election
+                                      Open Election
                                     </Text>
                                   </View>
                                 </View>

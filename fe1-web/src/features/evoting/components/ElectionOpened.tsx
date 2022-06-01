@@ -5,8 +5,7 @@ import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { Button, CheckboxList, TimeDisplay } from 'core/components';
-import { Typography } from 'core/styles';
+import { CheckboxList, TimeDisplay, PoPTextButton } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -79,18 +78,10 @@ const ElectionOpened = ({ election, questions, isOrganizer }: IPropTypes) => {
               />
             ))}
 
-            <Button onPress={onCastVote}>
-              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                {STRINGS.cast_vote}
-              </Text>
-            </Button>
+            <PoPTextButton onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
             <Badge value={hasVoted} status="success" />
             {isOrganizer && (
-              <Button onPress={onTerminateElection}>
-                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                  Terminate Election / Tally Votes
-                </Text>
-              </Button>
+              <PoPTextButton onPress={onTerminateElection}>{STRINGS.election_end}</PoPTextButton>
             )}
           </>
         ) : (

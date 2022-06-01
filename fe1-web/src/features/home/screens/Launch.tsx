@@ -1,16 +1,15 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, Button } from 'core/components';
+import { TextBlock, TextInputLine, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
-import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -85,30 +84,19 @@ const Launch = () => {
           />
         </View>
         <View style={styles.viewBottom}>
-          <Button onPress={() => onButtonLaunchPress(inputLaoName)}>
-            <Text
-              style={[
-                Typography.base,
-                Typography.centered,
-                Typography.negative,
-              ]}>{`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}</Text>
-          </Button>
+          <PoPTextButton onPress={() => onButtonLaunchPress(inputLaoName)}>
+            {STRINGS.launch_button_launch}
+          </PoPTextButton>
 
-          <Button onPress={connectToTestLao}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
-            </Text>
-          </Button>
+          <PoPTextButton onPress={connectToTestLao}>
+            [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
+          </PoPTextButton>
 
-          <Button onPress={onTestClearStorage}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              [TEST] Clear (persistent) storage
-            </Text>
-          </Button>
+          <PoPTextButton onPress={onTestClearStorage}>
+            [TEST] Clear (persistent) storage
+          </PoPTextButton>
 
-          <Button onPress={navigation.goBack}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>Cancel</Text>
-          </Button>
+          <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
         </View>
       </View>
     </ScreenWrapper>

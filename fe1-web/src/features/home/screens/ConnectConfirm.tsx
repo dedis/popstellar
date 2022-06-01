@@ -1,16 +1,15 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextBlock, TextInputLine, Button } from 'core/components';
+import { TextBlock, TextInputLine, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
-import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -102,16 +101,8 @@ const ConnectConfirm = () => {
           defaultValue={laoId}
         />
 
-        <Button onPress={onButtonConfirm}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_confirm}
-          </Text>
-        </Button>
-        <Button onPress={navigation.goBack}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_cancel}
-          </Text>
-        </Button>
+        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.general_button_confirm}</PoPTextButton>
+        <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
       </View>
     </ScreenWrapper>
   );

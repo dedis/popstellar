@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   button: {
     padding: Spacing.x05,
-
     borderColor: Colors.accent,
     backgroundColor: Colors.accent,
     borderWidth: Border.width,
@@ -23,7 +22,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const Button = (props: IPropTypes) => {
+const PoPButton = (props: IPropTypes) => {
   const { onPress, disabled, children, negative } = props;
 
   return (
@@ -39,9 +38,9 @@ const propTypes = {
   negative: PropTypes.bool,
   children: PropTypes.node,
 };
-Button.propTypes = propTypes;
+PoPButton.propTypes = propTypes;
 
-Button.defaultProps = {
+PoPButton.defaultProps = {
   disabled: false,
   negative: false,
   children: null,
@@ -49,4 +48,4 @@ Button.defaultProps = {
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export default Button;
+export default PoPButton;

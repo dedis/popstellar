@@ -4,7 +4,7 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -14,7 +14,7 @@ import {
   ParagraphBlock,
   TextBlock,
   TextInputLine,
-  Button,
+  PoPTextButton,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
@@ -22,7 +22,6 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
-import { Typography } from 'core/styles';
 import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -119,7 +118,7 @@ const CreateMeeting = () => {
           setLocation(text);
         }}
       />
-      <Button
+      <PoPTextButton
         onPress={() =>
           onConfirmEventCreation(
             startTime,
@@ -130,16 +129,10 @@ const CreateMeeting = () => {
           )
         }
         disabled={!confirmButtonVisibility}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.general_button_confirm}
-        </Text>
-      </Button>
+        {STRINGS.general_button_confirm}
+      </PoPTextButton>
 
-      <Button onPress={navigation.goBack}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.general_button_cancel}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}

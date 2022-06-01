@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, Text, View } from 'react-native';
 
-import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
-import Button from './Button';
+import PoPTextButton from './PoPTextButton';
 import TextInputLine from './TextInputLine';
 
 /**
@@ -43,21 +42,17 @@ const ConfirmModal = (props: IPropTypes) => {
           />
         ) : null}
         <View style={modalStyles.buttonView}>
-          <Button onPress={() => onConfirmPress(textInput)}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {buttonConfirmText}
-            </Text>
-          </Button>
+          <PoPTextButton onPress={() => onConfirmPress(textInput)}>
+            {buttonConfirmText}
+          </PoPTextButton>
 
-          <Button
+          <PoPTextButton
             onPress={() => {
               setVisibility(!visibility);
               setTextInput('');
             }}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {buttonCancelText}
-            </Text>
-          </Button>
+            {buttonCancelText}
+          </PoPTextButton>
         </View>
       </View>
     </Modal>

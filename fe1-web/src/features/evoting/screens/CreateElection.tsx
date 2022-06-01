@@ -2,7 +2,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -14,12 +14,11 @@ import {
   TextBlock,
   TextInputLine,
   TextInputList,
-  Button,
+  PoPTextButton,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { Typography } from 'core/styles';
 import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -225,17 +224,11 @@ const CreateElection = () => {
       }
 
       <View style={[styles.view, styles.zIndexInitial]}>
-        <Button onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            Add Question
-          </Text>
-        </Button>
-        <Button onPress={navigation.goBack}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_cancel}
-          </Text>
-        </Button>
-        <Button
+        <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
+          {STRINGS.election_add_question}
+        </PoPTextButton>
+        <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
+        <PoPTextButton
           onPress={() =>
             onConfirmEventCreation(
               startTime,
@@ -246,10 +239,8 @@ const CreateElection = () => {
             )
           }
           disabled={!buttonsVisibility}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.general_button_confirm}
-          </Text>
-        </Button>
+          {STRINGS.general_button_confirm}
+        </PoPTextButton>
       </View>
 
       <DismissModal

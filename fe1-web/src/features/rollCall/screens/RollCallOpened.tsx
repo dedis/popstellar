@@ -1,18 +1,18 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
-import { ConfirmModal, TextBlock, Button } from 'core/components';
+import { ConfirmModal, TextBlock, PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey } from 'core/objects';
-import { Spacing, Typography } from 'core/styles';
+import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -172,17 +172,13 @@ const RollCallOpened = () => {
           style={qrScannerStyles}
         />
         <Badge value={attendeePopTokens.size} status="success" />
-        <Button onPress={() => onCloseRollCall()}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.roll_call_scan_close}
-          </Text>
-        </Button>
+        <PoPTextButton onPress={() => onCloseRollCall()}>
+          {STRINGS.roll_call_scan_close}
+        </PoPTextButton>
 
-        <Button onPress={() => setInputModalIsVisible(true)}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.roll_call_add_attendee_manually}
-          </Text>
-        </Button>
+        <PoPTextButton onPress={() => setInputModalIsVisible(true)}>
+          {STRINGS.roll_call_add_attendee_manually}
+        </PoPTextButton>
       </View>
       <ConfirmModal
         visibility={inputModalIsVisible}

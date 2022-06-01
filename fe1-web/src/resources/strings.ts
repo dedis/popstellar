@@ -158,6 +158,11 @@ namespace STRINGS {
   export const election_method_Approval = 'Approval';
   export const election_wait_for_election_key = 'Waiting for the election key to be broadcasted';
 
+  export const election_open = 'Open Election';
+  export const election_add_question = 'Add Question';
+  export const election_end = 'End Election and Tally Votes';
+  export const election_results = 'Election Results';
+
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';
   export const modal_event_ends_in_past = "The event's end time is in the past.";

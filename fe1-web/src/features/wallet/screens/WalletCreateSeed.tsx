@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { CopiableTextInput, Button } from 'core/components';
+import { CopiableTextInput, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -121,18 +121,14 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_6}
             </Text>
           </Text>
-          <Button onPress={() => connectWithSeed()} negative>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_welcome_start_exploring}
-            </Text>
-          </Button>
-          <Button
+          <PoPTextButton onPress={() => connectWithSeed()} negative>
+            {STRINGS.wallet_welcome_start_exploring}
+          </PoPTextButton>
+          <PoPTextButton
             onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_insert_seed)}
             negative>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_welcome_already_know_seed}
-            </Text>
-          </Button>
+            {STRINGS.wallet_welcome_already_know_seed}
+          </PoPTextButton>
         </View>
       </ScreenWrapper>
     </View>

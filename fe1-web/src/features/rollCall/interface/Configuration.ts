@@ -129,10 +129,7 @@ export interface RollCallInterface extends FeatureInterface {
 interface EventType {
   eventType: string;
   navigationNames: {
-    createEvent:
-      | typeof STRINGS.navigation_lao_organizer_creation_meeting
-      | typeof STRINGS.navigation_lao_organizer_creation_roll_call
-      | typeof STRINGS.navigation_lao_organizer_creation_election;
+    createEvent: typeof STRINGS.navigation_lao_organizer_creation_roll_call;
   };
   Component: React.ComponentType<{
     eventId: string;

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`WideButtonView renders correctly without disabled 1`] = `
+exports[`PoPButton renders correctly without disabled 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
   onGestureEvent={[Function]}
@@ -36,7 +36,23 @@ exports[`WideButtonView renders correctly without disabled 1`] = `
         }
       }
     >
-      <Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "textAlign": "center",
+            },
+            Object {
+              "color": "#fff",
+            },
+          ]
+        }
+      >
         I am a wide button
       </Text>
     </View>

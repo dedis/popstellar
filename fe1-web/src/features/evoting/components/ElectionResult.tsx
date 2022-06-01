@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { TimeDisplay } from 'core/components';
 import { Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { Election, QuestionResult } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
@@ -12,7 +13,7 @@ const ElectionResult = ({ election }: IPropTypes) => {
   return (
     <>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      <Text style={Typography.base}>Election Results</Text>
+      <Text style={Typography.base}>{STRINGS.election_results}</Text>
       {election.questionResult &&
         election.questionResult.map((questionResult: QuestionResult) => {
           const question = election.questions.find((q) => q.id === questionResult.id);

@@ -2,13 +2,12 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
-import { TextBlock, Button } from 'core/components';
+import { TextBlock, PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -34,7 +33,7 @@ const CreateEvent = () => {
       <TextBlock text={STRINGS.create_description} />
 
       {eventTypes.map((eventType) => (
-        <Button
+        <PoPTextButton
           key={eventType.eventType}
           onPress={() =>
             navigation.navigate(STRINGS.navigation_app_lao, {
@@ -44,17 +43,11 @@ const CreateEvent = () => {
               },
             })
           }>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {eventType.eventType}
-          </Text>
-        </Button>
+          {eventType.eventType}
+        </PoPTextButton>
       ))}
 
-      <Button onPress={navigation.goBack}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.general_button_cancel}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
     </View>
   );
 };

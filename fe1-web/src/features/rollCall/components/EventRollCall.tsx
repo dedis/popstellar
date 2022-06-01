@@ -7,11 +7,10 @@ import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { QRCode, Button } from 'core/components';
+import { QRCode, PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoOrganizerParamList } from 'core/navigation/typing/LaoOrganizerParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -132,11 +131,7 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Not Open yet</Text>
             <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
-              <Button onPress={onOpenRollCall}>
-                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                  {STRINGS.roll_call_open}
-                </Text>
-              </Button>
+              <PoPTextButton onPress={onOpenRollCall}>{STRINGS.roll_call_open}</PoPTextButton>
             )}
           </>
         );
@@ -151,11 +146,9 @@ const EventRollCall = (props: IPropTypes) => {
               </>
             )}
             {isOrganizer && (
-              <Button onPress={onScanAttendees}>
-                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                  {STRINGS.roll_call_scan_attendees}
-                </Text>
-              </Button>
+              <PoPTextButton onPress={onScanAttendees}>
+                {STRINGS.roll_call_scan_attendees}
+              </PoPTextButton>
             )}
           </>
         );
@@ -168,11 +161,7 @@ const EventRollCall = (props: IPropTypes) => {
               <Text key={attendee.valueOf()}>{attendee}</Text>
             ))}
             {isOrganizer && (
-              <Button onPress={onReopenRollCall}>
-                <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                  {STRINGS.roll_call_reopen}
-                </Text>
-              </Button>
+              <PoPTextButton onPress={onReopenRollCall}>{STRINGS.roll_call_reopen}</PoPTextButton>
             )}
           </>
         );

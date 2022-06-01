@@ -3,9 +3,10 @@ import React from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { Button, TimeDisplay } from 'core/components';
+import { PoPTextButton, TimeDisplay } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { openElection } from '../network/ElectionMessageApi';
 import { Election } from '../objects';
@@ -51,11 +52,7 @@ const ElectionNotStarted = ({ election, questions, isOrganizer }: IPropTypes) =>
         renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
       />
       {isOrganizer && (
-        <Button onPress={onOpenElection}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            Open election
-          </Text>
-        </Button>
+        <PoPTextButton onPress={onOpenElection}>{STRINGS.election_open}</PoPTextButton>
       )}
     </>
   );
