@@ -3,6 +3,9 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
+
 import org.junit.Test;
 
 public class InputTest {
@@ -13,23 +16,23 @@ public class InputTest {
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
 
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
 
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   @Test
   public void testGetTxOutHash() {
-    assertEquals(Tx_OUT_HASH, TXIN.get_tx_out_hash());
+    assertEquals(Tx_OUT_HASH, TXIN.getTxOutHash());
   }
 
   @Test
   public void testGetTxOutIndex() {
-    assertEquals(TX_OUT_INDEX, TXIN.get_tx_out_index());
+    assertEquals(TX_OUT_INDEX, TXIN.getTxOutIndex());
   }
 
   @Test
   public void testGetScript() {
-    assertEquals(SCRIPTTXIN, TXIN.get_script());
+    assertEquals(SCRIPTTXIN, TXIN.getScript());
   }
 
   @Test
@@ -39,6 +42,6 @@ public class InputTest {
     assertNotEquals(TXIN, new Input(random, TX_OUT_INDEX, SCRIPTTXIN));
     assertNotEquals(TXIN, new Input(Tx_OUT_HASH, 4, SCRIPTTXIN));
     assertNotEquals(
-        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new ScriptInput(random, PUBKEY, SIG)));
+        TXIN, new Input(Tx_OUT_HASH, TX_OUT_INDEX, new ScriptInput(random, new PublicKey(PUBKEY), new Signature(SIG))));
   }
 }

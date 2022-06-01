@@ -13,12 +13,12 @@ public class ScriptOutputTest {
 
   @Test
   public void testGetType() {
-    assertEquals(TYPE, SCRIPTTXOUT.get_type());
+    assertEquals(TYPE, SCRIPTTXOUT.getType());
   }
 
   @Test
   public void testGetPub_key_hash() {
-    assertEquals(PUBKEYHASH, SCRIPTTXOUT.get_pubkey_hash());
+    assertEquals(PUBKEYHASH, SCRIPTTXOUT.getPubkeyHash());
   }
 
   @Test

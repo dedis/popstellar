@@ -1,29 +1,36 @@
+/*
+  FIXME: let sonarcloud keep track of this :)
+  WARNING: THIS FILE WAS CREATED TO TEST THE UI OF THE WALLET.
+  IT SHOULD NOT STAY IN THE CODEBASE FOR LONG AND WILL SHOULD REMOVED BY THE END OF THE SEMESTER
+  Tyratox, 18.05.2022
+*/
 import testKeyPair from 'test_data/keypair.json';
 
 import { EventTags, Hash, PublicKey, Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { addEvent, removeEvent } from 'features/events/reducer';
 import { connectToLao, disconnectFromLao, removeLao } from 'features/lao/reducer';
-import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
+import { addRollCall } from 'features/rollCall/reducer';
 
 import { Lao, LaoState } from '../../lao/objects';
 import { generateToken } from './Token';
 
 // region Dummy values definition
-export const mockPublicKey = testKeyPair.publicKey;
+const mockPublicKey = testKeyPair.publicKey;
 
-export const org = new PublicKey(mockPublicKey);
+const org = new PublicKey(mockPublicKey);
 
-export const mockLaoName = 'MyLao';
-export const mockLaoCreationTime = new Timestamp(1600000000);
-export const mockLaoIdHash: Hash = Hash.fromStringArray(
+const mockLaoName = 'MyLao';
+const mockLaoCreationTime = new Timestamp(1600000000);
+const mockLaoIdHash: Hash = Hash.fromStringArray(
   org.toString(),
   mockLaoCreationTime.toString(),
   mockLaoName,
 );
-export const mockLaoId: string = mockLaoIdHash.toString();
+const mockLaoId: string = mockLaoIdHash.toString();
 
-export const mockLaoState: LaoState = {
+const mockLaoState: LaoState = {
   id: mockLaoId,
   name: mockLaoName,
   creation: mockLaoCreationTime.valueOf(),
@@ -32,7 +39,7 @@ export const mockLaoState: LaoState = {
   witnesses: [],
   server_addresses: [],
 };
-export const mockLao = Lao.fromState(mockLaoState);
+const mockLao = Lao.fromState(mockLaoState);
 
 // MOCK ROLL CALL
 const mockRCName = 'myRollCall';
@@ -48,9 +55,9 @@ const mockRCIdHash = Hash.fromStringArray(
   mockRCName,
 );
 
-export const mockRollCallState: any = {
+const mockRollCallState: any = {
   id: mockRCIdHash.valueOf(),
-  eventType: EventTypeRollCall,
+  eventType: RollCall.EVENT_TYPE,
   start: mockRCTimestampStart.valueOf(),
   name: mockRCName,
   location: mockRCLocation,
@@ -100,8 +107,26 @@ export async function createDummyWalletState() {
     tokenMockRC1.publicKey.valueOf(),
   ]);
   dispatch(connectToLao(mockLao.toState()));
-  dispatch(addEvent(mockLao.id, mockRollCall0.toState()));
-  dispatch(addEvent(mockLao.id, mockRollCall1.toState()));
+  dispatch(
+    addEvent(mockLao.id, {
+      eventType: RollCall.EVENT_TYPE,
+      id: mockRollCall0.id.valueOf(),
+      start: mockRollCall0.proposedStart.valueOf(),
+      end: mockRollCall0.proposedEnd.valueOf(),
+    }),
+  );
+  dispatch(addRollCall(mockRollCall0.toState()));
+
+  dispatch(
+    addEvent(mockLao.id, {
+      eventType: RollCall.EVENT_TYPE,
+      id: mockRollCall0.id.valueOf(),
+
+      start: mockRollCall0.proposedStart.valueOf(),
+      end: mockRollCall0.proposedEnd.valueOf(),
+    }),
+  );
+  dispatch(addRollCall(mockRollCall1.toState()));
   console.debug('Dispatched mock events');
 }
 /*

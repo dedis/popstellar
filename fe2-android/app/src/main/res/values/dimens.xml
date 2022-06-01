@@ -111,4 +111,9 @@
   <!--  Home dimensions-->
   <dimen name="home_card_view_height">50dp</dimen>
 
+  <!-- Digital Cash dimensions -->
+  <dimen name="qr_digital_cash">200dp</dimen>
+  <dimen name="spinner_width_digital_cash">300dp</dimen>
+  <dimen name="spinner_height_digital_cash">70dp</dimen>
+
 </resources>

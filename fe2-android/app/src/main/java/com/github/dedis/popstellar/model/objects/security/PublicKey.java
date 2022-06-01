@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 
 /** A public key that can be used to verify a signature */
@@ -47,10 +48,10 @@ public class PublicKey extends Base64URLData {
     MessageDigest digest = null;
     try {
       digest = MessageDigest.getInstance("SHA-256");
-      byte[] hash = digest.digest(this.getEncoded().getBytes(StandardCharsets.UTF_8));
-      return Base64.getUrlEncoder().encodeToString(hash);
+      byte[] hash = digest.digest(this.getData());
+      return Base64.getUrlEncoder().encodeToString(Arrays.copyOf(hash, 20));
     } catch (NoSuchAlgorithmException e) {
-      System.err.println("Something is wrong by hashing the String element ");
+      Log.e(TAG, "Something is wrong by hashing the String element ");
       throw new IllegalArgumentException("Error in computing the hash in public key");
     }
   }

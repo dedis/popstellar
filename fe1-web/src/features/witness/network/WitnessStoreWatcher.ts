@@ -46,7 +46,7 @@ export const afterMessageProcessingHandler =
     const type = getWitnessRegistryEntryType(msg.messageData);
     const lao = getCurrentLao();
 
-    if (msg.laoId.valueOf() !== lao.id.valueOf()) {
+    if (msg.laoId?.valueOf() !== lao.id.valueOf()) {
       console.warn(
         `Received a message that should be witnessed for lao ${
           msg.laoId

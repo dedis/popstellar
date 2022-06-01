@@ -3,15 +3,14 @@ import '__tests__/utils/matchers';
 
 import {
   configureTestFeatures,
-  mockLao,
   mockLaoId,
+  mockLaoIdHash,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';
 
@@ -50,12 +49,13 @@ const closeRollCallJson = `{
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('CloseRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new CloseRollCall(sampleCloseRollCall)).toBeJsonEqual(sampleCloseRollCall);
+    expect(new CloseRollCall(sampleCloseRollCall, mockLaoIdHash)).toBeJsonEqual(
+      sampleCloseRollCall,
+    );
     const temp = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.CLOSE,
@@ -64,12 +64,12 @@ describe('CloseRollCall', () => {
       closed_at: TIMESTAMP,
       attendees: mockAttendees,
     };
-    expect(new CloseRollCall(temp)).toBeJsonEqual(temp);
+    expect(new CloseRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(closeRollCallJson);
-    expect(CloseRollCall.fromJson(obj)).toBeJsonEqual(sampleCloseRollCall);
+    expect(CloseRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCloseRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -81,69 +81,84 @@ describe('CloseRollCall', () => {
       closed_at: TIMESTAMP,
       attendees: mockAttendees,
     };
-    const createWrongObj = () => CloseRollCall.fromJson(obj);
+    const createWrongObj = () => CloseRollCall.fromJson(obj, mockLaoIdHash);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
   describe('constructor', () => {
     it('should throw an error if closed_at is undefined', () => {
       const createWrongObj = () =>
-        new CloseRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.DELETE,
-          update_id: rollCallCloseId,
-          closes: rollCallId,
-          attendees: mockAttendees,
-        });
+        new CloseRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.DELETE,
+            update_id: rollCallCloseId,
+            closes: rollCallId,
+            attendees: mockAttendees,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if attendees is undefined', () => {
       const createWrongObj = () =>
-        new CloseRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.DELETE,
-          update_id: rollCallCloseId,
-          closes: rollCallId,
-          closed_at: TIMESTAMP,
-        });
+        new CloseRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.DELETE,
+            update_id: rollCallCloseId,
+            closes: rollCallId,
+            closed_at: TIMESTAMP,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if closes is undefined', () => {
       const createWrongObj = () =>
-        new CloseRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.DELETE,
-          update_id: rollCallCloseId,
-          closed_at: TIMESTAMP,
-          attendees: mockAttendees,
-        });
+        new CloseRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.DELETE,
+            update_id: rollCallCloseId,
+            closed_at: TIMESTAMP,
+            attendees: mockAttendees,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is undefined', () => {
       const createWrongObj = () =>
-        new CloseRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.DELETE,
-          closes: rollCallId,
-          closed_at: TIMESTAMP,
-          attendees: mockAttendees,
-        });
+        new CloseRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.DELETE,
+            closes: rollCallId,
+            closed_at: TIMESTAMP,
+            attendees: mockAttendees,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is invalid', () => {
       const createWrongObj = () =>
-        new CloseRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.DELETE,
-          update_id: new Hash('id'),
-          closes: rollCallId,
-          closed_at: TIMESTAMP,
-          attendees: mockAttendees,
-        });
+        new CloseRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.DELETE,
+            update_id: new Hash('id'),
+            closes: rollCallId,
+            closed_at: TIMESTAMP,
+            attendees: mockAttendees,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

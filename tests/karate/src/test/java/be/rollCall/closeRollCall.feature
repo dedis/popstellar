@@ -28,7 +28,7 @@ Feature: Close a Roll Call
           "action": "close",
           "update_id": '#(getRollCallCloseValidUpdateId)',
           "closes": '#(getRollCallCloseValidId)',
-          "closed_at": 1633099135,
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
           "attendees": ['#(getAttendee)']
         }
       """
@@ -48,7 +48,7 @@ Feature: Close a Roll Call
           "action": "close",
           "update_id": '#(getRollCallCloseValidUpdateId)',
           "closes": '#(getRollCallCloseInvalidId)',
-          "closed_at": 1633099135,
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
           "attendees": ['#(getAttendee)']
         }
       """
@@ -67,7 +67,7 @@ Feature: Close a Roll Call
           "action": "close",
           "update_id": '#(getRollCallCloseValidUpdateId)',
           "closes": '#(getRollCallCloseValidId)',
-          "closed_at": 1633099135,
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
           "attendees": ['#(getAttendee)']
         }
       """

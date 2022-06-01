@@ -5,28 +5,28 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // The script describing the TxOut unlock mechanism
-public class ScriptOutput {
+public final class ScriptOutput {
   @SerializedName("type")
   private final String type; // Type of script
 
   @SerializedName("pubkey_hash")
-  private final String pub_key_hash; // Hash of the recipient’s public key
+  private final String pubKeyHash; // Hash of the recipient’s public key
 
   /**
    * @param type Type of script
-   * @param pub_key_hash Hash of the recipient’s public key
+   * @param pubKeyHash Hash of the recipient’s public key
    */
-  public ScriptOutput(String type, String pub_key_hash) {
+  public ScriptOutput(String type, String pubKeyHash) {
     this.type = type;
-    this.pub_key_hash = pub_key_hash;
+    this.pubKeyHash = pubKeyHash;
   }
 
-  public String get_type() {
+  public String getType() {
     return type;
   }
 
-  public String get_pubkey_hash() {
-    return pub_key_hash;
+  public String getPubkeyHash() {
+    return pubKeyHash;
   }
 
   @Override
@@ -34,16 +34,16 @@ public class ScriptOutput {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ScriptOutput that = (ScriptOutput) o;
-    return Objects.equals(type, that.type) && Objects.equals(pub_key_hash, that.pub_key_hash);
+    return Objects.equals(type, that.type) && Objects.equals(pubKeyHash, that.pubKeyHash);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(get_type(), get_pubkey_hash());
+    return Objects.hash(getType(), getPubkeyHash());
   }
 
   @Override
   public String toString() {
-    return "script{" + "type='" + type + '\'' + ", pubkey_hash='" + pub_key_hash + '\'' + '}';
+    return "script{" + "type='" + type + '\'' + ", pubkey_hash='" + pubKeyHash + '\'' + '}';
   }
 }

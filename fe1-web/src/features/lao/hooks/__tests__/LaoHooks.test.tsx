@@ -44,7 +44,7 @@ const wrapper =
     );
 
 describe('LaoHooks', () => {
-  describe('LaoHooks.useCurrentLao', () => {
+  describe('useCurrentLao', () => {
     it('should return the current lao if there is one', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLao(), {
         wrapper: wrapper(mockStore),
@@ -53,7 +53,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id if there is one', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(mockStore),
@@ -69,7 +69,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useEncodeLaoConnectionForQRCode', () => {
+  describe('useEncodeLaoConnectionForQRCode', () => {
     it('should return the function for encoding a connection', () => {
       const { result } = renderHook(() => LaoHooks.useEncodeLaoConnectionForQRCode(), {
         wrapper: wrapper(mockStore),
@@ -78,7 +78,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useEventListComponent', () => {
+  describe('useEventListComponent', () => {
     it('should return the current event list component', () => {
       const { result } = renderHook(() => LaoHooks.useEventListComponent(), {
         wrapper: wrapper(mockStore),
@@ -87,7 +87,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useIsLaoOrganizer', () => {
+  describe('useIsLaoOrganizer', () => {
     it('should return true if the current user is the organizer', () => {
       // make us the organizer
       mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
@@ -109,7 +109,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoList', () => {
+  describe('useLaoList', () => {
     it('should return the list of stored laos', () => {
       const { result } = renderHook(() => LaoHooks.useLaoList(), {
         wrapper: wrapper(mockStore),
@@ -118,7 +118,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoMap', () => {
+  describe('useLaoMap', () => {
     it('should return all stored laos in a mapping from ids to laos', () => {
       const { result } = renderHook(() => LaoHooks.useLaoMap(), {
         wrapper: wrapper(mockStore),
@@ -127,7 +127,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoNavigationScreens', () => {
+  describe('useLaoNavigationScreens', () => {
     it('should return the list of lao navigation screens', () => {
       const { result } = renderHook(() => LaoHooks.useLaoNavigationScreens(), {
         wrapper: wrapper(mockStore),
@@ -138,7 +138,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useOrganizerNavigationScreens', () => {
+  describe('useOrganizerNavigationScreens', () => {
     it('should return the list of organizer navigation screens', () => {
       const { result } = renderHook(() => LaoHooks.useOrganizerNavigationScreens(), {
         wrapper: wrapper(mockStore),

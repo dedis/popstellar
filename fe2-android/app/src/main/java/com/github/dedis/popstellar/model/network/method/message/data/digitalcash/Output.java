@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 // Object representing an output of this transaction
-public class Output {
+public final class Output {
   @SerializedName("value")
-  private final int value; // the value of the output transaction, expressed in miniLAOs
+  private final long value; // the value of the output transaction, expressed in miniLAOs
 
   @SerializedName("script")
   private final ScriptOutput script; // The script describing the TxOut unlock mechanism
@@ -16,12 +16,13 @@ public class Output {
    * @param value the value of the output transaction, expressed in miniLAOs
    * @param script The script describing the TxOut unlock mechanism
    */
-  public Output(int value, ScriptOutput script) {
+  public Output(long value, ScriptOutput script) {
     this.value = value;
     this.script = script;
   }
 
-  public int getValue() {
+
+  public long getValue() {
     return value;
   }
 

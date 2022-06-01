@@ -28,8 +28,9 @@ object SetupElectionExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, ELECTION_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  final val DATA_SET_UP_MESSAGE: Hash = Hash(Base64Data.encode(workingSetupElection.toJson.toString))
   final val MESSAGE_SETUPELECTION_WORKING: Message = new Message(
-    Base64Data.encode(workingSetupElection.toJson.toString),
+    DATA_SET_UP_MESSAGE.base64Data,
     SENDER_SETUPELECTION,
     SIGNATURE,
     Hash(Base64Data("")),

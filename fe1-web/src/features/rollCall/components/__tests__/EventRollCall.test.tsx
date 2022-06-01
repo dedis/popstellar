@@ -1,19 +1,24 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
-import * as reactRedux from 'react-redux';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
 import MockNavigator from '__tests__/components/MockNavigator';
-import { configureTestFeatures } from '__tests__/utils';
-import { mockLao } from '__tests__/utils/TestUtils';
+import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
+import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
+import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
+import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/reducer';
+import { generateToken } from 'features/wallet/objects';
+import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
-import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
+import { RollCall, RollCallStatus } from '../../objects';
 import EventRollCall from '../EventRollCall';
 
 const ID = new Hash('rollCallId');
@@ -26,7 +31,7 @@ const ATTENDEES = ['attendee1', 'attendee2'];
 const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
   return {
     id: ID.valueOf(),
-    eventType: EventTypeRollCall,
+    eventType: RollCall.EVENT_TYPE,
     start: TIMESTAMP_START.valueOf(),
     name: NAME,
     location: LOCATION,
@@ -52,30 +57,48 @@ jest.mock('features/rollCall/network', () => {
   };
 });
 
-let mockSelector: any;
-
-beforeAll(() => {
-  // the wallet uses the global store hence the full test features are required
-  configureTestFeatures();
-});
-
 // set up mock store
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = createStore(
+  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
+);
 mockStore.dispatch(connectToLao(mockLao.toState()));
+const mockRollCallState = mockRollCallCreated.toState();
+
+mockStore.dispatch(
+  addEvent(mockLaoId, {
+    eventType: RollCall.EVENT_TYPE,
+    id: mockRollCallState.id,
+    start: mockRollCall.start.valueOf(),
+    end: mockRollCall.end.valueOf(),
+  }),
+);
+mockStore.dispatch(addRollCall(mockRollCallState));
+
+const contextValue = {
+  [ROLLCALL_FEATURE_IDENTIFIER]: {
+    useCurrentLaoId: () => mockLaoIdHash,
+    makeEventByTypeSelector,
+    generateToken,
+    hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
+  } as RollCallReactContext,
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockSelector = jest.spyOn(reactRedux, 'useSelector').mockReturnValueOnce(mockLao);
 });
 
 describe('EventRollCall', () => {
   it('should correctly render', () => {
-    mockSelector.mockReturnValueOnce(mockRollCallCreated);
+    mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer={false} />;
+    const Screen = () => (
+      <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer={false} />
+    );
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -83,15 +106,14 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestOpenRollCall when the open button is clicked', () => {
-    const usedMockRollCall = mockRollCallCreated;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateRollCall(mockRollCallCreated.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallCreated.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={Screen} />
-        </Provider>
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -101,13 +123,14 @@ describe('EventRollCall', () => {
   });
 
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
-    const usedMockRollCall = mockRollCallClosed;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateRollCall(mockRollCallClosed.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallClosed.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -117,13 +140,14 @@ describe('EventRollCall', () => {
   });
 
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
-    const usedMockRollCall = mockRollCallOpened;
-    mockSelector.mockReturnValueOnce(usedMockRollCall);
+    mockStore.dispatch(updateRollCall(mockRollCallOpened.toState()));
 
-    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const Screen = () => <EventRollCall eventId={mockRollCallOpened.id.valueOf()} isOrganizer />;
     const obj = render(
       <Provider store={mockStore}>
-        <MockNavigator component={Screen} />
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Screen} />
+        </FeatureContext.Provider>
       </Provider>,
     );
 

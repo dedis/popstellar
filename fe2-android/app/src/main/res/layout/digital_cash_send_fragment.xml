@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <variable
+      name="view_model"
+      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_digital_cash_send"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.digitalcash.DigitalCashSendFragment">
+
+    <TextView
+      android:id="@+id/digital_cash_send_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      style="@style/title_style"
+      android:text="@string/digital_cash_send"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_address"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+      android:id="@+id/digital_cash_send_address"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:ems="10"
+      android:inputType="textPersonName"
+      android:hint="@string/digital_cash_address"
+      android:autofillHints="false"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_amount"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_title" />
+
+
+    <EditText
+      android:id="@+id/digital_cash_send_amount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:ems="10"
+      android:hint="@string/digital_cash_amount"
+      android:inputType="numberDecimal"
+      android:autofillHints="false"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_send"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_address" />
+
+    <Button
+      android:id="@+id/digital_cash_send_send"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/digital_cash_send_button"
+      style="@style/button_style"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_amount" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

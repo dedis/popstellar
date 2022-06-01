@@ -23,7 +23,7 @@ export class CreateMeeting implements MessageData {
 
   public readonly extra?: {};
 
-  constructor(msg: Partial<CreateMeeting>) {
+  constructor(msg: Partial<CreateMeeting>, laoId: Hash) {
     if (!msg.name) {
       throw new ProtocolError("Undefined 'name' parameter encountered during 'CreateMeeting'");
     }
@@ -62,46 +62,57 @@ export class CreateMeeting implements MessageData {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateMeeting'");
     }
 
+    const expectedId = CreateMeeting.computeMeetingId(laoId, this.creation, this.name);
+    if (!expectedId.equals(msg.id)) {
+      throw new ProtocolError(
+        "Invalid 'id' parameter encountered during 'CreateMeeting':" +
+          ' re-computing the value yields a different result (' +
+          `(expected: '${expectedId}', actual: '${msg.id}')`,
+      );
+    }
+
     this.id = msg.id;
   }
 
   /**
-   * Validates the CreateMeeting object based on external information
+   * Computes the id of a meeting
    *
    * @param laoId - The ID of the LAO this message was sent to
+   * @param createdAt - The time the meeting was created
+   * @param name The name of the meeting
    */
-  public validate(laoId: Hash) {
-    const expectedHash = Hash.fromStringArray(
-      EventTags.MEETING,
-      laoId.toString(),
-      this.creation.toString(),
-      this.name,
-    );
-    if (!expectedHash.equals(this.id)) {
-      throw new ProtocolError(
-        "Invalid 'id' parameter encountered during 'CreateMeeting': unexpected id value",
-      );
-    }
+  public static computeMeetingId(laoId: Hash, createdAt: Timestamp, name: string) {
+    return Hash.fromStringArray(EventTags.MEETING, laoId.toString(), createdAt.toString(), name);
   }
 
   /**
    * Creates a CreateMeeting object from a given object.
    *
-   * @param obj
+   * @param obj The parsed json data
+   * @param laoId The id of the lao this message belongs to
    */
-  public static fromJson(obj: any): CreateMeeting {
+  public static fromJson(obj: any, laoId?: Hash): CreateMeeting {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'CreateMeeting' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.MEETING, ActionType.CREATE, obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid meeting create\n\n${errors}`);
     }
 
-    return new CreateMeeting({
-      ...obj,
-      creation: new Timestamp(obj.creation),
-      start: new Timestamp(obj.start),
-      end: obj.end !== undefined ? new Timestamp(obj.end) : undefined,
-      id: new Hash(obj.id),
-    });
+    return new CreateMeeting(
+      {
+        ...obj,
+        creation: new Timestamp(obj.creation),
+        start: new Timestamp(obj.start),
+        end: obj.end !== undefined ? new Timestamp(obj.end) : undefined,
+        id: new Hash(obj.id),
+      },
+      laoId,
+    );
   }
 }
