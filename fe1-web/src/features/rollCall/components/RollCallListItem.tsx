@@ -5,7 +5,7 @@ import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import RollCallIcon from 'core/components/icons/RollCallIcon';
+import { PoPIcon } from 'core/components';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -51,7 +51,7 @@ const RollCallListItem = (props: IPropTypes) => {
   return (
     <>
       <View style={List.icon}>
-        <RollCallIcon color={Color.primary} size={Icon.size} />
+        <PoPIcon name="rollCall" color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{rollCall.name}</ListItem.Title>

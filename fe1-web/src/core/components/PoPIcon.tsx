@@ -118,6 +118,10 @@ const iconNameMap = {
     iconName: 'ios-warning',
     IconFamily: Ionicons,
   } as IonIcon,
+  witness: {
+    iconName: 'ios-eye',
+    IconFamily: Ionicons,
+  } as IonIcon,
 };
 
 const styles = StyleSheet.create({

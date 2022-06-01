@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
 
-
+import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
@@ -14,7 +14,6 @@ import LaoHomeScreen, {
   LaoHomeScreenHeaderRight,
 } from '../screens/LaoHomeScreen';
 import EventsNavigation from './EventsNavigation';
-import { makeIcon } from 'core/components/PoPIcon';
 
 const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 

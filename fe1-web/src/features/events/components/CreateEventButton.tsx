@@ -4,7 +4,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import CreateIcon from 'core/components/icons/CreateIcon';
+import { PoPIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Icon } from 'core/styles';
@@ -48,7 +48,7 @@ const CreateEventButton = () => {
 
   return (
     <TouchableOpacity onPress={onPress}>
-      <CreateIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="create" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

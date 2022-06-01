@@ -8,10 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
-import { QRCode } from 'core/components';
-import InfoIcon from 'core/components/icons/InfoIcon';
-import NotificationIcon from 'core/components/icons/NotificationIcon';
-import QrCodeIcon from 'core/components/icons/QrCodeIcon';
+import { PoPIcon, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -61,7 +58,7 @@ export const LaoHomeScreenHeader = () => {
       <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
         <Text style={Typography.topNavigationHeading}>{lao.name}</Text>
         <View style={styles.infoIcon}>
-          <InfoIcon color={Color.primary} size={Icon.size} />
+          <PoPIcon name="info" color={Color.primary} size={Icon.size} />
         </View>
       </TouchableOpacity>
 
@@ -103,7 +100,7 @@ export const LaoHomeScreenHeaderRight = () => {
     <>
       <View style={styles.buttons}>
         <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-          <QrCodeIcon color={Color.inactive} size={Icon.size} />
+          <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
         </TouchableOpacity>
         <TouchableOpacity
           containerStyle={styles.notificationButton}
@@ -115,7 +112,7 @@ export const LaoHomeScreenHeaderRight = () => {
               },
             })
           }>
-          <NotificationIcon color={Color.inactive} size={Icon.size} />
+          <PoPIcon name="notification" color={Color.inactive} size={Icon.size} />
         </TouchableOpacity>
 
         <Modal

@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import OptionsIcon from 'core/components/icons/OptionsIcon';
+import { PoPIcon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
@@ -205,7 +205,7 @@ export const NotificationScreenRightHeader = () => {
           { displayName: STRINGS.notification_clear_all, action: onClearNotifications },
         ])
       }>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

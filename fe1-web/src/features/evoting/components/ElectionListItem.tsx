@@ -5,7 +5,7 @@ import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import ElectionIcon from 'core/components/icons/ElectionIcon';
+import { PoPIcon } from 'core/components';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -47,7 +47,7 @@ const ElectionListItem = (props: IPropTypes) => {
   return (
     <>
       <View style={List.icon}>
-        <ElectionIcon color={Color.primary} size={Icon.size} />
+        <PoPIcon name="election" color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{election.name}</ListItem.Title>

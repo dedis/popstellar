@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
-import MeetingIcon from 'core/components/icons/MeetingIcon';
+import { PoPIcon } from 'core/components';
 import { Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -47,7 +47,7 @@ const MeetingListItem = (props: IPropTypes) => {
   return (
     <>
       <View style={List.icon}>
-        <MeetingIcon color={Color.primary} size={Icon.size} />
+        <PoPIcon name="meeting" color={Color.primary} size={Icon.size} />
       </View>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{meeting.name}</ListItem.Title>
