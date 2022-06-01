@@ -7,8 +7,18 @@ import { StyleSheet, View } from 'react-native';
 import { Color, Icon } from 'core/styles';
 import { ExtendType } from 'core/types';
 
+/**
+ * A union type for all valid Ionicon icon names
+ */
 type IoniconNames = keyof typeof Ionicons['glyphMap'];
 
+/**
+ * This tuple uniquely determines a IonIcon icon.
+ * @expo/vector-icons provides a set of icon families, each of them
+ * has a set of icons that each has a name. This type makes sure
+ * that the linter realizes when a invalid combination of
+ * iconName and IconFamily is used.
+ */
 type IonIcon = {
   iconName: IoniconNames;
   IconFamily: typeof Ionicons;
@@ -21,10 +31,27 @@ type MaterialIcon = {
   IconFamily: typeof MaterialIcons;
 };
 
+/**
+ * To add icons from new icon families, create an Icon type similar to the one above
+ * that contains the two fields 'iconName' and 'IconFamily' where the type of
+ * IconFamily should be a @expo/vector-icons icon family component and
+ * iconName should be the union type of all valid icon names for the respective family
+ */
+
+/**
+ * This is a map from our custom icon names to a tuple that uniquely
+ * determines an icon (it contains the family and the name inside the family).
+ * This map allows the component to look up what icon family component should be
+ * used and what name should be passed to it.
+ */
 const iconNameMap = {
   addPerson: {
     iconName: 'ios-person-add',
     IconFamily: Ionicons,
+    /**
+     * the 'as' typecast will make the linter yell at you if you tried to enter an invalid
+     * combination of name and family
+     */
   } as IonIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
