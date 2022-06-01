@@ -5,15 +5,15 @@ public class ScriptOutputObject {
   // Type of script
   private final String type;
   // Hash of the recipient’s public key
-  private final String pub_key_hash;
+  private final String pubKeyHash;
 
   /**
    * @param type Type of script
-   * @param pub_key_hash Hash of the recipient’s public key
+   * @param pubKeyHash Hash of the recipient’s public key
    */
-  public ScriptOutputObject(String type, String pub_key_hash) {
+  public ScriptOutputObject(String type, String pubKeyHash) {
     this.type = type;
-    this.pub_key_hash = pub_key_hash;
+    this.pubKeyHash = pubKeyHash;
   }
 
   public String getType() {
@@ -21,7 +21,7 @@ public class ScriptOutputObject {
   }
 
   public String getPubkeyHash() {
-    return pub_key_hash;
+    return pubKeyHash;
   }
 
   // a function that given a public key verify it is the goof public key

@@ -60,8 +60,8 @@ public class TransactionObject {
     return lockTime;
   }
 
-  public void setLockTime(long lock_time) {
-    this.lockTime = lock_time;
+  public void setLockTime(long lockTime) {
+    this.lockTime = lockTime;
   }
 
   public int getVersion() {
@@ -77,13 +77,13 @@ public class TransactionObject {
    * @return List<PublicKey> senders public keys
    */
   public List<PublicKey> getSendersTransaction() {
-    Iterator<InputObject> input_ite = getInputs().iterator();
-    List<PublicKey> senders= new ArrayList<>();
+    Iterator<InputObject> inputIte = getInputs().iterator();
+    List<PublicKey> senders = new ArrayList<>();
 
     //Through the inputs look at the sender
-    while (input_ite.hasNext()){
-      PublicKey current_sender = new PublicKey(input_ite.next().getScript().getPubkey());
-      senders.add(current_sender);
+    while (inputIte.hasNext()) {
+      PublicKey currentSender = new PublicKey(inputIte.next().getScript().getPubkey());
+      senders.add(currentSender);
     }
 
     return senders;
@@ -94,26 +94,26 @@ public class TransactionObject {
    * @return List<String> outputs public keys hash
    */
   public List<String> getReceiversHashTransaction() {
-    Iterator<OutputObject> output_ite = getOutputs().iterator();
-    List<String> receiver_hash = new ArrayList<>();
+    Iterator<OutputObject> outputIte = getOutputs().iterator();
+    List<String> receiverHash = new ArrayList<>();
 
-    while(output_ite.hasNext()){
-      receiver_hash.add(output_ite.next().getScript().getPubkeyHash());
+    while (outputIte.hasNext()) {
+      receiverHash.add(outputIte.next().getScript().getPubkeyHash());
     }
 
-    return receiver_hash;
+    return receiverHash;
   }
 
   /**
    * Function that give the Public Key of the Outputs
-   * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
+   * @param mapHashKey Map<String,PublicKey> dictionary public key by public key hash
    * @return List<PublicKey> outputs public keys
    */
-  public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> map_hash_key) {
-    Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
+  public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey) {
+    Iterator<String> receiverHashIte = getReceiversHashTransaction().iterator();
     List<PublicKey> receivers = new ArrayList<>();
-    while (receiver_hash_ite.hasNext()){
-      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),null);
+    while (receiverHashIte.hasNext()){
+      PublicKey pub = mapHashKey.getOrDefault(receiverHashIte.next(),null);
       if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
@@ -146,19 +146,19 @@ public class TransactionObject {
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
     String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
-    Iterator<InputObject> ite_input = inputs.iterator();
-    Iterator<OutputObject> ite_output = outputs.iterator();
+    Iterator<InputObject> iteInput = inputs.iterator();
+    Iterator<OutputObject> iteOutput = outputs.iterator();
 
     int index = 0;
-    while (ite_input.hasNext()){
-      InputObject current = ite_input.next();
+    while (iteInput.hasNext()){
+      InputObject current = iteInput.next();
       sig[index] = current.getTxOutHash();
       sig[index + 1] = String.valueOf(current.getTxOutIndex());
       index = index + 2;
     }
 
-    while (ite_output.hasNext()){
-      OutputObject current = ite_output.next();
+    while (iteOutput.hasNext()){
+      OutputObject current = iteOutput.next();
       sig[index] = String.valueOf(current.getValue());
       sig[index + 1] = current.getScript().getType();
       sig[index + 2] = current.getScript().getPubkeyHash();
@@ -181,12 +181,12 @@ public class TransactionObject {
     // Set the return value to nothing
     int miniLao = 0;
     // Compute the hash of the public key
-    String hash_key = receiver.computeHash();
+    String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     Iterator<OutputObject> iterator = getOutputs().iterator();
     while (iterator.hasNext()) {
       OutputObject current = iterator.next();
-      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+      if (current.getScript().getPubkeyHash().equals(hashKey)) {
         miniLao = miniLao + current.getValue();
       }
     }
@@ -200,12 +200,12 @@ public class TransactionObject {
    * @return int index in the transaction outputs
    */
   public int getIndexTransaction(PublicKey publicKey) {
-    Iterator<OutputObject> output_objectIterator = outputs.listIterator();
-    String hash_pubkey = publicKey.computeHash();
+    Iterator<OutputObject> outputObjectIterator = outputs.listIterator();
+    String hashPubkey = publicKey.computeHash();
     int index = 0;
-    while (output_objectIterator.hasNext()) {
-      OutputObject current = output_objectIterator.next();
-      if (current.getScript().getPubkeyHash().equals(hash_pubkey)) {
+    while (outputObjectIterator.hasNext()) {
+      OutputObject current = outputObjectIterator.next();
+      if (current.getScript().getPubkeyHash().equals(hashPubkey)) {
         return index;
       }
       index = index + 1;
