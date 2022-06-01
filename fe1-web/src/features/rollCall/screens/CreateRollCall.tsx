@@ -122,9 +122,7 @@ const CreateRollCall = () => {
         placeholder={STRINGS.roll_call_create_name_placeholder}
       />
 
-      <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.roll_call_create_location_placeholder}
-      </Text>
+      <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.roll_call_location}</Text>
       <Input
         value={rollCallLocation}
         onChange={setRollCallLocation}

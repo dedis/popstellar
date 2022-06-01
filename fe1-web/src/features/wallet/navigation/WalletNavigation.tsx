@@ -57,7 +57,7 @@ const WalletNavigationHeaderRight = () => {
 
   return (
     <TouchableOpacity onPress={onPressOptions}>
-      <PoPIcon name="options" color={Color.primary} size={Icon.size} />
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

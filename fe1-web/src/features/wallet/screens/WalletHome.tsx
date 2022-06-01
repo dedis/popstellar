@@ -82,6 +82,7 @@ const WalletHome = () => {
         {laoIds.map((laoId) => {
           return (
             <ListItem.Accordion
+              key={laoId}
               containerStyle={List.accordionItem}
               style={List.accordionItem}
               content={

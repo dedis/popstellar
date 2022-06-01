@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-import { Button, QRCode } from 'core/components';
-import QrCodeIcon from 'core/components/icons/QrCodeIcon';
+import { PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -57,7 +56,7 @@ export const WalletSingleHeaderRight = () => {
   return (
     <>
       <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-        <QrCodeIcon color={Color.inactive} size={Icon.size} />
+        <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
       </TouchableOpacity>
 
       <Modal
@@ -83,11 +82,9 @@ export const WalletSingleHeaderRight = () => {
 
           <Text style={[Typography.small, styles.publicKey]}>{rollCallTokenPublicKey}</Text>
 
-          <Button onPress={() => getNavigator().clipboard.writeText(rollCallTokenPublicKey)}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-              {STRINGS.wallet_single_roll_call_copy_pop_token}
-            </Text>
-          </Button>
+          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(rollCallTokenPublicKey)}>
+            {STRINGS.wallet_single_roll_call_copy_pop_token}
+          </PoPTextButton>
         </ScrollView>
       </Modal>
     </>
