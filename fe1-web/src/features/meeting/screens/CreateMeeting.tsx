@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ConfirmModal, DatePicker, DismissModal, Button, Input } from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { onConfirmEventCreation } from 'core/functions/UI';
@@ -124,7 +124,7 @@ const CreateMeeting = () => {
       />
 
       <View style={styles.buttons}>
-        <Button
+        <PoPTextButton
           onPress={() =>
             onConfirmEventCreation(
               startTime,
@@ -135,10 +135,8 @@ const CreateMeeting = () => {
             )
           }
           disabled={!confirmButtonVisibility}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {STRINGS.meeting_create_meeting}
-          </Text>
-        </Button>
+          {STRINGS.meeting_create_meeting}
+        </PoPTextButton>
       </View>
 
       <DismissModal

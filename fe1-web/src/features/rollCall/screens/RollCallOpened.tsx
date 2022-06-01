@@ -6,9 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { ConfirmModal } from 'core/components';
-import AddPersonIcon from 'core/components/icons/AddPersonIcon';
-import CloseIcon from 'core/components/icons/CloseIcon';
+import { ConfirmModal, PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -170,7 +168,7 @@ const RollCallOpened = () => {
                     attendeePopTokens: [...attendeePopTokens],
                   })
                 }>
-                <CloseIcon color={Color.accent} size={Icon.size} />
+                <PoPIcon name="close" color={Color.accent} size={Icon.size} />
               </TouchableOpacity>
             </View>
           </View>
@@ -179,7 +177,7 @@ const RollCallOpened = () => {
               <TouchableOpacity
                 onPress={() => setInputModalIsVisible(true)}
                 testID="roll-call-open-add-manually">
-                <AddPersonIcon color={Color.accent} size={Icon.size} />
+                <PoPIcon name="addPerson" color={Color.accent} size={Icon.size} />
               </TouchableOpacity>
             </View>
           </View>

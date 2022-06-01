@@ -127,15 +127,8 @@ interface EventType {
   eventType: string;
   eventName: string;
   navigationNames: {
-    createEvent:
-      | typeof STRINGS.navigation_lao_events_create_meeting
-      | typeof STRINGS.navigation_lao_events_create_roll_call
-      | typeof STRINGS.navigation_lao_events_create_election;
-
-    screenSingle:
-      | typeof STRINGS.navigation_lao_events_view_single_meeting
-      | typeof STRINGS.navigation_lao_events_view_single_roll_call
-      | typeof STRINGS.navigation_lao_events_view_single_election;
+    createEvent: typeof STRINGS.navigation_lao_events_create_roll_call;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_roll_call;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;

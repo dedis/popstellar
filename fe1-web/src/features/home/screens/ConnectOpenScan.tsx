@@ -4,9 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import CloseIcon from 'core/components/icons/CloseIcon';
-import CodeIcon from 'core/components/icons/CodeIcon';
-import CreateIcon from 'core/components/icons/CreateIcon';
+import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
@@ -134,7 +132,7 @@ const ConnectOpenScan = () => {
         <View>
           <View style={styles.leftButtons}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <CloseIcon color={Color.accent} size={Icon.size} />
+              <PoPIcon name="close" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>
@@ -143,11 +141,11 @@ const ConnectOpenScan = () => {
             <TouchableOpacity
               style={styles.buttonMargin}
               onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
-              <CreateIcon color={Color.accent} size={Icon.size} />
+              <PoPIcon name="create" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
-              <CodeIcon color={Color.accent} size={Icon.size} />
+              <PoPIcon name="code" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

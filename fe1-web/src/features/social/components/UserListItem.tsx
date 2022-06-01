@@ -6,14 +6,13 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ProfileIcon, Button } from 'core/components';
+import { ProfileIcon, PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
-import { Typography } from 'core/styles';
 import { gray } from 'core/styles/color';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -103,18 +102,14 @@ const UserListItem = (props: IPropTypes) => {
         <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <Button onPress={followUser} disabled={isFollowing}>
-              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                {STRINGS.follow_button}
-              </Text>
-            </Button>
+            <PoPTextButton onPress={followUser} disabled={isFollowing}>
+              {STRINGS.follow_button}
+            </PoPTextButton>
           </View>
           <View style={styles.buttonView}>
-            <Button onPress={goToUserProfile} disabled={!isFollowing}>
-              <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-                {STRINGS.profile_button}
-              </Text>
-            </Button>
+            <PoPTextButton onPress={goToUserProfile} disabled={!isFollowing}>
+              {STRINGS.profile_button}
+            </PoPTextButton>
           </View>
         </View>
       </View>

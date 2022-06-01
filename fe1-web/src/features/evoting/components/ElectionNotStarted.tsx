@@ -5,10 +5,10 @@ import { ListItem } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 
-import OptionsIcon from 'core/components/icons/OptionsIcon';
+import { Icon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
-import { Color, Icon, List, Typography } from 'core/styles';
+import { Color, Icon as IconStyles, List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -122,8 +122,10 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
 
   return (
     <TouchableOpacity
-      onPress={() => showActionSheet([{ displayName: 'Open Election', action: onOpenElection }])}>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      onPress={() =>
+        showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
+      }>
+      <Icon name="options" color={Color.inactive} size={IconStyles.size} />
     </TouchableOpacity>
   );
 };

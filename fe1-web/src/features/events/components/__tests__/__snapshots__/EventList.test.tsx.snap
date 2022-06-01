@@ -994,7 +994,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   testID="listItemTitle"
                                 >
                                   Supposed to start
-                                   
+
                                   <time
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
@@ -1337,7 +1337,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   testID="listItemTitle"
                                 >
                                   Supposed to start
-                                   
+
                                   <time
                                     dateTime="2021-05-07T03:20:00.000Z"
                                     title="2021-05-07 03:20"
@@ -1345,7 +1345,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     1 year ago
                                   </time>
                                   ,
-                                   
+
                                   location
                                 </Text>
                               </View>
@@ -2467,7 +2467,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   testID="listItemTitle"
                                 >
                                   Supposed to start
-                                   
+
                                   <time
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
@@ -2892,7 +2892,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   testID="listItemTitle"
                                 >
                                   Supposed to start
-                                   
+
                                   <time
                                     dateTime="2021-05-07T03:20:00.000Z"
                                     title="2021-05-07 03:20"
@@ -2900,7 +2900,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     1 year ago
                                   </time>
                                   ,
-                                   
+
                                   location
                                 </Text>
                               </View>

@@ -3,8 +3,8 @@ import { createStackNavigator, StackScreenProps } from '@react-navigation/stack'
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import OptionsIcon from 'core/components/icons/OptionsIcon';
-import WalletIcon from 'core/components/icons/WalletIcon';
+import { PoPIcon } from 'core/components';
+import { makeIcon } from 'core/components/PoPIcon';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -68,7 +68,7 @@ const WalletNavigationHeaderRight = () => {
 
   return (
     <TouchableOpacity onPress={onPressOptions}>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="options" color={Color.primary} size={Icon.size} />
     </TouchableOpacity>
   );
 };
@@ -76,7 +76,7 @@ const WalletNavigationHeaderRight = () => {
 export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.LaoScreen = {
   id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
-  tabBarIcon: WalletIcon,
+  tabBarIcon: makeIcon('wallet'),
   order: 99999999,
   headerRight: () => <WalletNavigationHeaderRight />,
 };

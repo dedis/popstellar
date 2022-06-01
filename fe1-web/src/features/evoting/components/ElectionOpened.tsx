@@ -7,9 +7,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import { Button } from 'core/components';
-import OptionsIcon from 'core/components/icons/OptionsIcon';
-import WarningIcon from 'core/components/icons/WarningIcon';
+import { PoPIcon, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Border, Color, Icon, List, Spacing, Typography } from 'core/styles';
@@ -90,7 +88,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
     <ScreenWrapper>
       {election.version === ElectionVersion.OPEN_BALLOT && (
         <View style={[styles.warning, styles.openBallot]}>
-          <WarningIcon color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>
               Warning
@@ -105,7 +103,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
       {election.version === ElectionVersion.SECRET_BALLOT && (
         <View style={[styles.warning, styles.secretBallot]}>
-          <WarningIcon color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>Notice</Text>
             <Text style={[Typography.base, Typography.negative]}>
@@ -176,11 +174,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
         ))}
       </View>
 
-      <Button onPress={onCastVote}>
-        <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-          {STRINGS.cast_vote}
-        </Text>
-      </Button>
+      <PoPTextButton onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
     </ScreenWrapper>
   );
 };
@@ -222,11 +216,9 @@ export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
   return (
     <TouchableOpacity
       onPress={() =>
-        showActionSheet([
-          { displayName: 'Terminate Election / Tally Votes', action: onTerminateElection },
-        ])
+        showActionSheet([{ displayName: STRINGS.election_end, action: onTerminateElection }])
       }>
-      <OptionsIcon color={Color.inactive} size={Icon.size} />
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </TouchableOpacity>
   );
 };

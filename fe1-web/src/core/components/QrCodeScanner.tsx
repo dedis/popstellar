@@ -4,16 +4,15 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import { Border, Color, Icon, Spacing } from 'core/styles';
+import { Border, Color, Icon as IconStyles, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
-
-import CameraReverseIcon from './icons/CameraReverseIcon';
 
 // FIXME: Remove CSS imports in order to support native apps
 // At the time of writing expo-camera nor expo-barcode-scanner work in web builds
 // because they load an external dependency (jsQR) that somehow does not properly load
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
+import Icon from './Icon';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
   backgroundColor: Color.contrast,
@@ -88,7 +87,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <CameraReverseIcon color={Color.accent} size={Icon.size} />
+              <Icon name="cameraReverse" color={Color.accent} size={IconStyles.size} />
             </TouchableOpacity>
           </View>
         </View>

@@ -1,8 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
 
-import EventIcon from 'core/components/icons/EventIcon';
-import HomeIcon from 'core/components/icons/HomeIcon';
+
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
@@ -15,6 +14,7 @@ import LaoHomeScreen, {
   LaoHomeScreenHeaderRight,
 } from '../screens/LaoHomeScreen';
 import EventsNavigation from './EventsNavigation';
+import { makeIcon } from 'core/components/PoPIcon';
 
 const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
@@ -35,12 +35,12 @@ const LaoNavigation: React.FC = () => {
         headerTitle: LaoHomeScreenHeader,
         Component: LaoHomeScreen,
         headerRight: LaoHomeScreenHeaderRight,
-        tabBarIcon: HomeIcon,
+        tabBarIcon: makeIcon('home'),
         order: -9999999,
       } as LaoFeature.LaoScreen,
       {
         id: STRINGS.navigation_lao_events,
-        tabBarIcon: EventIcon,
+        tabBarIcon: makeIcon('event'),
         Component: EventsNavigation,
         headerShown: false,
         order: 0,

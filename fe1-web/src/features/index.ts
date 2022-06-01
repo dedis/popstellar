@@ -1,4 +1,4 @@
-import SocialMediaIcon from 'core/components/icons/SocialMediaIcon';
+import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
@@ -135,7 +135,7 @@ export function configureFeatures() {
         id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
         headerShown: false,
-        tabBarIcon: SocialMediaIcon,
+        tabBarIcon: makeIcon('socialMedia'),
         order: 10000,
       },
       ...notificationConfiguration.laoScreens,
