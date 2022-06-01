@@ -1412,7 +1412,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                     }
                                                   }
                                                 >
-                                                  [QrCode {"value":"{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\",\\"servers\\":[]}","size":256,"style":{"height":"auto","maxWidth":"300px","width":"100%"},"viewBox":"0 0 256 256"}]
+                                                  [QrCode {"value":"{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}","size":256,"style":{"height":"auto","maxWidth":"300px","width":"100%"},"viewBox":"0 0 256 256"}]
                                                 </View>
                                               </View>
                                             </View>
