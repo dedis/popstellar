@@ -323,6 +323,7 @@ namespace STRINGS {
   export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
+  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 
   export const wallet_single_roll_call_description =
     'You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.';

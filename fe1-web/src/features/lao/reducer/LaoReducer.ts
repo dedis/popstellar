@@ -256,7 +256,7 @@ export const selectLaoIdsList = createSelector(
   // Input: sorted LAO ids list
   (state) => getLaosState(state).allIds,
   // Selector: returns an array of LaoIDs
-  (laoIds: string[]): string[] => laoIds,
+  (laoIds: string[]): Hash[] => laoIds.map((laoId) => new Hash(laoId)),
 );
 
 export const selectLaosList = createSelector(

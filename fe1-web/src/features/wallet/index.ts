@@ -40,7 +40,9 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     context: {
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
+      useLaoIds: configuration.useLaoIds,
       useNamesByLaoId: configuration.useNamesByLaoId,
+      walletItemGenerators: configuration.walletItemGenerators,
     },
   };
 }

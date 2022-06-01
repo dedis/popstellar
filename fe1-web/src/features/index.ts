@@ -72,10 +72,12 @@ export function configureFeatures() {
     keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useLaoIds: laoConfiguration.hooks.useLaoIds,
     useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    walletItemGenerators: [],
   });
 
   const socialConfiguration = social.configure(messageRegistry);

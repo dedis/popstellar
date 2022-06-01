@@ -74,10 +74,14 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* hooks */
   hooks: {
     /**
-     * Gets the list of LAOs
-     * @returns The list of LAOs
+     * Gets the list of laos
      */
     useLaoList: () => Lao[];
+
+    /**
+     * Gets the list of lao ids
+     */
+    useLaoIds: () => Hash[];
 
     /**
      * Checks whether the current user is an organizer of the current lao

@@ -2,6 +2,7 @@ import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Hash } from 'core/objects';
 
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
@@ -11,6 +12,7 @@ import {
   selectCurrentLaoId,
   selectIsLaoOrganizer,
   selectIsLaoWitness,
+  selectLaoIdsList,
   selectLaoIdToNameMap,
   selectLaosList,
   selectLaosMap,
@@ -60,6 +62,11 @@ export namespace LaoHooks {
    * Retrieves a list of all the LAOs known to the system
    */
   export const useLaoList = (): Lao[] => useSelector(selectLaosList);
+
+  /**
+   * Retrieves a list of all the LAO ids known to the system
+   */
+  export const useLaoIds = (): Hash[] => useSelector(selectLaoIdsList);
 
   /**
    * Indicates whether we are an organizer of the current LAO

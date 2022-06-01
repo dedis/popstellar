@@ -191,29 +191,32 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
 };
 
 /**
- * Returns all events of a certain type.
+ * Returns all events of a certain type for a certain lao.
  *
  * @param eventType
  */
-export const makeEventByTypeSelector = (eventType: string) =>
+export const makeEventByTypeSelector = (laoId: string, eventType: string) =>
   createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state),
+    // First input: Get all event ids for the given lao id
+    (state) => getEventState(state).byLaoId[laoId]?.allIds,
+    // Second input: Get all events across all LAOs
+    (state) => getEventState(state).byId,
     // Selector: returns a map of lao ids to a map of event its to event states
-    (eventMap: EventReducerState): Record<string, Record<string, EventState>> => {
-      const eventByLao: Record<string, Record<string, EventState>> = {};
+    (
+      eventIds: string[] | undefined,
+      eventById: EventReducerState['byId'],
+    ): Record<string, EventState> => {
+      if (!eventIds) {
+        return {};
+      }
 
-      Object.entries(eventMap.byLaoId).forEach(([laoId, eventList]) => {
-        eventByLao[laoId] = eventList.allIds
-          .map((i) => eventMap.byId[i])
-          .filter((e): e is EventState => e !== undefined && e.eventType === eventType)
-          .reduce((eventById, e) => {
-            eventById[e.id.valueOf()] = e;
-            return eventById;
-          }, {} as Record<string, EventState>);
-      });
-
-      return eventByLao;
+      return eventIds
+        .map((i) => eventById[i])
+        .filter((e): e is EventState => e !== undefined && e.eventType === eventType)
+        .reduce((obj, e) => {
+          obj[e.id.valueOf()] = e;
+          return obj;
+        }, {} as Record<string, EventState>);
     },
   );
 

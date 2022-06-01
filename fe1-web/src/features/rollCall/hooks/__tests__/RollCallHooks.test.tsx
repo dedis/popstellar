@@ -119,14 +119,11 @@ describe('RollCallHooks', () => {
 
   describe('RollCallHook.useRollCallsByLaoId', () => {
     it('should return the correct value', () => {
-      const { result } = renderHook(() => RollCallHooks.useRollCallsByLaoId(), { wrapper });
+      const { result } = renderHook(() => RollCallHooks.useRollCallsByLaoId(mockLaoId), {
+        wrapper,
+      });
       expect(result.current).toEqual({
-        [mockLaoId]: {
-          [mockRollCallState.id]: mockRollCall,
-        },
-        [mockLaoId2]: {
-          [mockRollCall3.id.valueOf()]: mockRollCall3,
-        },
+        [mockRollCallState.id]: mockRollCall,
       });
     });
   });

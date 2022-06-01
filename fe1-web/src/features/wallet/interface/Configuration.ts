@@ -47,6 +47,11 @@ export interface WalletCompositionConfiguration {
    */
   useCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Returns the list of all known lao ids.
+   */
+  useLaoIds: () => Hash[];
+
   /* Event related functions */
 
   /**
@@ -59,10 +64,10 @@ export interface WalletCompositionConfiguration {
   getEventById: (id: Hash) => WalletFeature.EventState | undefined;
 
   /**
-   * Returns a two-level map from laoIds to rollCallIds to rollCalls
+   * Returns a map from rollCallIds to rollCalls for a given lao id
    */
-  useRollCallsByLaoId: () => {
-    [laoId: string]: { [rollCallId: string]: WalletFeature.RollCall };
+  useRollCallsByLaoId: (laoId: string) => {
+    [rollCallId: string]: WalletFeature.RollCall;
   };
 
   /**
@@ -71,6 +76,12 @@ export interface WalletCompositionConfiguration {
   useNamesByLaoId: () => { [laoId: string]: string };
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
+
+  /**
+   * A list of item generators that given a laoId return a list of items
+   * to be displayed in the wallet for a given lao
+   */
+  walletItemGenerators: WalletFeature.WalletItemGenerator[];
 }
 
 /**
@@ -78,8 +89,11 @@ export interface WalletCompositionConfiguration {
  */
 export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
+  /* parameters */
+  | 'walletItemGenerators'
   /* lao */
   | 'useCurrentLaoId'
+  | 'useLaoIds'
   | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
