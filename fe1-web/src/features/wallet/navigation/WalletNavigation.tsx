@@ -11,6 +11,7 @@ import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Color, Icon, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import { forget } from '../objects';
 import { clearDummyWalletState, createDummyWalletState } from '../objects/DummyWallet';
@@ -67,6 +68,8 @@ const WalletNavigationHeaderRight = () => {
  * Allows to navigate between the wallet screens.
  */
 export default function WalletNavigation() {
+  const screens = WalletHooks.useWalletNavigationScreens();
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -96,6 +99,22 @@ export default function WalletNavigation() {
           headerRight: WalletSingleHeaderRight,
         }}
       />
+      {screens.map(
+        ({ id, title, headerTitle, headerLeft, headerRight, headerShown, Component }) => (
+          <Stack.Screen
+            name={id}
+            key={id}
+            component={Component}
+            options={{
+              title: title || id,
+              headerTitle: headerTitle || title || id,
+              headerLeft,
+              headerRight,
+              headerShown,
+            }}
+          />
+        ),
+      )}
     </Stack.Navigator>
   );
 }

@@ -76,6 +76,7 @@ namespace STRINGS {
   export const navigation_wallet_setup = 'Wallet Setup';
   export const navigation_wallet_show_seed = 'New Wallet';
   export const navigation_wallet_single_roll_call = 'Roll Call';
+  export const navigation_wallet_digital_cash_wallet = 'Digital Cash Wallet';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
@@ -339,6 +340,43 @@ namespace STRINGS {
   /* --- Meeting Feature Strings --- */
   export const meeting_event_name = 'Meeting';
   export const meeting_create_meeting = 'Create meeting';
+
+  /* --- Digital Cash Strings --- */
+  export const digital_cash_account = 'Digital Cash Account';
+  export const digital_cash_account_balance = 'Your account balance';
+  export const digital_cash_wallet_screen_title = 'Digital Cash Wallet';
+  export const digital_cash_wallet_balance = 'Balance';
+  export const digital_cash_wallet_description =
+    'Your balance for this lao is the sum of the balances of each roll call token you own in this lao. ' +
+    'The distribution of your total balance is visible in the list below. ' +
+    'To send cash from one of the accounts, simply tap on it.';
+
+  export const digital_cash_coin_issuance = 'Coin Issuance';
+  export const digital_cash_coin_issuance_description =
+    'You as the organizer can create money out of thin air 🧙‍♂️';
+
+  export const digital_cash_wallet_transaction_description =
+    'You can send cash by entering the public key of the beneficiary below and ' +
+    'choosing the amount of cash you would like to transfer.';
+
+  export const digital_cash_wallet_create_transaction = 'Create Transaction';
+  export const digital_cash_wallet_send_transaction = 'Send Transaction';
+
+  export const digital_cash_wallet_beneficiary = 'Beneficiary';
+  export const digital_cash_wallet_beneficiary_placeholder =
+    'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
+
+  export const digital_cash_wallet_amount = 'Amount';
+  export const digital_cash_wallet_amount_placeholder = '42.50';
+
+  export const digital_cash_wallet_amount_must_be_number = 'Invalid amount, please enter a number.';
+  export const digital_cash_wallet_amount_too_high =
+    'You cannot send more money than you have. Please enter a value smaller than your balance.';
+
+  export const digital_cash_wallet_transaction = 'Transaction';
+  export const digital_cash_wallet_transaction_history = 'Transaction History';
+  export const digital_cash_wallet_transaction_inputs = 'Inputs';
+  export const digital_cash_wallet_transaction_outputs = 'Ouputs';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

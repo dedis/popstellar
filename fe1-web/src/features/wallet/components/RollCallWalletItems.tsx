@@ -33,10 +33,12 @@ const RollCallWalletItems = ({ laoId }: IPropTypes) => {
   return (
     <>
       {tokens.map((token, idx) => (
+        // isFirstItem and isLastItem have to be refactored in the future
+        // since it is not known what other items other features add
         <RollCallWalletItem
           key={token.rollCallId.valueOf()}
           rollCallToken={token}
-          isFirstItem={idx === 0}
+          isFirstItem={false}
           isLastItem={idx === tokens.length - 1}
         />
       ))}

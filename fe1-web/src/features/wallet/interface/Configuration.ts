@@ -82,6 +82,8 @@ export interface WalletCompositionConfiguration {
    * to be displayed in the wallet for a given lao
    */
   walletItemGenerators: WalletFeature.WalletItemGenerator[];
+
+  walletNavigationScreens: WalletFeature.WalletScreen[];
 }
 
 /**
@@ -91,6 +93,7 @@ export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
   /* parameters */
   | 'walletItemGenerators'
+  | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
   | 'useLaoIds'

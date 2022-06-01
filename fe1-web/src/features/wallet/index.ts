@@ -43,6 +43,7 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       useLaoIds: configuration.useLaoIds,
       useNamesByLaoId: configuration.useNamesByLaoId,
       walletItemGenerators: configuration.walletItemGenerators,
+      walletNavigationScreens: configuration.walletNavigationScreens,
     },
   };
 }

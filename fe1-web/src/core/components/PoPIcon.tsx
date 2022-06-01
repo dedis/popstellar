@@ -26,6 +26,10 @@ const iconNameMap = {
     iconName: 'ios-person-add',
     IconFamily: Ionicons,
   } as IonIcon,
+  digitalCash: {
+    iconName: 'attach-money',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,

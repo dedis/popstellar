@@ -84,9 +84,10 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     useLaoIds: () => Hash[];
 
     /**
-     * Checks whether the current user is an organizer of the current lao
+     * Checks whether the current user is an organizer of the given lao
+     * If no laoId is passed, it is checked for the current lao
      */
-    useIsLaoOrganizer: () => boolean;
+    useIsLaoOrganizer: (laoId?: string) => boolean;
 
     /**
      * Checks whether the current user is a witness of the current lao

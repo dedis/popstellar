@@ -39,4 +39,9 @@ export namespace WalletHooks {
    * Gets a map from laoIds to names
    */
   export const useNamesByLaoId = () => useWalletContext().useNamesByLaoId();
+
+  /**
+   * Gets the list of wallet navigation screens
+   */
+  export const useWalletNavigationScreens = () => useWalletContext().walletNavigationScreens;
 }

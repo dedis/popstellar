@@ -4,6 +4,7 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
 import STRINGS from '../resources/strings';
+import * as digitalCash from './digital-cash';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
@@ -68,6 +69,14 @@ export function configureFeatures() {
     hasSeed: walletConfiguration.functions.hasSeed,
   });
 
+  const digitalWalletConfiguration = digitalCash.configure({
+    messageRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+  });
+
   const walletComposition = wallet.compose({
     keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
@@ -77,7 +86,8 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
-    walletItemGenerators: [],
+    walletItemGenerators: [...digitalWalletConfiguration.walletItemGenerators],
+    walletNavigationScreens: [...digitalWalletConfiguration.walletScreens],
   });
 
   const socialConfiguration = social.configure(messageRegistry);
@@ -190,6 +200,7 @@ export function configureFeatures() {
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
+      [digitalWalletConfiguration.identifier]: digitalWalletConfiguration.context,
     },
   };
 }

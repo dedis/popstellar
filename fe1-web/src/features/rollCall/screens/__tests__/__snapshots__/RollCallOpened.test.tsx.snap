@@ -512,7 +512,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                           onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "backgroundColor": "#fff",
+                              "backgroundColor": "rgb(242, 242, 242)",
                               "borderRadius": 16,
                               "margin": 32,
                               "padding": 32,
@@ -615,10 +615,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                     "borderRadius": 8,
                                     "flex": 1,
                                     "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
                                   },
                                 ]
                               }
@@ -1269,7 +1265,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                           onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "backgroundColor": "#fff",
+                              "backgroundColor": "rgb(242, 242, 242)",
                               "borderRadius": 16,
                               "margin": 32,
                               "padding": 32,
@@ -1372,10 +1368,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                     "borderRadius": 8,
                                     "flex": 1,
                                     "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
                                   },
                                 ]
                               }

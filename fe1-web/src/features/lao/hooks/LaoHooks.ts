@@ -7,10 +7,10 @@ import { Hash } from 'core/objects';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
+  makeIsLaoOrganizerSelector,
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
-  selectIsLaoOrganizer,
   selectIsLaoWitness,
   selectLaoIdsList,
   selectLaoIdToNameMap,
@@ -69,9 +69,14 @@ export namespace LaoHooks {
   export const useLaoIds = (): Hash[] => useSelector(selectLaoIdsList);
 
   /**
-   * Indicates whether we are an organizer of the current LAO
+   * Indicates whether we are an organizer of the the given lao
+   * If no laoId is passed, it is checked for the current lao
    */
-  export const useIsLaoOrganizer = (): boolean => useSelector(selectIsLaoOrganizer);
+  export const useIsLaoOrganizer = (laoId?: string): boolean => {
+    const isLaoOrganizerSelector = useMemo(() => makeIsLaoOrganizerSelector(laoId), [laoId]);
+
+    return useSelector(isLaoOrganizerSelector);
+  };
 
   /**
    * Indicates whether we are a witness of the current LAO

@@ -44,6 +44,7 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
           {STRINGS.wallet_home_rollcall_pop_token}
         </ListItem.Subtitle>
       </ListItem.Content>
+      <ListItem.Chevron />
     </ListItem>
   );
 };
