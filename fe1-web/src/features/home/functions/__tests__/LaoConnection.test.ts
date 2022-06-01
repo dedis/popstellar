@@ -2,12 +2,12 @@ import { mockLaoId } from '__tests__/utils';
 
 import { encodeLaoConnectionForQRCode } from '../LaoConnection';
 
-describe('lao-connection', () => {
+describe('LaoConnection', () => {
   describe('encodeLaoConnectionInQRCode', () => {
     it('should return correctly encoded data', () => {
       const servers = ['some server'];
       const data = JSON.parse(encodeLaoConnectionForQRCode(servers, mockLaoId));
-      expect(data).toHaveProperty('servers', servers);
+      expect(data).toHaveProperty('server', servers[0]);
       expect(data).toHaveProperty('lao', mockLaoId);
     });
   });
