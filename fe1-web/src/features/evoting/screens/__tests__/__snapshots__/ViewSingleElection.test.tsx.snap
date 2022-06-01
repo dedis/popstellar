@@ -7466,26 +7466,28 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               ]
                             }
                           >
-                            <Text
-                              allowFontScaling={false}
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#fff",
-                                    "fontSize": 50,
-                                  },
-                                  undefined,
-                                  Object {
-                                    "fontFamily": "ionicons",
-                                    "fontStyle": "normal",
-                                    "fontWeight": "normal",
-                                  },
-                                  Object {},
-                                ]
-                              }
-                            >
-                              
-                            </Text>
+                            <View>
+                              <Text
+                                allowFontScaling={false}
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#fff",
+                                      "fontSize": 50,
+                                    },
+                                    undefined,
+                                    Object {
+                                      "fontFamily": "ionicons",
+                                      "fontStyle": "normal",
+                                      "fontWeight": "normal",
+                                    },
+                                    Object {},
+                                  ]
+                                }
+                              >
+                                
+                              </Text>
+                            </View>
                             <View
                               style={
                                 Object {
@@ -13780,7 +13782,9 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               ]
                             }
                           >
-                            <Text />
+                            <View>
+                              <Text />
+                            </View>
                             <View
                               style={
                                 Object {

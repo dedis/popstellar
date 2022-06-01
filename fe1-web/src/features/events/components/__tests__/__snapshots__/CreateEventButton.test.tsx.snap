@@ -332,7 +332,9 @@ exports[`CreateEventButton renders correctly 1`] = `
                             }
                           }
                         >
-                          <Text />
+                          <View>
+                            <Text />
+                          </View>
                         </View>
                       </RNGestureHandlerButton>
                     </View>

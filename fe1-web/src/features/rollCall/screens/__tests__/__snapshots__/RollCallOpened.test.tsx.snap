@@ -389,7 +389,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                         }
                                       }
                                     >
-                                      <Text />
+                                      <View>
+                                        <Text />
+                                      </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
@@ -421,7 +423,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                         }
                                       }
                                     >
-                                      <Text />
+                                      <View>
+                                        <Text />
+                                      </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
@@ -463,7 +467,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   }
                                 }
                               >
-                                <Text />
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                             </View>
                           </View>
@@ -1083,26 +1089,28 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                         }
                                       }
                                     >
-                                      <Text
-                                        allowFontScaling={false}
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#3742fa",
-                                              "fontSize": 25,
-                                            },
-                                            undefined,
-                                            Object {
-                                              "fontFamily": "ionicons",
-                                              "fontStyle": "normal",
-                                              "fontWeight": "normal",
-                                            },
-                                            Object {},
-                                          ]
-                                        }
-                                      >
-                                        
-                                      </Text>
+                                      <View>
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#3742fa",
+                                                "fontSize": 25,
+                                              },
+                                              undefined,
+                                              Object {
+                                                "fontFamily": "ionicons",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                        >
+                                          
+                                        </Text>
+                                      </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
@@ -1134,26 +1142,28 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                         }
                                       }
                                     >
-                                      <Text
-                                        allowFontScaling={false}
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#3742fa",
-                                              "fontSize": 25,
-                                            },
-                                            undefined,
-                                            Object {
-                                              "fontFamily": "ionicons",
-                                              "fontStyle": "normal",
-                                              "fontWeight": "normal",
-                                            },
-                                            Object {},
-                                          ]
-                                        }
-                                      >
-                                        
-                                      </Text>
+                                      <View>
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#3742fa",
+                                                "fontSize": 25,
+                                              },
+                                              undefined,
+                                              Object {
+                                                "fontFamily": "ionicons",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                        >
+                                          
+                                        </Text>
+                                      </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
@@ -1195,26 +1205,28 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  allowFontScaling={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#3742fa",
-                                        "fontSize": 25,
-                                      },
-                                      undefined,
-                                      Object {
-                                        "fontFamily": "ionicons",
-                                        "fontStyle": "normal",
-                                        "fontWeight": "normal",
-                                      },
-                                      Object {},
-                                    ]
-                                  }
-                                >
-                                  
-                                </Text>
+                                <View>
+                                  <Text
+                                    allowFontScaling={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#3742fa",
+                                          "fontSize": 25,
+                                        },
+                                        undefined,
+                                        Object {
+                                          "fontFamily": "ionicons",
+                                          "fontStyle": "normal",
+                                          "fontWeight": "normal",
+                                        },
+                                        Object {},
+                                      ]
+                                    }
+                                  >
+                                    
+                                  </Text>
+                                </View>
                               </View>
                             </View>
                           </View>
