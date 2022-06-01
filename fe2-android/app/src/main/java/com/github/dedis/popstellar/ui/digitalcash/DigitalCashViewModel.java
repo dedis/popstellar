@@ -31,6 +31,7 @@ import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -368,8 +369,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   @Nullable
-  public Set<PublicKey> getAttendeesFromTheRollCall(){
-    return getCurrentLao().getRollCall(getRollCallId().getValue()).get().getAttendees();
+  public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
+    return getCurrentLao().lastRollCallClosed().getAttendees();
   }
 
   @Nullable
@@ -378,7 +379,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   @Nullable
-  public List<String> getAttendeesFromTheRollCallList(){
+  public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
     List<String> list = Collections.EMPTY_LIST;
     Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
     while (pub.hasNext()){

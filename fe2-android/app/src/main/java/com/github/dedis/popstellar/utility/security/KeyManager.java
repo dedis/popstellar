@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Comparator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -109,11 +108,7 @@ public class KeyManager {
    */
   public PoPToken getValidPoPToken(Lao lao) throws KeyException {
     // Find the latest closed RollCall and use the wallet to retrieve the key
-    RollCall rollCall =
-        lao.getRollCalls().values().stream()
-            .max(Comparator.comparing(RollCall::getEnd))
-            .orElseThrow(() -> new NoRollCallException(lao));
-
+    RollCall rollCall = lao.lastRollCallClosed();
     return getValidPoPToken(lao, rollCall);
   }
 

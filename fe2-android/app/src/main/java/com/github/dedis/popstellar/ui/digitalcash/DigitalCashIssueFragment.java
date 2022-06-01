@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -82,7 +83,13 @@ public class DigitalCashIssueFragment extends Fragment {
               }
             });
 
-    List<String> myArray = mViewModel.getAttendeesFromTheRollCallList();
+    List<String> myArray = null;
+    try {
+      myArray = mViewModel.getAttendeesFromTheRollCallList();
+    } catch (NoRollCallException e) {
+      e.printStackTrace();
+      Log.d(this.getClass().toString(), "Error : No Roll Call in the Lao");
+    }
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }

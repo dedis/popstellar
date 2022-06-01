@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -407,6 +408,17 @@ public final class Lao {
 
   public void setElections(Map<String, Election> elections) {
     this.elections = elections;
+  }
+
+  /**
+   * Class which return the last roll call open
+   *
+   * @return Rollcall the roll call with the last ending tim e
+   */
+  public RollCall lastRollCallClosed() throws NoRollCallException {
+    return this.getRollCalls().values().stream()
+        .max(Comparator.comparing(RollCall::getEnd))
+        .orElseThrow(() -> new NoRollCallException(this));
   }
 
   /**
