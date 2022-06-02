@@ -20,8 +20,8 @@ export namespace DigitalCashStore {
       console.warn('This roll call is undefined in digital cash state');
       return [];
     }
-    const hash = Hash.fromString(pk);
-    return Array.from(rcState.transactionsByPubHash[hash.valueOf()].values()) || [];
+    const hash = Hash.fromPublicKey(pk);
+    return Array.from(rcState.transactionsByPubHash[hash.valueOf()]?.values() || []) || [];
   }
   export function getBalance(laoId: string, RCId: string, pk: string): number {
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
@@ -34,7 +34,7 @@ export namespace DigitalCashStore {
       console.warn('This roll call is undefined in digital cash state');
       return 0;
     }
-    const hash = Hash.fromString(pk);
+    const hash = Hash.fromPublicKey(pk);
     const balance = rcState.balances[hash.valueOf()];
     return balance || 0;
   }

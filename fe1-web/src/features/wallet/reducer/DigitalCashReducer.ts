@@ -105,15 +105,15 @@ const digitalCashSlice = createSlice({
       });
 
       transactionMessage.outputs.forEach((output) => {
-        if (!rollCallState.balances[output.script.publicKeyHash.valueOf()]) {
-          rollCallState.balances[output.script.publicKeyHash.valueOf()] = 0;
+        const pubKeyHash = output.script.publicKeyHash.valueOf();
+        if (!rollCallState.balances[pubKeyHash]) {
+          rollCallState.balances[pubKeyHash] = 0;
         }
-        rollCallState.balances[output.script.publicKeyHash.valueOf()] += output.value;
-        if (rollCallState.transactionsByPubHash[output.script.publicKeyHash.valueOf()]) {
-          rollCallState.transactionsByPubHash[output.script.publicKeyHash.valueOf()].add(
-            transactionMessage,
-          );
+        rollCallState.balances[pubKeyHash] += output.value;
+        if (!rollCallState.transactionsByPubHash[pubKeyHash]) {
+          rollCallState.transactionsByPubHash[pubKeyHash] = new Set<TransactionState>();
         }
+        rollCallState.transactionsByPubHash[pubKeyHash].add(transactionMessage);
       });
     },
   },
