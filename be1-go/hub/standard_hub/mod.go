@@ -364,7 +364,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
-		err = answer.NewInvalidResourceError( "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
