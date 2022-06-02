@@ -142,7 +142,6 @@ public class LAONetworkManager implements MessageSender {
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
         .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
-        //    .ignoreElement().andThen(catchup(channel));
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
