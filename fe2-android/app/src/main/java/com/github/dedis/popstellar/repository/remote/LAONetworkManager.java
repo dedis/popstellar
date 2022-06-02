@@ -156,7 +156,7 @@ public class LAONetworkManager implements MessageSender {
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
-        .doOnError(error -> Log.e(TAG, "error unsubscribing : " + error))
+        .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
         .ignoreElement();
   }
 
