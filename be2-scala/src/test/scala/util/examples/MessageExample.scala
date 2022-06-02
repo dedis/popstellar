@@ -168,4 +168,12 @@ object MessageExample {
     List.empty,
     Some(AddChirp("abc", None, Timestamp(0)))
   )
+
+  final val MESSAGE_CREATE_MEETING: Message = new Message(
+    Base64Data.encode(CreateMeeting())
+
+
+  )
+
+
 }
