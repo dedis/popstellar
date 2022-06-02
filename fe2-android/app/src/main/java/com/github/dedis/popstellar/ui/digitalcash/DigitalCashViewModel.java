@@ -314,13 +314,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
-        transaction_hash = "somehash";
-        getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
-        index = '0';
-        getCurrentLao()
-            .getTransactionByUser()
-            .get(token.getPublicKey())
-            .getIndexTransaction(token.getPublicKey());
+        transaction_hash =
+            getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        index =
+            getCurrentLao()
+                .getTransactionByUser()
+                .get(token.getPublicKey())
+                .getIndexTransaction(token.getPublicKey());
       }
       String sig =
           Transaction.computeSigOutputsPairTxOutHashAndIndex(

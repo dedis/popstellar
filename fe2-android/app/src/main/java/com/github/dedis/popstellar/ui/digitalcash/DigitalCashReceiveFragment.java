@@ -16,6 +16,8 @@ import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import java.time.Instant;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
@@ -63,6 +65,9 @@ public class DigitalCashReceiveFragment extends Fragment {
             "Total from : \n"
                 + transaction.getMiniLaoPerReceiver(token.getPublicKey())
                 + " LAOcoin");
+        long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
+        ;
+        mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
       }
     } catch (KeyException e) {
       e.printStackTrace();
