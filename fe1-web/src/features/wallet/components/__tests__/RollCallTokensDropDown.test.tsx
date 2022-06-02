@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
-import { mockKeyPair, mockLao, mockRC } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockRollCallState } from '__tests__/utils';
 import { PopToken } from 'core/objects';
 import { RollCallToken } from 'features/wallet/objects/RollCallToken';
 
@@ -12,8 +12,8 @@ const mockArray = [
   new RollCallToken({
     token: mockToken,
     laoId: mockLao.id,
-    rollCallId: mockRC.id,
-    rollCallName: mockRC.name,
+    rollCallId: mockRollCallState.id,
+    rollCallName: mockRollCallState.name,
   }),
 ];
 
