@@ -68,23 +68,26 @@ public class DigitalCashIssueFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
-                // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
 
+                /*Take the amount entered by the user*/
+                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
                 String current_public_key_selected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
-                Log.d(
-                    this.getClass().toString(),
-                    "place holder text is " + current_public_key_selected);
-                try {
-                  postTransaction(
-                      Collections.singletonMap(current_public_key_selected, current_amount));
 
-                  mViewModel.updateLaoCoinEvent();
-
-                  mViewModel.openHome();
-                } catch (KeyException e) {
-                  e.printStackTrace();
+                if (current_amount.isEmpty() || (Integer.valueOf(current_amount) < 0)) {
+                  // create in View Model a function that toast : please enter amount
+                  mViewModel.requireToPutAnAmount();
+                } else if (current_public_key_selected.isEmpty()) {
+                  // create in View Model a function that toast : please enter key
+                  mViewModel.requireToPutLAOMember();
+                } else {
+                  try {
+                    postTransaction(
+                        Collections.singletonMap(current_public_key_selected, current_amount));
+                  } catch (KeyException e) {
+                    e.printStackTrace();
+                    // write a log
+                  }
                 }
               }
             });
@@ -100,25 +103,22 @@ public class DigitalCashIssueFragment extends Fragment {
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
 
-  private void setupSendCoinButton(){
+  /** Function that setup the Button */
+  private void setupSendCoinButton() {
     mBinding.digitalCashIssueIssue.setOnClickListener(
             v -> mViewModel.postTransactionEvent()
     );
   }
 
-  /// ** Function that permits to post transaction */
+  /**
+   * Function that post the transaction (call the function of the view model)
+   *
+   * @param PublicKeyAmount Map<String, String> containing the Public Keys and the related amount to
+   *     issue to
+   * @throws KeyException throw this exception if the key of the issuer is not on the LAO
+   */
   private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
-    // if (mBinding.digitalCashIssueAmount.getText() == null) {
-    // Toast.makeText(this.requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
-    // } else {
-    // String amount_string = mBinding.digitalCashIssueAmount.getText().toString();
-    Log.d(this.getClass().toString(), "Try to send a transaction");
-    Log.d(this.getClass().toString(), "The values are :" + PublicKeyAmount.values().toString());
-    Log.d(this.getClass().toString(), "The keys are : " + PublicKeyAmount.keySet().toString());
-    // long amount = 0 ;
     mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
-      //mViewModel.postTransaction(Collections.singletonMap(mViewModel.getCurrentLao().getOrganizer(),amount),
-          //Instant.now().getEpochSecond());
-   // }
+    mViewModel.updateLaoCoinEvent();
   }
 }

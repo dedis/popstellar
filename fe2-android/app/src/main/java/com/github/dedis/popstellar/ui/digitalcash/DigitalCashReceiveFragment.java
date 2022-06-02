@@ -61,10 +61,13 @@ public class DigitalCashReceiveFragment extends Fragment {
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText(" Received from : \n" + sender);
-        mBinding.digitalCashReceiveAmount.setText(
+
+        String string =
             "Total from : \n"
-                + transaction.getMiniLaoPerReceiver(token.getPublicKey())
-                + " LAOcoin");
+                + mViewModel.getUpdateReceiptAmountEvent().getValue().getContentIfNotHandled()
+                + " LAOcoin";
+
+        mBinding.digitalCashReceiveAmount.setText(string);
         long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
         ;
         mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");

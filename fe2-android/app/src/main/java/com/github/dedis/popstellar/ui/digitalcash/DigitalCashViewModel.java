@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -140,6 +141,22 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public void updateReceiptAmountEvent(String Amount) {
     updateReceiptAmountEvent.postValue(new SingleEvent<>(Amount));
+  }
+
+  public void requireToPutAnAmount() {
+    Toast.makeText(
+            getApplication().getApplicationContext(),
+            "Please enter a positive amount of LAOcoin",
+            Toast.LENGTH_LONG)
+        .show();
+  }
+
+  public void requireToPutLAOMember() {
+    Toast.makeText(
+            getApplication().getApplicationContext(),
+            "Please select a LAOMember",
+            Toast.LENGTH_LONG)
+        .show();
   }
 
   /*
@@ -287,11 +304,11 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
 
     try {
-      //Lao lao = getCurrentLao();
       PoPToken token =
               keyManager.getValidPoPToken(lao);
       // first make the output
       List<Output> outputs = new ArrayList<>();
+      long amountFromReceiver = 0;
       for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
         PublicKey pub = null;
         try {
@@ -301,7 +318,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
           Log.d(TAG, "Error on the key to whom we send !");
         }
         long amount = Long.valueOf(current.getValue());
-
+        amountFromReceiver += amount;
         Output add_output = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
         outputs.add(add_output);
       }
@@ -314,8 +331,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
-        transaction_hash =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey()).computeId();
+        TransactionObject transactionPrevious =
+            getCurrentLao().getTransactionByUser().get(token.getPublicKey());
+
+        long amount_sender =
+            transactionPrevious.getMiniLaoPerReceiver(token.getPublicKey()) - amountFromReceiver;
+        Output output_sender =
+            new Output(amount_sender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
+        outputs.add(output_sender);
+        transaction_hash = transactionPrevious.computeId();
         index =
             getCurrentLao()
                 .getTransactionByUser()
