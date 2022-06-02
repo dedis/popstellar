@@ -159,4 +159,5 @@ public class KeyManager {
     byte[] publicKey = Arrays.copyOfRange(buffer, 2, buffer.length);
     return new PublicKey(publicKey);
   }
+
 }

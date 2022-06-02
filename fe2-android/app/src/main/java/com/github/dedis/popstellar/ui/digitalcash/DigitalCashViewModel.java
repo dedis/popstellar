@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -73,6 +72,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent = new MutableLiveData<>();
+  /* Is used to change the lao Coin amount on the home fragment*/
+  private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
+  /* Update the receipt after sending a transactionn*/
+  private final MutableLiveData<SingleEvent<String>> updateReceiptAddressEvent =
+      new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
+      new MutableLiveData<>();
+
   /*
    * Dependencies for this class
    */
@@ -81,14 +88,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
+
   @Inject
   public DigitalCashViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager,
-      Wallet wallet) {
+      KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
     this.networkManager = networkManager;
@@ -103,7 +110,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
-  public LiveData<SingleEvent<Boolean>> getpostTransactionEvent() {
+  public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
     return postTransactionEvent;
   }
 
@@ -111,6 +118,29 @@ public class DigitalCashViewModel extends AndroidViewModel {
     postTransactionEvent.postValue(new SingleEvent<>(true));
   }
 
+  public LiveData<SingleEvent<Boolean>> getUpdateLaoCoinEvent() {
+    return updateLaoCoinEvent;
+  }
+
+  public void updateLaoCoinEvent() {
+    updateLaoCoinEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
+    return updateReceiptAddressEvent;
+  }
+
+  public void updateReceiptAddressEvent(String Address) {
+    updateReceiptAddressEvent.postValue(new SingleEvent<>(Address));
+  }
+
+  public LiveData<SingleEvent<String>> getUpdateReceiptAmountEvent() {
+    return updateReceiptAmountEvent;
+  }
+
+  public void updateReceiptAmountEvent(String Amount) {
+    updateReceiptAmountEvent.postValue(new SingleEvent<>(Amount));
+  }
 
   /*
    * Getters for MutableLiveData instances declared above
@@ -171,8 +201,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public void postTransactionTest(Map<String, String> PublicKeyAmount, Long time)
       throws KeyException {
     Log.d(TAG, "Post a transaction Test");
-    Log.d(TAG, getCurrentLao().toString());
-    Log.d(TAG, keyManager.getMainKeyPair().toString());
     KeyPair the_keys = keyManager.getValidPoPToken(getCurrentLao());
 
     List<Output> outputs =

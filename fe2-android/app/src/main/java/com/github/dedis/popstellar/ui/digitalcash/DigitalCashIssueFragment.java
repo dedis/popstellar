@@ -62,7 +62,7 @@ public class DigitalCashIssueFragment extends Fragment {
     setupSendCoinButton();
 
     mViewModel
-        .getpostTransactionEvent()
+        .getPostTransactionEvent()
         .observe(
             getViewLifecycleOwner(),
             booleanEvent -> {
@@ -79,6 +79,9 @@ public class DigitalCashIssueFragment extends Fragment {
                 try {
                   postTransaction(
                       Collections.singletonMap(current_public_key_selected, current_amount));
+
+                  mViewModel.updateLaoCoinEvent();
+
                   mViewModel.openHome();
                 } catch (KeyException e) {
                   e.printStackTrace();
