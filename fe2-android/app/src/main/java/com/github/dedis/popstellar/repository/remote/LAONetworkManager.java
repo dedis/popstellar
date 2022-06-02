@@ -88,8 +88,10 @@ public class LAONetworkManager implements MessageSender {
                             disposables.add(
                                 subscribe(channel)
                                     .subscribe(
-                                        () -> Log.d(TAG, "nothing to see"),
-                                        error -> Log.d(TAG, "error here too")))),
+                                        () ->
+                                            Log.d(TAG, "resubscription successful to :" + channel),
+                                        error ->
+                                            Log.d(TAG, "error on resubscription to" + error)))),
                 error -> Log.d(TAG, "Error on resubscription : " + error)));
   }
 
