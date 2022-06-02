@@ -50,34 +50,53 @@ public class DigitalCashReceiveFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    mViewModel
-        .getUpdateLaoCoinEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                try {
-                  Lao lao = mViewModel.getCurrentLao();
-                  PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+    try {
+      Lao lao = mViewModel.getCurrentLao();
+      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
 
-                  if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-                    TransactionObject transaction =
-                        lao.getTransactionByUser().get(token.getPublicKey());
-                    String sender = transaction.getSendersTransaction().get(0).getEncoded();
+      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+        TransactionObject transaction = lao.getTransactionByUser().get(token.getPublicKey());
+        String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
-                    mBinding.digitalCashReceiveAddress.setText(" Received from : \n" + sender);
-                    mBinding.digitalCashReceiveAmount.setText(
-                        "Total from : \n"
-                            + transaction.getMiniLaoPerReceiver(token.getPublicKey())
-                            + " LAOcoin");
-                  }
+        mBinding.digitalCashReceiveAddress.setText(" Received from : \n" + sender);
+        mBinding.digitalCashReceiveAmount.setText(
+            "Total from : \n"
+                + transaction.getMiniLaoPerReceiver(token.getPublicKey())
+                + " LAOcoin");
+      }
+    } catch (KeyException e) {
+      e.printStackTrace();
+      Log.d(this.getClass().toString(), "Error to get the Key");
+    }
 
-                } catch (KeyException e) {
-                  e.printStackTrace();
-                  Log.d(this.getClass().toString(), "Error to get the Key");
-                }
+    /*mViewModel
+    .getUpdateLaoCoinEvent()
+    .observe(
+        getViewLifecycleOwner(),
+        booleanEvent -> {
+          Boolean event = booleanEvent.getContentIfNotHandled();
+          if (event != null) {
+            try {
+              Lao lao = mViewModel.getCurrentLao();
+              PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+
+              if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+                TransactionObject transaction =
+                    lao.getTransactionByUser().get(token.getPublicKey());
+                String sender = transaction.getSendersTransaction().get(0).getEncoded();
+
+                mBinding.digitalCashReceiveAddress.setText(" Received from : \n" + sender);
+                mBinding.digitalCashReceiveAmount.setText(
+                    "Total from : \n"
+                        + transaction.getMiniLaoPerReceiver(token.getPublicKey())
+                        + " LAOcoin");
               }
-            });
+
+            } catch (KeyException e) {
+              e.printStackTrace();
+              Log.d(this.getClass().toString(), "Error to get the Key");
+            }
+          }
+        });*/
   }
 }
