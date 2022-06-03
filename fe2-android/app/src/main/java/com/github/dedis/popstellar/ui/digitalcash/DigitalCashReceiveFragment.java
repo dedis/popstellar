@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,38 +67,8 @@ public class DigitalCashReceiveFragment extends Fragment {
         mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
       }
     } catch (KeyException e) {
-      e.printStackTrace();
       Log.d(this.getClass().toString(), "Error to get the Key");
+      Toast.makeText(requireContext(), "Please enter a Lao", Toast.LENGTH_SHORT).show();
     }
-
-    /*mViewModel
-    .getUpdateLaoCoinEvent()
-    .observe(
-        getViewLifecycleOwner(),
-        booleanEvent -> {
-          Boolean event = booleanEvent.getContentIfNotHandled();
-          if (event != null) {
-            try {
-              Lao lao = mViewModel.getCurrentLao();
-              PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-
-              if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-                TransactionObject transaction =
-                    lao.getTransactionByUser().get(token.getPublicKey());
-                String sender = transaction.getSendersTransaction().get(0).getEncoded();
-
-                mBinding.digitalCashReceiveAddress.setText(" Received from : \n" + sender);
-                mBinding.digitalCashReceiveAmount.setText(
-                    "Total from : \n"
-                        + transaction.getMiniLaoPerReceiver(token.getPublicKey())
-                        + " LAOcoin");
-              }
-
-            } catch (KeyException e) {
-              e.printStackTrace();
-              Log.d(this.getClass().toString(), "Error to get the Key");
-            }
-          }
-        });*/
   }
 }

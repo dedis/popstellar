@@ -140,6 +140,16 @@ public class TransactionObject {
   }
 
   /**
+   * Check if a public key is in the senders
+   *
+   * @param publicKey PublicKey of someone
+   * @return true if public key in receiver, false otherwise
+   */
+  public boolean isSender(PublicKey publicKey) {
+    return getSendersTransaction().contains(publicKey);
+  }
+
+  /**
    * Function that given a key pair change the sig of an input considering all the outputs
    *
    * @param keyPair of one input sender

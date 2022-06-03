@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +54,8 @@ public class DigitalCashHomeFragment extends Fragment {
       Lao lao = mViewModel.getCurrentLao();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
 
+      mBinding.digitalCashHomeAddress.setText(token.getPublicKey().getEncoded());
+
       if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction = lao.getTransactionByUser().get(token.getPublicKey());
         mBinding.digitalCashSendAddress.setText(
@@ -60,41 +63,8 @@ public class DigitalCashHomeFragment extends Fragment {
       }
 
     } catch (KeyException e) {
-      e.printStackTrace();
       Log.d(this.getClass().toString(), "Error to get the Key");
-    }
-
-    /*mViewModel
-    .getUpdateLaoCoinEvent()
-    .observe(
-        getViewLifecycleOwner(),
-        booleanEvent -> {
-          Boolean event = booleanEvent.getContentIfNotHandled();
-          if (event != null) {
-            try {
-              Lao lao = mViewModel.getCurrentLao();
-              PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-
-              if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-                TransactionObject transaction =
-                    lao.getTransactionByUser().get(token.getPublicKey());
-                mBinding.digitalCashSendAddress.setText(
-                    "LAOcoin : " + transaction.getMiniLaoPerReceiver(token.getPublicKey()));
-              }
-
-            } catch (KeyException e) {
-              e.printStackTrace();
-              Log.d(this.getClass().toString(), "Error to get the Key");
-            }
-          }
-        });*/
-
-    try {
-      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(mViewModel.getCurrentLao());
-      mBinding.digitalCashHomeAddress.setText(token.getPublicKey().getEncoded());
-    } catch (KeyException e) {
-      e.printStackTrace();
-      Log.d(this.getClass().toString(), "No key in lao");
+      Toast.makeText(requireContext(), "Please enter a Lao", Toast.LENGTH_SHORT).show();
     }
   }
 }
