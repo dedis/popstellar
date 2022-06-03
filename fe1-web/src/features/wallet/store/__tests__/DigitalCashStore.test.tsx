@@ -1,17 +1,16 @@
 import 'jest-extended';
 
-import { getStore } from 'core/redux';
-
-import { DigitalCashStore } from '../DigitalCashStore';
-import { getDigitalCashState } from "../../reducer";
 import {
   mockCBHash,
-  mockCoinbaseTransactionJSON, mockKeyPair,
+  mockCoinbaseTransactionJSON,
+  mockKeyPair,
   mockKPHash,
   mockLaoId,
-  mockTransactionValue
-} from "../../../../__tests__/utils";
-import { Transaction } from "../../objects/transaction";
+  mockTransactionValue,
+} from '../../../../__tests__/utils';
+import { Transaction } from '../../objects/transaction';
+import { getDigitalCashState } from '../../reducer';
+import { DigitalCashStore } from '../DigitalCashStore';
 
 const mockTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState();
 
