@@ -1,44 +1,24 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockKeyPair, mockPublicKey2 } from '__tests__/utils';
+import {
+  mockCBHash,
+  mockCBSig,
+  mockCoinbaseTransactionJSON,
+  mockKeyPair,
+  mockPublicKey2,
+  mockTransactionValue,
+} from '__tests__/utils';
 import { Hash, PopToken, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
-import { Transaction, TransactionJSON, TransactionState } from '../Transaction';
+import { Transaction, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
 import { TransactionOutput } from '../TransactionOutput';
 
 // region Mock value definitions
 const mockPopToken = PopToken.fromState(mockKeyPair.toState());
-const mockValue = 100;
-const mockCBSig =
-  '1E7yPEY7SwZ1NNxi_jN85-IvThR7GzUFs8-Lfwao44waoCf-qj5xLKnpzsc8yP0cFr5UNOIzsgKUYaSzv1gpDQ==';
-const mockCBHash = 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=';
-const validCoinbaseJSON: TransactionJSON = {
-  version: 1,
-  inputs: [
-    {
-      tx_out_hash: STRINGS.coinbase_hash,
-      tx_out_index: 0,
-      script: {
-        type: 'Pay-to-Pubkey-Hash',
-        pubkey: mockKeyPair.publicKey.valueOf(),
-        sig: mockCBSig,
-      },
-    },
-  ],
-  outputs: [
-    {
-      value: mockValue,
-      script: {
-        type: 'Pay-to-Pubkey-Hash',
-        pubkey_hash: Hash.fromPublicKey(mockKeyPair.publicKey).valueOf(),
-      },
-    },
-  ],
-  lock_time: 0,
-};
+
 const validCoinbaseState: TransactionState = {
   transactionId: mockCBHash.valueOf(),
   version: 1,
@@ -55,7 +35,7 @@ const validCoinbaseState: TransactionState = {
   ],
   outputs: [
     {
-      value: mockValue,
+      value: mockTransactionValue,
       script: {
         type: 'Pay-to-Pubkey-Hash',
         publicKeyHash: Hash.fromPublicKey(mockKeyPair.publicKey).valueOf(),
@@ -158,11 +138,11 @@ describe('Transaction', () => {
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
   it('should be able to do a JSON round trip', () => {
-    const coinbaseTransaction = Transaction.fromJSON(validCoinbaseJSON, mockCBHash);
-    expect(coinbaseTransaction.toJSON()).toEqual(validCoinbaseJSON);
+    const coinbaseTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
+    expect(coinbaseTransaction.toJSON()).toEqual(mockCoinbaseTransactionJSON);
   });
   it('should fail to create a transaction with invalid hash', () => {
-    expect(() => Transaction.fromJSON(validCoinbaseJSON, 'hash')).toThrow(Error);
+    expect(() => Transaction.fromJSON(mockCoinbaseTransactionJSON, 'hash')).toThrow(Error);
   });
   it('should be able to create a transaction from a valid partial transaction', () => {
     const transactionObject = {
@@ -247,17 +227,17 @@ describe('Transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
       mockKeyPair.publicKey,
-      mockValue,
+      mockTransactionValue,
     );
     expect(coinbaseTransaction.transactionId.valueOf()).toEqual(mockCBHash.valueOf());
-    expect(coinbaseTransaction.toJSON()).toEqual(validCoinbaseJSON);
+    expect(coinbaseTransaction.toJSON()).toEqual(mockCoinbaseTransactionJSON);
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
   it('should validate a properly signed transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
       mockKeyPair.publicKey,
-      mockValue,
+      mockTransactionValue,
     );
     const isValid = Transaction.isTransactionValid(coinbaseTransaction, mockKeyPair.publicKey);
     expect(isValid).toBeTrue();
@@ -266,7 +246,7 @@ describe('Transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
       mockKeyPair.publicKey,
-      mockValue,
+      mockTransactionValue,
     );
     const isValid = Transaction.isTransactionValid(
       coinbaseTransaction,
@@ -278,8 +258,8 @@ describe('Transaction', () => {
     const transaction = Transaction.create(
       mockPopToken,
       mockKeyPair.publicKey,
-      mockValue,
-      mockValue,
+      mockTransactionValue,
+      mockTransactionValue,
       [validCoinbaseState],
     );
     expect(transaction.toState()).toEqual(validTransactionState0);
@@ -288,22 +268,32 @@ describe('Transaction', () => {
     const transaction = Transaction.create(
       mockPopToken,
       mockKeyPair.publicKey,
-      mockValue,
-      mockValue / 2,
+      mockTransactionValue,
+      mockTransactionValue / 2,
       [validCoinbaseState],
     );
     expect(transaction.toState()).toEqual(validTransactionState1);
   });
   it('should fail to create a transaction from empty transaction inputs', () => {
     expect(() =>
-      Transaction.create(mockPopToken, mockKeyPair.publicKey, mockValue, mockValue, []),
+      Transaction.create(
+        mockPopToken,
+        mockKeyPair.publicKey,
+        mockTransactionValue,
+        mockTransactionValue,
+        [],
+      ),
     ).toThrow(Error);
   });
   it('should fail to create a transaction from invalid transaction inputs', () => {
     expect(() =>
-      Transaction.create(mockPopToken, mockKeyPair.publicKey, mockValue, mockValue, [
-        randomTransactionState,
-      ]),
+      Transaction.create(
+        mockPopToken,
+        mockKeyPair.publicKey,
+        mockTransactionValue,
+        mockTransactionValue,
+        [randomTransactionState],
+      ),
     ).toThrow(Error);
   });
 });

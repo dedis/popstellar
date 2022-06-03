@@ -2,7 +2,13 @@ import 'jest-extended';
 
 import { AnyAction } from 'redux';
 
-import { mockCBHash, mockLaoId, mockValidCoinbaseJSON } from '__tests__/utils';
+import {
+  mockCBHash,
+  mockCoinbaseTransactionJSON,
+  mockKPHash,
+  mockLaoId,
+  mockTransactionValue,
+} from '__tests__/utils';
 import { Hash } from 'core/objects';
 import { Transaction } from 'features/wallet/objects/transaction';
 
@@ -13,7 +19,7 @@ import {
   DIGITAL_CASH_REDUCER_PATH,
 } from '../DigitalCashReducer';
 
-const mockTransaction = Transaction.fromJSON(mockValidCoinbaseJSON, mockCBHash).toState();
+const mockTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState();
 
 const emptyState = {
   byLaoId: {},
@@ -23,15 +29,14 @@ const filledState = {
   byLaoId: {
     [mockLaoId.valueOf()]: {
       balances: {
-        [mockValidCoinbaseJSON.outputs[0].script.pubkey_hash]:
-          mockValidCoinbaseJSON.outputs[0].value,
+        [mockKPHash.valueOf()]: mockTransactionValue,
       },
       transactions: [mockTransaction],
       transactionsByHash: {
         [mockTransaction.transactionId!]: mockTransaction,
       },
       transactionsByPubHash: {
-        [mockValidCoinbaseJSON.outputs[0].script.pubkey_hash]: [mockTransaction],
+        [mockKPHash.valueOf()]: [mockTransaction],
       },
     },
   },
@@ -56,7 +61,7 @@ describe('make balance selector', () => {
     expect(
       makeBalanceSelector(
         new Hash(mockLaoId),
-        mockValidCoinbaseJSON.inputs[0].script.pubkey,
+        mockCoinbaseTransactionJSON.inputs[0].script.pubkey,
       )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
     ).toEqual(100);
   });

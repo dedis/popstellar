@@ -81,11 +81,12 @@ export const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };
 
 // MOCK Transactions
 
-export const mockValue = 100;
-const mockCBSig =
+export const mockTransactionValue = 100;
+export const mockKPHash = Hash.fromPublicKey(mockKeyPair.publicKey);
+export const mockCBSig =
   '1E7yPEY7SwZ1NNxi_jN85-IvThR7GzUFs8-Lfwao44waoCf-qj5xLKnpzsc8yP0cFr5UNOIzsgKUYaSzv1gpDQ==';
 export const mockCBHash = 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=';
-export const mockValidCoinbaseJSON: TransactionJSON = {
+export const mockCoinbaseTransactionJSON: TransactionJSON = {
   version: 1,
   inputs: [
     {
@@ -100,7 +101,7 @@ export const mockValidCoinbaseJSON: TransactionJSON = {
   ],
   outputs: [
     {
-      value: mockValue,
+      value: mockTransactionValue,
       script: {
         type: 'Pay-to-Pubkey-Hash',
         pubkey_hash: Hash.fromPublicKey(mockKeyPair.publicKey).valueOf(),
