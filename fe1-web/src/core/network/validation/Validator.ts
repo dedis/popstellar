@@ -29,6 +29,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CREATE]: 'dataCreateLao',
     [ActionType.STATE]: 'dataStateLao',
     [ActionType.UPDATE_PROPERTIES]: 'dataUpdateLao',
+    [ActionType.GREET]: 'dataGreetLao',
   },
   [ObjectType.MESSAGE]: {
     [ActionType.WITNESS]: 'dataWitnessMessage',

@@ -1,6 +1,12 @@
 import { SignatureType } from 'core/network/jsonrpc/messages';
 
-import { WalletConfiguration, WalletInterface, WALLET_FEATURE_IDENTIFIER } from './interface';
+import * as functions from './functions';
+import {
+  WalletCompositionConfiguration,
+  WalletCompositionInterface,
+  WalletInterface,
+  WALLET_FEATURE_IDENTIFIER,
+} from './interface';
 import * as navigation from './navigation';
 import { getCurrentPopTokenFromStore } from './objects';
 import { walletReducer } from './reducer';
@@ -8,10 +14,17 @@ import { walletReducer } from './reducer';
 /**
  * Configures the wallet feature
  */
-export function configure(configuration: WalletConfiguration): WalletInterface {
+export function configure(): WalletInterface {
+  return {
+    identifier: WALLET_FEATURE_IDENTIFIER,
+    functions,
+  };
+}
+
+export function compose(configuration: WalletCompositionConfiguration): WalletCompositionInterface {
   configuration.keyPairRegistry.add(
     SignatureType.POP_TOKEN,
-    getCurrentPopTokenFromStore(configuration.getCurrentLao, configuration.getEventById),
+    getCurrentPopTokenFromStore(configuration.getCurrentLao, configuration.getRollCallById),
   );
 
   return {
@@ -21,7 +34,7 @@ export function configure(configuration: WalletConfiguration): WalletInterface {
       ...walletReducer,
     },
     context: {
-      makeEventByTypeSelector: configuration.makeEventByTypeSelector,
+      useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
     },
   };

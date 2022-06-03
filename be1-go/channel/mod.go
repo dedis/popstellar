@@ -15,7 +15,7 @@ import (
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
 type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message,
-	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) Channel
+	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (Channel, error)
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
@@ -99,6 +99,7 @@ type HubFunctionalities interface {
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
 	SendAndHandleMessage(method.Broadcast) error
+	GetServerAddress() string
 }
 
 // Broadcastable defines a channel that can broadcast

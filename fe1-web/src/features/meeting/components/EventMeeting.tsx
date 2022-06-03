@@ -1,28 +1,38 @@
 import PropTypes from 'prop-types';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 import { ParagraphBlock, TimeDisplay } from 'core/components';
+import STRINGS from 'resources/strings';
 
 import { Meeting } from '../objects';
+import { makeMeetingSelector } from '../reducer';
 
 /**
  * Component used to display a Meeting event in the LAO event list
  */
 
 const EventMeeting = (props: IPropTypes) => {
-  const { event } = props;
+  const { eventId: meetingId } = props;
+
+  const selectMeeting = useMemo(() => makeMeetingSelector(meetingId), [meetingId]);
+  const meeting = useSelector(selectMeeting);
+
+  if (!meeting) {
+    throw new Error(`Could not find a meeting with id ${meetingId}`);
+  }
 
   return (
     <>
-      <TimeDisplay start={event.start.valueOf()} />
-      {event.end && <TimeDisplay end={event.end.valueOf()} />}
-      {event.location && <ParagraphBlock text={event.location} />}
+      <TimeDisplay start={meeting.start.valueOf()} />
+      {meeting.end && <TimeDisplay end={meeting.end.valueOf()} />}
+      {meeting.location && <ParagraphBlock text={meeting.location} />}
     </>
   );
 };
 
 const propTypes = {
-  event: PropTypes.instanceOf(Meeting).isRequired,
+  eventId: PropTypes.string.isRequired,
 };
 EventMeeting.propTypes = propTypes;
 
@@ -30,10 +40,13 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventMeeting;
 
-export const MeetingEventTypeComponent = {
-  isOfType: (event: unknown) => event instanceof Meeting,
+export const MeetingEventType = {
+  eventType: Meeting.EVENT_TYPE,
+  navigationNames: {
+    createEvent: STRINGS.organizer_navigation_creation_meeting,
+  },
   Component: EventMeeting as FunctionComponent<{
-    event: unknown;
+    eventId: string;
     isOrganizer: boolean | null | undefined;
   }>,
 };

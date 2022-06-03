@@ -2,6 +2,7 @@
 /* eslint-disable import/order */
 import dataCreateLao from 'protocol/query/method/message/data/dataCreateLao.json';
 import dataStateLao from 'protocol/query/method/message/data/dataStateLao.json';
+import dataGreetLao from 'protocol/query/method/message/data/dataGreetLao.json';
 import dataUpdateLao from 'protocol/query/method/message/data/dataUpdateLao.json';
 import dataCreateMeeting from 'protocol/query/method/message/data/dataCreateMeeting.json';
 import dataStateMeeting from 'protocol/query/method/message/data/dataStateMeeting.json';
@@ -25,6 +26,7 @@ const dataSchemas = [
   dataCreateLao,
   dataStateLao,
   dataUpdateLao,
+  dataGreetLao,
 
   dataCreateMeeting,
   dataStateMeeting,

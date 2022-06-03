@@ -1,16 +1,17 @@
-import { ProtocolError } from 'core/objects';
+import { Hash, ProtocolError } from 'core/objects';
 
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ProcessableMessage } from './ProcessableMessage';
 
 type HandleFunction = (msg: ProcessableMessage) => boolean;
-type BuildFunction = (data: MessageData) => MessageData;
+type BuildFunction = (data: MessageData, laoId?: Hash) => MessageData;
 
 const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
 const {
   CREATE,
   STATE,
   UPDATE_PROPERTIES,
+  GREET,
   OPEN,
   CLOSE,
   REOPEN,
@@ -54,6 +55,7 @@ export class MessageRegistry {
     [k(LAO, CREATE), { signature: KEYPAIR }],
     [k(LAO, STATE), { signature: KEYPAIR }],
     [k(LAO, UPDATE_PROPERTIES), { signature: KEYPAIR }],
+    [k(LAO, GREET), { signature: KEYPAIR }],
 
     // Meeting
     [k(MEETING, CREATE), { signature: KEYPAIR }],
@@ -115,15 +117,16 @@ export class MessageRegistry {
   /**
    * Builds a message from a MessageData by calling the corresponding function.
    *
-   * @param data -The type of message to be built
+   * @param data - The type of message to be built
+   * @param laoId - The id of the lao this message was received from
    * @returns MessageData - The built message
    */
-  buildMessageData(data: unknown): MessageData {
+  buildMessageData(data: unknown, laoId?: Hash): MessageData {
     if (!MessageRegistry.isMessageData(data)) {
       throw new ProtocolError(`Data (${data}) is not a valid MessageData`);
     }
     const messageEntry = this.getEntry(data);
-    return messageEntry.build!(data);
+    return messageEntry.build!(data, laoId);
   }
 
   /**

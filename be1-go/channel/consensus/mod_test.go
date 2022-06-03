@@ -2000,6 +2000,11 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
+// GetServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetServerAddress() string {
+	return ""
+}
+
 // Sign implements channel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)

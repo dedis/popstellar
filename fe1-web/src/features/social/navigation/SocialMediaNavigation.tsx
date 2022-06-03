@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 
 import { PublicKey } from 'core/objects';
 import { gray, popBlue } from 'core/styles/colors';
-import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import { makeRollCallSelector } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
@@ -57,7 +57,7 @@ const SocialMediaNavigation = () => {
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeEventGetter(lao.id, rollCallId);
+  const eventSelect = makeRollCallSelector(rollCallId);
   const rollCall: RollCall = useSelector(eventSelect) as RollCall;
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes

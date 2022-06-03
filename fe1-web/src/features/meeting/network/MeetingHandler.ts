@@ -1,6 +1,6 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
-import { dispatch } from 'core/redux';
+import { Hash } from 'core/objects';
 
 import { MeetingConfiguration } from '../interface';
 import { Meeting } from '../objects';
@@ -12,34 +12,43 @@ import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
- *
- * @param addEvent - An action creator to add a lao event
+ * @param addMeeting - A function to add a meeting
  */
 export const handleMeetingCreateMessage =
-  (addEvent: MeetingConfiguration['addEvent']) =>
+  (addMeeting: (laoId: Hash | string, meeting: Meeting) => void) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `meeting#create was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.MEETING ||
       msg.messageData.action !== ActionType.CREATE
     ) {
-      console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
+      console.warn(
+        makeErr(
+          `Invalid object or action parameter: ${msg.messageData.object}#${msg.messageData.action}`,
+        ),
+      );
       return false;
     }
 
-    const mtgMsg = msg.messageData as CreateMeeting;
-    mtgMsg.validate(msg.laoId);
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
+      return false;
+    }
+
+    const meetingMessage = msg.messageData as CreateMeeting;
 
     const meeting = new Meeting({
-      id: mtgMsg.id,
-      name: mtgMsg.name,
-      location: mtgMsg.location,
-      creation: mtgMsg.creation,
-      start: mtgMsg.start,
-      end: mtgMsg.end ? mtgMsg.end : undefined,
-      extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
+      id: meetingMessage.id,
+      name: meetingMessage.name,
+      location: meetingMessage.location,
+      creation: meetingMessage.creation,
+      start: meetingMessage.start,
+      end: meetingMessage.end ? meetingMessage.end : undefined,
+      extra: meetingMessage.extra ? { ...meetingMessage.extra } : {},
     });
 
-    dispatch(addEvent(msg.laoId, meeting.toState()));
+    addMeeting(msg.laoId, meeting);
     return true;
   };
 
@@ -47,16 +56,18 @@ export const handleMeetingCreateMessage =
  * Handles a MeetingState message by updating the state of the meeting.
  *
  * @param getLaoById - A function to get laos by their id
- * @param getEventById - A function to get events by their id
- * @param getEventById - An action creator to update lao events
+ * @param getMeetingById - A function to get a meeting by its id
+ * @param updateMeeting - An function to update a meeting
  */
 export const handleMeetingStateMessage =
   (
     getLaoById: MeetingConfiguration['getLaoById'],
-    getEventById: MeetingConfiguration['getEventById'],
-    updateEvent: MeetingConfiguration['updateEvent'],
+    getMeetingById: (meetingId: Hash | string) => Meeting | undefined,
+    updateMeeting: (meeting: Meeting) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
+    const makeErr = (err: string) => `meeting#state was not processed: ${err}`;
+
     if (
       msg.messageData.object !== ObjectType.MEETING ||
       msg.messageData.action !== ActionType.STATE
@@ -65,39 +76,42 @@ export const handleMeetingStateMessage =
       return false;
     }
 
-    const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
-
-    const lao = getLaoById(msg.laoId.valueOf());
-    if (!lao) {
-      console.warn(makeErr('no LAO is currently active'));
+    if (!msg.laoId) {
+      console.warn(makeErr(`Was not sent on a lao subchannel but rather on '${msg.channel}'`));
       return false;
     }
 
-    const mtgMsg = msg.messageData as StateMeeting;
-    if (!hasWitnessSignatureQuorum(mtgMsg.modification_signatures, lao)) {
+    const lao = getLaoById(msg.laoId.valueOf());
+    if (!lao) {
+      console.warn(makeErr(`no known lao with id '${msg.laoId}'`));
+      return false;
+    }
+
+    const meetingMessage = msg.messageData as StateMeeting;
+    if (!hasWitnessSignatureQuorum(meetingMessage.modification_signatures, lao)) {
       console.warn(makeErr('witness quorum was not reached'));
       return false;
     }
 
     // FIXME: use meeting reducer
-    const oldMeeting = getEventById(mtgMsg.id) as Meeting;
+    const oldMeeting = getMeetingById(meetingMessage.id) as Meeting;
     if (!oldMeeting) {
-      console.warn(makeErr("no known meeting matching the 'id' field"));
+      console.warn(makeErr(`no known meeting with id ${meetingMessage.id}`));
       return false;
     }
 
     const meeting = new Meeting({
       ...oldMeeting,
-      lastModified: mtgMsg.last_modified,
-      location: mtgMsg.location,
-      start: mtgMsg.start,
-      end: mtgMsg.end,
+      lastModified: meetingMessage.last_modified,
+      location: meetingMessage.location,
+      start: meetingMessage.start,
+      end: meetingMessage.end,
       extra: {
         ...oldMeeting.extra,
-        ...mtgMsg.extra,
+        ...meetingMessage.extra,
       },
     });
 
-    dispatch(updateEvent(msg.laoId, meeting.toState()));
+    updateMeeting(meeting);
     return true;
   };

@@ -1,15 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  mockKeyPair,
-  mockLao,
-  mockLaoIdHash,
-  mockPopToken,
-  mockReduxAction,
-} from '__tests__/utils';
-import { KeyPairStore } from 'core/keypair';
+import { configureTestFeatures, mockKeyPair, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import {
@@ -17,6 +9,7 @@ import {
   channelFromIds,
   getLastPartOfChannel,
   Hash,
+  ROOT_CHANNEL,
   Signature,
   Timestamp,
 } from 'core/objects';
@@ -32,8 +25,7 @@ import {
   mockVote2,
 } from 'features/evoting/__tests__/utils';
 
-import { EvotingConfiguration } from '../../interface';
-import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
+import { Election, ElectionStatus, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
@@ -53,14 +45,13 @@ const mockMessageData = {
   data: Base64UrlData.encode('some data'),
   sender: mockKeyPair.publicKey,
   signature: Base64UrlData.encode('some data') as Signature,
-  channel: `some channel/${mockElectionId.valueOf()}`,
+  channel: `${ROOT_CHANNEL}/${mockLaoId}/${mockElectionId.valueOf()}`,
   message_id: Hash.fromString('some string'),
   witness_signatures: [],
 };
 
-const getMockLao: EvotingConfiguration['getCurrentLao'] = () => mockLao;
-const getEventByIdDummy: EvotingConfiguration['getEventById'] = () => undefined;
-const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
+const mockGetEventById = jest.fn();
+const mockUpdateEvent = jest.fn();
 
 // mock channelFromIds and subscribeToChannel (spyOn does not work)
 const mockChannelId = 'someChannelId';
@@ -107,6 +98,7 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "setup"', () => {
       const addEvent = jest.fn();
 
@@ -121,31 +113,49 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
-    it('should create the election', () => {
-      let storedElection: ElectionState | undefined;
-
-      const addEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
-      });
-
-      expect(storedElection).toEqual(undefined);
+    it('should return false if the message is not received on a lao channel', () => {
+      const addEvent = jest.fn();
 
       expect(
         handleElectionSetupMessage(addEvent)({
           ...mockMessageData,
-          messageData: new SetupElection({
-            lao: mockLaoIdHash,
-            id: mockElectionNotStarted.id,
-            name: mockElectionNotStarted.name,
-            version: mockElectionNotStarted.version,
-            created_at: mockElectionNotStarted.createdAt,
-            start_time: mockElectionNotStarted.start,
-            end_time: mockElectionNotStarted.end,
-            questions: mockElectionNotStarted.questions,
-          }),
+          laoId: undefined,
+          messageData: new SetupElection(
+            {
+              lao: mockLaoIdHash,
+              id: mockElectionNotStarted.id,
+              name: mockElectionNotStarted.name,
+              version: mockElectionNotStarted.version,
+              created_at: mockElectionNotStarted.createdAt,
+              start_time: mockElectionNotStarted.start,
+              end_time: mockElectionNotStarted.end,
+              questions: mockElectionNotStarted.questions,
+            },
+            mockLaoIdHash,
+          ),
+        }),
+      ).toBeFalse();
+    });
+
+    it('should create the election', () => {
+      const addEvent = jest.fn();
+
+      expect(
+        handleElectionSetupMessage(addEvent)({
+          ...mockMessageData,
+          messageData: new SetupElection(
+            {
+              lao: mockLaoIdHash,
+              id: mockElectionNotStarted.id,
+              name: mockElectionNotStarted.name,
+              version: mockElectionNotStarted.version,
+              created_at: mockElectionNotStarted.createdAt,
+              start_time: mockElectionNotStarted.start,
+              end_time: mockElectionNotStarted.end,
+              questions: mockElectionNotStarted.questions,
+            },
+            mockLaoIdHash,
+          ),
         }),
       ).toBeTrue();
 
@@ -159,17 +169,9 @@ describe('ElectionHandler', () => {
       expect(subscribeToChannel).toHaveBeenCalledTimes(1);
       expect(subscribeToChannel).toHaveBeenCalledWith(mockChannelId);
 
-      // check whether updateEvent has been called correctly
-      const newElectionState = {
-        ...mockElectionNotStarted.toState(),
-        electionStatus: ElectionStatus.NOT_STARTED,
-      };
-
-      expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
+      // check whether addEvent has been called correctly
+      expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted);
       expect(addEvent).toHaveBeenCalledTimes(1);
-
-      // check if the status was changed correctly
-      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -177,8 +179,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -188,11 +190,12 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "open"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -203,11 +206,28 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleElectionOpenMessage(
+          jest.fn(),
+          jest.fn(),
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new OpenElection({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            opened_at: TIMESTAMP,
+          }),
+        }),
+      ).toBeFalse();
+    });
+
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionOpenMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -221,17 +241,8 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status', () => {
-      let storedElection = mockElectionNotStarted.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
-      });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.NOT_STARTED);
+      const getEventById = jest.fn(() => Election.fromState(mockElectionNotStarted.toState()));
+      const updateEvent = jest.fn();
 
       expect(
         handleElectionOpenMessage(
@@ -252,16 +263,11 @@ describe('ElectionHandler', () => {
       expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      const newElectionState = {
-        ...mockElectionNotStarted.toState(),
-        electionStatus: ElectionStatus.OPENED,
-      };
+      const updatedElection = Election.fromState(mockElectionNotStarted.toState());
+      updatedElection.electionStatus = ElectionStatus.OPENED;
 
-      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
+      expect(updateEvent).toHaveBeenCalledWith(updatedElection);
       expect(updateEvent).toHaveBeenCalledTimes(1);
-
-      // check if the status was changed correctly
-      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -269,9 +275,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -281,12 +286,12 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "cast_vote"', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -297,36 +302,29 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
-    it('for attendees should return false if the election has not previously been stored', () => {
-      // stores the keypair of somebody else
-      KeyPairStore.store(mockPopToken);
-
+    it('should return false if the message is not received on a lao channel', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          jest.fn(),
+          jest.fn(),
         )({
           ...mockMessageData,
-          messageData: {
-            object: ObjectType.ELECTION,
-            action: ActionType.CAST_VOTE,
-            election: mockElectionId.valueOf(),
-            opened_at: TIMESTAMP,
-          } as MessageData,
+          laoId: undefined,
+          messageData: new CastVote({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            created_at: TIMESTAMP,
+            votes: [mockVote1, mockVote2],
+          }),
         }),
-      ).toBeTrue();
+      ).toBeFalse();
     });
 
-    it('for organizers should return false if the election has not previously been stored', () => {
-      // stores the keypair of the mockLao organizer
-      KeyPairStore.store(mockKeyPair);
-
+    it('it should return false if the election has not previously been stored', () => {
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -339,76 +337,23 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
-    it('for attendees should update election.registeredVotes', () => {
-      // stores the keypair of somebody else
-      KeyPairStore.store(mockPopToken);
-
-      let storedElection = mockElectionOpened.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
+    it('it should update election.registeredVotes', () => {
+      const mockElection = Election.fromState({
+        ...mockElectionOpened.toState(),
+        registeredVotes: [],
       });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
 
       const castVoteMessage = new CastVote({
         lao: mockLaoIdHash,
-        election: mockElectionId,
+        election: mockElection.id,
         created_at: TIMESTAMP,
         votes: [mockVote1, mockVote2],
       });
 
       expect(
         handleCastVoteMessage(
-          getMockLao,
-          getEventById,
-          updateEvent,
-        )({
-          ...mockMessageData,
-          messageData: castVoteMessage,
-        }),
-      ).toBeTrue();
-
-      // check whether getEventById and updateEvent have been not been
-      expect(getEventById).toHaveBeenCalledTimes(0);
-      expect(updateEvent).toHaveBeenCalledTimes(0);
-
-      // verify that the stored election was not changed
-      expect(storedElection).toEqual(mockElectionOpened.toState());
-    });
-
-    it('for organizers should update election.registeredVotes', () => {
-      // stores the keypair of the mockLao organizer
-      KeyPairStore.store(mockKeyPair);
-
-      let storedElection = mockElectionOpened.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
-      });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
-
-      const castVoteMessage = new CastVote({
-        lao: mockLaoIdHash,
-        election: mockElectionId,
-        created_at: TIMESTAMP,
-        votes: [mockVote1, mockVote2],
-      });
-
-      expect(
-        handleCastVoteMessage(
-          getMockLao,
-          getEventById,
-          updateEvent,
+          mockGetEventById.mockImplementationOnce(() => Election.fromState(mockElection.toState())),
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: castVoteMessage,
@@ -416,8 +361,8 @@ describe('ElectionHandler', () => {
       ).toBeTrue();
 
       // check whether getEventById has been called correctly
-      expect(getEventById).toHaveBeenCalledWith(mockElectionId);
-      expect(getEventById).toHaveBeenCalledTimes(1);
+      expect(mockGetEventById).toHaveBeenCalledWith(mockElection.id);
+      expect(mockGetEventById).toHaveBeenCalledTimes(1);
 
       const newVote: RegisteredVote = {
         createdAt: castVoteMessage.created_at.valueOf(),
@@ -426,18 +371,13 @@ describe('ElectionHandler', () => {
         messageId: mockMessageData.message_id.valueOf(),
       };
 
-      const newRegisteredVotes = [...mockElectionOpened.registeredVotes, newVote];
+      const newRegisteredVotes = [...mockElection.registeredVotes, newVote];
 
       // check whether updateEvent has been called correctly
-      const newElectionState = {
-        ...mockElectionOpened.toState(),
-        registeredVotes: newRegisteredVotes,
-      };
+      const updatedElection = Election.fromState(mockElection.toState());
+      updatedElection.registeredVotes = newRegisteredVotes;
 
-      expect(updateEvent).toHaveBeenLastCalledWith(mockLaoIdHash, newElectionState);
-
-      // check if the stored election was correctly updated
-      expect(storedElection).toEqual(newElectionState);
+      expect(mockUpdateEvent).toHaveBeenLastCalledWith(updatedElection);
     });
   });
 
@@ -445,8 +385,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -456,11 +396,12 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
     });
+
     it('should return false if the action is not "end"', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -471,11 +412,29 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if the message is not received on a lao channel', () => {
+      expect(
+        handleElectionEndMessage(
+          jest.fn(),
+          jest.fn(),
+        )({
+          ...mockMessageData,
+          laoId: undefined,
+          messageData: new EndElection({
+            lao: mockLaoIdHash,
+            election: mockElectionId,
+            created_at: TIMESTAMP,
+            registered_votes: mockRegistedVotesHash,
+          }),
+        }),
+      ).toBeFalse();
+    });
+
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionEndMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -489,17 +448,8 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status', () => {
-      let storedElection = mockElectionOpened.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
-      });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
+      const getEventById = jest.fn(() => Election.fromState(mockElectionOpened.toState()));
+      const updateEvent = jest.fn();
 
       expect(
         handleElectionEndMessage(
@@ -521,16 +471,11 @@ describe('ElectionHandler', () => {
       expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      const newElectionState = {
-        ...mockElectionOpened.toState(),
-        electionStatus: ElectionStatus.TERMINATED,
-      };
+      const updatedElection = Election.fromState(mockElectionOpened.toState());
+      updatedElection.electionStatus = ElectionStatus.TERMINATED;
 
-      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
+      expect(updateEvent).toHaveBeenCalledWith(updatedElection);
       expect(updateEvent).toHaveBeenCalledTimes(1);
-
-      // check if the status was changed correctly
-      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -538,8 +483,8 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -553,8 +498,8 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "result"', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -568,8 +513,8 @@ describe('ElectionHandler', () => {
     it('should return false if the message data does not contain a channel', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           channel: '',
@@ -584,8 +529,8 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionResultMessage(
-          getEventByIdDummy,
-          updateEventDummy,
+          mockGetEventById,
+          mockUpdateEvent,
         )({
           ...mockMessageData,
           messageData: {
@@ -599,17 +544,8 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status and store results', () => {
-      let storedElection = mockElectionTerminated.toState();
-
-      const getEventById = jest.fn(() => Election.fromState(storedElection));
-      const updateEvent = jest.fn((laoId, eventState) => {
-        storedElection = eventState;
-
-        // Return a redux action, should be an action creator
-        return mockReduxAction;
-      });
-
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.TERMINATED);
+      const getEventById = jest.fn(() => Election.fromState(mockElectionTerminated.toState()));
+      const updateEvent = jest.fn();
 
       expect(
         handleElectionResultMessage(
@@ -628,19 +564,14 @@ describe('ElectionHandler', () => {
       expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      const newElectionState = {
-        ...mockElectionTerminated.toState(),
-        electionStatus: ElectionStatus.RESULT,
-        questionResult: mockElectionResultQuestions.map((q) => ({
-          id: q.id,
-          result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-        })),
-      };
+      const updatedElection = Election.fromState(mockElectionTerminated.toState());
+      updatedElection.electionStatus = ElectionStatus.RESULT;
+      updatedElection.questionResult = mockElectionResultQuestions.map((q) => ({
+        id: q.id,
+        result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+      }));
 
-      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
-
-      // check if the results were correctly stored
-      expect(storedElection).toEqual(newElectionState);
+      expect(updateEvent).toHaveBeenCalledWith(updatedElection);
     });
   });
 });

@@ -1,10 +1,11 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { MeetingReducerState } from '../reducer';
 import { MeetingFeature } from './Feature';
 
 export const MEETING_FEATURE_IDENTIFIER = 'meeting';
@@ -31,17 +32,18 @@ export interface MeetingConfiguration {
   /**
    * Creates a redux action for adding an event to the event store
    * @param laoId - The lao id where to add the event
-   * @param eventState - The event to add to the store
+   * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: string | Hash, eventState: MeetingFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash | string, event: MeetingFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
-   * @param laoId - The lao id where to update the event
-   * @param eventState - The update event state
+   * @param laoId - The lao id where to add the event
+   * @param event - The event
+   * @returns A redux action causing the state change
    */
-  updateEvent: (laoId: string | Hash, eventState: MeetingFeature.EventState) => AnyAction;
+  updateEvent: (event: MeetingFeature.EventState) => AnyAction;
 
   /**
    * Given the redux state and an event id, this function looks in the active
@@ -50,7 +52,7 @@ export interface MeetingConfiguration {
    * @param id - The id of the event
    * @returns The event or undefined if none was found
    */
-  getEventById: (id: Hash) => MeetingFeature.Event | undefined;
+  getEventById: (id: Hash) => MeetingFeature.EventState | undefined;
 }
 
 /**
@@ -66,10 +68,22 @@ export interface MeetingInterface extends FeatureInterface {
     CreateMeeting: React.ComponentType<any>;
   };
 
-  eventTypeComponents: {
-    isOfType: (event: unknown) => boolean;
-    Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
-  }[];
+  eventTypes: EventType[];
 
   context: MeetingReactContext;
+
+  reducers: {
+    [MEETING_FEATURE_IDENTIFIER]: Reducer<MeetingReducerState>;
+  };
+}
+
+interface EventType {
+  eventType: string;
+  navigationNames: {
+    createEvent: string;
+  };
+  Component: React.ComponentType<{
+    eventId: string;
+    isOrganizer: boolean | null | undefined;
+  }>;
 }

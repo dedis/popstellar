@@ -1,0 +1,15 @@
+{
+    "object": "lao",
+    "action": "greet",
+    "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA",
+    "frontend": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "address": "popdemo.dedis.ch:8000/demo",
+    "peers": [
+        {
+            "address": "wss://popdemo.dedis.ch:8000/second-organizer-demo"
+        },
+        {
+            "address": "wss://popdemo.dedis.ch:8000/witness-demo"
+        }
+    ]
+}

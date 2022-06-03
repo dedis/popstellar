@@ -57,8 +57,8 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
     storeMessage(
       ExtendedMessage.fromMessage(
         broadcastParams.message,
-        broadcastParams.channel,
         req.receivedFrom,
+        broadcastParams.channel,
       ),
     );
   } else {

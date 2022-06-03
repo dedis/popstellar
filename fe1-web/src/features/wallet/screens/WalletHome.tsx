@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { LogoutRoundButton, QRCode } from 'core/components';
 import { Typography } from 'core/styles';
@@ -10,7 +9,6 @@ import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
 import { WalletHooks } from '../hooks';
-import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
 import { RollCallToken } from '../objects/RollCallToken';
 
@@ -47,10 +45,7 @@ const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
 
-  const rollCallSelector = WalletHooks.useEventByTypeSelector<WalletFeature.RollCall>(
-    WalletFeature.EventType.ROLL_CALL,
-  );
-  const rollCalls = useSelector(rollCallSelector);
+  const rollCalls = WalletHooks.useRollCallsByLaoId();
 
   const laoId = WalletHooks.useCurrentLaoId();
 

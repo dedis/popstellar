@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 
-import { ParagraphBlock, TextBlock } from 'core/components';
-import { Hash, Timestamp } from 'core/objects';
+import { ParagraphBlock } from 'core/components';
 import { Spacing } from 'core/styles';
-import { selectIsLaoOrganizer } from 'features/lao/reducer';
 
-import { EventsHooks } from '../hooks';
+import { EventHooks } from '../hooks';
 import eventViewStyles from '../styles/eventViewStyles';
 
 /**
@@ -16,38 +13,32 @@ import eventViewStyles from '../styles/eventViewStyles';
  * otherwise display its name and in all cases its nested events
  */
 const Event = (props: IPropTypes) => {
-  const { event } = props;
+  const { eventId, eventType } = props;
 
-  const isOrganizer = useSelector(selectIsLaoOrganizer);
-  const eventTypeComponents = EventsHooks.useEventTypeComponents();
+  const isOrganizer = EventHooks.useIsLaoOrganizer();
+  const eventTypes = EventHooks.useEventTypes();
 
   const Component = useMemo(() => {
-    return eventTypeComponents.find((c) => c.isOfType(event))?.Component;
-  }, [event, eventTypeComponents]);
+    return eventTypes.find((c) => c.eventType === eventType)?.Component;
+  }, [eventType, eventTypes]);
 
   return (
     <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
-      <TextBlock text={event.name} />
       {Component ? (
-        <Component event={event} isOrganizer={isOrganizer} />
+        <Component eventId={eventId} isOrganizer={isOrganizer} />
       ) : (
-        <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />
+        <ParagraphBlock text={`${eventType} (default event => no mapping in Event.tsx)`} />
       )}
     </View>
   );
 };
 
 const propTypes = {
-  event: PropTypes.shape({
-    id: PropTypes.instanceOf(Hash).isRequired,
-    name: PropTypes.string.isRequired,
-    start: PropTypes.instanceOf(Timestamp).isRequired,
-    end: PropTypes.instanceOf(Timestamp),
-  }).isRequired,
+  eventId: PropTypes.string.isRequired,
+  eventType: PropTypes.string.isRequired,
 };
 Event.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export const eventPropTypes = propTypes.event;
 export default Event;

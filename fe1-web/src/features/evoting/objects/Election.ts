@@ -1,12 +1,8 @@
 import { Hash, Timestamp } from 'core/objects';
 
-import { EvotingFeature } from '../interface/Feature';
-
 /**
  * Object to represent an election and all its components.
  */
-
-export const ELECTION_EVENT_TYPE = 'ELECTION';
 
 export enum ElectionStatus {
   NOT_STARTED = 'not started',
@@ -15,7 +11,8 @@ export enum ElectionStatus {
   RESULT = 'result', // When result is available
 }
 
-export interface ElectionState extends EvotingFeature.EventState {
+export interface ElectionState {
+  id: string;
   lao: string;
   name: string;
   version: string;
@@ -64,6 +61,8 @@ export interface QuestionResult {
 }
 
 export class Election {
+  public static EVENT_TYPE = 'ELECTION';
+
   public readonly lao: Hash;
 
   public readonly id: Hash;
@@ -162,10 +161,6 @@ export class Election {
    * Creates an ElectionState from the current Election object.
    */
   public toState(): ElectionState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      eventType: ELECTION_EVENT_TYPE,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 }

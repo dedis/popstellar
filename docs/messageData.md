@@ -9,6 +9,7 @@
   - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
   - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
   - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
+  - [Greeting new lao subscribers (lao#greet)](#greeting-new-lao-subscribers-laogreet)
   - [Witness a message (message#witness)](#witness-a-message-messagewitness)
   - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
   - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
@@ -391,6 +392,104 @@ the required number of witness signatures.
 }
 
 ```
+
+## Greeting new lao subscribers (lao#greet)
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*lao#greet*)
+
+
+The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
+
+Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
+
+In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional. (For now this check is omitted since the witnessing functionality has not been implemented in all subsystems)
+
+Last but not least, the greeting message contains a list of peers that tells client which other servers it can or should connect to. These severs run by other organizers or witnesses allow the client to send messages to multiple servers which increases the likelihood of sending it to a honest one.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/lao_greet/greeting.json
+
+{
+    "object": "lao",
+    "action": "greet",
+    "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+    "frontend": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "address": "wss://popdemo.dedis.ch:8000/demo",
+    "peers": [
+        {
+            "address": "wss://popdemo.dedis.ch:8000/second-organizer-demo"
+        },
+        {
+            "address": "wss://popdemo.dedis.ch:8000/witness-demo"
+        }
+    ]
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataGreetLao.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetLao.json",
+    "description": "Match a lao greeting query",
+    "$comment": "A message the back-end sends to clients when they subscribe to a LAO. It informs clients about the servers public key and its peers for this lao",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "greet"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "frontend": {
+            "description": "[Base64String] public key of the frontend of the server owner",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "address": {
+            "description": "Canonical address of the server with a protocol prefix and the port number",
+            "type": "string",
+            "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+        },
+        "peers": {
+            "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "description": "Canonical address of the peer with a protocol prefix and the port number",
+                        "type": "string",
+                        "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+                    }
+                },
+                "required": ["address"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "frontend", "address", "peers"]
+}
+
+```
+
+</details>
 
 ## Witness a message (message#witness)
 

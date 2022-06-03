@@ -83,14 +83,14 @@ final case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def writeLaoData(channel: Channel, message: Message): Unit = {
+  private def writeLaoData(channel: Channel, message: Message, address: Option[String]): Unit = {
     this.synchronized {
       val laoData: LaoData = Try(readLaoData(channel)) match {
         case Success(data) => data
         case Failure(_) => LaoData()
       }
       val laoDataKey: String = generateLaoDataKey(channel)
-      storage.write(laoDataKey -> laoData.updateWith(message).toJsonString)
+      storage.write(laoDataKey -> laoData.updateWith(message, address).toJsonString)
     }
   }
 
@@ -210,9 +210,9 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteLaoData(channel, message) =>
+    case WriteLaoData(channel, message, address) =>
       log.info(s"Actor $self (db) received a WriteLaoData request for channel $channel")
-      Try(writeLaoData(channel, message)) match {
+      Try(writeLaoData(channel, message, address)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -314,7 +314,7 @@ object DbActor {
    * @param channel the channel part of the LAO which data we need to update
    * @param message the message we use to update it
    */
-  final case class WriteLaoData(channel: Channel, message: Message) extends Event
+  final case class WriteLaoData(channel: Channel, message: Message, address: Option[String]) extends Event
 
   /**
    * Request to read all messages from a specific <channel>

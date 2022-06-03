@@ -1,14 +1,13 @@
 import { Hash, Timestamp } from 'core/objects';
 
-import { MeetingFeature } from '../interface';
-
 /**
  * Object to represent a meeting.
  */
 
-export const EventTypeMeeting = 'MEETING';
-
-export interface MeetingState extends MeetingFeature.EventState {
+export interface MeetingState {
+  id: string;
+  start: number;
+  end?: number;
   name: string;
   location: string;
   creation: number;
@@ -17,6 +16,8 @@ export interface MeetingState extends MeetingFeature.EventState {
 }
 
 export class Meeting {
+  public static EVENT_TYPE = 'MEETING';
+
   public readonly id: Hash;
 
   public readonly name: string;
@@ -87,10 +88,6 @@ export class Meeting {
    * Creates a MeetingState from the current Meeting object.
    */
   public toState(): MeetingState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      eventType: EventTypeMeeting,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 }
