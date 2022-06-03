@@ -151,7 +151,7 @@ const WalletHome = () => {
               new PublicKey(receiver),
               amount,
               tokens![selectedTokenIndex].rollCallId,
-              laoId!
+              laoId!,
             )
               .then(() => toast.show('Sent coinbase transaction'))
               .catch((err) => {

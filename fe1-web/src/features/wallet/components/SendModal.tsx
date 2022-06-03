@@ -35,6 +35,10 @@ const styles = StyleSheet.create({
     minWidth: 400,
     padding: 5,
   } as ViewStyle,
+  switchContainer: {
+    margin: 15,
+    flexDirection: 'row',
+  } as ViewStyle,
 });
 
 /**
@@ -70,13 +74,16 @@ const SendModal = (props: IPropTypes) => {
                 label={STRINGS.wallet_send_amount_label}
                 onChangeText={(text) => setAmount(Number.parseInt(text, 10))}
               />
-              <Switch
-                trackColor={{ false: '#767577', true: '#81b0ff' }}
-                thumbColor={isCoinbase ? '#f5dd4b' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={() => setIsCoinbase(!isCoinbase)}
-                value={isCoinbase}
-              />
+              <View style={styles.switchContainer}>
+                <Text>Coinbase: </Text>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={isCoinbase ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => setIsCoinbase(!isCoinbase)}
+                  value={isCoinbase}
+                />
+              </View>
               <Button title={STRINGS.wallet_send_title} onPress={onPressSend} />
             </View>
           </View>
