@@ -39,7 +39,7 @@ const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 const PoPTokenScanner = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const { laoId, rollCallId } = route.params;
+  const { laoId, rollCallId, beneficiaryIndex } = route.params;
 
   const toast = useToast();
 
@@ -68,6 +68,7 @@ const PoPTokenScanner = () => {
       laoId,
       scannedPoPTokenRollCallId: rollCallId,
       scannedPoPToken: popToken,
+      scannedPoPTokenBeneficiaryIndex: beneficiaryIndex,
     });
   };
 

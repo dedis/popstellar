@@ -18,7 +18,7 @@ const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) 
       }
       isExpanded={showChildren}
       onPress={() => setShowChildren(!showChildren)}>
-      {children}
+      {showChildren && children}
     </ListItem.Accordion>
   );
 };

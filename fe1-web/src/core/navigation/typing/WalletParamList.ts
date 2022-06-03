@@ -14,9 +14,11 @@ export type WalletParamList = {
     /* parameters used to return from the scanner */
     scannedPoPToken?: string;
     scannedPoPTokenRollCallId?: string;
+    scannedPoPTokenBeneficiaryIndex?: number;
   };
   [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {
     laoId: string;
     rollCallId: string;
+    beneficiaryIndex: number;
   };
 };

@@ -34,13 +34,15 @@ const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
 
-  const { laoId, scannedPoPTokenRollCallId, scannedPoPToken } = route.params;
+  const { laoId, scannedPoPTokenRollCallId, scannedPoPToken, scannedPoPTokenBeneficiaryIndex } =
+    route.params;
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
   const [selectedAccount, setSelectedAccount] = useState<RollCallAccount | null>(null);
-  const [beneficiary, setBeneficiary] = useState('');
-  const [amount, setAmount] = useState('');
+  const [targets, setTargets] = useState<{ beneficiary: string; amount: string }[]>([
+    { beneficiary: '', amount: '' },
+  ]);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -79,18 +81,19 @@ const DigitalCashWallet = () => {
     return rollCallAccounts;
   }, [rollCallAccounts, isOrganizer]);
 
+  const totalAmount = targets.reduce((sum, target) => sum + parseFloat(target.amount), 0);
+
   const onSendTransaction = () => {
     if (!selectedAccount) {
       throw new Error('It should not be possible to send money without selecting an account first');
     }
 
-    const amountToTransfer = Number.parseFloat(amount);
-    if (Number.isNaN(amountToTransfer)) {
+    if (Number.isNaN(totalAmount)) {
       setError(STRINGS.digital_cash_wallet_amount_must_be_number);
       return;
     }
 
-    if (selectedAccount.balance && amountToTransfer > selectedAccount.balance) {
+    if (selectedAccount.balance && totalAmount > selectedAccount.balance) {
       setError(STRINGS.digital_cash_wallet_amount_too_high);
       return;
     }
@@ -105,25 +108,48 @@ const DigitalCashWallet = () => {
   };
 
   const cannotSendTransaction =
-    Number.isNaN(parseFloat(amount)) ||
-    (!!selectedAccount?.balance &&
-      selectedAccount &&
-      parseFloat(amount) > selectedAccount?.balance);
+    Number.isNaN(totalAmount) ||
+    (!!selectedAccount?.balance && selectedAccount && totalAmount > selectedAccount?.balance);
+
+  const updateBeneficiary = (index: number, amount: string, popToken: string) => {
+    const newTargets = [...targets];
+
+    newTargets.splice(index, 1, {
+      amount,
+      beneficiary: popToken,
+    });
+
+    setTargets(newTargets);
+  };
+
+  const onClose = () => {
+    setShowModal(false);
+    setTargets([{ beneficiary: '', amount: '' }]);
+  };
 
   useEffect(() => {
-    if (scannedPoPTokenRollCallId && scannedPoPToken) {
+    if (
+      scannedPoPTokenRollCallId &&
+      scannedPoPToken &&
+      scannedPoPTokenBeneficiaryIndex !== undefined &&
+      scannedPoPTokenBeneficiaryIndex < targets.length
+    ) {
       const account = accounts.find((acc) => acc.rollCallId === scannedPoPTokenRollCallId);
 
       if (account) {
         setSelectedAccount(account);
         setShowModal(true);
 
-        setBeneficiary(scannedPoPToken);
+        updateBeneficiary(
+          scannedPoPTokenBeneficiaryIndex,
+          targets[scannedPoPTokenBeneficiaryIndex].amount,
+          scannedPoPToken,
+        );
       }
     }
     // should only be re-executed of the navigation parameters change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scannedPoPTokenRollCallId, scannedPoPToken]);
+  }, [scannedPoPTokenRollCallId, scannedPoPToken, scannedPoPTokenBeneficiaryIndex]);
 
   return (
     <ScreenWrapper>
@@ -157,22 +183,10 @@ const DigitalCashWallet = () => {
         })}
       </View>
 
-      <Modal
-        transparent
-        visible={showModal}
-        onRequestClose={() => {
-          setShowModal(!showModal);
-        }}>
-        <TouchableWithoutFeedback
-          containerStyle={ModalStyles.modalBackground}
-          onPress={() => {
-            setShowModal(!showModal);
-          }}
-        />
+      <Modal transparent visible={showModal} onRequestClose={onClose}>
+        <TouchableWithoutFeedback containerStyle={ModalStyles.modalBackground} onPress={onClose} />
         <ScrollView style={ModalStyles.modalContainer}>
-          <ModalHeader onClose={() => setShowModal(!showModal)}>
-            {STRINGS.digital_cash_wallet_your_account}
-          </ModalHeader>
+          <ModalHeader onClose={onClose}>{STRINGS.digital_cash_wallet_your_account}</ModalHeader>
 
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.digital_cash_wallet_balance}: ${selectedAccount?.balance || '∞'}
@@ -190,44 +204,54 @@ const DigitalCashWallet = () => {
 
           <CollapsibleContainer
             title={STRINGS.digital_cash_wallet_your_account_send}
-            isInitiallyOpen={!selectedAccount?.balance || !!beneficiary}>
+            isInitiallyOpen={!selectedAccount?.balance || !!scannedPoPToken}>
             <Text style={Typography.paragraph}>
               {STRINGS.digital_cash_wallet_transaction_description}
             </Text>
 
-            <Text style={[Typography.paragraph, Typography.important]}>
-              {STRINGS.digital_cash_wallet_beneficiary}
-            </Text>
-            <ScannerInput
-              value={beneficiary}
-              onChange={setBeneficiary}
-              onPress={() => {
-                if (!selectedAccount) {
-                  throw new Error(
-                    'It should not be possible to get here without selecting an account first',
-                  );
-                }
+            {targets.map(({ amount, beneficiary }, index) => (
+              <View key={index.toString()}>
+                <Text style={[Typography.paragraph, Typography.important]}>
+                  {STRINGS.digital_cash_wallet_beneficiary}
+                </Text>
+                <ScannerInput
+                  value={beneficiary}
+                  onChange={(newBeneficiary) => updateBeneficiary(index, amount, newBeneficiary)}
+                  onPress={() => {
+                    if (!selectedAccount) {
+                      throw new Error(
+                        'It should not be possible to get here without selecting an account first',
+                      );
+                    }
 
-                setShowModal(false);
+                    setShowModal(false);
 
-                navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                  laoId: laoId.valueOf(),
-                  rollCallId: selectedAccount.rollCallId,
-                });
-              }}
-              placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
-            />
+                    navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
+                      laoId: laoId.valueOf(),
+                      rollCallId: selectedAccount.rollCallId,
+                      beneficiaryIndex: index,
+                    });
+                  }}
+                  placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
+                />
 
-            <Text style={[Typography.paragraph, Typography.important]}>
-              {STRINGS.digital_cash_wallet_amount}
-            </Text>
-            <Input
-              value={amount}
-              onChange={setAmount}
-              placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
-            />
+                <Text style={[Typography.paragraph, Typography.important]}>
+                  {STRINGS.digital_cash_wallet_amount}
+                </Text>
+                <Input
+                  value={amount}
+                  onChange={(newAmount) => updateBeneficiary(index, newAmount, beneficiary)}
+                  placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
+                />
+              </View>
+            ))}
 
             {error && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
+            <PoPTextButton
+              onPress={() => setTargets([...targets, { beneficiary: '', amount: '' }])}>
+              {STRINGS.digital_cash_wallet_add_beneficiary}
+            </PoPTextButton>
+
             <PoPTextButton disabled={cannotSendTransaction} onPress={onSendTransaction}>
               {STRINGS.digital_cash_wallet_send_transaction}
             </PoPTextButton>

@@ -387,6 +387,8 @@ namespace STRINGS {
   export const digital_cash_wallet_your_account_receive_description =
     'Other attendees can send you money by scanning your PoP token';
   export const digital_cash_wallet_your_account_send = 'Send Cash';
+
+  export const digital_cash_wallet_add_beneficiary = 'Add Beneficiary';
   export const digital_cash_wallet_send_transaction = 'Send Transaction';
 
   export const digital_cash_wallet_beneficiary = 'Beneficiary';
