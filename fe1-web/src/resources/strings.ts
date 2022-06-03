@@ -204,6 +204,10 @@ namespace STRINGS {
   export const election_add_question = 'Add Question';
   export const election_end = 'End Election and Tally Votes';
   export const election_results = 'Election Results';
+  export const election_warning_open_ballot =
+    'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
+  export const election_info_secret_ballot =
+    'This is a secret ballot election, your cast votes are encrypted and will be decrypted by the organizer of the LAO.';
 
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';
@@ -216,10 +220,25 @@ namespace STRINGS {
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
 
-  /* --- General Roll-call Strings --- */
+  /* --- Roll-Call Feature Strings --- */
+  export const roll_call_event_name = 'Roll-Call';
 
   export const roll_call_description = 'Description';
   export const roll_call_location = 'Location';
+  export const roll_call_open_organizer =
+    'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
+  export const roll_call_open_attendee =
+    'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
+
+  export const roll_call_location_error_open_roll_call = 'Unable to send roll call open request';
+  export const roll_call_location_error_scanning_no_alias =
+    'Unable to scan attendees, the event does not have an idAlias';
+  export const roll_call_location_error_reopen_roll_call =
+    'Unable to send Roll call re-open request';
+  export const roll_call_location_error_reopen_roll_call_no_alias =
+    'Unable to send roll call re-open request, the event does not have an idAlias';
+
+  export const roll_call_location_error_close_roll_call = 'Could not close roll call';
 
   /* --- Roll-call creation Strings --- */
 
@@ -326,12 +345,13 @@ namespace STRINGS {
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';
 
-  /* --- Roll-Call Feature Strings --- */
-  export const roll_call_event_name = 'Roll-Call';
-
   /* --- Meeting Feature Strings --- */
   export const meeting_event_name = 'Meeting';
   export const meeting_create_meeting = 'Create meeting';
+
+  /* --- Witness Feature Strings --- */
+  export const witness_message_witness = 'Witness Message';
+  export const meeting_message_decline = 'Decline Message';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

@@ -8,6 +8,7 @@ import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
 import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
@@ -70,8 +71,8 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     <View>
       <Text>{JSON.stringify(notification)}</Text>
       <Text>{JSON.stringify(message)}</Text>
-      <PoPTextButton onPress={onWitness}>Witness Message</PoPTextButton>
-      <PoPTextButton onPress={onDecline}>Decline Message</PoPTextButton>
+      <PoPTextButton onPress={onWitness}>{STRINGS.witness_message_witness}</PoPTextButton>
+      <PoPTextButton onPress={onDecline}>{STRINGS.meeting_message_decline}</PoPTextButton>
     </View>
   );
 };

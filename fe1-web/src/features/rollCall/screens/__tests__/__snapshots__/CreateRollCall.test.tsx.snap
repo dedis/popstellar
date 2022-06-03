@@ -699,7 +699,6 @@ exports[`CreateRollCall renders correctly 1`] = `
                                     }
                                   }
                                 >
-                                  <Text />
                                   <Text
                                     style={
                                       Object {

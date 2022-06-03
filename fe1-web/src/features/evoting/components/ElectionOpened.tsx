@@ -94,8 +94,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
               Warning
             </Text>
             <Text style={[Typography.base, Typography.negative]}>
-              This is an open ballot election, your cast votes will be visible to all members of the
-              LAO.
+              {STRINGS.election_warning_open_ballot}
             </Text>
           </View>
         </View>
@@ -107,8 +106,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>Notice</Text>
             <Text style={[Typography.base, Typography.negative]}>
-              This is a secret ballot election, your cast votes are encrypted and will be decrypted
-              by the organizer of the LAO.
+              {STRINGS.election_info_secret_ballot}
             </Text>
           </View>
         </View>

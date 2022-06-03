@@ -531,7 +531,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                 }
                               }
                             >
-                              <Text />
                               <Text
                                 style={
                                   Object {
@@ -1288,7 +1287,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                 }
                               }
                             >
-                              <Text />
                               <Text
                                 style={
                                   Object {

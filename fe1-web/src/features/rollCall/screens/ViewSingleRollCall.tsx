@@ -112,12 +112,7 @@ const ViewSingleRollCall = () => {
       case RollCallStatus.OPENED:
         if (isOrganizer) {
           if (!attendeePopTokens) {
-            return (
-              <Text style={Typography.paragraph}>
-                The Roll Call is currently open and you as the organizer should start adding
-                attendees by scanning their PoP tokens.
-              </Text>
-            );
+            return <Text style={Typography.paragraph}>{STRINGS.roll_call_open_organizer}</Text>;
           }
 
           return null;
@@ -125,10 +120,7 @@ const ViewSingleRollCall = () => {
 
         return (
           <>
-            <Text style={Typography.paragraph}>
-              The Roll Call is currently open and you as an attendee should let the organizer scan
-              your PoP token encoded in the QR Code below.
-            </Text>
+            <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
             <QRCode visibility value={popToken} />
           </>
         );
@@ -263,27 +255,25 @@ export const ViewSinglRollCallScreenRightHeader = () => {
 
   const onOpenRollCall = () => {
     requestOpenRollCall(laoId, rollCall.id).catch((e) => {
-      makeToastErr('Unable to send roll call open request');
-      console.debug('Unable to send Roll call open request', e);
+      makeToastErr(STRINGS.roll_call_location_error_open_roll_call);
+      console.debug(STRINGS.roll_call_location_error_open_roll_call, e);
     });
   };
 
   const onReopenRollCall = () => {
     if (eventHasBeenOpened) {
       requestReopenRollCall(laoId, rollCall.idAlias).catch((e) => {
-        makeToastErr('Unable to send Roll call re-open request');
-        console.debug('Unable to send Roll call re-open request', e);
+        makeToastErr(STRINGS.roll_call_location_error_reopen_roll_call);
+        console.debug(STRINGS.roll_call_location_error_reopen_roll_call, e);
       });
     } else {
-      makeToastErr('Unable to send roll call re-open request, the event does not have an idAlias');
-      console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
+      makeToastErr(STRINGS.roll_call_location_error_reopen_roll_call_no_alias);
+      console.debug(STRINGS.roll_call_location_error_reopen_roll_call_no_alias);
     }
   };
 
   const onScanAttendees = () => {
-    console.log('onScanAttendees');
     if (eventHasBeenOpened) {
-      console.log('eventHasBeenOpened');
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_events,
         params: {
@@ -292,8 +282,8 @@ export const ViewSinglRollCallScreenRightHeader = () => {
         },
       });
     } else {
-      makeToastErr('Unable to scan attendees, the event does not have an idAlias');
-      console.debug('Unable to scan attendees, the event does not have an idAlias');
+      makeToastErr(STRINGS.roll_call_location_error_scanning_no_alias);
+      console.debug(STRINGS.roll_call_location_error_scanning_no_alias);
     }
   };
 
@@ -313,7 +303,8 @@ export const ViewSinglRollCallScreenRightHeader = () => {
       await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
       navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
-      toast.show(`Could not close roll call, error: ${err}`, {
+      console.log(err);
+      toast.show(STRINGS.roll_call_location_error_close_roll_call, {
         type: 'danger',
         placement: 'top',
         duration: FOUR_SECONDS,

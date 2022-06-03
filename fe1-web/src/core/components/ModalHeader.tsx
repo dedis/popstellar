@@ -28,7 +28,6 @@ const ModalHeader = (props: IPropTypes) => {
 
   return (
     <View style={styles.header}>
-      <Text />
       <Text style={styles.title}>{title}</Text>
       <TouchableOpacity containerStyle={styles.done} onPress={onClose} testID="modal-header-close">
         <Text style={Typography.pressable}>{STRINGS.general_done}</Text>

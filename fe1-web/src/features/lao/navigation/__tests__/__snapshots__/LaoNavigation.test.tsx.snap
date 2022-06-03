@@ -889,7 +889,6 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 }
                                               }
                                             >
-                                              <Text />
                                               <Text
                                                 style={
                                                   Object {
@@ -1348,7 +1347,6 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                   }
                                                 }
                                               >
-                                                <Text />
                                                 <Text
                                                   style={
                                                     Object {
