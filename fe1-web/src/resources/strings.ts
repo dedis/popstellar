@@ -208,6 +208,8 @@ namespace STRINGS {
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
   export const election_info_secret_ballot =
     'This is a secret ballot election, your cast votes are encrypted and will be decrypted by the organizer of the LAO.';
+  export const election_terminated_description =
+    'The election was terminated and the votes are being tallied... Waiting for the result';
 
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';

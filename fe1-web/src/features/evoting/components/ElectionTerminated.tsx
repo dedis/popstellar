@@ -5,6 +5,7 @@ import { ListItem } from 'react-native-elements';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { List, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { Election } from '../objects';
 
@@ -21,9 +22,7 @@ const ElectionTerminated = ({ election }: IPropTypes) => {
 
   return (
     <ScreenWrapper>
-      <Text style={Typography.base}>
-        The election was terminated and the votes are being tallied... Waiting for the result
-      </Text>
+      <Text style={Typography.base}>{STRINGS.election_terminated_description}</Text>
       <Text style={[Typography.paragraph, Typography.important]}>Questions</Text>
 
       <View style={List.container}>
