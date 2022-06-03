@@ -298,6 +298,8 @@ namespace STRINGS {
   export const events_list_upcoming = 'Upcoming';
 
   /* --- Notification screen Strings --- */
+  export const notification_unread_notifications = 'Notifications';
+  export const notification_read_notifications = 'Read Notifications';
   export const notification_clear_all = 'Clear notifications';
 
   /* --- Time Display Strings --- */
