@@ -7,12 +7,8 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
-import {
-  Transaction,
-  TransactionInput,
-  TransactionOutput,
-  TransactionState,
-} from '../objects/transaction';
+import STRINGS from '../../../resources/strings';
+import { TransactionState } from '../objects/transaction';
 
 interface DigitalCashReducerState {
   /**
@@ -34,7 +30,7 @@ interface DigitalCashReducerState {
    * A mapping between public key hashes and a set of the transactions which contain this hash
    * in one or more of their TxOuts
    */
-  transactionsByPubHash: Record<string, Set<TransactionState>>;
+  transactionsByPubHash: Record<string, TransactionState[]>;
 }
 interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
@@ -98,9 +94,10 @@ const digitalCashSlice = createSlice({
        */
       transactionMessage.inputs.forEach((input) => {
         const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
-        rollCallState.balances[pubHash] = 0;
-        if (rollCallState.transactionsByPubHash[pubHash]) {
-          rollCallState.transactionsByPubHash[pubHash].clear();
+        // If this is not a coinbase transaction, then as we are sure that all inputs are used
+        if (input.txOutHash !== STRINGS.coinbase_hash) {
+          rollCallState.balances[pubHash] = 0;
+          rollCallState.transactionsByPubHash[pubHash] = [];
         }
       });
 
@@ -110,10 +107,11 @@ const digitalCashSlice = createSlice({
           rollCallState.balances[pubKeyHash] = 0;
         }
         rollCallState.balances[pubKeyHash] += output.value;
-        if (!rollCallState.transactionsByPubHash[pubKeyHash]) {
-          rollCallState.transactionsByPubHash[pubKeyHash] = new Set<TransactionState>();
+        if (!(pubKeyHash in rollCallState.transactionsByPubHash)) {
+          rollCallState.transactionsByPubHash[pubKeyHash] = [];
         }
-        rollCallState.transactionsByPubHash[pubKeyHash].add(transactionMessage);
+        console.log(`State contains ${rollCallState.transactionsByPubHash[pubKeyHash]}`);
+        rollCallState.transactionsByPubHash[pubKeyHash].push(transactionMessage);
       });
     },
   },
