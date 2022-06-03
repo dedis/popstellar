@@ -7,7 +7,8 @@ import {
   mockKPHash,
   mockLaoId,
   mockTransactionValue,
-} from '../../../../__tests__/utils';
+} from '__tests__/utils';
+
 import { Transaction } from '../../objects/transaction';
 import { getDigitalCashState } from '../../reducer';
 import { DigitalCashStore } from '../DigitalCashStore';
