@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.repository.remote;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -22,16 +23,18 @@ import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** This class handles the JSON-RPC layer of the protocol */
 public class LAONetworkManager implements MessageSender {
@@ -81,7 +84,15 @@ public class LAONetworkManager implements MessageSender {
             .subscribe(
                 event ->
                     subscribedChannels.forEach(
-                        channel -> disposables.add(subscribe(channel).subscribe()))));
+                        channel ->
+                            disposables.add(
+                                subscribe(channel)
+                                    .subscribe(
+                                        () ->
+                                            Log.d(TAG, "resubscription successful to :" + channel),
+                                        error ->
+                                            Log.d(TAG, "error on resubscription to" + error)))),
+                error -> Log.d(TAG, "Error on resubscription : " + error)));
   }
 
   private void processIncomingMessages() {
@@ -109,6 +120,7 @@ public class LAONetworkManager implements MessageSender {
         .map(ResultMessages::getMessages)
         .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
         .doOnSuccess(messages -> handleMessages(messages, channel))
+        .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
         .ignoreElement();
   }
 
@@ -131,6 +143,7 @@ public class LAONetworkManager implements MessageSender {
     return request(subscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
+        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
@@ -144,6 +157,7 @@ public class LAONetworkManager implements MessageSender {
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
+        .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
         .ignoreElement();
   }
 
