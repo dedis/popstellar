@@ -5,10 +5,7 @@ import { TransactionState } from '../objects/transaction';
 import { getDigitalCashState } from '../reducer';
 
 export namespace DigitalCashStore {
-  export function getTransactionsByPublicKey(
-    laoId: string,
-    pk: string,
-  ): TransactionState[] {
+  export function getTransactionsByPublicKey(laoId: string, pk: string): TransactionState[] {
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
     if (!laoState) {
       return [];

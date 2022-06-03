@@ -1,5 +1,5 @@
 import { mockCBHash, mockValidCoinbaseJSON } from '__tests__/utils';
-import { Hash } from 'core/objects';
+import { Hash, ProtocolError } from 'core/objects';
 
 import { PostTransaction } from '../PostTransaction';
 
@@ -25,12 +25,12 @@ describe('PostTransaction', () => {
     const object = {
       transaction_id: postTransactionObject.transaction_id,
     };
-    expect(() => new PostTransaction(object)).toThrow(Error);
+    expect(() => new PostTransaction(object)).toThrow(ProtocolError);
   });
   it('should fail to create a message when undefined transaction_id', () => {
     const object = {
       transaction: postTransactionObject.transaction,
     };
-    expect(() => new PostTransaction(object)).toThrow(Error);
+    expect(() => new PostTransaction(object)).toThrow(ProtocolError);
   });
 });
