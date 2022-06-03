@@ -235,6 +235,7 @@ export function configureFeatures() {
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
+      [meetingConfiguration.identifier]: meetingConfiguration.context,
     },
   };
 }

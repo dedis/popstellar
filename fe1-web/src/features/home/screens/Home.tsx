@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { View } from 'react-native';
 
-import { TextBlock } from 'core/components';
+import { CopiableTextInput, TextBlock } from 'core/components';
+import { KeyPairStore } from 'core/keypair';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -14,6 +15,7 @@ import { HomeHooks } from '../hooks';
 const Home: FunctionComponent = () => {
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
+  const publicKey = KeyPairStore.getPublicKey();
 
   return laos && laos.length > 0 ? (
     <LaoList />
@@ -22,6 +24,9 @@ const Home: FunctionComponent = () => {
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />
+
+      <TextBlock bold text="Your public key:" />
+      <CopiableTextInput text={publicKey.valueOf()} />
     </View>
   );
 };
