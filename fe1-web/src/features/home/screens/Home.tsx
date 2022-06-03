@@ -18,7 +18,11 @@ const Home: FunctionComponent = () => {
   const publicKey = KeyPairStore.getPublicKey();
 
   return laos && laos.length > 0 ? (
-    <LaoList />
+    <>
+      <LaoList />
+      <TextBlock bold text="Your public key:" />
+      <CopiableTextInput text={publicKey.valueOf()} />
+    </>
   ) : (
     <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.home_welcome} />
