@@ -10,7 +10,7 @@ import { PostTransaction } from './messages';
  * @param addTransaction the function to add the received transaction to the digital cash state
  */
 export const handleTransactionPost =
-  (addTransaction: (laoId: Hash, rcId: Hash, transaction: Transaction) => void) =>
+  (addTransaction: (laoId: Hash, transaction: Transaction) => void) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.COIN ||
@@ -31,6 +31,6 @@ export const handleTransactionPost =
     console.log(`Handler: Received transaction with id: ${tx.transaction_id.valueOf()}`);
 
     const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
-    addTransaction(msg.laoId, tx.rc_id, transaction);
+    addTransaction(msg.laoId, transaction);
     return true;
   };

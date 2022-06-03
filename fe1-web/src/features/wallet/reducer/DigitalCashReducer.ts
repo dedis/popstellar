@@ -32,11 +32,8 @@ export interface DigitalCashReducerState {
    */
   transactionsByPubHash: Record<string, TransactionState[]>;
 }
-export interface DigitalCashRollCallReducerState {
-  byRCId: Record<string, DigitalCashReducerState>;
-}
 export interface DigitalCashLaoReducerState {
-  byLaoId: Record<string, DigitalCashRollCallReducerState>;
+  byLaoId: Record<string, DigitalCashReducerState>;
 }
 
 /* Initial state of the digital cash transactions */
@@ -59,23 +56,16 @@ const digitalCashSlice = createSlice({
       state,
       action: PayloadAction<{
         laoId: string;
-        rollCallId: string;
         transactionMessage: TransactionState;
       }>,
     ) => {
-      const { laoId, rollCallId, transactionMessage } = action.payload;
+      const { laoId, transactionMessage } = action.payload;
 
       /**
        * If state is empty for given lao or roll call, we should create the initial objects
        */
       if (!(laoId in state.byLaoId)) {
         state.byLaoId[laoId] = {
-          byRCId: {},
-        };
-      }
-
-      if (!(rollCallId in state.byLaoId[laoId].byRCId)) {
-        state.byLaoId[laoId].byRCId[rollCallId] = {
           balances: {},
           transactions: [],
           transactionsByHash: {},
@@ -83,10 +73,10 @@ const digitalCashSlice = createSlice({
         };
       }
 
-      const rollCallState: DigitalCashReducerState = state.byLaoId[laoId].byRCId[rollCallId];
+      const laoState: DigitalCashReducerState = state.byLaoId[laoId];
 
-      rollCallState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
-      rollCallState.transactions.push(transactionMessage);
+      laoState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
+      laoState.transactions.push(transactionMessage);
 
       /**
        * Invariant for the digital cash implementation:
@@ -96,22 +86,22 @@ const digitalCashSlice = createSlice({
         const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
         // If this is not a coinbase transaction, then as we are sure that all inputs are used
         if (input.txOutHash !== STRINGS.coinbase_hash) {
-          rollCallState.balances[pubHash] = 0;
-          rollCallState.transactionsByPubHash[pubHash] = [];
+          laoState.balances[pubHash] = 0;
+          laoState.transactionsByPubHash[pubHash] = [];
         }
       });
 
       transactionMessage.outputs.forEach((output) => {
         const pubKeyHash = output.script.publicKeyHash.valueOf();
-        if (!rollCallState.balances[pubKeyHash]) {
-          rollCallState.balances[pubKeyHash] = 0;
+        if (!laoState.balances[pubKeyHash]) {
+          laoState.balances[pubKeyHash] = 0;
         }
-        rollCallState.balances[pubKeyHash] += output.value;
-        if (!(pubKeyHash in rollCallState.transactionsByPubHash)) {
-          rollCallState.transactionsByPubHash[pubKeyHash] = [];
+        laoState.balances[pubKeyHash] += output.value;
+        if (!(pubKeyHash in laoState.transactionsByPubHash)) {
+          laoState.transactionsByPubHash[pubKeyHash] = [];
         }
-        console.log(`State contains ${rollCallState.transactionsByPubHash[pubKeyHash]}`);
-        rollCallState.transactionsByPubHash[pubKeyHash].push(transactionMessage);
+        console.log(`State contains ${laoState.transactionsByPubHash[pubKeyHash]}`);
+        laoState.transactionsByPubHash[pubKeyHash].push(transactionMessage);
       });
     },
   },
@@ -134,11 +124,8 @@ export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
  */
 export const makeBalanceSelector = (laoId: Hash, rollCallId: Hash, publicKey: string) =>
   createSelector(
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.byRCId,
-    (byRCId: Record<string, DigitalCashReducerState> | undefined) => {
-      if (byRCId && byRCId[rollCallId.valueOf()]) {
-        return byRCId[rollCallId.valueOf()].balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
-      }
-      return 0;
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
+    (laoState: DigitalCashReducerState | undefined) => {
+      return laoState?.balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
     },
   );

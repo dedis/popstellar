@@ -14,19 +14,16 @@ const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
  * @param from the popToken to send it with
  * @param to the destination public key
  * @param amount the value of the transaction
- * @param rcId the id of the roll call in which to send the transaction
  * @param laoId the id of the lao in which to send the transaction
  */
 export function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
-  rcId: Hash,
   laoId: Hash,
 ): Promise<void> {
   const transactionStates = DigitalCashStore.getTransactionsByPublicKey(
     laoId.valueOf(),
-    rcId.valueOf(),
     from.publicKey.valueOf(),
   );
 
@@ -35,7 +32,7 @@ export function requestSendTransaction(
     return Promise.resolve();
   }
 
-  const balance = getBalance(laoId.valueOf(), rcId.valueOf(), from.publicKey.valueOf());
+  const balance = getBalance(laoId.valueOf(), from.publicKey.valueOf());
 
   if (amount < 0 || amount > balance) {
     console.warn(makeErr('balance is not sufficient to send this amount'));
@@ -47,7 +44,6 @@ export function requestSendTransaction(
   const postTransactionMessage = new PostTransaction({
     transaction_id: transaction.transactionId,
     transaction: transaction.toJSON(),
-    rc_id: rcId,
   });
 
   console.log(`Sending a transaction with id: ${transaction.transactionId.valueOf()}`);
@@ -61,14 +57,12 @@ export function requestSendTransaction(
  * @param organizerKP the keypair of the organizer
  * @param to the destination public key
  * @param amount the value of the transaction
- * @param rcId the roll call id in which the transaction happens
  * @param laoId the lao id in which to send the transaction
  */
 export function requestCoinbaseTransaction(
   organizerKP: KeyPair,
   to: PublicKey,
   amount: number,
-  rcId: Hash,
   laoId: Hash,
 ): Promise<void> {
   const transaction = Transaction.createCoinbase(organizerKP, to, amount);
@@ -76,7 +70,6 @@ export function requestCoinbaseTransaction(
   const postTransactionMessage = new PostTransaction({
     transaction_id: transaction.transactionId,
     transaction: transaction.toJSON(),
-    rc_id: rcId,
   });
 
   console.log(`Sending a coinbase transaction with id: ${transaction.transactionId.valueOf()}`);

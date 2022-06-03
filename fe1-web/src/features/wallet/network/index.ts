@@ -15,11 +15,10 @@ export * from './DigitalCashMessageApi';
  * @param registry - The MessageRegistry where we want to add the mappings
  */
 export function configureNetwork(registry: MessageRegistry) {
-  const addTransactionToState = (laoId: Hash, rcId: Hash, transaction: Transaction) => {
+  const addTransactionToState = (laoId: Hash, transaction: Transaction) => {
     dispatch(
       addTransaction({
         laoId: laoId.valueOf(),
-        rollCallId: rcId.valueOf(),
         transactionMessage: transaction.toState(),
       }),
     );

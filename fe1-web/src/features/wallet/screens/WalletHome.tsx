@@ -146,13 +146,7 @@ const WalletHome = () => {
         setModalVisible={setSendModalVisible}
         send={(receiver: string, amount: number, isCoinbase: boolean) => {
           if (isCoinbase) {
-            requestCoinbaseTransaction(
-              KeyPairStore.get(),
-              new PublicKey(receiver),
-              amount,
-              tokens![selectedTokenIndex].rollCallId,
-              laoId!,
-            )
+            requestCoinbaseTransaction(KeyPairStore.get(), new PublicKey(receiver), amount, laoId!)
               .then(() => toast.show('Sent coinbase transaction'))
               .catch((err) => {
                 console.error('Failed sending the transaction : ', err);
@@ -162,7 +156,6 @@ const WalletHome = () => {
               tokens![selectedTokenIndex].token,
               new PublicKey(receiver),
               amount,
-              tokens![selectedTokenIndex].rollCallId,
               laoId!,
             )
               .then(() => toast.show('Sent transaction'))
