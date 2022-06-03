@@ -203,7 +203,9 @@ namespace STRINGS {
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
   export const election_end = 'End Election and Tally Votes';
+  export const election_questions = 'Questions';
   export const election_results = 'Election Results';
+
   export const election_warning_open_ballot =
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
   export const election_info_secret_ballot =
