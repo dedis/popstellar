@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { LogoutRoundButton, QRCode, WideButtonView } from 'core/components';
+import { LogoutRoundButton, QRCode } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -12,7 +12,6 @@ import { RollCallTokensDropDown } from '../components';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import * as Wallet from '../objects';
-import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
@@ -47,7 +46,6 @@ const styles = StyleSheet.create({
 const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
-  const [isDebug, setIsDebug] = useState(false);
 
   const rollCallSelector = WalletHooks.useEventByTypeSelector<WalletFeature.RollCall>(
     WalletFeature.EventType.ROLL_CALL,
@@ -77,16 +75,7 @@ const WalletHome = () => {
       .catch((e) => {
         console.debug(e);
       });
-  }, [rollCalls, isDebug, laoId]);
-
-  const toggleDebugMode = () => {
-    if (isDebug) {
-      clearDummyWalletState();
-      setIsDebug(false);
-    } else {
-      createDummyWalletState().then(() => setIsDebug(true));
-    }
-  };
+  }, [rollCalls, laoId]);
 
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
@@ -126,10 +115,6 @@ const WalletHome = () => {
       </View>
       {tokenInfos()}
       <View style={styles.smallPadding} />
-      <WideButtonView
-        title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
-        onPress={() => toggleDebugMode()}
-      />
     </View>
   );
 };

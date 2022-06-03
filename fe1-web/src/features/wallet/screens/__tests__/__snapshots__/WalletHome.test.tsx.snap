@@ -475,61 +475,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             }
                           }
                         />
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                Set debug mode on [TESTING]
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
                       </View>
                     </View>
                   </View>
@@ -952,63 +897,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             }
                           }
                         />
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            nativeID="animatedComponent"
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                Set debug mode on [TESTING]
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
                       </View>
                     </View>
                   </View>

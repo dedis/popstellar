@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
@@ -14,14 +14,12 @@ import { walletReducer } from 'features/wallet/reducer';
 import STRINGS from 'resources/strings';
 
 import { recoverWalletRollCallTokens } from '../../objects';
-import { clearDummyWalletState, createDummyWalletState } from '../../objects/DummyWallet';
 import { RollCallToken } from '../../objects/RollCallToken';
 import { WalletHome } from '../index';
 
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
 jest.mock('features/wallet/objects/Wallet');
-jest.mock('features/wallet/objects/DummyWallet');
 jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 
 const contextValue = {
@@ -86,51 +84,5 @@ describe('Wallet home', () => {
     });
 
     expect(component).toMatchSnapshot();
-  });
-
-  it('enables correctly the debug mode', async () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
-
-    const mockCreateWalletState = (createDummyWalletState as jest.Mock).mockImplementation(() =>
-      Promise.resolve(),
-    );
-    const { getByText } = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={WalletHome} />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-    const toggleDebugButton = getByText('Set debug mode on [TESTING]');
-
-    fireEvent.press(toggleDebugButton);
-    await waitFor(() => {
-      expect(mockCreateWalletState).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('disables correctly the debug mode', async () => {
-    const mockStore = createStore(combineReducers({ ...walletReducer, ...eventsReducer }));
-
-    (createDummyWalletState as jest.Mock).mockImplementation(() => Promise.resolve());
-
-    const mockClearWalletState = clearDummyWalletState as jest.Mock;
-    const { getByText } = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={WalletHome} />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-
-    const toggleButtonOn = getByText('Set debug mode on [TESTING]');
-    fireEvent.press(toggleButtonOn);
-
-    await waitFor(() => {
-      const toggleButtonOff = getByText('Set debug mode off [TESTING]');
-      fireEvent.press(toggleButtonOff);
-    });
-
-    expect(mockClearWalletState).toHaveBeenCalledTimes(1);
   });
 });
