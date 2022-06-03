@@ -27,31 +27,52 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
-          system.log.info("Received {}", m)
+        case m@(DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _)) =>
+          system.log.info(s"Received - message $m")
           system.log.info("Responding with a Nack")
-
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock, "MockedDB-NACK")
   }
 
-  def mockDbWithAck: AskableActorRef = {
+  def mockDbRollCallNotCreated: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
-          system.log.info("Received {}", m)
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
+          system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
-
           sender() ! DbActor.DbActorAck()
+        case DbActor.ChannelExists(_) =>
+          system.log.info(s"Received a create rollcall message")
+          system.log.info("Responding with a no")
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK")
+    system.actorOf(dbActorMock, "MockedDB-RollCallNotCreated")
   }
 
-  test("CreateRollCall fails if the database fails storing the message") {
+  def mockDbRollCallAlreadyCreated: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info(s"Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case x =>
+          system.log.info(s"Received - error $x")
+      }
+    })
+    system.actorOf(dbActorMock, "MockedDB-RollCallAlreadyCreated")
+  }
+
+  test("CreateRollCall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
@@ -61,15 +82,20 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
-  test("CreateRollCall succeeds if the database succeeds storing the message") {
-    val mockedDB = mockDbWithAck
+  test("CreateRollCall should succeed if the roll call doesn't already exist in the database") {
+    val mockedDB = mockDbRollCallNotCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-
-    rc.handleCreateRollCall(request) should equal(Left(request))
-
+    rc.handleCreateRollCall(request) should matchPattern { case Left(_) => }
     system.stop(mockedDB.actorRef)
   }
-  //TODO Add more RollCall handlers test
+
+  test("CreateRollCall should fail if the roll call already exists in database") {
+    val mockedDB = mockDbRollCallAlreadyCreated
+    val rc = new RollCallHandler(mockedDB)
+    val request = CreateRollCallMessages.createRollCall
+      rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
+    system.stop(mockedDB.actorRef)
+  }
 
 }

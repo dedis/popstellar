@@ -126,12 +126,40 @@
       * frontend.send(catchup)
       * def catchup_response = frontend_buffer.takeTimeout(timeout)
 
-
+    @name=election_open
+    Scenario: Opens an election
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+      * def validElectionOpen =
+            """
+              {
+                  "object": "election",
+                  "action": "open",
+                  "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+                  "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+                  "opened_at": 1633098944
+              }
+            """
+      * frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
     @name=cast_vote
     Scenario: Casts a valid vote
-      * string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-      * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-      * eval frontend.send(castVote)
-      * def cast_vote_broadcast = frontend_buffer.takeTimeout(timeout)
-      * def cast_vote = frontend_buffer.takeTimeout(timeout)
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+      * def validCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+      * frontend.publish(JSON.stringify(validCastVote), electionChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))

@@ -130,11 +130,15 @@ object JsonRpcRequestExample {
   private final val paramsWithCastVoteElectionWrongId: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_ELECTION_WRONG_ID)
   private final val paramsWithCastVoteElectionWrongLaoId: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_ELECTION_WRONG_LAO_ID)
   private final val paramsWithCastVoteElectionWrongOwner: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_ELECTION_WRONG_OWNER)
+  private final val paramsWithCastVoteElectionInvalidVote: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_INVALID_VOTES)
+  private final val paramsWithCastVoteElectionInvalidBallot: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_CAST_VOTE_INVALID_BALLOT)
   final val CAST_VOTE_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElection, id)
   final val CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongTimestamp, id)
   final val CAST_VOTE_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongId, id)
   final val CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongLaoId, id)
   final val CAST_VOTE_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongOwner, id)
+  final val CAST_VOTE_ELECTION_INVALID_VOTE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionInvalidVote, id)
+  final val CAST_VOTE_ELECTION_INVALID_BALLOT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionInvalidBallot, id)
 
   //For EndElection testing
   private final val paramsWithEndElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_END_ELECTION_WORKING)

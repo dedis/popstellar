@@ -77,17 +77,17 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly decodes a ResultElection message data") {
-    val example: String = getExampleMessage("messageData/election_result.json")
+  test("Parser correctly decodes a OpenElection message data") {
+    val example: String = getExampleMessage("messageData/election_open/election_open.json")
 
-    val messageData = ResultElection.buildFromJson(example)
+    val messageData = OpenElection.buildFromJson(example)
 
-    val result1 = ElectionBallotVotes("Yes", 1)
-    val result2 = ElectionBallotVotes("No", 0)
-    val questionResult = ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), result1 :: result2 :: Nil)
-    val expected = ResultElection(questionResult :: Nil, Nil)
+    val lao = Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="))
+    val election = Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="))
+    val opened_at = Timestamp(1633099883L)
+    val expected = OpenElection(lao, election, opened_at)
 
-    messageData shouldBe a[ResultElection]
+    messageData shouldBe a[OpenElection]
     messageData should equal(expected)
   }
 
@@ -110,6 +110,17 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
     messageData shouldBe a[CastVoteElection]
     messageData shouldEqualTo (expected)
+  }
+
+  test("Parser correctly decodes a ResultElection write_in message data") {
+    val example: String = getExampleMessage("messageData/election_result.json")
+    val messageData = ResultElection.buildFromJson(example)
+
+    val result = List(ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), List(ElectionBallotVotes("Yes", 1), ElectionBallotVotes("No", 0))))
+    val expected = ResultElection(result, List.empty)
+
+    messageData shouldBe a[ResultElection]
+    messageData should equal (expected)
   }
 
   test("Parser correctly encodes/decodes a PostTransaction message data") {
