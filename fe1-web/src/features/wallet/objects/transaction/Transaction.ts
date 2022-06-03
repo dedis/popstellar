@@ -44,13 +44,19 @@ export class Transaction {
       );
     }
     if (obj.version === undefined) {
-      throw new Error("Undefined 'version' when creating 'DigitalCashMessage'");
+      throw new Error("Undefined 'version' when creating 'Transaction'");
     }
     if (obj.inputs === undefined) {
       throw new Error("Undefined 'inputs' when creating 'Transaction'");
     }
+    if (obj.inputs.length === 0) {
+      throw new Error("Empty 'inputs' when creating 'Transaction'");
+    }
     if (obj.outputs === undefined) {
       throw new Error("Undefined 'outputs' when creating 'Transaction'");
+    }
+    if (obj.outputs.length === 0) {
+      throw new Error("Empty 'outputs' when creating 'Transaction'");
     }
     if (obj.lockTime === undefined) {
       throw new Error("Undefined 'lockTime' when creating 'Transaction'");
@@ -145,7 +151,6 @@ export class Transaction {
       from.publicKey.valueOf(),
       inputTransactions,
     );
-    // Now we need to define each objects because we need some string representation of everything to hash on
 
     // Concatenate the data to sign
     const dataString = Transaction.concatenateTxData(inputs, outputs);
@@ -305,10 +310,11 @@ export class Transaction {
 
   public toState(): TransactionState {
     return {
-      ...this,
+      version: this.version,
       inputs: this.inputs.map((input) => input.toState()),
       outputs: this.outputs.map((output) => output.toState()),
       transactionId: this.transactionId.valueOf(),
+      lockTime: this.lockTime,
     };
   }
 
