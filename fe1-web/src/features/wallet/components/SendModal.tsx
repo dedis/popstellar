@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Button, Modal, StyleSheet, Switch, Text, View, ViewStyle } from "react-native";
+import { Button, Modal, StyleSheet, Switch, Text, View, ViewStyle } from 'react-native';
 import { Input } from 'react-native-elements';
 
 import { Typography } from 'core/styles';

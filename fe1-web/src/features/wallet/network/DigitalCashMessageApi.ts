@@ -1,7 +1,5 @@
 import { publish } from 'core/network';
 import { getCoinChannel, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { Transaction } from '../objects/transaction';
 import { DigitalCashStore } from '../store';
