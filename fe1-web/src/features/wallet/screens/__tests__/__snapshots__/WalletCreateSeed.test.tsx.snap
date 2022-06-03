@@ -396,7 +396,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   As a first step, you need to set up your
                                 </Text>
                                 <Text>
-
+                                   
                                 </Text>
                                 <Text
                                   style={
@@ -408,7 +408,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   wallet 🔒
                                 </Text>
                                 <Text>
-
+                                   
                                 </Text>
                                 <Text
                                   style={
@@ -420,7 +420,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   that is secured using a
                                 </Text>
                                 <Text>
-
+                                   
                                 </Text>
                                 <Text
                                   style={
@@ -438,7 +438,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                     }
                                   }
                                 >
-                                  .
+                                  . 
                                 </Text>
                                 <Text
                                   style={
@@ -450,7 +450,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   It is very important that you keep a backup copy of your
                                 </Text>
                                 <Text>
-
+                                   
                                 </Text>
                                 <Text
                                   style={
@@ -545,7 +545,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   If you have backed up the above
                                 </Text>
                                 <Text>
-
+                                   
                                 </Text>
                                 <Text
                                   style={
