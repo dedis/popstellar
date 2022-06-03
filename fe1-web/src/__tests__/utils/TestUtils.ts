@@ -5,6 +5,8 @@ import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jso
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
+import { TransactionJSON } from "../../features/wallet/objects/transaction";
+import STRINGS from "../../resources/strings";
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
@@ -75,3 +77,34 @@ export const mockJsonRequest: Partial<JsonRpcRequest> = {
 };
 
 export const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };
+
+// MOCK Transactions
+
+export const mockValue = 100;
+const mockCBSig =
+  '1E7yPEY7SwZ1NNxi_jN85-IvThR7GzUFs8-Lfwao44waoCf-qj5xLKnpzsc8yP0cFr5UNOIzsgKUYaSzv1gpDQ==';
+export const mockCBHash = 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=';
+export const mockValidCoinbaseJSON: TransactionJSON = {
+  version: 1,
+  inputs: [
+    {
+      tx_out_hash: STRINGS.coinbase_hash,
+      tx_out_index: 0,
+      script: {
+        type: 'Pay-to-Pubkey-Hash',
+        pubkey: mockKeyPair.publicKey.valueOf(),
+        sig: mockCBSig,
+      },
+    },
+  ],
+  outputs: [
+    {
+      value: mockValue,
+      script: {
+        type: 'Pay-to-Pubkey-Hash',
+        pubkey_hash: Hash.fromPublicKey(mockKeyPair.publicKey).valueOf(),
+      },
+    },
+  ],
+  lock_time: 0,
+};
