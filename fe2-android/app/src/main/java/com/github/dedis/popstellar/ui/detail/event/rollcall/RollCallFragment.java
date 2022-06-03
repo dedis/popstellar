@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
@@ -53,14 +54,6 @@ public class RollCallFragment extends Fragment {
 
   public static RollCallFragment newInstance(PublicKey pk) {
     return new RollCallFragment(pk);
-  }
-
-  public static RollCallFragment newInstance(RollCall rollCall) {
-    return new RollCallFragment(rollCall);
-  }
-
-  public RollCallFragment(RollCall rollCall) {
-    this.rollCall = rollCall;
   }
 
   @Override
@@ -191,5 +184,19 @@ public class RollCallFragment extends Fragment {
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
+  }
+
+  /**
+   * The following is only for testing purposes. Production should never pass arguments to a
+   * fragment instantiation but should rather use arguments
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public static RollCallFragment newInstance(RollCall rollCall) {
+    return new RollCallFragment(rollCall);
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public RollCallFragment(RollCall rollCall) {
+    this.rollCall = rollCall;
   }
 }

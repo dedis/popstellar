@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
@@ -41,14 +42,6 @@ public class ElectionFragment extends Fragment {
   }
 
   public ElectionFragment() { // required empty constructor
-  }
-
-  public ElectionFragment(Election election) {
-    this.election = election;
-  }
-
-  public static ElectionFragment newInstance(Election election) {
-    return new ElectionFragment(election);
   }
 
   @Override
@@ -242,5 +235,19 @@ public class ElectionFragment extends Fragment {
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
+  }
+
+  /**
+   * The following is only for testing purposes. Production code should never pass arguments to a
+   * fragment instantiation but should rather use arguments
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public ElectionFragment(Election election) {
+    this.election = election;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public static ElectionFragment newInstance(Election election) {
+    return new ElectionFragment(election);
   }
 }
