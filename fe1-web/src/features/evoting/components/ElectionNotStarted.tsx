@@ -1,31 +1,21 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
+import React from 'react';
+import { Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 
 import { PoPIcon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
-import { Color, Icon, List, Typography } from 'core/styles';
+import { Color, Icon, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { openElection } from '../network/ElectionMessageApi';
 import { Election } from '../objects';
+import { ElectionQuestions } from './ElectionQuestions';
 
 const ElectionNotStarted = ({ election }: IPropTypes) => {
-  const [isQuestionOpen, setIsQuestionOpen] = useState(
-    election.questions.reduce((obj, question) => {
-      // this makes the reduce efficient. creating a new object
-      // in every iteration is not necessary
-      // eslint-disable-next-line no-param-reassign
-      obj[question.id] = true;
-      return obj;
-    }, {} as Record<string, boolean | undefined>),
-  );
-
   return (
     <ScreenWrapper>
       <Text style={Typography.paragraph}>
@@ -44,44 +34,7 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
           {election.end.toDate().toLocaleDateString()} {election.end.toDate().toLocaleTimeString()}
         </Text>
       </Text>
-
-      <Text style={[Typography.paragraph, Typography.important]}>Questions</Text>
-
-      <View style={List.container}>
-        {election.questions.map((question) => (
-          <ListItem.Accordion
-            key={question.id}
-            containerStyle={List.accordionItem}
-            style={List.accordionItem}
-            content={
-              <ListItem.Content>
-                <ListItem.Title style={[Typography.base, Typography.important]}>
-                  {question.question}
-                </ListItem.Title>
-              </ListItem.Content>
-            }
-            onPress={() =>
-              setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
-            }
-            isExpanded={!!isQuestionOpen[question.id]}>
-            {question.ballot_options.map((ballotOption, idx) => {
-              const listStyles = List.getListItemStyles(
-                idx === 0,
-                idx === question.ballot_options.length - 1,
-              );
-
-              return (
-                <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
-                  <View style={List.iconPlaceholder} />
-                  <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
-                  </ListItem.Content>
-                </ListItem>
-              );
-            })}
-          </ListItem.Accordion>
-        ))}
-      </View>
+      <ElectionQuestions election={election} />
     </ScreenWrapper>
   );
 };

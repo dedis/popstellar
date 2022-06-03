@@ -9208,6 +9208,12 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                               onResponderTerminate={[Function]}
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
+                              style={
+                                Object {
+                                  "backgroundColor": "rgb(242, 242, 242)",
+                                  "paddingLeft": 0,
+                                }
+                              }
                             >
                               <View
                                 style={
@@ -9660,6 +9666,12 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                               onResponderTerminate={[Function]}
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
+                              style={
+                                Object {
+                                  "backgroundColor": "rgb(242, 242, 242)",
+                                  "paddingLeft": 0,
+                                }
+                              }
                             >
                               <View
                                 style={
@@ -15425,6 +15437,12 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                               onResponderTerminate={[Function]}
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
+                              style={
+                                Object {
+                                  "backgroundColor": "rgb(242, 242, 242)",
+                                  "paddingLeft": 0,
+                                }
+                              }
                             >
                               <View
                                 style={
@@ -15877,6 +15895,12 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                               onResponderTerminate={[Function]}
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
+                              style={
+                                Object {
+                                  "backgroundColor": "rgb(242, 242, 242)",
+                                  "paddingLeft": 0,
+                                }
+                              }
                             >
                               <View
                                 style={

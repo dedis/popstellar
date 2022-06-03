@@ -1057,7 +1057,6 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                                 }
                               }
                             >
-                              <Text />
                               <Text
                                 style={
                                   Object {
@@ -1865,7 +1864,6 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <Text />
                                 <Text
                                   style={
                                     Object {

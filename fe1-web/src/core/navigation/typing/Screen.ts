@@ -31,6 +31,7 @@ export interface NavigationScreen {
    * A component to render in the right corner of the header bar (e.g. three dots)
    */
   headerRight?: HeaderComponent;
+
   /**
    * A component to render in the left corner of the header bar (e.g. a burger menu)
    */

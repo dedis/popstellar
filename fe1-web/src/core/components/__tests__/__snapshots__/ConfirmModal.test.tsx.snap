@@ -59,7 +59,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           }
         }
       >
-        <Text />
         <Text
           style={
             Object {
@@ -252,7 +251,6 @@ exports[`ConfirmModal renders correctly 1`] = `
           }
         }
       >
-        <Text />
         <Text
           style={
             Object {
@@ -445,7 +443,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           }
         }
       >
-        <Text />
         <Text
           style={
             Object {

@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     ...Typography.base,
     marginBottom: Spacing.x1,
     padding: Spacing.x05,
-
     backgroundColor: Color.contrast,
     borderWidth: 0,
     borderRadius: Border.radius,

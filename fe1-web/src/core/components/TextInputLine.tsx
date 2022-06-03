@@ -13,10 +13,8 @@ const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
     color: Color.primary,
-
     borderBottomWidth: Border.width,
     borderColor: Color.primary,
-
     marginVertical: Spacing.x2,
     padding: Spacing.x05,
   } as TextStyle,

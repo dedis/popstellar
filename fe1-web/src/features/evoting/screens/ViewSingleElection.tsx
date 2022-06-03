@@ -70,7 +70,7 @@ export const ViewSingleElectionScreenHeader = () => {
   return <Text style={Typography.topNavigationHeading}>{election.name}</Text>;
 };
 
-export const ViewSinglRollCallScreenRightHeader = () => {
+export const ViewSingleElectionScreenRightHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: electionId, isOrganizer } = route.params;
 
@@ -98,5 +98,5 @@ export const ViewSingleElectionScreen: EvotingFeature.LaoEventScreen = {
   id: STRINGS.navigation_lao_events_view_single_election,
   Component: ViewSingleElection,
   headerTitle: ViewSingleElectionScreenHeader,
-  headerRight: ViewSinglRollCallScreenRightHeader,
+  headerRight: ViewSingleElectionScreenRightHeader,
 };
