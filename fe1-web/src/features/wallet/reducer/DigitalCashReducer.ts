@@ -10,7 +10,7 @@ import { Hash } from 'core/objects';
 import STRINGS from '../../../resources/strings';
 import { TransactionState } from '../objects/transaction';
 
-interface DigitalCashReducerState {
+export interface DigitalCashReducerState {
   /**
    * A mapping between the public key hashes and their respective balances
    */
@@ -32,7 +32,7 @@ interface DigitalCashReducerState {
    */
   transactionsByPubHash: Record<string, TransactionState[]>;
 }
-interface DigitalCashRollCallReducerState {
+export interface DigitalCashRollCallReducerState {
   byRCId: Record<string, DigitalCashReducerState>;
 }
 export interface DigitalCashLaoReducerState {
