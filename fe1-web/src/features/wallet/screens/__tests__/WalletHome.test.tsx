@@ -25,7 +25,6 @@ import { WalletHome } from '../index';
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
 jest.mock('features/wallet/objects/Wallet');
-jest.mock('features/wallet/objects/DummyWallet');
 jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 
 const mockRCName = 'myRollCall';

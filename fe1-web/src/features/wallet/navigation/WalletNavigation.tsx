@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { PoPIcon } from 'core/components';
@@ -13,7 +13,6 @@ import STRINGS from 'resources/strings';
 
 import { WalletFeature } from '../interface';
 import { forget } from '../objects';
-import { clearDummyWalletState, createDummyWalletState } from '../objects/DummyWallet';
 import { WalletHome } from '../screens';
 
 const Stack = createStackNavigator<WalletParamList>();
@@ -41,8 +40,6 @@ const WalletNavigationHeaderRight = () => {
 
   const showActionSheet = useActionSheet();
 
-  const [isDebug, setIsDebug] = useState(false);
-
   const onPressOptions = () => {
     showActionSheet([
       {
@@ -50,17 +47,6 @@ const WalletNavigationHeaderRight = () => {
         action: () => {
           forget();
           navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-        },
-      },
-      {
-        displayName: STRINGS.wallet_home_toggle_debug,
-        action: () => {
-          if (isDebug) {
-            clearDummyWalletState();
-            setIsDebug(false);
-          } else {
-            createDummyWalletState().then(() => setIsDebug(true));
-          }
         },
       },
     ]);
