@@ -5,6 +5,7 @@ import {
   DIGITAL_CASH_FEATURE_IDENTIFIER,
 } from './interface';
 import { DigitalCashWalletScreen } from './screens/DigitalCashWallet';
+import { PoPTokenScannerScreen } from './screens/PoPTokenScanner';
 
 /**
  * Configures the wallet feature
@@ -13,7 +14,7 @@ export function configure(configuration: DigitalCashConfiguration): DigitalCashI
   return {
     identifier: DIGITAL_CASH_FEATURE_IDENTIFIER,
     walletItemGenerators: [digitalCashWalletItemGenerator],
-    walletScreens: [DigitalCashWalletScreen],
+    walletScreens: [DigitalCashWalletScreen, PoPTokenScannerScreen],
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,

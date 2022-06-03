@@ -20,7 +20,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
-  const balance = laoId.valueOf();
+  const balance = 0.0;
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
@@ -43,7 +43,7 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
         <ListItem.Content>
           <ListItem.Title style={Typography.base}>{STRINGS.digital_cash_account}</ListItem.Title>
           <ListItem.Subtitle style={Typography.small}>
-            {STRINGS.digital_cash_account_balance}: {balance}
+            {STRINGS.digital_cash_account_balance}: ${balance.toString()}
           </ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />

@@ -1,12 +1,13 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-import { Input, PoPTextButton } from 'core/components';
+import { CollapsibleContainer, Input, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
+import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -22,12 +23,18 @@ type NavigationProps = CompositeScreenProps<
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
-type RollCallAccount = { rollCallId: string; rollCallName: string; balance: null | number };
+type RollCallAccount = {
+  rollCallId: string;
+  rollCallName: string;
+  popToken: string;
+  balance: null | number;
+};
 
 const DigitalCashWallet = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
 
-  const { laoId } = route.params;
+  const { laoId, scannedPoPTokenRollCallId, scannedPoPToken } = route.params;
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
@@ -41,8 +48,18 @@ const DigitalCashWallet = () => {
 
   const rollCallAccounts: RollCallAccount[] = useMemo(
     () => [
-      { rollCallId: 'x', rollCallName: 'a roll call', balance: 21.3 },
-      { rollCallId: 'y', rollCallName: 'another roll call', balance: 20.9 },
+      {
+        rollCallId: 'l1d1c5VwRmz2oiRRjEJh78eEhOnEf8QJ4W5PrmZfxcE=',
+        rollCallName: 'a roll call',
+        popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
+        balance: 21.3,
+      },
+      {
+        rollCallId: 'THFll04mCvZxOhCL9DYygnbTBSR2fjQAYGkfTzPf-zc=',
+        rollCallName: 'another roll call',
+        popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
+        balance: 20.9,
+      },
     ],
     [],
   );
@@ -61,6 +78,52 @@ const DigitalCashWallet = () => {
     }
     return rollCallAccounts;
   }, [rollCallAccounts, isOrganizer]);
+
+  const onSendTransaction = () => {
+    if (!selectedAccount) {
+      throw new Error('It should not be possible to send money without selecting an account first');
+    }
+
+    const amountToTransfer = Number.parseFloat(amount);
+    if (Number.isNaN(amountToTransfer)) {
+      setError(STRINGS.digital_cash_wallet_amount_must_be_number);
+      return;
+    }
+
+    if (selectedAccount.balance && amountToTransfer > selectedAccount.balance) {
+      setError(STRINGS.digital_cash_wallet_amount_too_high);
+      return;
+    }
+
+    setError(null);
+
+    if (selectedAccount.balance) {
+      // TODO: transaction
+    } else {
+      // TODO: coin issuance
+    }
+  };
+
+  const cannotSendTransaction =
+    Number.isNaN(parseFloat(amount)) ||
+    (!!selectedAccount?.balance &&
+      selectedAccount &&
+      parseFloat(amount) > selectedAccount?.balance);
+
+  useEffect(() => {
+    if (scannedPoPTokenRollCallId && scannedPoPToken) {
+      const account = accounts.find((acc) => acc.rollCallId === scannedPoPTokenRollCallId);
+
+      if (account) {
+        setSelectedAccount(account);
+        setShowModal(true);
+
+        setBeneficiary(scannedPoPToken);
+      }
+    }
+    // should only be re-executed of the navigation parameters change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scannedPoPTokenRollCallId, scannedPoPToken]);
 
   return (
     <ScreenWrapper>
@@ -108,71 +171,67 @@ const DigitalCashWallet = () => {
         />
         <ScrollView style={ModalStyles.modalContainer}>
           <ModalHeader onClose={() => setShowModal(!showModal)}>
-            {STRINGS.digital_cash_wallet_create_transaction}
+            {STRINGS.digital_cash_wallet_your_account}
           </ModalHeader>
 
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.digital_cash_wallet_balance}: ${selectedAccount?.balance || '∞'}
           </Text>
 
-          <Text style={Typography.paragraph}>
-            {STRINGS.digital_cash_wallet_transaction_description}
-          </Text>
+          {selectedAccount?.balance && (
+            <CollapsibleContainer title={STRINGS.digital_cash_wallet_your_account_receive}>
+              <Text style={Typography.paragraph}>
+                {STRINGS.digital_cash_wallet_your_account_receive_description}
+              </Text>
 
-          <Text style={[Typography.paragraph, Typography.important]}>
-            {STRINGS.digital_cash_wallet_beneficiary}
-          </Text>
-          <Input
-            value={beneficiary}
-            onChange={setBeneficiary}
-            placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
-          />
+              <QRCode visibility value={selectedAccount.popToken} />
+            </CollapsibleContainer>
+          )}
 
-          <Text style={[Typography.paragraph, Typography.important]}>
-            {STRINGS.digital_cash_wallet_amount}
-          </Text>
-          <Input
-            value={amount}
-            onChange={setAmount}
-            placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
-          />
+          <CollapsibleContainer
+            title={STRINGS.digital_cash_wallet_your_account_send}
+            isInitiallyOpen={!selectedAccount?.balance || !!beneficiary}>
+            <Text style={Typography.paragraph}>
+              {STRINGS.digital_cash_wallet_transaction_description}
+            </Text>
 
-          {error && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
-          <PoPTextButton
-            disabled={
-              Number.isNaN(parseFloat(amount)) ||
-              (!!selectedAccount?.balance &&
-                selectedAccount &&
-                parseFloat(amount) > selectedAccount?.balance)
-            }
-            onPress={() => {
-              if (!selectedAccount) {
-                throw new Error(
-                  'It should not be possible to send money without selecting an account first',
-                );
-              }
+            <Text style={[Typography.paragraph, Typography.important]}>
+              {STRINGS.digital_cash_wallet_beneficiary}
+            </Text>
+            <ScannerInput
+              value={beneficiary}
+              onChange={setBeneficiary}
+              onPress={() => {
+                if (!selectedAccount) {
+                  throw new Error(
+                    'It should not be possible to get here without selecting an account first',
+                  );
+                }
 
-              const amountToTransfer = Number.parseFloat(amount);
-              if (Number.isNaN(amountToTransfer)) {
-                setError(STRINGS.digital_cash_wallet_amount_must_be_number);
-                return;
-              }
+                setShowModal(false);
 
-              if (selectedAccount.balance && amountToTransfer > selectedAccount.balance) {
-                setError(STRINGS.digital_cash_wallet_amount_too_high);
-                return;
-              }
+                navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
+                  laoId: laoId.valueOf(),
+                  rollCallId: selectedAccount.rollCallId,
+                });
+              }}
+              placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
+            />
 
-              setError(null);
+            <Text style={[Typography.paragraph, Typography.important]}>
+              {STRINGS.digital_cash_wallet_amount}
+            </Text>
+            <Input
+              value={amount}
+              onChange={setAmount}
+              placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
+            />
 
-              if (selectedAccount.balance) {
-                // TODO: transaction
-              } else {
-                // TODO: coin issuance
-              }
-            }}>
-            {STRINGS.digital_cash_wallet_send_transaction}
-          </PoPTextButton>
+            {error && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
+            <PoPTextButton disabled={cannotSendTransaction} onPress={onSendTransaction}>
+              {STRINGS.digital_cash_wallet_send_transaction}
+            </PoPTextButton>
+          </CollapsibleContainer>
         </ScrollView>
       </Modal>
 
