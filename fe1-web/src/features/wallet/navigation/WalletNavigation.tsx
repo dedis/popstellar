@@ -1,7 +1,7 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Icon } from 'core/components';
@@ -13,7 +13,6 @@ import STRINGS from 'resources/strings';
 
 import { WalletFeature } from '../interface';
 import { forget } from '../objects';
-import { clearDummyWalletState, createDummyWalletState } from '../objects/DummyWallet';
 import { WalletHome } from '../screens';
 
 const Stack = createStackNavigator<WalletParamList>();
@@ -41,8 +40,6 @@ const WalletNavigationHeaderRight = () => {
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const [isDebug, setIsDebug] = useState(false);
-
   const onPressOptions = () => {
     showActionSheetWithOptions(
       {
@@ -55,15 +52,6 @@ const WalletNavigationHeaderRight = () => {
             // logout
             forget();
             navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-            break;
-          case 1:
-            // toggle debug mode
-            if (isDebug) {
-              clearDummyWalletState();
-              setIsDebug(false);
-            } else {
-              createDummyWalletState().then(() => setIsDebug(true));
-            }
             break;
           case 2:
           default:
