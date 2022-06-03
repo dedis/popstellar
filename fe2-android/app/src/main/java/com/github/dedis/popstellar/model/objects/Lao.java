@@ -47,7 +47,7 @@ public final class Lao {
   // Some useful map for the digital cash
   private Map<String, PublicKey> pubKeyByHash;
   // Map for the history
-  private Map<PublicKey, List<TransactionObject>> transaction_historyByUser;
+  private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
   private Map<PublicKey, TransactionObject> transactionByUser;
 
@@ -70,7 +70,7 @@ public final class Lao {
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
     // initialize the maps :
-    this.transaction_historyByUser = new HashMap<>();
+    this.transactionHistoryByUser = new HashMap<>();
     this.transactionByUser = new HashMap<>();
     this.pubKeyByHash = new HashMap<>();
   }
@@ -180,7 +180,7 @@ public final class Lao {
     // also update the history and the current transaction per attendees
     // both map have to be set to empty again
     transactionByUser = new HashMap<>();
-    transaction_historyByUser = new HashMap<>();
+    transactionHistoryByUser = new HashMap<>();
   }
 
   // add a function that update all the transaction
@@ -206,8 +206,8 @@ public final class Lao {
       // Add the transaction in the current state  / for the sender and the receiver
       transactionByUser.put(current, transaction_object);
       // Add the transaction in the history / for the sender and the receiver
-      transaction_historyByUser.putIfAbsent(current, new ArrayList<>());
-      if (!transaction_historyByUser.get(current).add(transaction_object)) {
+      transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
+      if (!transactionHistoryByUser.get(current).add(transaction_object)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
@@ -386,8 +386,8 @@ public final class Lao {
         .collect(Collectors.toList());
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransaction_historyByUser() {
-    return transaction_historyByUser;
+  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
+    return transactionHistoryByUser;
   }
 
   public Map<PublicKey, TransactionObject> getTransactionByUser() {

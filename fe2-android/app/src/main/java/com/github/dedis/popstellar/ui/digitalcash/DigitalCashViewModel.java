@@ -294,10 +294,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
    * <p>Publish a Message General containing a PostTransaction data
    */
   public void postTransaction(Map<String, String> receiverandvalue, long locktime) {
-    Log.d(TAG, "Post a transaction");
 
+    /* Check if a Lao exist */
     Lao lao = getCurrentLao();
-
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -383,17 +382,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
                     Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
                     Log.d(
                         TAG,
-                        "The transaction history " + lao.getTransaction_historyByUser().toString());
+                        "The transaction history " + lao.getTransactionHistoryByUser().toString());
                   },
                   error ->
                       ErrorUtils.logAndShow(
                           getApplication(), TAG, error, R.string.error_post_transaction));
 
       disposables.add(disposable);
-
-
-
-
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
@@ -419,10 +414,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.mRollCallId.setValue(rollCallId);
   }
 
-  public LiveData<String> getRollCallId(){
-    return mRollCallId;
-  }
-
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
   }
@@ -444,6 +435,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   @Nullable
   public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
     return getCurrentLao().lastRollCallClosed().getAttendees();
+
   }
 
   @Nullable
@@ -459,19 +451,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
       String current = pub.next().getEncoded();
       list.add(current);
     }
-    Log.d(TAG, "put the list of attendees " + Objects.requireNonNull(getCurrentLao()).toString());
-    //list.add(getCurrentLao().getOrganizer().getEncoded());
     return list;
   }
 
   @Nullable
   private Lao getLao(String laoId) {
-    //mLAOs.getValue().iterator()
-    Log.d(TAG, "Search in the LAO Repository");
     LAOState laoState = laoRepository.getLaoById().get(laoId);
     if (laoState == null) return null;
-    Log.d(TAG,"A LAO was found :)");
-    Log.d(TAG, laoState.getLao().toString());
     return laoState.getLao();
   }
 }

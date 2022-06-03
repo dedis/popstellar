@@ -27,8 +27,9 @@ import java.util.Map;
  * method to create an instance of this fragment.
  */
 public class DigitalCashSendFragment extends Fragment {
-    private DigitalCashSendFragmentBinding mBinding;
-    private DigitalCashViewModel mViewModel;
+  private DigitalCashSendFragmentBinding mBinding;
+  private DigitalCashViewModel mViewModel;
+  private String TAG = DigitalCashSendFragment.class.toString();
 
   public DigitalCashSendFragment() {
     // not implemented yet
@@ -45,68 +46,75 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mViewModel = DigitalCashMain.obtainViewModel(getActivity());
-        mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+  @Override
+  public View onCreateView(
+    LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
-        // Inflate the layout for this fragment
-        return mBinding.getRoot();
-    }
+    // Inflate the layout for this fragment
+    return mBinding.getRoot();
+  }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
 
     mViewModel
-        .getPostTransactionEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                String current_amount = mBinding.digitalCashSendAmount.getText().toString();
-                // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+     .getPostTransactionEvent()
+     .observe(
+       getViewLifecycleOwner(),
+         booleanEvent -> {
+           Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+             String current_amount = mBinding.digitalCashSendAmount.getText().toString();
+             // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+             String current_public_key_selected = String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
+             if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
+              // create in View Model a function that toast : please enter amount
+              mViewModel.requireToPutAnAmount();
+             } else if (current_public_key_selected.isEmpty()) {
+               // create in View Model a function that toast : please enter key
+              mViewModel.requireToPutLAOMember();
+             } else {
+              try {
+               postTransaction(Collections.singletonMap(
+                       current_public_key_selected, current_amount));
+                      //mViewModel.updateReceiptAddressEvent(current_public_key_selected);
+                      //mViewModel.updateReceiptAmountEvent(current_amount);
+               mViewModel.openReceipt();
+              } catch (KeyException e) {
+               e.printStackTrace();
+               Log.d(TAG,"error couldn't post the transaction due to key exception");
+    }}}});
 
-                String current_public_key_selected =
-                    String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                Log.d(
-                    this.getClass().toString(),
-                    "place holder text is " + current_public_key_selected);
-                try {
-                  postTransaction(
-                      Collections.singletonMap(current_public_key_selected, current_amount));
-
-                  mViewModel.updateLaoCoinEvent();
-                  mViewModel.updateReceiptAddressEvent(current_public_key_selected);
-                  mViewModel.updateReceiptAmountEvent(current_amount);
-
-                  mViewModel.openReceipt();
-                } catch (KeyException e) {
-                  e.printStackTrace();
-                }
-              }
-            });
-
+    /* Roll Call attendees to which we can send*/
     List<String> myArray = null;
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      e.printStackTrace();
-      Log.d(this.getClass().toString(), "Error : No Roll Call in the Lao");
+      mViewModel.openHome();
+      Log.d(this.getClass().toString(), "error : no RollCall in the Lao");
+      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT).show();
     }
-    ArrayAdapter<String> adapter =
-        new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
-    }
+  }
 
+
+  /** Function that setup the Button */
   private void setupSendCoinButton() {
     mBinding.digitalCashSendSend.setOnClickListener(v -> mViewModel.postTransactionEvent());
   }
 
-  /// ** Function that permits to post transaction */
+  /**
+   * Function that post the transaction (call the function of the view model)
+   *
+   * @param PublicKeyAmount Map<String, String> containing the Public Keys and the related amount to
+   *     issue to
+   * @throws KeyException throw this exception if the key of the issuer is not on the LAO
+   */
   private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
     // Add some check if have money
     if (mViewModel.getLaoId().getValue() == null) {
@@ -114,10 +122,8 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      Log.d(this.getClass().toString(), "Try to send a transaction");
-      Log.d(this.getClass().toString(), "The values are :" + PublicKeyAmount.values().toString());
-      Log.d(this.getClass().toString(), "The keys are : " + PublicKeyAmount.keySet().toString());
       mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
+      mViewModel.updateLaoCoinEvent();
     }
   }
 }

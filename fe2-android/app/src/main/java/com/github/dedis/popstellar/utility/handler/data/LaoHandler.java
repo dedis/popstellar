@@ -67,9 +67,15 @@ public final class LaoHandler {
               // running is the scala one which does not implement consensus
               () -> Log.d(TAG, "subscription to consensus channel was a success"),
               error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
+      /* Creation channel coin*/
+      context.getMessageSender().subscribe(channel.subChannel("coin"))
+              .subscribe(
+                      ()-> Log.d(TAG,"subscription to the coin channel was a success"),
+                      error -> Log.d(TAG,"error while trying  to subscribe to coin channel")
+              );
+
     }
-    // should we create a coin channel here ?
-       laoRepository.updateNodes(channel);
+    laoRepository.updateNodes(channel);
   }
 
   /**

@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.telephony.mbms.StreamingServiceInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
+  private String TAG = DigitalCashIssueFragment.class.toString();
 
   public DigitalCashIssueFragment() {
     // not implemented yet
@@ -58,7 +61,6 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
     setupSendCoinButton();
 
     mViewModel
@@ -74,7 +76,7 @@ public class DigitalCashIssueFragment extends Fragment {
                 String current_public_key_selected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
 
-                if (current_amount.isEmpty() || (Integer.valueOf(current_amount) < 0)) {
+                if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
                   // create in View Model a function that toast : please enter amount
                   mViewModel.requireToPutAnAmount();
                 } else if (current_public_key_selected.isEmpty()) {
@@ -86,18 +88,20 @@ public class DigitalCashIssueFragment extends Fragment {
                         Collections.singletonMap(current_public_key_selected, current_amount));
                   } catch (KeyException e) {
                     e.printStackTrace();
-                    // write a log
+                    Log.d(TAG, "error couldn't post the transaction due to key exception");
                   }
                 }
               }
             });
 
+    /* Roll Call attendees to which we can send*/
     List<String> myArray = null;
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      e.printStackTrace();
-      Log.d(this.getClass().toString(), "Error : No Roll Call in the Lao");
+      mViewModel.openHome();
+      Log.d(this.getClass().toString(), "error : no RollCall in the Lao");
+      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT).show();
     }
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
@@ -118,7 +122,13 @@ public class DigitalCashIssueFragment extends Fragment {
    * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
   private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
-    mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
-    mViewModel.updateLaoCoinEvent();
+    if (mViewModel.getLaoId().getValue() == null) {
+      Toast.makeText(
+              requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
+              .show();
+    } else {
+      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
+      mViewModel.updateLaoCoinEvent();
+    }
   }
 }
