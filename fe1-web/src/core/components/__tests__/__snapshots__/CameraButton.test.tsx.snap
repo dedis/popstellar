@@ -16,6 +16,7 @@ exports[`CameraButton renders correctly 1`] = `
     onStartShouldSetResponder={[Function]}
     style={
       Object {
+        "alignContent": "center",
         "alignItems": "center",
         "backgroundColor": "#2196F3",
         "borderRadius": 80,

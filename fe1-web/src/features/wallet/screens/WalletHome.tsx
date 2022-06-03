@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 
-import { QRCode, WideButtonView } from 'core/components';
+import { LogoutRoundButton, QRCode } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -10,7 +10,6 @@ import STRINGS from 'resources/strings';
 import { RollCallTokensDropDown } from '../components';
 import { WalletHooks } from '../hooks';
 import * as Wallet from '../objects';
-import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
@@ -26,8 +25,17 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   } as ViewStyle,
-  textBase: Typography.base as TextStyle,
+  textBase: Typography.baseCentered as TextStyle,
   textImportant: Typography.important as TextStyle,
+  topBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+  } as ViewStyle,
 });
 
 /**
@@ -36,7 +44,6 @@ const styles = StyleSheet.create({
 const WalletHome = () => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
-  const [isDebug, setIsDebug] = useState(false);
 
   const rollCalls = WalletHooks.useRollCallsByLaoId();
 
@@ -63,16 +70,7 @@ const WalletHome = () => {
       .catch((e) => {
         console.debug(e);
       });
-  }, [rollCalls, isDebug, laoId]);
-
-  const toggleDebugMode = () => {
-    if (isDebug) {
-      clearDummyWalletState();
-      setIsDebug(false);
-    } else {
-      createDummyWalletState().then(() => setIsDebug(true));
-    }
-  };
+  }, [rollCalls, laoId]);
 
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
@@ -89,7 +87,18 @@ const WalletHome = () => {
 
   return (
     <View style={styles.homeContainer}>
-      <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
+      <View style={styles.topBar}>
+        <Text style={styles.textImportant}>{STRINGS.wallet_welcome}</Text>
+        <LogoutRoundButton
+          onClick={() => {
+            Wallet.forget();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
+            });
+          }}
+        />
+      </View>
       <View style={styles.tokenSelectContainer}>
         {tokens && (
           <RollCallTokensDropDown
@@ -101,20 +110,6 @@ const WalletHome = () => {
       </View>
       {tokenInfos()}
       <View style={styles.smallPadding} />
-      <WideButtonView
-        title={STRINGS.logout_from_wallet}
-        onPress={() => {
-          Wallet.forget();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: STRINGS.navigation_wallet_setup_tab }],
-          });
-        }}
-      />
-      <WideButtonView
-        title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
-        onPress={() => toggleDebugMode()}
-      />
     </View>
   );
 };
