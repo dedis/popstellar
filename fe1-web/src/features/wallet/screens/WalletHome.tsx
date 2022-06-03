@@ -63,11 +63,7 @@ const WalletHome = () => {
     if (!laoId || selectedTokenIndex === -1 || !tokens) {
       return () => 0;
     }
-    return makeBalanceSelector(
-      laoId,
-      tokens[selectedTokenIndex].rollCallId,
-      tokens[selectedTokenIndex].token.publicKey.valueOf(),
-    );
+    return makeBalanceSelector(laoId, tokens[selectedTokenIndex].token.publicKey.valueOf());
   }, [tokens, laoId, selectedTokenIndex]);
   const balance = useSelector(balanceSelector);
 
