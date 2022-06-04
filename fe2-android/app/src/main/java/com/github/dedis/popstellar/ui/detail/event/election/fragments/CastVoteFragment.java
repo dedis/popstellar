@@ -44,12 +44,13 @@ public class CastVoteFragment extends Fragment {
             mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
         for (int i = 0; i < electionQuestions.size(); i++) {
           ElectionQuestion electionQuestion = electionQuestions.get(i);
-          List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+          Integer vote = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+
           // Only one vote should be selected.
           ElectionVote electionVote =
               new ElectionVote(
                   electionQuestion.getId(),
-                  votes.get(0),
+                  vote,
                   electionQuestion.getWriteIn(),
                   null,
                   mLaoDetailViewModel.getCurrentElection().getId());
@@ -94,7 +95,7 @@ public class CastVoteFragment extends Fragment {
     int numberOfQuestions = election.getElectionQuestions().size();
 
     // Setting up the votes for the adapter
-    mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
+    mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList());
 
     // Setting the viewPager and its adapter
     ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
@@ -110,11 +111,8 @@ public class CastVoteFragment extends Fragment {
     return mCastVoteFragBinding.getRoot();
   }
 
-  private List<List<Integer>> setEmptyVoteList(int size) {
-    List<List<Integer>> votes = new ArrayList<>();
-    for (int i = 0; i < size; i++) {
-      votes.add(new ArrayList<>());
-    }
+  private List<Integer> setEmptyVoteList() {
+    List<Integer> votes = new ArrayList<>();
     return votes;
   }
 }

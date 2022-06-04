@@ -30,6 +30,9 @@ public class CastVoteViewPagerAdapter
   private final CastVoteFragmentBinding castVoteBinding;
   private Button voteButton;
 
+  // Defines the number of votes (unique for now)
+  private static final int NUMBER_OF_CHOICE = 1;
+
   public CastVoteViewPagerAdapter(
       LaoDetailViewModel mLaoDetailViewModel, CastVoteFragmentBinding castVoteBinding) {
     this.mLaoDetailViewModel = mLaoDetailViewModel;
@@ -60,7 +63,7 @@ public class CastVoteViewPagerAdapter
 
     // this will determine the number of option the user can select and vote for
     // If another voting method is implemented in setUp, this can be adapted
-    int numberOfChoices = 1; // by default
+    int numberOfChoices = NUMBER_OF_CHOICE; // by default it's 1
 
     List<Integer> votes = new ArrayList<>();
 
@@ -98,7 +101,11 @@ public class CastVoteViewPagerAdapter
               votes.add(listPosition);
             }
           }
-          mLaoDetailViewModel.setCurrentElectionQuestionVotes(votes, position);
+          // This is for satisfying the unique vote method
+          // It should be changed in the future when multiple vote will be allowed
+          // For now the unique vote is the first element of the votes list
+          int chosenVote = votes.isEmpty() ? null : votes.get(0);
+          mLaoDetailViewModel.setCurrentElectionQuestionVotes(chosenVote, position);
           ballotsListView.setClickable(true);
           voteButton.setEnabled(checkEachQuestion());
         };
@@ -111,10 +118,10 @@ public class CastVoteViewPagerAdapter
   }
 
   private boolean checkEachQuestion() {
-    List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
+    List<Integer> allVotes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
     if (allVotes != null) {
-      for (List<Integer> vote : allVotes) {
-        if (vote == null || vote.isEmpty()) {
+      for (Integer vote : allVotes) {
+        if (vote == null) {
           return false;
         }
       }

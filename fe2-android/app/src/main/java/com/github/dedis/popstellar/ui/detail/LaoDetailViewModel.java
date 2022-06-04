@@ -165,8 +165,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
-  private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes =
-      new MutableLiveData<>();
+  private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
           mCurrentLao,
@@ -944,18 +943,18 @@ public class LaoDetailViewModel extends AndroidViewModel
     mCurrentElection.setValue(e);
   }
 
-  public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {
+  public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
     return mCurrentElectionVotes;
   }
 
-  public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
+  public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
     if (currentElectionVotes == null) {
       throw new IllegalArgumentException();
     }
     mCurrentElectionVotes.setValue(currentElectionVotes);
   }
 
-  public void setCurrentElectionQuestionVotes(List<Integer> votes, int position) {
+  public void setCurrentElectionQuestionVotes(Integer votes, int position) {
     if (votes == null || position < 0 || position >= mCurrentElectionVotes.getValue().size()) {
       throw new IllegalArgumentException();
     }
