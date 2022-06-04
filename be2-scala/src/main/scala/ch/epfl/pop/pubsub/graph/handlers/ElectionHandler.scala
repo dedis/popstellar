@@ -1,19 +1,22 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
 import ch.epfl.pop.json.MessageDataProtocol.KeyElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, SetupElection}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
+import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import com.google.crypto.tink.subtle.Ed25519Sign
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
+import ch.epfl.pop.model.objects.ElectionChannel._
 
 /**
  * ElectionHandler object uses the db instance from the MessageHandler
@@ -45,7 +48,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
-    val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
+    val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
+    val electionId: Hash = data.id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     //need to write and propagate the election message
@@ -57,11 +61,25 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(combined, duration).value match {
       case Some(Success(_)) =>
-        val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-        val keyElection: KeyElection = KeyElection(electionId, PublicKey(Base64Data.encode(keyPair.getPublicKey)))
-        val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-          dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+        //generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
+        data.version match {
+          case OPEN_BALLOT => Left(rpcMessage)
+          case SECRET_BALLOT =>
+            val keyPair = KeyPair()
+            val keyCombined = for {
+              _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
+              electionData <- dbActor ? DbActor.ReadElectionData(electionId)
+            } yield electionData
 
+            Await.ready(keyCombined, duration).value match {
+              case Some(Success(_)) =>
+                val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
+                val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
+                dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel)
+              case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
+              case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+            }
+        }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
@@ -74,19 +92,19 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //checks first if the election is created (i.e. if the channel election exists)
-    val askChannelExist = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
-    Await.ready(askChannelExist, duration).value.get match {
-      case Success(_) =>
-        val askWritePropagate: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-        Await.result(askWritePropagate, duration)
+    val combined = for {
+      _ <- dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+      _ <- dbAskWritePropagate(rpcMessage)
+    } yield ()
+    Await.ready(combined, duration).value.get match {
+      case Success(_) => Left(rpcMessage)
       case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    // no need to propagate here, hence the use of dbAskWrite
-    val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
 
@@ -94,7 +112,58 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
-  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
-    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle EndElection messages yet", rpcMessage.id)
-  )
+  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val witnessSignatures = rpcMessage.getParamsMessage match {
+      case Some(it) => it.witness_signatures.map(_.signature)
+      case _ => Nil
+    }
+    val electionChannel: Channel = rpcMessage.getParamsChannel
+    val combined = for {
+      electionQuestionResults <- createElectionQuestionResults(electionChannel)
+      // propagate the endElection message
+      _ <- dbAskWritePropagate(rpcMessage)
+      //data to be broadcast
+      resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
+      data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString)
+      // create & propagate the resultMessage
+      _ <- dbBroadcast(rpcMessage, electionChannel, data, electionChannel)
+    } yield ()
+    Await.ready(combined, duration).value match {
+      case Some(Success(_)) => Left(rpcMessage)
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleEndElection unknown error", rpcMessage.getId))
+    }
+  }
+
+  private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
+    for {
+      votesList <- electionChannel.getLastVotes(dbActor)
+      castsVotesElections = votesList.map(_._2)
+      setupMessage <- electionChannel.getSetupMessage(dbActor)
+      questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
+    } yield {
+      val resultsTable = mutable.HashMap.from(for {
+        (question, ballots) <- questionToBallots
+      } yield question -> ballots.map(_ -> 0).toMap)
+      for {
+        castVoteElection <- castsVotesElections
+        voteElection <- castVoteElection.votes
+      } {
+        voteElection.vote match {
+          case Some(List(index)) =>
+            val question = voteElection.question
+            val ballots = questionToBallots(question).toArray
+            val ballot = ballots.apply(index)
+            val questionResult = resultsTable(question)
+            resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
+          case _ =>
+        }
+      }
+      List.from(for {
+        (qid, ballotToCount) <- resultsTable
+        electionBallotVotes = List.from(for {
+          (ballot, count) <- ballotToCount
+        } yield ElectionBallotVotes(ballot, count))
+      } yield ElectionQuestionResult(qid, electionBallotVotes))
+    }
+  }
 }

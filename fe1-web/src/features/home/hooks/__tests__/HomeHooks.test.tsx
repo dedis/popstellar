@@ -42,42 +42,42 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('Home hooks', () => {
-  describe('HomeHooks.useCreateLao', () => {
+  describe('useCreateLao', () => {
     it('should return the function for creating a lao', () => {
       const { result } = renderHook(() => HomeHooks.useRequestCreateLao(), { wrapper });
       expect(result.current).toEqual(requestCreateLao);
     });
   });
 
-  describe('HomeHooks.useAddLaoServerAddress', () => {
+  describe('useAddLaoServerAddress', () => {
     it('should return the function for adding a lao address', () => {
       const { result } = renderHook(() => HomeHooks.useAddLaoServerAddress(), { wrapper });
       expect(result.current).toEqual(addLaoServerAddress);
     });
   });
 
-  describe('HomeHooks.useConnectToTestLao', () => {
+  describe('useConnectToTestLao', () => {
     it('should return the function for connecting to the test lao', () => {
       const { result } = renderHook(() => HomeHooks.useConnectToTestLao(), { wrapper });
       expect(result.current).toEqual(connectToTestLao);
     });
   });
 
-  describe('HomeHooks.useLaoList', () => {
+  describe('useLaoList', () => {
     it('should return the list of current laos', () => {
       const { result } = renderHook(() => HomeHooks.useLaoList(), { wrapper });
       expect(result.current).toEqual([mockLao]);
     });
   });
 
-  describe('HomeHooks.useLaoListComponent', () => {
+  describe('useLaoListComponent', () => {
     it('should return the lao list component', () => {
       const { result } = renderHook(() => HomeHooks.useLaoListComponent(), { wrapper });
       expect(result.current).toEqual(LaoList);
     });
   });
 
-  describe('HomeHooks.useMainNavigationScreens', () => {
+  describe('useMainNavigationScreens', () => {
     it('should return the main navigation screens', () => {
       const { result } = renderHook(() => HomeHooks.useMainNavigationScreens(), { wrapper });
       expect(result.current).toEqual(mainNavigationScreens);

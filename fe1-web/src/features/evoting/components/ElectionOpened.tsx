@@ -67,9 +67,14 @@ const ElectionOpened = ({ election, questions, isOrganizer }: IPropTypes) => {
                 key={q.title + idx.toString()}
                 title={q.title}
                 values={q.data}
-                onChange={(values: number[]) =>
-                  setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
-                }
+                clickableOptions={1}
+                onChange={(values: number[]) => {
+                  if (values.length > 1) {
+                    throw new Error('Only single vote elections are supported');
+                  }
+
+                  setSelectedBallots({ ...selectedBallots, [idx]: values[0] });
+                }}
               />
             ))}
             <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />

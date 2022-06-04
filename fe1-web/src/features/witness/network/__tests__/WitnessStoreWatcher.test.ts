@@ -52,9 +52,10 @@ describe('makeWitnessStoreWatcher', () => {
       ExtendedMessage.fromData(
         { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp: t } as AddChirp,
         mockKeyPair,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 
@@ -74,9 +75,10 @@ describe('makeWitnessStoreWatcher', () => {
       ExtendedMessage.fromData(
         { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp: t } as AddChirp,
         mockKeyPair,
+        mockChannel,
       ),
-      mockChannel,
       mockAddress,
+      mockChannel,
       t,
     );
 

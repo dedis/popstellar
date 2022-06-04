@@ -16,7 +16,7 @@ export interface ExtendedMessageState {
   receivedAt: number;
   receivedFrom: string;
   processedAt?: number;
-  channel?: Channel;
+  channel: Channel;
   laoId: string;
 
   data: string;
@@ -41,45 +41,51 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
 
   public readonly receivedFrom: string;
 
-  public processedAt?: Timestamp;
+  public readonly processedAt?: Timestamp;
 
-  // The channel on which the message was received
-  public channel: Channel;
+  public readonly channel: Channel;
+
+  get laoId(): Hash | undefined {
+    try {
+      return getLaoIdFromChannel(this.channel);
+    } catch (e) {
+      return undefined;
+    }
+  }
 
   constructor(msg: Partial<ExtendedMessage>) {
-    super(msg);
-
-    if (!msg.receivedFrom) {
+    if (!msg.channel) {
       throw new Error(
-        '"receivedFrom" is not defined when creating a new instance of ExtendedMessage',
+        "Undefined 'channel' parameter encountered during 'ExtendedMessage' creation",
       );
     }
 
-    this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
-    this.receivedFrom = msg.receivedFrom;
-    this.processedAt = msg.processedAt;
-    this.channel =
-      msg.channel ||
-      (() => {
-        throw new Error('channel not defined');
-      })();
-  }
+    super(msg, msg.channel);
 
-  get laoId(): Hash {
-    return getLaoIdFromChannel(this.channel);
+    if (!msg.receivedFrom) {
+      throw new Error(
+        "Undefined 'receivedFrom' parameter encountered during 'ExtendedMessage' creation",
+      );
+    }
+    this.receivedFrom = msg.receivedFrom;
+
+    this.channel = msg.channel;
+
+    this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
+    this.processedAt = msg.processedAt;
   }
 
   public static fromMessage(
     msg: Message,
-    ch: Channel,
     receivedFrom: string,
+    channel: Channel,
     receivedAt?: Timestamp,
   ): ExtendedMessage {
     return new ExtendedMessage({
       ...msg,
-      channel: ch,
-      receivedAt: receivedAt || Timestamp.EpochNow(),
+      channel,
       receivedFrom,
+      receivedAt: receivedAt || Timestamp.EpochNow(),
     });
   }
 

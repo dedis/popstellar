@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { BackRoundButton, TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -11,6 +11,14 @@ import * as Wallet from '../objects';
 const styles = StyleSheet.create({
   smallPadding: {
     padding: '1rem',
+  } as ViewStyle,
+  largePadding: {
+    padding: '2rem',
+  } as ViewStyle,
+  container: {
+    ...containerStyles.centeredY,
+    padding: 20,
+    height: '100%',
   } as ViewStyle,
 });
 
@@ -37,7 +45,9 @@ const WalletSetSeed = () => {
   };
 
   return (
-    <View style={containerStyles.centeredXY}>
+    <View style={styles.container}>
+      <BackRoundButton onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)} />
+      <View style={styles.largePadding} />
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine
         placeholder={STRINGS.type_seed_example}
@@ -45,10 +55,6 @@ const WalletSetSeed = () => {
       />
       <View style={styles.smallPadding} />
       <WideButtonView title={STRINGS.save_seed_and_connect} onPress={() => initWallet()} />
-      <WideButtonView
-        title={STRINGS.back_to_wallet_setup}
-        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
-      />
     </View>
   );
 };

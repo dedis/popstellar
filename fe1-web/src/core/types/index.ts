@@ -27,3 +27,11 @@ export type MessageDataProperties<T> = Omit<OmitMethods<T>, 'object' | 'action'>
  * This can be used to extend a type or to overwrite types of the parent type
  */
 export type ExtendType<T, K> = Omit<T, keyof K> & K;
+
+/**
+ * Checks whether a given value is defined (not null or undefined)
+ * @param value The value to check
+ */
+export const isDefined = <T>(value: T | null | undefined): value is T => {
+  return value !== null && value !== undefined;
+};

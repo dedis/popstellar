@@ -92,7 +92,7 @@ object MessageRegistry {
     register.add((ObjectType.REACTION, ActionType.DELETE), createSchemaVerifier("dataDeleteReaction.json"), DeleteReaction.buildFromJson, SocialMediaValidator.validateDeleteReaction, SocialMediaHandler.handleDeleteReaction)
 
     // data digital cash
-    register.add((ObjectType.TRANSACTION, ActionType.POST), createSchemaVerifier("dataPostTransactionCoin.json"), PostTransaction.buildFromJson, CoinValidator.validatePostTransaction, CoinHandler.handlePostTransaction)
+    register.add((ObjectType.COIN, ActionType.POST_TRANSACTION), createSchemaVerifier("dataPostTransactionCoin.json"), PostTransaction.buildFromJson, CoinValidator.validatePostTransaction, CoinHandler.handlePostTransaction)
 
     new MessageRegistry(register.get)
   }

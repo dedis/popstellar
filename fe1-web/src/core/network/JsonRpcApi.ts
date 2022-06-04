@@ -49,7 +49,7 @@ export async function publish(
   connections?: NetworkConnection[],
 ): Promise<void> {
   const keyPair = await getSigningKeyPair(msgData);
-  const message = Message.fromData(msgData, keyPair);
+  const message = Message.fromData(msgData, keyPair, channel);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
@@ -115,7 +115,7 @@ function* messageGenerator(msgs: ReceivedMessage[], channel: Channel) {
   for (const m of msgs) {
     const message = Message.fromJson(m.message, channel);
 
-    yield ExtendedMessage.fromMessage(message, channel, m.receivedFrom);
+    yield ExtendedMessage.fromMessage(message, m.receivedFrom, channel);
   }
 }
 

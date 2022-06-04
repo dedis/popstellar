@@ -5,7 +5,7 @@ import { combineReducers, createStore } from 'redux';
 import { mockChannel, mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { messageReducer } from 'core/network/ingestion';
-import { channelFromIds, Timestamp } from 'core/objects';
+import { Base64UrlData, channelFromIds, Timestamp } from 'core/objects';
 import {
   mockElectionNotStarted,
   mockElectionOpened,
@@ -71,16 +71,19 @@ describe('requestCreateElection', () => {
     expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);
     expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-    const setupElectionMessage = new SetupElection({
-      lao: mockElectionNotStarted.lao,
-      id: mockElectionNotStarted.id,
-      name: mockElectionNotStarted.name,
-      version: mockElectionNotStarted.version,
-      created_at: mockElectionNotStarted.createdAt,
-      start_time: mockElectionNotStarted.start,
-      end_time: mockElectionNotStarted.end,
-      questions: mockElectionNotStarted.questions,
-    });
+    const setupElectionMessage = new SetupElection(
+      {
+        lao: mockElectionNotStarted.lao,
+        id: mockElectionNotStarted.id,
+        name: mockElectionNotStarted.name,
+        version: mockElectionNotStarted.version,
+        created_at: mockElectionNotStarted.createdAt,
+        start_time: mockElectionNotStarted.start,
+        end_time: mockElectionNotStarted.end,
+        questions: mockElectionNotStarted.questions,
+      },
+      mockLaoIdHash,
+    );
 
     expect(publish).toHaveBeenLastCalledWith(mockChannel, setupElectionMessage);
     expect(publish).toHaveBeenCalledTimes(1);
@@ -115,7 +118,7 @@ describe('openElection', () => {
 
 describe('castVote', () => {
   it('works as expected using a valid set of parameters (open ballot)', () => {
-    const selectedBallots: SelectedBallots = { 0: new Set([0]), 1: new Set([1]) };
+    const selectedBallots: SelectedBallots = { 0: 0, 1: 1 };
 
     castVote(mockElectionNotStarted, undefined, selectedBallots);
 
@@ -144,7 +147,7 @@ describe('castVote', () => {
   });
 
   it('works as expected using a valid set of parameters (secret ballot)', () => {
-    const selectedBallots: SelectedBallots = { 0: new Set([3]), 1: new Set([7]) };
+    const selectedBallots: SelectedBallots = { 0: 3, 1: 7 };
     const keyPair = ElectionKeyPair.generate();
 
     castVote(mockSecretBallotElectionNotStarted, keyPair.publicKey, selectedBallots);
@@ -168,17 +171,18 @@ describe('castVote', () => {
     );
 
     expect(castVoteMessage.votes.length).toEqual(2);
-    expect(castVoteMessage.votes[0].vote.length).toEqual(1);
-    expect(castVoteMessage.votes[1].vote.length).toEqual(1);
-
-    expect(castVoteMessage.votes[0].vote[0]).toBeString();
-    expect(castVoteMessage.votes[1].vote[0]).toBeString();
+    expect(castVoteMessage.votes[0].vote).toBeString();
+    expect(castVoteMessage.votes[1].vote).toBeString();
 
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[0].vote[0] as string).readIntBE(0, 2),
+      keyPair.privateKey
+        .decrypt(new Base64UrlData(castVoteMessage.votes[0].vote as string))
+        .readIntBE(0, 2),
     ).toEqual(3);
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[1].vote[0] as string).readIntBE(0, 2),
+      keyPair.privateKey
+        .decrypt(new Base64UrlData(castVoteMessage.votes[1].vote as string))
+        .readIntBE(0, 2),
     ).toEqual(7);
 
     expect(publish).toHaveBeenCalledTimes(1);

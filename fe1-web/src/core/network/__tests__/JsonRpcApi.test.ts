@@ -67,7 +67,7 @@ beforeAll(() => {
   configureMessages(mockMessageRegistry);
 
   // this cannot be initialized before as it requires the mock registries to be set up
-  mockResponseMessage = Message.fromData(mockMessageData, mockKeyPair, []);
+  mockResponseMessage = Message.fromData(mockMessageData, mockKeyPair, mockChannel, []);
   mockResponse = {
     id: 0,
     result: [mockResponseMessage],
@@ -94,7 +94,7 @@ describe('publish', () => {
   it('correctly builds a JsonRpcRequest and passes it to the network manager', async () => {
     await publish(mockChannel, mockMessageData);
 
-    const message = await Message.fromData(mockMessageData, mockKeyPair);
+    const message = Message.fromData(mockMessageData, mockKeyPair, mockChannel);
     const request = new JsonRpcRequest({
       method: JsonRpcMethod.PUBLISH,
       params: new Publish({
@@ -167,7 +167,7 @@ describe('catchup', () => {
       throw new Error('The generator should contain at least one message');
     }
 
-    const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress);
+    const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockAddress, mockChannel);
 
     // the receivedAt value is allowed differ
     expect({ ...value, receivedAt: 0 }).toBeJsonEqual({ ...expected, receivedAt: 0 });

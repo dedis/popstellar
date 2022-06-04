@@ -37,25 +37,19 @@ export async function requestCreateElection(
   questions: Question[],
   time: Timestamp,
 ): Promise<void> {
-  // first compute the election id
-  const electionId = Hash.fromStringArray(
-    EventTags.ELECTION,
-    laoId.valueOf(),
-    time.toString(),
-    name,
+  const message = new SetupElection(
+    {
+      version: version,
+      id: Hash.fromStringArray(EventTags.ELECTION, laoId.valueOf(), time.toString(), name),
+      lao: laoId,
+      name: name,
+      created_at: time,
+      start_time: Timestamp.max(time, start),
+      end_time: end,
+      questions: questions,
+    },
+    laoId,
   );
-
-  // create the election#setup message
-  const message = new SetupElection({
-    version: version,
-    id: electionId,
-    lao: laoId,
-    name: name,
-    created_at: time,
-    start_time: Timestamp.max(time, start),
-    end_time: end,
-    questions: questions,
-  });
 
   // publish on the general LAO channel
   return publish(channelFromIds(laoId), message);

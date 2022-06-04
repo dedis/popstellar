@@ -112,8 +112,8 @@ export const makeLaoGreetStoreWatcher = (
         const greetLaoMessage = ExtendedMessage.fromState(messageState.byId[messageId]);
 
         // as well as the key of the organizer of the lao corresponding to the message
-        const laoId = greetLaoMessage.laoId.valueOf();
-        if (!(laoId in laoState.byId)) {
+        const laoId = greetLaoMessage.laoId?.valueOf();
+        if (!laoId || !(laoId in laoState.byId)) {
           throw new Error(
             `The message with id ${messageId} was received from lao with id ${laoId} but this lao is not stored in the lao reducer`,
           );

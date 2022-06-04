@@ -7,19 +7,19 @@ const ed25519 = curve.newCurve('edwards25519');
 export class ElectionPublicKey {
   public point: Point;
 
-  constructor(encodedKey: string | Base64UrlData) {
+  constructor(encodedKey: Base64UrlData) {
     const point = ed25519.point();
-    point.unmarshalBinary(Buffer.from(encodedKey, 'base64'));
+    point.unmarshalBinary(encodedKey.toBuffer());
 
     this.point = point;
   }
 
   toString(): string {
-    return this.point.marshalBinary().toString('base64');
+    return Base64UrlData.encode(this.point.marshalBinary()).valueOf();
   }
 
   toBase64(): Base64UrlData {
-    return new Base64UrlData(this.toString());
+    return Base64UrlData.encode(this.point.marshalBinary());
   }
 
   equals(other: ElectionPublicKey): boolean {
@@ -32,7 +32,7 @@ export class ElectionPublicKey {
    * @param data The data to encrypt
    * @returns The points K and C (each 32 bits) appended together and encoded in base64
    */
-  encrypt(data: Buffer): string {
+  encrypt(data: Buffer): Base64UrlData {
     // Follows this implementation:
     // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L15-L23
 
@@ -52,6 +52,6 @@ export class ElectionPublicKey {
     // C = S.Add(S, M)                                  // message blinded with secret
     const C = S.add(S, M);
 
-    return Buffer.concat([K.marshalBinary(), C.marshalBinary()]).toString('base64');
+    return Base64UrlData.encode(Buffer.concat([K.marshalBinary(), C.marshalBinary()]));
   }
 }

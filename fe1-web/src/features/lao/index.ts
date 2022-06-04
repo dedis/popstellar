@@ -10,7 +10,13 @@ import {
 } from './interface';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
-import { laoReducer, serverReducer, addLaoServerAddress, greetLaoReducer } from './reducer';
+import {
+  laoReducer,
+  serverReducer,
+  addLaoServerAddress,
+  greetLaoReducer,
+  setLaoLastRollCall,
+} from './reducer';
 
 /**
  * Configures the LAO feature
@@ -26,6 +32,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     components: PublicComponents,
     actionCreators: {
       addLaoServerAddress,
+      setLaoLastRollCall,
     },
     hooks: {
       useLaoList: hooks.LaoHooks.useLaoList,

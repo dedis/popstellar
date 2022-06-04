@@ -12,8 +12,8 @@ final case class PostTransaction(
   transaction: Transaction,
   transactionId: Hash,
   ) extends MessageData {
-    override val _object: ObjectType = ObjectType.TRANSACTION
-    override val action: ActionType = ActionType.POST
+    override val _object: ObjectType = ObjectType.COIN
+    override val action: ActionType = ActionType.POST_TRANSACTION
 }
 
 object PostTransaction extends Parsable {
