@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.digitalcash;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,8 +12,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -29,7 +28,7 @@ public class DigitalCashMain extends AppCompatActivity {
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
   public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
-  //public static final String LAO = "LAO";
+  // public static final String LAO = "LAO";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,6 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
     mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
     mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
-
 
     setupNavigationBar();
     // Subscribe to "open home"
@@ -103,8 +101,27 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Log.d(TAG, "Open digital cash issue Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
+
               if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_issue);
+                Log.d(
+                    TAG,
+                    "the key from organizer is : "
+                        + mViewModel.getCurrentLao().getOrganizer().getEncoded());
+                Log.d(
+                    TAG,
+                    "the key from the person is "
+                        + mViewModel.getKeyManager().getMainPublicKey().getEncoded());
+                if (!mViewModel
+                    .getCurrentLao()
+                    .getOrganizer()
+                    .getEncoded()
+                    .equals(mViewModel.getKeyManager().getMainPublicKey().getEncoded())) {
+                  Toast.makeText(this, "You have to be the Lao Organizer", Toast.LENGTH_SHORT)
+                      .show();
+                } else {
+
+                  setupFragment(R.id.fragment_digital_cash_issue);
+                }
               }
             });
 

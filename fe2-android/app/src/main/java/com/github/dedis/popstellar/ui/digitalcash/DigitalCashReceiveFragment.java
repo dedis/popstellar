@@ -68,7 +68,8 @@ public class DigitalCashReceiveFragment extends Fragment {
         long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
         mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
         mBinding.digitalCashReceiveAmount.setText(
-            String.valueOf(transaction.getMiniLaoPerReceiver(token.getPublicKey())) + " LAOcoin");
+            String.valueOf(transaction.getMiniLaoPerReceiverFirst(token.getPublicKey()))
+                + " LAOcoin");
       }
     } catch (KeyException e) {
       Log.d(this.getClass().toString(), "Error to get the Key");

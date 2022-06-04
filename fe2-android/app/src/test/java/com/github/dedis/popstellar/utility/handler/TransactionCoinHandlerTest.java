@@ -152,7 +152,7 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransactionHistoryByUser().size());
     TransactionObject transaction_object =
-        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
+        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey()).get(0);
     assertEquals(transaction_object.getChannel(), coinChannel);
     assertEquals(1, lao.getPubKeyByHash().size());
   }

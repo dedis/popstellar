@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -45,10 +47,9 @@ public class DigitalCashSendFragment extends Fragment {
     return new DigitalCashSendFragment();
   }
 
-
   @Override
   public View onCreateView(
-    LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
@@ -62,32 +63,75 @@ public class DigitalCashSendFragment extends Fragment {
     setupSendCoinButton();
 
     mViewModel
-     .getPostTransactionEvent()
-     .observe(
-       getViewLifecycleOwner(),
-         booleanEvent -> {
-           Boolean event = booleanEvent.getContentIfNotHandled();
-            if (event != null) {
-             String current_amount = mBinding.digitalCashSendAmount.getText().toString();
-             // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
-             String current_public_key_selected = String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-             if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
-              // create in View Model a function that toast : please enter amount
-              mViewModel.requireToPutAnAmount();
-             } else if (current_public_key_selected.isEmpty()) {
-               // create in View Model a function that toast : please enter key
-              mViewModel.requireToPutLAOMember();
-             } else {
-              try {
-               postTransaction(Collections.singletonMap(
-                       current_public_key_selected, current_amount));
-                      //mViewModel.updateReceiptAddressEvent(current_public_key_selected);
-                      //mViewModel.updateReceiptAmountEvent(current_amount);
-               mViewModel.openReceipt();
-              } catch (KeyException e) {
-               e.printStackTrace();
-               Log.d(TAG,"error couldn't post the transaction due to key exception");
-    }}}});
+        .getPostTransactionEvent()
+        .observe(
+            getViewLifecycleOwner(),
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                String current_amount = mBinding.digitalCashSendAmount.getText().toString();
+                // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
+                String current_public_key_selected =
+                    String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
+                if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
+                  // create in View Model a function that toast : please enter amount
+                  mViewModel.requireToPutAnAmount();
+                  return;
+                } else if (current_public_key_selected.isEmpty()) {
+                  // create in View Model a function that toast : please enter key
+                  mViewModel.requireToPutLAOMember();
+                  return;
+                }
+
+                PoPToken token = null;
+                try {
+                  token = mViewModel.getKeyManager().getValidPoPToken(mViewModel.getCurrentLao());
+                  if (mViewModel.getCurrentLao().getTransactionByUser().isEmpty()
+                      || !mViewModel
+                          .getCurrentLao()
+                          .getTransactionByUser()
+                          .containsKey(token.getPublicKey())) {
+                    Toast.makeText(
+                            requireContext(),
+                            "Can't send because you have no money",
+                            Toast.LENGTH_SHORT)
+                        .show();
+                    return;
+                  }
+
+                  long amount =
+                      TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                          mViewModel
+                              .getCurrentLao()
+                              .getTransactionByUser()
+                              .get(token.getPublicKey()),
+                          token.getPublicKey());
+                  if (amount < (Integer.valueOf(current_amount))) {
+                    Toast.makeText(
+                            requireContext(),
+                            "Can't send more money than you have !",
+                            Toast.LENGTH_SHORT)
+                        .show();
+                    return;
+                  }
+                } catch (KeyException keyException) {
+                  Toast.makeText(requireContext(), "Require to be in the LAO !", Toast.LENGTH_SHORT)
+                      .show();
+                  return;
+                }
+
+                try {
+                  postTransaction(
+                      Collections.singletonMap(current_public_key_selected, current_amount));
+                  mViewModel.updateReceiptAddressEvent(current_public_key_selected);
+                  mViewModel.updateReceiptAmountEvent(current_amount);
+                  mViewModel.openReceipt();
+                } catch (KeyException e) {
+                  e.printStackTrace();
+                  Log.d(TAG, "error couldn't post the transaction due to key exception");
+                }
+              }
+            });
 
     /* Roll Call attendees to which we can send*/
     List<String> myArray = null;
@@ -96,12 +140,13 @@ public class DigitalCashSendFragment extends Fragment {
     } catch (NoRollCallException e) {
       mViewModel.openHome();
       Log.d(this.getClass().toString(), "error : no RollCall in the Lao");
-      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT).show();
+      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT)
+          .show();
     }
-    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    ArrayAdapter<String> adapter =
+        new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
-
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {

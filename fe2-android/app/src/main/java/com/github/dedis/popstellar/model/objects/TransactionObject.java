@@ -37,6 +37,35 @@ public class TransactionObject {
     // change the sig for all the inputs
   }
 
+  /**
+   * Class which return the last roll call open
+   *
+   * @return Rollcall the roll call with the last ending tim e
+   */
+  public static TransactionObject lastLockedTransactionObject(
+      List<TransactionObject> listTransaction) {
+    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
+  }
+
+  /**
+   * Total MiniLao List of Transaction
+   *
+   * @param transaction List<TransactionObject>
+   * @param receiver Public Key
+   * @return long amount per user
+   */
+  public static long getMiniLaoPerReceiverSetTransaction(
+      List<TransactionObject> transaction, PublicKey receiver) {
+    Iterator<TransactionObject> transactionIte = transaction.iterator();
+    long totalAmount = 0;
+    while (transactionIte.hasNext()) {
+      // TODO error !!!!
+      long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
+      totalAmount += current;
+    }
+    return totalAmount;
+  }
+
   public Channel getChannel() {
     return channel;
   }
@@ -84,10 +113,10 @@ public class TransactionObject {
    */
   public List<PublicKey> getSendersTransaction() {
     Iterator<InputObject> input_ite = getInputs().iterator();
-    List<PublicKey> senders= new ArrayList<>();
+    List<PublicKey> senders = new ArrayList<>();
 
-    //Through the inputs look at the sender
-    while (input_ite.hasNext()){
+    // Through the inputs look at the sender
+    while (input_ite.hasNext()) {
       PublicKey current_sender = new PublicKey(input_ite.next().getScript().getPubkey());
       senders.add(current_sender);
     }
@@ -104,7 +133,7 @@ public class TransactionObject {
     Iterator<OutputObject> output_ite = getOutputs().iterator();
     List<String> receiver_hash = new ArrayList<>();
 
-    while(output_ite.hasNext()){
+    while (output_ite.hasNext()) {
       receiver_hash.add(output_ite.next().getScript().getPubkeyHash());
     }
 
@@ -120,8 +149,8 @@ public class TransactionObject {
   public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> map_hash_key) {
     Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
     List<PublicKey> receivers = new ArrayList<>();
-    while (receiver_hash_ite.hasNext()){
-      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(),null);
+    while (receiver_hash_ite.hasNext()) {
+      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(), null);
       if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
@@ -168,14 +197,14 @@ public class TransactionObject {
     Iterator<OutputObject> ite_output = outputs.iterator();
 
     int index = 0;
-    while (ite_input.hasNext()){
+    while (ite_input.hasNext()) {
       InputObject current = ite_input.next();
       sig[index] = current.getTxOutHash();
       sig[index + 1] = String.valueOf(current.getTxOutIndex());
       index = index + 2;
     }
 
-    while (ite_output.hasNext()){
+    while (ite_output.hasNext()) {
       OutputObject current = ite_output.next();
       sig[index] = String.valueOf(current.getValue());
       sig[index + 1] = current.getScript().getType();
@@ -184,7 +213,6 @@ public class TransactionObject {
     }
     return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
   }
-
 
   /**
    * Function that given a Public Key gives the miniLaoCoin received
@@ -208,6 +236,34 @@ public class TransactionObject {
       OutputObject current = iterator.next();
       if (current.getScript().getPubkeyHash().equals(hash_key)) {
         miniLao = miniLao + current.getValue();
+      }
+    }
+    return miniLao;
+  }
+
+  /**
+   * Function that given a Public Key gives the miniLaoCoin received first time occur (indeed take
+   * into account the fact that someone send money to it self)
+   *
+   * @param receiver Public Key of a potential receiver
+   * @return int amount of Lao Coin
+   */
+  public long getMiniLaoPerReceiverFirst(PublicKey receiver) {
+    // Check in the future if useful
+    if (!isReceiver(receiver)) {
+      throw new IllegalArgumentException(
+          "The public Key is not contained in the receiver public key");
+    }
+    // Set the return value to nothing
+    long miniLao = 0;
+    // Compute the hash of the public key
+    String hash_key = receiver.computeHash();
+    // iterate through the output and sum if it's for the argument public key
+    Iterator<OutputObject> iterator = getOutputs().iterator();
+    while (iterator.hasNext()) {
+      OutputObject current = iterator.next();
+      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+        return current.getValue();
       }
     }
     return miniLao;
@@ -286,34 +342,5 @@ public class TransactionObject {
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
-  }
-
-  /**
-   * Class which return the last roll call open
-   *
-   * @return Rollcall the roll call with the last ending tim e
-   */
-  public static TransactionObject lastLockedTransactionObject(
-      List<TransactionObject> listTransaction) {
-    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
-  }
-
-  /**
-   * Total MiniLao List of Transaction
-   *
-   * @param transaction List<TransactionObject>
-   * @param receiver Public Key
-   * @return long amount per user
-   */
-  public static long getMiniLaoPerReceiverSetTransaction(
-      List<TransactionObject> transaction, PublicKey receiver) {
-    Iterator<TransactionObject> transactionIte = transaction.iterator();
-    long totalAmount = 0;
-    while (transactionIte.hasNext()) {
-      // TODO error !!!!
-      long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
-      totalAmount += current;
-    }
-    return totalAmount;
   }
 }
