@@ -17,7 +17,6 @@ public class Constants {
   /** The extra value given to the RollCallFragment when opened */
   public static final String RC_PK_EXTRA = "pk";
 
-  public static final float DISABLED_TRANSPARENCY_ALPHA = 0.3f;
-
-  public static final float ENABLED_OPAQUE_ALPHA = 1.0f;
+  /** Using the Resources class constant would require a min API of 29 */
+  public static final int ID_NULL = 0;
 }

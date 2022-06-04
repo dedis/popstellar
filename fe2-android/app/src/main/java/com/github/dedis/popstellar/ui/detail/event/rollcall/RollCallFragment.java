@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -46,8 +48,7 @@ public class RollCallFragment extends Fragment {
   private ImageView statusIcon;
   private String pk;
 
-  private static final int ID_NULL =
-      0; // Using the Resources class constant would require a min API of 29
+
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
   private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
