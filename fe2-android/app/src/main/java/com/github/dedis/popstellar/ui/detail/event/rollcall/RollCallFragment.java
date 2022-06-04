@@ -46,8 +46,6 @@ public class RollCallFragment extends Fragment {
   private TextView title;
   private TextView statusText;
   private ImageView statusIcon;
-  private String pk;
-
 
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
@@ -157,7 +155,7 @@ public class RollCallFragment extends Fragment {
   }
 
   private void retrieveAndDisplayPublicKey(View view) {
-    pk = requireArguments().getString(Constants.RC_PK_EXTRA);
+    String pk = requireArguments().getString(Constants.RC_PK_EXTRA);
     ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     Log.d(TAG, "key displayed is " + pk);
     Bitmap myBitmap = QRCode.from(pk).bitmap();
