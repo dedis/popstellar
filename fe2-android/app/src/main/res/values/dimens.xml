@@ -31,12 +31,9 @@
   <integer name="requested_preview_width">1600</integer>
   <dimen name="camera_close_button_end_margin">8dp</dimen>
 
-  <!-- Button -->
   <dimen name="channel_qr_code_size">250dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
-  <dimen name="event_buttons_width">110dp</dimen>
 
-  <!-- QR code -->
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
