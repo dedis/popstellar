@@ -49,7 +49,6 @@ public class RollCallFragment extends Fragment {
     // Required empty public constructor
   }
 
-
   public static RollCallFragment newInstance(PublicKey pk) {
     RollCallFragment fragment = new RollCallFragment();
     Bundle bundle = new Bundle(1);
@@ -89,7 +88,7 @@ public class RollCallFragment extends Fragment {
               laoDetailViewModel.closeRollCall();
               break;
             default:
-              throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
+              throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
           }
         };
 
@@ -148,9 +147,9 @@ public class RollCallFragment extends Fragment {
 
         imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
         break;
-      case RESULTS_READY:
+      default:
         // Should never happened for a Roll-Call
-        throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
+        throw new IllegalStateException("Roll-Call should not be in a " + rcState + " state");
     }
 
     managementButton.setText(managementTextId);

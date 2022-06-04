@@ -61,10 +61,10 @@ public class ElectionFragment extends Fragment {
 
     setupElectionContent();
     setupTime(view);
-
     managementButton.setOnClickListener(
         v -> {
-          switch (election.getState().getValue()) {
+          EventState state = election.getState().getValue();
+          switch (state) {
             case CREATED:
               // When implemented across all subsystems go into start election fragment which
               // implements consensus
@@ -89,22 +89,23 @@ public class ElectionFragment extends Fragment {
               break;
             default:
               throw new IllegalStateException(
-                  "User should not be able to use the management button when in this state");
+                  "User should not be able to use the management button when in this state : "
+                      + state);
           }
         });
 
     actionButton.setOnClickListener(
         v -> {
-          switch (election.getState().getValue()) {
-            case CLOSED:
-            case CREATED:
-              throw new IllegalStateException(
-                  "User should not be able to use the action button in this state");
+          EventState state = election.getState().getValue();
+          switch (state) {
             case OPENED:
               laoDetailViewModel.openCastVotes();
               break;
             case RESULTS_READY:
               laoDetailViewModel.openElectionResults(true);
+            default:
+              throw new IllegalStateException(
+                  "User should not be able to use the action button in this state :" + state);
           }
         });
 
@@ -193,6 +194,10 @@ public class ElectionFragment extends Fragment {
         statusText.setTextColor(getResources().getColor(R.color.green, null));
 
         managementButton.setVisibility(View.GONE);
+
+      default:
+        throw new IllegalStateException(
+            "User should not be able to use the action button in this state :" + electionState);
     }
 
     actionButton.setCompoundDrawablesWithIntrinsicBounds(imgAction, null, null, null);
