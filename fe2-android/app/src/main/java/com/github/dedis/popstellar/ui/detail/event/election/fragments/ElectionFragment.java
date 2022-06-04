@@ -87,8 +87,7 @@ public class ElectionFragment extends Fragment {
                   .setNegativeButton(R.string.no, null)
                   .show();
               break;
-            case CLOSED:
-            case RESULTS_READY:
+            default:
               throw new IllegalStateException(
                   "User should not be able to use the management button when in this state");
           }

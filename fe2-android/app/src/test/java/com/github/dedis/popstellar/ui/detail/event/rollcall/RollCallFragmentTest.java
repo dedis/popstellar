@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -120,7 +121,8 @@ public class RollCallFragmentTest {
               .build(),
           containerId(),
           RollCallFragment.class,
-          () -> RollCallFragment.newInstance(ROLL_CALL));
+          () -> RollCallFragment.newInstance(ROLL_CALL),
+          new BundleBuilder().putString(Constants.RC_PK_EXTRA, SENDER.getEncoded()).build());
 
   @Test
   public void rollCallTitleMatches() {

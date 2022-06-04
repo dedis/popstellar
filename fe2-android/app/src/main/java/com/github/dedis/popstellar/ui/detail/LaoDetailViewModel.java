@@ -616,7 +616,6 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(keyManager.getMainKeyPair(), channel, openRollCall)
             .subscribe(
                 () -> {
-                  Log.d(TAG, "opened the roll call");
                   currentRollCallId = openRollCall.getUpdateId();
                   Log.d(TAG, "opening rc with current id = " + currentRollCallId);
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;

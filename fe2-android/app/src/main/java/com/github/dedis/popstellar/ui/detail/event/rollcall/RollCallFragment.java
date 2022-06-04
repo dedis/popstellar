@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.Constants;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -42,18 +43,19 @@ public class RollCallFragment extends Fragment {
   private TextView title;
   private TextView statusText;
   private ImageView statusIcon;
-  private PublicKey pk;
+  private String pk;
 
   public RollCallFragment() {
     // Required empty public constructor
   }
 
-  public RollCallFragment(PublicKey pk) {
-    this.pk = pk;
-  }
 
   public static RollCallFragment newInstance(PublicKey pk) {
-    return new RollCallFragment(pk);
+    RollCallFragment fragment = new RollCallFragment();
+    Bundle bundle = new Bundle(1);
+    bundle.putString(Constants.RC_PK_EXTRA, pk.getEncoded());
+    fragment.setArguments(bundle);
+    return fragment;
   }
 
   @Override
@@ -86,7 +88,7 @@ public class RollCallFragment extends Fragment {
               // will add the scan to this fragment in the future
               laoDetailViewModel.closeRollCall();
               break;
-            case RESULTS_READY:
+            default:
               throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
           }
         };
@@ -97,16 +99,7 @@ public class RollCallFragment extends Fragment {
         .getState()
         .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
 
-    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
-    if (pk != null) {
-      Log.d(TAG, "key displayed is " + pk.getEncoded());
-      Bitmap myBitmap = QRCode.from(pk.getEncoded()).bitmap();
-      qrCode.setImageBitmap(myBitmap);
-    }
-    qrCode.setVisibility(
-        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
-            ? View.INVISIBLE
-            : View.VISIBLE);
+    retrieveAndDisplayPublicKey(view);
 
     return view;
   }
@@ -184,6 +177,18 @@ public class RollCallFragment extends Fragment {
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
+  }
+
+  private void retrieveAndDisplayPublicKey(View view) {
+    pk = requireArguments().getString(Constants.RC_PK_EXTRA);
+    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
+    Log.d(TAG, "key displayed is " + pk);
+    Bitmap myBitmap = QRCode.from(pk).bitmap();
+    qrCode.setImageBitmap(myBitmap);
+    qrCode.setVisibility(
+        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
+            ? View.INVISIBLE
+            : View.VISIBLE);
   }
 
   /**
