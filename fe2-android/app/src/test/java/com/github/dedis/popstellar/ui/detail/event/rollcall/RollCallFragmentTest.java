@@ -155,10 +155,6 @@ public class RollCallFragmentTest {
     managementButton().check(matches(withText("OPEN")));
   }
 
-  private void openRollCall() {
-    ROLL_CALL.setState(EventState.OPENED);
-  }
-
   @Test
   public void statusOpenedTest() {
     openRollCall();
@@ -171,10 +167,6 @@ public class RollCallFragmentTest {
     managementButton().check(matches(withText("CLOSE")));
   }
 
-  private void closeRollCall() {
-    ROLL_CALL.setState(EventState.CLOSED);
-  }
-
   @Test
   public void statusClosedTest() {
     closeRollCall();
@@ -185,5 +177,13 @@ public class RollCallFragmentTest {
   public void managementButtonClosedTest() {
     closeRollCall();
     managementButton().check(matches(withText("REOPEN")));
+  }
+
+  private void openRollCall() {
+    ROLL_CALL.setState(EventState.OPENED);
+  }
+
+  private void closeRollCall() {
+    ROLL_CALL.setState(EventState.CLOSED);
   }
 }

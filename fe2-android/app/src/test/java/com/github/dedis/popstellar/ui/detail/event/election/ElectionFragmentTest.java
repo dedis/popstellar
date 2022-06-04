@@ -165,10 +165,6 @@ public class ElectionFragmentTest {
     electionActionButton().check(matches(not(isEnabled())));
   }
 
-  private void openElection() {
-    election.setEventState(OPENED);
-  }
-
   @Test
   public void statusOpenTest() {
     openElection();
@@ -188,10 +184,6 @@ public class ElectionFragmentTest {
     electionActionButton().check(matches(isEnabled()));
   }
 
-  private void closeElection() {
-    election.setEventState(CLOSED);
-  }
-
   @Test
   public void statusClosedTest() {
     closeElection();
@@ -209,10 +201,6 @@ public class ElectionFragmentTest {
     closeElection();
     electionActionButton().check(matches(withText("Results")));
     electionActionButton().check(matches(not(isEnabled())));
-  }
-
-  private void receiveResults() {
-    election.setEventState(RESULTS_READY);
   }
 
   @Test
@@ -247,5 +235,17 @@ public class ElectionFragmentTest {
     electionManagementButton().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("Yes"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("No"), isDisplayed()));
+  }
+
+  private void openElection() {
+    election.setEventState(OPENED);
+  }
+
+  private void closeElection() {
+    election.setEventState(CLOSED);
+  }
+
+  private void receiveResults() {
+    election.setEventState(RESULTS_READY);
   }
 }
