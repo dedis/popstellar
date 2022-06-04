@@ -28,6 +28,7 @@ import net.glxn.qrgen.android.QRCode;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -44,6 +45,15 @@ public class RollCallFragment extends Fragment {
   private TextView statusText;
   private ImageView statusIcon;
   private String pk;
+
+  private static final int ID_NULL =
+      0; // Using the Resources class constant would require a min API of 29
+
+  private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
+  private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
+  private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
+  private final EnumMap<EventState, Integer> managementIconMap = buildManagementIconMap();
+  private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
 
   public RollCallFragment() {
     // Required empty public constructor
@@ -110,53 +120,20 @@ public class RollCallFragment extends Fragment {
     title.setText(rollCall.getName());
     managementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
 
-    Drawable imgStatus = null;
-    Drawable imgManagement = null;
+    managementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
 
-    int managementTextId = 0;
-    int statusTextId = 0;
+    Drawable imgManagement =
+        AppCompatResources.getDrawable(
+            getContext(), managementIconMap.getOrDefault(rcState, ID_NULL));
+    managementButton.setCompoundDrawablesWithIntrinsicBounds(imgManagement, null, null, null);
 
-    switch (rcState) {
-      case CREATED:
-        managementTextId = R.string.open;
-        statusTextId = R.string.closed;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
-        setImageColor(statusIcon, R.color.red);
-        statusText.setTextColor(getResources().getColor(R.color.red, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
-        break;
-      case OPENED:
-        statusTextId = R.string.open;
-        managementTextId = R.string.close;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_unlock);
-        setImageColor(statusIcon, R.color.green);
-        statusText.setTextColor(getResources().getColor(R.color.green, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_lock);
-        break;
-      case CLOSED:
-        statusTextId = R.string.closed;
-        managementTextId = R.string.reopen_rollcall;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
-        setImageColor(statusIcon, R.color.red);
-        statusText.setTextColor(getResources().getColor(R.color.red, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
-        break;
-      default:
-        // Should never happened for a Roll-Call
-        throw new IllegalStateException("Roll-Call should not be in a " + rcState + " state");
-    }
-
-    managementButton.setText(managementTextId);
-    managementButton.setCompoundDrawables(imgManagement, null, null, null);
-
+    Drawable imgStatus = getDrawableFromContext(statusIconMap.getOrDefault(rcState, ID_NULL));
     statusIcon.setImageDrawable(imgStatus);
-    statusText.setText(statusTextId);
+    setImageColor(statusIcon, statusColorMap.getOrDefault(rcState, ID_NULL));
+
+    statusText.setText(statusTextMap.getOrDefault(rcState, ID_NULL));
+    statusText.setTextColor(
+        getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
   }
 
   private void setupTime(View view) {
@@ -188,6 +165,46 @@ public class RollCallFragment extends Fragment {
         Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
             ? View.INVISIBLE
             : View.VISIBLE);
+  }
+
+  private EnumMap<EventState, Integer> buildManagementTextMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.string.open);
+    map.put(EventState.OPENED, R.string.close);
+    map.put(EventState.CLOSED, R.string.reopen_rollcall);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusTextMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.string.closed);
+    map.put(EventState.OPENED, R.string.open);
+    map.put(EventState.CLOSED, R.string.closed);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusIconMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.drawable.ic_lock);
+    map.put(EventState.OPENED, R.drawable.ic_unlock);
+    map.put(EventState.CLOSED, R.drawable.ic_lock);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusColorMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.color.red);
+    map.put(EventState.OPENED, R.color.green);
+    map.put(EventState.CLOSED, R.color.red);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildManagementIconMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.drawable.ic_unlock);
+    map.put(EventState.OPENED, R.drawable.ic_lock);
+    map.put(EventState.CLOSED, R.drawable.ic_unlock);
+    return map;
   }
 
   /**
