@@ -17,6 +17,8 @@ import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHomeFragment#newInstance} factory
  * method to create an instance of this fragment.
@@ -57,9 +59,11 @@ public class DigitalCashHomeFragment extends Fragment {
       mBinding.digitalCashHomeAddress.setText(token.getPublicKey().getEncoded());
 
       if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject transaction = lao.getTransactionByUser().get(token.getPublicKey());
-        mBinding.digitalCashSendAddress.setText(
-            "LAOcoin : " + transaction.getMiniLaoPerReceiver(token.getPublicKey()));
+        List<TransactionObject> transactions = lao.getTransactionByUser().get(token.getPublicKey());
+        long totalAmount =
+            TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                transactions, token.getPublicKey());
+        mBinding.digitalCashSendAddress.setText("LAOcoin : " + totalAmount);
       }
 
     } catch (KeyException e) {

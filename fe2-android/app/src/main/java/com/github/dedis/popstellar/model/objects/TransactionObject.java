@@ -12,6 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -287,6 +288,32 @@ public class TransactionObject {
         "this public key is not contained in the output of this transaction");
   }
 
+  /**
+   * Class which return the last roll call open
+   *
+   * @return Rollcall the roll call with the last ending tim e
+   */
+  public static TransactionObject lastLockedTransactionObject(
+      List<TransactionObject> listTransaction) {
+    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
+  }
 
-
+  /**
+   * Total MiniLao List of Transaction
+   *
+   * @param transaction List<TransactionObject>
+   * @param receiver Public Key
+   * @return long amount per user
+   */
+  public static long getMiniLaoPerReceiverSetTransaction(
+      List<TransactionObject> transaction, PublicKey receiver) {
+    Iterator<TransactionObject> transactionIte = transaction.iterator();
+    long totalAmount = 0;
+    while (transactionIte.hasNext()) {
+      // TODO error !!!!
+      long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
+      totalAmount += current;
+    }
+    return totalAmount;
+  }
 }

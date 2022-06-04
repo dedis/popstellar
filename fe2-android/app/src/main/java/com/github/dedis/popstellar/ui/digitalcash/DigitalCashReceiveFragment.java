@@ -58,13 +58,17 @@ public class DigitalCashReceiveFragment extends Fragment {
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
 
       if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject transaction = lao.getTransactionByUser().get(token.getPublicKey());
+        TransactionObject transaction =
+            TransactionObject.lastLockedTransactionObject(
+                lao.getTransactionByUser().get(token.getPublicKey()));
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText("Received from : \n" + sender);
 
         long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
         mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
+        mBinding.digitalCashReceiveAmount.setText(
+            String.valueOf(transaction.getMiniLaoPerReceiver(token.getPublicKey())) + " LAOcoin");
       }
     } catch (KeyException e) {
       Log.d(this.getClass().toString(), "Error to get the Key");

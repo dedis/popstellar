@@ -142,6 +142,14 @@ public final class RollCallHandler {
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
 
+      /* Creation channel coin*/
+      context
+          .getMessageSender()
+          .subscribe(channel.subChannel("coin"))
+          .subscribe(
+              () -> Log.d(TAG, "subscription to the coin channel was a success"),
+              error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
+
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {

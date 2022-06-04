@@ -330,20 +330,20 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject transactionPrevious =
+        List<TransactionObject> transactions =
             getCurrentLao().getTransactionByUser().get(token.getPublicKey());
 
         long amount_sender =
-            transactionPrevious.getMiniLaoPerReceiver(token.getPublicKey()) - amountFromReceiver;
+            TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                    transactions, token.getPublicKey())
+                - amountFromReceiver;
         Output output_sender =
             new Output(amount_sender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
         outputs.add(output_sender);
+        TransactionObject transactionPrevious =
+            TransactionObject.lastLockedTransactionObject(transactions);
         transaction_hash = transactionPrevious.computeId();
-        index =
-            getCurrentLao()
-                .getTransactionByUser()
-                .get(token.getPublicKey())
-                .getIndexTransaction(token.getPublicKey());
+        index = transactionPrevious.getIndexTransaction(token.getPublicKey());
       }
       String sig =
           Transaction.computeSigOutputsPairTxOutHashAndIndex(

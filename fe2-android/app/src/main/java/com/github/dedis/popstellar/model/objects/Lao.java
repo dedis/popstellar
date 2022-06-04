@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -49,7 +51,7 @@ public final class Lao {
   // Map for the history
   private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, TransactionObject> transactionByUser;
+  private Map<PublicKey, List<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -184,8 +186,8 @@ public final class Lao {
   }
 
   // add a function that update all the transaction
-  public void updateTransactionMaps(TransactionObject transaction_object) {
-    if (transaction_object == null) {
+  public void updateTransactionMaps(TransactionObject transactionObject) {
+    if (transactionObject == null) {
       throw new IllegalArgumentException("The transaction is null");
     }
     // Change the transaction per public key in transacionperUser
@@ -199,18 +201,33 @@ public final class Lao {
 
     // Contained in the receiver there are also the sender
     // which has to be in the list of attendees of the roll call
-    Iterator<PublicKey> receivers_ite =
-        transaction_object.getReceiversTransaction(pubKeyByHash).iterator();
-    while (receivers_ite.hasNext()) {
-      PublicKey current = receivers_ite.next();
+    Iterator<PublicKey> receiversIte =
+        transactionObject.getReceiversTransaction(pubKeyByHash).iterator();
+    while (receiversIte.hasNext()) {
+      PublicKey current = receiversIte.next();
       // Add the transaction in the current state  / for the sender and the receiver
-      transactionByUser.put(current, transaction_object);
+
+      if (transactionByUser.containsKey(current)
+          && transactionObject.isReceiver(current)
+          && !transactionObject.isSender(current)) {
+        transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
+        List<TransactionObject> list = new ArrayList<>(transactionByUser.get(current));
+        list.add(transactionObject);
+        transactionByUser.replace(current, list);
+      } else {
+        transactionByUser.put(current, Collections.singletonList(transactionObject));
+      }
+
       // Add the transaction in the history / for the sender and the receiver
       transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
-      if (!transactionHistoryByUser.get(current).add(transaction_object)) {
+      if (!transactionHistoryByUser.get(current).add(transactionObject)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
+    Log.d(
+        this.getClass().toString(),
+        "Transaction by history : " + transactionHistoryByUser.toString());
+    Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -390,7 +407,7 @@ public final class Lao {
     return transactionHistoryByUser;
   }
 
-  public Map<PublicKey, TransactionObject> getTransactionByUser() {
+  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
     return transactionByUser;
   }
 
@@ -465,6 +482,8 @@ public final class Lao {
         + elections
         + ", electInstances="
         + messageIdToElectInstance.values()
+        + ", transactionPerUser="
+        + transactionByUser.toString()
         + '}';
   }
 
