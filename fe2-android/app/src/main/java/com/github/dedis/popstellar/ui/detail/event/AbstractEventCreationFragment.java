@@ -57,6 +57,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
+  // This is to avoid clearing the fields on each click
   private boolean toBeCleared = true;
 
   public void setDateAndTimeView(View view) {
@@ -118,7 +119,13 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         });
   }
 
+  /**
+   * When the user want to change the suggested time, it would be cumbersome without clearing the
+   * suggested fields. So on the first click on one of those fields we clear them all, but not on
+   * subsequent ones
+   */
   private void clearDates() {
+    // Should only be cleared on the first click on those fields, to erase suggested time
     if (toBeCleared) {
       startDateEditText.getText().clear();
       startTimeEditText.getText().clear();
