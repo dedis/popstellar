@@ -44,8 +44,14 @@ public class CastVoteFragment extends Fragment {
             mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
         for (int i = 0; i < electionQuestions.size(); i++) {
           ElectionQuestion electionQuestion = electionQuestions.get(i);
-          Integer vote = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
 
+          // Attendee should not be able to send cast vote if he didn't vote for all questions
+          List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
+          if (votes.size() < electionQuestions.size()) {
+            return;
+          }
+
+          Integer vote = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
           // Only one vote should be selected.
           ElectionVote electionVote =
               new ElectionVote(

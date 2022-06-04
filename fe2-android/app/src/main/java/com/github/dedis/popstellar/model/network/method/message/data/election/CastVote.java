@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -31,9 +32,8 @@ public class CastVote <E> extends Data {
    * @param electionId election id
    * @param laoId lao id
    */
-  public CastVote(List<E> votes,
-                  String electionId,
-                  String laoId) {
+  @JsonCreator
+  public CastVote(@JsonProperty("votes") List<E> votes, String electionId, String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
     this.electionId = electionId;
     this.laoId = laoId;
@@ -106,4 +106,5 @@ public class CastVote <E> extends Data {
         + Arrays.toString(votes.toArray())
         + '}';
   }
+
 }

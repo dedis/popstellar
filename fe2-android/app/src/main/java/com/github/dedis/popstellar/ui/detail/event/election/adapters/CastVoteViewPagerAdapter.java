@@ -104,8 +104,7 @@ public class CastVoteViewPagerAdapter
           // This is for satisfying the unique vote method
           // It should be changed in the future when multiple vote will be allowed
           // For now the unique vote is the first element of the votes list
-          int chosenVote = votes.isEmpty() ? null : votes.get(0);
-          mLaoDetailViewModel.setCurrentElectionQuestionVotes(chosenVote, position);
+          mLaoDetailViewModel.setCurrentElectionQuestionVotes(votes.get(0), position);
           ballotsListView.setClickable(true);
           voteButton.setEnabled(checkEachQuestion());
         };

@@ -4,6 +4,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -11,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -51,7 +55,11 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
               + action.getAction()
               + ") does not exists in the protocol");
     }
-
+    // Due to the generic type of the vote, CastVote message needs a special
+    // deserialization
+    if (action == Action.CAST_VOTE) {
+      return customCastVoteDeserializer(json, context);
+    }
     return context.deserialize(json, clazz.get());
   }
 
@@ -62,5 +70,19 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     obj.addProperty(ACTION, src.getAction());
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     return obj;
+  }
+
+  public Data customCastVoteDeserializer(JsonElement json, JsonDeserializationContext context) {
+    JsonObject obj = json.getAsJsonObject();
+    Object voteContent = obj.get("items").getAsJsonObject().get("vote");
+    // Vote type of a CastVote is either an integer for an OpenBallot election or a
+    // String for an Encrypted election
+    if (voteContent.getClass().isInstance(Integer.class)) {
+      Type token = new TypeToken<CastVote<ElectionVote>>() {}.getType();
+      return context.deserialize(json, token);
+    } else {
+      Type token = new TypeToken<CastVote<ElectionEncryptedVote>>() {}.getType();
+      return context.deserialize(json, token);
+    }
   }
 }

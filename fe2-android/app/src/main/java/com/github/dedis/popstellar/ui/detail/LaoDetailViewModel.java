@@ -955,11 +955,14 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null || position < 0 || position >= mCurrentElectionVotes.getValue().size()) {
+    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
       throw new IllegalArgumentException();
     }
-
-    mCurrentElectionVotes.getValue().set(position, votes);
+    if (mCurrentElectionVotes.getValue().size() <= position) {
+      mCurrentElectionVotes.getValue().add(votes);
+    } else {
+      mCurrentElectionVotes.getValue().set(position, votes);
+    }
   }
 
   /*
