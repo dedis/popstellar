@@ -1,8 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
@@ -12,6 +15,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -46,6 +50,8 @@ public class ElectionTest {
   private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
 
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
+
   @Test
   public void settingNullParametersThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> election.setName(null));
@@ -56,6 +62,12 @@ public class ElectionTest {
   public void settingAndGettingReturnsCorrespondingName() {
     election.setName(name);
     assertThat(election.getName(), is(name));
+  }
+
+  @Test
+  public void settingAndGettingReturnsCorrespondingState() {
+    election.setEventState(OPENED);
+    assertThat(election.getState().getValue(), is(OPENED));
   }
 
   @Test
