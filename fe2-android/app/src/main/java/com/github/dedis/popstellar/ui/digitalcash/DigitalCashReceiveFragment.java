@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+
+import net.glxn.qrgen.android.QRCode;
 
 import java.time.Instant;
 
@@ -57,6 +60,10 @@ public class DigitalCashReceiveFragment extends Fragment {
       Lao lao = mViewModel.getCurrentLao();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
 
+      Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
+      mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
+
+
       if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction =
             TransactionObject.lastLockedTransactionObject(
@@ -64,6 +71,7 @@ public class DigitalCashReceiveFragment extends Fragment {
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText("Received from : \n" + sender);
+
 
         long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
         mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
