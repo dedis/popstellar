@@ -73,7 +73,7 @@ object Transaction extends Parsable {
   )
 
   final case class Output(
-    value: Long,
+    value: Uint53,
     script: LockScript,
   )
 }
