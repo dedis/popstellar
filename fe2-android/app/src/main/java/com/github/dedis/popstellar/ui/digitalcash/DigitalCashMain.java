@@ -1,16 +1,21 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -23,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashMain extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashMain.class.getSimpleName();
+  private BottomNavigationView bottomNavigationView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,8 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
 
     setupNavigationBar();
+    setupBackButton();
+
     // Subscribe to "open home"
     mViewModel
         .getOpenHomeEvent()
@@ -113,13 +121,42 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel.openHome();
   }
 
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+    if (menuItem.getItemId() == android.R.id.home) {
+      Fragment fragment =
+          getSupportFragmentManager().findFragmentById(R.id.fragment_container_digital_cash);
+      if (fragment instanceof DigitalCashHomeFragment) {
+        openHomeActivity();
+      } else {
+        bottomNavigationView.setSelectedItemId(R.id.home_coin);
+      }
+      return true;
+    }
+    return super.onOptionsItemSelected(menuItem);
+  }
+
+  private void openHomeActivity() {
+    Intent intent = new Intent(this, HomeActivity.class);
+    setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+    finish();
+  }
+
+  private void setupBackButton() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+  }
+
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
   }
 
   @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
+    bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
           int id = item.getItemId();
