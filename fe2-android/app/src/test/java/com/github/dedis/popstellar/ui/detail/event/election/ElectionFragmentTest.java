@@ -32,6 +32,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -75,7 +76,8 @@ public class ElectionFragmentTest {
   private static final long CREATION = 10323411;
   private static final long START = 10323421;
   private static final long END = 10323431;
-  private static final Election election = new Election(LAO_ID, CREATION, TITLE);
+  private static final Election election =
+      new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
   ElectionQuestion electionQuestion1 =
       new ElectionQuestion(
           "ElectionQuestion", "Plurality", false, Arrays.asList("1", "2"), election.getId());

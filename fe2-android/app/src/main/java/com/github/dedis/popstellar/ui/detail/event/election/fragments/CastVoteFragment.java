@@ -118,7 +118,7 @@ public class CastVoteFragment extends Fragment {
   }
 
   private List<Integer> setEmptyVoteList() {
-    List<Integer> votes = new ArrayList<>();
-    return votes;
+    // Keep this method if we need in the future to have multiple votes
+    return new ArrayList<>();
   }
 }
