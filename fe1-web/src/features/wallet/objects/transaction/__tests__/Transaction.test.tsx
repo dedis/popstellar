@@ -215,7 +215,10 @@ describe('Transaction', () => {
       mockKeyPair.publicKey,
       mockTransactionValue,
     );
-    const isValid = Transaction.isTransactionValid(coinbaseTransaction, mockKeyPair.publicKey);
+    const isValid = Transaction.checkTransactionSignatures(
+      coinbaseTransaction,
+      mockKeyPair.publicKey,
+    );
     expect(isValid).toBeTrue();
   });
   it('should invalidate a badly signed transaction', () => {
@@ -224,7 +227,7 @@ describe('Transaction', () => {
       mockKeyPair.publicKey,
       mockTransactionValue,
     );
-    const isValid = Transaction.isTransactionValid(
+    const isValid = Transaction.checkTransactionSignatures(
       coinbaseTransaction,
       new PublicKey(mockPublicKey2),
     );

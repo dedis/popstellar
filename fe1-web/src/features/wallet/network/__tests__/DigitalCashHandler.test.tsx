@@ -1,10 +1,23 @@
-import { mockKeyPair, mockLaoId, mockTransactionState } from '__tests__/utils';
+import {
+  mockCBHash,
+  mockCoinbaseTransactionJSON,
+  mockKeyPair,
+  mockLaoId,
+  mockPublicKey2,
+  mockTransactionState
+} from "__tests__/utils";
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/wallet/network/messages';
 import { Transaction } from 'features/wallet/objects/transaction';
 
 import { handleTransactionPost } from '../DigitalCashHandler';
+
+const mockCoinbaseTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
+const mockCoinbasePost = new PostTransaction({
+  transaction_id: mockCoinbaseTransaction.transactionId,
+  transaction: mockCoinbaseTransaction.toJSON(),
+});
 
 const mockTransaction = Transaction.fromState(mockTransactionState);
 const mockPost = new PostTransaction({
@@ -37,11 +50,12 @@ const createMockMessage = (post: PostTransaction) => {
 };
 
 const mockAddTransaction = jest.fn();
+const mockGetLaoOrganizer = jest.fn().mockReturnValue(mockKeyPair.publicKey);
 
 describe('DigitalCash handler', () => {
   it('should correctly handle message transaction', () => {
     const mockMessage = createMockMessage(mockPost);
-    expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeTrue();
+    expect(handleTransactionPost(mockAddTransaction, mockGetLaoOrganizer)(mockMessage)).toBeTrue();
 
     expect(mockAddTransaction).toHaveBeenCalledTimes(1);
     const [laoId, transaction] = mockAddTransaction.mock.calls[0];
@@ -51,12 +65,12 @@ describe('DigitalCash handler', () => {
 
   it('should return false when action does not correspond', () => {
     const mockMessage = createMockMessage(badActionPost);
-    expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeFalse();
+    expect(handleTransactionPost(mockAddTransaction, mockGetLaoOrganizer)(mockMessage)).toBeFalse();
   });
 
   it('should return false when object does not correspond', () => {
     const mockMessage = createMockMessage(badObjectPost);
-    expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeFalse();
+    expect(handleTransactionPost(mockAddTransaction, mockGetLaoOrganizer)(mockMessage)).toBeFalse();
   });
 
   it('should return false when laoId is not defined', () => {
@@ -64,6 +78,15 @@ describe('DigitalCash handler', () => {
       ...createMockMessage(mockPost),
       laoId: undefined,
     };
-    expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeFalse();
+    expect(handleTransactionPost(mockAddTransaction, mockGetLaoOrganizer)(mockMessage)).toBeFalse();
+  });
+  it('should return false when organizer did not sign the coinbase transaction', () => {
+    const mockMessage = createMockMessage(mockCoinbasePost);
+    expect(
+      handleTransactionPost(
+        mockAddTransaction,
+        mockGetLaoOrganizer.mockReturnValue(mockPublicKey2),
+      )(mockMessage),
+    ).toBeFalse();
   });
 });
