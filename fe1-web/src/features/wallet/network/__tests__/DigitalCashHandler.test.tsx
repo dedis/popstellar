@@ -4,8 +4,8 @@ import {
   mockKeyPair,
   mockLaoId,
   mockPublicKey2,
-  mockTransactionState
-} from "__tests__/utils";
+  mockTransactionState,
+} from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/wallet/network/messages';
