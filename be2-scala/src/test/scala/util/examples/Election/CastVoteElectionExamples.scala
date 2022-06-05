@@ -22,6 +22,7 @@ object CastVoteElectionExamples {
   final val VOTE_ID = Hash.fromStrings("Vote", ID.toString, QUESTION_ID.toString, VOTE.get.head.toString)
   final val VOTES: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(Left(1)), None))
 
+
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
