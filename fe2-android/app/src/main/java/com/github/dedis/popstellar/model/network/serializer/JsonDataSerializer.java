@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -74,10 +75,15 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
 
   public Data customCastVoteDeserializer(JsonElement json, JsonDeserializationContext context) {
     JsonObject obj = json.getAsJsonObject();
-    Object voteContent = obj.get("items").getAsJsonObject().get("vote");
+    JsonArray jsonVote = obj.getAsJsonArray("items");
+    boolean typeValidation = true;
     // Vote type of a CastVote is either an integer for an OpenBallot election or a
-    // String for an Encrypted election
-    if (voteContent.getClass().isInstance(Integer.class)) {
+    // String for an Encrypted election, type should be valid for all votes
+    for (int i = 0; i < jsonVote.size(); i++) {
+      JsonObject voteContent = jsonVote.get(i).getAsJsonObject();
+      typeValidation = typeValidation && voteContent.get("vote").getAsJsonPrimitive().isNumber();
+    }
+    if (typeValidation) {
       Type token = new TypeToken<CastVote<ElectionVote>>() {}.getType();
       return context.deserialize(json, token);
     } else {
