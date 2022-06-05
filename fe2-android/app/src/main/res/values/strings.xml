@@ -1,15 +1,21 @@
 <resources>
   <string name="app_name">popstellar</string>
 
-  <!-- Top Tabs -->
+  <!--  General-->
+  <string name="yes">Yes</string>
+  <string name="no">No</string>
+  <string name="add_caps">ADD</string>
+
+  <!-- bottom nav -->
   <string name="tab_home">Home</string>
   <string name="tab_connect">Connect</string>
   <string name="tab_launch">Launch</string>
   <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
-  <string name="tab_properties">Show/Hide Properties</string>
   <string name="tab_social_media">Social Media</string>
-  <string name="tab_digital_cash">Coin Transaction</string>
+  <string name="tab_digital_cash">Digital Cash</string>
+  <string name="event_list">Event List</string>
+  <string name="witnessing">Witnessing</string>
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
@@ -34,8 +40,16 @@
   <string name="text_entry_launch">Organization name</string>
   <string name="text_button_launch">Launch</string>
 
+  <!--  Lao Detail-->
+  <string name="add_election">New Election</string>
+  <string name="add_roll_call">New Roll Call</string>
+  <string name="present_header_title">Current</string>
+  <string name="future_header_title">Upcoming</string>
+  <string name="past_header_title">Previous</string>
 
   <!-- Abstract Event-->
+  <string name="open">Open</string>
+  <string name="close">Close</string>
   <string name="start_date_required">Start Date*</string>
   <string name="start_time_required">Start Time*</string>
   <string name="end_date_optional">End Date</string>
@@ -111,27 +125,26 @@
   <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
   <string name="event_description">Event Description</string>
   <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
-  <string name="close_roll_call">Close Roll-Call</string>
+  <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="roll_call_title_required">Roll-Call Title required</string>
-  <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
+  <string name="close_roll_call">Close Roll-Call</string>
+
+  <!--  Witnessing-->
+  <string name="messages">Messages</string>
+  <string name="witnesses">Witnesses</string>
 
   <!-- Witness -->
-  <string name="delete_witness_dialog_title">Delete ?</string>
   <string name="add_witness_successful">Witness has been added</string>
   <string name="add_witness_unsuccessful">Witness could not be added</string>
   <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
-  <string name="delete_witness_dialog_message">Are you sure you want to delete Witness n° %1$d</string>
 
   <!-- Properties -->
   <string name="test_organization_name">Test Organization Name</string>
-  <string name="edit_lao_name">Edit Lao Name</string>
 
   <string name="button_text">Cast Vote</string>
 
   <string name="total">Total:</string>
-  <string name="election_name">Election Name</string>
-  <string name="lao_name">LAO name</string>
   <string name="election_setup">Election Setup</string>
   <string name="select_a_voting_method">Select a voting method</string>
   <string name="submit">Submit</string>
@@ -139,6 +152,8 @@
   <string name="ballot_option_2">Ballot option 2</string>
 
   <!-- Election Event -->
+  <string name="closed">Closed</string>
+  <string name="finished">Finished</string>
   <string name="election_setup_presentation_title_text">Election Setup</string>
   <string name="add_ballot_options_button_text">Add ballot options</string>
   <string name="add_question_button_text">Add question</string>
@@ -149,30 +164,19 @@
   <string name="new_ballot_option_hint">ballot option</string>
 
   <string name="elections">Elections</string>
-  <string name="voting_management">Voting Management</string>
-  <string name="cancel_election">Cancel Election</string>
   <string name="displayed_end_time">displayed end time</string>
   <string name="displayed_current_time">displayed current time</string>
-  <string name="start_date">start date</string>
-  <string name="end_date">end date</string>
-  <string name="details">Details</string>
-  <string name="manage_election">manage election</string>
-  <string name="current_time">Current Time :</string>
-  <string name="election_start_time">Election Start Time :</string>
-  <string name="election_end_time">Election End Time :</string>
-  <string name="election_question">Election Question : ?</string>
-  <string name="edit_election_name">Edit Election Name</string>
-  <string name="edit_election_question">Edit Election Question</string>
-  <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
-  <string name="edit_election_start_time">Edit Election Start Time</string>
-  <string name="edit_election_end_time">Edit Election End Time</string>
   <string name="results">Results</string>
-  <string name="election_ended">Waiting for results</string>
-  <string name="tally_votes">Tally up votes</string>
-  <string name="cast_vote">Cast votes</string>
-  <string name="show_results">Show results</string>
+  <string name="waiting_for_results">Waiting for results</string>
+  <string name="vote">Vote</string>
   <string name="start">Start</string>
+  <string name="end">End</string>
   <string name="refresh_start">Refresh to start</string>
+  <string name="election_confirm_open">Are your sure you want to open this election ?</string>
+  <string name="election_confirm_close">
+    Are your sure you want to close this election, this action is irreversible ?
+  </string>
+  <string name="confirm_title">Confirm action</string>
 
   <!-- Consensus -->
   <string name="start_election">Start Election</string>
@@ -236,8 +240,6 @@
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
   <string name="message_signed">MESSAGE SIGNED</string>
-  <string name="witness_messages">WITNESS MESSAGES</string>
-  <string name="delete_a_witness">delete a witness</string>
 
   <!-- Settings -->
   <string name="settings">Settings</string>
@@ -258,6 +260,21 @@
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
+
+  <!--  Content description -->
+  <string name="qr_code_description">Open Qr code image</string>
+  <string name="qr_code_image_description">Qr code image to display LAO connecting information</string>
+  <string name="close_qr_description">Close Qr code</string>
+  <string name="status_icon_description">Status of the event</string>
+  <string name="time_icon_description">Time icon</string>
+  <string name="expand_icon_description">Expand</string>
+  <string name="event_type_icon_description">Event type</string>
+  <string name="event_right_arrow">Enter</string>
+  <string name="add_event_description">Add Event</string>
+  <string name="add_election_description">Add Election</string>
+  <string name="add_rc_description">Add Roll call</string>
+  <string name="rc_qr_description">Roll call qr code</string>
+  <string name="add_witness_description">Add witness</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
@@ -290,4 +307,5 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
+
 </resources>

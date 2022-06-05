@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -33,6 +34,7 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
+  private static final int ONE_HOUR = 1000 * 60 * 60;
 
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
@@ -55,33 +57,87 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
+  // This is to avoid clearing the fields on each click
+  private boolean toBeCleared = true;
+
   public void setDateAndTimeView(View view) {
+    long currentMillis = System.currentTimeMillis();
+    long suggestedEndMillis = currentMillis + ONE_HOUR; // Adding one hour
+    startDate = new GregorianCalendar();
+    startTime = new GregorianCalendar();
+    Date dCurrent =
+        new java.util.Date(currentMillis); // Get's the date based on the unix time stamp
+    startDate.setTime(dCurrent);
+    startTime.setTime(dCurrent);
+    Date dSuggestedEnd = new Date(suggestedEndMillis);
+    endDate = new GregorianCalendar();
+    endTime = new GregorianCalendar();
+    endDate.setTime(dSuggestedEnd);
+    endTime.setTime(dSuggestedEnd);
+
     startDateEditText = view.findViewById(R.id.start_date_edit_text);
     startDateEditText.setInputType(InputType.TYPE_NULL);
+    startDateEditText.setText(dateFormat.format(dCurrent));
 
     endDateEditText = view.findViewById(R.id.end_date_edit_text);
     endDateEditText.setInputType(InputType.TYPE_NULL);
+    endDateEditText.setText(dateFormat.format(dSuggestedEnd));
 
     startTimeEditText = view.findViewById(R.id.start_time_edit_text);
     startTimeEditText.setInputType(InputType.TYPE_NULL);
+    startTimeEditText.setText(timeFormat.format(dCurrent));
 
     endTimeEditText = view.findViewById(R.id.end_time_edit_text);
     endTimeEditText.setInputType(InputType.TYPE_NULL);
+    endTimeEditText.setText(timeFormat.format(dSuggestedEnd));
 
     // Offset the threshold a little to accept current value
     threshold.add(Calendar.MINUTE, -1);
 
     startDateEditText.setOnClickListener(
-        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate));
+        v -> {
+          clearDates();
+          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate);
+        });
 
     endDateEditText.setOnClickListener(
-        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate));
+        v -> {
+          clearDates();
+          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate);
+        });
 
     startTimeEditText.setOnClickListener(
-        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime));
+        v -> {
+          clearDates();
+          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime);
+        });
 
     endTimeEditText.setOnClickListener(
-        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime));
+        v -> {
+          clearDates();
+          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime);
+        });
+  }
+
+  /**
+   * When the user want to change the suggested time, it would be cumbersome without clearing the
+   * suggested fields. So on the first click on one of those fields we clear them all, but not on
+   * subsequent ones
+   */
+  private void clearDates() {
+    // Should only be cleared on the first click on those fields, to erase suggested time
+    if (toBeCleared) {
+      startDateEditText.getText().clear();
+      startTimeEditText.getText().clear();
+      endDateEditText.getText().clear();
+      endTimeEditText.getText().clear();
+
+      startDate = null;
+      startTime = null;
+      endDate = null;
+      endTime = null;
+      toBeCleared = false;
+    }
   }
 
   private void openPickerDialog(
