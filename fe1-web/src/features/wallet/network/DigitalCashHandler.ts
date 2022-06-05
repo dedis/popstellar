@@ -1,5 +1,5 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 
 import { Transaction } from '../objects/transaction';
 import { PostTransaction } from './messages';
@@ -7,10 +7,14 @@ import { PostTransaction } from './messages';
 /**
  * Handle a PostTransaction message.
  *
- * @param addTransaction the function to add the received transaction to the digital cash state
+ * @param addTransaction - A function to add the received transaction to the digital cash state
+ * @param getLaoOrganizer - A function to get the organizer from a lao
  */
 export const handleTransactionPost =
-  (addTransaction: (laoId: Hash, transaction: Transaction) => void) =>
+  (
+    addTransaction: (laoId: Hash, transaction: Transaction) => void,
+    getLaoOrganizer: (laoId: string) => PublicKey | undefined,
+  ) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.COIN ||
@@ -30,7 +34,15 @@ export const handleTransactionPost =
     const tx = msg.messageData as PostTransaction;
     console.log(`Handler: Received transaction with id: ${tx.transaction_id.valueOf()}`);
 
+    const organizerPublicKey = getLaoOrganizer(msg.laoId.valueOf());
+
     const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
+
+    if (!Transaction.checkTransactionSignatures(transaction, organizerPublicKey!)) {
+      console.warn('Transaction signatures are not valid');
+      return false;
+    }
+
     addTransaction(msg.laoId, transaction);
     return true;
   };

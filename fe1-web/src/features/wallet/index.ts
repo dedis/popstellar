@@ -23,7 +23,7 @@ export function configure(): WalletInterface {
 }
 
 export function compose(configuration: WalletCompositionConfiguration): WalletCompositionInterface {
-  configureNetwork(configuration.messageRegistry);
+  configureNetwork(configuration.messageRegistry, configuration.getLaoOrganizer);
   configuration.keyPairRegistry.add(
     SignatureType.POP_TOKEN,
     getCurrentPopTokenFromStore(configuration.getCurrentLao, configuration.getRollCallById),
@@ -38,7 +38,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     context: {
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
-      getLaoOrganizer: configuration.getLaoOrganizer,
     },
   };
 }

@@ -254,7 +254,10 @@ export class Transaction {
    * @param transaction the transaction to verify
    * @param organizerPublicKey the organizer's public key of the lao
    */
-  public static isTransactionValid = (transaction: Transaction, organizerPublicKey: PublicKey) => {
+  public static checkTransactionSignatures = (
+    transaction: Transaction,
+    organizerPublicKey: PublicKey,
+  ) => {
     const isCoinbase = transaction.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
 
     // Reconstruct data signed on
