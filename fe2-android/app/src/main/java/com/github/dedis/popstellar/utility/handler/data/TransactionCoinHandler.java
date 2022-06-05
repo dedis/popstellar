@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
@@ -35,11 +37,12 @@ public class TransactionCoinHandler {
     Channel channel = context.getChannel();
     Lao lao = laoRepository.getLaoByChannel(channel);
 
-    TransactionObject transaction_object = new TransactionObject();
+    Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
+    TransactionObject transactionObject = new TransactionObject();
 
-    transaction_object.setChannel(channel);
-    transaction_object.setLockTime(postTransactionCoin.getTransaction().getLockTime());
-    transaction_object.setVersion(postTransactionCoin.getTransaction().getVersion());
+    transactionObject.setChannel(channel);
+    transactionObject.setLockTime(postTransactionCoin.getTransaction().getLockTime());
+    transactionObject.setVersion(postTransactionCoin.getTransaction().getVersion());
 
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();
@@ -52,27 +55,28 @@ public class TransactionCoinHandler {
     }
 
     // Iterate on the inputs and the outputs
-    Iterator<Input> iterator_input = postTransactionCoin.getTransaction().getInputs().iterator();
-    Iterator<Output> iterator_output = postTransactionCoin.getTransaction().getOutputs().iterator();
+    Iterator<Input> iteratorInput = postTransactionCoin.getTransaction().getInputs().iterator();
+    Iterator<Output> iteratorOutput = postTransactionCoin.getTransaction().getOutputs().iterator();
 
-    while (iterator_input.hasNext()) {
-      Input current = iterator_input.next();
+    while (iteratorInput.hasNext()) {
+      Input current = iteratorInput.next();
       // Normally if there is an input there is always a script
       if (current.getScript() == null) {
         throw new IllegalArgumentException();
       }
-      ScriptInputObject script_ =
+      ScriptInputObject scriptInputObject =
           new ScriptInputObject(
               current.getScript().getType(),
               current.getScript().getPubkey(),
               current.getScript().getSig());
 
-      inputs.add(new InputObject(current.getTxOutHash(), current.getTxOutIndex(), script_));
+      inputs.add(
+          new InputObject(current.getTxOutHash(), current.getTxOutIndex(), scriptInputObject));
     }
 
-    while (iterator_output.hasNext()) {
-      //Normally if there is an output there is always a script
-      Output current = iterator_output.next();
+    while (iteratorOutput.hasNext()) {
+      // Normally if there is an output there is always a script
+      Output current = iteratorOutput.next();
       if (current.getScript() == null) {
         throw new IllegalArgumentException();
       }
@@ -82,10 +86,9 @@ public class TransactionCoinHandler {
       outputs.add(new OutputObject(current.getValue(), script));
     }
 
-    transaction_object.setInputs(inputs);
-    transaction_object.setOutputs(outputs);
-
+    transactionObject.setInputs(inputs);
+    transactionObject.setOutputs(outputs);
     // lao update the history / lao update the last transaction per public key
-    lao.updateTransactionMaps(transaction_object);
+    lao.updateTransactionMaps(transactionObject);
   }
 }
