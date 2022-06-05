@@ -8,10 +8,9 @@ import PublicKey._
 import java.security.MessageDigest
 
 final case class PublicKey(base64Data: Base64Data) {
-  private val asPoint = new Ed25519Point(base64Data.decode())
-
 
   def encrypt(messageB64: Base64Data): Base64Data = {
+    val asPoint = new Ed25519Point(base64Data.decode())
     val message = messageB64.decode()
     if (message.length > MAX_MESSAGE_LENGTH) throw new IllegalArgumentException(s"The message should contain at maximum $MAX_MESSAGE_LENGTH bytes")
     val M = Ed25519Point.embed(message)

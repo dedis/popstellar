@@ -29,8 +29,9 @@ object SetupElectionExamples {
 
 
   val workingSetupElectionOpenBallot: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)
+  final val DATA_SET_UP_OPEN_BALLOT: Hash = Hash(Base64Data.encode(workingSetupElectionOpenBallot.toJson.toString))
   final val MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING: Message = new Message(
-    Base64Data.encode(workingSetupElectionOpenBallot.toJson.toString),
+    DATA_SET_UP_OPEN_BALLOT.base64Data,
     SENDER_SETUPELECTION,
     SIGNATURE,
     Hash(Base64Data("")),

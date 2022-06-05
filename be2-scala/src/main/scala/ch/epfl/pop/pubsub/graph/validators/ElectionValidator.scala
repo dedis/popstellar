@@ -151,7 +151,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val combined = for {
           setupMessage <- channel.getSetupMessage(dbActorRef)
           questions = setupMessage.questions
-          DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+          DbActorReadElectionDataAck(electionData) <- dbActorRef ? DbActor.ReadElectionData(setupMessage.id)
           q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
         }
         yield if (!validateTimestampStaleness(data.created_at))
