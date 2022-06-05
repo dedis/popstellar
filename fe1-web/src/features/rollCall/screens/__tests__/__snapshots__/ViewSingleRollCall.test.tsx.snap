@@ -320,7 +320,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -1224,7 +1224,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -2166,7 +2166,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -11470,7 +11470,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -20774,7 +20774,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -21678,7 +21678,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -22560,7 +22560,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -23443,7 +23443,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >

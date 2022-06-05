@@ -320,7 +320,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -735,7 +735,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >

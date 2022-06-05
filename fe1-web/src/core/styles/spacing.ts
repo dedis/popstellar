@@ -8,4 +8,4 @@ export const x3 = 3 * spacingUnit;
 export const x4 = 4 * spacingUnit;
 export const x5 = 5 * spacingUnit;
 
-export const contentSpacing = x3;
+export const contentSpacing = x1;

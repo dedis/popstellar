@@ -328,7 +328,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                           onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "padding": 48,
+                              "padding": 16,
                             }
                           }
                         >
@@ -499,6 +499,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                         "marginRight": 16,
                                         "padding": 8,
                                         "textAlign": "center",
+                                        "width": 50,
                                       },
                                       Object {
                                         "color": "#fff",

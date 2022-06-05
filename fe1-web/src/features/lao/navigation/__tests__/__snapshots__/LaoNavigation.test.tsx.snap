@@ -381,7 +381,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   onGestureHandlerStateChange={[Function]}
                                   style={
                                     Object {
-                                      "padding": 48,
+                                      "padding": 16,
                                     }
                                   }
                                 >
@@ -768,7 +768,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "flexGrow": 1,
                                           "justifyContent": "center",
                                           "marginStart": 0,
-                                          "paddingLeft": 48,
+                                          "paddingLeft": 16,
                                         }
                                       }
                                     />
@@ -1225,7 +1225,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "flexGrow": 1,
                                           "justifyContent": "center",
                                           "marginEnd": 0,
-                                          "paddingRight": 48,
+                                          "paddingRight": 16,
                                         }
                                       }
                                     >

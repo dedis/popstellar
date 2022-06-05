@@ -341,7 +341,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             Object {
                               "flex": 1,
                               "flexDirection": "column",
-                              "margin": 48,
+                              "margin": 16,
                             }
                           }
                         >

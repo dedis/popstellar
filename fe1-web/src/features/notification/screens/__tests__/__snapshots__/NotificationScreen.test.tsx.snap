@@ -320,7 +320,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
