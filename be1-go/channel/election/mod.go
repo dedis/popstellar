@@ -1,7 +1,9 @@
 package election
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"popstellar/channel"
 	"popstellar/channel/registry"
@@ -725,10 +727,10 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 		return -1, answer.NewErrorf(-4, "vote data is invalid")
 	}
 
-	index, err := strconv.Atoi(string(data))
-	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote should be an encrypted int but was %s", string(data))
-	}
+	var index int
+
+	buf := bytes.NewReader(data)
+	err = binary.Read(buf, binary.BigEndian, &index)
 
 	return index, nil
 }
