@@ -3,7 +3,7 @@ import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, PopToken } from 'core/objects';
+import { Hash, PopToken, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import {
@@ -54,6 +54,12 @@ export interface WalletCompositionConfiguration {
    */
   useCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Returns the public key of the organizer of the lao
+   * @param laoId the id of the lao
+   */
+  getLaoOrganizer: (laoId: string) => PublicKey | undefined;
+
   /* Event related functions */
 
   /**
@@ -82,6 +88,7 @@ export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
   /* lao */
   | 'useCurrentLaoId'
+  | 'getLaoOrganizer'
   /* events */
   | 'useRollCallsByLaoId'
 >;

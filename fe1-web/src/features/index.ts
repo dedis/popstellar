@@ -79,6 +79,7 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
   });
 
   const socialConfiguration = social.configure(messageRegistry);

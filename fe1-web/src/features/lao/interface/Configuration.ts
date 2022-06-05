@@ -2,7 +2,7 @@ import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, Hash } from 'core/objects';
+import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { Lao } from '../objects';
@@ -142,6 +142,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Returns whether the user is witness of the current lao
      */
     isLaoWitness: () => boolean;
+
+    /**
+     * Returns the lao organizer's public key
+     */
+    getLaoOrganizer: (laoId: string) => PublicKey | undefined;
 
     /**
      * Get a LAOs channel by its id
