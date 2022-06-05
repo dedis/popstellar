@@ -48,9 +48,9 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-  private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
+  private final val PK_WRONG: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataWrong: LaoData = LaoData(PK_WRONG, List(PK_WRONG), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
 
@@ -304,6 +304,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Setting up an election with invalid question id fails") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_QUESTION_ID_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   test("Setting up an election with wrong sender fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_OWNER_RPC)
@@ -464,6 +471,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Casting an invalid vote id should fail") {
+    val dbActorRef = mockDbCastVote
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_INVALID_VOTE_ID_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+    
   test("Casting a vote if election is not open should fail") {
     val dbActorRef = mockDbMissingOpenElectionMessage
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
