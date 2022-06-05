@@ -17,31 +17,31 @@ public class ScriptInputObjectTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
-  private static String TYPE;
-  private static String PUBKEY;
-  private static String SIG;
-  private static ScriptInputObject SCRIPTTXIN;
+  private String type;
+  private String pubKey;
+  private String sig;
+  private ScriptInputObject scriptTxIn;
 
   @Before
   public void setup() throws GeneralSecurityException {
-    TYPE = "P2PKH";
-    PUBKEY = SENDER.getEncoded();
-    SIG = SENDER_KEY.sign(SENDER).getEncoded();
-    SCRIPTTXIN = new ScriptInputObject(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
+    type = "P2PKH";
+    pubKey = SENDER.getEncoded();
+    sig = SENDER_KEY.sign(SENDER).getEncoded();
+    scriptTxIn = new ScriptInputObject(type, new PublicKey(pubKey), new Signature(sig));
   }
 
   @Test
   public void getTypeTest() {
-    assertEquals(TYPE, SCRIPTTXIN.getType());
+    assertEquals(type, scriptTxIn.getType());
   }
 
   @Test
   public void getPubKeyTest() {
-    assertEquals(PUBKEY, SCRIPTTXIN.getPubkey().getEncoded());
+    assertEquals(pubKey, scriptTxIn.getPubkey().getEncoded());
   }
 
   @Test
   public void getSigTest() {
-    assertEquals(SIG, SCRIPTTXIN.getSig().getEncoded());
+    assertEquals(sig, scriptTxIn.getSig().getEncoded());
   }
 }

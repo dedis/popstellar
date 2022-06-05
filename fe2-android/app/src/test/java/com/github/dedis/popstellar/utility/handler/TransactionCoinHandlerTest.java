@@ -13,11 +13,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
@@ -51,19 +49,7 @@ public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-
-  private static final long openedAt = 1633099883;
-  private Lao lao;
-  private RollCall rollCall;
-  private Election election;
-  private ElectionQuestion electionQuestion;
-
-  private LAORepository laoRepository;
-  private MessageHandler messageHandler;
-
-  private static Channel coinChannel;
 
   // Version
   private static final int VERSION = 1;
@@ -91,10 +77,15 @@ public class TransactionCoinHandlerTest {
   private static final long TIMESTAMP = 0;
 
   // Transaction
-  private static final Transaction TRANSACTION =
-      new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
+  private static final Transaction TRANSACTION = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
-  private static PostTransactionCoin posttransactioncoin;
+  private Lao lao;
+  private RollCall rollCall;
+  private LAORepository laoRepository;
+  private MessageHandler messageHandler;
+  private Channel coinChannel;
+
+  private PostTransactionCoin postTransactionCoin;
 
   private ServerRepository serverRepository;
 
@@ -103,14 +94,11 @@ public class TransactionCoinHandlerTest {
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
-
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
-    //TRANSACTION.change_sig_inputs_considering_the_outputs(SENDER_KEY);
-    posttransactioncoin = new PostTransactionCoin(TRANSACTION);
-    laoRepository = new LAORepository();
 
-    // when(messageSender.subscribe(any())).then(args -> Completable.complete());
+    postTransactionCoin = new PostTransactionCoin(TRANSACTION);
+    laoRepository = new LAORepository();
 
     messageHandler =
         new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
@@ -127,6 +115,7 @@ public class TransactionCoinHandlerTest {
             put(rollCall.getId(), rollCall);
           }
         });
+    
     // Add the LAO to the LAORepository
     laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
@@ -145,7 +134,7 @@ public class TransactionCoinHandlerTest {
 
   @Test
   public void testHandlePostTransactionCoin() throws DataHandlingException {
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, posttransactioncoin, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransactionHistoryByUser().size());
