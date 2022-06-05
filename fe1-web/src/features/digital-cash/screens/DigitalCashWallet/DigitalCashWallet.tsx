@@ -165,7 +165,11 @@ const DigitalCashWallet = () => {
               }}>
               <ListItem.Content>
                 <ListItem.Title style={Typography.base}>{account.rollCallName}</ListItem.Title>
-                <ListItem.Subtitle style={Typography.small}>{account.rollCallId}</ListItem.Subtitle>
+                <ListItem.Subtitle
+                  style={Typography.small}
+                  numberOfLines={account.balance ? 1 : undefined}>
+                  {account.rollCallId}
+                </ListItem.Subtitle>
               </ListItem.Content>
               <ListItem.Title style={Typography.base}>${account.balance || '∞'}</ListItem.Title>
               <ListItem.Chevron />

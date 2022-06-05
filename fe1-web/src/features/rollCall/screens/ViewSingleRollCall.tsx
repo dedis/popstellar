@@ -189,7 +189,9 @@ const ViewSingleRollCall = () => {
                     <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>
                   <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>{token.valueOf()}</ListItem.Title>
+                    <ListItem.Title style={Typography.base} numberOfLines={1}>
+                      {token.valueOf()}
+                    </ListItem.Title>
                   </ListItem.Content>
                 </ListItem>
               );
