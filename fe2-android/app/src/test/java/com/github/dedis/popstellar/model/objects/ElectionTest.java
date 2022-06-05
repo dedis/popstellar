@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
@@ -22,6 +25,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -80,6 +84,8 @@ public class ElectionTest {
     election.setElectionKey(encodedKey.getEncoded());
   }
 
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
+
   @Test
   public void settingNullParametersThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> election.setName(null));
@@ -95,7 +101,7 @@ public class ElectionTest {
   @Test
   public void settingAndGettingReturnsCorrespondingState() {
     election.setEventState(OPENED);
-    assertThat(election.getState(), is(OPENED));
+    assertThat(election.getState().getValue(), is(OPENED));
   }
 
   @Test

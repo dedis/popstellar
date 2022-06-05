@@ -67,7 +67,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,12 +95,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<PublicKey>> mOpenIdentityEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mEditPropertiesEvent =
-      new MutableLiveData<>();
+
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
@@ -122,7 +121,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionResultsEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenManageElectionEvent =
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionFragmentEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
@@ -131,13 +130,11 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
-  private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
-      new MutableLiveData<>(new SingleEvent<>(false));
 
   private final MutableLiveData<SingleEvent<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Integer>> mAskCloseRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Integer>> mCloseRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
 
   private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
       new MutableLiveData<>();
@@ -153,13 +150,14 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Election> mCurrentElection =
-      new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
+      new MutableLiveData<>(); // Represents the current election being opened in a fragment
+  private final MutableLiveData<RollCall> mCurrentRollCall =
+      new MutableLiveData<>(); // Represents the current roll-call being opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -196,8 +194,8 @@ public class LaoDetailViewModel extends AndroidViewModel
               lao == null
                   ? new ArrayList<>()
                   : lao.getRollCalls().values().stream()
-                      .filter(rollcall -> rollcall.getState() == EventState.CLOSED)
-                      .filter(rollcall -> attendedOrOrganized(lao, rollcall))
+                      .filter(rollCall -> rollCall.getState().getValue() == EventState.CLOSED)
+                      .filter(rollCall -> attendedOrOrganized(lao, rollCall))
                       .collect(Collectors.toList()));
   /*
    * Dependencies for this class
@@ -235,8 +233,8 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
    * or was the organizer
    *
-   * @param lao
-   * @param rollcall
+   * @param lao the lao considered
+   * @param rollcall the roll-call considered
    * @return boolean saying whether user attended or organized the given roll call
    */
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
@@ -293,11 +291,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), channel, openElection)
             .subscribe(
-                () -> {
-                  Log.d(TAG, "opened election successfully");
-                  // Block action button on expandableListViewAdapter
-                  openElectionEvent();
-                },
+                () -> Log.d(TAG, "opened election successfully")
+                // stay on the election fragment for now
+                ,
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_open_election));
@@ -598,8 +594,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param id the roll call id to open
    */
   public void openRollCall(String id) {
-    Log.d(TAG, "call openRollCall");
-
+    Log.d(TAG, "call openRollCall with id" + id);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
@@ -614,7 +609,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     RollCall rollCall = optRollCall.get();
-    OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
+    OpenRollCall openRollCall =
+        new OpenRollCall(laoId, id, openedAt, rollCall.getState().getValue());
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
@@ -629,8 +625,8 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(keyManager.getMainKeyPair(), channel, openRollCall)
             .subscribe(
                 () -> {
-                  Log.d(TAG, "opened the roll call");
                   currentRollCallId = openRollCall.getUpdateId();
+                  Log.d(TAG, "opening rc with current id = " + currentRollCallId);
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
                   openScanning();
                 },
@@ -646,13 +642,14 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public void closeRollCall(int nextFragment) {
+  public void closeRollCall() {
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
+
     long end = Instant.now().getEpochSecond();
     Channel channel = lao.getChannel();
     CloseRollCall closeRollCall =
@@ -666,7 +663,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "closed the roll call");
                   currentRollCallId = "";
                   attendees.clear();
-                  mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
+                  mCloseRollCallEvent.setValue(new SingleEvent<>(true));
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -711,18 +708,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  /**
-   * Remove specific witness from the LAO's list of witnesses.
-   *
-   * <p>Publish a GeneralMessage containing UpdateLao data.
-   *
-   * @param witness the id of the witness to remove
-   */
-  public void removeWitness(String witness) {
-    Log.d(TAG, "trying to remove witness: " + witness);
-    // TODO: implement this by sending an UpdateLao
-  }
-
   /*
    * Getters for MutableLiveData instances declared above
    */
@@ -730,28 +715,16 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenLaoDetailEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent() {
-    return mOpenElectionEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getEndElectionEvent() {
-    return mEndElectionEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenElectionResultsEvent() {
     return mOpenElectionResultsEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getReceivedElectionResultsEvent() {
-    return mReceivedElectionResultsEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getElectionCreated() {
     return mElectionCreatedEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenManageElectionEvent() {
-    return mOpenManageElectionEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenElectionFragmentEvent() {
+    return mOpenElectionFragmentEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
@@ -790,16 +763,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mShowPropertiesEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getEditPropertiesEvent() {
-    return mEditPropertiesEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
     return mOpenSocialMediaEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
-    return mOpenDigitalCashEvent;
   }
 
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
@@ -896,7 +861,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mAskCloseRollCallEvent;
   }
 
-  public LiveData<SingleEvent<Integer>> getCloseRollCallEvent() {
+  public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
     return mCloseRollCallEvent;
   }
 
@@ -943,9 +908,19 @@ public class LaoDetailViewModel extends AndroidViewModel
     mCurrentElection.setValue(e);
   }
 
+
   public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
     return mCurrentElectionVotes;
   }
+
+  public RollCall getCurrentRollCall() {
+    return mCurrentRollCall.getValue();
+  }
+
+  public void setCurrentRollCall(RollCall rc) {
+    mCurrentRollCall.setValue(rc);
+  }
+
 
   public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
     if (currentElectionVotes == null) {
@@ -976,10 +951,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  public void electionCreated() {
-    mElectionCreatedEvent.postValue(new SingleEvent<>(true));
-  }
-
   public void openLaoDetail() {
     mOpenLaoDetailEvent.postValue(new SingleEvent<>(true));
   }
@@ -1004,24 +975,15 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
-  /** Propagates the open election event */
-  public void openElectionEvent() {
-    mOpenElectionEvent.postValue(new SingleEvent<>(true));
+  public MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
   }
 
   public void endElectionEvent() {
     mEndElectionEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void receiveElectionResultsEvent() {
-    mReceivedElectionResultsEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openWitnessMessage() {
-    mOpenWitnessMessageEvent.setValue(new SingleEvent<>(true));
-  }
-
-  private void openAddWitness() {
+  public void openAddWitness() {
 
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -1035,25 +997,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void toggleShowHideProperties() {
     boolean val = showProperties.getValue();
     showProperties.postValue(!val);
-  }
-
-  public void openEditProperties() {
-    mEditPropertiesEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void closeEditProperties() {
-    mEditPropertiesEvent.setValue(new SingleEvent<>(false));
-  }
-
-  public void terminateCurrentElection() {
-    if (mCurrentLao.getValue().removeElection(mCurrentElection.getValue().getId())) {
-      Log.d(TAG, "Election deleted : " + mCurrentElection.getValue().getId());
-      Lao lao = getCurrentLaoValue();
-      mCurrentLao.postValue(lao);
-      openLaoDetail();
-    } else {
-      Log.d(TAG, "Impossible to delete election : " + mCurrentElection.getValue().getId());
-    }
+    mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
   }
 
   /**
@@ -1082,53 +1026,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenElectionResultsEvent.postValue(new SingleEvent<>(open));
   }
 
-  public void openManageElection(Boolean open) {
-    mOpenManageElectionEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void openStartElection(Boolean open) {
-    mOpenStartElectionEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void confirmEdit() {
-    closeEditProperties();
-    if (!mLaoName.getValue().isEmpty()) {
-      updateLaoName();
-    }
-  }
-
-  /**
-   * Method to update the name of a Lao by sending an updateLao msg and a stateLao msg to the
-   * backend
-   */
-  public void updateLaoName() {
-    Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
-
-    Lao lao = getCurrentLaoValue();
-    Channel channel = lao.getChannel();
-    KeyPair mainKey = keyManager.getMainKeyPair();
-    long now = Instant.now().getEpochSecond();
-    UpdateLao updateLao =
-        new UpdateLao(
-            mainKey.getPublicKey(),
-            lao.getCreation(),
-            mLaoName.getValue(),
-            now,
-            lao.getWitnesses());
-    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(channel, msg)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "updated lao name");
-                  dispatchLaoUpdate("lao name", updateLao, lao, channel, msg);
-                },
-                error ->
-                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao));
-
-    disposables.add(disposable);
+  public void openElectionFragment(Boolean open) {
+    Log.d(TAG, "openElection in view model");
+    mOpenElectionFragmentEvent.postValue(new SingleEvent<>(open));
   }
 
   /**
@@ -1186,11 +1086,6 @@ public class LaoDetailViewModel extends AndroidViewModel
                 () -> Log.d(TAG, "updated " + desc),
                 error ->
                     ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_state_lao)));
-  }
-
-  public void cancelEdit() {
-    mLaoName.setValue("");
-    closeEditProperties();
   }
 
   public void subscribeToLao(String laoId) {
@@ -1286,19 +1181,33 @@ public class LaoDetailViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    handleAttendeeAddition(barcode.rawValue);
+  }
+
+  @Override
+  public boolean addManually(String data) {
+    Log.d(TAG, "Key manually submitted with value: " + data);
+    return handleAttendeeAddition(data);
+  }
+
+  /**
+   * Checks the key validity and handles the attendee addition process
+   *
+   * @param data the textual representation of the key
+   * @return true if an attendee was added false otherwise
+   */
+  private boolean handleAttendeeAddition(String data) {
     PublicKey attendee;
     try {
-      attendee = new PublicKey(barcode.rawValue);
+      attendee = new PublicKey(data);
     } catch (IllegalArgumentException e) {
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid QR code. Please try again."));
-      return;
+      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
+      return false;
     }
-
-    if (attendees.contains(attendee)
-        || Objects.requireNonNull(mWitnesses.getValue()).contains(attendee)) {
+    if (attendees.contains(attendee) || witnesses.contains(attendee)) {
       mScanWarningEvent.postValue(
-          new SingleEvent<>("This QR code has already been scanned. Please try again."));
-      return;
+          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
+      return false;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
       attendees.add(attendee);
@@ -1309,5 +1218,14 @@ public class LaoDetailViewModel extends AndroidViewModel
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
     }
+    return true;
+  }
+
+  public MutableLiveData<SingleEvent<Boolean>> getOpenWitnessing() {
+    return mOpenWitnessing;
+  }
+
+  public void openWitnessing() {
+    mOpenWitnessing.postValue(new SingleEvent<>(true));
   }
 }

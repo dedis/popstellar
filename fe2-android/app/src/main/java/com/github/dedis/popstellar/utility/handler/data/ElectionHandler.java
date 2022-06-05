@@ -115,8 +115,8 @@ public final class ElectionHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    //If created --> open it
-    if (election.getState() == CREATED) {
+    // If created --> open it
+    if (election.getState().getValue() == CREATED) {
       election.setEventState(OPENED);
     }
 
@@ -162,7 +162,8 @@ public final class ElectionHandler {
     Election election = laoRepository.getElectionByChannel(channel);
 
     // Verify the vote was created before the end of the election or the election is not closed yet
-    if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
+    if (election.getEndTimestamp() >= castVote.getCreation()
+        || election.getState().getValue() != CLOSED) {
       // Retrieve previous cast vote message stored for the given sender
       Optional<MessageID> previousMessageIdOption =
           election.getMessageMap().entrySet().stream()

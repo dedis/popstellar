@@ -70,8 +70,21 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
-    Await.result(ask, duration)
+    //check if the roll call already exists to open it
+    val ask =
+      for (
+        _ <- dbActor ? DbActor.ChannelExists(rpcRequest.getParamsChannel) transformWith {
+          case Success(_) => Future { () }
+          case _ => Future { throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall does not exist in db") }
+        };
+        _ <- dbAskWritePropagate(rpcRequest)
+      ) yield ()
+
+    Await.ready(ask, duration).value match {
+      case Some(Success(_)) => Left(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleOpenRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+    }
   }
 
   def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {

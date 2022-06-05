@@ -120,7 +120,6 @@ dependencies {
     // Hilt for instrumented tests
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     androidTestAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
-
     // Security
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
     implementation 'net.i2p.crypto:eddsa:0.2.0'
@@ -160,6 +159,7 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.6'
     debugImplementation "androidx.fragment:fragment-testing:1.4.1"
 
+    testImplementation 'android.arch.core:core-testing:1.1.1'
     testImplementation 'androidx.test:core:1.4.0'
     testImplementation 'androidx.test:runner:1.4.0'
     testImplementation 'androidx.test:rules:1.4.0'
