@@ -13,20 +13,30 @@ export class ReopenRollCall extends OpenRollCall {
   /**
    * Creates a ReopenRollCall object from a given object.
    *
-   * @param obj
+   * @param obj The parsed json data
+   * @param laoId The id of the lao this roll call belongs to
    */
-  public static fromJson(obj: any): ReopenRollCall {
+  public static fromJson(obj: any, laoId?: Hash): ReopenRollCall {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'ReopenRollCall' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.REOPEN, obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid reopen roll call\n\n${errors}`);
     }
 
-    return new ReopenRollCall({
-      ...obj,
-      opened_at: new Timestamp(obj.opened_at),
-      update_id: new Hash(obj.update_id),
-      opens: new Hash(obj.opens),
-    });
+    return new ReopenRollCall(
+      {
+        ...obj,
+        opened_at: new Timestamp(obj.opened_at),
+        update_id: new Hash(obj.update_id),
+        opens: new Hash(obj.opens),
+      },
+      laoId,
+    );
   }
 }

@@ -3,6 +3,7 @@ import React, { FunctionComponent, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
@@ -12,6 +13,7 @@ import STRINGS from 'resources/strings';
 import { EvotingHooks } from '../hooks';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
+import { makeElectionSelector } from '../reducer';
 import BarChartDisplay from './BarChartDisplay';
 
 /**
@@ -34,7 +36,15 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { event: election, isOrganizer } = props;
+  const { eventId: electionId, isOrganizer } = props;
+
+  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
+  const election = useSelector(selectElection);
+
+  if (!election) {
+    throw new Error(`Could not find a roll call with id ${electionId}`);
+  }
+
   const laoId = EvotingHooks.useCurrentLaoId();
 
   const toast = useToast();
@@ -170,7 +180,7 @@ const EventElection = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  event: PropTypes.instanceOf(Election).isRequired,
+  eventId: PropTypes.string.isRequired,
   isOrganizer: PropTypes.bool,
 };
 EventElection.propTypes = propTypes;
@@ -182,10 +192,13 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventElection;
 
-export const ElectionEventTypeComponent = {
-  isOfType: (event: unknown) => event instanceof Election,
+export const ElectionEventType = {
+  eventType: Election.EVENT_TYPE,
+  navigationNames: {
+    createEvent: STRINGS.organizer_navigation_creation_election,
+  },
   Component: EventElection as FunctionComponent<{
-    event: unknown;
+    eventId: string;
     isOrganizer: boolean | null | undefined;
   }>,
 };

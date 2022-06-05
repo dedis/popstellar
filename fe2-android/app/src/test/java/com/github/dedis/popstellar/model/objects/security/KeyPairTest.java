@@ -44,4 +44,19 @@ public class KeyPairTest {
 
     assertEquals(publicKey, keyPair.getPublicKey());
   }
+
+  @Test
+  public void pubKeyHash() {
+    // Tested with value in keypair.json (see #1042)
+    PublicKey pk = new PublicKey("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
+    assertEquals("-_qR4IHwsiq50raa8jURNArds54=", pk.computeHash());
+  }
+
+  @Test
+  public void pubKeyHash2() {
+    // Tested with value in keypair.json (see #1042)
+    PublicKey pk = new PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=");
+    assertEquals("SGnNfF533PBEUMYPMqBSQY83z5U=", pk.computeHash());
+  }
+
 }

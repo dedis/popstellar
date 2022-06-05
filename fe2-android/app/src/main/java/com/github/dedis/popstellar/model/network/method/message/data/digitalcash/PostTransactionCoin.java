@@ -5,9 +5,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-public class PostTransactionCoin extends Data {
+public final class PostTransactionCoin extends Data {
   @SerializedName(value = "transaction_id")
-  private final String transaction_id; // TxOutHash SHA256 over base64encode(transaction)
+  private final String transactionId; // TxOutHash SHA256 over base64encode(transaction)
 
   @SerializedName(value = "transaction")
   private final Transaction transaction; // the transaction object // String
@@ -17,7 +17,7 @@ public class PostTransactionCoin extends Data {
    */
   public PostTransactionCoin(Transaction transaction) {
     this.transaction = transaction;
-    this.transaction_id = transaction.computeId();
+    this.transactionId = transaction.computeId();
   }
 
   @Override
@@ -30,13 +30,13 @@ public class PostTransactionCoin extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(get_transaction_id(), get_transaction());
+    return java.util.Objects.hash(getTransactionId(), getTransaction());
   }
 
   @Override
   public String toString() {
     return "PostTransactionCoin{ transaction_id="
-        + transaction_id
+        + transactionId
         + "transaction="
         + transaction
         + '}';
@@ -52,11 +52,11 @@ public class PostTransactionCoin extends Data {
     return Action.POST_TRANSACTION.getAction();
   }
 
-  public Transaction get_transaction() {
+  public Transaction getTransaction() {
     return transaction;
   }
 
-  public String get_transaction_id() {
-    return transaction_id;
+  public String getTransactionId() {
+    return transactionId;
   }
 }

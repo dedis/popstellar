@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
@@ -44,7 +44,9 @@ beforeAll(() => {
 
 describe('CreateMeeting', () => {
   it('should be created correctly from Json', () => {
-    expect(new CreateMeeting(sampleCreateMeeting)).toBeJsonEqual(sampleCreateMeeting);
+    expect(new CreateMeeting(sampleCreateMeeting, mockLaoIdHash)).toBeJsonEqual(
+      sampleCreateMeeting,
+    );
 
     let temp: any = {
       object: ObjectType.MEETING,
@@ -57,7 +59,7 @@ describe('CreateMeeting', () => {
       end: FUTURE_TIMESTAMP,
       extra: mockExtra,
     };
-    expect(new CreateMeeting(temp)).toBeJsonEqual(temp);
+    expect(new CreateMeeting(temp, mockLaoIdHash)).toBeJsonEqual(temp);
 
     temp = {
       object: ObjectType.MEETING,
@@ -67,12 +69,12 @@ describe('CreateMeeting', () => {
       creation: TIMESTAMP,
       start: TIMESTAMP,
     };
-    expect(new CreateMeeting(temp)).toBeJsonEqual(temp);
+    expect(new CreateMeeting(temp, mockLaoIdHash)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(createMeetingJson);
-    expect(CreateMeeting.fromJson(obj)).toBeJsonEqual(sampleCreateMeeting);
+    expect(CreateMeeting.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCreateMeeting);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -87,118 +89,143 @@ describe('CreateMeeting', () => {
       end: FUTURE_TIMESTAMP,
       extra: mockExtra,
     };
-    const createWrongObj = () => CreateMeeting.fromJson(obj);
+    const createWrongObj = () => CreateMeeting.fromJson(obj, mockLaoIdHash);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
   describe('constructor', () => {
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          id: mockMeetingId,
-          creation: TIMESTAMP,
-          location: LOCATION,
-          start: TIMESTAMP,
-          end: FUTURE_TIMESTAMP,
-          extra: mockExtra,
-        });
+        new CreateMeeting(
+          {
+            object: ObjectType.MEETING,
+            action: ActionType.CREATE,
+            id: mockMeetingId,
+            creation: TIMESTAMP,
+            location: LOCATION,
+            start: TIMESTAMP,
+            end: FUTURE_TIMESTAMP,
+            extra: mockExtra,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if create is undefined', () => {
       const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          id: mockMeetingId,
-          name: NAME,
-          location: LOCATION,
-          start: TIMESTAMP,
-          end: FUTURE_TIMESTAMP,
-          extra: mockExtra,
-        });
+        new CreateMeeting(
+          {
+            object: ObjectType.MEETING,
+            action: ActionType.CREATE,
+            id: mockMeetingId,
+            name: NAME,
+            location: LOCATION,
+            start: TIMESTAMP,
+            end: FUTURE_TIMESTAMP,
+            extra: mockExtra,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if start is undefined', () => {
       const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          id: mockMeetingId,
-          name: NAME,
-          creation: TIMESTAMP,
-          location: LOCATION,
-          end: FUTURE_TIMESTAMP,
-          extra: mockExtra,
-        });
+        new CreateMeeting(
+          {
+            object: ObjectType.MEETING,
+            action: ActionType.CREATE,
+            id: mockMeetingId,
+            name: NAME,
+            creation: TIMESTAMP,
+            location: LOCATION,
+            end: FUTURE_TIMESTAMP,
+            extra: mockExtra,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          name: NAME,
-          creation: TIMESTAMP,
-          location: LOCATION,
-          start: TIMESTAMP,
-          end: FUTURE_TIMESTAMP,
-          extra: mockExtra,
-        });
+        new CreateMeeting(
+          {
+            object: ObjectType.MEETING,
+            action: ActionType.CREATE,
+            name: NAME,
+            creation: TIMESTAMP,
+            location: LOCATION,
+            start: TIMESTAMP,
+            end: FUTURE_TIMESTAMP,
+            extra: mockExtra,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if end is before creation', () => {
       const TIMESTAMP_BEFORE = new Timestamp(1609445600);
       const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          id: mockMeetingId,
-          name: NAME,
-          creation: TIMESTAMP,
-          location: LOCATION,
-          start: TIMESTAMP,
-          end: TIMESTAMP_BEFORE,
-          extra: mockExtra,
-        });
+        new CreateMeeting(
+          {
+            object: ObjectType.MEETING,
+            action: ActionType.CREATE,
+            id: mockMeetingId,
+            name: NAME,
+            creation: TIMESTAMP,
+            location: LOCATION,
+            start: TIMESTAMP,
+            end: TIMESTAMP_BEFORE,
+            extra: mockExtra,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });
 
   describe('validate', () => {
     it('should succeed if id is correct', () => {
-      const obj = new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
-      expect(() => obj.validate(new Hash(mockLaoId))).not.toThrow();
+      expect(
+        () =>
+          new CreateMeeting(
+            {
+              object: ObjectType.MEETING,
+              action: ActionType.CREATE,
+              id: mockMeetingId,
+              name: NAME,
+              creation: TIMESTAMP,
+              location: LOCATION,
+              start: TIMESTAMP,
+              end: FUTURE_TIMESTAMP,
+              extra: mockExtra,
+            },
+            mockLaoIdHash,
+          ),
+      ).not.toThrow();
     });
 
     it('should throw an error if id is incorrect', () => {
-      const obj = new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: new Hash('id'),
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
-      expect(() => obj.validate(new Hash(mockLaoId))).toThrow(ProtocolError);
+      expect(
+        () =>
+          new CreateMeeting(
+            {
+              object: ObjectType.MEETING,
+              action: ActionType.CREATE,
+              id: new Hash('id'),
+              name: NAME,
+              creation: TIMESTAMP,
+              location: LOCATION,
+              start: TIMESTAMP,
+              end: FUTURE_TIMESTAMP,
+              extra: mockExtra,
+            },
+            mockLaoIdHash,
+          ),
+      ).toThrow(ProtocolError);
     });
   });
 });

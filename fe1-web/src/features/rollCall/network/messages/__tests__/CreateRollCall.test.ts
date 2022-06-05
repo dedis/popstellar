@@ -1,10 +1,9 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { CreateRollCall } from '../CreateRollCall';
 
@@ -42,12 +41,13 @@ const createRollCallJson = `{
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('CreateRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new CreateRollCall(sampleCreateRollCall)).toBeJsonEqual(sampleCreateRollCall);
+    expect(new CreateRollCall(sampleCreateRollCall, mockLaoIdHash)).toBeJsonEqual(
+      sampleCreateRollCall,
+    );
     let temp: any = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.CREATE,
@@ -59,7 +59,7 @@ describe('CreateRollCall', () => {
       location: LOCATION,
       description: DESCRIPTION,
     };
-    expect(new CreateRollCall(temp)).toBeJsonEqual(temp);
+    expect(new CreateRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
 
     temp = {
       object: ObjectType.ROLL_CALL,
@@ -71,12 +71,12 @@ describe('CreateRollCall', () => {
       proposed_end: CLOSE_TIMESTAMP,
       location: LOCATION,
     };
-    expect(new CreateRollCall(temp)).toBeJsonEqual(temp);
+    expect(new CreateRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(createRollCallJson);
-    expect(CreateRollCall.fromJson(obj)).toBeJsonEqual(sampleCreateRollCall);
+    expect(CreateRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCreateRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -91,146 +91,173 @@ describe('CreateRollCall', () => {
       location: LOCATION,
       description: DESCRIPTION,
     };
-    const createWrongObj = () => CreateRollCall.fromJson(obj);
+    const createWrongObj = () => CreateRollCall.fromJson(obj, mockLaoIdHash);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if create is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          proposed_start: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            proposed_start: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_start is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_end is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if location is undefined', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is incorrect', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: new Hash('id'),
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: new Hash('id'),
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_start is before creation', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          creation: TIMESTAMP,
-          proposed_start: TIMESTAMP_BEFORE,
-          proposed_end: CLOSE_TIMESTAMP,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            creation: TIMESTAMP,
+            proposed_start: TIMESTAMP_BEFORE,
+            proposed_end: CLOSE_TIMESTAMP,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_end is before proposed_start', () => {
       const createWrongObj = () =>
-        new CreateRollCall({
-          object: ObjectType.ROLL_CALL,
-          action: ActionType.CREATE,
-          id: rollCallId,
-          name: NAME,
-          creation: TIMESTAMP_BEFORE,
-          proposed_start: TIMESTAMP,
-          proposed_end: TIMESTAMP_BEFORE,
-          location: LOCATION,
-          description: DESCRIPTION,
-        });
+        new CreateRollCall(
+          {
+            object: ObjectType.ROLL_CALL,
+            action: ActionType.CREATE,
+            id: rollCallId,
+            name: NAME,
+            creation: TIMESTAMP_BEFORE,
+            proposed_start: TIMESTAMP,
+            proposed_end: TIMESTAMP_BEFORE,
+            location: LOCATION,
+            description: DESCRIPTION,
+          },
+          mockLaoIdHash,
+        );
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

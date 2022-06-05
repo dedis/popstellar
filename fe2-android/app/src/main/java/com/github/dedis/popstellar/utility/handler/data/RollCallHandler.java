@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
@@ -104,6 +105,7 @@ public final class RollCallHandler {
    * @param context the HandlerContext of the message
    * @param closeRollCall the message that was received
    */
+  @SuppressLint("CheckResult")
   public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
@@ -140,11 +142,15 @@ public final class RollCallHandler {
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
-          .subscribe();
+          .subscribe(
+              () -> Log.d(TAG, "subscription a success"),
+              error -> Log.d(TAG, "subscription error"));
       context
           .getMessageSender()
           .subscribe(channel.subChannel("coin").subChannel(token.getPublicKey().getEncoded()))
-          .subscribe();
+          .subscribe(
+              () -> Log.d(TAG, "subscription a success"),
+              error -> Log.d(TAG, "subscription error"));
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {

@@ -1,5 +1,6 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -7,13 +8,30 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, Cr
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
 
-case object RollCallValidator extends MessageDataContentValidator with EventValidator {
+object RollCallValidator extends MessageDataContentValidator with EventValidator {
+
+  val rollCallValidator = new RollCallValidator(DbActor.getInstance)
+
+  override val EVENT_HASH_PREFIX: String = rollCallValidator.EVENT_HASH_PREFIX
+
+  def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = rollCallValidator.validateCreateRollCall(rpcMessage)
+
+  def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = rollCallValidator.validateOpenRollCall(rpcMessage)
+
+  def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = rollCallValidator.validateReopenRollCall(rpcMessage)
+
+  def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = rollCallValidator.validateCloseRollCall(rpcMessage)
+
+}
+
+sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+
   override val EVENT_HASH_PREFIX: String = "R"
 
   //remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
-
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
 
@@ -35,9 +53,9 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
           Right(validationError(s"unexpected id"))
-        } else if (!validateOwner(sender, channel)) {
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
@@ -71,9 +89,9 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateOwner(sender, channel)) {
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a $validatorName message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
@@ -113,11 +131,15 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
         } else if (data.attendees.size != data.attendees.toSet.size) {
           Right(validationError("duplicate attendees keys"))
+        } else if (!validateAttendee(sender, channel, dbActorRef)) {
+          Right(validationError("unexpected attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateOwner(sender, channel)) {
+        } else if (data.update_id == data.closes) {
+          Right(validationError("a closed roll call cannot be closed once again"))
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)

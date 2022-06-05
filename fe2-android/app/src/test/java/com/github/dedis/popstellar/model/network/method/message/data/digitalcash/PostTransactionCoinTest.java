@@ -8,6 +8,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.Gson;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -27,7 +29,7 @@ public class PostTransactionCoinTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
@@ -62,13 +64,13 @@ public class PostTransactionCoinTest {
 
   @Test
   public void getTransactionTest() {
-    assertEquals(TRANSACTION, POST_TRANSACTION.get_transaction());
+    assertEquals(TRANSACTION, POST_TRANSACTION.getTransaction());
   }
 
   @Test
   public void getTransactionIdTest() {
     String expected = "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=";
-    assertEquals(expected, POST_TRANSACTION.get_transaction_id());
+    assertEquals(expected, POST_TRANSACTION.getTransactionId());
   }
 
   private static final JsonSchemaFactory FACTORY =
@@ -82,4 +84,19 @@ public class PostTransactionCoinTest {
     PostTransactionCoin res = GSON.fromJson(json, PostTransactionCoin.class);
     assertEquals(POST_TRANSACTION, res);
   }
+
+  @Test
+  public void testHashCode() {
+    Transaction trans = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
+    PostTransactionCoin postTransaction = new PostTransactionCoin(trans);
+    assertEquals(java.util.Objects.hash(postTransaction.getTransactionId(), postTransaction.getTransaction()), postTransaction.hashCode());
+  }
+
+  @Test
+  public void testToString() {
+    Transaction trans = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
+    PostTransactionCoin postTransaction = new PostTransactionCoin(trans);
+    assertEquals("PostTransactionCoin{ transaction_id=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=transaction=Transaction{version=1, inputs=[input{tx_out_hash='47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=', tx_out_index=0, script=script{type='P2PKH', pubkey='PublicKey(AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)', sig='Signature(CAFEBABE)'}}], outputs=[output{value=32, script=script{type='P2PKH', pubkey_hash='2jmj7l5rSw0yVb-vlWAYkK-YBwk='}}], lock_time=0}}", postTransaction.toString());
+  }
+
 }

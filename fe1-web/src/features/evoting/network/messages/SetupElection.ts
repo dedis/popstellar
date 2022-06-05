@@ -28,12 +28,7 @@ export class SetupElection implements MessageData {
 
   public readonly questions: Question[];
 
-  constructor(msg: MessageDataProperties<SetupElection>) {
-    if (!msg.id) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
-    }
-    this.id = msg.id;
-
+  constructor(msg: MessageDataProperties<SetupElection>, laoId: Hash) {
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'SetupElection'");
     }
@@ -79,6 +74,21 @@ export class SetupElection implements MessageData {
     }
     this.end_time = msg.end_time;
 
+    if (!msg.id) {
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
+    }
+
+    const expectedId = SetupElection.computeElectionId(laoId, this.created_at, this.name);
+    if (!expectedId.equals(msg.id)) {
+      throw new ProtocolError(
+        "Invalid 'id' parameter encountered during 'SetupElection':" +
+          ' re-computing the value yields a different result (' +
+          `(expected: '${expectedId}', actual: '${msg.id}')`,
+      );
+    }
+
+    this.id = msg.id;
+
     if (!msg.questions) {
       throw new ProtocolError("Undefined 'questions' parameter encountered during 'SetupElection'");
     }
@@ -87,34 +97,25 @@ export class SetupElection implements MessageData {
   }
 
   /**
-   * Validates the SetupElection object based on external information
+   * Computes the id of an election
    *
    * @param laoId - The ID of the LAO this message was sent to
+   * @param createdAt - The time the election was created
+   * @param name The name of the election
    */
-  public validate(laoId: Hash) {
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION,
-      laoId.toString(),
-      this.created_at.toString(),
-      this.name,
-    );
-    if (!expectedHash.equals(this.id)) {
-      throw new ProtocolError(
-        "Invalid 'id' parameter encountered during 'SetupElection':" +
-          ' re-computing the value yields a different result',
-      );
-    }
+  public static computeElectionId(laoId: Hash, createdAt: Timestamp, name: string) {
+    return Hash.fromStringArray(EventTags.ELECTION, laoId.toString(), createdAt.toString(), name);
   }
 
   /**
    * Checks that an array of questions is valid.
    *
    * @param questions - The array of questions to be checked
-   * @param electID- The id of the election
+   * @param electionId - The id of the election
    */
-  public static validateQuestions(questions: Question[], electID: string) {
+  public static validateQuestions(questions: Question[], electionId: string) {
     questions.forEach((question) => {
-      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electID, question.question);
+      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electionId, question.question);
 
       if (expectedHash.valueOf() !== question.id) {
         throw new ProtocolError(
@@ -148,21 +149,31 @@ export class SetupElection implements MessageData {
   /**
    * Creates a SetupElection object from a given object.
    *
-   * @param obj
+   * @param obj The parsed json data
+   * @param laoId The id of the lao this message belongs to
    */
-  public static fromJson(obj: any): SetupElection {
+  public static fromJson(obj: any, laoId?: Hash): SetupElection {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'SetupElection' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.SETUP, obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid election setup\n\n${errors}`);
     }
 
-    return new SetupElection({
-      ...obj,
-      created_at: new Timestamp(obj.created_at),
-      start_time: new Timestamp(obj.start_time),
-      end_time: new Timestamp(obj.end_time),
-      id: new Hash(obj.id),
-    });
+    return new SetupElection(
+      {
+        ...obj,
+        created_at: new Timestamp(obj.created_at),
+        start_time: new Timestamp(obj.start_time),
+        end_time: new Timestamp(obj.end_time),
+        id: new Hash(obj.id),
+      },
+      laoId,
+    );
   }
 }

@@ -3,10 +3,16 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import android.util.Log;
+
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
+
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class TransactionTest {
   // Version
@@ -18,7 +24,7 @@ public class TransactionTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
@@ -40,22 +46,22 @@ public class TransactionTest {
 
   @Test
   public void testGetVersion() {
-    assertEquals(VERSION, TRANSACTION.get_version());
+    assertEquals(VERSION, TRANSACTION.getVersion());
   }
 
   @Test
   public void testGetTxIns() {
-    assertEquals(TX_INS, TRANSACTION.get_inputs());
+    assertEquals(TX_INS, TRANSACTION.getInputs());
   }
 
   @Test
   public void testGetTxOuts() {
-    assertEquals(TX_OUTS, TRANSACTION.get_outputs());
+    assertEquals(TX_OUTS, TRANSACTION.getOutputs());
   }
 
   @Test
   public void testGetTimestamp() {
-    assertEquals(TIMESTAMP, TRANSACTION.get_lock_time());
+    assertEquals(TIMESTAMP, TRANSACTION.getLockTime());
   }
 
   @Test

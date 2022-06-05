@@ -29,16 +29,19 @@ export function requestCreateElection(
   questions: Question[],
   time: Timestamp,
 ): Promise<void> {
-  const message = new SetupElection({
-    lao: laoId,
-    id: Hash.fromStringArray(EventTags.ELECTION, laoId.valueOf(), time.toString(), name),
-    name: name,
-    version: version,
-    created_at: time,
-    start_time: Timestamp.max(time, start),
-    end_time: end,
-    questions: questions,
-  });
+  const message = new SetupElection(
+    {
+      lao: laoId,
+      id: Hash.fromStringArray(EventTags.ELECTION, laoId.valueOf(), time.toString(), name),
+      name: name,
+      version: version,
+      created_at: time,
+      start_time: Timestamp.max(time, start),
+      end_time: end,
+      questions: questions,
+    },
+    laoId,
+  );
 
   // publish on the general LAO channel
   return publish(channelFromIds(laoId), message);
