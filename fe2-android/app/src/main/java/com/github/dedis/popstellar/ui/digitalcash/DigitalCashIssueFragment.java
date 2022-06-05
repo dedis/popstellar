@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
-import android.telephony.mbms.StreamingServiceInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -127,7 +126,7 @@ public class DigitalCashIssueFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
               .show();
     } else {
-      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
+      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond(), true);
       mViewModel.updateLaoCoinEvent();
     }
   }

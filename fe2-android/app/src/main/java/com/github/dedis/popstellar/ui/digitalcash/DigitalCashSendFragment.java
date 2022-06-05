@@ -167,7 +167,7 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond());
+      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond(), false);
       mViewModel.updateLaoCoinEvent();
     }
   }

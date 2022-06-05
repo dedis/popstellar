@@ -293,7 +293,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
    *
    * <p>Publish a Message General containing a PostTransaction data
    */
-  public void postTransaction(Map<String, String> receiverandvalue, long locktime) {
+  public void postTransaction(
+      Map<String, String> receiverandvalue, long locktime, boolean coinBase) {
 
     /* Check if a Lao exist */
     Lao lao = getCurrentLao();
@@ -329,7 +330,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       String transaction_hash = Hash.hash("none");
       int index = 0;
 
-      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey())) {
+      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey()) && !coinBase) {
         List<TransactionObject> transactions =
             getCurrentLao().getTransactionByUser().get(token.getPublicKey());
 

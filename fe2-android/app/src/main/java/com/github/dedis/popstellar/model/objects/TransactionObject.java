@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -342,5 +343,16 @@ public class TransactionObject {
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
+  }
+
+  /**
+   * Function that return if a Transaction is a coin base transaction or not
+   *
+   * @return boolean true if coin base transaction
+   */
+  public boolean isCoinBaseTransaction() {
+    return (getSendersTransaction().size() == 1)
+        && getInputs().get(0).getTxOutHash().equals(Hash.hash("none"))
+        && (getInputs().get(0).getTxOutIndex() == 0);
   }
 }

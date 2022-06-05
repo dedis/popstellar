@@ -179,8 +179,8 @@ public final class Lao {
       PublicKey current = iterator.next();
       pubKeyByHash.put(current.computeHash(), current);
     }
-    // also update the history and the current transaction per attendees
-    // both map have to be set to empty again
+    /*also update the history and the current transaction per attendees
+    both map have to be set to empty again*/
     transactionByUser = new HashMap<>();
     transactionHistoryByUser = new HashMap<>();
   }
@@ -190,8 +190,8 @@ public final class Lao {
     if (transactionObject == null) {
       throw new IllegalArgumentException("The transaction is null");
     }
-    // Change the transaction per public key in transacionperUser
-    // for the sender and the receiver
+    /* Change the transaction per public key in transacionperUser
+    for the sender and the receiver*/
     if (this.getRollCalls().values().isEmpty()) {
       throw new IllegalStateException("A transaction need a roll call creation ");
     }
@@ -199,17 +199,20 @@ public final class Lao {
       throw new IllegalStateException("A transaction need attendees !");
     }
 
-    // Contained in the receiver there are also the sender
-    // which has to be in the list of attendees of the roll call
+    /* Contained in the receiver there are also the sender
+    which has to be in the list of attendees of the roll call*/
     Iterator<PublicKey> receiversIte =
         transactionObject.getReceiversTransaction(pubKeyByHash).iterator();
     while (receiversIte.hasNext()) {
       PublicKey current = receiversIte.next();
       // Add the transaction in the current state  / for the sender and the receiver
 
+      /* The only case where the map has a list of transaction in memory is when we have several
+      coin base transaction (in fact the issuer send several time money to someone)
+      or our receiver is no sender */
       if (transactionByUser.containsKey(current)
-          && transactionObject.isReceiver(current)
-          && !transactionObject.isSender(current)) {
+          && (transactionObject.isCoinBaseTransaction()
+              || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
         transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
         List<TransactionObject> list = new ArrayList<>(transactionByUser.get(current));
         list.add(transactionObject);
