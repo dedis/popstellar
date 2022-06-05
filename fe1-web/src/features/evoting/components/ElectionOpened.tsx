@@ -105,7 +105,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
       {election.version === ElectionVersion.SECRET_BALLOT && (
         <View style={[styles.warning, styles.secretBallot]}>
-          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="info" color={Color.contrast} size={Icon.largeSize} />
           <View style={styles.warningText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>Notice</Text>
             <Text style={[Typography.base, Typography.negative]}>
