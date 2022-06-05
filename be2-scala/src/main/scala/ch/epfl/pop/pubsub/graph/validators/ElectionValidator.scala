@@ -10,10 +10,8 @@ import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -220,20 +218,21 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
-        if (!validateTimestampStaleness(data.created_at))
+        if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        else if (channel.extractChildChannel != data.election)
+        } else if (channel.extractChildChannel != data.election) {
           Right(validationError("unexpected election id"))
-        else if (laoId != data.lao)
+        } else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
-        else if (!validateOwner(sender, channel, dbActorRef))
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
+        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes))
+        } else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes)) {
           Right(validationError(s"Incorrect verification hash"))
-        else
+        } else {
           Left(rpcMessage)
+        }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
