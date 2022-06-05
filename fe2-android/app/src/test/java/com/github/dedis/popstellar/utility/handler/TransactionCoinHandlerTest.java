@@ -148,11 +148,11 @@ public class TransactionCoinHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, posttransactioncoin, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
     assertEquals(1, lao.getTransactionByUser().size());
-    assertEquals(1, lao.getTransaction_historyByUser().size());
+    assertEquals(1, lao.getTransactionHistoryByUser().size());
     TransactionObject transaction_object =
         lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
     assertEquals(transaction_object.getChannel(), coinChannel);
-    assertEquals(1, lao.getPub_keyByHash().size());
+    assertEquals(1, lao.getPubKeyByHash().size());
   }
 }
 

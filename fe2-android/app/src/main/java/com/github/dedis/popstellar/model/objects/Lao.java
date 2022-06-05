@@ -43,9 +43,9 @@ public final class Lao {
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   // Some useful map for the digital cash
-  private Map<String, PublicKey> pub_keyByHash;
+  private Map<String, PublicKey> pubKeyByHash;
   // Map for the history
-  private Map<PublicKey, List<TransactionObject>> transaction_historyByUser;
+  private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
   private Map<PublicKey, TransactionObject> transactionByUser;
 
@@ -68,9 +68,9 @@ public final class Lao {
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
     // initialize the maps :
-    this.transaction_historyByUser = new HashMap<>();
+    this.transactionHistoryByUser = new HashMap<>();
     this.transactionByUser = new HashMap<>();
-    this.pub_keyByHash = new HashMap<>();
+    this.pubKeyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -84,7 +84,7 @@ public final class Lao {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -169,21 +169,21 @@ public final class Lao {
    */
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     Iterator<PublicKey> iterator = attendees.iterator();
-    pub_keyByHash = new HashMap<>();
-    pub_keyByHash.put(organizer.computeHash(), organizer);
+    pubKeyByHash = new HashMap<>();
+    pubKeyByHash.put(organizer.computeHash(), organizer);
     while (iterator.hasNext()) {
       PublicKey current = iterator.next();
-      pub_keyByHash.put(current.computeHash(), current);
+      pubKeyByHash.put(current.computeHash(), current);
     }
     // also update the history and the current transaction per attendees
     // both map have to be set to empty again
     transactionByUser = new HashMap<>();
-    transaction_historyByUser = new HashMap<>();
+    transactionHistoryByUser = new HashMap<>();
   }
 
   // add a function that update all the transaction
-  public void updateTransactionMaps(TransactionObject transaction_object) {
-    if (transaction_object == null) {
+  public void updateTransactionMaps(TransactionObject transactionObject) {
+    if (transactionObject == null) {
       throw new IllegalArgumentException("The transaction is null");
     }
     // Change the transaction per public key in transacionperUser
@@ -191,21 +191,21 @@ public final class Lao {
     if (this.getRollCalls().values().isEmpty()) {
       throw new IllegalStateException("A transaction need a roll call creation ");
     }
-    if (this.pub_keyByHash.isEmpty()) {
+    if (this.pubKeyByHash.isEmpty()) {
       throw new IllegalStateException("A transaction need attendees !");
     }
 
     // Contained in the receiver there are also the sender
     // which has to be in the list of attendees of the roll call
-    Iterator<PublicKey> receivers_ite =
-        transaction_object.getReceiversTransaction(pub_keyByHash).iterator();
-    while (receivers_ite.hasNext()) {
-      PublicKey current = receivers_ite.next();
+    Iterator<PublicKey> receiversIte =
+        transactionObject.getReceiversTransaction(pubKeyByHash).iterator();
+    while (receiversIte.hasNext()) {
+      PublicKey current = receiversIte.next();
       // Add the transaction in the current state  / for the sender and the receiver
-      transactionByUser.put(current, transaction_object);
+      transactionByUser.put(current, transactionObject);
       // Add the transaction in the history / for the sender and the receiver
-      transaction_historyByUser.putIfAbsent(current, new ArrayList<>());
-      if (!transaction_historyByUser.get(current).add(transaction_object)) {
+      transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
+      if (!transactionHistoryByUser.get(current).add(transactionObject)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
@@ -384,16 +384,16 @@ public final class Lao {
         .collect(Collectors.toList());
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransaction_historyByUser() {
-    return transaction_historyByUser;
+  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
+    return transactionHistoryByUser;
   }
 
   public Map<PublicKey, TransactionObject> getTransactionByUser() {
     return transactionByUser;
   }
 
-  public Map<String, PublicKey> getPub_keyByHash() {
-    return pub_keyByHash;
+  public Map<String, PublicKey> getPubKeyByHash() {
+    return pubKeyByHash;
   }
 
   public Map<MessageID, Chirp> getAllChirps() {

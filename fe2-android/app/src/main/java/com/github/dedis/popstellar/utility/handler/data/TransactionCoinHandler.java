@@ -49,8 +49,8 @@ public class TransactionCoinHandler {
     List<OutputObject> outputs = new ArrayList<>();
 
     // Should always be at least one input and one output
-    if (postTransactionCoin.getTransaction().getInputs().size() == 0
-            || postTransactionCoin.getTransaction().getOutputs().size() == 0) {
+    if (postTransactionCoin.getTransaction().getInputs().isEmpty()
+            || postTransactionCoin.getTransaction().getOutputs().isEmpty()) {
       throw new IllegalArgumentException();
     }
 
