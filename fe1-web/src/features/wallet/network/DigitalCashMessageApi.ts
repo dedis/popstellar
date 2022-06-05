@@ -27,16 +27,14 @@ export function requestSendTransaction(
     from.publicKey.valueOf(),
   );
 
-  if (!transactionStates) {
-    console.warn(makeErr('no transaction out were found for this public key'));
-    return Promise.resolve();
+  if (transactionStates.length === 0) {
+    throw new Error(makeErr('no transaction out were found for this public key'));
   }
 
   const balance = getBalance(laoId.valueOf(), from.publicKey.valueOf());
 
   if (amount < 0 || amount > balance) {
-    console.warn(makeErr('balance is not sufficient to send this amount'));
-    return Promise.resolve();
+    throw new Error(makeErr('balance is not sufficient to send this amount'));
   }
 
   const transaction: Transaction = Transaction.create(from, to, balance, amount, transactionStates);

@@ -7,6 +7,7 @@ import {
   mockCoinbaseTransactionJSON,
   mockKeyPair,
   mockPublicKey2,
+  mockTransactionState,
   mockTransactionValue,
 } from '__tests__/utils';
 import { Hash, PopToken, PublicKey } from 'core/objects';
@@ -44,32 +45,7 @@ const validCoinbaseState: TransactionState = {
   ],
   lockTime: 0,
 };
-const validTransactionState0: TransactionState = {
-  version: 1,
-  inputs: [
-    {
-      txOutHash: 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=',
-      txOutIndex: 0,
-      script: {
-        type: 'Pay-to-Pubkey-Hash',
-        publicKey: 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=',
-        signature:
-          'rXV5aml3l5Yl9HmwEKEoRwjwGJw8rYcGwtEJkFk4FvAD9_3eZjTHGEIV4jPkKhmKRuv-hG5EgEXrLCgGJY6pBQ==',
-      },
-    },
-  ],
-  outputs: [
-    {
-      value: 100,
-      script: {
-        type: 'Pay-to-Pubkey-Hash',
-        publicKeyHash: '-_qR4IHwsiq50raa8jURNArds54=',
-      },
-    },
-  ],
-  transactionId: '72AqOuKOSNuVsCEkWQ9gtfm8biBgUJyInOhMw4NqkGI=',
-  lockTime: 0,
-};
+
 const validTransactionState1: TransactionState = {
   version: 1,
   inputs: [
@@ -262,7 +238,7 @@ describe('Transaction', () => {
       mockTransactionValue,
       [validCoinbaseState],
     );
-    expect(transaction.toState()).toEqual(validTransactionState0);
+    expect(transaction.toState()).toEqual(mockTransactionState);
   });
   it('should be able to create a transaction with split outputs', () => {
     const transaction = Transaction.create(

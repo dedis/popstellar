@@ -6,7 +6,7 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 
-import { TransactionJSON } from '../../features/wallet/objects/transaction';
+import { Transaction, TransactionJSON, TransactionState } from "../../features/wallet/objects/transaction";
 import STRINGS from '../../resources/strings';
 
 export const mockPublicKey = testKeyPair.publicKey;
@@ -109,4 +109,30 @@ export const mockCoinbaseTransactionJSON: TransactionJSON = {
     },
   ],
   lock_time: 0,
+};
+export const mockTransactionState: TransactionState = {
+  version: 1,
+  inputs: [
+    {
+      txOutHash: 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=',
+      txOutIndex: 0,
+      script: {
+        type: 'Pay-to-Pubkey-Hash',
+        publicKey: 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=',
+        signature:
+          'rXV5aml3l5Yl9HmwEKEoRwjwGJw8rYcGwtEJkFk4FvAD9_3eZjTHGEIV4jPkKhmKRuv-hG5EgEXrLCgGJY6pBQ==',
+      },
+    },
+  ],
+  outputs: [
+    {
+      value: 100,
+      script: {
+        type: 'Pay-to-Pubkey-Hash',
+        publicKeyHash: '-_qR4IHwsiq50raa8jURNArds54=',
+      },
+    },
+  ],
+  transactionId: '72AqOuKOSNuVsCEkWQ9gtfm8biBgUJyInOhMw4NqkGI=',
+  lockTime: 0,
 };
