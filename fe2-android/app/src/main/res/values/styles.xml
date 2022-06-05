@@ -58,7 +58,7 @@
 
   <style name="history_element_title">
     <item name="android:textSize">@dimen/size_body</item>
-    <item name="android:layout_marginStart">22dp</item>
+    <item name="android:layout_marginStart">16dp</item>
     <item name="android:textColor">@color/black</item>
     <item name="android:textStyle">bold</item>
   </style>

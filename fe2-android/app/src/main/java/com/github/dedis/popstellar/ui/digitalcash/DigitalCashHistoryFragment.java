@@ -6,8 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHistoryFragment#newInstance}
@@ -33,6 +38,18 @@ public class DigitalCashHistoryFragment extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
+    View view = inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
+
+    RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
+    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+    RecyclerView.ItemDecoration decoration =
+        new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+    HistoryListAdapter adapter = new HistoryListAdapter(new ArrayList<>());
+
+    transactionList.setLayoutManager(layoutManager);
+    transactionList.addItemDecoration(decoration);
+    transactionList.setAdapter(adapter);
+
+    return view;
   }
 }

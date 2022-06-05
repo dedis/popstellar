@@ -149,5 +149,6 @@
   <dimen name="spinner_height_digital_cash">70dp</dimen>
   <dimen name="history_recycler_view_top_margin">40dp</dimen>
   <dimen name="layout_horizontal_margin">8dp</dimen>
+  <dimen name="history_card_view_height">40dp</dimen>
 
 </resources>

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/transaction_card_view"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:minHeight="@dimen/home_card_view_height">
-  >
+  android:clickable="true"
+  android:minHeight="@dimen/history_card_view_height">
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginBottom="10dp">
 
     <TextView
       android:id="@+id/history_transaction_type_title"
@@ -18,7 +20,8 @@
       android:layout_marginTop="@dimen/margin_top"
       android:text="@string/digital_cash_received"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/history_transaction_detail_layout" />
 
     <TextView
       android:id="@+id/history_transaction_type_value"
@@ -29,6 +32,18 @@
       app:layout_constraintBottom_toBottomOf="@id/history_transaction_type_title"
       app:layout_constraintStart_toEndOf="@id/history_transaction_type_title"
       app:layout_constraintTop_toTopOf="@id/history_transaction_type_title" />
+
+    <ImageView
+      android:id="@+id/history_transaction_expand_icon"
+      android:layout_width="@dimen/event_layout_arrow_image_side"
+      android:layout_height="@dimen/event_layout_arrow_image_side"
+      android:layout_marginEnd="@dimen/event_layout_arrow_end_margin"
+      android:src="@drawable/ic_arrow_expand"
+      android:clickable="true"
+      app:layout_constraintBottom_toBottomOf="@+id/history_transaction_type_value"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:contentDescription="@string/expand_icon_description" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/history_transaction_detail_layout"
@@ -51,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/history_element_field"
-        android:text="0x5654556456456456456456456465"
+        android:text="0x5654556456456456456456456465="
         app:layout_constraintTop_toTopOf="@id/history_transaction_provenance_title"
         app:layout_constraintBottom_toBottomOf="@id/history_transaction_provenance_title"
         app:layout_constraintStart_toEndOf="@id/history_transaction_provenance_title" />
@@ -60,8 +75,8 @@
         android:id="@+id/history_transaction_transaction_id_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
         style="@style/history_element_title"
-        android:layout_marginTop="8dp"
         android:text="@string/digital_cash_transaction_id"
         app:layout_constraintTop_toBottomOf="@id/history_transaction_provenance_title"
         app:layout_constraintStart_toStartOf="parent" />
