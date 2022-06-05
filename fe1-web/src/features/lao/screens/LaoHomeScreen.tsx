@@ -49,6 +49,11 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Component rendered in the top middle of the navgiation bar when looking
+ * at the lao home screen. Makes sure it shows the name of the lao and
+ * not just some static string.
+ */
 export const LaoHomeScreenHeader = () => {
   const lao = LaoHooks.useCurrentLao();
   const [modalVisible, setModalVisible] = useState(false);

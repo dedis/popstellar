@@ -13,8 +13,11 @@ import STRINGS from 'resources/strings';
 
 import { openElection } from '../network/ElectionMessageApi';
 import { Election } from '../objects';
-import { ElectionQuestions } from './ElectionQuestions';
+import ElectionQuestions from './ElectionQuestions';
 
+/**
+ * Screen component for not started elections
+ */
 const ElectionNotStarted = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
@@ -48,6 +51,10 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ElectionNotStarted;
 
+/**
+ * Component that is rendered in the top right of the navigation bar for not started elections.
+ * Allows for example to show icons that then trigger different actions
+ */
 export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
   const { election, isOrganizer } = props;
 

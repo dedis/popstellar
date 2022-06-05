@@ -7,8 +7,11 @@ import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { Election } from '../objects';
-import { ElectionQuestions } from './ElectionQuestions';
+import ElectionQuestions from './ElectionQuestions';
 
+/**
+ * Screen component for terminated elections
+ */
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>

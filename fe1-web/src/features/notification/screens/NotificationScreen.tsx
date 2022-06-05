@@ -53,6 +53,11 @@ const NotificationScreen = () => {
 
 export default NotificationScreen;
 
+/**
+ * Component rendered in the top right of the navigation bar when looking at
+ * the notifications screen. Allows the user to perform a set of actions such
+ * as clearing the set of all notifications.
+ */
 export const NotificationScreenRightHeader = () => {
   const showActionSheet = useActionSheet();
   const notificationTypes = NotificationHooks.useNotificationTypes();
