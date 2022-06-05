@@ -18,7 +18,10 @@ import TransactionHistory from '../../components/TransactionHistory';
 import { DigitalCashHooks } from '../../hooks';
 import { DigitalCashFeature } from '../../interface';
 import { RollCallAccount } from '../../objects/Account';
-import { DigitalCashWalletActionType, digitalCashWalletStateReducer } from './state';
+import {
+  DigitalCashWalletActionType,
+  digitalCashWalletStateReducer,
+} from './DigitalCashWalletState';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,

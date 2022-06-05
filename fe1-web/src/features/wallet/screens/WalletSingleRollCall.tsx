@@ -26,6 +26,9 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
+/**
+ * Renders the screen for showing a single roll call in the wallet
+ */
 const WalletSingleRollCall = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallName } = route.params;
@@ -40,6 +43,10 @@ const WalletSingleRollCall = () => {
 
 export default WalletSingleRollCall;
 
+/**
+ * Component shown in the top middle of the navigation bar. Makes sure
+ * the name of a roll call is shown instead of some static text
+ */
 export const ViewSingleRollCallScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallName } = route.params;
@@ -47,6 +54,10 @@ export const ViewSingleRollCallScreenHeader = () => {
   return <Text style={Typography.topNavigationHeading}>{rollCallName}</Text>;
 };
 
+/**
+ * Component shown in the top right of the navigation bar. Allows the user to interact
+ * show the qr code if their pop token.
+ */
 export const WalletSingleHeaderRight = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallTokenPublicKey } = route.params;

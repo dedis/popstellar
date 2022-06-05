@@ -320,7 +320,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -2944,7 +2944,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
