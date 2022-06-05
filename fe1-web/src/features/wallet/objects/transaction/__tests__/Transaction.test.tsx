@@ -13,7 +13,7 @@ import {
 import { Hash, PopToken, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
-import { Transaction, TransactionState } from '../Transaction';
+import { Transaction, TransactionJSON, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
 import { TransactionOutput } from '../TransactionOutput';
 
@@ -105,6 +105,13 @@ const randomTransactionState: TransactionState = {
   ],
   transactionId: '99AqOuKOSNuVsCEkWQ9gtfm8biBgUJyInOhMw4NqkGI=',
   lockTime: 0,
+};
+
+const mockTransactionRecordByHash: Record<string, TransactionState> = {
+  [mockCBHash.valueOf()]: Transaction.fromJSON(
+    mockCoinbaseTransactionJSON,
+    mockCBHash.valueOf(),
+  ).toState(),
 };
 // endregion
 
@@ -209,15 +216,15 @@ describe('Transaction', () => {
     expect(coinbaseTransaction.toJSON()).toEqual(mockCoinbaseTransactionJSON);
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
-  it('should validate a properly signed transaction', () => {
+  it('should validate a properly signed coinbase transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
       mockKeyPair.publicKey,
       mockTransactionValue,
     );
-    const isValid = Transaction.checkTransactionSignatures(
-      coinbaseTransaction,
+    const isValid = coinbaseTransaction.checkTransactionValidity(
       mockKeyPair.publicKey,
+      mockTransactionRecordByHash,
     );
     expect(isValid).toBeTrue();
   });
@@ -227,11 +234,25 @@ describe('Transaction', () => {
       mockKeyPair.publicKey,
       mockTransactionValue,
     );
-    const isValid = Transaction.checkTransactionSignatures(
-      coinbaseTransaction,
+    const isValid = coinbaseTransaction.checkTransactionValidity(
       new PublicKey(mockPublicKey2),
+      mockTransactionRecordByHash,
     );
     expect(isValid).toBeFalse();
+  });
+  it('should validate a properly signed transaction', () => {
+    const transaction = Transaction.create(
+      mockPopToken,
+      mockKeyPair.publicKey,
+      mockTransactionValue,
+      mockTransactionValue,
+      [validCoinbaseState],
+    );
+    const isValid = transaction.checkTransactionValidity(
+      new PublicKey(mockPublicKey2),
+      mockTransactionRecordByHash,
+    );
+    expect(isValid).toBeTrue();
   });
   it('should be able to create a transaction from other valid transaction inputs', () => {
     const transaction = Transaction.create(

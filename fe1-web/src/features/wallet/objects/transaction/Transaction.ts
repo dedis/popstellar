@@ -251,30 +251,69 @@ export class Transaction {
   /**
    * Verifies the validity of the transaction
    * by checking the transaction inputs signature
-   * @param transaction the transaction to verify
-   * @param organizerPublicKey the organizer's public key of the lao
+   * @param organizerPublicKey - The organizer's public key of the lao
+   * @param transactionStates - A transaction id mapping of all transactions in memory
    */
-  public static checkTransactionSignatures = (
-    transaction: Transaction,
+  public checkTransactionValidity = (
     organizerPublicKey: PublicKey,
-  ) => {
-    const isCoinbase = transaction.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
+    transactionStates: Record<string, TransactionState>,
+  ): boolean => {
+    const isCoinbase = this.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
+    const originPublicKey = this.inputs[0].script.publicKey;
 
     // Reconstruct data signed on
-    const dataString = Transaction.concatenateTxData(
-      transaction.inputs.map((input) => input.toState()),
-      transaction.outputs.map((output) => output.toState()),
+    const encodedData = Base64UrlData.encode(
+      Transaction.concatenateTxData(
+        this.inputs.map((input) => input.toState()),
+        this.outputs.map((output) => output.toState()),
+      ),
     );
 
-    return !transaction.inputs.some((input) => {
-      if (isCoinbase && input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
-        return true;
+    let totalInputAmount = 0;
+
+    const inputsAreValid = !this.inputs.some((input) => {
+      if (isCoinbase) {
+        if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
+          console.warn('The coinbase transaction input is not the organizer');
+          return true;
+        }
       }
-      return !input.script.signature.verify(
-        input.script.publicKey,
-        Base64UrlData.encode(dataString),
-      );
+
+      if (!isCoinbase) {
+        const originTransactionOutput =
+          transactionStates[input.txOutHash.valueOf()].outputs[input.txOutIndex];
+        if (
+          originTransactionOutput.script.publicKeyHash !==
+          Hash.fromPublicKey(input.script.publicKey).valueOf()
+        ) {
+          console.warn(
+            "The transaction output public key hash used does not correspond to the spender's public key",
+          );
+          return true;
+        }
+        totalInputAmount += originTransactionOutput.value;
+      }
+
+      return !input.script.signature.verify(input.script.publicKey, encodedData);
     });
+
+    if (!inputsAreValid) {
+      console.warn('The transaction inputs are not valid');
+      return false;
+    }
+
+    let totalOutputAmount = 0;
+
+    this.outputs.forEach((output) => {
+      totalOutputAmount += output.value;
+    });
+
+    if (!isCoinbase && totalInputAmount < totalOutputAmount) {
+      console.warn('The total transaction output value is bigger than the total input value');
+      return false;
+    }
+
+    return true;
   };
 
   /**

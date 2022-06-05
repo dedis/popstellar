@@ -2,6 +2,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { Hash, PublicKey } from 'core/objects';
 
 import { Transaction } from '../objects/transaction';
+import { DigitalCashStore } from '../store';
 import { PostTransaction } from './messages';
 
 /**
@@ -38,7 +39,12 @@ export const handleTransactionPost =
 
     const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
 
-    if (!Transaction.checkTransactionSignatures(transaction, organizerPublicKey!)) {
+    if (
+      !transaction.checkTransactionValidity(
+        organizerPublicKey!,
+        DigitalCashStore.getTransactionsById(msg.laoId.valueOf()),
+      )
+    ) {
       console.warn('Transaction signatures are not valid');
       return false;
     }
