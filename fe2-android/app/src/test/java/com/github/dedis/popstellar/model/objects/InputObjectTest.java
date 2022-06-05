@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class InputObjectTest {
     TYPE = "P2PKH";
     PUBKEY = SENDER.getEncoded();
     SIG = SENDER_KEY.sign(SENDER).getEncoded();
-    SCRIPTTXIN = new ScriptInputObject(TYPE, PUBKEY, SIG);
+    SCRIPTTXIN = new ScriptInputObject(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
     INPUT = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
   }
 
@@ -45,8 +46,8 @@ public class InputObjectTest {
 
   @Test
   public void getScriptTest() {
-    assertEquals(INPUT.getScript().getPubkey(), PUBKEY);
-    assertEquals(INPUT.getScript().getSig(), SIG);
+    assertEquals(INPUT.getScript().getPubkey().getEncoded(), PUBKEY);
+    assertEquals(INPUT.getScript().getSig().getEncoded(), SIG);
     assertEquals(INPUT.getScript().getType(), TYPE);
   }
 }

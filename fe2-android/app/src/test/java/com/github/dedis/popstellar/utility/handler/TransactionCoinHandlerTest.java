@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.ServerRepository;
@@ -47,13 +48,10 @@ import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionCoinHandlerTest {
-  public static final String TAG = TransactionCoinHandlerTest.class.getSimpleName();
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
   private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
-
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private static final long openedAt = 1633099883;
@@ -76,7 +74,7 @@ public class TransactionCoinHandlerTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = SENDER.getEncoded();
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, PUBKEY, SIG);
+  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
