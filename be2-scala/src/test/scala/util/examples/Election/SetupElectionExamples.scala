@@ -80,7 +80,7 @@ object SetupElectionExamples {
     Some(wrongIdSetupElection)
   )
 
-  val wrongQuestionIdSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, ELECTION_VERSION,NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, invalidQuestion)
+  val wrongQuestionIdSetupElection: SetupElection = SetupElection(ELECTION_ID, LAO_ID, ELECTION_NAME, OPEN_BALLOT, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, invalidQuestion)
   final val MESSAGE_SETUPELECTION_WRONG_QUESTION_ID: Message = new Message(
     Base64Data.encode(wrongQuestionIdSetupElection.toJson.toString),
     SENDER_SETUPELECTION,

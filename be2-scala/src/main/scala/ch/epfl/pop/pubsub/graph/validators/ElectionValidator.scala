@@ -139,12 +139,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def allVoteHaveValidIndex(channel:Channel, votes: List[VoteElection], q2ballots: Map[Hash, List[String]], electionData: ElectionData) =
-    votes.forall { voteElection =>
-      val voteIndex = channel.getVoteIndex(electionData, voteElection.vote)
-      0 <= voteIndex && voteIndex < q2ballots(voteElection.question).size
-    }
-
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
 
@@ -186,10 +180,12 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val questionsId: List[Hash] = questions.map(_.id)
 
     votes.forall( vote => vote.vote match {
-      case Some(v) =>
+      case Some(Left(index)) =>
         questionsId.contains(vote.question) &&
-          v < q2Ballots(vote.question).size &&
-          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
+          index < q2Ballots(vote.question).size &&
+          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
+      case Some(Right(encryptedVote)) =>
+        questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
       case _ => false
     })
   }

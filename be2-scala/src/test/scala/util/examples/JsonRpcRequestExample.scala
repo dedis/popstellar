@@ -7,8 +7,8 @@ import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
 import util.examples.Election.EndElectionExamples._
+import util.examples.Election.KeyElectionExamples._
 import util.examples.Lao.GreetLaoExamples._
-import util.examples.Election._
 import util.examples.MessageExample._
 import util.examples.RollCall.CloseRollCallExamples._
 import util.examples.RollCall.CreateRollCallExamples._
