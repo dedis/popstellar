@@ -352,6 +352,10 @@ namespace STRINGS {
   export const wallet_home_toggle_debug = 'Toggle debug mode';
   export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 
+  export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
+  export const wallet_home_rollcall_no_pop_tokens_description =
+    "You haven't received any PoP token received in this LAO yet.";
+
   export const wallet_single_roll_call_description =
     'You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.';
   export const wallet_single_roll_call_pop_token = 'Your PoP token';

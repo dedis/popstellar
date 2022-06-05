@@ -24,7 +24,7 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  // isFirstItem and isLastItem have to be refactored in the future
+  // the digital cash wallet item should be at the top
   const listStyles = List.getListItemStyles(true, false);
 
   return (
@@ -59,6 +59,8 @@ const propTypes = {
 DigitalCashWalletItems.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+export default DigitalCashWalletItems;
 
 export const digitalCashWalletItemGenerator: DigitalCashFeature.WalletItemGenerator = {
   ListItems: DigitalCashWalletItems as React.ComponentType<{ laoId: Hash }>,

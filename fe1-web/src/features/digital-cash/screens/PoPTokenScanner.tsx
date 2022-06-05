@@ -39,6 +39,8 @@ const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 const PoPTokenScanner = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+
+  // these parameters are required to navigate back to the digital cash wallet
   const { laoId, rollCallId, beneficiaryIndex } = route.params;
 
   const toast = useToast();
@@ -54,6 +56,7 @@ const PoPTokenScanner = () => {
       setShowScanner(true);
     });
   }, [navigation]);
+
   // disable scanner on blur events
   useEffect(() => {
     // Return the function to unsubscribe from the event so it gets removed on unmount

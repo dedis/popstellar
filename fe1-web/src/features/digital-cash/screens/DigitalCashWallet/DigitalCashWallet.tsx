@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useReducer } from 'react';
 import { Modal, Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -14,21 +14,31 @@ import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { List, ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import TransactionHistory from '../components/TransactionHistory';
-import { DigitalCashHooks } from '../hooks';
-import { DigitalCashFeature } from '../interface';
+import TransactionHistory from '../../components/TransactionHistory';
+import { DigitalCashHooks } from '../../hooks';
+import { DigitalCashFeature } from '../../interface';
+import { RollCallAccount } from '../../objects/Account';
+import { DigitalCashWalletActionType, digitalCashWalletStateReducer } from './state';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
-type RollCallAccount = {
-  rollCallId: string;
-  rollCallName: string;
-  popToken: string;
-  balance: null | number;
-};
+const rollCallAccounts: RollCallAccount[] = [
+  {
+    rollCallId: 'l1d1c5VwRmz2oiRRjEJh78eEhOnEf8QJ4W5PrmZfxcE=',
+    rollCallName: 'a roll call',
+    popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
+    balance: 21.3,
+  },
+  {
+    rollCallId: 'THFll04mCvZxOhCL9DYygnbTBSR2fjQAYGkfTzPf-zc=',
+    rollCallName: 'another roll call',
+    popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
+    balance: 20.9,
+  },
+];
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
@@ -39,34 +49,25 @@ const DigitalCashWallet = () => {
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
-  const [selectedAccount, setSelectedAccount] = useState<RollCallAccount | null>(null);
-  const [targets, setTargets] = useState<{ beneficiary: string; amount: string }[]>([
-    { beneficiary: '', amount: '' },
-  ]);
-
-  const [error, setError] = useState<string | null>(null);
-
-  const [showModal, setShowModal] = useState<boolean>(false);
-
-  const rollCallAccounts: RollCallAccount[] = useMemo(
-    () => [
-      {
-        rollCallId: 'l1d1c5VwRmz2oiRRjEJh78eEhOnEf8QJ4W5PrmZfxcE=',
-        rollCallName: 'a roll call',
-        popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
-        balance: 21.3,
-      },
-      {
-        rollCallId: 'THFll04mCvZxOhCL9DYygnbTBSR2fjQAYGkfTzPf-zc=',
-        rollCallName: 'another roll call',
-        popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
-        balance: 20.9,
-      },
-    ],
-    [],
+  /**
+   * The component state. This is a react reducer, similar to redux reducers and allows
+   * us to hide the complex state update logic from the UI code
+   */
+  const [{ showModal, selectedAccount, beneficiaries, error }, dispatch] = useReducer(
+    digitalCashWalletStateReducer,
+    {
+      showModal: false,
+      selectedAccount: null,
+      beneficiaries: [{ amount: '', popToken: '' }],
+      error: null,
+    },
   );
+
   const balance = rollCallAccounts.reduce((sum, account) => sum + (account.balance || 0), 0);
 
+  /**
+   * Add coin issuance account for organizers
+   */
   const accounts: RollCallAccount[] = useMemo(() => {
     if (isOrganizer) {
       return [
@@ -79,9 +80,11 @@ const DigitalCashWallet = () => {
       ];
     }
     return rollCallAccounts;
-  }, [rollCallAccounts, isOrganizer]);
+  }, [isOrganizer]);
 
-  const totalAmount = targets.reduce((sum, target) => sum + parseFloat(target.amount), 0);
+  const totalAmount = beneficiaries.reduce((sum, target) => sum + parseFloat(target.amount), 0);
+
+  const onClose = () => dispatch({ type: DigitalCashWalletActionType.CLOSE_MODAL });
 
   const onSendTransaction = () => {
     if (!selectedAccount) {
@@ -89,16 +92,24 @@ const DigitalCashWallet = () => {
     }
 
     if (Number.isNaN(totalAmount)) {
-      setError(STRINGS.digital_cash_wallet_amount_must_be_number);
+      dispatch({
+        type: DigitalCashWalletActionType.SET_ERROR,
+        error: STRINGS.digital_cash_wallet_amount_must_be_number,
+      });
       return;
     }
 
     if (selectedAccount.balance && totalAmount > selectedAccount.balance) {
-      setError(STRINGS.digital_cash_wallet_amount_too_high);
+      dispatch({
+        type: DigitalCashWalletActionType.SET_ERROR,
+        error: STRINGS.digital_cash_wallet_amount_too_high,
+      });
       return;
     }
 
-    setError(null);
+    dispatch({
+      type: DigitalCashWalletActionType.CLEAR_ERROR,
+    });
 
     if (selectedAccount.balance) {
       // TODO: transaction
@@ -111,40 +122,21 @@ const DigitalCashWallet = () => {
     Number.isNaN(totalAmount) ||
     (!!selectedAccount?.balance && selectedAccount && totalAmount > selectedAccount?.balance);
 
-  const updateBeneficiary = (index: number, amount: string, popToken: string) => {
-    const newTargets = [...targets];
-
-    newTargets.splice(index, 1, {
-      amount,
-      beneficiary: popToken,
-    });
-
-    setTargets(newTargets);
-  };
-
-  const onClose = () => {
-    setShowModal(false);
-    setTargets([{ beneficiary: '', amount: '' }]);
-  };
-
   useEffect(() => {
     if (
       scannedPoPTokenRollCallId &&
-      scannedPoPToken &&
       scannedPoPTokenBeneficiaryIndex !== undefined &&
-      scannedPoPTokenBeneficiaryIndex < targets.length
+      scannedPoPTokenBeneficiaryIndex < beneficiaries.length
     ) {
       const account = accounts.find((acc) => acc.rollCallId === scannedPoPTokenRollCallId);
 
-      if (account) {
-        setSelectedAccount(account);
-        setShowModal(true);
-
-        updateBeneficiary(
-          scannedPoPTokenBeneficiaryIndex,
-          targets[scannedPoPTokenBeneficiaryIndex].amount,
-          scannedPoPToken,
-        );
+      if (account && scannedPoPToken) {
+        dispatch({
+          type: DigitalCashWalletActionType.INSERT_SCANNED_POP_TOKEN,
+          account,
+          beneficiaryIndex: scannedPoPTokenBeneficiaryIndex,
+          beneficiaryPopToken: scannedPoPToken,
+        });
       }
     }
     // should only be re-executed of the navigation parameters change
@@ -169,8 +161,7 @@ const DigitalCashWallet = () => {
               style={listStyle}
               bottomDivider
               onPress={() => {
-                setSelectedAccount(account);
-                setShowModal(true);
+                dispatch({ type: DigitalCashWalletActionType.OPEN_MODAL, account });
               }}>
               <ListItem.Content>
                 <ListItem.Title style={Typography.base}>{account.rollCallName}</ListItem.Title>
@@ -209,14 +200,20 @@ const DigitalCashWallet = () => {
               {STRINGS.digital_cash_wallet_transaction_description}
             </Text>
 
-            {targets.map(({ amount, beneficiary }, index) => (
+            {beneficiaries.map(({ amount, popToken }, index) => (
               <View key={index.toString()}>
                 <Text style={[Typography.paragraph, Typography.important]}>
                   {STRINGS.digital_cash_wallet_beneficiary}
                 </Text>
                 <ScannerInput
-                  value={beneficiary}
-                  onChange={(newBeneficiary) => updateBeneficiary(index, amount, newBeneficiary)}
+                  value={popToken}
+                  onChange={(newPopToken) =>
+                    dispatch({
+                      type: DigitalCashWalletActionType.UPDATE_BENEFICIARY,
+                      beneficiaryIndex: index,
+                      popToken: newPopToken,
+                    })
+                  }
                   onPress={() => {
                     if (!selectedAccount) {
                       throw new Error(
@@ -224,7 +221,8 @@ const DigitalCashWallet = () => {
                       );
                     }
 
-                    setShowModal(false);
+                    // we hide the modal here and automatically open it when navigating back
+                    dispatch({ type: DigitalCashWalletActionType.HIDE_MODAL });
 
                     navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
                       laoId: laoId.valueOf(),
@@ -240,7 +238,13 @@ const DigitalCashWallet = () => {
                 </Text>
                 <Input
                   value={amount}
-                  onChange={(newAmount) => updateBeneficiary(index, newAmount, beneficiary)}
+                  onChange={(newAmount) =>
+                    dispatch({
+                      type: DigitalCashWalletActionType.UPDATE_BENEFICIARY,
+                      beneficiaryIndex: index,
+                      amount: newAmount,
+                    })
+                  }
                   placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
                 />
               </View>
@@ -248,7 +252,7 @@ const DigitalCashWallet = () => {
 
             {error && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
             <PoPTextButton
-              onPress={() => setTargets([...targets, { beneficiary: '', amount: '' }])}>
+              onPress={() => dispatch({ type: DigitalCashWalletActionType.ADD_BENEFICIARY })}>
               {STRINGS.digital_cash_wallet_add_beneficiary}
             </PoPTextButton>
 
