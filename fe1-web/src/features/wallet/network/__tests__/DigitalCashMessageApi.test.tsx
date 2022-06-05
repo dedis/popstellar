@@ -11,11 +11,11 @@ import {
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish } from 'core/network/JsonRpcApi';
 import { Hash, PopToken } from 'core/objects';
+import { PostTransaction } from 'features/wallet/network/messages';
 import { Transaction } from 'features/wallet/objects/transaction';
 import { DigitalCashStore } from 'features/wallet/store';
 
 import { requestSendTransaction, requestCoinbaseTransaction } from '../DigitalCashMessageApi';
-import { PostTransaction } from '../messages';
 
 jest.mock('features/wallet/store/DigitalCashStore');
 const getTransactionsByPublicKeyMock = DigitalCashStore.getTransactionsByPublicKey as jest.Mock;
@@ -101,6 +101,7 @@ describe('Digital Cash Message Api', () => {
       expect(e).toBeInstanceOf(Error);
     }
   });
+
   it('should throw an error with amount greater than balance', async () => {
     try {
       await requestSendTransaction(
@@ -114,6 +115,7 @@ describe('Digital Cash Message Api', () => {
       expect(e).toBeInstanceOf(Error);
     }
   });
+
   it('should throw an error with negative amount', async () => {
     try {
       await requestSendTransaction(

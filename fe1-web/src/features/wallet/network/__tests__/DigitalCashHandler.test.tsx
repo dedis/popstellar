@@ -1,10 +1,10 @@
-import { mockKeyPair, mockLaoId, mockTransactionState } from "__tests__/utils";
-import { ActionType, ObjectType } from "core/network/jsonrpc/messages";
-import { Base64UrlData, Hash, Signature, Timestamp } from "core/objects";
+import { mockKeyPair, mockLaoId, mockTransactionState } from '__tests__/utils';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
+import { PostTransaction } from 'features/wallet/network/messages';
+import { Transaction } from 'features/wallet/objects/transaction';
 
-import { Transaction } from "../../objects/transaction";
-import { handleTransactionPost } from "../DigitalCashHandler";
-import { PostTransaction } from "../messages";
+import { handleTransactionPost } from '../DigitalCashHandler';
 
 const mockTransaction = Transaction.fromState(mockTransactionState);
 const mockPost = new PostTransaction({
@@ -48,14 +48,17 @@ describe('DigitalCash handler', () => {
     expect(laoId.valueOf()).toBe(mockLaoId);
     expect(transaction.toState()).toEqual(mockTransactionState);
   });
+
   it('should return false when action does not correspond', () => {
     const mockMessage = createMockMessage(badActionPost);
     expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeFalse();
   });
+
   it('should return false when object does not correspond', () => {
     const mockMessage = createMockMessage(badObjectPost);
     expect(handleTransactionPost(mockAddTransaction)(mockMessage)).toBeFalse();
   });
+
   it('should return false when laoId is not defined', () => {
     const mockMessage = {
       ...createMockMessage(mockPost),

@@ -6,7 +6,7 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 
-import { Transaction, TransactionJSON, TransactionState } from "../../features/wallet/objects/transaction";
+import { TransactionJSON, TransactionState } from '../../features/wallet/objects/transaction';
 import STRINGS from '../../resources/strings';
 
 export const mockPublicKey = testKeyPair.publicKey;
