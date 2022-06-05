@@ -491,6 +491,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     a roll call
                                   </Text>
                                   <Text
+                                    numberOfLines={1}
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -704,6 +705,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     another roll call
                                   </Text>
                                   <Text
+                                    numberOfLines={1}
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -1160,29 +1162,39 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                         }
                                       }
                                     >
-                                      <TextInput
-                                        editable={true}
-                                        onChangeText={[Function]}
-                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                      <View
                                         style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                            },
-                                          ]
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
                                         }
-                                        value=""
-                                      />
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderRadius": 8,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
                                       <View
                                         style={
                                           Object {
@@ -1272,29 +1284,39 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     >
                                       Amount
                                     </Text>
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="42.50"
+                                    <View
                                       style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "backgroundColor": "#fff",
-                                            "borderRadius": 8,
-                                            "flex": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "flex": 1,
+                                          "flexDirection": "row",
+                                        }
                                       }
-                                      value=""
-                                    />
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="42.50"
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "backgroundColor": "#fff",
+                                              "borderRadius": 8,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        value=""
+                                      />
+                                    </View>
                                   </View>
                                   <RNGestureHandlerButton
                                     collapsable={false}
@@ -3278,6 +3300,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     a roll call
                                   </Text>
                                   <Text
+                                    numberOfLines={1}
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -3469,6 +3492,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     another roll call
                                   </Text>
                                   <Text
+                                    numberOfLines={1}
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -3881,29 +3905,39 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                         }
                                       }
                                     >
-                                      <TextInput
-                                        editable={true}
-                                        onChangeText={[Function]}
-                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                      <View
                                         style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                            },
-                                          ]
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
                                         }
-                                        value=""
-                                      />
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderRadius": 8,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
                                       <View
                                         style={
                                           Object {
@@ -3974,29 +4008,39 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     >
                                       Amount
                                     </Text>
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="42.50"
+                                    <View
                                       style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "backgroundColor": "#fff",
-                                            "borderRadius": 8,
-                                            "flex": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "flex": 1,
+                                          "flexDirection": "row",
+                                        }
                                       }
-                                      value=""
-                                    />
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="42.50"
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "backgroundColor": "#fff",
+                                              "borderRadius": 8,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        value=""
+                                      />
+                                    </View>
                                   </View>
                                   <RNGestureHandlerButton
                                     collapsable={false}

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CollapsibleContainer container can be opened 1`] = `
-<View>
+Array [
   <View
     accessible={true}
     focusable={true}
@@ -14,62 +14,200 @@ exports[`CollapsibleContainer container can be opened 1`] = `
     onStartShouldSetResponder={[Function]}
     style={
       Object {
-        "opacity": 1,
+        "backgroundColor": "rgb(242, 242, 242)",
+        "paddingLeft": 0,
       }
     }
   >
-    <View>
-      <Text
-        style={
-          Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
-          }
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "rgb(242, 242, 242)",
+          "borderColor": "#bcbbc1",
+          "flexDirection": "row",
+          "padding": 14,
+          "paddingLeft": 0,
         }
-      >
-        open me
-      </Text>
-      <Text
+      }
+      testID="padView"
+    >
+      <View
         style={
           Array [
             Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
+              "alignItems": "flex-start",
+              "flex": 1,
+              "justifyContent": "center",
             },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
+            undefined,
           ]
         }
+        theme={
+          Object {
+            "colors": Object {
+              "black": "#242424",
+              "disabled": "hsl(208, 8%, 90%)",
+              "divider": "#bcbbc1",
+              "error": "#ff190c",
+              "grey0": "#393e42",
+              "grey1": "#43484d",
+              "grey2": "#5e6977",
+              "grey3": "#86939e",
+              "grey4": "#bdc6cf",
+              "grey5": "#e1e8ee",
+              "greyOutline": "#bbb",
+              "platform": Object {
+                "android": Object {
+                  "error": "#f44336",
+                  "grey": "rgba(0, 0, 0, 0.54)",
+                  "primary": "#2196f3",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#9C27B0",
+                  "success": "#4caf50",
+                  "warning": "#ffeb3b",
+                },
+                "default": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "ios": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "web": Object {
+                  "error": "#ff190c",
+                  "grey": "#393e42",
+                  "primary": "#2089dc",
+                  "searchBg": "#303337",
+                  "secondary": "#ca71eb",
+                  "success": "#52c41a",
+                  "warning": "#faad14",
+                },
+              },
+              "primary": "#2089dc",
+              "searchBg": "#303337",
+              "secondary": "#ca71eb",
+              "success": "#52c41a",
+              "warning": "#faad14",
+              "white": "#ffffff",
+            },
+          }
+        }
       >
-        v
-      </Text>
+        <Text
+          style={
+            Object {
+              "backgroundColor": "transparent",
+              "color": "#000",
+              "fontSize": 20,
+              "fontWeight": "bold",
+              "lineHeight": 26,
+              "textAlign": "left",
+            }
+          }
+          testID="listItemTitle"
+        >
+          open me
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "paddingLeft": 16,
+          }
+        }
+      />
+      <View
+        style={
+          Object {
+            "transform": Array [
+              Object {
+                "rotate": "0deg",
+              },
+            ],
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          <View>
+            <View
+              style={
+                Object {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "justifyContent": "center",
+                }
+              }
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": undefined,
+                      "fontSize": 24,
+                    },
+                    Object {
+                      "backgroundColor": "transparent",
+                    },
+                    Object {
+                      "fontFamily": "material-community",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+                testID="iconIcon"
+              >
+                󰅀
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
-  </View>
-  <Text>
-    a first child
-  </Text>
-  <Text>
-    a second child
-  </Text>
-</View>
+  </View>,
+  <View
+    style={
+      Object {
+        "maxHeight": "0%",
+        "opacity": 0,
+      }
+    }
+  >
+    <Text>
+      a first child
+    </Text>
+    <Text>
+      a second child
+    </Text>
+  </View>,
+]
 `;
 
 exports[`CollapsibleContainer renders correctly when closed 1`] = `
-<View>
+Array [
   <View
     accessible={true}
-    collapsable={false}
     focusable={true}
-    nativeID="animatedComponent"
     onClick={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
@@ -79,56 +217,175 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
     onStartShouldSetResponder={[Function]}
     style={
       Object {
-        "opacity": 1,
+        "backgroundColor": "rgb(242, 242, 242)",
+        "paddingLeft": 0,
       }
     }
   >
-    <View>
-      <Text
-        style={
-          Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
-          }
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "rgb(242, 242, 242)",
+          "borderColor": "#bcbbc1",
+          "flexDirection": "row",
+          "padding": 14,
+          "paddingLeft": 0,
         }
-      >
-        A collapsible container
-      </Text>
-      <Text
+      }
+      testID="padView"
+    >
+      <View
         style={
           Array [
             Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
+              "alignItems": "flex-start",
+              "flex": 1,
+              "justifyContent": "center",
             },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
+            undefined,
           ]
         }
+        theme={
+          Object {
+            "colors": Object {
+              "black": "#242424",
+              "disabled": "hsl(208, 8%, 90%)",
+              "divider": "#bcbbc1",
+              "error": "#ff190c",
+              "grey0": "#393e42",
+              "grey1": "#43484d",
+              "grey2": "#5e6977",
+              "grey3": "#86939e",
+              "grey4": "#bdc6cf",
+              "grey5": "#e1e8ee",
+              "greyOutline": "#bbb",
+              "platform": Object {
+                "android": Object {
+                  "error": "#f44336",
+                  "grey": "rgba(0, 0, 0, 0.54)",
+                  "primary": "#2196f3",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#9C27B0",
+                  "success": "#4caf50",
+                  "warning": "#ffeb3b",
+                },
+                "default": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "ios": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "web": Object {
+                  "error": "#ff190c",
+                  "grey": "#393e42",
+                  "primary": "#2089dc",
+                  "searchBg": "#303337",
+                  "secondary": "#ca71eb",
+                  "success": "#52c41a",
+                  "warning": "#faad14",
+                },
+              },
+              "primary": "#2089dc",
+              "searchBg": "#303337",
+              "secondary": "#ca71eb",
+              "success": "#52c41a",
+              "warning": "#faad14",
+              "white": "#ffffff",
+            },
+          }
+        }
       >
-        &lt;
-      </Text>
+        <Text
+          style={
+            Object {
+              "backgroundColor": "transparent",
+              "color": "#000",
+              "fontSize": 20,
+              "fontWeight": "bold",
+              "lineHeight": 26,
+              "textAlign": "left",
+            }
+          }
+          testID="listItemTitle"
+        >
+          A collapsible container
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "paddingLeft": 16,
+          }
+        }
+      />
+      <View
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={
+          Object {
+            "transform": Array [
+              Object {
+                "rotate": "0deg",
+              },
+            ],
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          <View>
+            <View
+              style={
+                Object {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "justifyContent": "center",
+                }
+              }
+            >
+              <Text />
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
-  </View>
-</View>
+  </View>,
+  <View
+    collapsable={false}
+    nativeID="animatedComponent"
+    style={
+      Object {
+        "maxHeight": "0%",
+        "opacity": 0,
+      }
+    }
+  />,
+]
 `;
 
 exports[`CollapsibleContainer renders correctly when opened 1`] = `
-<View>
+Array [
   <View
     accessible={true}
-    collapsable={false}
     focusable={true}
-    nativeID="animatedComponent"
     onClick={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
@@ -138,51 +395,195 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
     onStartShouldSetResponder={[Function]}
     style={
       Object {
-        "opacity": 1,
+        "backgroundColor": "rgb(242, 242, 242)",
+        "paddingLeft": 0,
       }
     }
   >
-    <View>
-      <Text
-        style={
-          Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
-          }
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "rgb(242, 242, 242)",
+          "borderColor": "#bcbbc1",
+          "flexDirection": "row",
+          "padding": 14,
+          "paddingLeft": 0,
         }
-      >
-        A collapsible container
-      </Text>
-      <Text
+      }
+      testID="padView"
+    >
+      <View
         style={
           Array [
             Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
+              "alignItems": "flex-start",
+              "flex": 1,
+              "justifyContent": "center",
             },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
+            undefined,
           ]
         }
+        theme={
+          Object {
+            "colors": Object {
+              "black": "#242424",
+              "disabled": "hsl(208, 8%, 90%)",
+              "divider": "#bcbbc1",
+              "error": "#ff190c",
+              "grey0": "#393e42",
+              "grey1": "#43484d",
+              "grey2": "#5e6977",
+              "grey3": "#86939e",
+              "grey4": "#bdc6cf",
+              "grey5": "#e1e8ee",
+              "greyOutline": "#bbb",
+              "platform": Object {
+                "android": Object {
+                  "error": "#f44336",
+                  "grey": "rgba(0, 0, 0, 0.54)",
+                  "primary": "#2196f3",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#9C27B0",
+                  "success": "#4caf50",
+                  "warning": "#ffeb3b",
+                },
+                "default": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "ios": Object {
+                  "error": "#ff3b30",
+                  "grey": "#7d7d7d",
+                  "primary": "#007aff",
+                  "searchBg": "#dcdce1",
+                  "secondary": "#5856d6",
+                  "success": "#4cd964",
+                  "warning": "#ffcc00",
+                },
+                "web": Object {
+                  "error": "#ff190c",
+                  "grey": "#393e42",
+                  "primary": "#2089dc",
+                  "searchBg": "#303337",
+                  "secondary": "#ca71eb",
+                  "success": "#52c41a",
+                  "warning": "#faad14",
+                },
+              },
+              "primary": "#2089dc",
+              "searchBg": "#303337",
+              "secondary": "#ca71eb",
+              "success": "#52c41a",
+              "warning": "#faad14",
+              "white": "#ffffff",
+            },
+          }
+        }
       >
-        v
-      </Text>
+        <Text
+          style={
+            Object {
+              "backgroundColor": "transparent",
+              "color": "#000",
+              "fontSize": 20,
+              "fontWeight": "bold",
+              "lineHeight": 26,
+              "textAlign": "left",
+            }
+          }
+          testID="listItemTitle"
+        >
+          A collapsible container
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "paddingLeft": 16,
+          }
+        }
+      />
+      <View
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={
+          Object {
+            "transform": Array [
+              Object {
+                "rotate": "0deg",
+              },
+            ],
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          <View>
+            <View
+              style={
+                Object {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "justifyContent": "center",
+                }
+              }
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": undefined,
+                      "fontSize": 24,
+                    },
+                    Object {
+                      "backgroundColor": "transparent",
+                    },
+                    Object {
+                      "fontFamily": "material-community",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+                testID="iconIcon"
+              >
+                󰅀
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
-  </View>
-  <Text>
-    a first child
-  </Text>
-  <Text>
-    a second child
-  </Text>
-</View>
+  </View>,
+  <View
+    collapsable={false}
+    nativeID="animatedComponent"
+    style={
+      Object {
+        "maxHeight": "0%",
+        "opacity": 0,
+      }
+    }
+  >
+    <Text>
+      a first child
+    </Text>
+    <Text>
+      a second child
+    </Text>
+  </View>,
+]
 `;

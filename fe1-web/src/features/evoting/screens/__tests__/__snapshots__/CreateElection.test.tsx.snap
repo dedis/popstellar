@@ -343,29 +343,39 @@ exports[`CreateElection renders correctly 1`] = `
                           >
                             Name
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="Election Q1 2022"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Election Q1 2022"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderRadius": 8,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              value=""
+                            />
+                          </View>
                           <Text
                             style={
                               Array [
@@ -449,29 +459,39 @@ exports[`CreateElection renders correctly 1`] = `
                                
                               1
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="What is your favorite color?"
+                            <View
                               style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                ]
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                              value=""
-                            />
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="What is your favorite color?"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 8,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
                             <Text
                               style={
                                 Array [
@@ -500,29 +520,39 @@ exports[`CreateElection renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="Blue"
+                                <View
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "backgroundColor": "#fff",
-                                        "borderRadius": 8,
-                                        "flex": 1,
-                                        "padding": 8,
-                                      },
-                                    ]
+                                    Object {
+                                      "flex": 1,
+                                      "flexDirection": "row",
+                                    }
                                   }
-                                  value=""
-                                />
+                                >
+                                  <TextInput
+                                    editable={true}
+                                    onChangeText={[Function]}
+                                    placeholder="Blue"
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "marginBottom": 16,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "backgroundColor": "#fff",
+                                          "borderRadius": 8,
+                                          "flex": 1,
+                                          "padding": 8,
+                                          "width": 50,
+                                        },
+                                      ]
+                                    }
+                                    value=""
+                                  />
+                                </View>
                                 <RNGestureHandlerButton
                                   collapsable={false}
                                   onGestureEvent={[Function]}
@@ -564,8 +594,8 @@ exports[`CreateElection renders correctly 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -624,8 +654,8 @@ exports[`CreateElection renders correctly 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -754,8 +784,8 @@ exports[`CreateElection renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -943,8 +973,8 @@ What do you want to do ?
                                   rippleColor={0}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                   testID="confirm-modal-confirm"

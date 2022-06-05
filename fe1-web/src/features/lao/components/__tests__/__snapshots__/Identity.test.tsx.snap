@@ -415,31 +415,41 @@ exports[`Identity renders correctly 1`] = `
                       >
                         Name
                       </Text>
-                      <TextInput
-                        editable={false}
-                        placeholder="John Doe"
+                      <View
                         style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "backgroundColor": "#fff",
-                              "borderRadius": 8,
-                              "flex": 1,
-                              "padding": 8,
-                            },
-                            Object {
-                              "color": "gray",
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                            "flexDirection": "row",
+                          }
                         }
-                        value=""
-                      />
+                      >
+                        <TextInput
+                          editable={false}
+                          placeholder="John Doe"
+                          style={
+                            Array [
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "backgroundColor": "#fff",
+                                "borderRadius": 8,
+                                "flex": 1,
+                                "padding": 8,
+                                "width": 50,
+                              },
+                              Object {
+                                "color": "gray",
+                              },
+                            ]
+                          }
+                          value=""
+                        />
+                      </View>
                       <Text
                         style={
                           Array [
@@ -458,31 +468,41 @@ exports[`Identity renders correctly 1`] = `
                       >
                         Title
                       </Text>
-                      <TextInput
-                        editable={false}
-                        placeholder="LAO Organizer"
+                      <View
                         style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "backgroundColor": "#fff",
-                              "borderRadius": 8,
-                              "flex": 1,
-                              "padding": 8,
-                            },
-                            Object {
-                              "color": "gray",
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                            "flexDirection": "row",
+                          }
                         }
-                        value=""
-                      />
+                      >
+                        <TextInput
+                          editable={false}
+                          placeholder="LAO Organizer"
+                          style={
+                            Array [
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "backgroundColor": "#fff",
+                                "borderRadius": 8,
+                                "flex": 1,
+                                "padding": 8,
+                                "width": 50,
+                              },
+                              Object {
+                                "color": "gray",
+                              },
+                            ]
+                          }
+                          value=""
+                        />
+                      </View>
                       <Text
                         style={
                           Array [
@@ -501,31 +521,41 @@ exports[`Identity renders correctly 1`] = `
                       >
                         Organization
                       </Text>
-                      <TextInput
-                        editable={false}
-                        placeholder="DEDIS Lab"
+                      <View
                         style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "backgroundColor": "#fff",
-                              "borderRadius": 8,
-                              "flex": 1,
-                              "padding": 8,
-                            },
-                            Object {
-                              "color": "gray",
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                            "flexDirection": "row",
+                          }
                         }
-                        value=""
-                      />
+                      >
+                        <TextInput
+                          editable={false}
+                          placeholder="DEDIS Lab"
+                          style={
+                            Array [
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "backgroundColor": "#fff",
+                                "borderRadius": 8,
+                                "flex": 1,
+                                "padding": 8,
+                                "width": 50,
+                              },
+                              Object {
+                                "color": "gray",
+                              },
+                            ]
+                          }
+                          value=""
+                        />
+                      </View>
                       <Text
                         style={
                           Array [
@@ -544,31 +574,41 @@ exports[`Identity renders correctly 1`] = `
                       >
                         Email
                       </Text>
-                      <TextInput
-                        editable={false}
-                        placeholder="john.doe@epfl.ch"
+                      <View
                         style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "backgroundColor": "#fff",
-                              "borderRadius": 8,
-                              "flex": 1,
-                              "padding": 8,
-                            },
-                            Object {
-                              "color": "gray",
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                            "flexDirection": "row",
+                          }
                         }
-                        value=""
-                      />
+                      >
+                        <TextInput
+                          editable={false}
+                          placeholder="john.doe@epfl.ch"
+                          style={
+                            Array [
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "backgroundColor": "#fff",
+                                "borderRadius": 8,
+                                "flex": 1,
+                                "padding": 8,
+                                "width": 50,
+                              },
+                              Object {
+                                "color": "gray",
+                              },
+                            ]
+                          }
+                          value=""
+                        />
+                      </View>
                       <Text
                         style={
                           Array [
@@ -587,31 +627,41 @@ exports[`Identity renders correctly 1`] = `
                       >
                         Phone number
                       </Text>
-                      <TextInput
-                        editable={false}
-                        placeholder="+41 12 345 67 89"
+                      <View
                         style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "backgroundColor": "#fff",
-                              "borderRadius": 8,
-                              "flex": 1,
-                              "padding": 8,
-                            },
-                            Object {
-                              "color": "gray",
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                            "flexDirection": "row",
+                          }
                         }
-                        value=""
-                      />
+                      >
+                        <TextInput
+                          editable={false}
+                          placeholder="+41 12 345 67 89"
+                          style={
+                            Array [
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "backgroundColor": "#fff",
+                                "borderRadius": 8,
+                                "flex": 1,
+                                "padding": 8,
+                                "width": 50,
+                              },
+                              Object {
+                                "color": "gray",
+                              },
+                            ]
+                          }
+                          value=""
+                        />
+                      </View>
                     </View>
                   </View>
                 </View>
