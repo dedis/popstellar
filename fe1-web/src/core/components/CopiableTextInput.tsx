@@ -20,6 +20,8 @@ const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
     ...Typography.centered,
+    /* will make it shrink down to a width of 50 */
+    width: 50,
     flexGrow: 1,
     borderWidth: Border.width,
     borderRadius: Border.radius,

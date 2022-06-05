@@ -4,8 +4,11 @@ import React from 'react';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 
 import { Election } from '../objects';
-import { ElectionQuestions } from './ElectionQuestions';
+import ElectionQuestions from './ElectionQuestions';
 
+/**
+ * Screen component for elections where the result is available
+ */
 const ElectionResult = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>

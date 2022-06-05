@@ -33,6 +33,9 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+/**
+ * Screen for viewing a single roll call
+ */
 const ViewSingleRollCall = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: rollCallId, isOrganizer, attendeePopTokens } = route.params;
@@ -205,6 +208,11 @@ const ViewSingleRollCall = () => {
 
 export default ViewSingleRollCall;
 
+/**
+ * Component rendered in the top middle of the navgiation bar when looking
+ * at a single roll call. Makes sure it shows the name of the roll call and
+ * not just some static string.
+ */
 export const ViewSingleRollCallScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: rollCallId } = route.params;
@@ -219,6 +227,10 @@ export const ViewSingleRollCallScreenHeader = () => {
   return <Text style={Typography.topNavigationHeading}>{rollCall.name}</Text>;
 };
 
+/**
+ * Component rendered in the top right of the navigation bar when looking at a roll call.
+ * Allows the user to trigger different actions by pressing on the options button.
+ */
 export const ViewSinglRollCallScreenRightHeader = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();

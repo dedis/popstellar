@@ -341,7 +341,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                             Object {
                               "flex": 1,
                               "flexDirection": "column",
-                              "margin": 48,
+                              "margin": 16,
                             }
                           }
                         >
@@ -1046,7 +1046,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                             Object {
                               "flex": 1,
                               "flexDirection": "column",
-                              "margin": 48,
+                              "margin": 16,
                             }
                           }
                         >

@@ -13,6 +13,9 @@ import { EvotingInterface } from '../interface';
 import { Election, ElectionStatus } from '../objects';
 import { makeElectionSelector } from '../reducer';
 
+/**
+ * Renders the subtitle of the ElectionListItem component
+ */
 const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
     return (
@@ -34,6 +37,9 @@ const Subtitle = ({ election }: { election: Election }) => {
   return <ListItem.Subtitle style={Typography.small}>{STRINGS.general_closed}</ListItem.Subtitle>;
 };
 
+/**
+ * Renders a list item for an election that will be shown in the lao event list
+ */
 const ElectionListItem = (props: IPropTypes) => {
   const { eventId: electionId } = props;
 
@@ -67,6 +73,9 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ElectionListItem;
 
+/**
+ * Creates an event type object that can then be passed to the event feature
+ */
 export const ElectionEventType: EvotingInterface['eventTypes']['0'] = {
   eventType: Election.EVENT_TYPE,
   eventName: STRINGS.election_event_name,

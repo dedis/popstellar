@@ -432,7 +432,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "justifyContent": "center",
                                           "marginStart": 0,
                                           "opacity": 1,
-                                          "paddingLeft": 48,
+                                          "paddingLeft": 16,
                                         }
                                       }
                                     />
@@ -477,7 +477,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "justifyContent": "center",
                                           "marginEnd": 0,
                                           "opacity": 1,
-                                          "paddingRight": 48,
+                                          "paddingRight": 16,
                                         }
                                       }
                                     />
@@ -636,7 +636,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                               onGestureHandlerStateChange={[Function]}
                                               style={
                                                 Object {
-                                                  "padding": 48,
+                                                  "padding": 16,
                                                 }
                                               }
                                             >

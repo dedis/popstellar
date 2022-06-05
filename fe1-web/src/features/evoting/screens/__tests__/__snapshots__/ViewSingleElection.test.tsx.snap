@@ -4400,7 +4400,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -5739,7 +5739,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -7094,7 +7094,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -7447,7 +7447,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -9155,7 +9155,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -10776,7 +10776,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -12115,7 +12115,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -13426,7 +13426,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -13779,7 +13779,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -15384,7 +15384,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >

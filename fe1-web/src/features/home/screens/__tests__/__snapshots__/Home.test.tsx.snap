@@ -320,7 +320,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -700,7 +700,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >

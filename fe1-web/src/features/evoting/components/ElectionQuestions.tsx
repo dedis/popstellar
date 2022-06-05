@@ -16,7 +16,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ElectionQuestions = ({ election }: IPropTypes) => {
+/**
+ * Component listing the questions of an election. If the result is already available,
+ * it is shown as well.
+ */
+const ElectionQuestions = ({ election }: IPropTypes) => {
   const [isQuestionOpen, setIsQuestionOpen] = useState(
     election.questions.reduce((obj, question) => {
       // this makes the reduce efficient. creating a new object
@@ -152,3 +156,5 @@ const propTypes = {
 ElectionQuestions.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+export default ElectionQuestions;

@@ -45,6 +45,11 @@ const ViewSingleMeeting = () => {
 
 export default ViewSingleMeeting;
 
+/**
+ * Component rendered in the top middle of the navgiation bar when looking
+ * at a single meeting. Makes sure it shows the name of the meeting and
+ * not just some static string.
+ */
 export const ViewSingleMeetingScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: meetingId } = route.params;

@@ -42,6 +42,9 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * Screen component for opened elections
+ */
 const ElectionOpened = ({ election }: IPropTypes) => {
   const toast = useToast();
 
@@ -186,6 +189,10 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ElectionOpened;
 
+/**
+ * Component that is rendered in the top right of the navigation bar for opened elections.
+ * Allows for example to show icons that then trigger different actions
+ */
 export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
   const { election, isOrganizer } = props;
 

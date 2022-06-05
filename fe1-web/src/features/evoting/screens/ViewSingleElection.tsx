@@ -28,6 +28,9 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+/**
+ * The screen for showing a single election
+ */
 const ViewSingleElection = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: electionId } = route.params;
@@ -56,6 +59,11 @@ const ViewSingleElection = () => {
 
 export default ViewSingleElection;
 
+/**
+ * Component rendered in the top middle of the navgiation bar when looking
+ * at a single election. Makes sure it shows the name of the election and
+ * not just some static string.
+ */
 export const ViewSingleElectionScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: electionId } = route.params;
@@ -70,6 +78,11 @@ export const ViewSingleElectionScreenHeader = () => {
   return <Text style={Typography.topNavigationHeading}>{election.name}</Text>;
 };
 
+/**
+ * Component rendered in the top right of the navigation bar when looking at a
+ * single election. Allows the user to perform certaina actions such as opening
+ * or closing an election.
+ */
 export const ViewSingleElectionScreenRightHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: electionId, isOrganizer } = route.params;
