@@ -75,7 +75,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
 
   public Data customCastVoteDeserializer(JsonElement json, JsonDeserializationContext context) {
     JsonObject obj = json.getAsJsonObject();
-    JsonArray jsonVote = obj.getAsJsonArray("items");
+    JsonArray jsonVote = obj.getAsJsonArray("votes");
     boolean typeValidation = true;
     // Vote type of a CastVote is either an integer for an OpenBallot election or a
     // String for an Encrypted election, type should be valid for all votes
