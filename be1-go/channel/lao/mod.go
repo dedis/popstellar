@@ -551,7 +551,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
+		return answer.NewDuplicateResourceError("message already exists")
 	}
 
 	return nil
@@ -625,7 +625,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewInvalidMessageFieldError( "Lao ID of the message is %s, should be "+
+		return answer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
@@ -647,12 +647,12 @@ func (c *Channel) createElection(msg message.Message,
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
 	if update.LastModified != state.LastModified {
-		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
+		return answer.NewInvalidMessageFieldError("mismatch between last modified: expected %d got %d",
 			update.LastModified, state.LastModified)
 	}
 
 	if update.Name != state.Name {
-		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s",
+		return answer.NewInvalidMessageFieldError("mismatch between name: expected %s got %s",
 			update.Name, state.Name)
 	}
 
@@ -660,7 +660,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	N := len(state.Witnesses)
 
 	if M != N {
-		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
+		return answer.NewInvalidMessageFieldError("mismatch between witness count: expected %d got %d", M, N)
 	}
 
 	match := 0
@@ -675,7 +675,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to "+
+		return answer.NewInvalidMessageFieldError("mismatch between witness keys: expected %d keys to "+
 			"match but %d matched", M, match)
 	}
 
