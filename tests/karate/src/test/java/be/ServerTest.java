@@ -34,15 +34,15 @@ public class ServerTest {
   Karate testElectionOpen(){
     return Karate.run("classpath:be/election/electionOpen.feature");
   }
-  @Karate.Test
-  Karate testCastVote(){
-    return Karate.run("classpath:be/election/castVote.feature");
-  }
-
-  @Karate.Test
-  Karate testElectionEnd(){
-    return Karate.run("classpath:be/election/electionEnd.feature");
-  }
+//  @Karate.Test
+//  Karate testCastVote(){
+//    return Karate.run("classpath:be/election/castVote.feature");
+//  }
+//
+//  @Karate.Test
+//  Karate testElectionEnd(){
+//    return Karate.run("classpath:be/election/electionEnd.feature");
+//  }
 }
 
 

@@ -37,6 +37,9 @@ type Channel struct {
 
 	// *baseChannel
 
+	// Creation time of the election
+	createdAt int64
+
 	// Starting time of the election
 	start int64
 
@@ -120,6 +123,7 @@ func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
+		createdAt:  msgData.CreatedAt,
 		start:      msgData.StartTime,
 		end:        msgData.EndTime,
 		started:    false,
