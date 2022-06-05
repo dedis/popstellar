@@ -6,6 +6,7 @@ import com.intuit.karate.http.WebSocketServerBase;
 
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
+import common.utils.JsonUtils;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
@@ -14,6 +15,7 @@ import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
+import static common.utils.JsonUtils.*;
 import static common.utils.JsonUtils.getJSON;
 
 /** Defines a mock backend server that is fully customisable. */
@@ -32,8 +34,9 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   private Channel channel;
   private Json laoCreationMessageData;
 
-  private static final String VALID_CATCHUP_REPLY_TEMPLATE =
-      "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":[]}";
+  private String laoID;
+
+
 
   public MockBackend(MessageQueue queue, int port) {
     this.queue = queue;
@@ -69,33 +72,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     String frameText = frame.text();
     logger.info("message received : {}", frameText);
     queue.onNewMsg(frameText);
-    Json json = Json.of(frame.text());
-
-
-    if (json.get("method").equals("publish")){
-      Json paramJson = getJSON(json, "params");
-  //    logger.info("params is {}", paramJson);
-//      if (param == null){
-//        logger.info("params is null");
-//      }
-      Json msg = getJSON(paramJson, "message");
-  //    logger.info("msg is {}", msg);
-      laoCreationMessageData = msg;
-    }
-
-    if (json.get("method").equals("catchup") && laoCreationMessageData != null){
-      if (json.toString().contains("consensus")){
-        if (replyProducer != null) send(replyProducer.apply(frameText));
-      } else {
-        String replaceId =
-            VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) json.get("id")));
-        String toSend = replaceId.replace("[]", "[" + laoCreationMessageData.toString() + "]");
-        send(toSend);
-      }
-    } else {
-      // Send back the reply
-      if (replyProducer != null) send(replyProducer.apply(frameText));
-    }
+    if (replyProducer != null) send(replyProducer.apply(frameText));
   }
 
   public int getPort() {
@@ -136,25 +113,19 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     return queue;
   }
 
-  public String getPublishMessage() {
-    String text = queue.takeTimeout(5000);
-    if (!text.toLowerCase().contains("publish")) {
-      logger.info("getPublishMessage : {}", text);
-      throw new IllegalStateException();
-    }
-    Json json = Json.of(text);
-    Json paramJson = getJSON(json, "params");
-    logger.info("params is {}", paramJson);
-
-    Json msg = getJSON(paramJson, "message");
-    logger.info("msg is {}", msg);
-
-    String replaceId =
-        VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) json.get("id")));
-    return replaceId.replace("[]", "[" + msg.toString() + "]");
-  }
-
   public void clearBuffer() {
     queue.clear();
+  }
+
+  public String getLaoID(){
+    return laoID;
+  }
+
+  public void setLaoCreateMode(){
+    replyProducer = ReplyMethods.LAO_CREATE;
+  }
+
+  public void setRollCallCreateMode(){
+    replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
   }
 }

@@ -29,6 +29,7 @@ Feature: android page object
     * def add_roll_call_selector = '#com.github.dedis.popstellar:id/add_roll_call'
     * def roll_call_title_selector = '#com.github.dedis.popstellar:id/roll_call_title_text'
     * def roll_call_open_selector = '#com.github.dedis.popstellar:id/roll_call_open'
+    * def roll_call_confirm_selector = '#com.github.dedis.popstellar:id/roll_call_confirm'
     * def roll_call_close_confirm_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
 
   @name=basic_setup
