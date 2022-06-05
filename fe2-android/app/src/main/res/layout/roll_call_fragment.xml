@@ -1,64 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/fragment_roll_call"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/fragment_roll_call_detail"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+  <TextView
+    android:id="@+id/roll_call_fragment_title"
+    style="@style/title_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+  <TextView
+    android:id="@+id/roll_call_fragment_status"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/status_margin_top"
+    android:text="@string/closed"
+    android:textColor="@color/red"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/roll_call_fragment_title" />
 
-    <LinearLayout
-      android:layout_width="@dimen/qr_rollcall_layout_width"
-      android:layout_height="@dimen/qr_rollcall_layout_height"
-      android:gravity="center"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal_bottom"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal">
+  <ImageView
+    android:id="@+id/roll_call_fragment_status_icon"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/ic_lock"
+    app:layout_constraintBottom_toBottomOf="@id/roll_call_fragment_status"
+    app:layout_constraintEnd_toStartOf="@id/roll_call_fragment_status"
+    app:layout_constraintTop_toTopOf="@id/roll_call_fragment_status"
+    android:contentDescription="@string/status_icon_description" />
 
-      <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/show_qrcode_to_organizer"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/pk_qr_code"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  <ImageView
+    android:id="@+id/start_time_icon"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/clock_icon_margin_top"
+    android:src="@drawable/ic_time"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/roll_call_fragment_status"
+    android:contentDescription="@string/time_icon_description" />
 
-      <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+  <TextView
+    android:id="@+id/roll_call_fragment_start_time_title"
+    style="@style/explication_text_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    android:text="@string/start"
+    app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
+    app:layout_constraintStart_toEndOf="@id/start_time_icon"
+    app:layout_constraintTop_toTopOf="@id/start_time_icon" />
 
-        <ImageView
-          android:id="@+id/pk_qr_code"
-          android:layout_width="@dimen/qr_rollcall_img"
-          android:layout_height="@dimen/qr_rollcall_img"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
-      </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+  <TextView
+    android:id="@+id/roll_call_fragment_start_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
+    app:layout_constraintStart_toEndOf="@id/roll_call_fragment_start_time_title"
+    app:layout_constraintTop_toTopOf="@id/start_time_icon" />
 
-    <Button
-      android:id="@+id/back_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/back"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toStartOf="parent" />
-  </androidx.constraintlayout.widget.ConstraintLayout>
+  <ImageView
+    android:id="@+id/end_time_icon"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/in_between_clocks_icon_margin_top"
+    android:src="@drawable/ic_time"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/start_time_icon"
+    android:contentDescription="@string/time_icon_description" />
 
-</layout>
+  <TextView
+    android:id="@+id/roll_call_fragment_end_time_title"
+    style="@style/explication_text_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    android:text="@string/end"
+    app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
+    app:layout_constraintStart_toEndOf="@id/end_time_icon"
+    app:layout_constraintTop_toTopOf="@id/end_time_icon" />
+
+  <TextView
+    android:id="@+id/roll_call_fragment_end_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
+    app:layout_constraintStart_toStartOf="@id/roll_call_fragment_start_time"
+    app:layout_constraintTop_toTopOf="@id/end_time_icon" />
+
+  <ImageView
+    android:id="@+id/roll_call_pk_qr_code"
+    android:layout_width="@dimen/qr_rollcall_img"
+    android:layout_height="@dimen/qr_rollcall_img"
+    app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/roll_call_fragment_end_time"
+    android:contentDescription="@string/rc_qr_description" />
+
+  <Button
+    android:id="@+id/roll_call_management_button"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/event_button_height"
+    android:layout_margin="@dimen/event_button_margin"
+    android:backgroundTint="@color/colorPrimary"
+    android:drawableStart="@drawable/ic_unlock"
+    android:text="@string/open"
+    android:textColor="@color/white"
+    android:textSize="@dimen/event_button_text_size"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

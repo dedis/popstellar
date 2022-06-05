@@ -7,10 +7,13 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -22,14 +25,16 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ManageElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -39,6 +44,7 @@ import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -50,6 +56,7 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;
+  private BottomNavigationView navbar;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
@@ -60,6 +67,12 @@ public class LaoDetailActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
+
+    navbar = findViewById(R.id.lao_detail_nav_bar);
+    setupNavigationBar();
+
+    setupBackButton();
+
     mViewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
     if (getIntent()
@@ -70,9 +83,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
-    setupHomeButton();
-    setupIdentityButton();
-    setupSocialMediaButton();
+
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -86,14 +97,19 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
     // Subscribe to "open home" event
     setupHomeActivity();
+
     // Subscribe to "open identity" event
     setupIdentityFragment();
+
     // Subscribe to " open social media " event
     setupSocialMediaActivity();
+
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
-    // Subscribe to "add witness" event
-    setupAddWitness();
+
+    // Subscribe to "open witnessing" event
+    setupWitnessing();
+
     // Subscribe to "new lao event" event
     handleNewEvent();
 
@@ -108,32 +124,30 @@ public class LaoDetailActivity extends AppCompatActivity {
                 openScanning(action);
               }
             });
-    mViewModel
-        .getCloseRollCallEvent()
-        .observe(
-            this,
-            integerEvent -> {
-              Integer nextFragment = integerEvent.getContentIfNotHandled();
-              if (nextFragment != null) {
-                if (nextFragment.equals(R.id.fragment_lao_detail)) {
-                  mViewModel.openLaoDetail();
-                } else if (nextFragment.equals(R.id.fragment_home)) {
-                  mViewModel.openHome();
-                } else if (nextFragment.equals(R.id.fragment_identity)) {
-                  mViewModel.openIdentity();
-                }
-              }
-            });
+
+    // Subscribe to "enter roll call" event
     mViewModel
         .getPkRollCallEvent()
         .observe(
             this,
-            stringEvent -> {
-              PublicKey pk = stringEvent.getContentIfNotHandled();
+            publicKeySingleEvent -> {
+              PublicKey pk = publicKeySingleEvent.getContentIfNotHandled();
               if (pk != null) {
-                setupRollCallDetailFragment(pk);
+                enterRollCall(pk);
               }
             });
+
+    mViewModel
+        .getCloseRollCallEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupLaoFragment();
+              }
+            });
+
     subscribeWalletEvents();
 
     // Subscribe to "open cast votes event" event
@@ -143,10 +157,39 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupElectionResultsFragment();
 
     // Subscribe to "open manage election" event
-    setupManageElectionFragment();
+    setupElectionFragment();
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
+
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                openDigitalCash();
+              }
+            });
+  }
+
+  private void openDigitalCash() {
+    Intent intent = new Intent(this, DigitalCashMain.class);
+    startActivity(intent);
+  }
+
+  private void setupWitnessing() {
+    mViewModel
+        .getOpenWitnessing()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupWitnessingFragment();
+              }
+            });
   }
 
   private void subscribeWalletEvents() {
@@ -215,24 +258,27 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
-  public void setupHomeButton() {
-    Button homeButton = (Button) findViewById(R.id.tab_home);
-    homeButton.setOnClickListener(v -> mViewModel.openHome());
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+    if (menuItem.getItemId() == android.R.id.home) {
+      Fragment fragment =
+          getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
+      if (fragment instanceof LaoDetailFragment) {
+        openHome();
+      } else {
+        navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
+      }
+      return true;
+    }
+    return super.onOptionsItemSelected(menuItem);
   }
 
-  public void setupIdentityButton() {
-    Button identityButton = (Button) findViewById(R.id.tab_identity);
-    identityButton.setOnClickListener(v -> mViewModel.openIdentity());
-  }
-
-  public void setupSocialMediaButton() {
-    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
-    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
-  }
-
-  public void setupDigitalCashButton() {
-    Button digitalCashButton = (Button) findViewById(R.id.tab_digital_cash);
-    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  private void setupBackButton() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
   }
 
   private void setupLaoFragment() {
@@ -247,11 +293,15 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                Intent intent = new Intent(this, HomeActivity.class);
-                setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-                finish();
+                openHome();
               }
             });
+  }
+
+  private void openHome() {
+    Intent intent = new Intent(this, HomeActivity.class);
+    setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+    finish();
   }
 
   private void setupIdentityFragment() {
@@ -301,23 +351,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupCreateRollCallFragment() {
-    setCurrentFragment(
-        R.id.fragment_create_roll_call_event, RollCallEventCreationFragment::newInstance);
-  }
-
-  private void setupAddWitness() {
-
-    // Subscribe to "open witness " event
-    mViewModel
-        .getOpenAddWitness()
-        .observe(
-            this,
-            stringEvent -> {
-              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
-              if (action != null) {
-                openScanning(action);
-              }
-            });
+    setCurrentFragment(R.id.fragment_create_roll_call_event, RollCallCreationFragment::newInstance);
   }
 
   private void setupScanFragmentWitness() {
@@ -351,17 +385,16 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-  private void setupRollCallDetailFragment(PublicKey pk) {
-    setCurrentFragment(
-        R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
-  }
-
   private void setupCreateElectionSetupFragment() {
     setCurrentFragment(R.id.fragment_setup_election_event, ElectionSetupFragment::newInstance);
   }
 
   private void setupLaoWalletFragment() {
     setCurrentFragment(R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+  }
+
+  private void setupWitnessingFragment() {
+    setCurrentFragment(R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 
   private void setupRollCallTokenFragment(String id) {
@@ -372,16 +405,20 @@ public class LaoDetailActivity extends AppCompatActivity {
     setCurrentFragment(R.id.fragment_attendees_list, () -> AttendeesListFragment.newInstance(id));
   }
 
-  private void setupManageElectionFragment() {
+  private void enterRollCall(PublicKey pk) {
+    setCurrentFragment(R.id.fragment_roll_call, () -> RollCallFragment.newInstance(pk));
+  }
+
+  private void setupElectionFragment() {
     mViewModel
-        .getOpenManageElectionEvent()
+        .getOpenElectionFragmentEvent()
         .observe(
             this,
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setCurrentFragment(
-                    R.id.fragment_manage_election, ManageElectionFragment::newInstance);
+                Log.d(TAG, "opening new election fragment");
+                setCurrentFragment(R.id.fragment_election, ElectionFragment::newInstance);
               }
             });
   }
@@ -434,6 +471,25 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
+  public void setupNavigationBar() {
+    navbar.setOnItemSelectedListener(
+        item -> {
+          int id = item.getItemId();
+          if (id == R.id.lao_detail_event_list_menu) {
+            setupLaoFragment();
+          } else if (id == R.id.lao_detail_identity_menu) {
+            mViewModel.openIdentity();
+          } else if (id == R.id.lao_detail_witnessing_menu) {
+            mViewModel.openWitnessing();
+          } else if (id == R.id.lao_detail_digital_cash_menu) {
+            mViewModel.openDigitalCash();
+          } else if (id == R.id.lao_detail_social_media_menu) {
+            mViewModel.openSocialMedia();
+          }
+          return true;
+        });
+  }
+
   /**
    * Set the current fragment in the container of the activity
    *
@@ -446,6 +502,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     if (fragment == null) {
       fragment = fragmentSupplier.get();
     }
+
+    // We want to remove the possibility to escape the fragment without closing the roll-call
+    navbar.setVisibility(fragment instanceof QRCodeScanningFragment ? View.GONE : View.VISIBLE);
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(

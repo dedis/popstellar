@@ -11,6 +11,12 @@ public class Constants {
   /** The extra value given to the LaoDetailActivity when lao_detail are to be opened */
   public static final String LAO_DETAIL_EXTRA = "lao_detail";
 
-  /** The extra value give to the LaoDetailActivity when the wallet content is to be opened */
+  /** The extra value given to the LaoDetailActivity when the wallet content is to be opened */
   public static final String CONTENT_WALLET_EXTRA = "content_wallet";
+
+  /** The extra value given to the RollCallFragment when opened */
+  public static final String RC_PK_EXTRA = "pk";
+
+  /** Using the Resources class constant would require a min API of 29 */
+  public static final int ID_NULL = 0;
 }
