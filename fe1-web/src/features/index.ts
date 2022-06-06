@@ -1,9 +1,9 @@
+import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
 import STRINGS from '../resources/strings';
-import * as connect from './connect';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
@@ -26,11 +26,6 @@ export function configureFeatures() {
 
   const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
-  const connectConfiguration = connect.configure({
-    addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
-    getLaoChannel: laoConfiguration.functions.getLaoChannel,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-  });
 
   const evotingConfiguration = evoting.configure({
     /* LAO FEATURE */
@@ -106,23 +101,16 @@ export function configureFeatures() {
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
+    getLaoChannel: laoConfiguration.functions.getLaoChannel,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    /* components */
     LaoList: laoConfiguration.components.LaoList,
-    mainNavigationScreens: [
-      {
-        id: STRINGS.navigation_tab_connect,
-        Component: connectConfiguration.navigation.ConnectNavigation,
-        order: -10000,
-      },
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletComposition.navigation.WalletNavigation,
-        order: 99999999,
-      },
-    ],
+    /* screens */
+    homeNavigationScreens: [...walletComposition.homeScreens],
   });
 
   const eventsComposition = events.compose({
@@ -138,58 +126,25 @@ export function configureFeatures() {
   const laoComposition = lao.compose({
     /* events */
     EventList: eventConfiguration.components.EventList,
+    CreateEventButton: eventConfiguration.components.CreateEventButton,
     /* connect */
-    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionForQRCode,
+    encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
       {
-        id: STRINGS.navigation_tab_home,
-        Component: homeComposition.screens.Home,
-        order: -99999999,
-      },
-      {
-        id: STRINGS.navigation_tab_social_media,
+        id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
-        order: 0,
-      },
-      {
-        id: STRINGS.organization_navigation_tab_notifications,
-        Component: notificationConfiguration.navigation.NotificationNavigation,
-        order: 70000,
-        Badge: notificationConfiguration.components.NotificationBadge,
-      },
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletComposition.navigation.WalletNavigation,
-        order: 99999999,
-      },
-    ],
-    organizerNavigationScreens: [
-      {
-        id: STRINGS.organizer_navigation_tab_create_event,
-        Component: eventConfiguration.screens.CreateEvent,
-        order: 0,
-      },
-      {
-        id: STRINGS.organizer_navigation_creation_meeting,
-        Component: meetingConfiguration.screens.CreateMeeting,
+        headerShown: false,
+        tabBarIcon: makeIcon('socialMedia'),
         order: 10000,
       },
-      {
-        id: STRINGS.organizer_navigation_creation_roll_call,
-        Component: rollCallConfiguration.screens.CreateRollCall,
-        order: 20000,
-      },
-      {
-        id: STRINGS.organizer_navigation_creation_election,
-        Component: evotingConfiguration.screens.CreateElection,
-        order: 30000,
-      },
-      {
-        id: STRINGS.roll_call_open,
-        Component: rollCallConfiguration.screens.RollCallOpened,
-        order: 40000,
-      },
+      ...notificationConfiguration.laoScreens,
+      ...walletComposition.laoScreens,
+    ],
+    eventsNavigationScreens: [
+      ...meetingConfiguration.laoEventScreens,
+      ...rollCallConfiguration.laoEventScreens,
+      ...evotingConfiguration.laoEventScreens,
     ],
   });
 
@@ -217,22 +172,17 @@ export function configureFeatures() {
 
     navigationOpts: {
       screens: [
-        {
-          id: STRINGS.app_navigation_tab_home,
-          component: homeComposition.navigation.MainNavigation,
-        },
-        {
-          id: STRINGS.app_navigation_tab_lao,
-          component: laoComposition.navigation.LaoNavigation,
-        },
+        ...homeComposition.appScreens,
+        ...walletComposition.appScreens,
+        ...laoComposition.appScreens,
       ],
     },
     context: {
       [notificationComposition.identifier]: notificationComposition.context,
-      [connectConfiguration.identifier]: connectConfiguration.context,
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
+      [meetingConfiguration.identifier]: meetingConfiguration.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,

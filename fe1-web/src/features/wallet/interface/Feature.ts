@@ -1,3 +1,6 @@
+import { HomeParamList } from 'core/navigation/typing/HomeParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { NavigationTabScreen } from 'core/navigation/typing/Screen';
 import { Hash, PopToken } from 'core/objects';
 
 export namespace WalletFeature {
@@ -29,5 +32,13 @@ export namespace WalletFeature {
     name: string;
 
     containsToken(token: PopToken | undefined): boolean;
+  }
+
+  export interface LaoScreen extends NavigationTabScreen {
+    id: keyof LaoParamList;
+  }
+
+  export interface HomeScreen extends NavigationTabScreen {
+    id: keyof HomeParamList;
   }
 }

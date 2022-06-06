@@ -1,7 +1,7 @@
-import React from 'react';
 import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -83,9 +83,10 @@ export type WalletReactContext = Pick<
  * The interface the wallet feature exposes
  */
 export interface WalletCompositionInterface extends FeatureInterface {
-  navigation: {
-    WalletNavigation: React.ComponentType<any>;
-  };
+  appScreens: AppScreen[];
+
+  homeScreens: WalletFeature.HomeScreen[];
+  laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;
 

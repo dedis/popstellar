@@ -8,7 +8,7 @@ import TimeAgo from 'react-timeago';
 
 import { ConfirmModal, ProfileIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
+import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
@@ -191,7 +191,6 @@ const ChirpCard = (props: IPropTypes) => {
         description={STRINGS.modal_chirp_deletion_description}
         onConfirmPress={() => deleteChirp()}
         buttonConfirmText={STRINGS.general_yes}
-        buttonCancelText={STRINGS.general_no}
       />
     </>
   );

@@ -4,6 +4,7 @@ import { AnyAction, Reducer } from 'redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import { MeetingReducerState } from '../reducer';
 import { MeetingFeature } from './Feature';
@@ -64,9 +65,7 @@ export type MeetingReactContext = Pick<MeetingConfiguration, 'useCurrentLaoId'>;
  * The interface the meeting feature exposes
  */
 export interface MeetingInterface extends FeatureInterface {
-  screens: {
-    CreateMeeting: React.ComponentType<any>;
-  };
+  laoEventScreens: MeetingFeature.LaoEventScreen[];
 
   eventTypes: EventType[];
 
@@ -79,10 +78,12 @@ export interface MeetingInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: string;
+    createEvent: typeof STRINGS.navigation_lao_events_create_meeting;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_meeting;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

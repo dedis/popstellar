@@ -4,10 +4,15 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
 <View
   style={
     Object {
-      "alignItems": "center",
-      "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "borderWidth": 0,
+      "color": "#000",
+      "fontSize": 20,
+      "lineHeight": 26,
+      "marginBottom": 16,
+      "padding": 8,
+      "textAlign": "left",
     }
   }
 >
@@ -46,10 +51,15 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
 <View
   style={
     Object {
-      "alignItems": "center",
-      "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "borderWidth": 0,
+      "color": "#000",
+      "fontSize": 20,
+      "lineHeight": 26,
+      "marginBottom": 16,
+      "padding": 8,
+      "textAlign": "left",
     }
   }
 >
@@ -88,10 +98,15 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
 <View
   style={
     Object {
-      "alignItems": "center",
-      "flex": 1,
-      "marginHorizontal": 50,
-      "marginVertical": 10,
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "borderWidth": 0,
+      "color": "#000",
+      "fontSize": 20,
+      "lineHeight": 26,
+      "marginBottom": 16,
+      "padding": 8,
+      "textAlign": "left",
     }
   }
 >
