@@ -11,8 +11,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
@@ -20,7 +18,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -30,9 +27,6 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -40,13 +34,13 @@ import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,11 +50,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 import io.reactivex.Completable;
@@ -80,7 +72,6 @@ public class ElectionHandlerTest extends TestCase {
   private Lao lao;
   private RollCall rollCall;
   private Election election;
-  private Election electionEncrypted;
   private ElectionQuestion electionQuestion;
 
   private LAORepository laoRepository;
@@ -111,38 +102,28 @@ public class ElectionHandlerTest extends TestCase {
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
     lao.setRollCalls(
-            new HashMap<String, RollCall>() {
-              {
-                put(rollCall.getId(), rollCall);
-              }
-            });
+        new HashMap<String, RollCall>() {
+          {
+            put(rollCall.getId(), rollCall);
+          }
+        });
 
     // Create one Election and add it to the LAO
     election =
-            new Election(
-                    lao.getId(), Instant.now().getEpochSecond(), "election 1", ElectionVersion.OPEN_BALLOT);
-    electionEncrypted =
-            new Election(
-                    lao.getId(), Instant.now().getEpochSecond(), "election 2", ElectionVersion.SECRET_BALLOT);
-
+        new Election(
+            lao.getId(), Instant.now().getEpochSecond(), "election 1", ElectionVersion.OPEN_BALLOT);
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
     election.setChannel(lao.getChannel().subChannel(election.getId()));
-    electionEncrypted.setStart(Instant.now().getEpochSecond());
-    electionEncrypted.setEnd(Instant.now().getEpochSecond() + 21L);
-    electionEncrypted.setId("election2");
-    electionEncrypted.setChannel(lao.getChannel().subChannel(electionEncrypted.getId()));
-
     electionQuestion =
-            new ElectionQuestion(
-                    "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
+        new ElectionQuestion(
+            "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
     election.setElectionQuestions(Collections.singletonList(electionQuestion));
     lao.setElections(
-            new HashMap<String, Election>() {
-              {
-                put(election.getId(), election);
-                put(electionEncrypted.getId(), electionEncrypted);
-              }
+        new HashMap<String, Election>() {
+          {
+            put(election.getId(), election);
+          }
         });
 
     // Add the LAO to the LAORepository
@@ -152,7 +133,6 @@ public class ElectionHandlerTest extends TestCase {
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
     laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
-
   }
 
   @Test
@@ -171,12 +151,11 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetupOpenBallot.getId());
     assertTrue(electionOpt.isPresent());
-
-    assertEquals(EventState.CREATED, electionOpt.get().getState().getValue());
     assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
 
     // Check that the election version has been successfully set
     assertEquals(ElectionVersion.OPEN_BALLOT, electionOpt.get().getElectionVersion());
+    assertEquals(EventState.CREATED, electionOpt.get().getState().getValue());
 
 
     // Check the WitnessMessage has been created
@@ -242,8 +221,8 @@ public class ElectionHandlerTest extends TestCase {
       messageHandler.handleMessage(laoRepository, messageSender,
           election.getChannel(), message);
       if (state == EventState.CREATED) {
-        // Test for current TimeStamp
         assertEquals(EventState.OPENED, election.getState().getValue());
+        //Test for current TimeStamp
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
       } else {
         assertEquals(state, election.getState().getValue());
@@ -260,51 +239,8 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-            laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     assertEquals(key, election.getElectionKey());
   }
-
-  @Test
-  public void testHandleCastVote() throws DataHandlingException {
-    // Here we test if the handling can both an Open Ballot cast vote and
-    // an Secret Ballot vote
-
-    // First test the Open Ballot version
-    // Set up a open ballot election
-    ElectionVote electionVote1 =
-            new ElectionVote("1", 1, false, null, election.getId());
-    List<ElectionVote> electionVotes = Arrays.asList(electionVote1);
-    CastVote<ElectionVote> electionVote = new CastVote<>(electionVotes, election.getId(), CREATE_LAO.getId());
-
-    MessageGeneral message1 = new MessageGeneral(SENDER_KEY, electionVote, GSON);
-    // Test the whole process
-    messageHandler.handleMessage(
-            laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message1);
-    List<String> listOfVoteIds = new ArrayList<>();
-    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
-    // messageIds
-    listOfVoteIds.add(electionVote1.getId());
-    String expectedHash = Hash.hash(listOfVoteIds.toArray(new String[0]));
-    assertEquals(expectedHash, election.computerRegisteredVotes());
-
-    // Now test with a SECRET BALLOT election
-
-    // Generate some keys for encryption
-    ElectionKeyPair keys = ElectionKeyPair.generateKeyPair();
-    ElectionPublicKey pubKey = keys.getEncryptionScheme();
-    Base64URLData encodedKey = new Base64URLData(pubKey.getPublicKey().toBytes());
-    electionEncrypted.setElectionKey(encodedKey.getEncoded());
-
-    ElectionEncryptedVote electionEncryptedVote1 =
-            new ElectionEncryptedVote("2", "1", false, null, electionEncrypted.getId());
-    List<ElectionEncryptedVote> electionEncryptedVote = Arrays.asList(electionEncryptedVote1);
-    CastVote<ElectionEncryptedVote> encryptedCastVote = new CastVote<>(electionEncryptedVote, electionEncrypted.getId(), CREATE_LAO.getId());
-
-    MessageGeneral message2 = new MessageGeneral(SENDER_KEY, encryptedCastVote, GSON);
-    // Test the handling, it no error are thrown it means that the validation happened without problems
-    messageHandler.handleMessage(
-            laoRepository, messageSender, LAO_CHANNEL.subChannel(electionEncrypted.getId()), message2);
-  }
-
 }
