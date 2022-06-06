@@ -16,11 +16,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.ed25519.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.ed25519.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Before;

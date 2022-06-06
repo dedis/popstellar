@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects.security.ed25519;
+package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
@@ -69,10 +69,10 @@ public class ElectionPrivateKey {
     public byte[] decrypt(@NonNull String message) throws CothorityCryptoException {
 
         Base64URLData decoded = new Base64URLData(message);
-        // Follows this implementation:
-        // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L27-L31
-        byte[] in_byte_message = decoded.getData();
-        if (in_byte_message.length != MESSAGE_BYTE_SIZE) {
+    // Follows this implementation:
+    // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L27-L31
+    byte[] byteMessage = decoded.getData();
+    if (byteMessage.length != MESSAGE_BYTE_SIZE) {
             throw new IllegalArgumentException("Your message to decrypt should contain exactly 64 bytes");
         }
 
@@ -81,9 +81,9 @@ public class ElectionPrivateKey {
         byte[] Cbytes = new byte[HALF_MESSAGE_BYTE_SIZE];
         for (int i = 0; i < MESSAGE_BYTE_SIZE; i++) {
             if (i < HALF_MESSAGE_BYTE_SIZE) {
-                Kbytes[i] = in_byte_message[i];
+        Kbytes[i] = byteMessage[i];
             } else {
-                Cbytes[i - HALF_MESSAGE_BYTE_SIZE] = in_byte_message[i];
+        Cbytes[i - HALF_MESSAGE_BYTE_SIZE] = byteMessage[i];
             }
         }
         Ed25519Point K;

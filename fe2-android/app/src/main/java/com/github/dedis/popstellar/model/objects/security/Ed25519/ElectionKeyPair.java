@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects.security.ed25519;
+package com.github.dedis.popstellar.model.objects.security.Ed25519;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
