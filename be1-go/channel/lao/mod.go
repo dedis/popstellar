@@ -647,12 +647,12 @@ func (c *Channel) createElection(msg message.Message,
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
 	if update.LastModified != state.LastModified {
-		return answer.NewInvalidMessageFieldError("mismatch between last modified: expected %d got %d",
+		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
 			update.LastModified, state.LastModified)
 	}
 
 	if update.Name != state.Name {
-		return answer.NewInvalidMessageFieldError("mismatch between name: expected %s got %s",
+		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s",
 			update.Name, state.Name)
 	}
 
@@ -660,7 +660,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	N := len(state.Witnesses)
 
 	if M != N {
-		return answer.NewInvalidMessageFieldError("mismatch between witness count: expected %d got %d", M, N)
+		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
 	}
 
 	match := 0
@@ -675,7 +675,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return answer.NewInvalidMessageFieldError("mismatch between witness keys: expected %d keys to "+
+		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to "+
 			"match but %d matched", M, match)
 	}
 
