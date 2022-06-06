@@ -47,32 +47,44 @@ func Serve(cliCtx *cli.Context, user string) error {
 	otherWitness := cliCtx.StringSlice("other-witness")
 
 	pk := cliCtx.String("public-key")
-	if pk == "" {
-		return xerrors.Errorf("%s's public key is required", user)
-	}
-
-	// decode public key and unmarshal public key
-	pkBuf, err := base64.URLEncoding.DecodeString(pk)
-	if err != nil {
-		return xerrors.Errorf("failed to base64url decode public key: %v", err)
-	}
-
-	point := crypto.Suite.Point()
-
-	err = point.UnmarshalBinary(pkBuf)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal public key: %v", err)
-	}
-
-	// get the HubType from the user
-	var hubType = hub.HubType(user)
 
 	// compute the client server address
 	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
 
-	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
-		lao.NewChannel, hubType)
+	point := crypto.Suite.Point()
+
+	// get the HubType from the user
+	var hubType = hub.HubType(user)
+
+	// TODO
+	var h *standard_hub.Hub
+	var err error
+
+	if pk == "" {
+		// create user hub
+		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
+			lao.NewChannel, hubType, false)
+
+		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
+	} else {
+		// decode public key and unmarshal public key
+		pkBuf, err := base64.URLEncoding.DecodeString(pk)
+		if err != nil {
+			return xerrors.Errorf("failed to base64url decode public key: %v", err)
+		}
+
+		err = point.UnmarshalBinary(pkBuf)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal public key: %v", err)
+		}
+
+		// create user hub
+		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
+			lao.NewChannel, hubType, true)
+
+		log.Info().Msg("The owner public key has been specified, only " + pk + " can create LAO")
+	}
+
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)
 	}
