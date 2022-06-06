@@ -11,23 +11,14 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-      <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/election_setup_guideline_horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="@dimen/guideline_tab" />
-
       <TextView
         android:id="@+id/election_setup_lao_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold"
+        style="@style/title_style"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/election_setup_guideline_horizontal" />
+        app:layout_constraintTop_toTopOf="parent" />
 
       <TextView
         android:id="@+id/election_setup_presentation_title"
@@ -55,6 +46,7 @@
         android:id="@+id/add_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="@style/Theme.AppCompat"
         android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
         android:text="@string/add_question_button_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +110,8 @@
         style="@style/Theme.AppCompat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/inter_buttons_margin"
+        android:backgroundTint="@color/gray"
         android:clickable="true"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
