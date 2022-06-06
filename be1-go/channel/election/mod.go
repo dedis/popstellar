@@ -742,7 +742,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	buf := bytes.NewReader(data)
 	err = binary.Read(buf, binary.BigEndian, &index)
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote data is invalid")
+		return -1, answer.NewErrorf(-4, "vote data is not big endian int")
 	}
 
 	return index, nil

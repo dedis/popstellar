@@ -460,32 +460,6 @@ func Test_Sending_Election_Key(t *testing.T) {
 	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
 }
 
-/*func Test_Decrypt(t *testing.T) {
-	// create secret ballot election channel: election with one question
-	electChannel, _ := newFakeChannel(t, true)
-
-	real  := 1
-
-	msgBuf := make([]byte, 32)
-
-	binary.BigEndian.PutUint32(msgBuf, uint32(real))
-
-	K, C := electChannel.Encrypt(electChannel.pubElectionKey, msgBuf)
-
-	kBuf, err := K.MarshalBinary()
-	require.NoError(t, err)
-
-	cBuf, err := C.MarshalBinary()
-	require.NoError(t, err)
-
-	buf := append(kBuf, cBuf...)
-
-	index, err := electChannel.decryptVote(base64.URLEncoding.EncodeToString(buf))
-	require.NoError(t, err)
-
-	require.Equal(t, real, index)
-}*/
-
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -497,7 +471,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	file := ""
+	var file string
 	if secret {
 		file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup_secret_ballot.json")
 	} else {
