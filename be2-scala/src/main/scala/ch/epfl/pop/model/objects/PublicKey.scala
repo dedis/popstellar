@@ -8,7 +8,7 @@ import PublicKey._
 import java.security.MessageDigest
 
 final case class PublicKey(base64Data: Base64Data) {
-  private val asPoint = new Ed25519Point(base64Data.decode())
+  private lazy val asPoint = new Ed25519Point(base64Data.decode())
 
 
   def encrypt(messageB64: Base64Data): Base64Data = {

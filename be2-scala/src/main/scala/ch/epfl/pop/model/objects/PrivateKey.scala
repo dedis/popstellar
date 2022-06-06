@@ -5,7 +5,7 @@ import ch.epfl.pop.model.objects.PrivateKey._
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 final case class PrivateKey(base64Data: Base64Data) {
-  private val asScalar: Scalar = new Ed25519Scalar(base64Data.decode())
+  private lazy val asScalar: Scalar = new Ed25519Scalar(base64Data.decode())
 
   def decrypt(messageB64: Base64Data): Base64Data = {
     val message = messageB64.decode()
