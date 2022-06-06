@@ -78,6 +78,7 @@ public class ElectionFragmentTest {
   private static final long END = 10323431;
   private static final Election election =
       new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
+
   ElectionQuestion electionQuestion1 =
       new ElectionQuestion(
           "ElectionQuestion", "Plurality", false, Arrays.asList("1", "2"), election.getId());

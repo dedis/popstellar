@@ -908,6 +908,13 @@ public class LaoDetailViewModel extends AndroidViewModel
     mCurrentElection.setValue(e);
   }
 
+  public RollCall getCurrentRollCall() {
+    return mCurrentRollCall.getValue();
+  }
+
+  public void setCurrentRollCall(RollCall rc) {
+    mCurrentRollCall.setValue(rc);
+  }
 
   public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
     return mCurrentElectionVotes;

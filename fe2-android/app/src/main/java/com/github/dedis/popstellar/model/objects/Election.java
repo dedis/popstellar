@@ -6,6 +6,10 @@ import static java.util.Objects.isNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
+
+import androidx.lifecycle.MutableLiveData;
+
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
