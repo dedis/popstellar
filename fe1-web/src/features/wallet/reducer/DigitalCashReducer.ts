@@ -84,6 +84,7 @@ const digitalCashSlice = createSlice({
        */
       transactionMessage.inputs.forEach((input) => {
         const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
+
         // If this is not a coinbase transaction, then as we are sure that all inputs are used
         if (input.txOutHash !== STRINGS.coinbase_hash) {
           laoState.balances[pubHash] = 0;
@@ -93,14 +94,15 @@ const digitalCashSlice = createSlice({
 
       transactionMessage.outputs.forEach((output) => {
         const pubKeyHash = output.script.publicKeyHash.valueOf();
+
         if (!laoState.balances[pubKeyHash]) {
           laoState.balances[pubKeyHash] = 0;
         }
         laoState.balances[pubKeyHash] += output.value;
+
         if (!(pubKeyHash in laoState.transactionsByPubHash)) {
           laoState.transactionsByPubHash[pubKeyHash] = [];
         }
-        console.log(`State contains ${laoState.transactionsByPubHash[pubKeyHash]}`);
         laoState.transactionsByPubHash[pubKeyHash].push(transactionMessage);
       });
     },
