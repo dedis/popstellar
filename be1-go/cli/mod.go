@@ -64,6 +64,9 @@ func Serve(cliCtx *cli.Context, user string) error {
 		// create user hub
 		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
 			lao.NewChannel, hubType, false)
+		if err != nil {
+			return xerrors.Errorf("failed create the %s hub: %v", user, err)
+		}
 
 		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
 	} else {
@@ -81,12 +84,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 		// create user hub
 		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
 			lao.NewChannel, hubType, true)
+		if err != nil {
+			return xerrors.Errorf("failed create the %s hub: %v", user, err)
+		}
 
 		log.Info().Msg("The owner public key has been specified, only " + pk + " can create LAO")
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed create the %s hub: %v", user, err)
 	}
 
 	// start the processing loop
