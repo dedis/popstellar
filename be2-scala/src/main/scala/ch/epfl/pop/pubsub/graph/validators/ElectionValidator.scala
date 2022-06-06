@@ -243,10 +243,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
    * @param checkHash The hash of the concatenated votes (i.e. registered_votes)
    * @return True if the hashes are the same, false otherwise
    */
-  private def compareResults(castVotes: List[(Message, CastVoteElection)], checkHash: Hash): Boolean = {
-    val sortedCastVotes: List[CastVoteElection] = castVotes.sortBy(_._1.message_id.toString.toLowerCase).map(_._2)
-    val voteElections: List[VoteElection] = sortedCastVotes.flatMap(_.votes)
-    val computedHash = Hash.fromStrings(voteElections.map(_.id.toString): _*)
+  private def compareResults(castVotes: List[CastVoteElection], checkHash: Hash): Boolean = {
+    val votes: List[VoteElection] = castVotes.flatMap(_.votes)
+    val sortedVotes: List[VoteElection] = votes.sortBy(_.id.toString.toLowerCase)
+    val computedHash = Hash.fromStrings(sortedVotes.map(_.id.toString): _*)
     computedHash == checkHash
   }
 }
