@@ -168,7 +168,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         } else {
           Left(rpcMessage)
         }
-
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -179,10 +178,12 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val questionsId: List[Hash] = questions.map(_.id)
 
     votes.forall( vote => vote.vote match {
-      case Some(v :: _ ) =>
+      case Some(Left(index)) =>
         questionsId.contains(vote.question) &&
-          v < q2Ballots(vote.question).size &&
-          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
+          index < q2Ballots(vote.question).size &&
+          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
+      case Some(Right(encryptedVote)) =>
+        questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
       case _ => false
     })
   }
@@ -217,20 +218,21 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
-        if (!validateTimestampStaleness(data.created_at))
+        if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        else if (channel.extractChildChannel != data.election)
+        } else if (channel.extractChildChannel != data.election) {
           Right(validationError("unexpected election id"))
-        else if (laoId != data.lao)
+        } else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
-        else if (!validateOwner(sender, channel, dbActorRef))
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef))
+        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
-        else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes))
+        } else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes)) {
           Right(validationError(s"Incorrect verification hash"))
-        else
+        } else {
           Left(rpcMessage)
+        }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }

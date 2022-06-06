@@ -10,11 +10,10 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.Election.CastVoteElectionExamples.{DATA_CAST_VOTE_MESSAGE, MESSAGE_CAST_VOTE_ELECTION_WORKING}
-import util.examples.Election.EndElectionExamples.{DATA_END_ELECTION_MESSAGE, MESSAGE_END_ELECTION_WORKING}
-import util.examples.Election.OpenElectionExamples.{DATA_OPEN_MESSAGE, MESSAGE_OPEN_ELECTION_WORKING}
-import util.examples.Election.SetupElectionExamples
-import util.examples.Election.SetupElectionExamples.{DATA_SET_UP_MESSAGE, MESSAGE_SETUPELECTION_WORKING}
+import util.examples.Election.CastVoteElectionExamples._
+import util.examples.Election.EndElectionExamples._
+import util.examples.Election.OpenElectionExamples._
+import util.examples.Election.SetupElectionExamples._
 import util.examples.JsonRpcRequestExample._
 import util.examples.RollCall.CreateRollCallExamples.SENDER
 

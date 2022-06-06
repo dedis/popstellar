@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection,
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
 
+import java.nio.ByteBuffer
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -56,5 +57,22 @@ object ElectionChannel {
         attendeeIdToLastVote.values.toList
       }
     }
+
+    /**
+     * return index of the vote
+     *
+     * @param electionData the electiondata containing keys if need to decrypt
+     * @param vote         None if not voted, Some(Left(Int)) for non open ballots Right(Base64Data) for encrypted vote
+     * @return The index of the ballot, -1 if not voted
+     */
+    def getVoteIndex(electionData: ElectionData, vote: Option[Either[Int, Base64Data]]): Int =
+      vote match {
+        case Some(Left(index)) =>
+          index
+        case Some(Right(encryptedVote)) =>
+          ByteBuffer.wrap(Array[Byte](0, 0).concat(electionData.keyPair.decrypt(encryptedVote).decode())).getInt
+        case _ =>
+          -1
+      }
   }
 }
