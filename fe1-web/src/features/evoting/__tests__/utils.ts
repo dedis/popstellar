@@ -189,7 +189,7 @@ export const openedSecretBallotElection = new Election({
 
 export const mockElectionKeyString = 'uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=';
 export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyString);
-export const mockElectionKey = new ElectionPublicKey(mockElectionKeyString);
+export const mockElectionKey = new ElectionPublicKey(mockEncodedElectionKey);
 
 export const mockElectionPrivateKeyString = 'o1EESXAvTFD34Ss29FVohukOximnyn/qf/PdZu2HCQw=';
 export const mockEncodedElectionPrivateKey = new Base64UrlData(mockElectionPrivateKeyString);

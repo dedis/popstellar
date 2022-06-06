@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
@@ -36,7 +38,7 @@ public class Election extends Event {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private EventState state;
+  private final MutableLiveData<EventState> state = new MutableLiveData<>();
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
@@ -108,10 +110,10 @@ public class Election extends Event {
   }
 
   public void setEventState(EventState state) {
-    this.state = state;
+    this.state.postValue(state);
   }
 
-  public EventState getState() {
+  public MutableLiveData<EventState> getState() {
     return state;
   }
 

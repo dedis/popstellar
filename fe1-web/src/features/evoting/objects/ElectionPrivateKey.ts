@@ -8,9 +8,9 @@ const ed25519 = curve.newCurve('edwards25519');
 export class ElectionPrivateKey {
   public scalar: Ed25519Scalar;
 
-  constructor(encodedKey: string | Base64UrlData) {
+  constructor(encodedKey: Base64UrlData) {
     const scalar = ed25519.scalar();
-    scalar.unmarshalBinary(Buffer.from(encodedKey, 'base64'));
+    scalar.unmarshalBinary(encodedKey.toBuffer());
 
     if (!(scalar instanceof Ed25519Scalar)) {
       throw new Error('Election keys are expected to be Ed25519 scalars');
@@ -20,11 +20,11 @@ export class ElectionPrivateKey {
   }
 
   toString(): string {
-    return this.scalar.marshalBinary().toString('base64');
+    return Base64UrlData.encode(this.scalar.marshalBinary()).valueOf();
   }
 
   toBase64(): Base64UrlData {
-    return new Base64UrlData(this.toString());
+    return Base64UrlData.encode(this.scalar.marshalBinary());
   }
 
   equals(other: ElectionPrivateKey): boolean {
@@ -37,10 +37,10 @@ export class ElectionPrivateKey {
    * @param encryptedData The encrypted data to encrypt
    * @returns The decrypted data
    */
-  decrypt(encryptedData: string): Buffer {
+  decrypt(encryptedData: Base64UrlData): Buffer {
     // Follows this implementation:
     // https://github.com/dedis/cothority/blob/0299bcd78bab22bde6d6449b1594613987355535/evoting/lib/elgamal.go#L27-L31
-    const b = Buffer.from(encryptedData, 'base64');
+    const b = encryptedData.toBuffer();
 
     const K = ed25519.point();
     K.unmarshalBinary(b.slice(0, 32));

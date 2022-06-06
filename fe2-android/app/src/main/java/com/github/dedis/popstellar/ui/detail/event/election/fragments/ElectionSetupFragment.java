@@ -207,6 +207,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // We "deactivate" the button on click, to prevent the user from creating multiple
           // elections at once
           submitButton.setEnabled(false);
+
           // When submitting, we compute the timestamps for the selected start and end time
           if (!computeTimesInSeconds()) {
             return;
@@ -284,7 +285,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
   }
 
-  /** @return true if the election name text, dates and times inputs are valid */
+  /**
+   * @return true if the election name text, dates and times inputs are valid
+   */
   private boolean isElectionLevelInputValid() {
     return !electionNameText.getText().toString().trim().isEmpty()
         && !getStartDate().isEmpty()

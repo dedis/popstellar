@@ -6,6 +6,8 @@
 
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
+import { Base64UrlData } from 'core/objects';
+
 import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
 /**
@@ -84,7 +86,7 @@ export const getElectionKeyByElectionId = (
   const electionKeyState = getElectionKeyState(state);
 
   if (electionId in electionKeyState.byElectionId) {
-    return new ElectionPublicKey(electionKeyState.byElectionId[electionId]);
+    return new ElectionPublicKey(new Base64UrlData(electionKeyState.byElectionId[electionId]));
   }
 
   return undefined;
@@ -102,7 +104,7 @@ export const makeElectionKeySelector = (electionId: string) =>
     // Selector: returns the election key associated to the given election id
     (byElectionId: ElectionKeyReducerState['byElectionId']): ElectionPublicKey | undefined => {
       if (electionId in byElectionId) {
-        return new ElectionPublicKey(byElectionId[electionId]);
+        return new ElectionPublicKey(new Base64UrlData(byElectionId[electionId]));
       }
 
       return undefined;

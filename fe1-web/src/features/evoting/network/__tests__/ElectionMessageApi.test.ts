@@ -5,7 +5,7 @@ import { combineReducers, createStore } from 'redux';
 import { mockChannel, mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { messageReducer } from 'core/network/ingestion';
-import { channelFromIds, Timestamp } from 'core/objects';
+import { Base64UrlData, channelFromIds, Timestamp } from 'core/objects';
 import {
   mockElectionNotStarted,
   mockElectionOpened,
@@ -175,10 +175,14 @@ describe('castVote', () => {
     expect(castVoteMessage.votes[1].vote).toBeString();
 
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[0].vote as string).readIntBE(0, 2),
+      keyPair.privateKey
+        .decrypt(new Base64UrlData(castVoteMessage.votes[0].vote as string))
+        .readIntBE(0, 2),
     ).toEqual(3);
     expect(
-      keyPair.privateKey.decrypt(castVoteMessage.votes[1].vote as string).readIntBE(0, 2),
+      keyPair.privateKey
+        .decrypt(new Base64UrlData(castVoteMessage.votes[1].vote as string))
+        .readIntBE(0, 2),
     ).toEqual(7);
 
     expect(publish).toHaveBeenCalledTimes(1);

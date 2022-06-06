@@ -2,11 +2,12 @@
 <resources>
   <color name="colorPrimary">#185ADB</color>
   <color name="colorPrimaryDark">#0A1931</color>
-  <color name="colorAccent">#03DAC5</color>
+  <color name="colorAccent">#185ADB</color>
   <color name="categoryTab">#185ADB</color>
   <color name="white">#FFFFFF</color>
   <color name="lao">#E6E6E6</color>
   <color name="red">#EE1010</color>
   <color name="black">#000000</color>
+  <color name="green">#3E8F07</color>
   <color name="gray">#808080</color>
 </resources>

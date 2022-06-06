@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,6 +87,14 @@ public final class QRCodeScanningFragment extends Fragment {
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
+      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
+          view -> {
+            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
+            boolean success = mQRCodeScanningViewModel.addManually(data);
+            if (success) {
+              mQrCodeFragBinding.manualAddEditText.getText().clear();
+            }
+          });
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -104,7 +111,11 @@ public final class QRCodeScanningFragment extends Fragment {
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
     } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
-
+      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
+          view -> {
+            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
+            mQRCodeScanningViewModel.addManually(data);
+          });
       mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
     }
 
@@ -116,15 +127,6 @@ public final class QRCodeScanningFragment extends Fragment {
         new QRFocusingProcessor(
             barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel)));
     return mQrCodeFragBinding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      Button back = requireActivity().findViewById(R.id.tab_back);
-      back.setOnClickListener(c -> ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
-    }
   }
 
   @Override
@@ -168,11 +170,10 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private void setupCloseRollCallButton() {
-    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-        clicked -> setupClickCloseListener(R.id.fragment_lao_detail));
+    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(clicked -> setupClickCloseListener());
   }
 
-  private void setupClickCloseListener(int nextFragment) {
+  private void setupClickCloseListener() {
     if (closeRollCallAlert != null && closeRollCallAlert.isShowing()) {
       closeRollCallAlert.dismiss();
     }
@@ -182,8 +183,7 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setOnDismissListener(dialog -> startCamera());
     builder.setPositiveButton(
         R.string.confirm,
-        (dialog, which) ->
-            ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall(nextFragment));
+        (dialog, which) -> ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall());
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     mPreview.stop();
     closeRollCallAlert = builder.create();
@@ -286,7 +286,7 @@ public final class QRCodeScanningFragment extends Fragment {
             integerEvent -> {
               Integer nextFragment = integerEvent.getContentIfNotHandled();
               if (nextFragment != null) {
-                setupClickCloseListener(nextFragment);
+                setupClickCloseListener();
               }
             });
   }

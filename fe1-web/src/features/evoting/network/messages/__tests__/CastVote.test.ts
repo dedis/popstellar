@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, ProtocolError, Timestamp } from 'core/objects';
+import { Base64UrlData, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import {
   mockElectionId,
@@ -265,7 +265,9 @@ describe('CastVote', () => {
         mockSecretBallotElectionNotStarted.questions[0].id,
       );
 
-      expect(keyPair.privateKey.decrypt(encryptedVotes[0].vote).readIntBE(0, 2)).toEqual(0);
+      expect(
+        keyPair.privateKey.decrypt(new Base64UrlData(encryptedVotes[0].vote)).readIntBE(0, 2),
+      ).toEqual(0);
 
       // we should **not** hash the unencrypted vote id, this allows recovering the option index
       expect(encryptedVotes[1]).not.toHaveProperty(
@@ -287,7 +289,9 @@ describe('CastVote', () => {
         mockSecretBallotElectionNotStarted.questions[1].id,
       );
 
-      expect(keyPair.privateKey.decrypt(encryptedVotes[1].vote).readIntBE(0, 2)).toEqual(1);
+      expect(
+        keyPair.privateKey.decrypt(new Base64UrlData(encryptedVotes[1].vote)).readIntBE(0, 2),
+      ).toEqual(1);
     });
   });
 

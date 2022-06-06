@@ -20,7 +20,7 @@ Feature: Cast a vote
 
   # Testing if after creating an election correctly, casting a valid vote succeeds
   Scenario: Casting a valid vote on a started election
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def validCastVote =
       """
         {
@@ -31,7 +31,7 @@ Feature: Cast a vote
           "created_at": 1633098941,
           "votes": [
             {
-              "id": '#(getIsThisProjectFunVoteId)',
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
               "vote": [0]
             }
@@ -46,7 +46,7 @@ Feature: Cast a vote
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote on an LAO channel instead of an election one
   Scenario: Casting a vote on a lao channel should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def validCastVote =
       """
         {
@@ -57,7 +57,7 @@ Feature: Cast a vote
           "created_at": 1633098941,
           "votes": [
             {
-              "id": '#(getIsThisProjectFunVoteId)',
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
               "vote": [0]
             }
@@ -72,7 +72,7 @@ Feature: Cast a vote
 # Testing if before creating an election, the backend returns an error
 # upon casting a vote
   Scenario: Casting a valid vote on non existent election should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def validCastVote =
       """
         {
@@ -83,7 +83,7 @@ Feature: Cast a vote
           "created_at": 1633098941,
           "votes": [
             {
-              "id": '#(getIsThisProjectFunVoteId)',
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
               "vote": [0]
             }
@@ -97,7 +97,7 @@ Feature: Cast a vote
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with wrong vote id
   Scenario: Casting a vote with wrong vote id should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def invalidCastVote =
       """
         {
@@ -122,7 +122,7 @@ Feature: Cast a vote
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with lao id as vote id
   Scenario: Casting a vote with lao id as vote id should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def invalidCastVote =
       """
         {
@@ -148,7 +148,7 @@ Feature: Cast a vote
   # Testing if after creating an election correctly, the backend returns an error
   # upon a non-attendee casting a valid vote.
   Scenario: Non attendee casting a vote should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
     And def invalidCastVote =
       """
         {
@@ -159,7 +159,7 @@ Feature: Cast a vote
           "created_at": 1633098941,
           "votes": [
             {
-              "id": '#(getIsThisProjectFunVoteId)',
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
               "vote": [0]
             }
@@ -171,4 +171,3 @@ Feature: Cast a vote
     And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
-

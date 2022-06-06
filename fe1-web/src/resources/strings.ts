@@ -259,6 +259,8 @@ namespace STRINGS {
   export const lao_id = 'LAO ID';
   export const lao_name = 'LAO name';
   export const roll_call_name = 'Roll Call name';
+  export const wallet_logout_icon = 'logout';
+  export const wallet_arrow_left_icon = 'west';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';
