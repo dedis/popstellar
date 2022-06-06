@@ -75,7 +75,12 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
   @Override
   public int getItemCount() {
-    // return transactions.size();
+    //    return transactions.parallelStream()
+    //        .reduce(
+    //            0,
+    //            (accumulator, element) ->
+    //                accumulator + element.getInputs().size() + element.getOutputs().size(),
+    //            Integer::sum); //We compute the sum of each input and output of each transaction
     return 2;
   }
 
