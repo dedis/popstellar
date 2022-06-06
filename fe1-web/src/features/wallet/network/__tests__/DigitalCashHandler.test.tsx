@@ -10,8 +10,11 @@ import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/wallet/network/messages';
 import { Transaction } from 'features/wallet/objects/transaction';
+import { DigitalCashStore } from 'features/wallet/store';
 
 import { handleTransactionPost } from '../DigitalCashHandler';
+
+jest.mock('features/wallet/store/DigitalCashStore');
 
 const mockCoinbaseTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
 const mockCoinbasePost = new PostTransaction({
@@ -51,6 +54,10 @@ const createMockMessage = (post: PostTransaction) => {
 
 const mockAddTransaction = jest.fn();
 const mockGetLaoOrganizer = jest.fn().mockReturnValue(mockKeyPair.publicKey);
+
+(DigitalCashStore.getTransactionsById as jest.Mock).mockReturnValue({
+  [mockCBHash.valueOf()]: mockCoinbaseTransaction,
+});
 
 describe('DigitalCash handler', () => {
   it('should correctly handle message transaction', () => {

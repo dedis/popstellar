@@ -285,11 +285,11 @@ export class Transaction {
         // The public key hash of the used transaction output must correspond
         // to the public key the transaction is using in this input
         if (
-          originTransactionOutput.script.publicKeyHash !==
-          Hash.fromPublicKey(input.script.publicKey).valueOf()
+          Hash.fromPublicKey(input.script.publicKey).valueOf() !==
+          originTransactionOutput.script.publicKeyHash.valueOf()
         ) {
           console.warn(
-            "The transaction output public key hash used does not correspond to the spender's public key",
+            "The transaction output public key hash does not correspond to the spender's public key hash",
           );
           return true;
         }

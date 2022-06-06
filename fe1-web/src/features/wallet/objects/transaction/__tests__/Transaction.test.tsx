@@ -13,7 +13,7 @@ import {
 import { Hash, PopToken, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
-import { Transaction, TransactionJSON, TransactionState } from '../Transaction';
+import { Transaction, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
 import { TransactionOutput } from '../TransactionOutput';
 
