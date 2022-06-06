@@ -684,15 +684,20 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	return resultElection, nil
 }
 
+// getVoteIndex extracts the index of the vote from the validVotes
 func (c *Channel) getVoteIndex(vote validVote) (int, error) {
 	switch m := c.electionType; m {
+	// open ballot votes have the index in plain text
 	case messagedata.OpenBallot:
 		index, _ := vote.index.(int)
 		return index, nil
+	// secret ballot votes must be decrypted to get the index
 	case messagedata.SecretBallot:
 		temp, _ := vote.index.(string)
 		index, err := c.decryptVote(temp)
 		if err != nil {
+			// logs a warning because we don't stop the tallying for non-conform votes
+			// we just disregards them
 			c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
 			return index, err
 		}
@@ -702,12 +707,15 @@ func (c *Channel) getVoteIndex(vote validVote) (int, error) {
 	}
 }
 
+// decryptVote decrypts the vote using ElGamal under Ed25519 curve
 func (c *Channel) decryptVote(vote string) (int, error) {
+	// vote is encoded in base64
 	votebuf, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
 		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
 	}
 
+	// K and C are respectively the first and last 32 bytes of the vote
 	K := crypto.Suite.Point()
 	C := crypto.Suite.Point()
 
@@ -721,6 +729,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
 	}
 
+	// performs the ElGamal decryption
 	S := crypto.Suite.Point().Mul(c.secElectionKey, K)
 	data, err := crypto.Suite.Point().Sub(C, S).Data()
 	if err != nil {
@@ -729,6 +738,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 
 	var index int
 
+	// interprets the data as a big endian int
 	buf := bytes.NewReader(data)
 	err = binary.Read(buf, binary.BigEndian, &index)
 

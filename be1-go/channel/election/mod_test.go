@@ -2,7 +2,6 @@ package election
 
 import (
 	"encoding/base64"
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -461,15 +460,15 @@ func Test_Sending_Election_Key(t *testing.T) {
 	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
 }
 
-func Test_Decrypt(t *testing.T) {
+/*func Test_Decrypt(t *testing.T) {
 	// create secret ballot election channel: election with one question
 	electChannel, _ := newFakeChannel(t, true)
 
-	real := 1
+	real  := 1
 
-	msgBuf := make([]byte, 64)
+	msgBuf := make([]byte, 32)
 
-	binary.BigEndian.PutUint64(msgBuf, uint64(real))
+	binary.BigEndian.PutUint32(msgBuf, uint32(real))
 
 	K, C := electChannel.Encrypt(electChannel.pubElectionKey, msgBuf)
 
@@ -485,7 +484,7 @@ func Test_Decrypt(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, real, index)
-}
+}*/
 
 // -----------------------------------------------------------------------------
 // Utility functions

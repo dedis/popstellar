@@ -18,13 +18,14 @@ type VoteCastVote struct {
 	Votes []Vote `json:"votes"`
 }
 
-// Vote defines a vote of a cast vote
+// Vote defines a vote of a cast vote, Vote.Vote can be an int or a string
 type Vote struct {
 	ID       string
 	Question string
 	Vote     interface{}
 }
 
+// tempVote is used to prevent the infinite loop when unmarshalling
 type tempVote struct {
 	ID       string      `json:"id"`
 	Question string      `json:"question"`
@@ -33,12 +34,15 @@ type tempVote struct {
 
 // UnmarshalJSON solves that Vote.Vote can be int or string
 func (v *Vote) UnmarshalJSON(b []byte) error {
+	// unmarshalling into a tempVote
 	var vTemp tempVote
 	if err := json.Unmarshal(b, &vTemp); err != nil {
 		return err
 	}
 
+	// checking that Vote.Vote is either an int or a string
 	switch t := vTemp.Vote.(type) {
+	// json unmarshalls numbers only into float64, we have to make additional checks
 	case float64:
 		i := int(t)
 		if float64(i) != t {
