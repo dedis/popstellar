@@ -36,8 +36,8 @@ final case class LaoData(
   def updateWith(message: Message, adr: Option[String]): LaoData = {
     message.decodedData.fold(this) {
       case call: CloseRollCall => adr match {
-        case Some(str) => LaoData(owner, call.attendees ::: attendees, privateKey, publicKey, witnesses, str)
-        case _ => LaoData(owner, call.attendees ::: attendees, privateKey, publicKey, witnesses, address)
+        case Some(str) => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, str)
+        case _ => LaoData(owner, call.attendees, privateKey, publicKey, witnesses, address)
       }
 
       case lao: CreateLao => adr match {
