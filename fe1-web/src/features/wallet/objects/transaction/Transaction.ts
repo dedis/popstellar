@@ -258,8 +258,8 @@ export class Transaction {
     organizerPublicKey: PublicKey,
     transactionStates: Record<string, TransactionState>,
   ): boolean => {
+    // Transaction is a coinbase transaction if it's first input's txOutHash is the defined coinbase hash
     const isCoinbase = this.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
-    const originPublicKey = this.inputs[0].script.publicKey;
 
     // Reconstruct data signed on
     const encodedData = Base64UrlData.encode(
@@ -273,15 +273,17 @@ export class Transaction {
 
     const inputsAreValid = !this.inputs.some((input) => {
       if (isCoinbase) {
+        // If the transaction is a coinbase transaction, the signer must be the organizer
         if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
-          console.warn('The coinbase transaction input is not the organizer');
+          console.warn('The coinbase transaction input signer is not the organizer');
           return true;
         }
-      }
-
-      if (!isCoinbase) {
+      } else {
         const originTransactionOutput =
           transactionStates[input.txOutHash.valueOf()].outputs[input.txOutIndex];
+
+        // The public key hash of the used transaction output must correspond
+        // to the public key the transaction is using in this input
         if (
           originTransactionOutput.script.publicKeyHash !==
           Hash.fromPublicKey(input.script.publicKey).valueOf()
@@ -293,8 +295,12 @@ export class Transaction {
         }
         totalInputAmount += originTransactionOutput.value;
       }
-
-      return !input.script.signature.verify(input.script.publicKey, encodedData);
+      // The public key of this input must have signed the concatenated data
+      if (!input.script.signature.verify(input.script.publicKey, encodedData)) {
+        console.warn('The signature for this input is not valid');
+        return true;
+      }
+      return false;
     });
 
     if (!inputsAreValid) {
