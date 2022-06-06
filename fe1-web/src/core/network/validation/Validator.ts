@@ -60,6 +60,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.REACTION]: {
     [ActionType.ADD]: 'dataAddReaction',
   },
+  [ObjectType.COIN]: {
+    [ActionType.POST_TRANSACTION]: 'postTransaction',
+  },
 };
 
 function getSchema(obj: ObjectType, action: ActionType): string | null {
