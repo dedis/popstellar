@@ -82,7 +82,7 @@ class LaoDataSuite extends FunSuite with Matchers {
     val rollCallData: LaoData = createData.updateWith(messageCloseRollCall, address)
 
     rollCallData.owner should equal(PublicKey(Base64Data("a2V5")))
-    rollCallData.attendees should equal(List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")), PublicKey(Base64Data("a2V5"))))
+    rollCallData.attendees should equal(List(PublicKey(Base64Data("a2V5")), PublicKey(Base64Data("a2V5QXR0ZW5kZWU="))))
     rollCallData.witnesses should equal(List.empty)
     rollCallData.address should equal(address.get)
 

@@ -325,7 +325,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val actualLaoData2: LaoData = LaoData.buildFromJson(initialStorage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
 
     actualLaoData2.owner should equal(PublicKey(Base64Data.encode("key")))
-    actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("keyAttendee")), PublicKey(Base64Data.encode("key"))))
+    actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("key")), PublicKey(Base64Data.encode("keyAttendee"))))
     actualLaoData2.witnesses should equal(List.empty)
   }
 

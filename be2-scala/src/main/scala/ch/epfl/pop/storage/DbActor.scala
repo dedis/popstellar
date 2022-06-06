@@ -7,7 +7,7 @@ import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROOT_CHANNEL_PREFIX}
+import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -184,7 +184,7 @@ final case class DbActor(
 
   @throws [DbActorNAckException]
   private def createRollCallData(laoId: Hash, updateId: Hash, state: ActionType): Unit = {
-    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}rollcall${CHANNEL_SEPARATOR}${laoId.toString}")
+    val channel = Channel(s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> RollCallData(updateId, state).toJsonString
       storage.write(pair)
@@ -193,7 +193,7 @@ final case class DbActor(
 
   @throws [DbActorNAckException]
   private def readRollCallData(laoId: Hash): RollCallData = {
-    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}rollcall${CHANNEL_SEPARATOR}${laoId.toString}")) match {
+    Try(storage.read(s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}")) match {
       case Success(Some(json)) => RollCallData.buildFromJson(json)
       case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadElectionData for election $laoId not in the database")
       case Failure(ex) => throw ex
@@ -207,7 +207,7 @@ final case class DbActor(
         case Success(data) => data
         case Failure(_) => RollCallData(null, null)
       }
-      val rollcallDataKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall${CHANNEL_SEPARATOR}${laoId.toString}"
+      val rollcallDataKey: String = s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
       storage.write(rollcallDataKey -> rollcallData.updateWith(message).toJsonString)
     }
   }
