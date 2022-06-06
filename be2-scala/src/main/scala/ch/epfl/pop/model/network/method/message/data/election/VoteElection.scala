@@ -24,5 +24,7 @@ object VoteElection extends Parsable {
   def apply(id: Hash, question: Hash, vote: Option[Either[Int, Base64Data]], writeInOpt: Option[String]): VoteElection =
     new VoteElection(id, question, vote, writeInOpt)
 
+  def apply(id: Hash, question: Hash, writeIn: String): VoteElection = new VoteElection(id, question, None, Some(writeIn))
+
   override def buildFromJson(payload: String): VoteElection = payload.parseJson.asJsObject.convertTo[VoteElection]
 }

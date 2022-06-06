@@ -8,8 +8,6 @@ class KeyPairSuite extends FunSuite with Matchers {
     val keypair = KeyPair()
     val encrypted = keypair.encrypt(message)
     val decrypted = keypair.decrypt(encrypted)
-    println(f"encrypted : ${encrypted.decodeToString()}")
-    println(f"decrypted : ${decrypted.decodeToString()}")
     decrypted should equal(message)
   }
   test("Encrypt and decrypt a message too long should crash") {

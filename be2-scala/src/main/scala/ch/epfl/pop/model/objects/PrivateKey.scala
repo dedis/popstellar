@@ -29,5 +29,5 @@ final case class PrivateKey(base64Data: Base64Data) {
 
 object PrivateKey {
   protected val MESSAGE_BYTE_SIZE: Int = 64
-  protected val HALF_MESSAGE_BYTE_SIZE: Int = 32
+  protected val HALF_MESSAGE_BYTE_SIZE: Int = MESSAGE_BYTE_SIZE / 2
 }

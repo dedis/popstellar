@@ -12,15 +12,15 @@ final case class PublicKey(base64Data: Base64Data) {
 
 
   def encrypt(messageB64: Base64Data): Base64Data = {
-    val message = messageB64.decode()
-    if (message.length > MAX_MESSAGE_LENGTH) throw new IllegalArgumentException(s"The message should contain at maximum $MAX_MESSAGE_LENGTH bytes")
-    val M = Ed25519Point.embed(message)
+    val messageBytes = messageB64.decode()
+    if (messageBytes.length > MAX_MESSAGE_LENGTH) throw new IllegalArgumentException(s"The message should contain at maximum $MAX_MESSAGE_LENGTH bytes")
+    val embeddedMessage = Ed25519Point.embed(messageBytes)
     val seed = new Array[Byte](Ed25519.field.getb / 8)
     new SecureRandom().nextBytes(seed)
     val k = new Ed25519Scalar(seed)
     val K = Ed25519Point.base.mul(k)
     val S = asPoint.mul(k)
-    val C = S.add(M)
+    val C = S.add(embeddedMessage)
     val result: Array[Byte] = K.toBytes.concat(C.toBytes)
     Base64Data.encode(result)
   }
