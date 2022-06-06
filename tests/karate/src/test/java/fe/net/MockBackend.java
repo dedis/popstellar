@@ -71,7 +71,10 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
     String frameText = frame.text();
     logger.info("message received : {}", frameText);
-    queue.onNewMsg(frameText);
+    if (!frameText.contains("consensus")) {
+      // We don't want consensus messages to interfere since we do not test them yet
+      queue.onNewMsg(frameText);
+    }
     if (replyProducer != null) send(replyProducer.apply(frameText));
   }
 
@@ -117,8 +120,9 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     queue.clear();
   }
 
-  public String getLaoID(){
-    return laoID;
+  public boolean receiveNoMoreResponses(){
+    return queue.takeTimeout(5000) == null;
+
   }
 
   public void setLaoCreateMode(){

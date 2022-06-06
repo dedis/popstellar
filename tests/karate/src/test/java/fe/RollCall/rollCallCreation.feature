@@ -21,3 +21,5 @@ Feature: Create RollCall
     # * json catchup_consensus = backend.takeTimeout(withMethod('catchup'), timeout)
 
     Then match create_rc contains deep { method: 'publish'}
+    And match backend.receiveNoMoreResponses() == true
+    # check display
