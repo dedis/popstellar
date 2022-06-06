@@ -157,7 +157,6 @@ public class ElectionHandlerTest extends TestCase {
     assertEquals(ElectionVersion.OPEN_BALLOT, electionOpt.get().getElectionVersion());
     assertEquals(EventState.CREATED, electionOpt.get().getState().getValue());
 
-
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
@@ -221,6 +220,7 @@ public class ElectionHandlerTest extends TestCase {
       messageHandler.handleMessage(laoRepository, messageSender,
           election.getChannel(), message);
       if (state == EventState.CREATED) {
+        //Test for current TimeStamp
         assertEquals(EventState.OPENED, election.getState().getValue());
         //Test for current TimeStamp
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThrows;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
@@ -24,6 +25,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Before;
+
 import org.junit.Rule;
 import org.junit.Test;
 
