@@ -735,8 +735,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	if err != nil {
 		return -1, answer.NewErrorf(-4, "vote data is invalid")
 	}
-
-	var index int
+	var index int16
 
 	// interprets the data as a big endian int
 	buf := bytes.NewReader(data)
@@ -745,7 +744,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 		return -1, answer.NewErrorf(-4, "vote data is not big endian int")
 	}
 
-	return index, nil
+	return int(index), nil
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
