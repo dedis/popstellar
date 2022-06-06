@@ -307,14 +307,21 @@ public class ElectionHandlerTest extends TestCase {
 
     ElectionEncryptedVote electionEncryptedVote1 =
         new ElectionEncryptedVote("2", "1", false, null, electionEncrypted.getId());
-    List<ElectionEncryptedVote> electionEncryptedVote = Arrays.asList(electionEncryptedVote1);
+    ElectionEncryptedVote electionEncryptedVote2 =
+        new ElectionEncryptedVote("3", "1", false, null, electionEncrypted.getId());
+    List<ElectionEncryptedVote> electionEncryptedVote =
+        Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
     CastVote<ElectionEncryptedVote> encryptedCastVote =
         new CastVote<>(electionEncryptedVote, electionEncrypted.getId(), CREATE_LAO.getId());
-
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, encryptedCastVote, GSON);
     // Test the handling, it no error are thrown it means that the validation happened without
     // problems
     messageHandler.handleMessage(
         laoRepository, messageSender, LAO_CHANNEL.subChannel(electionEncrypted.getId()), message2);
+    List<String> listOfVoteIds2 = new ArrayList<>();
+    listOfVoteIds2.add(electionEncryptedVote1.getId());
+    listOfVoteIds2.add(electionEncryptedVote2.getId());
+    String expectedHash2 = Hash.hash(listOfVoteIds2.toArray(new String[0]));
+    assertEquals(expectedHash2, electionEncrypted.computerRegisteredVotes());
   }
 }
