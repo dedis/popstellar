@@ -65,7 +65,6 @@ export class EndElection implements MessageData {
   }
 
   public static computeRegisteredVotesHash(election: Election) {
-    // sort array in-place
     const sortedVoteIds = [...election.registeredVotes]
       // Expand each registered vote to the contained vote ids
       // flatMap = map + flatten array
