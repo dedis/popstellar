@@ -115,7 +115,7 @@ public class TransactionCoinHandlerTest {
             put(rollCall.getId(), rollCall);
           }
         });
-    
+
     // Add the LAO to the LAORepository
     laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
