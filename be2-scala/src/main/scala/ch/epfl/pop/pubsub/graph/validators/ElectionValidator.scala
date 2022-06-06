@@ -5,8 +5,8 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
-import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -51,6 +51,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
+        //checks if the question ids are valid wrt protocol
+        def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
+          questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
+
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (!validateTimestampOrder(data.created_at, data.start_time)) {
@@ -59,6 +63,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
+        } else if (!validateQuestionId(data.questions, data.id)) {
+          Right(validationError("unexpected question ids"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
@@ -104,16 +110,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  private def allVoteHaveValidIndex(votes: List[VoteElection], q2ballots: Map[Hash, List[String]]) =
-    votes.forall { voteElection =>
-      val vote = voteElection.vote match {
-        case Some(v :: _) => v
-        case _ => -1
-      }
-      // check if the ballot is available
-      vote < q2ballots(voteElection.question).size
-    }
-
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
 
@@ -122,9 +118,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
 
         val channel: Channel = rpcMessage.getParamsChannel
-
         val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
-        val q2Ballots = questions.map(question => question.id -> question.ballot_options).toMap
+        val sender: PublicKey = message.sender
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
@@ -132,21 +127,15 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected election id"))
         } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
           Right(validationError("unexpected lao id"))
-          //  check it the question id exists
-        } else if (!data.votes.map(_.question).forall(question => q2Ballots.contains(question))) {
-          Right(validationError(s"Incorrect parameter questionId"))
-        } else if (!allVoteHaveValidIndex(data.votes, q2Ballots)) {
-          Right(validationError(s"Incorrect parameter ballot"))
-          // check for question id duplication
-        } else if (data.votes.map(_.question).distinct.length != data.votes.length) {
-          Right(validationError(s"The castvote contains twice the same question id"))
+        } else if (!validateVoteElection(data.election, data.votes, questions)) {
+          Right(validationError(s"invalid votes"))
           // check open and end constraints
         } else if (getOpenMessage(channel).isEmpty) {
           Right(validationError(s"This election has not started yet"))
         } else if (getEndMessage(channel).isDefined) {
           Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(message.sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender ${message.sender} has an invalid PoP token."))
+        } else if (!validateAttendee(sender, channel, dbActorRef)) {
+          Right(validationError(s"Sender ${sender} has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
         } else {
@@ -154,6 +143,20 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+  }
+
+  //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
+  private def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
+    val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
+    val questionsId: List[Hash] = questions.map(_.id)
+
+    votes.forall( vote => vote.vote match {
+      case Some(v :: _ ) =>
+        questionsId.contains(vote.question) &&
+          v < q2Ballots(vote.question).size &&
+          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, v.toString)
+      case _ => false
+    })
   }
 
   private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =

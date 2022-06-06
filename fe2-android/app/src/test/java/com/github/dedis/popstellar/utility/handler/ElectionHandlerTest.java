@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -32,7 +34,16 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import io.reactivex.Completable;
+
+import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -40,12 +51,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
@@ -70,6 +77,8 @@ public class ElectionHandlerTest extends TestCase {
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
+
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
   @Before
   public void setup() throws GeneralSecurityException, IOException {
@@ -144,7 +153,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetup.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.CREATED, electionOpt.get().getState());
+    assertEquals(EventState.CREATED, electionOpt.get().getState().getValue());
     assertEquals(electionSetup.getId(), electionOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -178,7 +187,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.RESULTS_READY, electionOpt.get().getState());
+    assertEquals(EventState.RESULTS_READY, electionOpt.get().getState().getValue());
     assertEquals(
         Collections.singletonList(questionResult), electionOpt.get().getResultsForQuestionId("id"));
   }
@@ -197,7 +206,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.CLOSED, electionOpt.get().getState());
+    assertEquals(EventState.CLOSED, electionOpt.get().getState().getValue());
   }
 
   @Test
@@ -210,11 +219,12 @@ public class ElectionHandlerTest extends TestCase {
       messageHandler.handleMessage(laoRepository, messageSender,
           election.getChannel(), message);
       if (state == EventState.CREATED) {
-        assertEquals(EventState.OPENED, election.getState());
+        assertEquals(EventState.OPENED, election.getState().getValue());
         //Test for current TimeStamp
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
       } else {
-        assertEquals(state, election.getState());}
+        assertEquals(state, election.getState().getValue());
+      }
     }
   }
 }

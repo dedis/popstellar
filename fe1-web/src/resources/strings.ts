@@ -256,15 +256,17 @@ namespace STRINGS {
   export const lao_id = 'LAO ID';
   export const lao_name = 'LAO name';
   export const roll_call_name = 'Roll Call name';
-  export const wallet_send_title = 'Send';
-  export const wallet_send_destination_label = "Receiver's public key";
-  export const wallet_send_amount_label = 'Amount to send';
 
   /* --- Digital Cash Strings --- */
   export const script_type = 'Pay-to-Pubkey-Hash';
   export const coinbase_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
   export const cash_send = 'Send';
   export const cash_receiver = 'Receiver';
+  export const wallet_logout_icon = 'logout';
+  export const wallet_arrow_left_icon = 'west';
+  export const wallet_send_title = 'Send';
+  export const wallet_send_destination_label = "Receiver's public key";
+  export const wallet_send_amount_label = 'Amount to send';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

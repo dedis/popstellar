@@ -317,12 +317,52 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "alignItems": "center",
                             "flex": 1,
+                            "height": "100%",
                             "justifyContent": "center",
+                            "padding": 20,
                           }
                         }
                       >
+                        <View
+                          accessible={true}
+                          collapsable={false}
+                          focusable={true}
+                          nativeID="animatedComponent"
+                          onClick={[Function]}
+                          onResponderGrant={[Function]}
+                          onResponderMove={[Function]}
+                          onResponderRelease={[Function]}
+                          onResponderTerminate={[Function]}
+                          onResponderTerminationRequest={[Function]}
+                          onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "alignContent": "center",
+                              "alignItems": "center",
+                              "backgroundColor": "#2196F3",
+                              "borderRadius": 30,
+                              "height": 65,
+                              "justifyContent": "center",
+                              "opacity": 1,
+                              "shadowColor": "gray",
+                              "shadowOffset": Object {
+                                "height": 2,
+                                "width": 2,
+                              },
+                              "width": 65,
+                            }
+                          }
+                        >
+                          <Text />
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "padding": "2rem",
+                            }
+                          }
+                        />
                         <Text
                           style={
                             Object {
@@ -410,63 +450,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 }
                               >
                                 SAVE SEED AND CONNECT
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            nativeID="animatedComponent"
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                BACK TO WALLET SETUP
                               </Text>
                             </View>
                           </View>
