@@ -1,10 +1,10 @@
 import { Picker } from '@react-native-picker/picker';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StyleSheet, TextStyle } from 'react-native';
 
+import { Border, Color, Spacing, Typography } from 'core/styles';
 import { ExtendType } from 'core/types';
-
-import containerStyles from '../styles/stylesheets/containerStyles';
 
 /**
  * Simple dropdown where the user can select options
@@ -15,14 +15,22 @@ import containerStyles from '../styles/stylesheets/containerStyles';
  *  - Default selected option (not required, if not specified then first in the array is chosen)
  */
 
+const styles = StyleSheet.create({
+  select: {
+    ...Typography.base,
+    marginBottom: Spacing.x1,
+    padding: Spacing.x05,
+    backgroundColor: Color.contrast,
+    borderWidth: 0,
+    borderRadius: Border.radius,
+  } as TextStyle,
+});
+
 const DropdownSelector = (props: IPropTypes) => {
   const { selected, onChange, options } = props;
 
   return (
-    <Picker
-      selectedValue={selected}
-      onValueChange={onChange}
-      style={containerStyles.centerWithMargin}>
+    <Picker selectedValue={selected} onValueChange={onChange} style={styles.select}>
       {options.map((option) => (
         <Picker.Item key={option.value} label={option.label} value={option.value} />
       ))}

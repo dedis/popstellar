@@ -2,16 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Border, Colors } from 'core/styles';
+import { Border, Color } from 'core/styles';
 
 const styles = StyleSheet.create({
   hr: {
-    borderColor: Colors.accent,
+    borderColor: Color.accent,
     borderWidth: Border.width,
     borderRadius: Border.radius,
   } as ViewStyle,
   negative: {
-    borderColor: Colors.contrast,
+    borderColor: Color.contrast,
   } as ViewStyle,
 });
 

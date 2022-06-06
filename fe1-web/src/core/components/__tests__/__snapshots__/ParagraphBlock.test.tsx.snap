@@ -16,6 +16,7 @@ exports[`ParagraphBlock renders correctly using bold prop 1`] = `
 <Text
   style={
     Object {
+      "color": "#000",
       "fontSize": 20,
       "fontWeight": "bold",
       "lineHeight": 26,

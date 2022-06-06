@@ -25,5 +25,5 @@ export default function ConnectNavigation() {
 export const ConnectNavigationScreen: AppScreen = {
   id: STRINGS.navigation_app_connect,
   title: STRINGS.navigation_app_connect,
-  component: ConnectNavigation,
+  Component: ConnectNavigation,
 };

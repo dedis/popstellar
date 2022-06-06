@@ -1,6 +1,5 @@
-import { makeIcon } from 'core/components/Icon';
+import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
-import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
@@ -127,58 +126,25 @@ export function configureFeatures() {
   const laoComposition = lao.compose({
     /* events */
     EventList: eventConfiguration.components.EventList,
+    CreateEventButton: eventConfiguration.components.CreateEventButton,
     /* connect */
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
       {
-        id: STRINGS.navigation_lao_home,
-        title: STRINGS.navigation_lao_home_title,
-        Component: homeComposition.screens.Home,
-        tabBarIcon: makeIcon('list'),
-        order: -99999999,
-      },
-      {
         id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
+        headerShown: false,
         tabBarIcon: makeIcon('socialMedia'),
-        order: 0,
-      },
-      {
-        id: STRINGS.navigation_lao_notifications,
-        Component: notificationConfiguration.navigation.NotificationNavigation,
-        tabBarIcon: makeIcon('notification'),
-        order: 70000,
-        headerRight: notificationConfiguration.components.NotificationBadge,
-      },
-      ...walletComposition.laoScreens,
-    ],
-    organizerNavigationScreens: [
-      {
-        id: STRINGS.navigation_lao_organizer_create_event,
-        Component: eventConfiguration.screens.CreateEvent,
-        order: 0,
-      },
-      {
-        id: STRINGS.navigation_lao_organizer_creation_meeting,
-        Component: meetingConfiguration.screens.CreateMeeting,
         order: 10000,
       },
-      {
-        id: STRINGS.navigation_lao_organizer_creation_roll_call,
-        Component: rollCallConfiguration.screens.CreateRollCall,
-        order: 20000,
-      },
-      {
-        id: STRINGS.navigation_lao_organizer_creation_election,
-        Component: evotingConfiguration.screens.CreateElection,
-        order: 30000,
-      },
-      {
-        id: STRINGS.navigation_lao_organizer_open_roll_call,
-        Component: rollCallConfiguration.screens.RollCallOpened,
-        order: 40000,
-      },
+      ...notificationConfiguration.laoScreens,
+      ...walletComposition.laoScreens,
+    ],
+    eventsNavigationScreens: [
+      ...meetingConfiguration.laoEventScreens,
+      ...rollCallConfiguration.laoEventScreens,
+      ...evotingConfiguration.laoEventScreens,
     ],
   });
 
@@ -208,10 +174,7 @@ export function configureFeatures() {
       screens: [
         ...homeComposition.appScreens,
         ...walletComposition.appScreens,
-        {
-          id: STRINGS.navigation_app_lao,
-          component: laoComposition.navigation.LaoNavigation,
-        } as AppScreen,
+        ...laoComposition.appScreens,
       ],
     },
     context: {
@@ -219,6 +182,7 @@ export function configureFeatures() {
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
+      [meetingConfiguration.identifier]: meetingConfiguration.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,

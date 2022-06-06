@@ -320,7 +320,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -328,6 +328,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 32,
                                 "fontWeight": "bold",
                                 "lineHeight": 41,
@@ -341,6 +342,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "marginBottom": 16,
@@ -353,6 +355,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "marginBottom": 16,
@@ -697,7 +700,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -705,6 +708,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 32,
                                 "fontWeight": "bold",
                                 "lineHeight": 41,
@@ -718,6 +722,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "marginBottom": 16,
@@ -730,6 +735,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "marginBottom": 16,

@@ -9,8 +9,16 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
+  export const general_done = 'Done';
+  export const general_starting_at = 'Supposed to start';
+  export const general_ending_at = 'Supposed to end';
+  export const general_ended_at = 'Ended at';
+
+  export const general_closed = 'Closed';
+  export const general_ongoing = 'Ongoing';
 
   /* --- User Roles --- */
+  export const user_role = 'Role';
   export const user_role_attendee = 'Attendee';
   export const user_role_organizer = 'Organizer';
   export const user_role_witness = 'Witness';
@@ -39,21 +47,28 @@ namespace STRINGS {
   export const navigation_notification_notifications_title = 'Notifications';
   export const navigation_notification_single_notification = 'Notification';
 
-  /* --- Lap Navigation Strings --- */
-  export const navigation_lao_home = 'Home';
-  export const navigation_lao_home_title = 'LAOs';
+  /* --- Lao Navigation Strings --- */
+  export const navigation_lao_home = 'Lao';
+  export const navigation_lao_lao_title = 'LAO';
   export const navigation_lao_notifications = 'Notifications';
   export const navigation_lao_events = 'Events';
-  export const navigation_lao_identity = 'My identity';
   export const navigation_lao_wallet = 'Wallet';
 
+  /* --- Lao Home Navigation Strings --- */
+  export const navigation_lao_home_identity = 'My identity';
+
   /* --- Lao Organizer Navigation Strings --- */
-  export const navigation_lao_organizer_home = 'Organizer Home';
-  export const navigation_lao_organizer_create_event = 'Create Event';
-  export const navigation_lao_organizer_creation_meeting = 'Create meeting';
-  export const navigation_lao_organizer_creation_roll_call = 'Create roll call';
-  export const navigation_lao_organizer_creation_election = 'Create election';
-  export const navigation_lao_organizer_open_roll_call = 'Open Roll-Call';
+  export const navigation_lao_events_home = 'Events Home';
+  export const navigation_lao_events_home_title = 'Events';
+
+  export const navigation_lao_events_create_event = 'Create Event';
+  export const navigation_lao_events_create_meeting = 'Create Meeting';
+  export const navigation_lao_events_view_single_meeting = 'Single Meeting';
+  export const navigation_lao_events_create_roll_call = 'Create Roll-Call';
+  export const navigation_lao_events_view_single_roll_call = 'Single Roll-Call';
+  export const navigation_lao_events_create_election = 'Create Election';
+  export const navigation_lao_events_view_single_election = 'Single Election';
+  export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home_tab = 'Wallet Home';
@@ -69,6 +84,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_user_profile = 'User profile';
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
+  /* --- Lao Strings --- */
+  export const lao_qr_code_title = 'Connection QR Code';
+  export const lao_properties_id = 'Identifier';
+  export const lao_properties_your_role = 'Your role';
+  export const lao_properties_current_connections = 'You are currently connected to';
+  export const lao_properties_add_additional_connection = 'Add connection';
+  export const lao_properties_disconnect = 'Disconnect';
+
   /* --- Home Strings --- */
 
   export const home_navigation_title = 'LAOs';
@@ -83,11 +106,11 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
-  export const attendees_of_last_roll_call = 'Attendees of last roll call';
+  export const attendees_of_last_roll_call = 'Attendees of last roll-call';
   export const follow_button = 'Follow';
   export const profile_button = 'Profile';
   export const social_media_your_profile_unavailable =
-    'You do not have a social media profile yet, be sure to have participated in a roll call.';
+    'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
   export const modal_chirp_deletion_description = 'Are you sure you want to delete this chirp?';
 
@@ -97,18 +120,20 @@ namespace STRINGS {
   export const connect_scanning_fail = 'Invalid QRCode data';
 
   // Connecting Connect Strings
+  export const connect_connect = 'Connect';
   export const connect_connecting_title = 'Connecting';
   export const connect_connecting_uri = 'Connecting to URI';
   export const connect_connecting_validate = 'Simulate connection';
   export const connect_server_uri = 'Server URI';
+  export const connect_server_uri_placeholder = 'ws://127.0.0.1:9000/';
   export const connect_lao_id = 'LAO ID';
+  export const connect_lao_id_placeholder = 'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
 
   // Confirm Connect Strings
   export const connect_confirm_description = 'Connect to this local organization?';
 
   /* --- Launch Strings --- */
-  export const launch_description =
-    'To launch a new organization, please enter a name and an address';
+  export const launch_heading = 'Launch a new organization 🚀';
   export const launch_organization_name = 'Organization name';
   export const launch_address = 'Address';
   export const launch_button_launch = 'Launch';
@@ -124,11 +149,22 @@ namespace STRINGS {
     'this box checked. If you wish to reveal your identity to other participants in the organization, you may ' +
     'un-check this box and enter the information you wish to reaveal below. You must enter identity information in ' +
     'order to play an Organizer or Witness role in an organization.';
-  export const identity_name_placeholder = 'Name';
-  export const identity_title_placeholder = 'Title';
-  export const identity_organization_placeholder = 'Organization';
-  export const identity_email_placeholder = 'Email';
-  export const identity_phone_placeholder = 'Phone number';
+
+  export const identity_name_label = 'Name';
+  export const identity_name_placeholder = 'John Doe';
+
+  export const identity_title_label = 'Title';
+  export const identity_title_placeholder = 'LAO Organizer';
+
+  export const identity_organization_label = 'Organization';
+  export const identity_organization_placeholder = 'DEDIS Lab';
+
+  export const identity_email_label = 'Email';
+  export const identity_email_placeholder = 'john.doe@epfl.ch';
+
+  export const identity_phone_label = 'Phone number';
+  export const identity_phone_placeholder = '+41 12 345 67 89';
+
   export const identity_qrcode_description = 'ID (Public Key):';
 
   /* --- WitnessScreen Strings --- */
@@ -137,22 +173,28 @@ namespace STRINGS {
   export const witness_name = 'Witnesses';
   export const witness_scan = 'Please scan the personal QR code of the witness to add';
 
-  /* --- Discussion creation Strings --- */
-  export const discussion_create_name = 'Name*';
-  export const discussion_create_open = 'discussion open';
+  /* --- Evoting Feature Strings --- */
+  export const election_event_name = 'Election';
 
   /* --- Election creation Strings --- */
   export const election_create_setup = 'Election Setup';
-  export const election_create_name = 'Name*';
+  export const election_create_name = 'Name';
+  export const election_create_name_placeholder = 'Election Q1 2022';
+  export const election_create_version = 'Election Type';
   export const election_create_version_open_ballot = 'Open Ballot';
   export const election_create_version_secret_ballot = 'Secret Ballot';
   export const election_create_start_time = 'Start time';
   export const election_create_finish_time = 'End time';
+  export const election_create_question = 'Question';
+  export const election_create_question_placeholder = 'What is your favorite color?';
+  export const election_create_option_placeholder = 'Blue';
 
-  export const election_create_question = 'Question*';
+  export const election_create_add_question = 'Add Question';
+
+  export const election_create_ballot_options = 'Ballot Options';
+
   export const election_create_voting_method = 'Voting method';
   export const election_create_ballot_option = 'Option';
-  export const election_create_ballot_options = 'Ballot Options';
   export const election_voting_method = 'Voting Method';
   export const election_method_Plurality = 'Plurality';
   export const election_method_Approval = 'Approval';
@@ -161,7 +203,15 @@ namespace STRINGS {
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
   export const election_end = 'End Election and Tally Votes';
+  export const election_questions = 'Questions';
   export const election_results = 'Election Results';
+
+  export const election_warning_open_ballot =
+    'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
+  export const election_info_secret_ballot =
+    'This is a secret ballot election, your cast votes are encrypted and will be decrypted by the organizer of the LAO.';
+  export const election_terminated_description =
+    'The election was terminated and the votes are being tallied... Waiting for the result';
 
   /* --- Event Creation Strings --- */
   export const modal_event_creation_failed = 'Event creation failed';
@@ -174,21 +224,47 @@ namespace STRINGS {
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
 
-  /* --- Roll-call creation Strings --- */
-  export const roll_call_create_proposed_start = 'Proposed Start:';
-  export const roll_call_create_proposed_end = 'Proposed End:';
-  export const roll_call_create_description = 'Description';
-  export const roll_call_create_location = 'Location*';
-  export const roll_call_create_name = 'Name*';
+  /* --- Roll-Call Feature Strings --- */
+  export const roll_call_event_name = 'Roll-Call';
 
-  /* --- Roll-call open page Strings --- */
+  export const roll_call_description = 'Description';
+  export const roll_call_location = 'Location';
+  export const roll_call_open_organizer =
+    'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
+  export const roll_call_open_attendee =
+    'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
+
+  export const roll_call_location_error_open_roll_call = 'Unable to send roll call open request';
+  export const roll_call_location_error_scanning_no_alias =
+    'Unable to scan attendees, the event does not have an idAlias';
+  export const roll_call_location_error_reopen_roll_call =
+    'Unable to send Roll call re-open request';
+  export const roll_call_location_error_reopen_roll_call_no_alias =
+    'Unable to send roll call re-open request, the event does not have an idAlias';
+
+  export const roll_call_location_error_close_roll_call = 'Could not close roll call';
+
+  /* --- Roll-call creation Strings --- */
+
+  export const roll_call_create_proposed_start = 'Proposed Start';
+  export const roll_call_create_proposed_end = 'Proposed End';
+  export const roll_call_create_name = 'Name';
+  export const roll_call_create_name_placeholder = 'Real Life Captcha';
+
+  export const roll_call_create_location_placeholder = 'BC410';
+
+  export const roll_call_create_description_placeholder = 'Are you a robot?';
+
+  /* --- Roll-call Single View Strings --- */
+
   export const roll_call_open = 'Open Roll-Call';
   export const roll_call_reopen = 'Re-open Roll-Call';
+  export const roll_call_close = 'Close Roll-Call';
 
   /* --- Roll-call scanning Strings --- */
   export const roll_call_scan_attendees = 'Scan Attendees';
   export const roll_call_scan_description =
-    'Please scan each participant’s Roll-call QR code exactly once.';
+    'Please scan each participant’s Roll-call QR code once.';
   export const roll_call_scan_participant = 'participant scanned';
   export const roll_call_scan_close = 'Close Roll-Call';
   export const roll_call_scan_close_confirmation = 'Do you confirm to close the roll-call ?';
@@ -208,12 +284,22 @@ namespace STRINGS {
   export const poll_create_answer_type_one_of_n = 'Choose one of n';
 
   /* --- Meeting creation Strings --- */
-  export const meeting_create_name = 'Name*';
-  export const meeting_create_start_time = 'Start time= ';
-  export const meeting_create_finish_time = 'End time= ';
+  export const meeting_create_name = 'Name';
+  export const meeting_create_name_placeholder = 'Global PoP Meeting';
+  export const meeting_create_start_time = 'Start time';
+  export const meeting_create_finish_time = 'End time';
   export const meeting_create_location = 'Location';
+  export const meeting_create_location_placeholder = 'BC410';
+
+  /* --- Events Feature Strings --- */
+  export const events_create_event = 'Create';
+  export const events_list_past = 'Past';
+  export const events_list_current = 'Current';
+  export const events_list_upcoming = 'Upcoming';
 
   /* --- Notification screen Strings --- */
+  export const notification_unread_notifications = 'Notifications';
+  export const notification_read_notifications = 'Read Notifications';
   export const notification_clear_all = 'Clear notifications';
 
   /* --- Time Display Strings --- */
@@ -259,9 +345,19 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_header = 'Your Wallet 🔒';
+  export const wallet_home_logout = 'Logout';
+  export const wallet_home_toggle_debug = 'Toggle debug mode';
 
   export const no_tokens_in_wallet =
-    'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here';
+    'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';
+
+  /* --- Meeting Feature Strings --- */
+  export const meeting_event_name = 'Meeting';
+  export const meeting_create_meeting = 'Create meeting';
+
+  /* --- Witness Feature Strings --- */
+  export const witness_message_witness = 'Witness Message';
+  export const meeting_message_decline = 'Decline Message';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

@@ -24,6 +24,7 @@ export { default as TextBlock } from './TextBlock';
 export { default as TextInputLine } from './TextInputLine';
 export { default as TextInputList } from './TextInputList';
 export { default as TimeDisplay } from './TimeDisplay';
+export { default as Input } from './Input';
 export { default as PoPButton } from './PoPButton';
 export { default as PoPTextButton } from './PoPTextButton';
-export { default as Icon } from './Icon';
+export { default as PoPIcon } from './PoPIcon';

@@ -1,29 +1,64 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
+import { Text } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 
-import { PoPTextButton, TimeDisplay } from 'core/components';
-import { Spacing, Typography } from 'core/styles';
+import { PoPIcon } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
+import { useActionSheet } from 'core/hooks/ActionSheet';
+import { Color, Icon, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { openElection } from '../network/ElectionMessageApi';
 import { Election } from '../objects';
+import ElectionQuestions from './ElectionQuestions';
 
-const styles = StyleSheet.create({
-  textOptions: {
-    marginHorizontal: Spacing.x1,
-    fontSize: 16,
-    textAlign: 'center',
-  } as TextStyle,
-  textQuestions: {
-    ...Typography.baseCentered,
-    fontSize: 20,
-  } as TextStyle,
-});
+/**
+ * Screen component for not started elections
+ */
+const ElectionNotStarted = ({ election }: IPropTypes) => {
+  return (
+    <ScreenWrapper>
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.general_starting_at}</Text>
+        {'\n'}
+        <Text>
+          {election.start.toDate().toLocaleDateString()}{' '}
+          {election.start.toDate().toLocaleTimeString()}
+        </Text>
+      </Text>
 
-const ElectionNotStarted = ({ election, questions, isOrganizer }: IPropTypes) => {
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.general_ending_at}</Text>
+        {'\n'}
+        <Text>
+          {election.end.toDate().toLocaleDateString()} {election.end.toDate().toLocaleTimeString()}
+        </Text>
+      </Text>
+      <ElectionQuestions election={election} />
+    </ScreenWrapper>
+  );
+};
+
+const propTypes = {
+  election: PropTypes.instanceOf(Election).isRequired,
+};
+ElectionNotStarted.propTypes = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+export default ElectionNotStarted;
+
+/**
+ * Component that is rendered in the top right of the navigation bar for not started elections.
+ * Allows for example to show icons that then trigger different actions
+ */
+export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
+  const { election, isOrganizer } = props;
+
+  const showActionSheet = useActionSheet();
   const toast = useToast();
 
   const onOpenElection = () => {
@@ -40,40 +75,30 @@ const ElectionNotStarted = ({ election, questions, isOrganizer }: IPropTypes) =>
       });
   };
 
+  // don't show a button for non-organizers
+  if (!isOrganizer) {
+    return null;
+  }
+
   return (
-    <>
-      <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      <SectionList
-        sections={questions}
-        keyExtractor={(item, index) => item + index}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.textQuestions}>{title}</Text>
-        )}
-        renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-      />
-      {isOrganizer && (
-        <PoPTextButton onPress={onOpenElection}>{STRINGS.election_open}</PoPTextButton>
-      )}
-    </>
+    <TouchableOpacity
+      onPress={() =>
+        showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
+      }>
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
+    </TouchableOpacity>
   );
 };
 
-const propTypes = {
+const rightHeaderPropTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
-  questions: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      data: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-    }).isRequired,
-  ).isRequired,
   isOrganizer: PropTypes.bool,
 };
-ElectionNotStarted.propTypes = propTypes;
 
-ElectionNotStarted.defaultProps = {
+type RightHeaderIPropTypes = PropTypes.InferProps<typeof rightHeaderPropTypes>;
+
+ElectionNotStartedRightHeader.propTypes = rightHeaderPropTypes;
+
+ElectionNotStartedRightHeader.defaultProps = {
   isOrganizer: false,
 };
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-export default ElectionNotStarted;

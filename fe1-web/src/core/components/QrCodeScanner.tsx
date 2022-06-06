@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import { Border, Colors, Spacing } from 'core/styles';
+import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
 // FIXME: Remove CSS imports in order to support native apps
@@ -12,10 +12,10 @@ import { FOUR_SECONDS } from 'resources/const';
 // because they load an external dependency (jsQR) that somehow does not properly load
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
-import Icon from './Icon';
+import PoPIcon from './PoPIcon';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
-  backgroundColor: Colors.contrast,
+  backgroundColor: Color.contrast,
   padding: Spacing.x05,
   borderRadius: Border.radius,
 };
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   uiContainer: {
     flex: 1,
     flexDirection: 'column',
-    margin: Spacing.horizontalContentSpacing,
+    margin: Spacing.contentSpacing,
   },
   buttonContainer: {
     flexDirection: 'column',
@@ -65,20 +65,18 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     });
   };
 
-  if (!showCamera) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.camera}>
-        <QrReader
-          delay={300}
-          onError={handleError}
-          onScan={handleScan}
-          facingMode={facingMode}
-          className="qr-code-scanner"
-        />
+        {showCamera && (
+          <QrReader
+            delay={300}
+            onError={handleError}
+            onScan={handleScan}
+            facingMode={facingMode}
+            className="qr-code-scanner"
+          />
+        )}
       </View>
       <View style={styles.uiContainer}>
         <View style={styles.children}>{children}</View>
@@ -89,7 +87,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
-              <Icon name="camera-reverse" color={Colors.accent} size={25} />
+              <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

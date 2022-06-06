@@ -1,15 +1,15 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextBlock, TextInputLine, PoPTextButton } from 'core/components';
+import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { NetworkConnection } from 'core/network/NetworkConnection';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -22,21 +22,6 @@ import { HomeHooks } from '../hooks';
  *
  * TODO Make the confirm button make the action require in the UI specification
  */
-
-/**
- * Connects to the given server URL.
- *
- * @param serverUrl
- */
-export function connectTo(serverUrl: string): NetworkConnection | undefined {
-  try {
-    const { href } = new URL(serverUrl); // validate
-    return getNetworkManager().connect(href);
-  } catch (err) {
-    console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
-    return undefined;
-  }
-}
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_confirm>,
@@ -56,12 +41,9 @@ const ConnectConfirm = () => {
   const getLaoChannel = HomeHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
-    const connection = connectTo(serverUrl);
-    if (!connection) {
-      return;
-    }
-
     try {
+      const connection = getNetworkManager().connect(serverUrl);
+
       const channel = getLaoChannel(laoId);
       if (!channel) {
         throw new Error('The given LAO ID is invalid');
@@ -71,10 +53,7 @@ const ConnectConfirm = () => {
       await subscribeToChannel(channel, [connection]);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_events,
-        params: {
-          screen: STRINGS.navigation_lao_organizer_home,
-        },
+        screen: STRINGS.navigation_lao_home,
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
@@ -89,20 +68,15 @@ const ConnectConfirm = () => {
   return (
     <ScreenWrapper>
       <View style={containerStyles.flex}>
-        <TextBlock text={STRINGS.connect_confirm_description} />
-        <TextInputLine
-          placeholder={STRINGS.connect_server_uri}
-          onChangeText={(input: string) => setServerUrl(input)}
-          defaultValue={serverUrl}
-        />
-        <TextInputLine
-          placeholder={STRINGS.connect_lao_id}
-          onChangeText={(input: string) => setLaoId(input)}
-          defaultValue={laoId}
-        />
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.connect_server_uri}
+        </Text>
+        <Input value={serverUrl} onChange={setServerUrl} placeholder={STRINGS.connect_server_uri} />
 
-        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.general_button_confirm}</PoPTextButton>
-        <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
+        <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
+        <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
+
+        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.connect_connect}</PoPTextButton>
       </View>
     </ScreenWrapper>
   );

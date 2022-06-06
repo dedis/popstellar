@@ -1,29 +1,18 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
+import { PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Spacing } from 'core/styles';
+import { getNetworkManager } from 'core/network';
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { selectIsLaoOrganizer, selectIsLaoWitness } from '../reducer';
-
-const laoPropertiesStyles = StyleSheet.create({
-  default: {
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: Spacing.x1,
-    marginHorizontal: Spacing.x2,
-    marginTop: Spacing.x1,
-    marginBottom: Spacing.x1,
-  },
-});
 
 const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   if (isOrganizer) {
@@ -42,43 +31,53 @@ type NavigationProps = CompositeScreenProps<
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
-const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
+const LaoProperties = () => {
   const lao = LaoHooks.useCurrentLao();
 
   const navigation = useNavigation<NavigationProps['navigation']>();
-
-  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const isWitness = useSelector(selectIsLaoWitness);
 
   return (
-    <View style={laoPropertiesStyles.default}>
-      <CollapsibleContainer title="Lao Properties" isInitiallyOpen={isInitiallyOpen}>
-        <ParagraphBlock text={`Lao name: ${lao.name}`} />
-        <ParagraphBlock text={`Your role: ${getUserRole(isOrganizer, isWitness)}`} />
-        <QRCode
-          value={encodeLaoConnection(lao.server_addresses[0] || '', lao.id.toString())}
-          visibility
-        />
-        <Button
-          title="Add connection"
-          onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}
-        />
-      </CollapsibleContainer>
+    <View>
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
+        {'\n'}
+        <Text>{lao.id}</Text>
+      </Text>
+
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>
+          {STRINGS.lao_properties_your_role}
+        </Text>
+        {'\n'}
+        <Text>{getUserRole(isOrganizer, isWitness)}</Text>
+      </Text>
+
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>
+          {STRINGS.lao_properties_current_connections}
+        </Text>
+        {'\n'}
+        <Text>{lao.server_addresses.join(', ')}</Text>
+      </Text>
+
+      <PoPTextButton onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
+        {STRINGS.lao_properties_add_additional_connection}
+      </PoPTextButton>
+
+      <PoPTextButton
+        onPress={() => {
+          getNetworkManager().disconnectFromAll();
+          navigation.navigate(STRINGS.navigation_app_home, {
+            screen: STRINGS.navigation_home_home,
+          });
+        }}>
+        {STRINGS.lao_properties_disconnect}
+      </PoPTextButton>
     </View>
   );
 };
-
-const propTypes = {
-  isInitiallyOpen: PropTypes.bool,
-};
-
-LaoProperties.propTypes = propTypes;
-LaoProperties.defaultProps = {
-  isInitiallyOpen: false,
-};
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default LaoProperties;

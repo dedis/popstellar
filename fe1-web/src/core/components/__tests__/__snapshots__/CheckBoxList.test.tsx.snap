@@ -15,6 +15,7 @@ exports[`CheckBoxList renders correctly 1`] = `
   <Text
     style={
       Object {
+        "color": "#000",
         "fontSize": 20,
         "lineHeight": 26,
         "marginHorizontal": 10,
@@ -230,6 +231,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
   <Text
     style={
       Object {
+        "color": "#000",
         "fontSize": 20,
         "lineHeight": 26,
         "marginHorizontal": 10,

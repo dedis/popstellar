@@ -515,7 +515,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                   Object {
                                                     "flex": 1,
                                                     "flexDirection": "column",
-                                                    "margin": 48,
+                                                    "margin": 16,
                                                   }
                                                 }
                                               >
@@ -548,9 +548,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                       >
                                                         <View
                                                           accessible={true}
-                                                          collapsable={false}
                                                           focusable={true}
-                                                          nativeID="animatedComponent"
                                                           onClick={[Function]}
                                                           onResponderGrant={[Function]}
                                                           onResponderMove={[Function]}
@@ -582,9 +580,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                       >
                                                         <View
                                                           accessible={true}
-                                                          collapsable={false}
                                                           focusable={true}
-                                                          nativeID="animatedComponent"
                                                           onClick={[Function]}
                                                           onResponderGrant={[Function]}
                                                           onResponderMove={[Function]}
@@ -605,9 +601,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                         </View>
                                                         <View
                                                           accessible={true}
-                                                          collapsable={false}
                                                           focusable={true}
-                                                          nativeID="animatedComponent"
                                                           onClick={[Function]}
                                                           onResponderGrant={[Function]}
                                                           onResponderMove={[Function]}
@@ -648,9 +642,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                   >
                                                     <View
                                                       accessible={true}
-                                                      collapsable={false}
                                                       focusable={true}
-                                                      nativeID="animatedComponent"
                                                       onClick={[Function]}
                                                       onResponderGrant={[Function]}
                                                       onResponderMove={[Function]}

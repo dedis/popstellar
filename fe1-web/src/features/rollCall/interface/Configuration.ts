@@ -100,10 +100,7 @@ export type RollCallReactContext = Pick<
  * The interface the rollcall feature exposes
  */
 export interface RollCallInterface extends FeatureInterface {
-  screens: {
-    CreateRollCall: React.ComponentType<any>;
-    RollCallOpened: React.ComponentType<any>;
-  };
+  laoEventScreens: RollCallFeature.LaoEventScreen[];
 
   eventTypes: EventType[];
 
@@ -128,10 +125,12 @@ export interface RollCallInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_organizer_creation_roll_call;
+    createEvent: typeof STRINGS.navigation_lao_events_create_roll_call;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_roll_call;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

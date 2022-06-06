@@ -14,9 +14,18 @@ import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import LaoNavigation from '../LaoNavigation';
 
+jest.mock('react-qr-code', () => {
+  const MockQrCode = (props: any) => `[QrCode ${JSON.stringify(props)}]`;
+  return {
+    __esModule: true,
+    default: MockQrCode,
+  };
+});
+
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
+    CreateEventButton: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [
       {
@@ -31,7 +40,7 @@ const contextValue = {
         Component: () => <Text>second screen</Text>,
       },
     ],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 
@@ -40,9 +49,7 @@ const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer
 mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 mockStore.dispatch(connectToLao(mockLao.toState()));
 
-// react-navigation has a problem that makes this test always fail
-// https://github.com/satya164/react-native-tab-view/issues/1104
-describe.skip('LaoNavigation', () => {
+describe('LaoNavigation', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>

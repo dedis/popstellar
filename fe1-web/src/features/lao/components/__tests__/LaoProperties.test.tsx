@@ -21,13 +21,14 @@ jest.mock('react-qr-code', () => 'qr code');
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
+    CreateEventButton: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 
-const LaoPropertiesScreen = () => <LaoProperties isInitiallyOpen />;
+const LaoPropertiesScreen = () => <LaoProperties />;
 
 describe('LaoProperties', () => {
   it('renders correctly as organizer', () => {

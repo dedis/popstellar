@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-import { Colors } from '../styles';
+import { Color } from '../styles';
 import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 /**
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 30,
     height: 30,
-    backgroundColor: Colors.white,
+    backgroundColor: Color.white,
     borderRadius: 30,
   } as ViewStyle,
   iconRecording: {
@@ -33,7 +33,7 @@ function RecorderButton({ action }: IPropTypes) {
 
   return (
     <TouchableOpacity
-      style={[circularButtonStyles.button, { backgroundColor: Colors.red }]}
+      style={[circularButtonStyles.button, { backgroundColor: Color.red }]}
       onPress={() => {
         action();
         setIsRecording(!isRecording);

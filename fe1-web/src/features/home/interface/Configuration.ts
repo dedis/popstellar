@@ -86,14 +86,11 @@ export interface HomeInterface extends FeatureInterface {
     /**
      * Given the lao server address and the lao id, this computes the data
      * that is encoded in a QR code that can be used to connect to a LAO
-     * @param server The server address
+     * @param servers The server addresses
      * @param laoId The lao id
      * @returns The encoded data
      */
-    encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
-  };
-  screens: {
-    Home: React.ComponentType<any>;
+    encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
   };
   context: HomeReactContext;
 }

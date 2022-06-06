@@ -1,15 +1,16 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { TextBlock, TextInputLine, PoPTextButton } from 'core/components';
+import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
+import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -55,10 +56,7 @@ const Launch = () => {
         subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.navigation_app_lao, {
-            screen: STRINGS.navigation_lao_events,
-            params: {
-              screen: STRINGS.navigation_lao_organizer_home,
-            },
+            screen: STRINGS.navigation_lao_home,
           });
         }),
       )
@@ -71,16 +69,22 @@ const Launch = () => {
     <ScreenWrapper>
       <View style={containerStyles.flex}>
         <View style={styles.viewTop}>
-          <TextBlock text={STRINGS.launch_description} />
-          <TextInputLine
+          <Text style={Typography.heading}>{STRINGS.launch_heading}</Text>
+
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.launch_organization_name}
+          </Text>
+          <Input
+            value={inputLaoName}
+            onChange={setInputLaoName}
             placeholder={STRINGS.launch_organization_name}
-            onChangeText={(input: string) => setInputLaoName(input)}
-            defaultValue={inputLaoName}
           />
-          <TextInputLine
+
+          <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.launch_address}</Text>
+          <Input
+            value={inputAddress}
+            onChange={setInputAddress}
             placeholder={STRINGS.launch_address}
-            onChangeText={(input: string) => setInputAddress(input)}
-            defaultValue={inputAddress}
           />
         </View>
         <View style={styles.viewBottom}>

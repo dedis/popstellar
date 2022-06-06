@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
-import { gray, popBlue } from 'core/styles/colors';
+import { Color, Spacing, Typography } from 'core/styles';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
 import { makeRollCallSelector } from 'features/rollCall/reducer';
@@ -79,9 +79,17 @@ const SocialMediaNavigation = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: iconSelector(route.name),
-        tabBarActiveTintColor: popBlue,
-        tabBarInactiveTintColor: gray,
-        swipeEnabled: false,
+
+        tabBarActiveTintColor: Color.accent,
+        tabBarInactiveTintColor: Color.inactive,
+        headerLeftContainerStyle: {
+          paddingLeft: Spacing.contentSpacing,
+        },
+        headerRightContainerStyle: {
+          paddingRight: Spacing.contentSpacing,
+        },
+        headerTitleStyle: Typography.topNavigationHeading,
+        headerTitleAlign: 'center',
       })}>
       <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
         {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}

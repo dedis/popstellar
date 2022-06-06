@@ -2,64 +2,102 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useMemo } from 'react';
+import { ListItem } from 'react-native-elements';
+import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { Spacing, Typography } from 'core/styles';
+import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { List, Typography } from 'core/styles';
+import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { getLaoChannel } from '../functions';
 import { Lao } from '../objects';
-
-/**
- * The LAO item component: name of LAO
- *
- * On click go to the organization screen and store the ID of the LAO for the organization screen
- */
-const styles = StyleSheet.create({
-  view: {
-    marginBottom: Spacing.x1,
-  } as ViewStyle,
-  text: {
-    ...Typography.baseCentered,
-    borderWidth: 1,
-    borderRadius: 5,
-  } as TextStyle,
-});
+import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<HomeParamList, typeof STRINGS.navigation_home_home>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
 >;
 
-const LaoItem = ({ lao }: IPropTypes) => {
+const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const toast = useToast();
 
-  const handlePress = () => {
-    navigation.navigate(STRINGS.navigation_app_home, {
-      screen: STRINGS.navigation_home_mock_connect,
-      params: {
-        screen: STRINGS.navigation_connect_confirm,
-        params: {
-          laoId: lao.id.valueOf(),
-          serverUrl: lao.server_addresses[0],
-        },
-      },
-    });
+  const isWitnessSelector = makeIsLaoWitnessSelector(lao.id.valueOf());
+  const isOrganizerSelector = makeIsLaoOrganizerSelector(lao.id.valueOf());
+
+  const isWitness = useSelector(isWitnessSelector);
+  const isOrganizer = useSelector(isOrganizerSelector);
+
+  const role = useMemo(() => {
+    if (isOrganizer) {
+      return STRINGS.user_role_organizer;
+    }
+    if (isWitness) {
+      return STRINGS.user_role_witness;
+    }
+
+    return STRINGS.user_role_attendee;
+  }, [isWitness, isOrganizer]);
+
+  const onPress = async () => {
+    try {
+      const connections = lao.server_addresses.map((address) =>
+        getNetworkManager().connect(address),
+      );
+
+      const channel = getLaoChannel(lao.id.valueOf());
+      if (!channel) {
+        throw new Error('The given LAO ID is invalid');
+      }
+
+      // subscribe to the lao channel on the new connections
+      await subscribeToChannel(channel, connections);
+
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_home,
+      });
+    } catch (err) {
+      console.error(`Failed to establish lao connection: ${err}`);
+      toast.show(`Failed to establish lao connection: ${err}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
+    }
   };
 
+  const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
+
   return (
-    <View style={styles.view}>
-      <TouchableOpacity onPress={() => handlePress()}>
-        <Text style={styles.text}>{lao.name}</Text>
-      </TouchableOpacity>
-    </View>
+    <ListItem
+      key={lao.id.valueOf()}
+      containerStyle={listStyle}
+      style={listStyle}
+      onPress={onPress}
+      bottomDivider>
+      <ListItem.Content>
+        <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>
+        <ListItem.Subtitle style={Typography.small}>
+          {STRINGS.user_role}: {role}
+        </ListItem.Subtitle>
+        <ListItem.Subtitle style={Typography.small}>
+          {lao.server_addresses.join(', ')}
+        </ListItem.Subtitle>
+      </ListItem.Content>
+      <ListItem.Chevron />
+    </ListItem>
   );
 };
 
 const propTypes = {
   lao: PropTypes.instanceOf(Lao).isRequired,
+  isFirstItem: PropTypes.bool.isRequired,
+  isLastItem: PropTypes.bool.isRequired,
 };
 LaoItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

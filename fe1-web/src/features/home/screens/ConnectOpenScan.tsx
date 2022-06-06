@@ -4,18 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { Icon } from 'core/components';
+import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
-import { subscribeToChannel } from 'core/network';
-import { Colors, Spacing } from 'core/styles';
+import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
-import { connectTo } from './ConnectConfirm';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -46,7 +45,7 @@ const ConnectOpenScan = () => {
   const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
 
-  // this is needed as otherwise the camera will stay turned on
+  // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
 
   // re-enable scanner on focus events
@@ -92,12 +91,12 @@ const ConnectOpenScan = () => {
       setShowScanner(false);
 
       console.info(
-        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.server}'.`,
+        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.servers}'.`,
       );
 
       // connect to the lao
-      const connection = connectTo(connectToLao.server);
-      if (!connection) {
+      const connections = connectToLao.servers.map((server) => getNetworkManager().connect(server));
+      if (connections.length === 0) {
         return;
       }
 
@@ -113,12 +112,9 @@ const ConnectOpenScan = () => {
       }
 
       // subscribe to the lao channel on the new connection
-      subscribeToChannel(channel, [connection]).then(() => {
+      subscribeToChannel(channel, connections).then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
-          screen: STRINGS.navigation_lao_events,
-          params: {
-            screen: STRINGS.navigation_lao_organizer_home,
-          },
+          screen: STRINGS.navigation_lao_home,
         });
       });
     } catch (error) {
@@ -136,7 +132,7 @@ const ConnectOpenScan = () => {
         <View>
           <View style={styles.leftButtons}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon name="close" color={Colors.accent} size={25} />
+              <PoPIcon name="close" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>
@@ -145,11 +141,11 @@ const ConnectOpenScan = () => {
             <TouchableOpacity
               style={styles.buttonMargin}
               onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
-              <Icon name="create" color={Colors.accent} size={25} />
+              <PoPIcon name="create" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
-              <Icon name="code" color={Colors.accent} size={25} />
+              <PoPIcon name="code" color={Color.accent} size={Icon.size} />
             </TouchableOpacity>
           </View>
         </View>

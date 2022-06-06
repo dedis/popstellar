@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, TextInput, TextStyle } from 'react-native';
 
-import { Border, Colors, Spacing, Typography } from '../styles';
+import { Border, Color, Spacing, Typography } from '../styles';
 
 /**
  * Component which creates the typical one line text input used in the application.
@@ -12,17 +12,15 @@ import { Border, Colors, Spacing, Typography } from '../styles';
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
-    color: Colors.primary,
-
+    color: Color.primary,
     borderBottomWidth: Border.width,
-    borderColor: Colors.primary,
-
+    borderColor: Color.primary,
     marginVertical: Spacing.x2,
     padding: Spacing.x05,
   } as TextStyle,
   negative: {
-    color: Colors.contrast,
-    borderColor: Colors.contrast,
+    color: Color.contrast,
+    borderColor: Color.contrast,
   },
 });
 

@@ -1,14 +1,14 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { Icon } from 'core/components';
-import { makeIcon } from 'core/components/Icon';
+import { PoPIcon } from 'core/components';
+import { makeIcon } from 'core/components/PoPIcon';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Colors } from 'core/styles';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { WalletFeature } from '../interface';
@@ -38,33 +38,23 @@ type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_
 const WalletNavigationHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  const { showActionSheetWithOptions } = useActionSheet();
+  const showActionSheet = useActionSheet();
 
   const onPressOptions = () => {
-    showActionSheetWithOptions(
+    showActionSheet([
       {
-        options: ['Logout', 'Toggle debug mode', 'Cancel'],
-        cancelButtonIndex: 2,
+        displayName: STRINGS.wallet_home_logout,
+        action: () => {
+          forget();
+          navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
+        },
       },
-      (idx) => {
-        switch (idx) {
-          case 0:
-            // logout
-            forget();
-            navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-            break;
-          case 2:
-          default:
-            // cancel
-            break;
-        }
-      },
-    );
+    ]);
   };
 
   return (
     <TouchableOpacity onPress={onPressOptions}>
-      <Icon name="options" color={Colors.primary} size={25} />
+      <PoPIcon name="options" color={Color.primary} size={Icon.size} />
     </TouchableOpacity>
   );
 };

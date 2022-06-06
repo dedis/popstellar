@@ -122,68 +122,129 @@ Array [
   </View>,
   <Modal
     hardwareAccelerated={false}
+    onRequestClose={[Function]}
     transparent={true}
     visible={false}
   >
-    <View
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
       style={
         Object {
-          "backgroundColor": "white",
-          "borderRadius": 10,
-          "borderWidth": 1,
-          "margin": "auto",
-          "width": 550,
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
     >
       <View
-        style={
-          Object {
-            "borderBottomWidth": 1,
-          }
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={Object {}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 16,
+          "margin": 32,
+          "padding": 32,
         }
-      >
-        <Text
+      }
+    >
+      <View>
+        <View
           style={
             Object {
-              "alignSelf": "flex-start",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "padding": 20,
-              "paddingLeft": 10,
-              "textAlign": "center",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 16,
+              "width": "100%",
             }
           }
         >
-          Chirp deletion
+          <Text
+            style={
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Chirp deletion
+          </Text>
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            style={
+              Object {
+                "position": "absolute",
+                "right": 0,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <Text
+                style={
+                  Object {
+                    "color": "#3742fa",
+                    "fontSize": 20,
+                    "fontWeight": "500",
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  }
+                }
+              >
+                Done
+              </Text>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+        <Text
+          style={
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
         </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "alignSelf": "flex-start",
-            "fontSize": 20,
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "padding": 20,
-            "paddingLeft": 10,
-            "textAlign": "left",
-          }
-        }
-      >
-        Are you sure you want to delete this chirp?
-      </Text>
-      <View
-        style={
-          Object {
-            "alignSelf": "center",
-            "flexDirection": "row",
-            "paddingBottom": 20,
-          }
-        }
-      >
         <RNGestureHandlerButton
           collapsable={false}
           onGestureEvent={[Function]}
@@ -197,6 +258,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -210,19 +272,22 @@ Array [
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -241,65 +306,8 @@ Array [
             </View>
           </View>
         </RNGestureHandlerButton>
-        <RNGestureHandlerButton
-          collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          style={
-            Object {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-          >
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
-              }
-            >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                No
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
       </View>
-    </View>
+    </RCTScrollView>
   </Modal>,
 ]
 `;
@@ -515,68 +523,129 @@ Array [
   </View>,
   <Modal
     hardwareAccelerated={false}
+    onRequestClose={[Function]}
     transparent={true}
     visible={false}
   >
-    <View
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
       style={
         Object {
-          "backgroundColor": "white",
-          "borderRadius": 10,
-          "borderWidth": 1,
-          "margin": "auto",
-          "width": 550,
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
     >
       <View
-        style={
-          Object {
-            "borderBottomWidth": 1,
-          }
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={Object {}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 16,
+          "margin": 32,
+          "padding": 32,
         }
-      >
-        <Text
+      }
+    >
+      <View>
+        <View
           style={
             Object {
-              "alignSelf": "flex-start",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "padding": 20,
-              "paddingLeft": 10,
-              "textAlign": "center",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 16,
+              "width": "100%",
             }
           }
         >
-          Chirp deletion
+          <Text
+            style={
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Chirp deletion
+          </Text>
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            style={
+              Object {
+                "position": "absolute",
+                "right": 0,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <Text
+                style={
+                  Object {
+                    "color": "#3742fa",
+                    "fontSize": 20,
+                    "fontWeight": "500",
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  }
+                }
+              >
+                Done
+              </Text>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+        <Text
+          style={
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
         </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "alignSelf": "flex-start",
-            "fontSize": 20,
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "padding": 20,
-            "paddingLeft": 10,
-            "textAlign": "left",
-          }
-        }
-      >
-        Are you sure you want to delete this chirp?
-      </Text>
-      <View
-        style={
-          Object {
-            "alignSelf": "center",
-            "flexDirection": "row",
-            "paddingBottom": 20,
-          }
-        }
-      >
         <RNGestureHandlerButton
           collapsable={false}
           onGestureEvent={[Function]}
@@ -590,6 +659,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -603,19 +673,22 @@ Array [
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -634,65 +707,8 @@ Array [
             </View>
           </View>
         </RNGestureHandlerButton>
-        <RNGestureHandlerButton
-          collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          style={
-            Object {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-          >
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
-              }
-            >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                No
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
       </View>
-    </View>
+    </RCTScrollView>
   </Modal>,
 ]
 `;
@@ -933,68 +949,129 @@ Array [
   </View>,
   <Modal
     hardwareAccelerated={false}
+    onRequestClose={[Function]}
     transparent={true}
     visible={false}
   >
-    <View
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
       style={
         Object {
-          "backgroundColor": "white",
-          "borderRadius": 10,
-          "borderWidth": 1,
-          "margin": "auto",
-          "width": 550,
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
     >
       <View
-        style={
-          Object {
-            "borderBottomWidth": 1,
-          }
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={Object {}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 16,
+          "margin": 32,
+          "padding": 32,
         }
-      >
-        <Text
+      }
+    >
+      <View>
+        <View
           style={
             Object {
-              "alignSelf": "flex-start",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "padding": 20,
-              "paddingLeft": 10,
-              "textAlign": "center",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 16,
+              "width": "100%",
             }
           }
         >
-          Chirp deletion
+          <Text
+            style={
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Chirp deletion
+          </Text>
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            style={
+              Object {
+                "position": "absolute",
+                "right": 0,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <Text
+                style={
+                  Object {
+                    "color": "#3742fa",
+                    "fontSize": 20,
+                    "fontWeight": "500",
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  }
+                }
+              >
+                Done
+              </Text>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+        <Text
+          style={
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
         </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "alignSelf": "flex-start",
-            "fontSize": 20,
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "padding": 20,
-            "paddingLeft": 10,
-            "textAlign": "left",
-          }
-        }
-      >
-        Are you sure you want to delete this chirp?
-      </Text>
-      <View
-        style={
-          Object {
-            "alignSelf": "center",
-            "flexDirection": "row",
-            "paddingBottom": 20,
-          }
-        }
-      >
         <RNGestureHandlerButton
           collapsable={false}
           onGestureEvent={[Function]}
@@ -1008,6 +1085,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -1021,19 +1099,22 @@ Array [
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -1052,65 +1133,8 @@ Array [
             </View>
           </View>
         </RNGestureHandlerButton>
-        <RNGestureHandlerButton
-          collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          style={
-            Object {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-          >
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
-              }
-            >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                No
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
       </View>
-    </View>
+    </RCTScrollView>
   </Modal>,
 ]
 `;
@@ -1351,68 +1375,129 @@ Array [
   </View>,
   <Modal
     hardwareAccelerated={false}
+    onRequestClose={[Function]}
     transparent={true}
     visible={false}
   >
-    <View
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
       style={
         Object {
-          "backgroundColor": "white",
-          "borderRadius": 10,
-          "borderWidth": 1,
-          "margin": "auto",
-          "width": 550,
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
     >
       <View
-        style={
-          Object {
-            "borderBottomWidth": 1,
-          }
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={Object {}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 16,
+          "margin": 32,
+          "padding": 32,
         }
-      >
-        <Text
+      }
+    >
+      <View>
+        <View
           style={
             Object {
-              "alignSelf": "flex-start",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "padding": 20,
-              "paddingLeft": 10,
-              "textAlign": "center",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 16,
+              "width": "100%",
             }
           }
         >
-          Chirp deletion
+          <Text
+            style={
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Chirp deletion
+          </Text>
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            style={
+              Object {
+                "position": "absolute",
+                "right": 0,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <Text
+                style={
+                  Object {
+                    "color": "#3742fa",
+                    "fontSize": 20,
+                    "fontWeight": "500",
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  }
+                }
+              >
+                Done
+              </Text>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+        <Text
+          style={
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
         </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "alignSelf": "flex-start",
-            "fontSize": 20,
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "padding": 20,
-            "paddingLeft": 10,
-            "textAlign": "left",
-          }
-        }
-      >
-        Are you sure you want to delete this chirp?
-      </Text>
-      <View
-        style={
-          Object {
-            "alignSelf": "center",
-            "flexDirection": "row",
-            "paddingBottom": 20,
-          }
-        }
-      >
         <RNGestureHandlerButton
           collapsable={false}
           onGestureEvent={[Function]}
@@ -1426,6 +1511,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -1439,19 +1525,22 @@ Array [
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -1470,65 +1559,8 @@ Array [
             </View>
           </View>
         </RNGestureHandlerButton>
-        <RNGestureHandlerButton
-          collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          style={
-            Object {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-          >
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
-              }
-            >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                No
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
       </View>
-    </View>
+    </RCTScrollView>
   </Modal>,
 ]
 `;
@@ -1744,68 +1776,129 @@ Array [
   </View>,
   <Modal
     hardwareAccelerated={false}
+    onRequestClose={[Function]}
     transparent={true}
     visible={false}
   >
-    <View
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
       style={
         Object {
-          "backgroundColor": "white",
-          "borderRadius": 10,
-          "borderWidth": 1,
-          "margin": "auto",
-          "width": 550,
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
     >
       <View
-        style={
-          Object {
-            "borderBottomWidth": 1,
-          }
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={Object {}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 16,
+          "margin": 32,
+          "padding": 32,
         }
-      >
-        <Text
+      }
+    >
+      <View>
+        <View
           style={
             Object {
-              "alignSelf": "flex-start",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "padding": 20,
-              "paddingLeft": 10,
-              "textAlign": "center",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 16,
+              "width": "100%",
             }
           }
         >
-          Chirp deletion
+          <Text
+            style={
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Chirp deletion
+          </Text>
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            style={
+              Object {
+                "position": "absolute",
+                "right": 0,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <Text
+                style={
+                  Object {
+                    "color": "#3742fa",
+                    "fontSize": 20,
+                    "fontWeight": "500",
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  }
+                }
+              >
+                Done
+              </Text>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+        <Text
+          style={
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
         </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "alignSelf": "flex-start",
-            "fontSize": 20,
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "padding": 20,
-            "paddingLeft": 10,
-            "textAlign": "left",
-          }
-        }
-      >
-        Are you sure you want to delete this chirp?
-      </Text>
-      <View
-        style={
-          Object {
-            "alignSelf": "center",
-            "flexDirection": "row",
-            "paddingBottom": 20,
-          }
-        }
-      >
         <RNGestureHandlerButton
           collapsable={false}
           onGestureEvent={[Function]}
@@ -1819,6 +1912,7 @@ Array [
               "width": "100%",
             }
           }
+          testID="confirm-modal-confirm"
         >
           <View
             accessible={true}
@@ -1832,19 +1926,22 @@ Array [
           >
             <View
               style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
+                Array [
+                  Object {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 16,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
               }
             >
               <Text
                 style={
                   Array [
                     Object {
+                      "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
@@ -1863,65 +1960,8 @@ Array [
             </View>
           </View>
         </RNGestureHandlerButton>
-        <RNGestureHandlerButton
-          collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          style={
-            Object {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-          >
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 16,
-                  "borderWidth": 1,
-                  "padding": 8,
-                }
-              }
-            >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                No
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
       </View>
-    </View>
+    </RCTScrollView>
   </Modal>,
 ]
 `;

@@ -2,18 +2,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Text } from 'react-native';
 
-import { TimeDisplay } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { Election } from '../objects';
+import ElectionQuestions from './ElectionQuestions';
 
+/**
+ * Screen component for terminated elections
+ */
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
-    <>
-      <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      <Text style={Typography.base}>Election Terminated</Text>
-      <Text style={Typography.base}>Waiting for result</Text>
-    </>
+    <ScreenWrapper>
+      <Text style={Typography.base}>{STRINGS.election_terminated_description}</Text>
+
+      <ElectionQuestions election={election} />
+    </ScreenWrapper>
   );
 };
 

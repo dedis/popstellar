@@ -9,7 +9,7 @@ import { ConnectToLao } from '../ConnectToLao';
 const serverUrl = 'ws://127.0.0.1:9000/organizer/client';
 
 const sampleConnectToLao: Partial<ConnectToLao> = {
-  server: serverUrl,
+  servers: [serverUrl],
   lao: mockLaoId,
 };
 
@@ -22,7 +22,7 @@ describe('ConnectToLao', () => {
   it('should be created correctly from JSON', () => {
     expect(new ConnectToLao(sampleConnectToLao)).toBeJsonEqual(sampleConnectToLao);
     const temp = {
-      server: serverUrl,
+      servers: [serverUrl],
       lao: mockLaoId,
     };
     expect(new ConnectToLao(temp)).toBeJsonEqual(temp);
@@ -54,7 +54,7 @@ describe('ConnectToLao', () => {
     it('should throw an error if lao id is undefined', () => {
       const wrongObj = () =>
         new ConnectToLao({
-          server: serverUrl,
+          servers: [serverUrl],
         });
       expect(wrongObj).toThrow(ProtocolError);
     });

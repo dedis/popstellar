@@ -14,16 +14,18 @@ import { connectToLao, laoReducer } from 'features/lao/reducer';
 import { LaoHooks } from '../LaoHooks';
 
 const EventList = jest.fn();
+const CreateEventButton = jest.fn();
 
 const laoNavigationScreens: LaoFeature.LaoScreen[] = [];
-const organizerNavigationScreens: LaoFeature.OrganizerScreen[] = [];
+const organizerNavigationScreens: LaoFeature.LaoEventScreen[] = [];
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     encodeLaoConnectionForQRCode,
     laoNavigationScreens,
-    organizerNavigationScreens,
+    eventsNavigationScreens: organizerNavigationScreens,
     EventList,
+    CreateEventButton,
   } as LaoReactContext,
 };
 
@@ -87,6 +89,15 @@ describe('LaoHooks', () => {
     });
   });
 
+  describe('useCreateEventButtonComponent', () => {
+    it('should return the current event list component', () => {
+      const { result } = renderHook(() => LaoHooks.useCreateEventButtonComponent(), {
+        wrapper: wrapper(mockStore),
+      });
+      expect(result.current).toBe(CreateEventButton);
+    });
+  });
+
   describe('useIsLaoOrganizer', () => {
     it('should return true if the current user is the organizer', () => {
       // make us the organizer
@@ -140,7 +151,7 @@ describe('LaoHooks', () => {
 
   describe('useOrganizerNavigationScreens', () => {
     it('should return the list of organizer navigation screens', () => {
-      const { result } = renderHook(() => LaoHooks.useOrganizerNavigationScreens(), {
+      const { result } = renderHook(() => LaoHooks.useEventsNavigationScreens(), {
         wrapper: wrapper(mockStore),
       });
 

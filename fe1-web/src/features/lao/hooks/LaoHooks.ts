@@ -29,9 +29,13 @@ export namespace LaoHooks {
 
   /**
    * Gets the event list component
-   * @returns The event list component
    */
   export const useEventListComponent = () => useLaoContext().EventList;
+
+  /**
+   * Gets the event create event button component
+   */
+  export const useCreateEventButtonComponent = () => useLaoContext().CreateEventButton;
 
   /**
    * Gets the function that can encode a lao connection ready to be rendered as a QR code
@@ -41,15 +45,13 @@ export namespace LaoHooks {
 
   /**
    * Gets the lao navigation screens
-   * @returns The lao navigation screens
    */
   export const useLaoNavigationScreens = () => useLaoContext().laoNavigationScreens;
 
   /**
-   * Gets the organizer navigation screens
-   * @returns The organizer navigation screens
+   * Gets the events navigation screens
    */
-  export const useOrganizerNavigationScreens = () => useLaoContext().organizerNavigationScreens;
+  export const useEventsNavigationScreens = () => useLaoContext().eventsNavigationScreens;
 
   /** Hooks defined by the lao feature */
 

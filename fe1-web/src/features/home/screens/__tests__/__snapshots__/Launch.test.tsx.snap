@@ -320,7 +320,7 @@ exports[`Launch renders correctly 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -343,51 +343,98 @@ exports[`Launch renders correctly 1`] = `
                               <Text
                                 style={
                                   Object {
-                                    "color": "black",
-                                    "fontSize": 25,
-                                    "lineHeight": 26,
-                                    "marginHorizontal": 10,
-                                    "textAlign": "center",
+                                    "color": "#000",
+                                    "fontSize": 32,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 41,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
                                   }
                                 }
                               >
-                                To launch a new organization, please enter a name and an address
+                                Launch a new organization 🚀
+                              </Text>
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                Organization name
                               </Text>
                               <TextInput
-                                defaultValue=""
+                                editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Organization name"
-                                selectTextOnFocus={true}
                                 style={
-                                  Object {
-                                    "borderBottomWidth": 1,
-                                    "borderColor": "#000",
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginVertical": 32,
-                                    "padding": 8,
-                                    "textAlign": "left",
-                                  }
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 8,
+                                      "flex": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
                                 }
+                                value=""
                               />
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                Address
+                              </Text>
                               <TextInput
-                                defaultValue="ws://127.0.0.1:9000/organizer/client"
+                                editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Address"
-                                selectTextOnFocus={true}
                                 style={
-                                  Object {
-                                    "borderBottomWidth": 1,
-                                    "borderColor": "#000",
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginVertical": 32,
-                                    "padding": 8,
-                                    "textAlign": "left",
-                                  }
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 8,
+                                      "flex": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
                                 }
+                                value="ws://127.0.0.1:9000/organizer/client"
                               />
                             </View>
                             <View
@@ -423,19 +470,22 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <View
                                     style={
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      }
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
                                     }
                                   >
                                     <Text
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -480,19 +530,22 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <View
                                     style={
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      }
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
                                     }
                                   >
                                     <Text
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -537,19 +590,22 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <View
                                     style={
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      }
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
                                     }
                                   >
                                     <Text
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -594,19 +650,22 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <View
                                     style={
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      }
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
                                     }
                                   >
                                     <Text
                                       style={
                                         Array [
                                           Object {
+                                            "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",

@@ -8,7 +8,7 @@ import { TextInputLine, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { Colors, Typography } from 'core/styles';
+import { Color, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -17,7 +17,7 @@ import * as Wallet from '../objects';
 const styles = StyleSheet.create({
   welcomeView: {
     flex: 1,
-    backgroundColor: Colors.accent,
+    backgroundColor: Color.accent,
   } as ViewStyle,
 });
 
@@ -87,5 +87,5 @@ export default WalletSetSeed;
 export const WalletSetSeedScreen: AppScreen = {
   id: STRINGS.navigation_app_wallet_insert_seed,
   title: STRINGS.navigation_app_wallet_insert_seed,
-  component: WalletSetSeed,
+  Component: WalletSetSeed,
 };

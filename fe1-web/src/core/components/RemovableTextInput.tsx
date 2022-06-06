@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import STRINGS from 'resources/strings';
-
-import { Spacing, Typography, Views } from '../styles';
-import DeleteButton from './DeleteButton';
+import { Color, Icon, Spacing } from '../styles';
+import Input from './Input';
+import PoPIcon from './PoPIcon';
 
 /**
  * TextInput component which is removable by clicking the trashcan
@@ -13,42 +13,31 @@ import DeleteButton from './DeleteButton';
  */
 
 const styles = StyleSheet.create({
-  view: {
-    ...Views.base,
+  container: {
+    flex: 1,
     flexDirection: 'row',
-    zIndex: 3,
+    alignItems: 'center',
   } as ViewStyle,
-  textInput: {
-    ...Typography.baseCentered,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.x2,
-    marginHorizontal: Spacing.x5,
-  } as TextStyle,
+  icon: {
+    marginLeft: Spacing.x1,
+    marginBottom: Spacing.x1,
+  },
 });
 
 const RemovableTextInput = (props: IPropTypes) => {
-  const { onRemove } = props;
-  const { onChange } = props;
-  const { id } = props;
-  const { value } = props;
-  const placeholder = STRINGS.add_option;
+  const { onRemove, onChange, id, value, placeholder } = props;
 
   return (
-    <View style={styles.view}>
-      <TextInput
-        style={styles.textInput}
-        placeholder={placeholder}
-        onChangeText={(text: string) => {
-          onChange(id, text);
-        }}
+    <View style={styles.container}>
+      <Input
+        placeholder={placeholder || ''}
+        onChange={(text: string) => onChange(id, text)}
         key={id}
-        value={value}
+        value={value || ''}
       />
-      <DeleteButton
-        action={() => {
-          onRemove(id);
-        }}
-      />
+      <TouchableOpacity containerStyle={styles.icon} onPress={() => onRemove(id)}>
+        <PoPIcon name="delete" color={Color.primary} size={Icon.size} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -58,19 +47,16 @@ const propTypes = {
   onChange: PropTypes.func.isRequired,
   id: PropTypes.number.isRequired,
   value: PropTypes.string,
+  placeholder: PropTypes.string,
 };
 
 RemovableTextInput.propTypes = propTypes;
 
 RemovableTextInput.defaultProps = {
   value: '',
+  placeholder: '',
 };
 
-type IPropTypes = {
-  onRemove: Function;
-  onChange: Function;
-  id: number;
-  value: string;
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RemovableTextInput;

@@ -317,37 +317,10 @@ exports[`LaoList renders correctly with no item 1`] = `
                       <View
                         style={
                           Object {
-                            "flex": 1,
-                            "justifyContent": "center",
+                            "borderRadius": 16,
                           }
                         }
-                      >
-                        <RCTScrollView
-                          data={Array []}
-                          getItem={[Function]}
-                          getItemCount={[Function]}
-                          keyExtractor={[Function]}
-                          onContentSizeChange={[Function]}
-                          onLayout={[Function]}
-                          onMomentumScrollBegin={[Function]}
-                          onMomentumScrollEnd={[Function]}
-                          onScroll={[Function]}
-                          onScrollBeginDrag={[Function]}
-                          onScrollEndDrag={[Function]}
-                          removeClippedSubviews={false}
-                          renderItem={[Function]}
-                          scrollEventThrottle={50}
-                          stickyHeaderIndices={Array []}
-                          style={
-                            Object {
-                              "marginTop": 32,
-                            }
-                          }
-                          viewabilityConfigCallbackPairs={Array []}
-                        >
-                          <View />
-                        </RCTScrollView>
-                      </View>
+                      />
                     </View>
                   </View>
                 </View>
@@ -678,187 +651,200 @@ exports[`LaoList renders correctly with one item 1`] = `
                       <View
                         style={
                           Object {
-                            "flex": 1,
-                            "justifyContent": "center",
+                            "borderRadius": 16,
                           }
                         }
                       >
-                        <RCTScrollView
-                          data={
+                        <View
+                          accessible={true}
+                          focusable={true}
+                          onClick={[Function]}
+                          onResponderGrant={[Function]}
+                          onResponderMove={[Function]}
+                          onResponderRelease={[Function]}
+                          onResponderTerminate={[Function]}
+                          onResponderTerminationRequest={[Function]}
+                          onStartShouldSetResponder={[Function]}
+                          style={
                             Array [
-                              Lao {
-                                "creation": Timestamp {},
-                                "id": Hash {
-                                  "0": "-",
-                                  "1": "M",
-                                  "10": "k",
-                                  "11": "L",
-                                  "12": "V",
-                                  "13": "l",
-                                  "14": "X",
-                                  "15": "B",
-                                  "16": "R",
-                                  "17": "a",
-                                  "18": "8",
-                                  "19": "9",
-                                  "2": "2",
-                                  "20": "3",
-                                  "21": "p",
-                                  "22": "c",
-                                  "23": "E",
-                                  "24": "-",
-                                  "25": "4",
-                                  "26": "s",
-                                  "27": "7",
-                                  "28": "s",
-                                  "29": "s",
-                                  "3": "5",
-                                  "30": "O",
-                                  "31": "8",
-                                  "32": "J",
-                                  "33": "v",
-                                  "34": "5",
-                                  "35": "g",
-                                  "36": "X",
-                                  "37": "O",
-                                  "38": "v",
-                                  "39": "t",
-                                  "4": "9",
-                                  "40": "r",
-                                  "41": "e",
-                                  "42": "E",
-                                  "43": "=",
-                                  "5": "c",
-                                  "6": "5",
-                                  "7": "J",
-                                  "8": "l",
-                                  "9": "a",
-                                },
-                                "last_modified": Timestamp {},
-                                "last_roll_call_id": undefined,
-                                "last_tokenized_roll_call_id": undefined,
-                                "name": "MyLao",
-                                "organizer": PublicKey {
-                                  "0": "J",
-                                  "1": "9",
-                                  "10": "k",
-                                  "11": "5",
-                                  "12": "c",
-                                  "13": "-",
-                                  "14": "i",
-                                  "15": "3",
-                                  "16": "2",
-                                  "17": "7",
-                                  "18": "7",
-                                  "19": "U",
-                                  "2": "f",
-                                  "20": "q",
-                                  "21": "4",
-                                  "22": "C",
-                                  "23": "m",
-                                  "24": "e",
-                                  "25": "L",
-                                  "26": "4",
-                                  "27": "t",
-                                  "28": "5",
-                                  "29": "3",
-                                  "3": "B",
-                                  "30": "W",
-                                  "31": "D",
-                                  "32": "f",
-                                  "33": "U",
-                                  "34": "g",
-                                  "35": "h",
-                                  "36": "a",
-                                  "37": "K",
-                                  "38": "0",
-                                  "39": "H",
-                                  "4": "z",
-                                  "40": "p",
-                                  "41": "e",
-                                  "42": "M",
-                                  "43": "=",
-                                  "5": "J",
-                                  "6": "V",
-                                  "7": "7",
-                                  "8": "0",
-                                  "9": "J",
-                                },
-                                "server_addresses": Array [],
-                                "witnesses": Array [],
+                              Object {
+                                "backgroundColor": "#fff",
+                              },
+                              Object {
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                              },
+                              Object {
+                                "borderBottomLeftRadius": 16,
+                                "borderBottomRightRadius": 16,
                               },
                             ]
                           }
-                          getItem={[Function]}
-                          getItemCount={[Function]}
-                          keyExtractor={[Function]}
-                          onContentSizeChange={[Function]}
-                          onLayout={[Function]}
-                          onMomentumScrollBegin={[Function]}
-                          onMomentumScrollEnd={[Function]}
-                          onScroll={[Function]}
-                          onScrollBeginDrag={[Function]}
-                          onScrollEndDrag={[Function]}
-                          removeClippedSubviews={false}
-                          renderItem={[Function]}
-                          scrollEventThrottle={50}
-                          stickyHeaderIndices={Array []}
-                          style={
-                            Object {
-                              "marginTop": 32,
-                            }
-                          }
-                          viewabilityConfigCallbackPairs={Array []}
                         >
-                          <View>
+                          <View
+                            style={
+                              Object {
+                                "alignItems": "center",
+                                "backgroundColor": "#fff",
+                                "borderBottomLeftRadius": 16,
+                                "borderBottomRightRadius": 16,
+                                "borderBottomWidth": 0.5,
+                                "borderColor": "#bcbbc1",
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                                "flexDirection": "row",
+                                "padding": 14,
+                              }
+                            }
+                            testID="padView"
+                          >
                             <View
-                              onLayout={[Function]}
-                              style={null}
+                              style={
+                                Array [
+                                  Object {
+                                    "alignItems": "flex-start",
+                                    "flex": 1,
+                                    "justifyContent": "center",
+                                  },
+                                  undefined,
+                                ]
+                              }
+                              theme={
+                                Object {
+                                  "colors": Object {
+                                    "black": "#242424",
+                                    "disabled": "hsl(208, 8%, 90%)",
+                                    "divider": "#bcbbc1",
+                                    "error": "#ff190c",
+                                    "grey0": "#393e42",
+                                    "grey1": "#43484d",
+                                    "grey2": "#5e6977",
+                                    "grey3": "#86939e",
+                                    "grey4": "#bdc6cf",
+                                    "grey5": "#e1e8ee",
+                                    "greyOutline": "#bbb",
+                                    "platform": Object {
+                                      "android": Object {
+                                        "error": "#f44336",
+                                        "grey": "rgba(0, 0, 0, 0.54)",
+                                        "primary": "#2196f3",
+                                        "searchBg": "#dcdce1",
+                                        "secondary": "#9C27B0",
+                                        "success": "#4caf50",
+                                        "warning": "#ffeb3b",
+                                      },
+                                      "default": Object {
+                                        "error": "#ff3b30",
+                                        "grey": "#7d7d7d",
+                                        "primary": "#007aff",
+                                        "searchBg": "#dcdce1",
+                                        "secondary": "#5856d6",
+                                        "success": "#4cd964",
+                                        "warning": "#ffcc00",
+                                      },
+                                      "ios": Object {
+                                        "error": "#ff3b30",
+                                        "grey": "#7d7d7d",
+                                        "primary": "#007aff",
+                                        "searchBg": "#dcdce1",
+                                        "secondary": "#5856d6",
+                                        "success": "#4cd964",
+                                        "warning": "#ffcc00",
+                                      },
+                                      "web": Object {
+                                        "error": "#ff190c",
+                                        "grey": "#393e42",
+                                        "primary": "#2089dc",
+                                        "searchBg": "#303337",
+                                        "secondary": "#ca71eb",
+                                        "success": "#52c41a",
+                                        "warning": "#faad14",
+                                      },
+                                    },
+                                    "primary": "#2089dc",
+                                    "searchBg": "#303337",
+                                    "secondary": "#ca71eb",
+                                    "success": "#52c41a",
+                                    "warning": "#faad14",
+                                    "white": "#ffffff",
+                                  },
+                                }
+                              }
                             >
-                              <View
+                              <Text
                                 style={
                                   Object {
-                                    "marginBottom": 16,
+                                    "backgroundColor": "transparent",
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
+                                testID="listItemTitle"
                               >
+                                MyLao
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "backgroundColor": "transparent",
+                                    "color": "#242424",
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  }
+                                }
+                                testID="listItemTitle"
+                              >
+                                Role
+                                : 
+                                Attendee
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "backgroundColor": "transparent",
+                                    "color": "#242424",
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  }
+                                }
+                                testID="listItemTitle"
+                              >
+                                
+                              </Text>
+                            </View>
+                            <View
+                              style={
+                                Object {
+                                  "paddingLeft": 16,
+                                }
+                              }
+                            />
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "center",
+                                  "overflow": "hidden",
+                                }
+                              }
+                            >
+                              <View>
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  nativeID="animatedComponent"
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
-                                      "opacity": 1,
+                                      "alignItems": "center",
+                                      "backgroundColor": "transparent",
+                                      "justifyContent": "center",
                                     }
                                   }
                                 >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "borderRadius": 5,
-                                        "borderWidth": 1,
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginHorizontal": 10,
-                                        "textAlign": "center",
-                                      }
-                                    }
-                                  >
-                                    MyLao
-                                  </Text>
+                                  <Text />
                                 </View>
                               </View>
                             </View>
                           </View>
-                        </RCTScrollView>
+                        </View>
                       </View>
                     </View>
                   </View>

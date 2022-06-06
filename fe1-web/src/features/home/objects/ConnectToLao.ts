@@ -5,7 +5,7 @@ import { ProtocolError } from 'core/objects';
  * Object containing the server url and Lao id to generate the QR code of a Lao.
  */
 export class ConnectToLao {
-  public readonly server: string;
+  public readonly servers: string[];
 
   public readonly lao: string;
 
@@ -20,12 +20,12 @@ export class ConnectToLao {
       throw new ProtocolError("undefined 'lao' when creating 'ConnectToLao'");
     }
 
-    if (connectToLao.server === undefined) {
-      throw new ProtocolError("undefined 'server' when creating 'ConnectToLao'");
+    if (connectToLao.servers === undefined) {
+      throw new ProtocolError("undefined 'servers' when creating 'ConnectToLao'");
     }
 
     this.lao = connectToLao.lao;
-    this.server = connectToLao.server;
+    this.servers = connectToLao.servers;
   }
 
   public static fromJson(obj: any): ConnectToLao {
@@ -37,6 +37,16 @@ export class ConnectToLao {
 
     return new ConnectToLao({
       ...obj,
+      /* in the future the qr code should encode a list of servers */
+      servers: [obj.server],
+    });
+  }
+
+  public toJson(): string {
+    return JSON.stringify({
+      lao: this.lao,
+      /* in the future the qr code should encode a list of servers */
+      server: this.servers[0],
     });
   }
 }

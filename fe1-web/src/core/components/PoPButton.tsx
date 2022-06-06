@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { Border, Colors, Spacing } from '../styles';
+import { Border, Color, Spacing } from '../styles';
 
 const styles = StyleSheet.create({
   container: {
@@ -12,22 +12,42 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   button: {
     padding: Spacing.x05,
-    borderColor: Colors.accent,
-    backgroundColor: Colors.accent,
+    borderColor: Color.accent,
+    backgroundColor: Color.accent,
     borderWidth: Border.width,
     borderRadius: Border.radius,
   } as ViewStyle,
+  disabled: {
+    borderColor: Color.inactive,
+    backgroundColor: Color.inactive,
+  } as ViewStyle,
   negative: {
-    borderColor: Colors.contrast,
+    borderColor: Color.contrast,
+  } as ViewStyle,
+  disabledNegative: {
+    borderColor: Color.inactive,
+    backgroundColor: Color.inactive,
   } as ViewStyle,
 });
 
 const PoPButton = (props: IPropTypes) => {
-  const { onPress, disabled, children, negative } = props;
+  const { onPress, disabled, children, negative, testID } = props;
+
+  const viewStyles = [styles.button];
+  if (negative && disabled) {
+    viewStyles.push(styles.disabledNegative);
+  } else if (negative) {
+    viewStyles.push(styles.negative);
+  } else if (disabled) {
+    viewStyles.push(styles.disabled);
+  }
 
   return (
-    <TouchableOpacity containerStyle={styles.container} onPress={disabled ? undefined : onPress}>
-      <View style={negative ? [styles.button, styles.negative] : styles.button}>{children}</View>
+    <TouchableOpacity
+      containerStyle={styles.container}
+      onPress={disabled ? undefined : onPress}
+      testID={testID || undefined}>
+      <View style={viewStyles}>{children}</View>
     </TouchableOpacity>
   );
 };
@@ -37,6 +57,7 @@ const propTypes = {
   disabled: PropTypes.bool,
   negative: PropTypes.bool,
   children: PropTypes.node,
+  testID: PropTypes.string,
 };
 PoPButton.propTypes = propTypes;
 
@@ -44,6 +65,7 @@ PoPButton.defaultProps = {
   disabled: false,
   negative: false,
   children: null,
+  testID: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

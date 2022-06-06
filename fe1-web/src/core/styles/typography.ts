@@ -1,12 +1,23 @@
 import { TextStyle } from 'react-native';
 
-import { contrast, accent as accentColor, secondaryAccent as secondaryColor } from './colors';
+import {
+  contrast,
+  accent as accentColor,
+  secondaryAccent as secondaryColor,
+  primary as primaryColor,
+} from './color';
 import { x1 } from './spacing';
 
 export const base: TextStyle = {
   textAlign: 'left',
+  color: primaryColor,
   fontSize: 20,
   lineHeight: 26,
+};
+
+export const small: TextStyle = {
+  fontSize: 16,
+  lineHeight: 20,
 };
 
 export const accent: TextStyle = {
@@ -34,12 +45,22 @@ export const heading: TextStyle = {
   marginBottom: x1,
 };
 
+export const topNavigationHeading: TextStyle = {
+  ...base,
+  fontWeight: '500',
+};
+
+export const pressable: TextStyle = {
+  ...base,
+  color: accentColor,
+  fontWeight: '500',
+};
+
 export const centered: TextStyle = {
   textAlign: 'center',
 };
 
 export const important: TextStyle = {
-  ...base,
   fontWeight: 'bold',
 };
 

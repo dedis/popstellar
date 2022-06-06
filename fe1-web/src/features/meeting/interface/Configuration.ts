@@ -65,9 +65,7 @@ export type MeetingReactContext = Pick<MeetingConfiguration, 'useCurrentLaoId'>;
  * The interface the meeting feature exposes
  */
 export interface MeetingInterface extends FeatureInterface {
-  screens: {
-    CreateMeeting: React.ComponentType<any>;
-  };
+  laoEventScreens: MeetingFeature.LaoEventScreen[];
 
   eventTypes: EventType[];
 
@@ -80,10 +78,12 @@ export interface MeetingInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_organizer_creation_meeting;
+    createEvent: typeof STRINGS.navigation_lao_events_create_meeting;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_meeting;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

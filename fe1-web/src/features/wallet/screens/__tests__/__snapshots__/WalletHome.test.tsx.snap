@@ -320,7 +320,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -328,6 +328,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 32,
                                 "fontWeight": "bold",
                                 "lineHeight": 41,
@@ -386,6 +387,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "textAlign": "left",
@@ -733,7 +735,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "padding": 48,
+                            "padding": 16,
                           }
                         }
                       >
@@ -741,6 +743,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 32,
                                 "fontWeight": "bold",
                                 "lineHeight": 41,
@@ -754,6 +757,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                           <Text
                             style={
                               Object {
+                                "color": "#000",
                                 "fontSize": 20,
                                 "lineHeight": 26,
                                 "marginBottom": 16,
@@ -761,7 +765,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               }
                             }
                           >
-                            No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here
+                            No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here
                           </Text>
                         </View>
                       </RCTScrollView>
