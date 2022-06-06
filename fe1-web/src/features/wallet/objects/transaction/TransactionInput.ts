@@ -99,7 +99,7 @@ export class TransactionInput {
 
   public toJSON(): TransactionInputJSON {
     return {
-      tx_out_hash: this.txOutHash!.valueOf(),
+      tx_out_hash: this.txOutHash.valueOf(),
       tx_out_index: this.txOutIndex,
       script: {
         type: this.script.type,

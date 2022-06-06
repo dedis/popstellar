@@ -82,7 +82,7 @@ export class Transaction {
   /**
    * Hashes the transaction to get its id
    */
-  private hashTransaction = (): Hash => {
+  private readonly hashTransaction = (): Hash => {
     // Recursively concatenating fields by lexicographic order of their names
     const dataInputs = this.inputs.flatMap((input) => {
       return [
@@ -230,7 +230,7 @@ export class Transaction {
    * @param pk the public key of the sender
    * @param transactions the transaction messages used as inputs
    */
-  private static getInputsInToSign = (
+  private static readonly getInputsInToSign = (
     pk: string,
     transactions: TransactionState[],
   ): Omit<TransactionInputState, 'script'>[] => {
@@ -332,7 +332,7 @@ export class Transaction {
     outputs: TransactionOutputState[],
   ) => {
     const inputsDataString = inputs.reduce(
-      (dataString, input) => dataString + input.txOutHash!.valueOf() + input.txOutIndex!.toString(),
+      (dataString, input) => dataString + input.txOutHash.valueOf() + input.txOutIndex.toString(),
       '',
     );
     return outputs.reduce(

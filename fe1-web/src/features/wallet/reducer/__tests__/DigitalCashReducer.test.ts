@@ -51,7 +51,7 @@ describe('digital cash reducer', () => {
     expect(
       digitalCashReduce(
         emptyState,
-        addTransaction({ laoId: mockLaoId, transactionMessage: mockTransaction }),
+        addTransaction({ laoId: mockLaoId, transactionState: mockTransaction }),
       ),
     ).toEqual(filledState);
   });

@@ -56,10 +56,14 @@ const digitalCashSlice = createSlice({
       state,
       action: PayloadAction<{
         laoId: string;
-        transactionMessage: TransactionState;
+        transactionState: TransactionState;
       }>,
     ) => {
-      const { laoId, transactionMessage } = action.payload;
+      const { laoId, transactionState } = action.payload;
+
+      if (!transactionState.transactionId) {
+        throw new Error('The transaction id of the added transaction is not defined');
+      }
 
       /**
        * If state is empty for given lao or roll call, we should create the initial objects
@@ -75,14 +79,14 @@ const digitalCashSlice = createSlice({
 
       const laoState: DigitalCashReducerState = state.byLaoId[laoId];
 
-      laoState.transactionsByHash[transactionMessage.transactionId!] = transactionMessage;
-      laoState.transactions.push(transactionMessage);
+      laoState.transactionsByHash[transactionState.transactionId] = transactionState;
+      laoState.transactions.push(transactionState);
 
       /**
        * Invariant for the digital cash implementation:
        * Every input of a public key used in an input will be spent in the outputs
        */
-      transactionMessage.inputs.forEach((input) => {
+      transactionState.inputs.forEach((input) => {
         const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
 
         // If this is not a coinbase transaction, then as we are sure that all inputs are used
@@ -92,7 +96,7 @@ const digitalCashSlice = createSlice({
         }
       });
 
-      transactionMessage.outputs.forEach((output) => {
+      transactionState.outputs.forEach((output) => {
         const pubKeyHash = output.script.publicKeyHash.valueOf();
 
         if (!laoState.balances[pubKeyHash]) {
@@ -103,7 +107,7 @@ const digitalCashSlice = createSlice({
         if (!(pubKeyHash in laoState.transactionsByPubHash)) {
           laoState.transactionsByPubHash[pubKeyHash] = [];
         }
-        laoState.transactionsByPubHash[pubKeyHash].push(transactionMessage);
+        laoState.transactionsByPubHash[pubKeyHash].push(transactionState);
       });
     },
   },

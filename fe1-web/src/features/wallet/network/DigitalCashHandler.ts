@@ -36,12 +36,16 @@ export const handleTransactionPost =
     console.log(`Handler: Received transaction with id: ${tx.transaction_id.valueOf()}`);
 
     const organizerPublicKey = getLaoOrganizer(msg.laoId.valueOf());
+    if (!organizerPublicKey) {
+      console.warn('The organizer public key for this lao id was not found');
+      return false;
+    }
 
     const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
 
     if (
       !transaction.checkTransactionValidity(
-        organizerPublicKey!,
+        organizerPublicKey,
         DigitalCashStore.getTransactionsById(msg.laoId.valueOf()),
       )
     ) {

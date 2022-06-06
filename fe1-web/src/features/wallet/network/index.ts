@@ -23,7 +23,7 @@ export function configureNetwork(
     dispatch(
       addTransaction({
         laoId: laoId.valueOf(),
-        transactionMessage: transaction.toState(),
+        transactionState: transaction.toState(),
       }),
     );
   };
