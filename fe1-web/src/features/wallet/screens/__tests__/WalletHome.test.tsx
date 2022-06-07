@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoId, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
@@ -68,6 +68,7 @@ const contextValue = {
     useCurrentLaoId: () => mockLaoIdHash,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
+    getLaoOrganizer: jest.fn(() => mockKeyPair.publicKey),
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,

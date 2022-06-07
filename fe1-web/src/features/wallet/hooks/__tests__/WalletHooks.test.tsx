@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockKeyPair, mockLaoId, mockLaoIdHash } from "__tests__/utils";
+import { mockKeyPair, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
