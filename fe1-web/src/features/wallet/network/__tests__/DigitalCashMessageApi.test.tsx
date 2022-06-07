@@ -89,44 +89,35 @@ describe('Digital Cash Message Api', () => {
 
   it('should throw an error when no transaction out found', async () => {
     getTransactionsByPublicKeyMock.mockReturnValue([]);
-    try {
-      await requestSendTransaction(
+    await expect(
+      requestSendTransaction(
         mockPopToken,
         mockKeyPair.publicKey,
         mockTransactionValue,
         new Hash(mockLaoId),
-      );
-      fail();
-    } catch (e) {
-      expect(e).toBeInstanceOf(Error);
-    }
+      ),
+    ).rejects.toBeInstanceOf(Error);
   });
 
   it('should throw an error with amount greater than balance', async () => {
-    try {
-      await requestSendTransaction(
+    await expect(
+      requestSendTransaction(
         mockPopToken,
         mockKeyPair.publicKey,
         mockTransactionValue + 10,
         new Hash(mockLaoId),
-      );
-      fail();
-    } catch (e) {
-      expect(e).toBeInstanceOf(Error);
-    }
+      ),
+    ).rejects.toBeInstanceOf(Error);
   });
 
   it('should throw an error with negative amount', async () => {
-    try {
-      await requestSendTransaction(
+    await expect(
+      requestSendTransaction(
         mockPopToken,
         mockKeyPair.publicKey,
         -mockTransactionValue,
         new Hash(mockLaoId),
-      );
-      fail();
-    } catch (e) {
-      expect(e).toBeInstanceOf(Error);
-    }
+      ),
+    ).rejects.toBeInstanceOf(Error);
   });
 });

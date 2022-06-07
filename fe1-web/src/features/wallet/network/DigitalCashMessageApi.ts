@@ -16,7 +16,7 @@ const makeErr = (err: string) => `Sending the transaction failed: ${err}`;
  * @param amount the value of the transaction
  * @param laoId the id of the lao in which to send the transaction
  */
-export function requestSendTransaction(
+export async function requestSendTransaction(
   from: PopToken,
   to: PublicKey,
   amount: number,
