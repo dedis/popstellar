@@ -46,6 +46,8 @@ type Channel struct {
 	// Keys of the election if secret ballot, nil otherwise
 	pubElectionKey kyber.Point
 	secElectionKey kyber.Scalar
+	// Creation time of the election
+	createdAt int64
 
 	// Starting time of the election
 	start int64
@@ -132,6 +134,7 @@ func NewChannel(channelPath string, msg message.Message, msgData messagedata.Ele
 		electionType:   msgData.Version,
 		pubElectionKey: pubKey,
 		secElectionKey: secKey,
+		createdAt:      msgData.CreatedAt,
 		start:          msgData.StartTime,
 		end:            msgData.EndTime,
 		started:        false,
