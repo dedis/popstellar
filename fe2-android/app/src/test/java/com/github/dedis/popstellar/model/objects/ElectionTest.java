@@ -18,9 +18,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Before;
@@ -221,7 +221,7 @@ public class ElectionTest {
       try {
         byte[] decryptedData = electionPrivateKey.decrypt(e.getVote());
         // Pad the result
-        int decryptedINt = ((decryptedData[1] & 0xff) << 8) | (decryptedData[0] & 0xff);
+        int decryptedINt = ((decryptedData[1] & 0xff)) | (decryptedData[0] & 0xff << 8);
         int openVoteIndice = o.getVote();
         assertEquals(openVoteIndice, decryptedINt);
       } catch (CothorityCryptoException exception) {

@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.objects.security.ed25519;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionPublicKey;
 
 import org.junit.Test;
 

@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -15,7 +16,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.ele.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -287,22 +288,22 @@ public class Election extends Event {
    *
    * @param electionId ID of the Election
    * @param questionId ID of the Election question
-   * @param voteIndex index(es) of the vote
+   * @param voteIndexEncrypted index(es) of the vote
    * @param writeInEncrypted string representing the write in
    * @param writeInEnabled boolean representing if write enabled or not
    * @return the ID of an election question computed as
    *     Hash('Vote'||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
    */
   public static String generateEncryptedElectionVoteId(
-          String electionId,
-          String questionId,
-          String voteIndex,
-          String writeInEncrypted,
-          boolean writeInEnabled) {
-    // HashLen('Vote', election_id, question_id, (encrypted_vote_index(es)|encrypted_write_in))),
+      String electionId,
+      String questionId,
+      String voteIndexEncrypted,
+      String writeInEncrypted,
+      boolean writeInEnabled) {
+    // HashLen('Vote', election_id, question_id, (encrypted_vote_index|encrypted_write_in))),
     // concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
     return Hash.hash(
-            "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndex);
+        "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndexEncrypted);
   }
 
   /**
@@ -322,6 +323,7 @@ public class Election extends Event {
       } else {
         for (ElectionEncryptedVote vote : encryptedVoteByPublicKey.get(senderPk)) {
           listOfVoteIds.add(vote.getId());
+          Log.d("tak: ", vote.getId());
         }
       }
     }
@@ -346,7 +348,7 @@ public class Election extends Event {
       int voteIndice = vote.getVote();
 
       // Get the two lsb byte from the indice
-      byte[] voteIndiceInBytes = {(byte) voteIndice, (byte) (voteIndice >> 8)};
+      byte[] voteIndiceInBytes = {(byte) (voteIndice >> 8), (byte) voteIndice};
 
       // Create a public key and encrypt the indice
       Base64URLData electionKeyToBase64 = new Base64URLData(getElectionKey());
