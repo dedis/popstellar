@@ -104,7 +104,13 @@ You may start the organizer server at ports `9000` for clients and `9001` for
 witnesses by executing
 
 ```
-HUB_DB="path/to/db.db" ./pop organizer --pk "<base64url encoded pk>" serve
+HUB_DB="path/to/db.db" ./pop organizer serve
+```
+
+if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
+
+```
+HUB_DB="path/to/db.db" ./pop organizer --pk "<base64url encoded pk of server owner>" serve
 ```
 
 Please use the `-cp` and `-wp` flags to specify an alternative port. The full
