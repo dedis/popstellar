@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,35 +19,35 @@ public class InputObjectTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
-  private static String TYPE;
-  private static String PUBKEY;
-  private static String SIG;
-  private static ScriptInputObject SCRIPTTXIN;
-  private static InputObject INPUT;
+  private String type;
+  private String pubKey;
+  private String sig;
+  private ScriptInputObject scriptTxIn;
+  private InputObject input;
 
   @Before
   public void setup() throws GeneralSecurityException {
-    TYPE = "P2PKH";
-    PUBKEY = SENDER.getEncoded();
-    SIG = SENDER_KEY.sign(SENDER).getEncoded();
-    SCRIPTTXIN = new ScriptInputObject(TYPE, PUBKEY, SIG);
-    INPUT = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
+    type = "P2PKH";
+    pubKey = SENDER.getEncoded();
+    sig = SENDER_KEY.sign(SENDER).getEncoded();
+    scriptTxIn = new ScriptInputObject(type, new PublicKey(pubKey), new Signature(sig));
+    input = new InputObject(Tx_OUT_HASH, TX_OUT_INDEX, scriptTxIn);
   }
 
   @Test
   public void getTxOutIndexTest() {
-    assertEquals(TX_OUT_INDEX, INPUT.getTxOutIndex());
+    assertEquals(TX_OUT_INDEX, input.getTxOutIndex());
   }
 
   @Test
   public void getTxOutHashTest() {
-    assertEquals(Tx_OUT_HASH, INPUT.getTxOutHash());
+    assertEquals(Tx_OUT_HASH, input.getTxOutHash());
   }
 
   @Test
   public void getScriptTest() {
-    assertEquals(INPUT.getScript().getPubkey(), PUBKEY);
-    assertEquals(INPUT.getScript().getSig(), SIG);
-    assertEquals(INPUT.getScript().getType(), TYPE);
+    assertEquals(input.getScript().getPubkey().getEncoded(), pubKey);
+    assertEquals(input.getScript().getSig().getEncoded(), sig);
+    assertEquals(input.getScript().getType(), type);
   }
 }
