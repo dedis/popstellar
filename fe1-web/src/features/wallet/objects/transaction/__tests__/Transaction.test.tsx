@@ -11,7 +11,7 @@ import {
   mockTransactionValue,
 } from '__tests__/utils';
 import { Hash, PopToken, PublicKey } from 'core/objects';
-import { COINBASE_HASH } from 'resources/const';
+import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
 import { Transaction, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
@@ -21,14 +21,13 @@ import { TransactionOutput } from '../TransactionOutput';
 const mockPopToken = PopToken.fromState(mockKeyPair.toState());
 
 const validCoinbaseState: TransactionState = {
-  transactionId: mockCBHash.valueOf(),
   version: 1,
   inputs: [
     {
       txOutHash: COINBASE_HASH,
       txOutIndex: 0,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKey: mockKeyPair.publicKey.valueOf(),
         signature: mockCBSig,
       },
@@ -38,11 +37,12 @@ const validCoinbaseState: TransactionState = {
     {
       value: mockTransactionValue,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKeyHash: Hash.fromPublicKey(mockKeyPair.publicKey).valueOf(),
       },
     },
   ],
+  transactionId: mockCBHash,
   lockTime: 0,
 };
 
@@ -50,13 +50,13 @@ const validTransactionState1: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: 'FhlMNTEOqOzkKbe8RH00fmF-Op0S_ipowEn0nj402Ts=',
+      txOutHash: mockCBHash,
       txOutIndex: 0,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
-        publicKey: 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=',
+        type: SCRIPT_TYPE,
+        publicKey: mockKeyPair.publicKey.valueOf(),
         signature:
-          'bRhZp9bDfhCR5GVzNM6NYDPbOvOPDfnV_RN6Wo4UEosUPPcDImDkOfBxurzAxAd5DLABSkpm_oiW4PNJz2vaBg==',
+          'mPbWaEkjY-Lkf__nYDURTzhQhc0pIcnrwMMBXtDObYSJeO0rC769_mDx3eMbRWpO94_aS3OJqUOlZMttbSQIAQ==',
       },
     },
   ],
@@ -64,19 +64,19 @@ const validTransactionState1: TransactionState = {
     {
       value: 50,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKeyHash: '-_qR4IHwsiq50raa8jURNArds54=',
       },
     },
     {
       value: 50,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKeyHash: '-_qR4IHwsiq50raa8jURNArds54=',
       },
     },
   ],
-  transactionId: 'u62vOHqen-DEraUbJHnZhJ_qQPr4MPe9tvR6lZzmpJE=',
+  transactionId: 'Fx9iFMM4orpZkdUjHdcvtkW3QGpm-AyWkygsOcuCVZQ=',
   lockTime: 0,
 };
 
@@ -87,7 +87,7 @@ const randomTransactionState: TransactionState = {
       txOutHash: 'EEEEETeOqOzklbe8RH00fmF-Op0S_ipowEn0nj00000=',
       txOutIndex: 0,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKey: 'EEEEETeOqOzklbe8RH00fmF-Op0S_ipowEn0nj00000=',
         signature:
           'WAY5aml3l5Yl9HmwEKEoRwjwGJw8rYcGwtEJkFk4FvAD9_3eZjTHGEIV4jPkKhmKRuv-hG5EgEXrLCgGJY6pBQ==',
@@ -98,7 +98,7 @@ const randomTransactionState: TransactionState = {
     {
       value: 100,
       script: {
-        type: 'Pay-to-Pubkey-Hash',
+        type: SCRIPT_TYPE,
         publicKeyHash: '-_NO4IHwsiq50raa8jURNArds54=',
       },
     },
