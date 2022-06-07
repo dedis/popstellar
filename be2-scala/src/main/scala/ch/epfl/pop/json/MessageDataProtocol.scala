@@ -88,8 +88,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
       case Seq(id@JsString(_), question@JsString(_)) =>
 
-        val voteOpt: Option[Int] = json.asJsObject.getFields(PARAM_VOTE) match {
-          case Seq(vote@JsNumber(_)) => Some(vote.convertTo[Int])
+        val voteOpt: Option[Either[Int, Base64Data]] = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(JsNumber(value)) => Some(Left(value.intValue))
+          case Seq(JsString(s)) => Some(Right(Base64Data(s)))
           case _ => None
         }
         val writeInOpt: Option[String] = json.asJsObject.getFields(PARAM_WRITE_IN) match {

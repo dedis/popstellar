@@ -4,6 +4,7 @@ import { AnyAction, Reducer } from 'redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import { RollCall } from '../objects';
 import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
@@ -99,10 +100,7 @@ export type RollCallReactContext = Pick<
  * The interface the rollcall feature exposes
  */
 export interface RollCallInterface extends FeatureInterface {
-  screens: {
-    CreateRollCall: React.ComponentType<any>;
-    RollCallOpened: React.ComponentType<any>;
-  };
+  laoEventScreens: RollCallFeature.LaoEventScreen[];
 
   eventTypes: EventType[];
 
@@ -127,10 +125,12 @@ export interface RollCallInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: string;
+    createEvent: typeof STRINGS.navigation_lao_events_create_roll_call;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_roll_call;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

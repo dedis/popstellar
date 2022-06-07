@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
-import { white } from '../colors';
+import { white } from '../color';
 import { Typography } from '../index';
 
 const modalStyles = StyleSheet.create({

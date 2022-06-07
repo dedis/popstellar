@@ -1,7 +1,10 @@
-import * as Buttons from './buttons';
-import * as Colors from './colors';
+import * as Border from './border';
+import * as Color from './color';
+import * as Icon from './icon';
+import * as List from './list';
+import * as Modal from './modal';
 import * as Spacing from './spacing';
 import * as Typography from './typography';
-import * as Views from './views';
+import * as View from './view';
 
-export { Buttons, Colors, Spacing, Typography, Views };
+export { Border, Color, Icon, List, Modal as ModalStyles, Spacing, Typography, View as ViewStyles };

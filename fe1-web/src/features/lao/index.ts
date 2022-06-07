@@ -8,7 +8,7 @@ import {
   LaoConfigurationInterface,
   LAO_FEATURE_IDENTIFIER,
 } from './interface';
-import * as navigation from './navigation';
+import { LaoNavigationAppScreen } from './navigation';
 import { configureNetwork } from './network';
 import {
   laoReducer,
@@ -55,12 +55,13 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
 export const compose = (config: LaoCompositionConfiguration): LaoCompositionInterface => {
   return {
     identifier: LAO_FEATURE_IDENTIFIER,
-    navigation,
+    appScreens: [LaoNavigationAppScreen],
     context: {
       EventList: config.EventList,
+      CreateEventButton: config.CreateEventButton,
       encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
       laoNavigationScreens: config.laoNavigationScreens,
-      organizerNavigationScreens: config.organizerNavigationScreens,
+      eventsNavigationScreens: config.eventsNavigationScreens,
     },
   };
 };

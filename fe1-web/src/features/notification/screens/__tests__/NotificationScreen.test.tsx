@@ -16,8 +16,9 @@ import {
   notificationReducer,
 } from 'features/notification/reducer';
 import { WitnessNotificationType } from 'features/witness/components';
+import { WitnessFeature } from 'features/witness/interface';
 
-import NotificationScreen from '../NotificationScreen';
+import NotificationScreen, { NotificationScreenRightHeader } from '../NotificationScreen';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
@@ -33,7 +34,7 @@ mockStore.dispatch(
     laoId: mockLaoId,
     title: 'a notification',
     timestamp: 0,
-    type: 'mock-notification',
+    type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   }),
 );
 mockStore.dispatch(
@@ -41,7 +42,7 @@ mockStore.dispatch(
     laoId: mockLaoId,
     title: 'another notification',
     timestamp: 1,
-    type: 'mock-notification',
+    type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   }),
 );
 mockStore.dispatch(markNotificationAsRead({ laoId: mockLaoId, notificationId: 0 }));
@@ -52,6 +53,19 @@ describe('NotificationScreen', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={NotificationScreen} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('NotificationScreenRightHeader', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={NotificationScreenRightHeader} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

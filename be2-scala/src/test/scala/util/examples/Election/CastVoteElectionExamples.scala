@@ -20,14 +20,15 @@ object CastVoteElectionExamples {
   final val QUESTION_ID = Hash.fromStrings("Question", ID.toString, "valid")
   final val VOTE = Some(List(1))
   final val VOTE_ID = Hash.fromStrings("Vote", ID.toString, QUESTION_ID.toString, VOTE.get.head.toString)
-  final val VOTES: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(1), None))
+  final val VOTES: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(Left(1)), None))
+
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
-  val invalidVotes: List[VoteElection] = List(VoteElection(VOTE_ID, invalidId, Some(1), None))
-  val invalidBallot: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(2), None))
-  val invalidVoteId:  List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(1), None))
+  val invalidVotes: List[VoteElection] = List(VoteElection(VOTE_ID, invalidId, Some(Left(1)), None))
+  val invalidBallot: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(Left(2)), None))
+  val invalidVoteId:  List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(Left(1)), None))
 
 
   val workingCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, VOTES)

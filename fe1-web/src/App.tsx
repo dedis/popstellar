@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
 
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
@@ -41,14 +42,16 @@ function App() {
       <PersistGate loading={null} persistor={persist}>
         <FeatureContext.Provider value={context}>
           <NavigationContainer ref={navigationRef}>
-            <SafeAreaProvider>
-              {Platform.OS === 'ios' && (
-                <StatusBar barStyle="dark-content" backgroundColor="white" />
-              )}
-              <ToastProvider>
-                <AppNavigation screens={navigationOpts.screens} />
-              </ToastProvider>
-            </SafeAreaProvider>
+            <ActionSheetProvider>
+              <SafeAreaProvider>
+                {Platform.OS === 'ios' && (
+                  <StatusBar barStyle="dark-content" backgroundColor="white" />
+                )}
+                <ToastProvider>
+                  <AppNavigation screens={navigationOpts.screens} />
+                </ToastProvider>
+              </SafeAreaProvider>
+            </ActionSheetProvider>
           </NavigationContainer>
         </FeatureContext.Provider>
       </PersistGate>
