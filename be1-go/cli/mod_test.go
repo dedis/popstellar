@@ -19,7 +19,7 @@ import (
 func TestConnectToSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	oh, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, lao.NewChannel, hub.OrganizerHubType, true)
+	oh, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, lao.NewChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 	oh.Start()
 
@@ -29,7 +29,7 @@ func TestConnectToSocket(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	wh, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, lao.NewChannel, hub.WitnessHubType, true)
+	wh, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, lao.NewChannel, hub.WitnessHubType)
 	require.NoError(t, err)
 	wDone := make(chan struct{})
 	wh.Start()

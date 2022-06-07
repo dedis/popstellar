@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"go.dedis.ch/kyber/v3"
 	"net/url"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
@@ -51,24 +52,13 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// compute the client server address
 	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
 
-	point := crypto.Suite.Point()
+	var point kyber.Point = nil
 
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
-
-	var h *standard_hub.Hub
-	var err error
-
-	if pk == "" {
-		// create user hub
-		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
-			lao.NewChannel, hubType, false)
-		if err != nil {
-			return xerrors.Errorf("failed create the %s hub: %v", user, err)
-		}
-
-		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
-	} else {
+	
+	if pk != "" {
+		point = crypto.Suite.Point()
 		// decode public key and unmarshal public key
 		pkBuf, err := base64.URLEncoding.DecodeString(pk)
 		if err != nil {
@@ -80,14 +70,16 @@ func Serve(cliCtx *cli.Context, user string) error {
 			return xerrors.Errorf("failed to unmarshal public key: %v", err)
 		}
 
-		// create user hub
-		h, err = standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
-			lao.NewChannel, hubType, true)
-		if err != nil {
-			return xerrors.Errorf("failed create the %s hub: %v", user, err)
-		}
-
 		log.Info().Msg("The owner public key has been specified, only " + pk + " can create LAO")
+	} else {
+		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
+	}
+
+	// create user hub
+	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
+		lao.NewChannel, hubType)
+	if err != nil {
+		return xerrors.Errorf("failed create the %s hub: %v", user, err)
 	}
 
 	// start the processing loop

@@ -92,9 +92,6 @@ type Hub struct {
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
 	queries   queries
-
-	// isCheckingOwnerKey allows to enable or disable the security that allow only the organizer the LAO creation
-	isCheckingOwnerKey bool
 }
 
 // newQueries creates a new queries struct
@@ -150,7 +147,7 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, laoFac channel.LaoFactory,
-	hubType hub.HubType, isCheckingOwnerKey bool) (*Hub, error) {
+	hubType hub.HubType) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -162,24 +159,23 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, l
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		hubType:            hubType,
-		serverAdress:       serverAddress,
-		messageChan:        make(chan socket.IncomingMessage),
-		channelByID:        make(map[string]channel.Channel),
-		closedSockets:      make(chan string),
-		pubKeyOwner:        pubKeyOwner,
-		pubKeyServ:         pubServ,
-		secKeyServ:         secServ,
-		schemaValidator:    schemaValidator,
-		stop:               make(chan struct{}),
-		workers:            semaphore.NewWeighted(numWorkers),
-		log:                log,
-		laoFac:             laoFac,
-		serverSockets:      channel.NewSockets(),
-		hubInbox:           *inbox.NewInbox(rootChannel),
-		rootInbox:          *inbox.NewInbox(rootChannel),
-		queries:            newQueries(),
-		isCheckingOwnerKey: isCheckingOwnerKey,
+		hubType:         hubType,
+		serverAdress:    serverAddress,
+		messageChan:     make(chan socket.IncomingMessage),
+		channelByID:     make(map[string]channel.Channel),
+		closedSockets:   make(chan string),
+		pubKeyOwner:     pubKeyOwner,
+		pubKeyServ:      pubServ,
+		secKeyServ:      secServ,
+		schemaValidator: schemaValidator,
+		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(numWorkers),
+		log:             log,
+		laoFac:          laoFac,
+		serverSockets:   channel.NewSockets(),
+		hubInbox:        *inbox.NewInbox(rootChannel),
+		rootInbox:       *inbox.NewInbox(rootChannel),
+		queries:         newQueries(),
 	}
 
 	if sqlite.GetDBPath() != "" {
@@ -552,7 +548,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if h.isCheckingOwnerKey && !h.GetPubKeyOwner().Equal(senderPubKey) {
+	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
 		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
 			senderPubKey, h.GetPubKeyOwner())
 	}
