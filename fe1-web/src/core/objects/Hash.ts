@@ -57,11 +57,12 @@ export class Hash extends Base64UrlData {
     // We need the raw public key
     const decodedPK = Base64UrlData.fromBase64(publicKey.valueOf()).toBuffer();
 
-    const bString = hash.update(decodedPK).array();
-    // Taking only the first 20 bytes
-    const str = String.fromCharCode(...bString.slice(0, 20));
+    const intArray = hash.update(decodedPK).array();
 
-    return new Hash(Base64UrlData.encode(str, 'binary').valueOf());
+    // Taking only the first 20 bytes
+    const buff = Buffer.from(intArray.slice(0, 20));
+
+    return new Hash(Base64UrlData.encode(buff, 'binary').valueOf());
   }
 
   /**
