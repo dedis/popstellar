@@ -1700,7 +1700,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered alphabetically by vote_id"
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered in ascii order by vote_id"
         }
     },
     "additionalProperties": false,

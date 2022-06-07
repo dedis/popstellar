@@ -245,7 +245,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
    */
   private def compareResults(castVotes: List[CastVoteElection], checkHash: Hash): Boolean = {
     val votes: List[VoteElection] = castVotes.flatMap(_.votes)
-    val sortedVotes: List[VoteElection] = votes.sortBy(_.id.toString.toLowerCase)
+    val sortedVotes: List[VoteElection] = votes.sortBy(_.id.toString)
     val computedHash = Hash.fromStrings(sortedVotes.map(_.id.toString): _*)
     computedHash == checkHash
   }
