@@ -44,11 +44,19 @@ public class CastVoteFragment extends Fragment {
             mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
         for (int i = 0; i < electionQuestions.size(); i++) {
           ElectionQuestion electionQuestion = electionQuestions.get(i);
-          List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+
+          // Attendee should not be able to send cast vote if he didn't vote for all questions
+          List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
+          if (votes.size() < electionQuestions.size()) {
+            return;
+          }
+
+          Integer vote = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+          // Only one vote should be selected.
           ElectionVote electionVote =
               new ElectionVote(
                   electionQuestion.getId(),
-                  votes,
+                  vote,
                   electionQuestion.getWriteIn(),
                   null,
                   mLaoDetailViewModel.getCurrentElection().getId());
@@ -93,7 +101,7 @@ public class CastVoteFragment extends Fragment {
     int numberOfQuestions = election.getElectionQuestions().size();
 
     // Setting up the votes for the adapter
-    mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
+    mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList());
 
     // Setting the viewPager and its adapter
     ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
@@ -109,11 +117,8 @@ public class CastVoteFragment extends Fragment {
     return mCastVoteFragBinding.getRoot();
   }
 
-  private List<List<Integer>> setEmptyVoteList(int size) {
-    List<List<Integer>> votes = new ArrayList<>();
-    for (int i = 0; i < size; i++) {
-      votes.add(new ArrayList<>());
-    }
-    return votes;
+  private List<Integer> setEmptyVoteList() {
+    // Keep this method if we need in the future to have multiple votes
+    return new ArrayList<>();
   }
 }

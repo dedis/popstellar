@@ -6,6 +6,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
@@ -13,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -22,6 +24,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +182,12 @@ public final class ElectionHandler {
 
       // Verify the current cast vote message is the last one received
       if (previousMessageCreation <= castVote.getCreation()) {
-        election.putVotesBySender(senderPk, castVote.getVotes());
+        // Filter given the content of the vote
+        if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+          election.putOpenBallotVotesBySender(senderPk, castVote.getVotes());
+        } else {
+          election.putEncryptedVotesBySender(senderPk, castVote.getVotes());
+        }
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
       }
