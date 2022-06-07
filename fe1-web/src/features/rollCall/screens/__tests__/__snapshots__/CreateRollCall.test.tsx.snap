@@ -382,7 +382,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                               ]
                             }
                           >
-                            BC410
+                            Location
                           </Text>
                           <TextInput
                             editable={true}
