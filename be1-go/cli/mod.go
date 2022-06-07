@@ -118,7 +118,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 	}
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, witnessSrv)
 	if err != nil {
 		return err
 	}
