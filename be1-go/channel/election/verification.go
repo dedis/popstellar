@@ -67,6 +67,10 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 		return xerrors.Errorf("election was already started or terminated")
 	}
 
+	if electionOpen.OpenedAt < c.createdAt {
+		return xerrors.Errorf("election open cannot have a creation time prior to election setup")
+	}
+
 	return nil
 }
 
