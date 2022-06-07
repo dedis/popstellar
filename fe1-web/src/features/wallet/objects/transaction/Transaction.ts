@@ -271,12 +271,12 @@ export class Transaction {
 
     let totalInputAmount = 0;
 
-    const inputsAreValid = !this.inputs.some((input) => {
+    const inputsAreValid = this.inputs.every((input) => {
       if (isCoinbase) {
         // If the transaction is a coinbase transaction, the signer must be the organizer
         if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
           console.warn('The coinbase transaction input signer is not the organizer');
-          return true;
+          return false;
         }
       } else {
         const originTransactionOutput =
@@ -291,16 +291,16 @@ export class Transaction {
           console.warn(
             "The transaction output public key hash does not correspond to the spender's public key hash",
           );
-          return true;
+          return false;
         }
         totalInputAmount += originTransactionOutput.value;
       }
       // The public key of this input must have signed the concatenated data
       if (!input.script.signature.verify(input.script.publicKey, encodedData)) {
         console.warn('The signature for this input is not valid');
-        return true;
+        return false;
       }
-      return false;
+      return true;
     });
 
     if (!inputsAreValid) {

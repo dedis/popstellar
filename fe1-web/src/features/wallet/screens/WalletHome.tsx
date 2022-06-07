@@ -97,6 +97,40 @@ const WalletHome = () => {
       });
   }, [rollCalls, laoId]);
 
+  const sendTransaction = (receiver: string, amount: number, isCoinbase: boolean) => {
+    if (!tokens) {
+      throw new Error('No pop tokens found to send a transaction');
+    }
+    if (selectedTokenIndex < 0) {
+      throw new Error('No pop tokens selected to send a transaction');
+    }
+
+    if (isCoinbase) {
+      requestCoinbaseTransaction(
+        KeyPairStore.get(),
+        new PublicKey(receiver),
+        amount,
+        tokens[selectedTokenIndex].laoId,
+      )
+        .then(() => toast.show('Sent coinbase transaction'))
+        .catch((err) => {
+          console.error('Failed sending the transaction : ', err);
+        });
+    } else {
+      requestSendTransaction(
+        tokens[selectedTokenIndex].token,
+        new PublicKey(receiver),
+        amount,
+        tokens[selectedTokenIndex].laoId,
+      )
+        .then(() => toast.show('Sent transaction'))
+        .catch((err) => {
+          console.error('Failed sending the transaction : ', err);
+        });
+    }
+    setSendModalVisible(false);
+  };
+
   const tokenInfos = () => {
     if (selectedTokenIndex !== -1 && tokens) {
       const selectedToken = tokens[selectedTokenIndex];
@@ -148,27 +182,7 @@ const WalletHome = () => {
       <SendModal
         modalVisible={sendModalVisible}
         setModalVisible={setSendModalVisible}
-        send={(receiver: string, amount: number, isCoinbase: boolean) => {
-          if (isCoinbase) {
-            requestCoinbaseTransaction(KeyPairStore.get(), new PublicKey(receiver), amount, laoId!)
-              .then(() => toast.show('Sent coinbase transaction'))
-              .catch((err) => {
-                console.error('Failed sending the transaction : ', err);
-              });
-          } else {
-            requestSendTransaction(
-              tokens![selectedTokenIndex].token,
-              new PublicKey(receiver),
-              amount,
-              laoId!,
-            )
-              .then(() => toast.show('Sent transaction'))
-              .catch((err) => {
-                console.error('Failed sending the transaction : ', err);
-              });
-          }
-          setSendModalVisible(false);
-        }}
+        send={sendTransaction}
       />
       <View style={styles.smallPadding} />
     </View>

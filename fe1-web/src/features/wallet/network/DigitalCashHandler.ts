@@ -43,13 +43,15 @@ export const handleTransactionPost =
 
     const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
 
+    // Check the transaction signatures over the inputs and outputs,
+    // and check that the transaction inputs used are consistent with our current state
     if (
       !transaction.checkTransactionValidity(
         organizerPublicKey,
         DigitalCashStore.getTransactionsById(msg.laoId.valueOf()),
       )
     ) {
-      console.warn('Transaction signatures are not valid');
+      console.warn('Transaction is not valid');
       return false;
     }
 
