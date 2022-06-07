@@ -115,7 +115,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
-	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+	consensusCh := consensus.NewChannel(consensusPath, hub, log, organizerPubKey)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	newChannel := &Channel{

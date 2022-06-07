@@ -57,6 +57,8 @@ type Channel struct {
 	// /root/<lao_id>/consensus
 	channelID string
 
+	organizerPubKey kyber.Point
+
 	hub channel.HubFunctionalities
 
 	attendees map[string]struct{}
@@ -110,20 +112,21 @@ type ElectInstance struct {
 
 // NewChannel returns a new initialized consensus channel
 func NewChannel(channelID string, hub channel.HubFunctionalities,
-	log zerolog.Logger) channel.Channel {
+	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
 
 	inbox := inbox.NewInbox(channelID)
 
 	log = log.With().Str("channel", "consensus").Logger()
 
 	newChannel := &Channel{
-		clock:     clock.New(),
-		sockets:   channel.NewSockets(),
-		inbox:     inbox,
-		channelID: channelID,
-		hub:       hub,
-		attendees: make(map[string]struct{}),
-		log:       log,
+		clock:           clock.New(),
+		sockets:         channel.NewSockets(),
+		inbox:           inbox,
+		channelID:       channelID,
+		organizerPubKey: organizerPubKey,
+		hub:             hub,
+		attendees:       make(map[string]struct{}),
+		log:             log,
 		consensusInstances: struct {
 			sync.Mutex
 			m map[string]*ConsensusInstance
@@ -278,7 +281,7 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 	consensusInstance.createElectInstance(message.MessageID, c.hub.GetServerNumber())
 
 	// TODO
-	if sender.Equal(c.hub.GetPubKeyOwner()) {
+	if sender.Equal(c.organizerPubKey) {
 		consensusInstance.role = proposerRole
 	}
 
