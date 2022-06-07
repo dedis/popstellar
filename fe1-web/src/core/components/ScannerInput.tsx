@@ -33,7 +33,7 @@ const ScannerInput = (props: IPropTypes) => {
       />
       <View style={styles.button}>
         <PoPButton onPress={onPress}>
-          <PoPIcon name="qrCode" color={Color.contrast} />
+          <PoPIcon name="scan" color={Color.contrast} />
         </PoPButton>
       </View>
     </View>

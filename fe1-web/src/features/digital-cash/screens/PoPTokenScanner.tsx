@@ -67,9 +67,9 @@ const PoPTokenScanner = () => {
   }, [navigation]);
 
   const goBack = (popToken?: string) => {
-    navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet, {
+    navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
       laoId,
-      scannedPoPTokenRollCallId: rollCallId,
+      rollCallId,
       scannedPoPToken: popToken,
       scannedPoPTokenBeneficiaryIndex: beneficiaryIndex,
     });

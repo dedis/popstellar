@@ -77,6 +77,10 @@ namespace STRINGS {
   export const navigation_wallet_show_seed = 'New Wallet';
   export const navigation_wallet_single_roll_call = 'Roll Call';
   export const navigation_wallet_digital_cash_wallet = 'Digital Cash Wallet';
+
+  export const navigation_wallet_digital_cash_send_receive = 'Send & Receive';
+  export const navigation_wallet_digital_cash_send_receive_title = 'Your Account';
+
   export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
 
   /* --- Social Media Navigation Strings --- */
@@ -384,9 +388,10 @@ namespace STRINGS {
 
   export const digital_cash_wallet_transaction_description =
     'You can send cash by entering the public key of the beneficiary below and ' +
-    'choosing the amount of cash you would like to transfer.';
+    'choosing the amount of cash you would like to transfer. To receive money you can' +
+    'show your PoP token to the sender. To access the QR code of your PoP token, tab the QR' +
+    'code icon in the top right of this screen.';
 
-  export const digital_cash_wallet_your_account = 'Your Account';
   export const digital_cash_wallet_your_account_receive = 'Receive Cash';
   export const digital_cash_wallet_your_account_receive_description =
     'Other attendees can send you money by scanning your PoP token';
