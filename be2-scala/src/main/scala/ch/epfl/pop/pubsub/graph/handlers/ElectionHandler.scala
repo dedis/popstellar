@@ -128,8 +128,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
     for {
-      votesList <- electionChannel.getLastVotes(dbActor)
-      castsVotesElections = votesList.map(_._2)
+      castsVotesElections <- electionChannel.getLastVotes(dbActor)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
       DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)

@@ -46,12 +46,12 @@ object ElectionChannel {
      * @param dbActor the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
      * @return the final vote for each attendee that has voted
      */
-    def getLastVotes(dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, CastVoteElection)]] = {
+    def getLastVotes(dbActor: AskableActorRef = DbActor.getInstance): Future[List[CastVoteElection]] = {
       extractMessages[CastVoteElection](dbActor).map{votes =>
-        val attendeeIdToLastVote = mutable.Map[PublicKey, (Message, CastVoteElection)]()
+        val attendeeIdToLastVote = mutable.Map[PublicKey, CastVoteElection]()
         for ((message, castvote) <- votes) {
-          if (!attendeeIdToLastVote.contains(message.sender) || attendeeIdToLastVote(message.sender)._2.created_at < castvote.created_at) {
-            attendeeIdToLastVote.update(message.sender, (message, castvote))
+          if (!attendeeIdToLastVote.contains(message.sender) || attendeeIdToLastVote(message.sender).created_at < castvote.created_at) {
+            attendeeIdToLastVote.update(message.sender, castvote)
           }
         }
         attendeeIdToLastVote.values.toList
