@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
@@ -67,8 +67,11 @@ public class DigitalCashHomeFragment extends Fragment {
       }
 
     } catch (KeyException e) {
-      Log.d(this.getClass().toString(), "Error to get the Key");
-      Toast.makeText(requireContext(), "Please enter a Lao", Toast.LENGTH_SHORT).show();
+      Toast.makeText(
+              requireContext(),
+              getString(R.string.digital_cash_please_enter_roll_call),
+              Toast.LENGTH_SHORT)
+          .show();
     }
   }
 }

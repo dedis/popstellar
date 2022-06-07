@@ -126,8 +126,7 @@ public class DigitalCashIssueFragment extends Fragment {
                       postTransaction(issueMap);
                     }
                   } catch (KeyException e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "error couldn't post the transaction due to key exception");
+                    Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
                   }
                 }
               }

@@ -53,6 +53,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
+  private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
   private static final String COIN = "coin";
 
   private static final String TYPE = "Pay-to-Pubkey-Hash";
@@ -250,8 +251,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
         try {
           pub = getPublicKeyOutString(current.getKey());
         } catch (Exception e) {
-          e.printStackTrace();
-          Log.d(TAG, "Error on the key to whom we send !");
+          Log.e(TAG, RECEIVER_KEY_ERROR);
         }
         long amount = Long.valueOf(current.getValue());
         amountFromReceiver += amount;
@@ -271,12 +271,12 @@ public class DigitalCashViewModel extends AndroidViewModel {
         List<TransactionObject> transactions =
             getCurrentLao().getTransactionByUser().get(token.getPublicKey());
 
-        long amount_sender =
+        long amountSender =
             TransactionObject.getMiniLaoPerReceiverSetTransaction(
                     transactions, token.getPublicKey())
                 - amountFromReceiver;
         Output outputSender =
-            new Output(amount_sender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
+            new Output(amountSender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
         outputs.add(outputSender);
         for (TransactionObject transactionPrevious : transactions) {
           transactionHash = transactionPrevious.computeId();
@@ -320,7 +320,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                     Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
                     Toast.makeText(
                             getApplication().getApplicationContext(),
-                            "Post Transaction!",
+                            R.string.digital_cash_post_transaction,
                             Toast.LENGTH_LONG)
                         .show();
                     Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
@@ -354,7 +354,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   public void setRollCallId(String rollCallId){
-    Log.d(TAG, "Set the rollcall Id : " + rollCallId);
     this.mRollCallId.setValue(rollCallId);
   }
 
@@ -372,7 +371,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   @Nullable
   public Lao getCurrentLao() {
-    Log.d(TAG, "search the lao with id :" + getLaoId().getValue());
     return getLao(getLaoId().getValue());
   }
 

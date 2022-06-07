@@ -228,6 +228,8 @@
   <string name="digital_cash_content_description_qr_receive">Receive qr code transaction</string>
   <string name="digital_cash_select_lao_member">Select LAO Member</string>
   <string name="digital_cash_time">time</string>
+  <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
+  <string name="digital_cash_post_transaction">Post transaction !</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -276,6 +278,8 @@
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
+  <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
+  <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
