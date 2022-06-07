@@ -221,17 +221,17 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 			// that the validVotes contain one vote for one question by every voter
 			validVotes[validVote.msgID] = validVote.ID
 			msgIDs = append(msgIDs, validVote.msgID)
+			validVotesSorted = append(validVotesSorted, validVote.ID)
 		}
 		question.validVotesMu.Unlock()
 
-		// sort the valid votes alphabetically by msg ID
-		sort.Strings(msgIDs)
 		for _, msgID := range msgIDs {
 			log.Info().Msgf("valid votes is %s for msg id %s", validVotes[msgID], msgID)
-			validVotesSorted = append(validVotesSorted, validVotes[msgID])
 		}
-
 	}
+
+	// sort valid votes by vote id
+	sort.Strings(validVotesSorted)
 
 	// hash all valid vote ids
 	validVotesHash := messagedata.Hash(validVotesSorted...)
