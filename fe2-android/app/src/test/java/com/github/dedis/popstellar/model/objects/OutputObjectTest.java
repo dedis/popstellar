@@ -27,6 +27,6 @@ public class OutputObjectTest {
   @Test
   public void getScriptTest() {
     assertEquals(TYPE, OUTPUT.getScript().getType());
-    assertEquals(PUBKEYHASH, OUTPUT.getScript().getPubkeyHash());
+    assertEquals(PUBKEYHASH, OUTPUT.getPubKeyHash());
   }
 }

@@ -23,6 +23,6 @@ public class ScriptOutputObjectTest {
 
   @Test
   public void getPublicKeyHashTest() {
-    assertEquals(PUBKEYHASH, SCRIPTTXOUT.getPubkeyHash());
+    assertEquals(PUBKEYHASH, SCRIPTTXOUT.getPubKeyHash());
   }
 }

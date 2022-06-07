@@ -20,7 +20,7 @@ public class ScriptOutputObject {
     return type;
   }
 
-  public String getPubkeyHash() {
+  public String getPubKeyHash() {
     return pubKeyHash;
   }
 

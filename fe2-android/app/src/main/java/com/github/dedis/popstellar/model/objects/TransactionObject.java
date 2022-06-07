@@ -98,7 +98,7 @@ public class TransactionObject {
     List<String> receiverHash = new ArrayList<>();
 
     while (outputIte.hasNext()) {
-      receiverHash.add(outputIte.next().getScript().getPubkeyHash());
+      receiverHash.add(outputIte.next().getPubKeyHash());
     }
 
     return receiverHash;
@@ -161,7 +161,7 @@ public class TransactionObject {
       OutputObject current = iteOutput.next();
       sig[index] = String.valueOf(current.getValue());
       sig[index + 1] = current.getScript().getType();
-      sig[index + 2] = current.getScript().getPubkeyHash();
+      sig[index + 2] = current.getPubKeyHash();
       index = index + 3;
     }
     return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
@@ -186,7 +186,7 @@ public class TransactionObject {
     Iterator<OutputObject> iterator = getOutputs().iterator();
     while (iterator.hasNext()) {
       OutputObject current = iterator.next();
-      if (current.getScript().getPubkeyHash().equals(hashKey)) {
+      if (current.getPubKeyHash().equals(hashKey)) {
         miniLao = miniLao + current.getValue();
       }
     }
@@ -205,7 +205,7 @@ public class TransactionObject {
     int index = 0;
     while (outputObjectIterator.hasNext()) {
       OutputObject current = outputObjectIterator.next();
-      if (current.getScript().getPubkeyHash().equals(hashPubkey)) {
+      if (current.getPubKeyHash().equals(hashPubkey)) {
         return index;
       }
       index = index + 1;

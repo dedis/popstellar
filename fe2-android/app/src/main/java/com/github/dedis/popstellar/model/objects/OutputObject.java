@@ -20,4 +20,8 @@ public class OutputObject {
   public ScriptOutputObject getScript() {
     return script;
   }
+
+  public String getPubKeyHash() {
+    return script.getPubKeyHash();
+  }
 }
