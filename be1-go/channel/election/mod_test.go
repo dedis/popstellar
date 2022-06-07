@@ -106,21 +106,22 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 	electChannel, _ := newFakeChannel(t, false)
 
 	// Create the messages
-	numMessages := 5
+	numMessages := 6
 
 	messages := make([]message.Message, numMessages)
+	messages[0] = message.Message{MessageID: "0"}
 
-	for i := 0; i < numMessages; i++ {
+	for i := 1; i < numMessages; i++ {
 		// Create a new message containing only an id
 		msg := message.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = msg
 
-		// Store the message in the inbox
-		electChannel.inbox.StoreMessage(msg)
-
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
 		time.Sleep(time.Millisecond)
+
+		// Store the message in the inbox
+		electChannel.inbox.StoreMessage(msg)
 	}
 
 	// Compute the catchup method
@@ -128,8 +129,8 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
-	for i := 1; i < numMessages+1; i++ {
-		require.Equal(t, messages[i-1].MessageID, catchupAnswer[i].MessageID,
+	for i := 0; i < numMessages; i++ {
+		require.Equal(t, messages[i].MessageID, catchupAnswer[i].MessageID,
 			catchupAnswer)
 	}
 }
@@ -566,7 +567,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel, err := NewChannel(channelPath, message.Message{}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	channel, err := NewChannel(channelPath, message.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
 	require.NoError(t, err)
 
 	channelElec, ok := channel.(*Channel)
