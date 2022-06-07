@@ -11,7 +11,7 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
-import AttendeeEventsScreen from '../EventsScreen';
+import EventsScreen from '../EventsScreen';
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
@@ -33,7 +33,7 @@ describe('AttendeeScreen', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={AttendeeEventsScreen} />
+          <MockNavigator component={EventsScreen} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

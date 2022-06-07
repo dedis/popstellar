@@ -8,7 +8,7 @@ import { LaoHooks } from '../hooks';
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.
  * By default, only the past and present section are open.
  */
-const AttendeeEventsScreen = () => {
+const EventsScreen = () => {
   const EventList = LaoHooks.useEventListComponent();
 
   return (
@@ -18,4 +18,4 @@ const AttendeeEventsScreen = () => {
   );
 };
 
-export default AttendeeEventsScreen;
+export default EventsScreen;
