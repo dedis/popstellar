@@ -185,15 +185,13 @@ export class Transaction {
    * @param amount the amount to send
    */
   public static createCoinbase(organizerKP: KeyPair, to: PublicKey[], amount: number): Transaction {
-    const outputs: TransactionOutputState[] = to.map((pk) => {
-      return {
-        value: amount,
-        script: {
-          type: SCRIPT_TYPE,
-          publicKeyHash: Hash.fromPublicKey(pk).valueOf(),
-        },
-      };
-    });
+    const outputs: TransactionOutputState[] = to.map((pk) => ({
+      value: amount,
+      script: {
+        type: SCRIPT_TYPE,
+        publicKeyHash: Hash.fromPublicKey(pk).valueOf(),
+      },
+    }));
 
     const input: Omit<TransactionInputState, 'script'> = {
       txOutHash: COINBASE_HASH,
@@ -232,20 +230,17 @@ export class Transaction {
   private static readonly getInputsInToSign = (
     pk: string,
     transactions: TransactionState[],
-  ): Omit<TransactionInputState, 'script'>[] => {
-    return transactions.flatMap((tr) =>
+  ): Omit<TransactionInputState, 'script'>[] =>
+    transactions.flatMap((tr) =>
       tr.outputs
         .filter(
           (output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf(),
         )
-        .map((output, index) => {
-          return {
-            txOutHash: tr.transactionId!.valueOf(),
-            txOutIndex: index,
-          };
-        }),
+        .map((output, index) => ({
+          txOutHash: tr.transactionId!.valueOf(),
+          txOutIndex: index,
+        })),
     );
-  };
 
   /**
    * Verifies the validity of the transaction
