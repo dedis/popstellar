@@ -190,7 +190,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("invalid message field: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
 func Test_Create_LAO_Bad_Signature(t *testing.T) {
