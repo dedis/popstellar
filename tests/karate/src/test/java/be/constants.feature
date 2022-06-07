@@ -208,8 +208,8 @@ Feature: Constants
     # In the specification there is a Pubkey that will never be used by am attendee so we use
     # it as a supreme source of digital coin distribution (will maybe change later)
     * def createIssuancePubKey = function(){ return "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
-    # The signature is constant since the backend will not check it either way, it is the front end's
-    # job to perform is check so we can leave it as a constant value
+    # The signature is currently constant since the backend will not check it either way,
+    # it is the front end's job to perform is check so we can leave it as a constant value
     * def createSignatureForCoinIssuance = function() { return "CAFEBABE" }
 
     * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
