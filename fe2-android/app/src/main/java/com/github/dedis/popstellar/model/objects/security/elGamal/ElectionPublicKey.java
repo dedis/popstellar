@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects.security.elgamal;
+package com.github.dedis.popstellar.model.objects.security.elGamal;
 
 import android.util.Log;
 

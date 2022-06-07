@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNotEquals;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 
 import org.junit.Test;
 
