@@ -552,7 +552,6 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
-	//TODO
 	if h.isCheckingOwnerKey && !h.GetPubKeyOwner().Equal(senderPubKey) {
 		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
 			senderPubKey, h.GetPubKeyOwner())

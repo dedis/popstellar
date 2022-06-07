@@ -280,7 +280,6 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 
 	consensusInstance.createElectInstance(message.MessageID, c.hub.GetServerNumber())
 
-	// TODO
 	if sender.Equal(c.organizerPubKey) {
 		consensusInstance.role = proposerRole
 	}

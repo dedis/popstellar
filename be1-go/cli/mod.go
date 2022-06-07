@@ -56,7 +56,6 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
 
-	// TODO
 	var h *standard_hub.Hub
 	var err error
 
