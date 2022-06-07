@@ -693,11 +693,7 @@ func (c *Channel) getVoteIndex(vote validVote) (int, bool) {
 	switch elecType {
 	// open ballot votes have the index in plain text
 	case messagedata.OpenBallot:
-		index, ok := vote.index.(int)
-		if !ok {
-			return -1, false
-		}
-
+		index, _ := vote.index.(int)
 		return index, true
 	// secret ballot votes must be decrypted to get the index
 	case messagedata.SecretBallot:
