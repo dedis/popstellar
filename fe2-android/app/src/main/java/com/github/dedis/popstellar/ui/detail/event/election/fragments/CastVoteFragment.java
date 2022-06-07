@@ -98,8 +98,6 @@ public class CastVoteFragment extends Fragment {
     // Setting election name
     electionNameView.setText(election.getName());
 
-    int numberOfQuestions = election.getElectionQuestions().size();
-
     // Setting up the votes for the adapter
     mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList());
 
