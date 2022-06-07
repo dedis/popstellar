@@ -13,8 +13,9 @@ export namespace DigitalCashStore {
     if (!laoState) {
       return [];
     }
-    const hash = Hash.fromPublicKey(pk);
-    return Array.from(laoState.transactionsByPubHash[hash.valueOf()]?.values() || []) || [];
+    const pkHash = Hash.fromPublicKey(pk);
+    const transactionsById = getTransactionsById(laoId);
+    return laoState.transactionsByPubHash[pkHash.valueOf()]?.map((hash) => transactionsById[hash]);
   }
   export function getBalance(laoId: string, pk: string): number {
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];

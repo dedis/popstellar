@@ -17,9 +17,9 @@ export interface DigitalCashReducerState {
   balances: Record<string, number>;
 
   /**
-   * Every transaction received for this roll call
+   * Every hash of transactions received for this lao
    */
-  transactions: TransactionState[];
+  allTransactionsHash: string[];
 
   /**
    * Transactions by their transaction hash (transaction id)
@@ -27,10 +27,10 @@ export interface DigitalCashReducerState {
   transactionsByHash: Record<string, TransactionState>;
 
   /**
-   * A mapping between public key hashes and a set of the transactions which contain this hash
-   * in one or more of their TxOuts
+   * A mapping between public key hashes and an array of hash of transactions which contains
+   * this public key hash in one or more of their TxOuts
    */
-  transactionsByPubHash: Record<string, TransactionState[]>;
+  transactionsByPubHash: Record<string, string[]>;
 }
 export interface DigitalCashLaoReducerState {
   byLaoId: Record<string, DigitalCashReducerState>;
@@ -64,6 +64,7 @@ const digitalCashSlice = createSlice({
       if (!transactionState.transactionId) {
         throw new Error('The transaction id of the added transaction is not defined');
       }
+      const transactionHash = transactionState.transactionId;
 
       /**
        * If state is empty for given lao or roll call, we should create the initial objects
@@ -71,7 +72,7 @@ const digitalCashSlice = createSlice({
       if (!(laoId in state.byLaoId)) {
         state.byLaoId[laoId] = {
           balances: {},
-          transactions: [],
+          allTransactionsHash: [],
           transactionsByHash: {},
           transactionsByPubHash: {},
         };
@@ -79,8 +80,8 @@ const digitalCashSlice = createSlice({
 
       const laoState: DigitalCashReducerState = state.byLaoId[laoId];
 
-      laoState.transactionsByHash[transactionState.transactionId] = transactionState;
-      laoState.transactions.push(transactionState);
+      laoState.transactionsByHash[transactionHash] = transactionState;
+      laoState.allTransactionsHash.push(transactionHash);
 
       /**
        * Invariant for the digital cash implementation:
@@ -107,7 +108,7 @@ const digitalCashSlice = createSlice({
         if (!(pubKeyHash in laoState.transactionsByPubHash)) {
           laoState.transactionsByPubHash[pubKeyHash] = [];
         }
-        laoState.transactionsByPubHash[pubKeyHash].push(transactionState);
+        laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
       });
     },
   },
