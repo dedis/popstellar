@@ -103,7 +103,8 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 }
 
 func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing.T) {
-	// create the opened election channel with election open time less than election creation time
+	// create the opened election channel with election open time less than
+	// election creation time
 	electChannel, _ := newFakeChannel(t)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
