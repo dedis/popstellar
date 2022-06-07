@@ -16,7 +16,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.ele.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;

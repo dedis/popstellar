@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.elgamal.ElectionPublicKey;
 
 import org.junit.Test;
 
