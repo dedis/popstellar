@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -214,69 +213,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
-  /** Post Transaction Test Try To follow the message */
-  public void postTransactionTest(Map<String, String> PublicKeyAmount, Long time)
-      throws KeyException {
-    Log.d(TAG, "Post a transaction Test");
-    KeyPair the_keys = keyManager.getValidPoPToken(getCurrentLao());
-
-    List<Output> outputs =
-        Collections.singletonList(
-            new Output((long) 0, new ScriptOutput(TYPE, the_keys.getPublicKey().computeHash())));
-
-    String transaction_hash = Hash.hash("string");
-    int index = 0;
-
-    String sig =
-        Transaction.computeSigOutputsPairTxOutHashAndIndex(
-            the_keys, outputs, Collections.singletonMap(transaction_hash, index));
-    Transaction transaction =
-        new Transaction(
-            VERSION,
-            Collections.singletonList(
-                new Input(
-                    transaction_hash,
-                    index,
-                    new ScriptInput(TYPE, the_keys.getPublicKey().getEncoded(), sig))),
-            outputs,
-            time);
-
-    PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
-    Log.d(TAG, postTransactionCoin.toString());
-
-    Channel channel =
-        getCurrentLao()
-            .getChannel()
-            .subChannel(COIN);
-    Log.d(TAG, channel.toString());
-
-    // laoRepository.updateNodes(channel);
-
-    Log.d(TAG, PUBLISH_MESSAGE);
-
-    MessageGeneral msg = new MessageGeneral(the_keys, postTransactionCoin, gson);
-    Log.d(TAG, msg.toString());
-
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(the_keys, channel, postTransactionCoin)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
-                  Toast.makeText(
-                          getApplication().getApplicationContext(),
-                          "Post Transaction!",
-                          Toast.LENGTH_LONG)
-                      .show();
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_post_transaction));
-
-    disposables.add(disposable);
-  }
-
   public PublicKey getPublicKeyOutString(String encodedpub) throws Exception {
     Iterator<PublicKey> ite = getAttendeesFromTheRollCall().iterator();
     while (ite.hasNext()) {
@@ -327,9 +263,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
       // First there would be only one Input
 
       // Case no transaction before
-      String transaction_hash = Hash.hash("none");
+      String transactionHash = Hash.hash("none");
       int index = 0;
 
+      List<Input> inputs = new ArrayList<>();
       if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey()) && !coinBase) {
         List<TransactionObject> transactions =
             getCurrentLao().getTransactionByUser().get(token.getPublicKey());
@@ -338,27 +275,33 @@ public class DigitalCashViewModel extends AndroidViewModel {
             TransactionObject.getMiniLaoPerReceiverSetTransaction(
                     transactions, token.getPublicKey())
                 - amountFromReceiver;
-        Output output_sender =
+        Output outputSender =
             new Output(amount_sender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
-        outputs.add(output_sender);
-        TransactionObject transactionPrevious =
-            TransactionObject.lastLockedTransactionObject(transactions);
-        transaction_hash = transactionPrevious.computeId();
-        index = transactionPrevious.getIndexTransaction(token.getPublicKey());
+        outputs.add(outputSender);
+        for (TransactionObject transactionPrevious : transactions) {
+          transactionHash = transactionPrevious.computeId();
+          index = transactionPrevious.getIndexTransaction(token.getPublicKey());
+          String sig =
+              Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                  token, outputs, Collections.singletonMap(transactionHash, index));
+          inputs.add(
+              new Input(
+                  transactionHash,
+                  index,
+                  new ScriptInput(TYPE, token.getPublicKey().getEncoded(), sig)));
+        }
+      } else {
+        String sig =
+            Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                token, outputs, Collections.singletonMap(transactionHash, index));
+        inputs.add(
+            new Input(
+                transactionHash,
+                index,
+                new ScriptInput(TYPE, token.getPublicKey().getEncoded(), sig)));
       }
-      String sig =
-          Transaction.computeSigOutputsPairTxOutHashAndIndex(
-              token, outputs, Collections.singletonMap(transaction_hash, index));
-      Transaction transaction =
-          new Transaction(
-              VERSION,
-              Collections.singletonList(
-                  new Input(
-                      transaction_hash,
-                      index,
-                      new ScriptInput(TYPE, token.getPublicKey().getEncoded(), sig))),
-              outputs,
-              locktime);
+
+      Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
 
       PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
 
