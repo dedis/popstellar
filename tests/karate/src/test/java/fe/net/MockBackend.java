@@ -12,6 +12,7 @@ import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
@@ -30,7 +31,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   // Defines the rule to apply on incoming messages to produce its reply.
   // Can be null if no reply should be sent back.
-  private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
+  private Function<String, List<String>> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
   private Json laoCreationMessageData;
 
@@ -51,7 +52,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
    *
    * @param replyProducer to set
    */
-  public void setReplyProducer(Function<String, String> replyProducer) {
+  public void setReplyProducer(Function<String, List<String>> replyProducer) {
     this.replyProducer = replyProducer;
   }
 
@@ -75,7 +76,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
       // We don't want consensus messages to interfere since we do not test them yet
       queue.onNewMsg(frameText);
     }
-    if (replyProducer != null) send(replyProducer.apply(frameText));
+    if (replyProducer != null) replyProducer.apply(frameText).forEach(this::send);
   }
 
   public int getPort() {

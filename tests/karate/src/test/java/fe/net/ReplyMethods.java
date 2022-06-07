@@ -5,6 +5,9 @@ import com.intuit.karate.Logger;
 import common.net.MessageBuffer;
 import common.utils.JsonUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -43,8 +46,12 @@ public class ReplyMethods {
 
   private static Json laoCreatePublishJson;
 
+  private static List<String> buildSingleton(String string) {
+    return Collections.singletonList(string);
+  }
+
   /** Always reply with a valid response */
-  public static Function<String, String> ALWAYS_VALID_CONSENSUS =
+  public static Function<String, List<String>> ALWAYS_VALID_CONSENSUS =
       msg -> {
         Json msgJson = Json.of(msg);
         int id = msgJson.get("id");
@@ -52,55 +59,58 @@ public class ReplyMethods {
             msgJson.get("method").equals("catchup")
                 ? VALID_CATCHUP_REPLY_TEMPLATE
                 : VALID_REPLY_TEMPLATE;
-        return template.replace("%ID%", Integer.toString(id));
+        return buildSingleton(template.replace("%ID%", Integer.toString(id)));
       };
 
   /** Always reply with a valid response */
-  public static Function<String, String> ALWAYS_VALID =
+  public static Function<String, List<String>> ALWAYS_VALID =
       msg -> {
         Json msgJson = Json.of(msg);
         int id = msgJson.get(ID);
-        return VALID_REPLY_TEMPLATE.replace("%ID%", Integer.toString(id));
+        return buildSingleton(VALID_REPLY_TEMPLATE.replace("%ID%", Integer.toString(id)));
       };
 
-  public static Function<String, String> LAO_CREATE_CATCHUP =
-      msg ->{
-        if (msg.contains(CONSENSUS)){
+  public static Function<String, List<String>> LAO_CREATE_CATCHUP =
+      msg -> {
+        if (msg.contains(CONSENSUS)) {
           return ALWAYS_VALID_CONSENSUS.apply(msg);
         }
         Json msgJson = Json.of(msg);
         String replaceId =
             VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) msgJson.get("id")));
-        if (laoCreatePublishJson == null){ // Should not happen
-          return replaceId;
+        if (laoCreatePublishJson == null) { // Should not happen
+          return buildSingleton(replaceId);
         }
-        return replaceId.replace("[]", "[" + laoCreatePublishJson.toString() + "]");
+        return buildSingleton(replaceId.replace("[]", "[" + laoCreatePublishJson.toString() + "]"));
       };
 
-
-  public static Function<String, String> LAO_CREATE =
-      msg ->{
+  public static Function<String, List<String>> LAO_CREATE =
+      msg -> {
         Json msgJson = Json.of(msg);
         String method = msgJson.get(METHOD);
-        if (PUBLISH.equals(method)){
+        if (PUBLISH.equals(method)) {
           laoCreatePublishJson = getJSON(getJSON(Json.of(msg), "params"), "message");
         }
-        if (CATCHUP.equals(method)){
+        if (CATCHUP.equals(method)) {
           return LAO_CREATE_CATCHUP.apply(msg);
-        }
-        else { // We want to respond valid result for both publish and subscribe
+        } else { // We want to respond valid result for both publish and subscribe
           return ALWAYS_VALID.apply(msg);
         }
       };
 
-  public static Function<String, String>  ROLL_CALL_CREATE_BROADCAST =
+  public static Function<String, List<String>>  ROLL_CALL_CREATE_BROADCAST =
       msg ->{
         Json param = getJSON(Json.of(msg), "params");
         String channel = param.get("channel");
+
         Json jsonMsg = getJSON(param, "message");
         Json send = Json.object();
         send.set("channel", channel);
         send.set("message", jsonMsg);
-        return RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
+
+        String broadCast = RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
+        String result = ALWAYS_VALID.apply(msg).get(0);
+
+        return Arrays.asList(broadCast, result);
       };
 }
