@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
@@ -8,10 +9,14 @@ import (
 
 // WaitAndShutdownServers blocks until the user passes a SIGINT or SIGTERM and
 // then shuts down the http servers.
-func WaitAndShutdownServers(servers ...*Server) error {
+func WaitAndShutdownServers(ctx context.Context, servers ...*Server) error {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
-	<-done
+
+	select {
+	case <-done:
+	case <-ctx.Done():
+	}
 
 	for _, server := range servers {
 		server.log.Info().Msgf("shutting down server %s", server.srv.Addr)
