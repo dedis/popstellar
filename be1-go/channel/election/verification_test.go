@@ -101,6 +101,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
+
 func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing.T) {
 	// create the opened election channel with election open time less than
 	// election creation time
@@ -122,7 +123,7 @@ func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing
 	require.Error(t, err)
 }
 
-func TestVerify_CastVote(t *testing.T) {
+func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 	// create the election channel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
