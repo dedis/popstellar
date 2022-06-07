@@ -57,12 +57,15 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
   private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
-  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
-  private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.LAO, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE))
-  private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE))
-  private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_MESSAGE, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
-  private final val messagesNotEnd: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_WORKING, MESSAGE_OPEN_ELECTION_WORKING)
+  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
+  private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.LAO, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
+  private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT))
+  private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
+  private final val messagesNotEnd: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING, MESSAGE_OPEN_ELECTION_WORKING)
   private final val messages: List[Message] =  MESSAGE_END_ELECTION_WORKING :: messagesNotEnd
+
+  private val keyPair: KeyPair = KeyPair()
+  private val electionData: ElectionData = ElectionData(Hash(Base64Data.encode("election")), keyPair)
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -146,10 +149,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+        case DbActor.ReadElectionData(_) =>
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
@@ -166,10 +171,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+        case DbActor.ReadElectionData(_) =>
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
@@ -186,10 +193,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongChannelCastVote)
+        case DbActor.ReadElectionData(_) =>
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
@@ -206,10 +215,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndCastMessage)
+        case DbActor.ReadElectionData(_) =>
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
@@ -226,10 +237,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithEndElectionMessage)
+        case DbActor.ReadElectionData(_) =>
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
-        case DbActor.Read(_, DATA_SET_UP_MESSAGE) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WORKING))
+        case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Read(_, DATA_END_ELECTION_MESSAGE) =>

@@ -5,15 +5,15 @@ import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
-import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
 import { makeNotificationSelector } from '../reducer';
 
 type NavigationProps = StackScreenProps<
-  NotificationStackParamList,
-  typeof STRINGS.notification_navigation_tab_single_notification
+  NotificationParamList,
+  typeof STRINGS.navigation_notification_single_notification
 >;
 
 const SingleNotificationScreen = () => {

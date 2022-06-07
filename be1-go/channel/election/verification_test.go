@@ -102,6 +102,27 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing.T) {
+	// create the opened election channel with election open time less than
+	// election creation time
+	electChannel, _ := newFakeChannel(t)
+
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
+		"election_open.json"))
+	require.NoError(t, err)
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	electChannel.createdAt = electionOpen.OpenedAt + 100
+
+	// send the election open message to the channel
+	err = electChannel.verifyMessageElectionOpen(electionOpen)
+	require.Error(t, err)
+}
+
 func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 	// create the election channel
 	electChannel, _ := newFakeChannel(t, false)

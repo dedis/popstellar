@@ -13,7 +13,7 @@ import RemovableTextInput from './RemovableTextInput';
  */
 
 const TextInputList = (props: IPropTypes) => {
-  const { onChange } = props;
+  const { onChange, placeholder } = props;
   const [idCount, setIdCount] = useState(1);
   const [userInputs, setUserInputs] = useState([{ id: 0, value: '' }]);
 
@@ -64,6 +64,7 @@ const TextInputList = (props: IPropTypes) => {
           onRemove={removeInput}
           id={option.id}
           value={option.value}
+          placeholder={placeholder}
           key={option.id}
         />
       ))}
@@ -73,8 +74,12 @@ const TextInputList = (props: IPropTypes) => {
 
 const propTypes = {
   onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 };
 TextInputList.propTypes = propTypes;
+TextInputList.defaultProps = {
+  placeholder: '',
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

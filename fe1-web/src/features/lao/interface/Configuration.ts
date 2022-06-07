@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
@@ -19,7 +20,9 @@ export interface LaoConfiguration {
 export interface LaoCompositionConfiguration {
   /* events */
 
-  EventList: React.ComponentType<any>;
+  EventList: React.ComponentType<unknown>;
+
+  CreateEventButton: React.VFC<unknown>;
 
   /* connect */
 
@@ -27,19 +30,19 @@ export interface LaoCompositionConfiguration {
    * Given the lao server address and the lao id, this computes the data
    * that is encoded in a QR code that can be used to connect to a LAO
    */
-  encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
+  encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
 
   /* other */
 
   /**
    * The screens that should additionally be included in the lao navigation
    */
-  laoNavigationScreens: LaoFeature.Screen[];
+  laoNavigationScreens: LaoFeature.LaoScreen[];
 
   /**
-   * The screens that should additionally be included in the lao navigation
+   * The screens that should additionally be included in the lao events navigation
    */
-  organizerNavigationScreens: LaoFeature.Screen[];
+  eventsNavigationScreens: LaoFeature.LaoEventScreen[];
 }
 
 /**
@@ -178,18 +181,16 @@ export type LaoReactContext = Pick<
   LaoCompositionConfiguration,
   /* events */
   | 'EventList'
+  | 'CreateEventButton'
   /* connect */
   | 'encodeLaoConnectionForQRCode'
   /* navigation screens */
   | 'laoNavigationScreens'
-  | 'organizerNavigationScreens'
+  | 'eventsNavigationScreens'
 >;
 
 export interface LaoCompositionInterface extends FeatureInterface {
-  /* navigation */
-  navigation: {
-    LaoNavigation: React.ComponentType<unknown>;
-  };
-  /* react context */
+  appScreens: AppScreen[];
+
   context: LaoReactContext;
 }

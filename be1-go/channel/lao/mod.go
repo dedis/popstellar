@@ -551,7 +551,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
+		return answer.NewDuplicateResourceError("message already exists")
 	}
 
 	return nil
@@ -625,7 +625,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be "+
+		return answer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 

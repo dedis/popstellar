@@ -1,29 +1,32 @@
-import 'react-datepicker/dist/react-datepicker.css';
-
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
   ConfirmModal,
   DatePicker,
   DismissModal,
-  DropdownSelector,
-  ParagraphBlock,
-  TextBlock,
-  TextInputLine,
   TextInputList,
-  WideButtonView,
+  Input,
+  DropdownSelector,
+  PoPTextButton,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { onConfirmEventCreation } from 'core/functions/UI';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { createEventStyles as styles } from 'core/styles/stylesheets/createEventStyles';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
+import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { ElectionVersion, Question } from '../objects';
 
@@ -31,6 +34,14 @@ const DEFAULT_ELECTION_DURATION = 3600;
 
 // for now only plurality voting is supported (2022-03-16, Tyratox)
 const VOTING_METHOD = STRINGS.election_method_Plurality;
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_election>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 // the type used for storing questions in the react state
 // does not yet contain the id of the questions, this is computed
@@ -108,10 +119,8 @@ const createElection = (
 /**
  * UI to create an Election Event
  */
-
 const CreateElection = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
 
@@ -135,7 +144,7 @@ const CreateElection = () => {
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
       .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        navigation.navigate(STRINGS.navigation_lao_events_home);
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);
@@ -147,15 +156,46 @@ const CreateElection = () => {
       });
   };
 
+  const buildDatePickerWeb = () => {
+    const startDate = startTime.toDate();
+    const endDate = endTime.toDate();
+
+    return (
+      <>
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.election_create_start_time}
+        </Text>
+        <DatePicker
+          selected={startDate}
+          onChange={(date: Date) =>
+            onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_ELECTION_DURATION)
+          }
+        />
+
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.election_create_finish_time}
+        </Text>
+        <DatePicker
+          selected={endDate}
+          onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
+        />
+      </>
+    );
+  };
+
   return (
-    <ScrollView>
-      <TextBlock text={STRINGS.election_create_setup} bold />
-      <TextInputLine
-        placeholder={STRINGS.election_create_name}
-        onChangeText={(text: string) => {
-          setElectionName(text);
-        }}
+    <ScreenWrapper>
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.election_create_name}
+      </Text>
+      <Input
+        value={electionName}
+        onChange={setElectionName}
+        placeholder={STRINGS.election_create_name_placeholder}
       />
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.election_create_version}
+      </Text>
       <DropdownSelector
         selected={version}
         onChange={(value) => {
@@ -174,75 +214,55 @@ const CreateElection = () => {
           },
         ]}
       />
-      {
-        // the date picker for the web
-        // see archive branches for date picker used for native apps
-        Platform.OS === 'web' && (
-          <View style={styles.viewVertical}>
-            <View style={[styles.view, styles.padding]}>
-              <ParagraphBlock text={STRINGS.election_create_start_time} />
-              <DatePicker
-                selected={startTime.toDate()}
-                onChange={(date: Date) =>
-                  onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_ELECTION_DURATION)
-                }
-              />
-            </View>
-            <View style={[styles.view, styles.padding, styles.zIndexInitial]}>
-              <ParagraphBlock text={STRINGS.election_create_finish_time} />
-              <DatePicker
-                selected={endTime.toDate()}
-                onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
-              />
-            </View>
-          </View>
-        )
-      }
-      {
-        // list all questions
-        questions.map((_, idx) => (
-          <View key={idx.toString()}>
-            <TextInputLine
-              placeholder={STRINGS.election_create_question}
-              onChangeText={(text: string) =>
-                setQuestions((prev) =>
-                  prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
-                )
-              }
-            />
-            <TextInputList
-              onChange={(ballot_options: string[]) =>
-                setQuestions((prev) =>
-                  prev.map((item, id) =>
-                    id === idx ? { ...item, ballot_options: ballot_options } : item,
-                  ),
-                )
-              }
-            />
-          </View>
-        ))
-      }
+      {/* see archive branches for date picker used for native apps */}
+      {Platform.OS === 'web' && buildDatePickerWeb()}
+      {questions.map((value, idx) => (
+        <View key={idx.toString()}>
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.election_create_question} {idx + 1}
+          </Text>
+          <Input
+            value={questions[idx].question}
+            onChange={(text: string) =>
+              setQuestions((prev) =>
+                prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
+              )
+            }
+            placeholder={STRINGS.election_create_question_placeholder}
+          />
+          <Text style={[Typography.paragraph, Typography.important]}>
+            {STRINGS.election_create_ballot_options}
+          </Text>
+          <TextInputList
+            placeholder={STRINGS.election_create_option_placeholder}
+            onChange={(ballot_options: string[]) =>
+              setQuestions((prev) =>
+                prev.map((item, id) =>
+                  id === idx ? { ...item, ballot_options: ballot_options } : item,
+                ),
+              )
+            }
+          />
+        </View>
+      ))}
 
-      <View style={[styles.view, styles.zIndexInitial]}>
-        <WideButtonView
-          title="Add Question"
-          onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}
-        />
-        <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
-        <WideButtonView
-          title={STRINGS.general_button_confirm}
-          onPress={() =>
-            onConfirmEventCreation(
-              startTime,
-              endTime,
-              onCreateElection,
-              setModalStartIsVisible,
-              setModalEndIsVisible,
-            )
-          }
-          disabled={!buttonsVisibility}
-        />
-      </View>
+      <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
+        {STRINGS.election_create_add_question}
+      </PoPTextButton>
+
+      <PoPTextButton
+        onPress={() =>
+          onConfirmEventCreation(
+            startTime,
+            endTime,
+            onCreateElection,
+            setModalStartIsVisible,
+            setModalEndIsVisible,
+          )
+        }
+        disabled={!buttonsVisibility}>
+        {STRINGS.general_button_confirm}
+      </PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}
@@ -255,12 +275,16 @@ const CreateElection = () => {
         setVisibility={setModalStartIsVisible}
         title={STRINGS.modal_event_creation_failed}
         description={STRINGS.modal_event_starts_in_past}
-        onConfirmPress={() => onCreateElection()}
+        onConfirmPress={onCreateElection}
         buttonConfirmText={STRINGS.modal_button_start_now}
-        buttonCancelText={STRINGS.modal_button_go_back}
       />
-    </ScrollView>
+    </ScreenWrapper>
   );
 };
 
 export default CreateElection;
+
+export const CreateElectionScreen: EvotingFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_create_election,
+  Component: CreateElection,
+};

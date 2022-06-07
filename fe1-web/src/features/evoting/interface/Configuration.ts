@@ -4,6 +4,7 @@ import { AnyAction, Reducer } from 'redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import {
   ElectionKeyReducerState,
@@ -99,9 +100,7 @@ export type EvotingReactContext = Pick<
  * The interface the evoting feature exposes
  */
 export interface EvotingInterface extends FeatureInterface {
-  screens: {
-    CreateElection: React.ComponentType<any>;
-  };
+  laoEventScreens: EvotingFeature.LaoEventScreen[];
 
   eventTypes: EventType[];
 
@@ -115,10 +114,12 @@ export interface EvotingInterface extends FeatureInterface {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: string;
+    createEvent: typeof STRINGS.navigation_lao_events_create_election;
+    screenSingle: typeof STRINGS.navigation_lao_events_view_single_election;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;
