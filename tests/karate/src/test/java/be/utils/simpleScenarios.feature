@@ -145,7 +145,7 @@
     Scenario: Casts a valid vote
       * string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
       * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
       * eval frontend.send(castVote)
       * def cast_vote_broadcast = frontend_buffer.takeTimeout(timeout)
       * def cast_vote = frontend_buffer.takeTimeout(timeout)
