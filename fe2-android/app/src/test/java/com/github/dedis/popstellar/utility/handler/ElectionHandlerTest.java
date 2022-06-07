@@ -31,10 +31,10 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.ServerRepository;
@@ -319,8 +319,8 @@ public class ElectionHandlerTest extends TestCase {
     messageHandler.handleMessage(
         laoRepository, messageSender, LAO_CHANNEL.subChannel(electionEncrypted.getId()), message2);
     List<String> listOfVoteIds2 = new ArrayList<>();
-    listOfVoteIds2.add(electionEncryptedVote1.getId());
     listOfVoteIds2.add(electionEncryptedVote2.getId());
+    listOfVoteIds2.add(electionEncryptedVote1.getId());
     String expectedHash2 = Hash.hash(listOfVoteIds2.toArray(new String[0]));
     assertEquals(expectedHash2, electionEncrypted.computerRegisteredVotes());
   }

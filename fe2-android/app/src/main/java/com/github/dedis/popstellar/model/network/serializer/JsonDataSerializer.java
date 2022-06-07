@@ -56,10 +56,9 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
               + action.getAction()
               + ") does not exists in the protocol");
     }
-    // Due to the generic type of the vote, CastVote message needs a special
-    // deserialization
+    // If action is a CastVote, we need to create a custom deserializer
     if (action == Action.CAST_VOTE) {
-      return customCastVoteDeserializer(json, context);
+      return castVoteDeserializer(json, context);
     }
     return context.deserialize(json, clazz.get());
   }
@@ -73,22 +72,30 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     return obj;
   }
 
-  public Data customCastVoteDeserializer(JsonElement json, JsonDeserializationContext context) {
+  public CastVote castVoteDeserializer(JsonElement json, JsonDeserializationContext context) {
     JsonObject obj = json.getAsJsonObject();
     JsonArray jsonVote = obj.getAsJsonArray("votes");
-    boolean typeValidation = true;
+    boolean typeValidationInt = true;
+    boolean typeValidationString = true;
     // Vote type of a CastVote is either an integer for an OpenBallot election or a
     // String for an Encrypted election, type should be valid for all votes
     for (int i = 0; i < jsonVote.size(); i++) {
       JsonObject voteContent = jsonVote.get(i).getAsJsonObject();
-      typeValidation = typeValidation && voteContent.get("vote").getAsJsonPrimitive().isNumber();
+      typeValidationInt =
+          typeValidationInt && voteContent.get("vote").getAsJsonPrimitive().isNumber();
+      typeValidationString =
+          typeValidationString && voteContent.get("vote").getAsJsonPrimitive().isString();
     }
-    if (typeValidation) {
+    if (typeValidationInt && !typeValidationString) {
       Type token = new TypeToken<CastVote<ElectionVote>>() {}.getType();
       return context.deserialize(json, token);
-    } else {
+    } else if (!typeValidationInt && typeValidationString) {
       Type token = new TypeToken<CastVote<ElectionEncryptedVote>>() {}.getType();
       return context.deserialize(json, token);
+    } else {
+      throw new JsonParseException("Unknown vote type in cast vote message");
     }
   }
+
+
 }

@@ -13,9 +13,9 @@ import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.Ed25519.ElectionPublicKey;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -153,9 +153,9 @@ public class Election extends Event {
     if (votes == null || votes.isEmpty()) {
       throw new IllegalArgumentException("Open ballot votes cannot be null or empty");
     }
-    // The list must be sorted by order of question ids
+    // The list must be sorted by order of vote ids
     List<ElectionVote> votesCopy = new ArrayList<>(votes);
-    votesCopy.sort(Comparator.comparing(ElectionVote::getQuestionId));
+    votesCopy.sort(Comparator.comparing(ElectionVote::getId));
     openVoteByPublicKey.put(senderPk, votesCopy);
   }
 
@@ -199,9 +199,9 @@ public class Election extends Event {
     if (votes == null || votes.isEmpty()) {
       throw new IllegalArgumentException("Encrypted votes cannot be null or empty");
     }
-    // The list must be sorted by order of question ids
+    // The list must be sorted by order of vote ids
     List<ElectionEncryptedVote> votesCopy = new ArrayList<>(votes);
-    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getQuestionId));
+    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getId));
     encryptedVoteByPublicKey.put(senderPk, votesCopy);
   }
 
@@ -308,7 +308,6 @@ public class Election extends Event {
   /**
    * Computes the hash for the registered votes, when terminating an election (sorted by message
    * id's alphabetical order)
-   *
    * @return the hash of all registered votes
    */
   public String computerRegisteredVotes() {

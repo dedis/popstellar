@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects.security.Ed25519;
+package com.github.dedis.popstellar.model.objects.security.ed25519;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotEquals;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 
 import org.junit.Test;
 
@@ -42,8 +45,8 @@ public class ElectionKeyPairTest {
           "Public base64 encoded key : ",
           new Base64URLData(electionPublicKey.toString()).getData().toString());
       // Pad the decrypted data and observe the result
-      int decryptedINt = ((decryptedData[1] & 0xff) << 8) | (decryptedData[0] & 0xff);
-      assertEquals(data, decryptedINt);
+      int decryptedInt = ((decryptedData[1] & 0xff) << 8) | (decryptedData[0] & 0xff);
+      assertEquals(data, decryptedInt);
     } catch (CothorityCryptoException e) {
     } // Exception should not catch anything
   }

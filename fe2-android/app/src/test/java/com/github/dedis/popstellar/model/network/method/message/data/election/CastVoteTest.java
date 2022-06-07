@@ -27,7 +27,7 @@ public class CastVoteTest {
   private final String electionId = " myElection";
   private final boolean writeInEnabled = false;
   private final String write_in = "My write in ballot option";
-  Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   // Set up a open ballot election
   private final ElectionVote electionVote1 =
@@ -101,7 +101,6 @@ public class CastVoteTest {
     }.getType();
     assertEquals(castOpenVote, GSON.fromJson(json, token));
   }
-
 
   /**
    * Deserialization needs a specific generic type to match correctly the class

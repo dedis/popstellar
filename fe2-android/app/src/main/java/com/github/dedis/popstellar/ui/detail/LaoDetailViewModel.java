@@ -358,30 +358,26 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote<ElectionVote> castOpenBallotVote = null;
-      CastVote<ElectionEncryptedVote> castEncryptedVote = null;
-
+      CastVote vote;
       // Construct the cast vote depending if the messages need to be encrypted or not
       if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        castOpenBallotVote = new CastVote<>(votes, election.getId(), lao.getId());
+        vote = new CastVote<>(votes, election.getId(), lao.getId());
       } else {
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        castEncryptedVote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
+        vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
         Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
                 .show();
       }
-
       Channel electionChannel = election.getChannel();
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
-              networkManager
-                      .getMessageSender()
-                      .publish(token, electionChannel,
-                              election.getElectionVersion() == ElectionVersion.OPEN_BALLOT ? castOpenBallotVote : castEncryptedVote)
-                      .doFinally(this::openLaoDetail)
-                      .subscribe(
-                              () -> {
-                                Log.d(TAG, "sent a vote successfully");
+          networkManager
+              .getMessageSender()
+              .publish(token, electionChannel, vote)
+              .doFinally(this::openLaoDetail)
+              .subscribe(
+                  () -> {
+                    Log.d(TAG, "sent a vote successfully");
                     // Toast ? + send back to election screen or details screen ?
                     Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
                         .show();
