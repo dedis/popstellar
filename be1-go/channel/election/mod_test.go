@@ -2,6 +2,7 @@ package election
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -458,6 +459,70 @@ func Test_Sending_Election_Key(t *testing.T) {
 
 	// Compare the key received and the public key of the channel
 	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
+}
+
+func Test_GetVoteIndex(t *testing.T) {
+	electChannel, _ := newFakeChannel(t, true)
+
+	real := 1
+
+	msgBuf := make([]byte, 2)
+
+	binary.BigEndian.PutUint16(msgBuf, uint16(real))
+
+	K, C := electChannel.Encrypt(electChannel.pubElectionKey, msgBuf)
+
+	kBuf, err := K.MarshalBinary()
+	require.NoError(t, err)
+
+	cBuf, err := C.MarshalBinary()
+	require.NoError(t, err)
+
+	buf := append(kBuf, cBuf...)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	validVote := validVote{"", "", 1, buf64}
+
+	index, err := electChannel.getVoteIndex(validVote)
+	require.NoError(t, err)
+
+	require.Equal(t, real, index)
+}
+
+func Test_Decrypt(t *testing.T) {
+	slice32 := make([]byte, 32)
+
+	// create secret ballot election channel: election with one question
+	electChannel, _ := newFakeChannel(t, true)
+
+	// vote is not base64
+	_, err := electChannel.decryptVote("@@@")
+	require.Error(t, err)
+
+	// first 32 bytes are not a kyber.Point
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(slice32))
+	require.Error(t, err)
+
+	// last 32 bytes are not a kyber.Point
+	K := crypto.Suite.Point()
+	KBuf, err := K.MarshalBinary()
+	require.NoError(t, err)
+	KBuf = append(KBuf, slice32...)
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(KBuf))
+	require.Error(t, err)
+
+	// embeded data is empty
+	K, C := electChannel.Encrypt(electChannel.pubElectionKey, []byte{})
+
+	KBuf, err = K.MarshalBinary()
+	require.NoError(t, err)
+
+	CBuf, err := C.MarshalBinary()
+	require.NoError(t, err)
+
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(append(KBuf, CBuf...)))
+	require.Error(t, err)
 }
 
 // -----------------------------------------------------------------------------
