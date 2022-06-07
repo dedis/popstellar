@@ -72,6 +72,16 @@ public final class LaoHandler {
 
 
     }
+
+    /* Creation channel coin*/
+    context
+            .getMessageSender()
+            .subscribe(channel.subChannel("coin"))
+            .subscribe(
+                    () -> Log.d(TAG, "subscription to the coin channel was a success"),
+                    error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
+
+
     laoRepository.updateNodes(channel);
   }
 
