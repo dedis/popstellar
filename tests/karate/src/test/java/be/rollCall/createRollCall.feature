@@ -109,7 +109,7 @@ Feature: Create a Roll Call
     * string rootChannel = "/root"
     When frontend.publish(JSON.stringify(validCreateRollCall), rootChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
-    Then match answer contains INTERNAL_SERVER_ERROR
+    Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
 

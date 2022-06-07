@@ -23,6 +23,7 @@ Feature: Constants
     * def laoValidCreationTime = function(){ return 1633035721 }
     * def laoInvalidCreationTime = function(){ return -1633035721 }
 
+
     # Represents the starting point a valid roll call and should be created after the lao
     * def rollCallValidCreationTime = function()   { return 1633098853 }
     # Creating a Roll Call before a LAO was created should be considered invalid
@@ -31,9 +32,21 @@ Feature: Constants
     * def rollCallOpenValidCreationTime = function(){ return rollCallValidCreationTime() + 100}
     # Creation time of close Roll Call should be after the creation time of Roll Call Open
     * def rollCallCloseValidCreationTime = function(){ return rollCallOpenValidCreationTime() + 100}
+    # Creation time of Election Setup should be after the creation time of Roll Call Close
+    * def electionSetupCreationTime = function() { return 1633098941 }
+
 
     * def laoValidName = function(){ return "LAO"}
     * def laoInvalidName = function(){ return ""}
+    * def electionSetupName = function() { return "Election" }
+
+    * def getLaoValidName = call laoValidName
+    * def getLaoInvalidName = call laoValidName
+    * def getElectionSetupName = call electionSetupName
+
+    * def getLaoValidCreationTime = call laoValidCreationTime
+    * def getLaoInvalidCreationTime = call laoInvalidCreationTime
+    * def getElectionSetupCreationTime = call electionSetupCreationTime
     * def rollCallValidName = function() {return "Roll Call "}
 
     * def getLaoValidName = call laoValidName
@@ -58,6 +71,11 @@ Feature: Constants
             return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
+
+    * def getLaoValid = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+    * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
+    * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
+
     * def constructRollCallId =
       """
         function(laoId, rollCallName, time){
@@ -102,10 +120,17 @@ Feature: Constants
           return "lM5Lntpk4Y4SpKjzV2ICYpe4YnMOvWz1eeREB_RVVRg="
         }
       """
-    * def createValidElectionSetupId =
+    * def createElectionId =
       """
-        function(){
-          return "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
+        function(name, time){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var electionConstant = "Election"
+          var lao = getLaoValid
+          var String = Java.type('java.lang.String')
+          var timeString = String.format("%d",time)
+          return jsonConverter.hash(electionConstant.getBytes(), lao.getBytes(),
+                                    timeString.getBytes(), name.getBytes())
         }
       """
     * def createInvalidElectionSetupId =
@@ -114,10 +139,17 @@ Feature: Constants
           return "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="
         }
       """
+    * def getValidElectionSetupId = createElectionId(getElectionSetupName, getElectionSetupCreationTime)
+
     * def createIsThisProjectFunQuestionId =
       """
         function(){
-          return "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg="
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var jsonConverter = new JsonConverter()
+          var questionConstant = "Question"
+          var electionId = getValidElectionSetupId
+          var question = "Is this project fun?"
+          return jsonConverter.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
         }
       """
     * def createInvalidQuestionId =
@@ -126,10 +158,32 @@ Feature: Constants
           return "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="
         }
       """
+    * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
     * def createIsThisProjectFunVoteId =
       """
+        function(vote){
+          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var String = Java.type('java.lang.String')
+          var jsonConverter = new JsonConverter()
+          var voteConstant = "Vote"
+          var electionId = getValidElectionSetupId
+          var questionId = getIsThisProjectFunQuestionId
+          return jsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
+                                     questionId.getBytes(), vote.getBytes())
+        }
+      """
+    # The argument "0" represents the index of the ballot option Yes
+    * def createIsThisProjectFunVoteIdVoteYes =
+      """
         function(){
-          return "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk="
+          return createIsThisProjectFunVoteId("0")
+        }
+      """
+    # The argument "1" represents the index of the ballot option No
+    * def createIsThisProjectFunVoteIdVoteNo =
+      """
+        function(){
+          return createIsThisProjectFunVoteId("1")
         }
       """
     * def createInvalidVoteId =
@@ -173,11 +227,9 @@ Feature: Constants
     * def getRollCallCloseValidUpdateId = constructRollCallUpdateId(getLaoValid, getRollCallCloseValidId, getRollCallCloseValidCreationTime)
     * def getRollCallCloseInvalidUpdateId = call createInvalidRollCallCloseUpdateId
 
-    * def getValidElectionSetupId = call createValidElectionSetupId
     * def getInvalidElectionSetupId = call createInvalidElectionSetupId
-    * def getIsThisProjectFunQuestionId = call createIsThisProjectFunQuestionId
     * def getInvalidQuestionId = call createInvalidQuestionId
-    * def getIsThisProjectFunVoteId = call createIsThisProjectFunVoteId
+    * def getIsThisProjectFunVoteIdVoteYes = call createIsThisProjectFunVoteIdVoteYes
     * def getInvalidVoteId = call createInvalidVoteId
     * def getValidRegisteredVotes = call createValidRegisteredVotes
     * def getInvalidRegisteredVotes = call createInvalidRegisteredVotes

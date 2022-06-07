@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
+import { BackRoundButton, CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
@@ -14,6 +14,11 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   largePadding: {
     padding: '2rem',
+  } as ViewStyle,
+  container: {
+    ...containerStyles.centeredY,
+    padding: 20,
+    height: '100%',
   } as ViewStyle,
 });
 
@@ -44,16 +49,14 @@ const WalletCreateSeed = () => {
   };
 
   return (
-    <View style={containerStyles.centeredY}>
+    <View style={styles.container}>
+      <BackRoundButton onClick={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)} />
+      <View style={styles.largePadding} />
       <TextBlock bold text={STRINGS.show_seed_info} />
       <View style={styles.smallPadding} />
       <CopiableTextInput text={seed} />
       <View style={styles.smallPadding} />
       <WideButtonView title={STRINGS.connect_with_this_seed} onPress={() => connectWithSeed()} />
-      <WideButtonView
-        title={STRINGS.back_to_wallet_setup}
-        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
-      />
     </View>
   );
 };

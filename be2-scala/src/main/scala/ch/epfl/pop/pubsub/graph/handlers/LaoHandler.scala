@@ -50,15 +50,14 @@ case object LaoHandler extends MessageHandler {
           _ <- dbActor ? DbActor.Write(laoChannel, message)
           // write lao data
           _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
+          //after creating the lao, we need to send a lao#greet message to the frontend
+          greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
+          broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
+          _ <- dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
         } yield ()
 
         Await.ready(combined, duration).value.get match {
-          case Success(_) =>
-            //after creating the lao, we need to send a lao#greet message to the frontend
-            val greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
-            val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
-            dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
-
+          case Success(_) => Left(rpcMessage)
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }

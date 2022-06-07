@@ -62,7 +62,7 @@
 
       <Button
         android:id="@+id/button_confirm_seed"
-        style="@style/button_style"
+        style="@style/Theme.AppCompat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"

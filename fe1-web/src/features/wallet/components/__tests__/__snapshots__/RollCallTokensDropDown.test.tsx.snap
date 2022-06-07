@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RollCallTokensDropDown renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "fontSize": 20,
+      "margin": "auto",
+      "maxHeight": 40,
+      "maxWidth": "90%",
+      "textAlign": "center",
+      "width": "fit-content",
+    }
+  }
+>
+  <RNCPicker
+    items={
+      Array [
+        Object {
+          "label": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+          "testID": undefined,
+          "textColor": undefined,
+          "value": 0,
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
