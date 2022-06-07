@@ -139,6 +139,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}
 
+	newChannel.createCoinChannel(socket, newChannel.log)
+
 	return newChannel, err
 }
 
@@ -448,8 +450,6 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 			}
 		}
 	}
-
-	c.createCoinChannel(senderSocket, c.log)
 
 	return nil
 }
