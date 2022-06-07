@@ -53,13 +53,13 @@ export function requestSendTransaction(
  * Requests a digital cash coinbase transaction post
  *
  * @param organizerKP the keypair of the organizer
- * @param to the destination public key
+ * @param to the destinations' public key
  * @param amount the value of the transaction
  * @param laoId the lao id in which to send the transaction
  */
 export function requestCoinbaseTransaction(
   organizerKP: KeyPair,
-  to: PublicKey,
+  to: PublicKey[],
   amount: number,
   laoId: Hash,
 ): Promise<void> {

@@ -56,7 +56,7 @@ describe('Digital Cash Message Api', () => {
   it('should create a correct coinbase transaction request', async () => {
     await requestCoinbaseTransaction(
       mockKeyPair,
-      mockKeyPair.publicKey,
+      [mockKeyPair.publicKey],
       mockTransactionValue,
       new Hash(mockLaoId),
     );

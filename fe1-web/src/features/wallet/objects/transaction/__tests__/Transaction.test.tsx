@@ -209,7 +209,7 @@ describe('Transaction', () => {
   it('should be able to create a coinbase transaction properly', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
-      mockKeyPair.publicKey,
+      [mockKeyPair.publicKey],
       mockTransactionValue,
     );
     expect(coinbaseTransaction.transactionId.valueOf()).toEqual(mockCBHash.valueOf());
@@ -219,7 +219,7 @@ describe('Transaction', () => {
   it('should validate a properly signed coinbase transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
-      mockKeyPair.publicKey,
+      [mockKeyPair.publicKey],
       mockTransactionValue,
     );
     const isValid = coinbaseTransaction.checkTransactionValidity(
@@ -231,7 +231,7 @@ describe('Transaction', () => {
   it('should invalidate a badly signed transaction', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
-      mockKeyPair.publicKey,
+      [mockKeyPair.publicKey],
       mockTransactionValue,
     );
     const isValid = coinbaseTransaction.checkTransactionValidity(

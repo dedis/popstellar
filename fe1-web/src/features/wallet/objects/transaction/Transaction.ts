@@ -181,20 +181,19 @@ export class Transaction {
   /**
    * Creates a coinbase transaction
    * @param organizerKP the organizer's key pair
-   * @param to the receiver of the coinbase transaction
+   * @param to the receivers of the coinbase transaction
    * @param amount the amount to send
    */
-  public static createCoinbase(organizerKP: KeyPair, to: PublicKey, amount: number): Transaction {
-    const toPublicKeyHash = Hash.fromPublicKey(to);
-    const outputTo = {
-      value: amount,
-      script: {
-        type: SCRIPT_TYPE,
-        publicKeyHash: toPublicKeyHash.valueOf(),
-      },
-    };
-
-    const outputs: TransactionOutputState[] = [outputTo];
+  public static createCoinbase(organizerKP: KeyPair, to: PublicKey[], amount: number): Transaction {
+    const outputs: TransactionOutputState[] = to.map((pk) => {
+      return {
+        value: amount,
+        script: {
+          type: SCRIPT_TYPE,
+          publicKeyHash: Hash.fromPublicKey(pk).valueOf(),
+        },
+      };
+    });
 
     const input: Omit<TransactionInputState, 'script'> = {
       txOutHash: COINBASE_HASH,

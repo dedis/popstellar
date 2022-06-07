@@ -128,7 +128,7 @@ const WalletHome = () => {
     if (isCoinbase) {
       requestCoinbaseTransaction(
         KeyPairStore.get(),
-        new PublicKey(receiver),
+        [new PublicKey(receiver)],
         amount,
         tokens[selectedTokenIndex].laoId,
       )
