@@ -131,22 +131,26 @@ const WalletHome = () => {
         [new PublicKey(receiver)],
         amount,
         tokens[selectedTokenIndex].laoId,
-      )
-        .then(() => toast.show('Sent coinbase transaction'))
-        .catch((err) => {
-          console.error('Failed sending the transaction : ', err);
-        });
+      ).then(
+        () => toast.show('Sent coinbase transaction'),
+        (reason) => {
+          toast.show('Failed to send transaction');
+          console.error(reason);
+        },
+      );
     } else {
       requestSendTransaction(
         tokens[selectedTokenIndex].token,
         new PublicKey(receiver),
         amount,
         tokens[selectedTokenIndex].laoId,
-      )
-        .then(() => toast.show('Sent transaction'))
-        .catch((err) => {
-          console.error('Failed sending the transaction : ', err);
-        });
+      ).then(
+        () => toast.show('Sent transaction'),
+        (reason) => {
+          toast.show('Failed to send transaction');
+          console.error(reason);
+        },
+      );
     }
     setSendModalVisible(false);
   };
