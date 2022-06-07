@@ -20,7 +20,12 @@ export { default as ProfileIcon } from './ProfileIcon';
 export { default as QRCode } from './QRCode';
 export { default as RecorderButton } from './RecorderButton';
 export { default as RemovableTextInput } from './RemovableTextInput';
-export { BackRoundButton, LogoutRoundButton } from './RoundIconButton';
+export {
+  BackRoundButton,
+  CloseRoundButton,
+  LogoutRoundButton,
+  SendRoundButton,
+} from './RoundIconButton';
 export { default as TextBlock } from './TextBlock';
 export { default as TextInputLine } from './TextInputLine';
 export { default as TextInputList } from './TextInputList';

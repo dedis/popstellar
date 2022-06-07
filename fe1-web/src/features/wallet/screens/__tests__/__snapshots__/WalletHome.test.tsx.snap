@@ -461,11 +461,11 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
+                                      "alignContent": "center",
                                       "alignItems": "center",
                                       "backgroundColor": "#2196F3",
                                       "borderRadius": 30,
-                                      "display": "flex",
-                                      "height": 80,
+                                      "height": 65,
                                       "justifyContent": "center",
                                       "opacity": 1,
                                       "shadowColor": "gray",
@@ -473,31 +473,11 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                         "height": 2,
                                         "width": 2,
                                       },
-                                      "width": 80,
+                                      "width": 65,
                                     }
                                   }
                                 >
-                                  <View
-                                    style={
-                                      Object {
-                                        "overflow": "hidden",
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "alignItems": "center",
-                                            "backgroundColor": "transparent",
-                                            "justifyContent": "center",
-                                          }
-                                        }
-                                      >
-                                        <Text />
-                                      </View>
-                                    </View>
-                                  </View>
+                                  <Text />
                                 </View>
                               </View>
                               <View

@@ -4,14 +4,14 @@ import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { LogoutRoundButton, QRCode } from 'core/components';
+import { LogoutRoundButton, QRCode, SendRoundButton } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
 import { PublicKey } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 
-import { RollCallTokensDropDown, SendModal, RoundIconButton } from '../components';
+import { RollCallTokensDropDown, SendModal } from '../components';
 import { WalletHooks } from '../hooks';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../network';
 import * as Wallet from '../objects';
@@ -138,8 +138,7 @@ const WalletHome = () => {
       {tokenInfos()}
       {tokens && (
         <View style={styles.mainButtonsContainer}>
-          <RoundIconButton
-            name="send"
+          <SendRoundButton
             onClick={() => {
               setSendModalVisible(true);
             }}

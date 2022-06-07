@@ -1,3 +1,4 @@
+import { FontAwesome } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -54,6 +55,31 @@ export const LogoutRoundButton = (props: IButtonPropTypes) => {
   );
 };
 
+export const SendRoundButton = (props: IButtonPropTypes) => {
+  const { onClick } = props;
+  return (
+    <RoundIconButton onClick={onClick}>
+      <FontAwesome
+        name="dollar"
+        size={Buttons.defaultButtonIconSize}
+        color={Buttons.defaultButtonIconColor}
+      />
+    </RoundIconButton>
+  );
+};
+
+export const CloseRoundButton = (props: IButtonPropTypes) => {
+  const { onClick } = props;
+  return (
+    <RoundIconButton onClick={onClick}>
+      <AntDesign
+        name="close"
+        size={Buttons.defaultButtonIconSize}
+        color={Buttons.defaultButtonIconColor}
+      />
+    </RoundIconButton>
+  );
+};
 const buttonPropTypes = {
   onClick: PropTypes.func.isRequired,
 };

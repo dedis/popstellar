@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 import { Button, Modal, StyleSheet, Switch, Text, View, ViewStyle } from 'react-native';
 import { Input } from 'react-native-elements';
 
+import { CloseRoundButton } from 'core/components';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-
-import RoundIconButton from './RoundIconButton';
 
 const styles = StyleSheet.create({
   modal: {
@@ -60,7 +59,7 @@ const SendModal = (props: IPropTypes) => {
         <View style={containerStyles.centerWithMargin}>
           <View style={styles.topBar}>
             <Text style={styles.title}>{STRINGS.wallet_send_title}</Text>
-            <RoundIconButton name="close" onClick={switchModalVisibility} />
+            <CloseRoundButton onClick={switchModalVisibility} />
           </View>
           <View style={styles.sendContainer}>
             <View style={styles.sendView}>
