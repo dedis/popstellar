@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"go.dedis.ch/kyber/v3"
 	"net/url"
 	be1_go "popstellar"
@@ -52,28 +53,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// compute the client server address
 	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
 
-	var point kyber.Point = nil
-
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
 
-	if pk != "" {
-		point = crypto.Suite.Point()
-		// decode public key and unmarshal public key
-		pkBuf, err := base64.URLEncoding.DecodeString(pk)
-		if err != nil {
-			return xerrors.Errorf("failed to base64url decode public key: %v", err)
-		}
-
-		err = point.UnmarshalBinary(pkBuf)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal public key: %v", err)
-		}
-
-		log.Info().Msg("The owner public key has been specified, only " + pk + " can create LAO")
-	} else {
-		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
-	}
+	var point kyber.Point = nil
+	ownerKey(pk, &point)
 
 	// create user hub
 	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
@@ -193,6 +177,28 @@ func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub,
 		}
 	default:
 		return xerrors.Errorf("invalid other hub type: %v", otherHubType)
+	}
+
+	return nil
+}
+
+func ownerKey(pk string, point *kyber.Point) error {
+	if pk != "" {
+		*point = crypto.Suite.Point()
+		// decode public key and unmarshal public key
+		pkBuf, err := base64.URLEncoding.DecodeString(pk)
+		if err != nil {
+			return xerrors.Errorf("failed to base64url decode public key: %v", err)
+		}
+
+		err = (*point).UnmarshalBinary(pkBuf)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal public key: %v", err)
+		}
+
+		log.Info().Msg("The owner public key has been specified, only " + pk + " can create LAO")
+	} else {
+		log.Info().Msg("No public key specified for the owner, everyone can create LAO.")
 	}
 
 	return nil
