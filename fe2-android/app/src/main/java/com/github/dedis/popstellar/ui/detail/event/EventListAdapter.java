@@ -46,9 +46,9 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     this.eventsMap.put(FUTURE, new ArrayList<>());
     this.lifecycleOwner = lifecycleOwner;
     this.viewModel = viewModel;
-    expanded[PAST.ordinal()] = false;
+    expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
-    expanded[FUTURE.ordinal()] = false;
+    expanded[FUTURE.ordinal()] = true;
     putEventsInMap(events);
   }
 

@@ -107,7 +107,8 @@ public class EventListAdapterTest {
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(1));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(2));
-              assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(3));
+              assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(3));
+              assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(4));
             });
   }
 
@@ -124,10 +125,11 @@ public class EventListAdapterTest {
                   new EventListAdapter(
                       Arrays.asList(ROLL_CALL, ROLL_CALL2), laoDetailViewModel, activity);
               adapter.replaceList(Collections.singletonList(ROLL_CALL2));
-              assertEquals(3, adapter.getItemCount());
+              assertEquals(4, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(1));
-              assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(2));
+              assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(2));
+              assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(3));
             });
   }
 }
