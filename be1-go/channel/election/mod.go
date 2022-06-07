@@ -660,8 +660,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 		if question.method == "Plurality" {
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
-				index, err := c.getVoteIndex(vote)
-				if err == nil {
+				index, ok := c.getVoteIndex(vote)
+				if ok && index >= 0 && index < len(question.ballotOptions) {
 					numberOfVotesPerBallotOption[index]++
 				}
 			}
@@ -685,12 +685,17 @@ func (c *Channel) gatherResults(questions map[string]*question,
 }
 
 // getVoteIndex extracts the index of the vote from the validVotes
-func (c *Channel) getVoteIndex(vote validVote) (int, error) {
-	switch m := c.electionType; m {
+func (c *Channel) getVoteIndex(vote validVote) (int, bool) {
+	elecType := c.electionType
+	switch elecType {
 	// open ballot votes have the index in plain text
 	case messagedata.OpenBallot:
-		index, _ := vote.index.(int)
-		return index, nil
+		index, ok := vote.index.(int)
+		if !ok {
+			return -1, false
+		}
+
+		return index, true
 	// secret ballot votes must be decrypted to get the index
 	case messagedata.SecretBallot:
 		temp, _ := vote.index.(string)
@@ -699,11 +704,11 @@ func (c *Channel) getVoteIndex(vote validVote) (int, error) {
 			// logs a warning because we don't stop the tallying for non-conform votes
 			// we just disregards them
 			c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
-			return index, err
+			return index, false
 		}
-		return index, nil
+		return index, true
 	default:
-		return -1, answer.NewErrorf(-6, "election type shouldn't be %s", m)
+		return -1, false
 	}
 }
 
@@ -713,6 +718,10 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	votebuf, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
 		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
+	}
+
+	if len(votebuf) != 64 {
+		return -1, answer.NewErrorf(-4, "vote %s is not 64 bytes long", vote)
 	}
 
 	// K and C are respectively the first and last 32 bytes of the vote
@@ -736,7 +745,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 		return -1, answer.NewErrorf(-4, "vote data is invalid")
 	}
 
-	var index int16
+	var index uint16
 
 	// interprets the data as a big endian int
 	buf := bytes.NewReader(data)

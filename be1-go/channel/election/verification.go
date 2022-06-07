@@ -271,8 +271,9 @@ func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
 			return answer.NewErrorf(-4, "vote should be base64 encoded")
 		}
 
-		if l := len(temp); l != 64 {
-			return answer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", l)
+		length := len(temp)
+		if length != 64 {
+			return answer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", length)
 		}
 	}
 

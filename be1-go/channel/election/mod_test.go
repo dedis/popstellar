@@ -484,14 +484,17 @@ func Test_GetVoteIndex(t *testing.T) {
 
 	validVote := validVote{"", "", 1, buf64}
 
-	index, err := electChannel.getVoteIndex(validVote)
-	require.NoError(t, err)
+	index, ok := electChannel.getVoteIndex(validVote)
+	require.True(t, ok)
 
 	require.Equal(t, real, index)
 }
 
 func Test_Decrypt(t *testing.T) {
 	slice32 := make([]byte, 32)
+	for i := range slice32 {
+		slice32[i] = 0
+	}
 
 	// create secret ballot election channel: election with one question
 	electChannel, _ := newFakeChannel(t, true)

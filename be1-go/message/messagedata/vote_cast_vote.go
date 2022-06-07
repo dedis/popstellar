@@ -22,7 +22,7 @@ type VoteCastVote struct {
 type Vote struct {
 	ID       string
 	Question string
-	Vote     interface{}
+	Vote     interface{} // Can be int or string
 }
 
 // tempVote is used to prevent the infinite loop when unmarshalling
@@ -36,8 +36,10 @@ type tempVote struct {
 func (v *Vote) UnmarshalJSON(b []byte) error {
 	// unmarshalling into a tempVote
 	var vTemp tempVote
-	if err := json.Unmarshal(b, &vTemp); err != nil {
-		return err
+
+	err := json.Unmarshal(b, &vTemp)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError("failed to unmarshal vote")
 	}
 
 	// checking that Vote.Vote is either an int or a string
@@ -49,13 +51,13 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 			return answer.NewErrorf(-4, "invalid vote type, should be int but was float")
 		}
 		*v = Vote{vTemp.ID, vTemp.Question, i}
-		return nil
 	case string:
 		*v = Vote(vTemp)
-		return nil
 	default:
 		return answer.NewErrorf(-4, "invalid vote type, should be int or string but was %v", t)
 	}
+
+	return nil
 }
 
 // GetObject implements MessageData
