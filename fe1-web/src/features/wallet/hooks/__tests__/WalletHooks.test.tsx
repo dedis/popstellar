@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLaoId, mockLaoIdHash } from "__tests__/utils";
 import FeatureContext from 'core/contexts/FeatureContext';
 import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
@@ -16,12 +16,14 @@ const rollCallByIdMapByLaoId = {
   },
 };
 const useRollCallsByLaoId = jest.fn(() => rollCallByIdMapByLaoId);
+const getLaoOrganizer = jest.fn(() => mockKeyPair.publicKey);
 
 const contextValue = {
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
     getEventById,
     useRollCallsByLaoId,
+    getLaoOrganizer,
   } as WalletReactContext,
 };
 
