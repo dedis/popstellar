@@ -18,9 +18,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.ele.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.ele.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.ele.ElectionPublicKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Before;
