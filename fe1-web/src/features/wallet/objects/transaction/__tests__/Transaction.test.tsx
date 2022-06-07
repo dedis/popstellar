@@ -11,7 +11,7 @@ import {
   mockTransactionValue,
 } from '__tests__/utils';
 import { Hash, PopToken, PublicKey } from 'core/objects';
-import STRINGS from 'resources/strings';
+import { COINBASE_HASH } from 'resources/const';
 
 import { Transaction, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
@@ -25,7 +25,7 @@ const validCoinbaseState: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: STRINGS.coinbase_hash,
+      txOutHash: COINBASE_HASH,
       txOutIndex: 0,
       script: {
         type: 'Pay-to-Pubkey-Hash',

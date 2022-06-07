@@ -258,8 +258,6 @@ namespace STRINGS {
   export const roll_call_name = 'Roll Call name';
 
   /* --- Digital Cash Strings --- */
-  export const script_type = 'Pay-to-Pubkey-Hash';
-  export const coinbase_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
   export const cash_send = 'Send';
   export const cash_receiver = 'Receiver';
   export const wallet_logout_icon = 'logout';

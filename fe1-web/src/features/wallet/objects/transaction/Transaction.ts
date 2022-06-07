@@ -1,5 +1,5 @@
 import { Base64UrlData, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
-import STRINGS from 'resources/strings';
+import { SCRIPT_TYPE, COINBASE_HASH } from 'resources/const';
 
 import { TransactionInput, TransactionInputJSON, TransactionInputState } from './TransactionInput';
 import {
@@ -127,7 +127,7 @@ export class Transaction {
     const outputTo = {
       value: amount,
       script: {
-        type: STRINGS.script_type,
+        type: SCRIPT_TYPE,
         publicKeyHash: toPublicKeyHash.valueOf(),
       },
     };
@@ -140,7 +140,7 @@ export class Transaction {
       const outputFrom: TransactionOutputState = {
         value: currentBalance - amount,
         script: {
-          type: STRINGS.script_type,
+          type: SCRIPT_TYPE,
           publicKeyHash: fromPublicKeyHash.valueOf(),
         },
       };
@@ -163,7 +163,7 @@ export class Transaction {
       return {
         ...input,
         script: {
-          type: STRINGS.script_type,
+          type: SCRIPT_TYPE,
           publicKey: from.publicKey.valueOf(),
           signature: signature.valueOf(),
         },
@@ -189,7 +189,7 @@ export class Transaction {
     const outputTo = {
       value: amount,
       script: {
-        type: STRINGS.script_type,
+        type: SCRIPT_TYPE,
         publicKeyHash: toPublicKeyHash.valueOf(),
       },
     };
@@ -197,7 +197,7 @@ export class Transaction {
     const outputs: TransactionOutputState[] = [outputTo];
 
     const input: Omit<TransactionInputState, 'script'> = {
-      txOutHash: STRINGS.coinbase_hash,
+      txOutHash: COINBASE_HASH,
       txOutIndex: 0,
     };
 
@@ -211,7 +211,7 @@ export class Transaction {
     const finalInput: TransactionInputState = {
       ...input,
       script: {
-        type: STRINGS.script_type,
+        type: SCRIPT_TYPE,
         publicKey: organizerKP.publicKey.valueOf(),
         signature: signature.valueOf(),
       },
@@ -259,7 +259,7 @@ export class Transaction {
     transactionStates: Record<string, TransactionState>,
   ): boolean => {
     // Transaction is a coinbase transaction if it's first input's txOutHash is the defined coinbase hash
-    const isCoinbase = this.inputs[0].txOutHash.valueOf() === STRINGS.coinbase_hash;
+    const isCoinbase = this.inputs[0].txOutHash.valueOf() === COINBASE_HASH;
 
     // Reconstruct data signed on
     const encodedData = Base64UrlData.encode(

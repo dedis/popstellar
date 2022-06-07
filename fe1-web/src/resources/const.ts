@@ -1,1 +1,5 @@
 export const FOUR_SECONDS = 4000;
+
+// DIGITAL CASH
+export const SCRIPT_TYPE = 'Pay-to-Pubkey-Hash';
+export const COINBASE_HASH = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';

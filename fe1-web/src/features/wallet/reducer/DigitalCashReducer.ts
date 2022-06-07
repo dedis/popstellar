@@ -6,8 +6,8 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
+import { COINBASE_HASH } from 'resources/const';
 
-import STRINGS from '../../../resources/strings';
 import { TransactionState } from '../objects/transaction';
 
 export interface DigitalCashReducerState {
@@ -90,7 +90,7 @@ const digitalCashSlice = createSlice({
         const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
 
         // If this is not a coinbase transaction, then as we are sure that all inputs are used
-        if (input.txOutHash !== STRINGS.coinbase_hash) {
+        if (input.txOutHash !== COINBASE_HASH) {
           laoState.balances[pubHash] = 0;
           laoState.transactionsByPubHash[pubHash] = [];
         }

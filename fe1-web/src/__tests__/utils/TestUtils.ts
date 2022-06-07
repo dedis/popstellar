@@ -5,9 +5,9 @@ import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jso
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
+import { COINBASE_HASH } from 'resources/const';
 
 import { TransactionJSON, TransactionState } from '../../features/wallet/objects/transaction';
-import STRINGS from '../../resources/strings';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
@@ -90,7 +90,7 @@ export const mockCoinbaseTransactionJSON: TransactionJSON = {
   version: 1,
   inputs: [
     {
-      tx_out_hash: STRINGS.coinbase_hash,
+      tx_out_hash: COINBASE_HASH,
       tx_out_index: 0,
       script: {
         type: 'Pay-to-Pubkey-Hash',
