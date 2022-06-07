@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,25 @@ public class TransactionObject {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
       receivers.add(pub);
+    }
+    return receivers;
+  }
+
+  /**
+   * Function that give the Public Key of the Outputs
+   *
+   * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
+   * @return List<PublicKey> outputs public keys
+   */
+  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> map_hash_key) {
+    Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
+    Map<PublicKey, Long> receivers = new HashMap<>();
+    while (receiver_hash_ite.hasNext()) {
+      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(), null);
+      if (pub == null) {
+        throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
+      }
+      receivers.putIfAbsent(pub, this.getMiniLaoPerReceiver(pub));
     }
     return receivers;
   }
