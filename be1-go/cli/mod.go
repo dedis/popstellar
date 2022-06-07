@@ -56,7 +56,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 
 	// get the HubType from the user
 	var hubType = hub.HubType(user)
-	
+
 	if pk != "" {
 		point = crypto.Suite.Point()
 		// decode public key and unmarshal public key
