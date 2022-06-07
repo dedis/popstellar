@@ -38,6 +38,7 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     context: {
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
+      getLaoOrganizer: configuration.getLaoOrganizer,
     },
   };
 }

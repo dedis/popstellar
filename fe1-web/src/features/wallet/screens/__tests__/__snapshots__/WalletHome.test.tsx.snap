@@ -628,40 +628,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     />
                                   </View>
                                   <View
-                                    style={
-                                      Object {
-                                        "flexDirection": "row",
-                                        "margin": 15,
-                                      }
-                                    }
-                                  >
-                                    <Text>
-                                      Coinbase: 
-                                    </Text>
-                                    <RCTSwitch
-                                      accessibilityRole="switch"
-                                      onChange={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      onTintColor="#81b0ff"
-                                      style={
-                                        Array [
-                                          Object {
-                                            "height": 31,
-                                            "width": 51,
-                                          },
-                                          Object {
-                                            "backgroundColor": "#3e3e3e",
-                                            "borderRadius": 16,
-                                          },
-                                        ]
-                                      }
-                                      thumbTintColor="#f4f3f4"
-                                      tintColor="#767577"
-                                      value={false}
-                                    />
-                                  </View>
-                                  <View
                                     accessibilityRole="button"
                                     accessible={true}
                                     collapsable={false}

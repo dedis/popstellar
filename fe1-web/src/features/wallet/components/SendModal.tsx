@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
  * A modal to send some LAOCOINs to another public key
  */
 const SendModal = (props: IPropTypes) => {
-  const { modalVisible, setModalVisible, send } = props;
+  const { modalVisible, setModalVisible, send, isOrganizer } = props;
   const [isCoinbase, setIsCoinbase] = useState(false);
   const [receiverPK, setReceiverPK] = useState('');
   const [amount, setAmount] = useState(0);
@@ -73,16 +73,18 @@ const SendModal = (props: IPropTypes) => {
                 label={STRINGS.wallet_send_amount_label}
                 onChangeText={(text) => setAmount(Number.parseInt(text, 10))}
               />
-              <View style={styles.switchContainer}>
-                <Text>Coinbase: </Text>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={isCoinbase ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={() => setIsCoinbase(!isCoinbase)}
-                  value={isCoinbase}
-                />
-              </View>
+              {isOrganizer && (
+                <View style={styles.switchContainer}>
+                  <Text>Coinbase: </Text>
+                  <Switch
+                    trackColor={{ false: '#767577', true: '#81b0ff' }}
+                    thumbColor={isCoinbase ? '#f5dd4b' : '#f4f3f4'}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={() => setIsCoinbase(!isCoinbase)}
+                    value={isCoinbase}
+                  />
+                </View>
+              )}
               <Button title={STRINGS.wallet_send_title} onPress={onPressSend} />
             </View>
           </View>
@@ -96,6 +98,7 @@ const propTypes = {
   modalVisible: PropTypes.bool.isRequired,
   setModalVisible: PropTypes.func.isRequired,
   send: PropTypes.func.isRequired,
+  isOrganizer: PropTypes.bool.isRequired,
 };
 SendModal.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

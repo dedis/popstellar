@@ -88,6 +88,7 @@ export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
   /* lao */
   | 'useCurrentLaoId'
+  | 'getLaoOrganizer'
   /* events */
   | 'useRollCallsByLaoId'
 >;

@@ -18,6 +18,8 @@ import * as Wallet from '../objects';
 import { RollCallToken } from '../objects/RollCallToken';
 import { makeBalanceSelector } from '../reducer';
 
+import useWalletContext = WalletHooks.useWalletContext;
+
 const styles = StyleSheet.create({
   homeContainer: {
     ...containerStyles.centeredXY,
@@ -59,19 +61,24 @@ const WalletHome = () => {
   const [sendModalVisible, setSendModalVisible] = useState(false);
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(-1);
+  const [isSelectedLaoOrganizer, setIsSelectedLaoOrganizer] = useState(false);
 
   const toast = useToast();
+  const walletContext = useWalletContext();
 
   const rollCalls = WalletHooks.useRollCallsByLaoId();
 
   const laoId = WalletHooks.useCurrentLaoId();
 
   const balanceSelector = useMemo(() => {
-    if (!laoId || selectedTokenIndex === -1 || !tokens) {
+    if (selectedTokenIndex === -1 || !tokens) {
       return () => 0;
     }
-    return makeBalanceSelector(laoId, tokens[selectedTokenIndex].token.publicKey.valueOf());
-  }, [tokens, laoId, selectedTokenIndex]);
+    return makeBalanceSelector(
+      tokens[selectedTokenIndex].laoId,
+      tokens[selectedTokenIndex].token.publicKey.valueOf(),
+    );
+  }, [tokens, selectedTokenIndex]);
   const balance = useSelector(balanceSelector);
 
   // FIXME: Navigation should use a defined type here (instead of any)
@@ -96,6 +103,19 @@ const WalletHome = () => {
         console.debug(e);
       });
   }, [rollCalls, laoId]);
+
+  useEffect(() => {
+    if (!tokens || selectedTokenIndex === -1) {
+      setIsSelectedLaoOrganizer(false);
+      return;
+    }
+    const organizer = walletContext.getLaoOrganizer(tokens[selectedTokenIndex].laoId.valueOf());
+    if (organizer && organizer.valueOf() === KeyPairStore.getPublicKey().valueOf()) {
+      setIsSelectedLaoOrganizer(true);
+    } else {
+      setIsSelectedLaoOrganizer(false);
+    }
+  }, [walletContext, tokens, selectedTokenIndex]);
 
   const sendTransaction = (receiver: string, amount: number, isCoinbase: boolean) => {
     if (!tokens) {
@@ -183,6 +203,7 @@ const WalletHome = () => {
         modalVisible={sendModalVisible}
         setModalVisible={setSendModalVisible}
         send={sendTransaction}
+        isOrganizer={isSelectedLaoOrganizer}
       />
       <View style={styles.smallPadding} />
     </View>
