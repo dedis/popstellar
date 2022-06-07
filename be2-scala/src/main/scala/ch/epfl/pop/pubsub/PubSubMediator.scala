@@ -32,9 +32,8 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
         // if we have people already subscribed to said channel
         case Some(set) =>
           if (set.contains(clientActorRef)) {
-            val reason: String = s"Actor $clientActorRef was already subscribed to channel '$channel'"
-            log.info(reason)
-            Future(SubscribeToNAck(channel, reason))
+            log.info(s"$clientActorRef already subscribed to '$channel'")
+            Future(SubscribeToAck(channel))
           } else {
             log.info(s"Subscribing $clientActorRef to channel '$channel'")
             set += clientActorRef
