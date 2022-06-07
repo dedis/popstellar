@@ -25,16 +25,8 @@ final case class RollCallData(update_id: Hash, state: ActionType) {
 }
 
 object RollCallData extends Parsable {
-  def apply(
-             update_id: Hash,
-             state: ActionType
-           ): RollCallData = {
-    new RollCallData(update_id, state)
-  }
 
   override def buildFromJson(payload: String): RollCallData = payload.parseJson.asJsObject.convertTo[RollCallData]
 
   def getName: String = "rollcallData"
 }
-
-
