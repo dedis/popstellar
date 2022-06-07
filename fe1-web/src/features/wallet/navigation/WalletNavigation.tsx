@@ -1,12 +1,21 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/core';
+import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { PoPIcon } from 'core/components';
+import { makeIcon } from 'core/components/PoPIcon';
+import { useActionSheet } from 'core/hooks/ActionSheet';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { WalletError, WalletHome, WalletSetSeed, WalletSetup, WalletCreateSeed } from '../screens';
-import { WalletStore } from '../store';
+import { WalletFeature } from '../interface';
+import { forget } from '../objects';
+import { WalletHome } from '../screens';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<WalletParamList>();
 
 /**
  * Defines the Wallet stack navigation.
@@ -17,17 +26,43 @@ export default function WalletNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-      initialRouteName={
-        WalletStore.hasSeed()
-          ? STRINGS.navigation_wallet_home_tab
-          : STRINGS.navigation_wallet_setup_tab
-      }>
-      <Stack.Screen name={STRINGS.navigation_wallet_setup_tab} component={WalletSetup} />
+      }}>
       <Stack.Screen name={STRINGS.navigation_wallet_home_tab} component={WalletHome} />
-      <Stack.Screen name={STRINGS.navigation_wallet_create_seed} component={WalletCreateSeed} />
-      <Stack.Screen name={STRINGS.navigation_wallet_insert_seed} component={WalletSetSeed} />
-      <Stack.Screen name={STRINGS.navigation_wallet_error} component={WalletError} />
     </Stack.Navigator>
   );
 }
+
+/* can be in the lao or home navigation but we only need the top app navigation which is always present */
+type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>;
+
+const WalletNavigationHeaderRight = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+
+  const showActionSheet = useActionSheet();
+
+  const onPressOptions = () => {
+    showActionSheet([
+      {
+        displayName: STRINGS.wallet_home_logout,
+        action: () => {
+          forget();
+          navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
+        },
+      },
+    ]);
+  };
+
+  return (
+    <TouchableOpacity onPress={onPressOptions}>
+      <PoPIcon name="options" color={Color.primary} size={Icon.size} />
+    </TouchableOpacity>
+  );
+};
+
+export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.LaoScreen = {
+  id: STRINGS.navigation_home_wallet,
+  Component: WalletNavigation,
+  tabBarIcon: makeIcon('wallet'),
+  order: 99999999,
+  headerRight: () => <WalletNavigationHeaderRight />,
+};

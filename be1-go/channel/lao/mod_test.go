@@ -549,18 +549,15 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 
 	greetMsg := catchupAnswer[1]
 
-	data := messagedata.LaoGreet{}.NewEmpty()
+	var laoGreet messagedata.LaoGreet
 
-	err = greetMsg.UnmarshalData(data)
+	err = greetMsg.UnmarshalData(&laoGreet)
 	require.NoError(t, err)
 
-	dataGreet, ok := data.(*messagedata.LaoGreet)
-	require.True(t, ok)
-
-	require.Equal(t, messagedata.LAOObject, dataGreet.Object)
-	require.Equal(t, messagedata.LAOActionGreet, dataGreet.Action)
-	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", dataGreet.LaoID)
-	require.Equal(t, publicKey64, dataGreet.Frontend)
+	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
+	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
+	require.Equal(t, publicKey64, laoGreet.Frontend)
 }
 
 // -----------------------------------------------------------------------------

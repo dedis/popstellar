@@ -4,13 +4,14 @@ import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.coin._
+import ch.epfl.pop.model.network.method.message.data.election.VersionType.VersionType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
-import ch.epfl.pop.model.network.method.message.data.{MessageData, ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects._
 import spray.json._
 
@@ -40,6 +41,15 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def write(obj: ActionType): JsValue = JsString(obj.toString)
   }
 
+  implicit object versionTypeFormat extends RootJsonFormat[VersionType] {
+    override def read(json: JsValue): VersionType = json match {
+      case JsString(version) => VersionType.unapply(version).getOrElse(VersionType.INVALID)
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a VersionType")
+    }
+
+    override def write(obj: VersionType): JsValue = JsString(obj.toString)
+  }
+
 
   // ------------------------------- METADATA UTILITY -------------------------------------- //
   // retrieve information from the header if it is correct.
@@ -48,7 +58,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   def parseHeader(data: String): Try[(ObjectType, ActionType)] =
     Try {
       data.parseJson.asJsObject.getFields(PARAM_OBJECT, PARAM_ACTION) match {
-        case Seq(objectString @ JsString(_), actionString @ JsString(_)) =>
+        case Seq(objectString@JsString(_), actionString@JsString(_)) =>
           (objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
         case _ => throw new IllegalArgumentException("parseHeader: header fields not found")
       }
@@ -60,9 +70,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   private def annotateHeader[T <: MessageData](fmt: RootJsonFormat[T]): RootJsonFormat[T] =
     new RootJsonFormat[T] {
       val inner = fmt
+
       override def read(json: JsValue): T = inner.read(json)
+
       override def write(obj: T): JsValue = inner.write(obj) match {
-        case JsObject(fields) => JsObject(fields.updated(PARAM_OBJECT,obj._object.toJson).updated(PARAM_ACTION,obj.action.toJson))
+        case JsObject(fields) => JsObject(fields.updated(PARAM_OBJECT, obj._object.toJson).updated(PARAM_ACTION, obj.action.toJson))
         case _ => throw new IllegalArgumentException("annotateHeader: inner format must produce an object")
       }
     }
@@ -76,8 +88,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
       case Seq(id@JsString(_), question@JsString(_)) =>
 
-        val voteOpt: Option[List[Int]] = json.asJsObject.getFields(PARAM_VOTE) match {
-          case Seq(JsArray(vote)) => Some(vote.map(_.convertTo[Int]).toList)
+        val voteOpt: Option[Either[Int, Base64Data]] = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(JsNumber(value)) => Some(Left(value.intValue))
+          case Seq(JsString(s)) => Some(Right(Base64Data(s)))
           case _ => None
         }
         val writeInOpt: Option[String] = json.asJsObject.getFields(PARAM_WRITE_IN) match {
@@ -106,7 +119,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
       // Adding either of the optional values depending on which is defined
       obj.write_in.foreach { w => jsObjectContent += (PARAM_WRITE_IN -> w.toJson) }
-      obj.vote.foreach { v => jsObjectContent += (PARAM_VOTE -> v.toJson) }
+      jsObjectContent += (PARAM_VOTE -> obj.vote.toJson)
 
 
       JsObject(jsObjectContent)
@@ -286,10 +299,33 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = annotateHeader(jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature"))
 
   implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, List[VoteElection], CastVoteElection](CastVoteElection.apply, "lao", "election", "created_at", "votes"))
-  implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
+  implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, VersionType, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
   implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
   implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
+
+  implicit object KeyElectionFormat extends JsonFormat[KeyElection] {
+    final private val PARAM_ELECTION_ID: String = "election"
+    final private val PARAM_ELECTION_KEY: String = "election_key"
+
+    override def read(json: JsValue): KeyElection = json.asJsObject().getFields(PARAM_ELECTION_ID, PARAM_ELECTION_KEY) match {
+      case Seq(election@JsString(_), election_key@JsString(_)) => KeyElection(
+        election.convertTo[Hash],
+        election_key.convertTo[PublicKey]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a KeyElection object")
+    }
+
+    override def write(obj: KeyElection): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
+        PARAM_ELECTION_ID -> obj.election.toJson,
+        PARAM_ELECTION_KEY -> obj.election_key.toJson,
+      )
+      JsObject(jsObjectContent)
+    }
+  }
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))
@@ -300,6 +336,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp"))
 
   implicit val postTransactionFormat: JsonFormat[PostTransaction] = jsonFormat[Transaction, Hash, PostTransaction](PostTransaction.apply, "transaction", "transaction_id")
+
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
@@ -316,6 +353,27 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def write(obj: ChannelData): JsValue = JsObject(
       PARAM_CHANNEL_TYPE -> obj.channelType.toJson,
       PARAM_MESSAGES -> obj.messages.toJson
+    )
+
+  }
+
+  implicit object ElectionDataFormat extends JsonFormat[ElectionData] {
+    final private val PARAM_ELECTION_ID: String = "electionId"
+    final private val PARAM_PRIVATE_KEY: String = "privateKey"
+    final private val PARAM_PUBLIC_KEY: String = "publicKey"
+
+    override def read(json: JsValue): ElectionData = json.asJsObject().getFields(PARAM_ELECTION_ID, PARAM_PRIVATE_KEY, PARAM_PUBLIC_KEY) match {
+      case Seq(electionId@JsString(_), privateKey@JsString(_), publicKey@JsString(_)) => ElectionData(
+        electionId.convertTo[Hash],
+        KeyPair(privateKey.convertTo[PrivateKey], publicKey.convertTo[PublicKey])
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a ChannelData object")
+    }
+
+    override def write(obj: ElectionData): JsValue = JsObject(
+      PARAM_ELECTION_ID -> obj.electionId.toJson,
+      PARAM_PRIVATE_KEY -> obj.keyPair.privateKey.toJson,
+      PARAM_PUBLIC_KEY -> obj.keyPair.publicKey.toJson
     )
 
   }
@@ -346,5 +404,4 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_WITNESSES -> obj.witnesses.toJson
     )
   }
-
 }

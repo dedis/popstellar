@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -7,6 +8,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
@@ -20,8 +22,11 @@ import static com.github.dedis.popstellar.ui.pages.detail.event.election.Electio
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.electionName;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.questionText;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.submit;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.versionChoice;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.writeIn;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,12 +36,11 @@ import static org.mockito.Mockito.when;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -48,7 +52,17 @@ import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSe
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Completable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import javax.inject.Inject;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,20 +74,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
 
 @LargeTest
 @HiltAndroidTest
@@ -528,5 +528,22 @@ public class ElectionSetupFragmentTest {
     }
 
     submit().check(matches(isNotEnabled()));
+  }
+
+  /** Basic test for sanity of spinner content */
+  @Test
+  public void canChooseVotingVersion() {
+    setupViewModel();
+
+    // By default, the spinner is set to OPEN_BALLOT
+    versionChoice().perform(click());
+    onData(anything()).atPosition(0).perform(click());
+    versionChoice()
+        .check(matches(withSpinnerText(containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
+
+    versionChoice().perform(click());
+    onData(anything()).atPosition(1).perform(click());
+    versionChoice()
+        .check(matches(withSpinnerText(containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
   }
 }

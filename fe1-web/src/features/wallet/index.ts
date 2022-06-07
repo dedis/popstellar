@@ -7,9 +7,11 @@ import {
   WalletInterface,
   WALLET_FEATURE_IDENTIFIER,
 } from './interface';
-import * as navigation from './navigation';
+import { WalletNavigationScreen } from './navigation/WalletNavigation';
 import { getCurrentPopTokenFromStore } from './objects';
 import { walletReducer } from './reducer';
+import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';
+import { WalletSetSeedScreen } from './screens/WalletSetSeed';
 
 /**
  * Configures the wallet feature
@@ -29,7 +31,9 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
 
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
-    navigation,
+    appScreens: [WalletCreateSeedScreen, WalletSetSeedScreen],
+    homeScreens: [WalletNavigationScreen],
+    laoScreens: [WalletNavigationScreen],
     reducers: {
       ...walletReducer,
     },

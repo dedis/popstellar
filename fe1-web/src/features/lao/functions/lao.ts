@@ -2,6 +2,7 @@ import { Channel, channelFromIds, Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
 import {
+  makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoWitness,
@@ -33,6 +34,14 @@ export const getLaoById = (laoId: string) => getLaoByIdFromState(laoId, getStore
  * @returns The current lao id
  */
 export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
+
+/**
+ * Returns the organizer backend's public key for a given lao
+ * @param laoId The lao id
+ * @returns The organizer's backend public key for the given lao or undefined if it is not known
+ */
+export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
+  makeLaoOrganizerBackendPublicKeySelector(laoId)(getStore().getState());
 
 /**
  * Returns whether the user is witness of the current lao

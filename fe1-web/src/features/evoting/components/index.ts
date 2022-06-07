@@ -1,1 +1,1 @@
-export { default as EventElection, ElectionEventType } from './EventElection';
+export { default as ElectionListItem, ElectionEventType } from './ElectionListItem';

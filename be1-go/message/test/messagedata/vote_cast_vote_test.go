@@ -37,6 +37,39 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=", msg.Votes[0].ID)
 	require.Equal(t, "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=", msg.Votes[0].Question)
 
-	require.Len(t, msg.Votes[0].Vote, 1)
-	require.Equal(t, 0, msg.Votes[0].Vote[0])
+	require.Equal(t, 0, msg.Votes[0].Vote)
+}
+
+func Test_New_Empty_Cast_vote(t *testing.T) {
+	var castVote messagedata.VoteCastVote
+
+	require.Empty(t, castVote.NewEmpty())
+}
+
+func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
+	testWithWrongType := func(obj interface{}) func(*testing.T) {
+		return func(t *testing.T) {
+			file := filepath.Join(relativeExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+
+			buf, err := os.ReadFile(file)
+			require.NoError(t, err)
+
+			var msg messagedata.VoteCastVote
+
+			err = json.Unmarshal(buf, &msg)
+			require.NoError(t, err)
+
+			msg.Votes[0].Vote = obj
+
+			buf, err = json.Marshal(msg)
+			require.NoError(t, err)
+
+			err = json.Unmarshal(buf, &msg)
+			require.Error(t, err)
+		}
+	}
+
+	t.Run("vote is an array", testWithWrongType([]int{0}))
+	t.Run("vote is a boolean", testWithWrongType(false))
+	t.Run("vote is a float", testWithWrongType(3.4))
 }
