@@ -45,7 +45,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
         Bundle.EMPTY,
         android.R.id.content,
         fragmentClass,
-        null,
+        (FragmentFactory) null,
         Bundle.EMPTY);
   }
 
@@ -80,7 +80,13 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
    */
   public static <A extends AppCompatActivity, F extends Fragment> FragmentScenario<A, F> launchIn(
       Class<A> activityClass, @IdRes int contentId, Class<F> fragmentClass) {
-    return launchIn(activityClass, Bundle.EMPTY, contentId, fragmentClass, null, Bundle.EMPTY);
+    return launchIn(
+        activityClass,
+        Bundle.EMPTY,
+        contentId,
+        fragmentClass,
+        (FragmentFactory) null,
+        Bundle.EMPTY);
   }
 
   /**
@@ -133,6 +139,35 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
         fragmentClass,
         factory(fragmentSupplier),
         Bundle.EMPTY);
+  }
+
+  /**
+   * Launch a new FragmentScenario
+   *
+   * @param activityClass activity to launch the scenario on
+   * @param activityArgs arguments of the activity
+   * @param contentId id of the placeholder where the fragment will be put
+   * @param fragmentClass fragment to launch the scenario on
+   * @param fragmentSupplier supplier that creates the fragment object
+   * @param fragmentArgs arguments of the fragment
+   * @param <A> Activity type
+   * @param <F> Fragment type
+   * @return the launched scenario
+   */
+  public static <A extends AppCompatActivity, F extends Fragment> FragmentScenario<A, F> launchIn(
+      Class<A> activityClass,
+      Bundle activityArgs,
+      @IdRes int contentId,
+      Class<F> fragmentClass,
+      Supplier<F> fragmentSupplier,
+      Bundle fragmentArgs) {
+    return launchIn(
+        activityClass,
+        activityArgs,
+        contentId,
+        fragmentClass,
+        factory(fragmentSupplier),
+        fragmentArgs);
   }
 
   private static <F extends Fragment> FragmentFactory factory(Supplier<F> fragmentSupplier) {

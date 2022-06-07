@@ -29,6 +29,10 @@ import (
 )
 
 func main() {
+	run(context.Background(), os.Args)
+}
+
+func run(ctx context.Context, args []string) {
 	publicKeyFlag := &cli.StringFlag{
 		Name:    "public-key",
 		Aliases: []string{"pk"},
@@ -125,7 +129,7 @@ func main() {
 		},
 	}
 
-	err := app.RunContext(context.Background(), os.Args)
+	err := app.RunContext(ctx, args)
 	if err != nil {
 		log.Fatal(err)
 	}

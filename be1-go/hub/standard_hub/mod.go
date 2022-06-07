@@ -364,14 +364,13 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		socket.SendError(&id, err)
+		socket.SendError(&id, handlerErr)
 		return err
 	}
 
@@ -548,7 +547,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !h.GetPubKeyOwner().Equal(senderPubKey) {
+	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
 		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
 			senderPubKey, h.GetPubKeyOwner())
 	}

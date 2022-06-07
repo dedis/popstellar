@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/fragment_election"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".ui.detail.event.election.fragments.ElectionFragment">
+
+  <TextView
+    android:id="@+id/election_fragment_title"
+    style="@style/title_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+    android:id="@+id/election_fragment_status"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/status_margin_top"
+    android:text="@string/closed"
+    android:textColor="@color/red"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/election_fragment_title" />
+
+  <ImageView
+    android:id="@+id/election_fragment_status_icon"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/ic_lock"
+    app:layout_constraintBottom_toBottomOf="@id/election_fragment_status"
+    app:layout_constraintEnd_toStartOf="@id/election_fragment_status"
+    app:layout_constraintTop_toTopOf="@id/election_fragment_status"
+    android:contentDescription="@string/status_icon_description" />
+
+  <ImageView
+    android:id="@+id/start_time_icon"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/clock_icon_margin_top"
+    android:src="@drawable/ic_time"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/election_fragment_status"
+    android:contentDescription="@string/time_icon_description" />
+
+  <TextView
+    android:id="@+id/election_fragment_start_time_title"
+    style="@style/explication_text_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    android:text="@string/start"
+    app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
+    app:layout_constraintStart_toEndOf="@id/start_time_icon"
+    app:layout_constraintTop_toTopOf="@id/start_time_icon" />
+
+  <TextView
+    android:id="@+id/election_fragment_start_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    app:layout_constraintBottom_toBottomOf="@id/start_time_icon"
+    app:layout_constraintStart_toEndOf="@id/election_fragment_start_time_title"
+    app:layout_constraintTop_toTopOf="@id/start_time_icon" />
+
+  <ImageView
+    android:id="@+id/end_time_icon"
+    android:layout_width="@dimen/event_clock_icon_side"
+    android:layout_height="@dimen/event_clock_icon_side"
+    android:layout_marginTop="@dimen/in_between_clocks_icon_margin_top"
+    android:src="@drawable/ic_time"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/start_time_icon"
+    android:contentDescription="@string/time_icon_description" />
+
+  <TextView
+    style="@style/explication_text_style"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/clock_icon_margin_start"
+    android:text="@string/end"
+    app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
+    app:layout_constraintStart_toEndOf="@id/end_time_icon"
+    app:layout_constraintTop_toTopOf="@id/end_time_icon" />
+
+  <TextView
+    android:id="@+id/election_fragment_end_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
+    app:layout_constraintStart_toStartOf="@id/election_fragment_start_time"
+    app:layout_constraintTop_toTopOf="@id/end_time_icon" />
+
+  <Button
+    android:id="@+id/election_action_button"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/event_button_height"
+    android:layout_margin="@dimen/event_button_margin"
+    android:backgroundTint="@color/colorPrimary"
+    android:drawableStart="@drawable/ic_voting_action"
+    android:drawableTint="@color/white"
+    android:enabled="false"
+    android:drawablePadding="0dp"
+    android:text="@string/vote"
+    android:textColor="@color/white"
+    android:textSize="@dimen/event_button_text_size"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+  <Button
+    android:id="@+id/election_management_button"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/event_button_height"
+    android:layout_marginEnd="@dimen/inter_buttons_margin"
+    android:backgroundTint="@color/green"
+    android:drawableStart="@drawable/ic_unlock"
+    android:drawableTint="@color/white"
+    android:text="@string/start"
+    android:textColor="@color/white"
+    android:textSize="@dimen/event_button_text_size"
+    app:layout_constraintBottom_toBottomOf="@id/election_action_button"
+    app:layout_constraintEnd_toStartOf="@id/election_action_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

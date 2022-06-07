@@ -1,19 +1,44 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import DatePickerElement from 'react-datepicker';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Timestamp } from '../objects';
+import Input from './Input';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ONE_MINUTE_IN_SECONDS = 60;
+
+const CustomInput = forwardRef((props: CustomInputIPropTypes, ref: any) => {
+  const { value, onClick } = props;
+
+  return (
+    <TouchableOpacity onPress={onClick || undefined} ref={ref}>
+      <Input value={value || ''} enabled />
+    </TouchableOpacity>
+  );
+});
+
+const customInputPropTypes = {
+  value: PropTypes.string,
+  onClick: PropTypes.func,
+};
+CustomInput.propTypes = customInputPropTypes;
+
+CustomInput.defaultProps = {
+  value: '',
+  onClick: undefined,
+};
+
+type CustomInputIPropTypes = PropTypes.InferProps<typeof customInputPropTypes>;
 
 /**
  * Component which displays a date picker that allows the user to enter a date and a time. It is
  * impossible to select a date/time from the past.
  */
-
 const DatePicker = (props: IPropTypes) => {
-  const { selected } = props;
-  const { onChange } = props;
+  const { selected, onChange } = props;
 
   return (
     <DatePickerElement
@@ -23,6 +48,7 @@ const DatePicker = (props: IPropTypes) => {
       showTimeInput
       minDate={new Date()}
       showDisabledMonthNavigation
+      customInput={<CustomInput />}
     />
   );
 };

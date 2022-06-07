@@ -5,7 +5,7 @@ exports[`NotificationScreen renders correctly for a non-empty store 1`] = `
   style={
     Object {
       "alignItems": "center",
-      "backgroundColor": "#f00",
+      "backgroundColor": "red",
       "borderRadius": 50,
       "flex": 1,
       "height": 18,

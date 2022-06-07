@@ -20,6 +20,9 @@
             "$ref": "dataCreateRollCall.json"
         },
         {
+            "$ref": "dataKeyElection.json"
+        },
+        {
             "$ref": "dataEndElection.json"
         },
         {

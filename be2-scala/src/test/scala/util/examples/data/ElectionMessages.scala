@@ -17,6 +17,8 @@ object SetupElectionMessages extends ElectionMessagesTrait {
 
   final val setupElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup.json")()
 
+  final val setupElectionSecretBallot: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup_secret_ballot.json")()
+
   //TODO: Generate other Set Up Election messages
 }
 
@@ -31,6 +33,18 @@ object OpenElectionMessages extends ElectionMessagesTrait {
 
   //TODO: Generate other Open Election messages
 }
+
+object KeyElectionMessages extends ElectionMessagesTrait {
+
+  override val action: ActionType = ActionType.KEY
+
+  override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("key_election_channel"))
+
+  final val keyElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_key/election_key.json")()
+
+}
+
+
 
 object CastVoteElectionMessages extends ElectionMessagesTrait {
 

@@ -48,5 +48,17 @@ export namespace HomeHooks {
    * Gets the list of screens to be rendered in the main navigation
    * @returns The list of screens
    */
-  export const useMainNavigationScreens = () => useHomeContext().mainNavigationScreens;
+  export const useHomeNavigationScreens = () => useHomeContext().homeNavigationScreens;
+
+  /**
+   * Returns a function from the context for obtaining the channel for a given lao
+   * @returns A function for getting the channel by lao id
+   */
+  export const useGetLaoChannel = () => useHomeContext().getLaoChannel;
+
+  /**
+   * Gets the current lao id
+   * @returns The current lao id
+   */
+  export const useCurrentLaoId = () => useHomeContext().useCurrentLaoId();
 }

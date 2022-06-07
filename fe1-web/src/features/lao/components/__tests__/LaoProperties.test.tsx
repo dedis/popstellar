@@ -8,7 +8,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockKeyPair, mockLao, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
-import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
+import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { LaoState } from 'features/lao/objects';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
@@ -21,13 +21,14 @@ jest.mock('react-qr-code', () => 'qr code');
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
+    CreateEventButton: () => null,
     encodeLaoConnectionForQRCode,
     laoNavigationScreens: [],
-    organizerNavigationScreens: [],
+    eventsNavigationScreens: [],
   } as LaoReactContext,
 };
 
-const LaoPropertiesScreen = () => <LaoProperties isInitiallyOpen />;
+const LaoPropertiesScreen = () => <LaoProperties />;
 
 describe('LaoProperties', () => {
   it('renders correctly as organizer', () => {
