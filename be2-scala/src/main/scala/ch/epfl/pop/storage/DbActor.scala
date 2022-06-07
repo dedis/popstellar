@@ -6,8 +6,8 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -16,10 +16,10 @@ import ch.epfl.pop.storage.DbActor._
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
-                       private val mediatorRef: ActorRef,
-                       private val registry: MessageRegistry,
-                       private val storage: Storage = new DiskStorage()
-                     ) extends Actor with ActorLogging {
+                          private val mediatorRef: ActorRef,
+                          private val registry: MessageRegistry,
+                          private val storage: Storage = new DiskStorage()
+                        ) extends Actor with ActorLogging {
 
   override def postStop(): Unit = {
     storage.close()
@@ -30,7 +30,7 @@ final case class DbActor(
 
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def write(channel: Channel, message: Message): Unit = {
     // determine data object type. Assumption: all payloads carry header fields.
     val (_object, action) = MessageDataProtocol.parseHeader(message.data.decodeToString()).get
@@ -47,7 +47,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
     Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
@@ -56,7 +56,7 @@ final case class DbActor(
         MessageDataProtocol.parseHeader(data) match {
           case Success((_object, action)) =>
             val builder = registry.getBuilder(_object, action).get
-            Some(msg.copy(decodedData=Some(builder(data))))
+            Some(msg.copy(decodedData = Some(builder(data))))
           case Failure(ex) =>
             log.error(s"Unable to decode message data: $ex")
             Some(msg)
@@ -66,7 +66,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def readChannelData(channel: Channel): ChannelData = {
     Try(storage.read(channel.toString)) match {
       case Success(Some(json)) => ChannelData.buildFromJson(json)
@@ -75,7 +75,16 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
+  private def readElectionData(electionId: Hash): ElectionData = {
+    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
+      case Success(Some(json)) => ElectionData.buildFromJson(json)
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def readLaoData(channel: Channel): LaoData = {
     Try(storage.read(generateLaoDataKey(channel))) match {
       case Success(Some(json)) => LaoData.buildFromJson(json)
@@ -96,7 +105,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def catchupChannel(channel: Channel): List[Message] = {
 
     @scala.annotation.tailrec
@@ -117,13 +126,13 @@ final case class DbActor(
     buildCatchupList(channelData.messages, Nil)
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def writeAndPropagate(channel: Channel, message: Message): Unit = {
     write(channel, message)
     mediatorRef ! PubSubMediator.Propagate(channel, message)
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
@@ -131,7 +140,16 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
+  private def createElectionData(electionId: Hash, keyPair: KeyPair): Unit = {
+    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")
+    if (!checkChannelExistence(channel)) {
+      val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
+      storage.write(pair)
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def createChannels(channels: List[(Channel, ObjectType.ObjectType)]): Unit = {
 
     @scala.annotation.tailrec
@@ -154,7 +172,7 @@ final case class DbActor(
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
 
-    Try(storage.write(mapped : _*))
+    Try(storage.write(mapped: _*))
   }
 
   private def checkChannelExistence(channel: Channel): Boolean = {
@@ -164,7 +182,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def addWitnessSignature(messageId: Hash, signature: Signature): Unit = {
     throw DbActorNAckException(
       ErrorCodes.SERVER_ERROR.id,
@@ -172,7 +190,7 @@ final case class DbActor(
     )
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
       case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
@@ -234,6 +252,13 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case ReadElectionData(electionId) =>
+      log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
+      Try(readElectionData(electionId)) match {
+        case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case ReadLaoData(channel) =>
       log.info(s"Actor $self (db) received a ReadLaoData request")
       Try(readLaoData(channel)) match {
@@ -265,6 +290,15 @@ final case class DbActor(
     case CreateChannel(channel, objectType) =>
       log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
       Try(createChannel(channel, objectType)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case CreateElectionData(id, keyPair) =>
+      log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
+        s"\n\tprivate key = ${keyPair.privateKey.toString}" +
+        s"\n\tpublic key = ${keyPair.publicKey.toString}")
+      Try(createElectionData(id, keyPair)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -339,7 +373,7 @@ object DbActor {
   /**
    * Request to read a specific message with id <messageId> from <channel>
    *
-   * @param channel the channel where the message was published
+   * @param channel   the channel where the message was published
    * @param messageId the id of the message (message_id) we want to read
    */
   final case class Read(channel: Channel, messageId: Hash) extends Event
@@ -351,6 +385,13 @@ object DbActor {
    * the channel we need the data for
    */
   final case class ReadChannelData(channel: Channel) extends Event
+
+  /**
+   * Request to read the ElectionData for election <id>
+   *
+   * @param electionId the election unique id
+   */
+  final case class ReadElectionData(electionId: Hash) extends Event
 
   /**
    * Request to read the laoData of the LAO, with key laoId
@@ -391,6 +432,14 @@ object DbActor {
    * @param objectType channel type
    */
   final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
+
+  /**
+   * Request to create election data in the db with an id and a keypair
+   *
+   * @param id      unique id of the election
+   * @param keyPair the keypair of the election
+   */
+  final case class CreateElectionData(id: Hash, keyPair: KeyPair) extends Event
 
   /**
    * Request to create List of channels in the db with given types
@@ -458,6 +507,15 @@ object DbActor {
    * @param channelData requested channel data
    */
   final case class DbActorReadChannelDataAck(channelData: ChannelData) extends DbActorMessage
+
+  /**
+   * Response for a [[ReadElectionData]] db request Receiving [[DbActorReadElectionDataAck]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param electionData requested channel data
+   */
+  final case class DbActorReadElectionDataAck(electionData: ElectionData) extends DbActorMessage
+
 
   /**
    * Response for a [[ReadLaoData]] db request Receiving [[DbActorReadLaoDataAck]] works as

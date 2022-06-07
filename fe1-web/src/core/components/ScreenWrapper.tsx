@@ -3,9 +3,11 @@ import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { Spacing } from 'core/styles';
+
 const styles = StyleSheet.create({
   view: {
-    padding: 16,
+    padding: Spacing.contentSpacing,
   } as ViewStyle,
 });
 

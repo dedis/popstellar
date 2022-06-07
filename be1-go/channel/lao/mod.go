@@ -115,7 +115,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
-	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+	consensusCh := consensus.NewChannel(consensusPath, hub, log, organizerPubKey)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	newChannel := &Channel{
@@ -138,6 +138,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	if err != nil {
 		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}
+
+	newChannel.createCoinChannel(socket, newChannel.log)
 
 	return newChannel, err
 }
@@ -449,8 +451,6 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		}
 	}
 
-	c.createCoinChannel(senderSocket, c.log)
-
 	return nil
 }
 
@@ -551,7 +551,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
+		return answer.NewDuplicateResourceError("message already exists")
 	}
 
 	return nil
@@ -625,7 +625,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be "+
+		return answer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
@@ -633,8 +633,11 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees,
+	electionCh, err := election.NewChannel(channelPath, msg, setupMsg, c.attendees,
 		c.hub, c.log, c.organizerPubKey)
+	if err != nil {
+		return xerrors.Errorf("failed to create the election: %v", err)
+	}
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)

@@ -21,10 +21,11 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
 	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
-	ElectionActionSetup  = "setup"
 
 	LAOObject       = "lao"
 	LAOActionCreate = "create"

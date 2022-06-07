@@ -2,58 +2,39 @@ package com.github.dedis.popstellar.ui.detail;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.connectQrCode;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.fragmentContainer;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.homeButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.identityButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.identityFragmentId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.propertiesLayout;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.showPropertiesButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.witnessButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailPageObject.witnessFragmentId;
-import static org.junit.Assert.assertEquals;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.digitalCashButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentContainer;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.identityButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.identityFragmentId;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailFragmentId;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.socialMediaButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.toolBarBackButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.witnessButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.witnessingFragmentId;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.ImageView;
-
-import androidx.lifecycle.LiveData;
-import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.google.gson.Gson;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -114,91 +95,37 @@ public class LaoDetailActivityTest {
           .around(activityScenarioRule);
 
   @Test
-  public void homeButtonOpensHome() {
-    homeButton().perform(click());
-
-    assertEquals(
-        HomeActivity.class.getName(),
-        activityScenarioRule
-            .getScenario()
-            .getResult()
-            .getResultData()
-            .getComponent()
-            .getClassName());
-  }
-
-  @Test
-  public void identityButtonOpensIdentityTab() {
+  public void identityTabOpensIdentityTab() {
     identityButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(identityFragmentId()))));
   }
 
   @Test
-  public void showPropertyButtonShowsConnectQRCode() {
-    showPropertiesButton().perform(click());
-
-    propertiesLayout().check(matches(isDisplayed()));
-
-    String expectedQRCode = gson.toJson(new ConnectToLao(networkManager.getCurrentUrl(), LAO_ID));
-    connectQrCode().check(matches(withQrCode(expectedQRCode)));
+  public void witnessingTabShowsWitnessTab() {
+    witnessButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(witnessingFragmentId()))));
   }
 
   @Test
-  public void witnessButtonShowsWitnessTab() {
-    witnessButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(witnessFragmentId()))));
+  public void cancelGoesBackToEventList() {
+    identityButton().perform(click());
+    toolBarBackButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
 
+  @Test
+  public void socialMediaNavOpensSocialMediaActivity() {
+    Intents.init();
+    socialMediaButton().perform(click());
+    intended(hasComponent(SocialMediaActivity.class.getName()));
+    Intents.release();
+  }
 
-  // Matches an ImageView containing a QRCode with expected content
-  private Matcher<? super View> withQrCode(String expectedContent) {
-    return new BoundedMatcher<View, ImageView>(ImageView.class) {
-      @Override
-      protected boolean matchesSafely(ImageView item) {
-        String actualContent = extractContent(item);
-        return expectedContent.equals(actualContent);
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("QRCode('" + expectedContent + "')");
-      }
-
-      @Override
-      public void describeMismatch(Object item, Description description) {
-        if (super.matches(item)) {
-          // The type is a match, so the mismatch came from the QRCode content
-          String content = extractContent((ImageView) item);
-          description.appendText("QRCode('" + content + "')");
-        } else {
-          // The mismatch is on the type, let BoundedMatcher handle it
-          super.describeMismatch(item, description);
-        }
-      }
-
-      private String extractContent(ImageView item) {
-        Drawable drawable = item.getDrawable();
-        if (!(drawable instanceof BitmapDrawable))
-          throw new IllegalArgumentException("The provided ImageView does not contain a bitmap");
-
-        BinaryBitmap binary = convertToBinary(((BitmapDrawable) drawable).getBitmap());
-
-        try {
-          // Parse the bitmap and check it against expected value
-          return new QRCodeReader().decode(binary).getText();
-        } catch (NotFoundException | ChecksumException | FormatException e) {
-          throw new IllegalArgumentException("The provided image is not a valid QRCode", e);
-        }
-      }
-
-      private BinaryBitmap convertToBinary(Bitmap qrcode) {
-        // Convert the QRCode to something zxing understands
-        int[] buffer = new int[qrcode.getWidth() * qrcode.getHeight()];
-        qrcode.getPixels(buffer, 0, qrcode.getWidth(), 0, 0, qrcode.getWidth(), qrcode.getHeight());
-        LuminanceSource source =
-            new RGBLuminanceSource(qrcode.getWidth(), qrcode.getHeight(), buffer);
-        return new BinaryBitmap(new HybridBinarizer(source));
-      }
-    };
+  @Test
+  public void digitalCashNavOpensActivity() {
+    Intents.init();
+    digitalCashButton().perform(click());
+    intended(hasComponent(DigitalCashMain.class.getName()));
+    Intents.release();
   }
 }

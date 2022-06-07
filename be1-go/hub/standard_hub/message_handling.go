@@ -24,32 +24,29 @@ const publishError = "failed to publish: %v"
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err := xerrors.Errorf("failed to decode message data: %v", err)
-		sock.SendError(&publish.ID, err)
+		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+
 		return err
 	}
 
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
-		sock.SendError(&publish.ID, err)
+		err := answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		err := xerrors.Errorf("failed to get object#action: %v", err)
-		sock.SendError(&publish.ID, err)
+		err := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		return err
 	}
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := xerrors.Errorf("only lao#create is allowed on root, "+
+		err := answer.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -58,20 +55,18 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	err = publish.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
-		h.log.Err(err).Msg("invalid lao#create message")
-		sock.SendError(&publish.ID, err)
+		h.log.Err(err).Msg("invalid lao#create message " + err.Error())
+		return err
 	}
 
 	err = h.createLao(publish.Params.Message, laoCreate, sock)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
-		sock.SendError(&publish.ID, err)
 		return err
 	}
 
@@ -290,22 +285,22 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, xerrors.Errorf("failed to decode public key string: %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to decode signature string: %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to verify signature : %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q",
+		return publish.ID, answer.NewInvalidMessageFieldError("message_id is wrong: expected %q found %q",
 			expectedMessageID, messageID)
 	}
 
@@ -322,19 +317,19 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
-			return publish.ID, xerrors.Errorf(rootChannelErr, err)
+			return publish.ID, err
 		}
 		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return publish.ID, xerrors.Errorf(getChannelErr, err)
+		return publish.ID, answer.NewInvalidMessageFieldError(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return publish.ID, xerrors.Errorf(publishError, err)
+		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
 	}
 
 	return publish.ID, nil

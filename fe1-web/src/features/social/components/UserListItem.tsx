@@ -1,13 +1,19 @@
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ProfileIcon, WideButtonView } from 'core/components';
+import { ProfileIcon, PoPTextButton } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
+import { gray } from 'core/styles/color';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -48,11 +54,22 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_attendee_list>,
+  CompositeScreenProps<
+    StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_search>,
+    CompositeScreenProps<
+      StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+      StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+    >
+  >
+>;
+
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { currentUserPublicKey, laoId, publicKey } = props;
-  // FIXME: use proper navigation type
-  const navigation = useNavigation<any>();
+
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
   const followUser = () => {
@@ -85,18 +102,14 @@ const UserListItem = (props: IPropTypes) => {
         <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <WideButtonView
-              title={STRINGS.follow_button}
-              onPress={followUser}
-              disabled={isFollowing}
-            />
+            <PoPTextButton onPress={followUser} disabled={isFollowing}>
+              {STRINGS.follow_button}
+            </PoPTextButton>
           </View>
           <View style={styles.buttonView}>
-            <WideButtonView
-              title={STRINGS.profile_button}
-              onPress={goToUserProfile}
-              disabled={!isFollowing}
-            />
+            <PoPTextButton onPress={goToUserProfile} disabled={!isFollowing}>
+              {STRINGS.profile_button}
+            </PoPTextButton>
           </View>
         </View>
       </View>
