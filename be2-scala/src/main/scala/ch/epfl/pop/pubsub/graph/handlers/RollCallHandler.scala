@@ -87,6 +87,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               }
             }
             _ <- dbAskWritePropagate(rpcRequest)
+            //creates a RollCallData
             _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
           } yield ()
 
