@@ -71,18 +71,6 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbWrongChannel: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
-        case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
-
   //WitnessMessage
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
@@ -93,13 +81,6 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
 
   test("Witnessing a message without valid PoP token fails") {
     val dbActorRef = mockDbWrongToken
-    val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    system.stop(dbActorRef.actorRef)
-  }
-
-  test("Witnessing a message on wrong type of channel fails") {
-    val dbActorRef = mockDbWrongChannel
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)

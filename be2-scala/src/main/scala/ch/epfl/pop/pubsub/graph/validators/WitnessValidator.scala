@@ -3,7 +3,6 @@ package ch.epfl.pop.pubsub.graph.validators
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Signature}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
@@ -32,13 +31,10 @@ sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDat
         val channel: Channel = rpcMessage.getParamsChannel
 
         //check if the signature in the message received is valid
-        //not sure thought ..
         if (!signature.verify(sender, messageId.base64Data)) {
           Right(validationError("verification of the signature over the message id failed"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a WitnessMessage message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
