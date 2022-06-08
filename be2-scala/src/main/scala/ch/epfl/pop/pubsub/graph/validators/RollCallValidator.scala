@@ -123,7 +123,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val rollcallData: Option[RollCallData] = getRollCallData(laoId)
     rollcallData match {
       case Some(data) =>
-        (data.state == CREATE && data.update_id == opens) || (data.state == CLOSE && data.update_id == opens)
+        (data.state == CREATE && data.updateId == opens) || (data.state == CLOSE && data.updateId == opens)
       case _ => false
     }
   }
@@ -179,7 +179,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
   private def validateCloses(laoId: Hash, closes: Hash): Boolean = {
     val rollcallData: Option[RollCallData] = getRollCallData(laoId)
     rollcallData match {
-      case Some(data) => (data.state == OPEN && data.update_id == closes) || (data.state == REOPEN && data.update_id == closes)
+      case Some(data) => (data.state == OPEN && data.updateId == closes) || (data.state == REOPEN && data.updateId == closes)
       case _ => false
     }
   }

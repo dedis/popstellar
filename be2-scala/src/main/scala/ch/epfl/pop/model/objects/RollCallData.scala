@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import spray.json._
 
-final case class RollCallData(update_id: Hash, state: ActionType) {
+final case class RollCallData(updateId: Hash, state: ActionType) {
   def toJsonString: String = {
     val that: RollCallData = this // tricks the compiler into inferring the right type
     that.toJson.toString

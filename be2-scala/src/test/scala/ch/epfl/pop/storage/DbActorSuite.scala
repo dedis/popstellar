@@ -536,7 +536,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val actualRollcallData: RollCallData = RollCallData.buildFromJson(storage.elements(rollcallKey))
 
     actualRollcallData.state should equal(ActionType.CREATE)
-    actualRollcallData.update_id should equal(CreateRollCallExamples.R_ID)
+    actualRollcallData.updateId should equal(CreateRollCallExamples.R_ID)
 
     //act (2)
     val messageRollcall2: Message = OpenRollCallExamples.MESSAGE_OPEN_ROLL_CALL_WORKING
@@ -550,7 +550,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val actualRollcallData2: RollCallData = RollCallData.buildFromJson(storage.elements(rollcallKey))
 
     actualRollcallData2.state should equal(ActionType.OPEN)
-    actualRollcallData2.update_id should equal(OpenRollCallExamples.UPDATE_ID)
+    actualRollcallData2.updateId should equal(OpenRollCallExamples.UPDATE_ID)
   }
 
   test("readRollCallData succeeds for existing RollCallData") {
@@ -573,6 +573,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val readRollcallData: RollCallData = answer.asInstanceOf[DbActor.DbActorReadRollCallDataAck].rollcallData
 
     readRollcallData.state should equal(ActionType.CREATE)
-    readRollcallData.update_id should equal(updateId)
+    readRollcallData.updateId should equal(updateId)
   }
 }

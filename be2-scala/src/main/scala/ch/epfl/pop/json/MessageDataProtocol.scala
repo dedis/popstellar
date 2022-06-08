@@ -370,11 +370,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: RollCallData): JsValue = JsObject(
-      PARAM_UPDATE_ID -> obj.update_id.toJson,
+      PARAM_UPDATE_ID -> obj.updateId.toJson,
       PARAM_STATE -> obj.state.toJson
     )
   }
-  
+
   implicit object ElectionDataFormat extends JsonFormat[ElectionData] {
     final private val PARAM_ELECTION_ID: String = "electionId"
     final private val PARAM_PRIVATE_KEY: String = "privateKey"
