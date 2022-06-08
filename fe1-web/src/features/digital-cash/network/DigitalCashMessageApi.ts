@@ -1,8 +1,8 @@
 import { publish } from 'core/network';
 import { getCoinChannel, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
 
-import { Transaction } from '../objects/transaction';
 import { DigitalCashStore } from '../../wallet/store';
+import { Transaction } from '../objects/transaction';
 import { PostTransaction } from './messages';
 
 import getBalance = DigitalCashStore.getBalance;

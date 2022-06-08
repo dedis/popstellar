@@ -8,10 +8,10 @@ import { Hash } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import { recoverWalletRollCallTokens } from '../objects';
-import { RollCallToken } from '../objects/RollCallToken';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {

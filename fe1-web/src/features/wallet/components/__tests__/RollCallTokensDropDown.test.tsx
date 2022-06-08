@@ -3,8 +3,8 @@ import React from 'react';
 
 import { mockKeyPair, mockLao } from '__tests__/utils';
 import { Hash, PopToken } from 'core/objects';
-import { RollCallToken } from 'features/wallet/objects/RollCallToken';
 
+import { RollCallToken } from '../../../../core/objects/RollCallToken';
 import { RollCallTokensDropDown } from '../index';
 
 const mockToken = PopToken.fromState(mockKeyPair.toState());

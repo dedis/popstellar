@@ -17,8 +17,8 @@ import { hasSeed } from 'features/wallet/functions';
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
 import { walletReducer } from 'features/wallet/reducer';
 
+import { RollCallToken } from '../../../../core/objects/RollCallToken';
 import { generateToken, recoverWalletRollCallTokens } from '../../objects';
-import { RollCallToken } from '../../objects/RollCallToken';
 import { WalletHome } from '../index';
 
 jest.mock('core/platform/Storage');

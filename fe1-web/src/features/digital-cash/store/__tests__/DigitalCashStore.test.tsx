@@ -8,9 +8,9 @@ import {
   mockLaoId,
   mockTransactionValue,
 } from '__tests__/utils';
-import { Transaction } from '../../objects/transaction';
 import { getDigitalCashState } from 'features/wallet/reducer';
 
+import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from '../DigitalCashStore';
 
 const mockTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState();

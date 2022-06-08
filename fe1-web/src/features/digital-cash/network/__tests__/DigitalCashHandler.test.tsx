@@ -9,9 +9,9 @@ import {
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
-import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from 'features/wallet/store';
 
+import { Transaction } from '../../objects/transaction';
 import { handleTransactionPost } from '../DigitalCashHandler';
 
 jest.mock('features/wallet/store/DigitalCashStore');

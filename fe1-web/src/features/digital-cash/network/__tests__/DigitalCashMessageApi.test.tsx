@@ -12,9 +12,9 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { publish } from 'core/network/JsonRpcApi';
 import { Hash, PopToken } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
-import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from 'features/wallet/store';
 
+import { Transaction } from '../../objects/transaction';
 import { requestSendTransaction, requestCoinbaseTransaction } from '../DigitalCashMessageApi';
 
 jest.mock('features/wallet/store/DigitalCashStore');

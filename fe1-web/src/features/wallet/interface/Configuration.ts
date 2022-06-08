@@ -3,9 +3,10 @@ import { Reducer } from 'redux';
 import { KeyPairRegistry } from 'core/keypair';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, PopToken, PublicKey } from 'core/objects';
+import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 import {
   WalletReducerState,
   WALLET_REDUCER_PATH,
@@ -53,12 +54,6 @@ export interface WalletCompositionConfiguration {
    * @returns The current lao id
    */
   useCurrentLaoId: () => Hash | undefined;
-
-  /**
-   * Returns the public key of the organizer of the lao
-   * @param laoId the id of the lao
-   */
-  getLaoOrganizer: (laoId: string) => PublicKey | undefined;
 
   /**
    * Returns the list of all known lao ids.
@@ -109,12 +104,15 @@ export type WalletReactContext = Pick<
   | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
-  | 'getLaoOrganizer'
   | 'useLaoIds'
   | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
 >;
+
+export type WalletCompositionFunction = {
+  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
+};
 
 /**
  * The interface the wallet feature exposes
@@ -126,6 +124,8 @@ export interface WalletCompositionInterface extends FeatureInterface {
   laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;
+
+  functions: WalletCompositionFunction;
 
   reducers: {
     [WALLET_REDUCER_PATH]: Reducer<WalletReducerState>;

@@ -1,4 +1,5 @@
 import { SignatureType } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
 
 import * as functions from './functions';
 import {
@@ -8,8 +9,7 @@ import {
   WALLET_FEATURE_IDENTIFIER,
 } from './interface';
 import { WalletNavigationScreen } from './navigation/WalletNavigation';
-import { configureNetwork } from '../digital-cash/network';
-import { getCurrentPopTokenFromStore } from './objects';
+import { getCurrentPopTokenFromStore, recoverWalletRollCallTokens } from './objects';
 import { digitalCashReducer, walletReducer } from './reducer';
 import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';
 import { WalletSetSeedScreen } from './screens/WalletSetSeed';
@@ -25,7 +25,6 @@ export function configure(): WalletInterface {
 }
 
 export function compose(configuration: WalletCompositionConfiguration): WalletCompositionInterface {
-  configureNetwork(configuration.messageRegistry, configuration.getLaoOrganizer);
   configuration.keyPairRegistry.add(
     SignatureType.POP_TOKEN,
     getCurrentPopTokenFromStore(configuration.getCurrentLao, configuration.getRollCallById),
@@ -39,10 +38,16 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       ...walletReducer,
       ...digitalCashReducer,
     },
+    functions: {
+      useRollCallTokensByLaoId: (laoId: string) =>
+        recoverWalletRollCallTokens(
+          Object.values(configuration.useRollCallsByLaoId(laoId)),
+          new Hash(laoId),
+        ),
+    },
     context: {
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
-      getLaoOrganizer: configuration.getLaoOrganizer,
       useLaoIds: configuration.useLaoIds,
       useNamesByLaoId: configuration.useNamesByLaoId,
       walletItemGenerators: configuration.walletItemGenerators,

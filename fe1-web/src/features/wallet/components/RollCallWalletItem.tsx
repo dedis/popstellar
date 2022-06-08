@@ -11,7 +11,7 @@ import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { RollCallToken } from '../objects/RollCallToken';
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_home>,

@@ -1,8 +1,8 @@
 import { Hash } from 'core/objects';
 import { isDefined } from 'core/types';
 
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 import { WalletFeature } from '../interface';
-import { RollCallToken } from './RollCallToken';
 import { generateToken } from './Token';
 
 /**

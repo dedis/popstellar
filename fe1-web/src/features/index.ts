@@ -24,6 +24,7 @@ export function configureFeatures() {
   // configure features
   const eventConfiguration = events.configure();
   const walletConfiguration = wallet.configure();
+  const digitalCashConfiguration = digitalCash.configure();
 
   const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
@@ -69,14 +70,6 @@ export function configureFeatures() {
     hasSeed: walletConfiguration.functions.hasSeed,
   });
 
-  const digitalWalletConfiguration = digitalCash.configure({
-    messageRegistry,
-    getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
-  });
-
   const walletComposition = wallet.compose({
     keyPairRegistry,
     messageRegistry,
@@ -87,9 +80,20 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    walletItemGenerators: [...digitalCashConfiguration.walletItemGenerators],
+    walletNavigationScreens: [...digitalCashConfiguration.walletScreens],
+  });
+
+  const digitalCashComposition = digitalCash.compose({
+    messageRegistry: messageRegistry,
+    keyPairRegistry: keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
-    walletItemGenerators: [...digitalWalletConfiguration.walletItemGenerators],
-    walletNavigationScreens: [...digitalWalletConfiguration.walletScreens],
+    useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    useRollCallTokensByLaoId: walletComposition.functions.useRollCallTokensByLaoId,
   });
 
   const socialConfiguration = social.configure(messageRegistry);
@@ -202,7 +206,7 @@ export function configureFeatures() {
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
-      [digitalWalletConfiguration.identifier]: digitalWalletConfiguration.context,
+      [digitalCashComposition.identifier]: digitalCashComposition.context,
     },
   };
 }

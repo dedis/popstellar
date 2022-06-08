@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { RollCallToken } from '../objects/RollCallToken';
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 
 const styles = StyleSheet.create({
   pickerStyle: {

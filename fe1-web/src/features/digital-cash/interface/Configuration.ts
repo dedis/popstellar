@@ -1,17 +1,17 @@
+import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import { RollCallToken } from 'core/objects/RollCallToken';
 
 import { DigitalCashFeature } from './Feature';
-import { WalletFeature } from "../../wallet/interface";
 
 export const DIGITAL_CASH_FEATURE_IDENTIFIER = 'digital-cash';
 
-export interface DigitalCashConfiguration {
+export interface DigitalCashCompositionConfiguration {
   /* objects */
-
+  keyPairRegistry: KeyPairRegistry;
   messageRegistry: MessageRegistry;
-
   /* lao */
 
   /**
@@ -21,35 +21,31 @@ export interface DigitalCashConfiguration {
   getCurrentLao: () => DigitalCashFeature.Lao;
 
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
-   */
-  useCurrentLaoId: () => Hash | undefined;
-
-  /**
    * Returns the currently active lao id. Should be used outside react components
    * @returns The current lao or undefined if there is none.
    */
   getCurrentLaoId: () => Hash | undefined;
+  useCurrentLaoId: () => Hash | undefined;
 
   /**
    * Gets whether the current user is organizer of the given lao
    */
   useIsLaoOrganizer: (laoId: string) => boolean;
+  getLaoOrganizer: (laoId: string) => PublicKey | undefined;
 
   useRollCallsByLaoId: (laoId: string) => {
-    [rollCallId: string]: WalletFeature.RollCall;
+    [rollCallId: string]: DigitalCashFeature.RollCall;
   };
 
-  getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
+  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
 }
 
 /**
  * The type of the context that is provided to react witness components
  */
 export type DigitalCashReactContext = Pick<
-  DigitalCashConfiguration,
-  'useCurrentLaoId' | 'useIsLaoOrganizer'
+  DigitalCashCompositionConfiguration,
+  'useCurrentLaoId' | 'useIsLaoOrganizer' | 'useRollCallTokensByLaoId'
 >;
 
 /**
@@ -58,6 +54,8 @@ export type DigitalCashReactContext = Pick<
 export interface DigitalCashInterface extends FeatureInterface {
   walletItemGenerators: DigitalCashFeature.WalletItemGenerator[];
   walletScreens: DigitalCashFeature.WalletScreen[];
+}
 
+export interface DigitalCashCompositionInterface extends FeatureInterface {
   context: DigitalCashReactContext;
 }

@@ -3,7 +3,7 @@ import { Hash } from 'core/objects';
 import { mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCall } from 'features/rollCall/objects';
 
-import { RollCallToken } from '../RollCallToken';
+import { RollCallToken } from '../../../../core/objects/RollCallToken';
 import * as Seed from '../Seed';
 import { generateToken } from '../Token';
 import { recoverWalletRollCallTokens } from '../Wallet';
