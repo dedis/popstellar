@@ -57,7 +57,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
             }
             _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
             _ <- dbAskWritePropagate(rpcRequest)
-            _ <- dbActor ? DbActor.CreateRollCallData(laoId, data.id, data.action)
+            _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
           } yield ()
 
         Await.ready(ask, duration).value match {

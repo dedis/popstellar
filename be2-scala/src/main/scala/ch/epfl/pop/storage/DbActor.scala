@@ -200,13 +200,9 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
-  private def createRollCallData(laoId: Hash, updateId: Hash, state: ActionType): Unit = {
-    val channel = Channel(s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}")
-    if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> RollCallData(updateId, state).toJsonString
-      storage.write(pair)
-    }
+  //generates the key of the RollCallData to store in the database
+  private def generateRollCallDataKey(laoId: Hash): String = {
+    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
   }
 
   @throws [DbActorNAckException]
@@ -225,7 +221,7 @@ final case class DbActor(
         case Success(data) => data
         case Failure(_) => RollCallData(null, null)
       }
-      val rollcallDataKey: String = s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+      val rollcallDataKey: String = generateRollCallDataKey(laoId)
       storage.write(rollcallDataKey -> rollcallData.updateWith(message).toJsonString)
     }
   }
@@ -321,13 +317,6 @@ final case class DbActor(
     case AddWitnessSignature(messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(messageId, signature)) match {
-        case Success(_) => sender() ! DbActorAck()
-        case failure => sender() ! failure.recover(Status.Failure(_))
-      }
-
-    case CreateRollCallData(laoId, updateId, state) =>
-      log.info(s"Actor $self (db) received an CreateRollcallData request for lao '$laoId'")
-      Try(createRollCallData(laoId, updateId, state)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
