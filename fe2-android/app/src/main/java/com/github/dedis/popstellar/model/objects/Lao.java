@@ -50,7 +50,7 @@ public final class Lao {
   // Map for the history
   private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, TransactionObject> transactionByUser;
+  private Map<PublicKey, List<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -188,7 +188,7 @@ public final class Lao {
    * Function that update all the transaction Update transactionByUser (current state of money)
    * Update transactionHistory (current transaction perform per user)
    *
-   * @param transactionObject
+   * @param transactionObject object which was posted and now should update the lao map
    */
   public void updateTransactionMaps(TransactionObject transactionObject) {
     if (transactionObject == null) {
@@ -414,7 +414,7 @@ public final class Lao {
     return transactionHistoryByUser;
   }
 
-  public Map<PublicKey, TransactionObject> getTransactionByUser() {
+  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
     return transactionByUser;
   }
 

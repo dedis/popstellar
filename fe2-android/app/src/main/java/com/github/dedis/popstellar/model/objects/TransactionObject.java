@@ -1,13 +1,21 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +36,7 @@ public class TransactionObject {
   private long lockTime;
 
   public TransactionObject() {
-    // Empty constructor // empty transaction
-    // change the sig for all the inputs
+    /* Empty constructor == empty transaction */
   }
 
   public Channel getChannel() {
@@ -122,6 +129,25 @@ public class TransactionObject {
   }
 
   /**
+   * Function that give the Public Key receiver and the amount on the Output of transaction
+   *
+   * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
+   * @return List<PublicKey,Long> outputs public keys
+   */
+  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> map_hash_key) {
+    Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
+    Map<PublicKey, Long> receivers = new HashMap<>();
+    while (receiver_hash_ite.hasNext()) {
+      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(), null);
+      if (pub == null) {
+        throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
+      }
+      receivers.putIfAbsent(pub, this.getMiniLaoPerReceiver(pub));
+    }
+    return receivers;
+  }
+
+  /**
    * Check if a public key is in the recipient
    *
    * @param publicKey PublicKey of someone
@@ -132,11 +158,29 @@ public class TransactionObject {
   }
 
   /**
+   * Check if a public key is in the senders
+   *
+   * @param publicKey PublicKey of someone
+   * @return true if public key in receiver, false otherwise
+   */
+  public boolean isSender(PublicKey publicKey) {
+    return getSendersTransaction().contains(publicKey);
+  }
+
+  /**
+   * Function that given a key pair change the sig of an input considering all the outputs
+   *
+   * @return sig other all the outputs and inputs with the public key
+   */
+  public String computeSigOutputsInputs() throws GeneralSecurityException {
+    return computeSigOutputsInputs();
+  }
+
+  /**
    * Function that given a key pair change the sig of an input considering all the outputs
    *
    * @param keyPair of one input sender
    * @return sig other all the outputs and inputs with the public key
-   * @throws GeneralSecurityException
    */
   public String computeSigOutputsInputs(KeyPair keyPair) throws GeneralSecurityException {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
@@ -193,6 +237,55 @@ public class TransactionObject {
   }
 
   /**
+   * Total MiniLao per public key of a List of Transaction
+   *
+   * @param transaction List<TransactionObject>
+   * @param receiver Public Key
+   * @return long amount per user
+   */
+  public static long getMiniLaoPerReceiverSetTransaction(
+      List<TransactionObject> transaction, PublicKey receiver) {
+    Iterator<TransactionObject> transactionIte = transaction.iterator();
+    long totalAmount = 0;
+    while (transactionIte.hasNext()) {
+      // TODO error !!!!
+      long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
+      totalAmount += current;
+    }
+    return totalAmount;
+  }
+
+  /**
+   * Function which return the first amount which correspond to the Public Key (this function is
+   * useful if someone send money to herself, in fact only the first amount in the transaction
+   * correspond to the money he has send to him)
+   *
+   * @param receiver Public Key of a potential receiver
+   * @return int amount of Lao Coin
+   */
+  public long getMiniLaoPerReceiverFirst(PublicKey receiver) {
+    // Check in the future if useful
+    if (!isReceiver(receiver)) {
+      throw new IllegalArgumentException(
+          "The public Key is not contained in the receiver public key");
+    }
+    // Set the return value to nothing
+    long miniLao = 0;
+    // Compute the hash of the public key
+    String hash_key = receiver.computeHash();
+    // iterate through the output and sum if it's for the argument public key
+    Iterator<OutputObject> iterator = getOutputs().iterator();
+    while (iterator.hasNext()) {
+      OutputObject current = iterator.next();
+      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+        // return after first occurrence
+        return current.getValue();
+      }
+    }
+    return miniLao;
+  }
+
+  /**
    * Function that return the index of the output for a given key in this Transaction
    *
    * @param publicKey PublicKey of an individual in Transaction output
@@ -213,4 +306,71 @@ public class TransactionObject {
         "this public key is not contained in the output of this transaction");
   }
 
+  public String computeId() {
+    // Make a list all the string in the transaction
+    List<String> collect_transaction = new ArrayList<String>();
+    // Add them in lexicographic order
+
+    // Inputs
+    for (int i = 0; i < inputs.size(); i++) {
+      InputObject currentTxin = inputs.get(i);
+      // Script
+      // PubKey
+      collect_transaction.add(currentTxin.getScript().getPubkey().getEncoded());
+      // Sig
+      collect_transaction.add(currentTxin.getScript().getSig().toString());
+      // Type
+      collect_transaction.add(currentTxin.getScript().getType());
+      // TxOutHash
+      collect_transaction.add(currentTxin.getTxOutHash());
+      // TxOutIndex
+      collect_transaction.add(String.valueOf(currentTxin.getTxOutIndex()));
+    }
+
+    // lock_time
+    collect_transaction.add(String.valueOf(lockTime));
+    // Outputs
+    for (int i = 0; i < outputs.size(); i++) {
+      OutputObject currentTxout = outputs.get(i);
+      // Script
+      // PubKeyHash
+      collect_transaction.add(currentTxout.getScript().getPubkeyHash());
+      // Type
+      collect_transaction.add(currentTxout.getScript().getType());
+      // Value
+      collect_transaction.add(String.valueOf(currentTxout.getValue()));
+    }
+    // Version
+    collect_transaction.add(String.valueOf(version));
+
+    String concat = "";
+    for (int i = 0; i < collect_transaction.size(); i++) {
+      String toAdd = collect_transaction.get(i);
+      concat = concat.concat(toAdd.length() + toAdd);
+    }
+
+    MessageDigest digest;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(concat.getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(hash);
+    } catch (NoSuchAlgorithmException e) {
+      Log.e(
+          this.getClass().toString(),
+          "Something is wrong with the hash calculation",
+          new IllegalArgumentException("Error in the computation of the transaction id"));
+      return "-1";
+    }
+  }
+
+  /**
+   * Function that return if a Transaction is a coin base transaction or not
+   *
+   * @return boolean true if coin base transaction
+   */
+  public boolean isCoinBaseTransaction() {
+    return (getSendersTransaction().size() == 1)
+        && getInputs().get(0).getTxOutHash().equals(Hash.hash("none"))
+        && (getInputs().get(0).getTxOutIndex() == 0);
+  }
 }
