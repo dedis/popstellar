@@ -15,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -361,6 +362,16 @@ public class TransactionObject {
           new IllegalArgumentException("Error in the computation of the transaction id"));
       return "-1";
     }
+  }
+
+  /**
+   * Class which return the last roll call open
+   *
+   * @return Rollcall the roll call with the last ending tim e
+   */
+  public static TransactionObject lastLockedTransactionObject(
+      List<TransactionObject> listTransaction) {
+    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
   }
 
   /**
