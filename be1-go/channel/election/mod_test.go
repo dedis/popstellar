@@ -344,6 +344,39 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, expectedRes[1].BallotOption, res[1].BallotOption)
 }
 
+func Test_Update_Vote_Works(t *testing.T) {
+	// create election channel: election with one question
+	electChannel, _ := newFakeChannel(t, false)
+
+	// get cast vote message data
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	castVote.Votes[0].Question = "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="
+
+	// vote for index 0
+	castVote.Votes[0].Vote = 0
+
+	err = updateVote("", "@@@", castVote, electChannel.questions)
+	require.NoError(t, err)
+
+	// vote for index 1 at a later time
+	castVote.Votes[0].Vote = 1
+	castVote.CreatedAt++
+
+	err = updateVote("", "@@@", castVote, electChannel.questions)
+	require.NoError(t, err)
+
+	// check that the last vote was counted
+	vote := electChannel.questions["2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="].validVotes["@@@"]
+	require.Equal(t, 1, vote.index)
+}
+
 func Test_Publish_Election_Open(t *testing.T) {
 
 	// create election channel: election with one question
