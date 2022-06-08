@@ -11,8 +11,8 @@ import ch.epfl.pop.storage.DbActor
 
 //Similarly to the handlers, we create a WitnessValidator object which creates a WitnessValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
-object WitnessValidator extends MessageDataContentValidator {
-  val witnessValidator = new WitnessValidator(DbActor.getInstance)
+object WitnessValidator {
+  lazy val witnessValidator = new WitnessValidator(DbActor.getInstance)
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = witnessValidator.validateWitnessMessage(rpcMessage)
 }
 
