@@ -8,7 +8,7 @@ import {
   WALLET_FEATURE_IDENTIFIER,
 } from './interface';
 import { WalletNavigationScreen } from './navigation/WalletNavigation';
-import { configureNetwork } from './network';
+import { configureNetwork } from '../digital-cash/network';
 import { getCurrentPopTokenFromStore } from './objects';
 import { digitalCashReducer, walletReducer } from './reducer';
 import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';

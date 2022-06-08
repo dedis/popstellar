@@ -3,7 +3,7 @@ import { Hash, PublicKey } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { Transaction } from '../objects/transaction';
-import { addTransaction } from '../reducer';
+import { addTransaction } from '../../wallet/reducer';
 import { handleTransactionPost } from './DigitalCashHandler';
 import { PostTransaction } from './messages';
 

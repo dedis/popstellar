@@ -2,7 +2,7 @@ import { Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
 import { TransactionState } from '../objects/transaction';
-import { getDigitalCashState } from '../reducer';
+import { getDigitalCashState } from '../../wallet/reducer';
 
 export namespace DigitalCashStore {
   export function getTransactionsById(laoId: string): Record<string, TransactionState> {

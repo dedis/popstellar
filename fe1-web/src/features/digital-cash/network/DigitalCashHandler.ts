@@ -2,7 +2,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { Hash, PublicKey } from 'core/objects';
 
 import { Transaction } from '../objects/transaction';
-import { DigitalCashStore } from '../store';
+import { DigitalCashStore } from '../../wallet/store';
 import { PostTransaction } from './messages';
 
 /**

@@ -10,7 +10,7 @@ import {
   mockTransactionValue,
 } from '__tests__/utils';
 import { Hash } from 'core/objects';
-import { Transaction } from 'features/wallet/objects/transaction';
+import { Transaction } from '../../objects/transaction';
 
 import {
   digitalCashReduce,

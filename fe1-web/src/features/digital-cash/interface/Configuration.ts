@@ -3,6 +3,7 @@ import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { DigitalCashFeature } from './Feature';
+import { WalletFeature } from "../../wallet/interface";
 
 export const DIGITAL_CASH_FEATURE_IDENTIFIER = 'digital-cash';
 
@@ -35,6 +36,12 @@ export interface DigitalCashConfiguration {
    * Gets whether the current user is organizer of the given lao
    */
   useIsLaoOrganizer: (laoId: string) => boolean;
+
+  useRollCallsByLaoId: (laoId: string) => {
+    [rollCallId: string]: WalletFeature.RollCall;
+  };
+
+  getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 }
 
 /**

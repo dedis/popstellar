@@ -7,7 +7,7 @@ import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } 
 import { Lao, LaoState } from 'features/lao/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
-import { TransactionJSON, TransactionState } from '../../features/wallet/objects/transaction';
+import { TransactionJSON, TransactionState } from '../../features/digital-cash/objects/transaction';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;

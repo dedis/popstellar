@@ -11,8 +11,8 @@ import {
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish } from 'core/network/JsonRpcApi';
 import { Hash, PopToken } from 'core/objects';
-import { PostTransaction } from 'features/wallet/network/messages';
-import { Transaction } from 'features/wallet/objects/transaction';
+import { PostTransaction } from 'features/digital-cash/network/messages';
+import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from 'features/wallet/store';
 
 import { requestSendTransaction, requestCoinbaseTransaction } from '../DigitalCashMessageApi';

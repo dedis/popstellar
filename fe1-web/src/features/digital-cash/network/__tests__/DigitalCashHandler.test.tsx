@@ -8,8 +8,8 @@ import {
 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
-import { PostTransaction } from 'features/wallet/network/messages';
-import { Transaction } from 'features/wallet/objects/transaction';
+import { PostTransaction } from 'features/digital-cash/network/messages';
+import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from 'features/wallet/store';
 
 import { handleTransactionPost } from '../DigitalCashHandler';

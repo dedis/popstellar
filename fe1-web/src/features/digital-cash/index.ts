@@ -19,6 +19,7 @@ export function configure(configuration: DigitalCashConfiguration): DigitalCashI
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
+      useRollCallsByLaoId: configuration.useRollCallsByLaoId,
     },
   };
 }
