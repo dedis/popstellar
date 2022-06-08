@@ -69,12 +69,6 @@ func main() {
 		Aliases: []string{"ow"},
 		Usage:   "address and port to connect to other witness",
 	}
-	testFlag := &cli.BoolFlag{
-		Name:    "test",
-		Aliases: []string{"tt"},
-		Usage:   "stop the server for testing purposes",
-		Value:   false,
-	}
 
 	app := &cli.App{
 		Name:  "pop",
@@ -95,7 +89,6 @@ func main() {
 							serverListenAddressFlag,
 							clientPortFlag,
 							witnessPortFlag,
-							testFlag,
 						},
 						Action: func(c *cli.Context) error {
 							err := Serve(c, "organizer")
