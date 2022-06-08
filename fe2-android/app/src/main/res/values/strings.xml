@@ -231,6 +231,7 @@
   <string name="digital_cash_content_description_qr_receipt">Receipt qr code transaction</string>
   <string name="digital_cash_content_description_qr_receive">Receive qr code transaction</string>
   <string name="digital_cash_select_lao_member">Select LAO Member</string>
+  <string name="digital_cash_time">time</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
