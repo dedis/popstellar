@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -18,7 +20,7 @@ public class RollCall extends Event {
   private long creation;
   private long start;
   private long end;
-  private EventState state;
+  private final MutableLiveData<EventState> state = new MutableLiveData<>();
   private Set<PublicKey> attendees;
 
   private String location;
@@ -83,12 +85,8 @@ public class RollCall extends Event {
     this.end = end;
   }
 
-  public EventState getState() {
-    return state;
-  }
-
   public void setState(EventState state) {
-    this.state = state;
+    this.state.postValue(state);
   }
 
   public Set<PublicKey> getAttendees() {
@@ -131,6 +129,11 @@ public class RollCall extends Event {
       return Long.MAX_VALUE;
     }
     return end;
+  }
+
+  @Override
+  public MutableLiveData<EventState> getState() {
+    return state;
   }
 
   /**
@@ -191,7 +194,7 @@ public class RollCall extends Event {
         + ", end="
         + end
         + ", state="
-        + state
+        + state.getValue()
         + ", attendees="
         + Arrays.toString(attendees.toArray())
         + ", location='"

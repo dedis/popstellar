@@ -314,85 +314,82 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                         }
                       }
                     >
-                      <View
+                      <RCTScrollView
+                        collapsable={false}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "alignItems": "center",
-                            "flex": 1,
-                            "justifyContent": "center",
-                            "padding": 30,
+                            "padding": 16,
                           }
                         }
                       >
-                        <Text
-                          style={
-                            Object {
-                              "fontSize": 25,
-                              "fontWeight": "bold",
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          Welcome to your Digital Wallet
-                        </Text>
-                        <View
-                          style={
-                            Object {
-                              "flexDirection": "row",
-                              "marginBottom": 20,
-                              "marginTop": 30,
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Object {
-                                "fontSize": 20,
-                                "margin": "auto",
-                                "maxHeight": 40,
-                                "maxWidth": "90%",
-                                "textAlign": "center",
-                                "width": "fit-content",
-                              }
-                            }
-                          >
-                            <RNCPicker
-                              items={
-                                Array [
-                                  Object {
-                                    "label": "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=",
-                                    "testID": undefined,
-                                    "textColor": undefined,
-                                    "value": 0,
-                                  },
-                                ]
-                              }
-                              onChange={[Function]}
-                              selectedIndex={0}
-                              style={
-                                Array [
-                                  Object {
-                                    "height": 216,
-                                  },
-                                  undefined,
-                                ]
-                              }
-                            />
-                          </View>
-                        </View>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "flex": 1,
-                              "justifyContent": "center",
-                            }
-                          }
-                        >
+                        <View>
                           <Text
                             style={
                               Object {
-                                "fontSize": 25,
+                                "color": "#000",
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "lineHeight": 41,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
+                            }
+                          >
+                            Your Wallet 🔒
+                          </Text>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "row",
+                                "marginBottom": 20,
+                                "marginTop": 30,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "fontSize": 20,
+                                  "margin": "auto",
+                                  "maxHeight": 40,
+                                  "maxWidth": "90%",
+                                  "textAlign": "center",
+                                  "width": "fit-content",
+                                }
+                              }
+                            >
+                              <RNCPicker
+                                items={
+                                  Array [
+                                    Object {
+                                      "label": "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=",
+                                      "testID": undefined,
+                                      "textColor": undefined,
+                                      "value": 0,
+                                    },
+                                  ]
+                                }
+                                onChange={[Function]}
+                                selectedIndex={0}
+                                style={
+                                  Array [
+                                    Object {
+                                      "height": 216,
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                              />
+                            </View>
+                          </View>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
                                 "textAlign": "left",
                               }
                             }
@@ -404,124 +401,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             visibility={true}
                           />
                         </View>
-                        <View
-                          style={
-                            Object {
-                              "padding": "1rem",
-                            }
-                          }
-                        />
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                LOGOUT
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                Set debug mode on [TESTING]
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
+                      </RCTScrollView>
                     </View>
                   </View>
                 </View>
@@ -849,168 +729,46 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         }
                       }
                     >
-                      <View
+                      <RCTScrollView
+                        collapsable={false}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "alignItems": "center",
-                            "flex": 1,
-                            "justifyContent": "center",
-                            "padding": 30,
+                            "padding": 16,
                           }
                         }
                       >
-                        <Text
-                          style={
-                            Object {
-                              "fontSize": 25,
-                              "fontWeight": "bold",
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          Welcome to your Digital Wallet
-                        </Text>
-                        <View
-                          style={
-                            Object {
-                              "flexDirection": "row",
-                              "marginBottom": 20,
-                              "marginTop": 30,
-                            }
-                          }
-                        />
-                        <Text
-                          style={
-                            Object {
-                              "fontSize": 25,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shown here
-                        </Text>
-                        <View
-                          style={
-                            Object {
-                              "padding": "1rem",
-                            }
-                          }
-                        />
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            nativeID="animatedComponent"
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
+                        <View>
+                          <Text
                             style={
                               Object {
-                                "opacity": 1,
+                                "color": "#000",
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "lineHeight": 41,
+                                "marginBottom": 16,
+                                "textAlign": "left",
                               }
                             }
                           >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                LOGOUT
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                        <View
-                          style={
-                            Object {
-                              "marginHorizontal": 50,
-                              "marginVertical": 10,
-                            }
-                          }
-                        >
-                          <View
-                            accessibilityRole="button"
-                            accessibilityState={
-                              Object {
-                                "disabled": false,
-                              }
-                            }
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            nativeID="animatedComponent"
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
+                            Your Wallet 🔒
+                          </Text>
+                          <Text
                             style={
                               Object {
-                                "opacity": 1,
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
                               }
                             }
                           >
-                            <View
-                              style={
-                                Array [
-                                  Object {},
-                                ]
-                              }
-                            >
-                              <Text
-                                disabled={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#007AFF",
-                                      "fontSize": 18,
-                                      "margin": 8,
-                                      "textAlign": "center",
-                                    },
-                                  ]
-                                }
-                              >
-                                Set debug mode on [TESTING]
-                              </Text>
-                            </View>
-                          </View>
+                            No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here
+                          </Text>
                         </View>
-                      </View>
+                      </RCTScrollView>
                     </View>
                   </View>
                 </View>

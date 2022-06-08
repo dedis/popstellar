@@ -26,6 +26,7 @@ case object LaoHandler extends MessageHandler {
 
         // we are using the lao id instead of the message_id at lao creation
         val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        val coinChannel: Channel = Channel(s"$laoChannel${Channel.COIN_CHANNEL_PREFIX}")
         val socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         //we get access to the canonical address of the server
@@ -42,6 +43,7 @@ case object LaoHandler extends MessageHandler {
           }
           // create lao channels
           _ <- dbActor ? DbActor.CreateChannelsFromList(List(
+            (coinChannel, ObjectType.COIN),
             (laoChannel, ObjectType.LAO),
             (socialChannel, ObjectType.CHIRP),
             (reactionChannel, ObjectType.REACTION)
@@ -50,15 +52,14 @@ case object LaoHandler extends MessageHandler {
           _ <- dbActor ? DbActor.Write(laoChannel, message)
           // write lao data
           _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
+          //after creating the lao, we need to send a lao#greet message to the frontend
+          greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
+          broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
+          _ <- dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
         } yield ()
 
         Await.ready(combined, duration).value.get match {
-          case Success(_) =>
-            //after creating the lao, we need to send a lao#greet message to the frontend
-            val greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
-            val broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
-            dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
-
+          case Success(_) => Left(rpcMessage)
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }

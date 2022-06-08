@@ -1,7 +1,13 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockKeyPair, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  mockKeyPair,
+  mockLaoId,
+  mockLaoIdHash,
+  mockPopToken,
+} from '__tests__/utils';
 import { subscribeToChannel } from 'core/network';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import {
@@ -24,16 +30,19 @@ import {
   mockVote1,
   mockVote2,
 } from 'features/evoting/__tests__/utils';
+import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
 
 import { Election, ElectionStatus, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
+  handleElectionKeyMessage,
   handleElectionOpenMessage,
   handleElectionResultMessage,
   handleElectionSetupMessage,
 } from '../ElectionHandler';
 import { CastVote, ElectionResult, EndElection, SetupElection } from '../messages';
+import { ElectionKey } from '../messages/ElectionKey';
 import { OpenElection } from '../messages/OpenElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -70,6 +79,14 @@ jest.mock('core/network', () => {
   };
 });
 
+jest.mock('core/redux', () => {
+  const actualModule = jest.requireActual('core/redux');
+  return {
+    ...actualModule,
+    dispatch: jest.fn((...args) => actualModule.dispatch(...args)),
+  };
+});
+
 beforeAll(() => {
   configureTestFeatures();
 });
@@ -77,13 +94,113 @@ beforeAll(() => {
 beforeEach(() => {
   // clear data in the redux store
   dispatch({ type: 'CLEAR_STORAGE', value: {} });
-});
-
-afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('ElectionHandler', () => {
+  describe('election#key', () => {
+    it('should return false if the object is not "election"', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn();
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.CHIRP,
+            action: ActionType.KEY,
+          },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the action is not "key"', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn();
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.ADD,
+          },
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the message does not contain a channel', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn();
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          channel: undefined as unknown as string,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.KEY,
+            election: mockElectionId,
+            election_key: mockKeyPair.publicKey,
+          } as ElectionKey,
+        }),
+      ).toBeFalse();
+    });
+
+    it("should return false if the organizer backend's public key is unkown", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => undefined);
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.KEY,
+            election: mockElectionId,
+            election_key: mockKeyPair.publicKey,
+          } as ElectionKey,
+        }),
+      ).toBeFalse();
+    });
+
+    it("should return false if the organizer backend's public key does not match the sender's", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockPopToken.publicKey);
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.KEY,
+            election: mockElectionId,
+            election_key: mockKeyPair.publicKey,
+          } as ElectionKey,
+        }),
+      ).toBeFalse();
+    });
+
+    it('should store the election key if the election key message is correct', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockKeyPair.publicKey);
+
+      expect(
+        handleElectionKeyMessage(mockGetLaoOrganizerBackendPublicKey)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.KEY,
+            election: mockElectionId,
+            election_key: mockKeyPair.publicKey,
+          } as ElectionKey,
+        }),
+      ).toBeTrue();
+
+      expect(dispatch).toHaveBeenCalledWith(
+        addElectionKey({
+          electionId: mockElectionId.valueOf(),
+          electionKey: mockKeyPair.publicKey.valueOf(),
+        }),
+      );
+      expect(dispatch).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('election#setup', () => {
     it('should return false if the object is not "election"', () => {
       const addEvent = jest.fn();
@@ -485,6 +602,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           mockGetEventById,
           mockUpdateEvent,
+          jest.fn(),
         )({
           ...mockMessageData,
           messageData: {
@@ -500,6 +618,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           mockGetEventById,
           mockUpdateEvent,
+          jest.fn(),
         )({
           ...mockMessageData,
           messageData: {
@@ -515,6 +634,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           mockGetEventById,
           mockUpdateEvent,
+          jest.fn(),
         )({
           ...mockMessageData,
           channel: '',
@@ -526,11 +646,54 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
-    it('should return false if the election has not previously been stored', () => {
+    it("should return false if the organizer backend's public key is unkown", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => undefined);
+
       expect(
         handleElectionResultMessage(
           mockGetEventById,
           mockUpdateEvent,
+          mockGetLaoOrganizerBackendPublicKey,
+        )({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.RESULT,
+            election: mockElectionId.valueOf(),
+            created_at: TIMESTAMP,
+          } as MessageData,
+        }),
+      ).toBeFalse();
+    });
+
+    it("should return false if the organizer backend's public key does not match the sender's", () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockPopToken.publicKey);
+
+      expect(
+        handleElectionResultMessage(
+          mockGetEventById,
+          mockUpdateEvent,
+          mockGetLaoOrganizerBackendPublicKey,
+        )({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.RESULT,
+            election: mockElectionId.valueOf(),
+            created_at: TIMESTAMP,
+          } as MessageData,
+        }),
+      ).toBeFalse();
+    });
+
+    it('should return false if the election has not previously been stored', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockKeyPair.publicKey);
+
+      expect(
+        handleElectionResultMessage(
+          mockGetEventById,
+          mockUpdateEvent,
+          mockGetLaoOrganizerBackendPublicKey,
         )({
           ...mockMessageData,
           messageData: {
@@ -544,6 +707,7 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status and store results', () => {
+      const mockGetLaoOrganizerBackendPublicKey = jest.fn(() => mockKeyPair.publicKey);
       const getEventById = jest.fn(() => Election.fromState(mockElectionTerminated.toState()));
       const updateEvent = jest.fn();
 
@@ -551,6 +715,7 @@ describe('ElectionHandler', () => {
         handleElectionResultMessage(
           getEventById,
           updateEvent,
+          mockGetLaoOrganizerBackendPublicKey,
         )({
           ...mockMessageData,
           messageData: new ElectionResult({

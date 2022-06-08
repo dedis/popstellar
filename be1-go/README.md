@@ -103,6 +103,21 @@ go run . -h
 You may start the organizer server at ports `9000` for clients and `9001` for
 witnesses by executing
 
+```
+./pop organizer serve
+```
+
+if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
+
+```
+./pop organizer --pk "<base64url encoded pk of server owner>" serve
+```
+
+Please use the `-cp` and `-wp` flags to specify an alternative port. The full
+path to connect to the organizer as a client is
+`ws://host:clientport/organizer/client/` and as a witness
+`ws://host:witnessport/organizer/witness/`.
+
 You may start the witness server at ports `9000` for clients and `9002` for
 witness, connected to the organizer at `localhost:9000` by executing `./pop
 witness --pk "<base64 encoded pk>" serve`. Please use the `-cp` and `-wp` flags

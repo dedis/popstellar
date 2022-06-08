@@ -86,6 +86,11 @@ export interface WitnessInterface extends FeatureInterface {
       notification: WitnessFeature.Notification;
       navigateToNotificationScreen: () => void;
     }>;
+
+    Icon: React.ComponentType<{
+      color: string;
+      size: number;
+    }>;
   }[];
 
   context: WitnessReactContext;

@@ -4,11 +4,11 @@ import { Spacing } from 'core/styles';
 
 const eventViewStyles = StyleSheet.create({
   default: {
-    marginHorizontal: Spacing.s,
+    marginHorizontal: Spacing.x2,
     borderWidth: 1,
     borderRadius: 5,
-    paddingHorizontal: Spacing.xs,
-    marginBottom: Spacing.xs,
+    paddingHorizontal: Spacing.x1,
+    marginBottom: Spacing.x1,
   },
 });
 

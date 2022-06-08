@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
+import { PoPTextButton } from 'core/components';
+import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
 import { dispatch } from 'core/redux';
 import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
@@ -69,8 +71,8 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     <View>
       <Text>{JSON.stringify(notification)}</Text>
       <Text>{JSON.stringify(message)}</Text>
-      <Button title="Witness Message" onPress={onWitness} />
-      <Button title="Decline Message" onPress={onDecline} />
+      <PoPTextButton onPress={onWitness}>{STRINGS.witness_message_witness}</PoPTextButton>
+      <PoPTextButton onPress={onDecline}>{STRINGS.meeting_message_decline}</PoPTextButton>
     </View>
   );
 };
@@ -111,4 +113,6 @@ export const WitnessNotificationType = {
     notification: WitnessFeature.Notification;
     navigateToNotificationScreen: () => void;
   }>,
+
+  Icon: makeIcon('witness'),
 };

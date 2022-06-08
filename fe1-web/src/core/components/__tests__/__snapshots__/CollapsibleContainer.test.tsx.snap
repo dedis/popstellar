@@ -25,6 +25,7 @@ exports[`CollapsibleContainer container can be opened 1`] = `
             "color": "black",
             "fontSize": 25,
             "fontWeight": "bold",
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -36,7 +37,9 @@ exports[`CollapsibleContainer container can be opened 1`] = `
         style={
           Array [
             Object {
-              "fontSize": 25,
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
               "marginHorizontal": 10,
               "textAlign": "center",
             },
@@ -87,6 +90,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
             "color": "black",
             "fontSize": 25,
             "fontWeight": "bold",
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -98,7 +102,9 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
         style={
           Array [
             Object {
-              "fontSize": 25,
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
               "marginHorizontal": 10,
               "textAlign": "center",
             },
@@ -143,6 +149,7 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
             "color": "black",
             "fontSize": 25,
             "fontWeight": "bold",
+            "lineHeight": 26,
             "marginHorizontal": 10,
             "textAlign": "center",
           }
@@ -154,7 +161,9 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
         style={
           Array [
             Object {
-              "fontSize": 25,
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
               "marginHorizontal": 10,
               "textAlign": "center",
             },

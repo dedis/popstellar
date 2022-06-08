@@ -104,7 +104,7 @@ object MessageExample {
 
   private final val createLaoWrongId: CreateLao = CreateLao(idInvalid, name, creationWorking, organizer, workingWitnessList)
   final val MESSAGE_CREATELAO_WRONG_ID: Message = new Message(
-    Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
+    Base64Data.encode(createLaoWrongId.toJson.toString),
     organizer,
     Signature(Base64Data("")),
     Hash(Base64Data("")),
@@ -113,7 +113,7 @@ object MessageExample {
   )
 
   final val MESSAGE_CREATELAO_WRONG_SENDER: Message = new Message(
-    Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
+    Base64Data.encode(createLaoCorrect.toJson.toString),
     PublicKey(Base64Data.encode("wrong")),
     Signature(Base64Data("")),
     Hash(Base64Data("")),

@@ -7,23 +7,25 @@ import { combineReducers, createStore, Store } from 'redux';
 import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
-import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
+import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import { LaoHooks } from '../LaoHooks';
 
 const EventList = jest.fn();
+const CreateEventButton = jest.fn();
 
-const laoNavigationScreens: LaoFeature.Screen[] = [];
-const organizerNavigationScreens: LaoFeature.Screen[] = [];
+const laoNavigationScreens: LaoFeature.LaoScreen[] = [];
+const organizerNavigationScreens: LaoFeature.LaoEventScreen[] = [];
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     encodeLaoConnectionForQRCode,
     laoNavigationScreens,
-    organizerNavigationScreens,
+    eventsNavigationScreens: organizerNavigationScreens,
     EventList,
+    CreateEventButton,
   } as LaoReactContext,
 };
 
@@ -87,6 +89,15 @@ describe('LaoHooks', () => {
     });
   });
 
+  describe('useCreateEventButtonComponent', () => {
+    it('should return the current event list component', () => {
+      const { result } = renderHook(() => LaoHooks.useCreateEventButtonComponent(), {
+        wrapper: wrapper(mockStore),
+      });
+      expect(result.current).toBe(CreateEventButton);
+    });
+  });
+
   describe('useIsLaoOrganizer', () => {
     it('should return true if the current user is the organizer', () => {
       // make us the organizer
@@ -140,7 +151,7 @@ describe('LaoHooks', () => {
 
   describe('useOrganizerNavigationScreens', () => {
     it('should return the list of organizer navigation screens', () => {
-      const { result } = renderHook(() => LaoHooks.useOrganizerNavigationScreens(), {
+      const { result } = renderHook(() => LaoHooks.useEventsNavigationScreens(), {
         wrapper: wrapper(mockStore),
       });
 

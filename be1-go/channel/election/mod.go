@@ -1,7 +1,9 @@
 package election
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"popstellar/channel"
 	"popstellar/channel/registry"
@@ -16,6 +18,7 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -29,6 +32,8 @@ const (
 	failedToBroadcast  = "failed to broadcast message: %v"
 )
 
+var suite = crypto.Suite
+
 // Channel is used to handle election messages.
 type Channel struct {
 	sockets   channel.Sockets
@@ -36,6 +41,15 @@ type Channel struct {
 	channelID string
 
 	// *baseChannel
+
+	// Type of election channel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
+	electionType string
+
+	// Keys of the election if secret ballot, nil otherwise
+	pubElectionKey kyber.Point
+	secElectionKey kyber.Scalar
+	// Creation time of the election
+	createdAt int64
 
 	// Starting time of the election
 	start int64
@@ -95,8 +109,8 @@ type validVote struct {
 	// voteTime represents the time of the creation of the vote
 	voteTime int64
 
-	// indexes represents the indexes of the ballot options
-	indexes []int
+	// index represents the index of the ballot options
+	index interface{}
 }
 
 // attendees represents the attendees in an election.
@@ -106,25 +120,28 @@ type attendees struct {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
+func NewChannel(channelPath string, msg message.Message, msgData messagedata.ElectionSetup,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+	log zerolog.Logger, organizerPubKey kyber.Point) (channel.Channel, error) {
 
 	log = log.With().Str("channel", "election").Logger()
 
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
+	pubKey, secKey := generateKeys()
 
 	newChannel := &Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
-		start:      msgData.StartTime,
-		end:        msgData.EndTime,
-		started:    false,
-		terminated: false,
-		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
+		electionType:   msgData.Version,
+		pubElectionKey: pubKey,
+		secElectionKey: secKey,
+		createdAt:      msgData.CreatedAt,
+		start:          msgData.StartTime,
+		end:            msgData.EndTime,
+		started:        false,
+		terminated:     false,
+		questions:      getAllQuestionsForElectionChannel(msgData.Questions),
 
 		attendees: &attendees{
 			store: attendeesMap,
@@ -137,9 +154,20 @@ func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
 		organiserPubKey: organizerPubKey,
 	}
 
-	newChannel.registry = newChannel.NewElectionRegistry()
+	newChannel.registry = newChannel.newElectionRegistry()
 
-	return newChannel
+	newChannel.inbox.StoreMessage(msg)
+
+	if newChannel.electionType != messagedata.SecretBallot {
+		return newChannel, nil
+	}
+
+	err := newChannel.createAndSendElectionKey()
+	if err != nil {
+		err = xerrors.Errorf("failed to send the election key: %v", err)
+	}
+
+	return newChannel, err
 }
 
 // ---
@@ -235,8 +263,8 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	return nil
 }
 
-// NewElectionRegistry creates a new registry for the election channel
-func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
+// newElectionRegistry creates a new registry for the election channel
+func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
 	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
@@ -488,6 +516,79 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	return nil
 }
 
+// createAndSendElectionKey creates and sends the election#key message
+func (c *Channel) createAndSendElectionKey() error {
+	// Marshalls the election key
+	ekBuf, err := c.pubElectionKey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the election key: %v", err)
+	}
+
+	msgData := messagedata.ElectionKey{
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
+		Election: c.getElectionID(),
+		Key:      base64.URLEncoding.EncodeToString(ekBuf),
+	}
+
+	// Marshalls the message data
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the data: %v", err)
+	}
+
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	// Marshalls the server public key
+	pk := c.hub.GetPubKeyServ()
+	skBuf, err := pk.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the server key: %v", err)
+	}
+
+	// Sign the data
+	signatureBuf, err := c.hub.Sign(dataBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
+	electionKeyMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(skBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = c.broadcastToAllClients(electionKeyMsg)
+	if err != nil {
+		return xerrors.Errorf(failedToBroadcast, err)
+	}
+
+	c.inbox.StoreMessage(electionKeyMsg)
+
+	return nil
+}
+
+// getElectionID extracts and returns the electionID from the channelID
+func (c *Channel) getElectionID() string {
+	// split channel to [lao id, election id]
+	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+
+	return IDs[1]
+}
+
+// generateKeys generates and returns a key pair
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
+}
+
 // isPresent checks if a key representing a user is present in
 // the list of attendees.
 func (a *attendees) isPresent(key string) bool {
@@ -501,7 +602,7 @@ func (a *attendees) isPresent(key string) bool {
 
 // broadcastElectionResult gathers and broadcasts the results of an election
 func (c *Channel) broadcastElectionResult() error {
-	resultElection, err := gatherResults(c.questions, c.log)
+	resultElection, err := c.gatherResults(c.questions, c.log)
 	if err != nil {
 		return xerrors.Errorf("failed to gather results: %v", err)
 	}
@@ -540,7 +641,7 @@ func (c *Channel) broadcastElectionResult() error {
 	return nil
 }
 
-func gatherResults(questions map[string]*question,
+func (c *Channel) gatherResults(questions map[string]*question,
 	log zerolog.Logger) (messagedata.ElectionResult, error) {
 
 	log.Info().Msgf("gathering results for the election")
@@ -562,8 +663,9 @@ func gatherResults(questions map[string]*question,
 		if question.method == "Plurality" {
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
-				for _, ballotIndex := range vote.indexes {
-					numberOfVotesPerBallotOption[ballotIndex]++
+				index, ok := c.getVoteIndex(vote)
+				if ok && index >= 0 && index < len(question.ballotOptions) {
+					numberOfVotesPerBallotOption[index]++
 				}
 			}
 
@@ -583,6 +685,75 @@ func gatherResults(questions map[string]*question,
 	}
 
 	return resultElection, nil
+}
+
+// getVoteIndex extracts the index of the vote from the validVotes
+func (c *Channel) getVoteIndex(vote validVote) (int, bool) {
+	elecType := c.electionType
+	switch elecType {
+	// open ballot votes have the index in plain text
+	case messagedata.OpenBallot:
+		index, _ := vote.index.(int)
+		return index, true
+	// secret ballot votes must be decrypted to get the index
+	case messagedata.SecretBallot:
+		temp, _ := vote.index.(string)
+		index, err := c.decryptVote(temp)
+		if err != nil {
+			// logs a warning because we don't stop the tallying for non-conform votes
+			// we just disregards them
+			c.log.Warn().Msgf("failed to decrypt a vote: %v", err)
+			return index, false
+		}
+		return index, true
+	default:
+		return -1, false
+	}
+}
+
+// decryptVote decrypts the vote using ElGamal under Ed25519 curve
+func (c *Channel) decryptVote(vote string) (int, error) {
+	// vote is encoded in base64
+	votebuf, err := base64.URLEncoding.DecodeString(vote)
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
+	}
+
+	if len(votebuf) != 64 {
+		return -1, answer.NewErrorf(-4, "vote %s is not 64 bytes long", vote)
+	}
+
+	// K and C are respectively the first and last 32 bytes of the vote
+	K := crypto.Suite.Point()
+	C := crypto.Suite.Point()
+
+	err = K.UnmarshalBinary(votebuf[:32])
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+	}
+
+	err = C.UnmarshalBinary(votebuf[32:])
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+	}
+
+	// performs the ElGamal decryption
+	S := crypto.Suite.Point().Mul(c.secElectionKey, K)
+	data, err := crypto.Suite.Point().Sub(C, S).Data()
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote data is invalid")
+	}
+
+	var index uint16
+
+	// interprets the data as a big endian int
+	buf := bytes.NewReader(data)
+	err = binary.Read(buf, binary.BigEndian, &index)
+	if err != nil {
+		return -1, answer.NewErrorf(-4, "vote data is empty")
+	}
+
+	return int(index), nil
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
@@ -627,12 +798,12 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 
 		// if the sender didn't previously cast a vote or if the vote is no
 		// longer valid update it
-		err := checkMethodProperties(qs.method, len(vote.Vote))
+		err := checkMethodProperties(qs.method, 1)
 		if err != nil {
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
 
-		if !ok || earlierVote.voteTime > castVote.CreatedAt {
+		if !ok || earlierVote.voteTime < castVote.CreatedAt {
 			qs.validVotes[sender] = validVote{
 				msgID,
 				vote.ID,
