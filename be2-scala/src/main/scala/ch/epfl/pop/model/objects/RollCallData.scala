@@ -14,11 +14,11 @@ final case class RollCallData(updateId: Hash, state: ActionType) {
   }
 
   def updateWith(message: Message): RollCallData = {
-    message.decodedData.fold(this) {
-      case create: CreateRollCall => RollCallData(create.id, create.action)
-      case open: OpenRollCall => RollCallData(open.update_id, open.action)
-      case reopen: ReopenRollCall => RollCallData(reopen.update_id, reopen.action)
-      case close: CloseRollCall => RollCallData(close.update_id, close.action)
+    message.decodedData match {
+      case Some(create: CreateRollCall) => RollCallData(create.id, create.action)
+      case Some(open: OpenRollCall) => RollCallData(open.update_id, open.action)
+      case Some(reopen: ReopenRollCall) => RollCallData(reopen.update_id, reopen.action)
+      case Some(close: CloseRollCall) => RollCallData(close.update_id, close.action)
       case _ => this
     }
   }
