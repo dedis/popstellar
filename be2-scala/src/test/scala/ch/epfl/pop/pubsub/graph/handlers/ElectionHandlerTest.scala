@@ -16,6 +16,7 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples._
 import util.examples.Election._
 import util.examples.data._
+import util.examples.LaoDataExample
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -29,6 +30,9 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
   }
+
+  private val keyPair: KeyPair = KeyPair()
+  private val electionData: ElectionData = ElectionData(Hash(Base64Data.encode("election")), keyPair)
 
   private final val sender: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION
 
@@ -64,8 +68,14 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           system.log.info("Responding with a Ack")
 
           sender() ! DbActor.DbActorAck()
-        case x =>
-          system.log.info(s"Received - error $x")
+        case DbActor.ReadLaoData(_) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+        case DbActor.ReadElectionData(_) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK")
@@ -76,16 +86,47 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
-          system.log.info(s"Received a message")
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) | DbActor.CreateElectionData(_, _) =>
+          system.log.info("Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
         case DbActor.ChannelExists(_) =>
-          system.log.info(s"Received a create setup message")
+          system.log.info("Received a create setup message")
           system.log.info("Responding with a no")
           sender() ! Status.Failure(DbActorNAckException(1, "no"))
-        case x =>
-          system.log.info(s"Received - error $x")
+        case DbActor.ReadLaoData(_) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+        case DbActor.ReadElectionData(_) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
+      }
+    })
+    system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
+  }
+
+  def mockDbElectionSecretBallotReadFailed: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) | DbActor.CreateElectionData(_, _) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case DbActor.ChannelExists(_) =>
+          system.log.info("Received a channel exist setup message")
+          system.log.info("Responding with a no")
+          sender() ! Status.Failure(DbActorNAckException(1, "no"))
+        case DbActor.ReadLaoData(_) =>
+          system.log.info("Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+        case DbActor.ReadElectionData(_) =>
+          system.log.info("Received a read election data")
+          system.log.info("Responding with a Nack")
+          sender() ! Status.Failure(DbActorNAckException(1, "no"))
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
@@ -181,6 +222,26 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
+  test("SetupElection with secret ballot should succeed if the it is stored correctly in the database") {
+    val mockedDB = mockDbWithAck
+    val rc = new ElectionHandler(mockedDB)
+    val request = SetupElectionMessages.setupElectionSecretBallot
+
+    rc.handleSetupElection(request) should equal(Left(request))
+
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("SetupElection with secret ballot should fail if the election cannot read in the election data") {
+    val mockedDB = mockDbElectionSecretBallotReadFailed
+    val rc = new ElectionHandler(mockedDB)
+    val request = SetupElectionMessages.setupElectionSecretBallot
+
+    rc.handleSetupElection(request) shouldBe an[Right[PipelineError, _]]
+
+    system.stop(mockedDB.actorRef)
+  }
+
   test("OpenElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAck
     val rc = new ElectionHandler(mockedDB)
@@ -258,6 +319,26 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val request = EndElectionMessages.endElection
 
     rc.handleEndElection(request) shouldBe an[Right[PipelineError, _]]
+
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("KeyElection should succeed if the election already exists") {
+    val mockedDB = mockDbWithAck
+    val rc = new ElectionHandler(mockedDB)
+    val request = KeyElectionMessages.keyElection
+
+    rc.handleKeyElection(request) should equal(Left(request))
+
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("keyElection should fail if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new ElectionHandler(mockedDB)
+    val request = KeyElectionMessages.keyElection
+
+    rc.handleKeyElection(request) shouldBe an[Right[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

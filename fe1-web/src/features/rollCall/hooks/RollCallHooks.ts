@@ -41,84 +41,31 @@ export namespace RollCallHooks {
    */
   export const useHasSeed = () => useRollCallContext().hasSeed;
 
-  /**
-   * Creates a subset of rollCallById where the returned map only contains the keys in rollCallIds
-   * @param rollCallIds The set of roll call ids that should be mapped to the corresponding roll call
-   * @param rollCallById A map where all mappings from roll call id to roll call instance are contained
-   */
-  const getRollCallsId = (
-    rollCallIds: string[],
-    rollCallById: Record<string, RollCall>,
+  export const useRollCallsByLaoId = (
+    laoId: string,
   ): {
     [rollCallId: string]: RollCall;
-  } => {
-    return rollCallIds.reduce((rollCallByIdMap, rollCallId) => {
-      // in order to make the reduce() efficient, we want to reuse the object and thus
-      // re-assign properties here
-      // eslint-disable-next-line no-param-reassign
-      rollCallByIdMap[rollCallId] = rollCallById[rollCallId];
-      return rollCallByIdMap;
-    }, {} as Record<string, RollCall>);
-  };
-
-  /**
-   * Creates a map from laoId to maps from roll call id to roll call instances
-   * @param rollCallStatesByLaoId A map from laoId to a map of roll call ids to roll call states
-   * @param rollCallById A map from roll call id to roll call instance
-   */
-  const getRollCallsByLaoId = (
-    rollCallStatesByLaoId: Record<string, Record<string, RollCallFeature.EventState>>,
-    rollCallById: Record<string, RollCall>,
-  ): {
-    [laoId: string]: { [rollCallId: string]: RollCall };
-  } => {
-    // iterate over all lao ids
-    return Object.keys(rollCallStatesByLaoId).reduce((rollCallsByLaoId, laoId) => {
-      // for each lao id create a map from roll call id to a roll call instance
-
-      // in order to make the reduce() efficient, we want to reuse the object and thus
-      // re-assign properties here
-      // eslint-disable-next-line no-param-reassign
-      rollCallsByLaoId[laoId] = getRollCallsId(
-        Object.keys(rollCallStatesByLaoId[laoId]),
-        rollCallById,
-      );
-
-      return rollCallsByLaoId;
-    }, {} as Record<string, Record<string, RollCall>>);
-  };
-
-  export const useRollCallsByLaoId = (): {
-    [laoId: string]: { [rollCallId: string]: RollCall };
   } => {
     const { makeEventByTypeSelector } = useRollCallContext();
     const eventStatesByLaoIdSelector = useMemo(
       () =>
-        makeEventByTypeSelector(RollCall.EVENT_TYPE) as (
+        makeEventByTypeSelector(laoId, RollCall.EVENT_TYPE) as (
           state: unknown,
-        ) => Record<string, Record<string, RollCallFeature.EventState>>,
-      [makeEventByTypeSelector],
+        ) => Record<string, RollCallFeature.EventState>,
+      [makeEventByTypeSelector, laoId],
     );
 
     const eventStatesByLaoId = useSelector(eventStatesByLaoIdSelector);
 
-    // retrieve all event ids from the 2 level map
-    const allEventIds = useMemo(
-      () => Object.values(eventStatesByLaoId).flatMap(Object.keys),
-      [eventStatesByLaoId],
-    );
+    // retrieve all event ids from the map
+    const allEventIds = useMemo(() => Object.keys(eventStatesByLaoId), [eventStatesByLaoId]);
 
     // retrieve all corresponding roll calls
     const rollCallByIdSelector = useMemo(
       () => makeRollCallByIdSelector(allEventIds),
       [allEventIds],
     );
-    const rollCallById = useSelector(rollCallByIdSelector);
 
-    // create a map from laoIds to a map from rollcall id to roll call instances
-    return useMemo(
-      () => getRollCallsByLaoId(eventStatesByLaoId, rollCallById),
-      [eventStatesByLaoId, rollCallById],
-    );
+    return useSelector(rollCallByIdSelector);
   };
 }

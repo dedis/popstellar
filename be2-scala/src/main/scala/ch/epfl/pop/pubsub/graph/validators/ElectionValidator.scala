@@ -30,6 +30,8 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateResultElection(rpcMessage)
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateEndElection(rpcMessage)
+
+  def validateKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateKeyElection(rpcMessage)
 }
 
 sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
@@ -70,6 +72,31 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
+        } else {
+          Left(rpcMessage)
+        }
+
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
+  def validateKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "KeyElection", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: KeyElection = message.decodedData.get.asInstanceOf[KeyElection]
+
+        val channel: Channel = rpcMessage.getParamsChannel
+        val electionId: Hash = channel.extractChildChannel
+        val sender: PublicKey = message.sender
+
+        if (electionId != data.election) {
+          Right(validationError("Unexpected election id"))
+        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
+          Right(validationError(s"trying to send a KeyElection message on a wrong type of channel $channel"))
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
+          Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else {
           Left(rpcMessage)
         }
@@ -141,6 +168,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         } else {
           Left(rpcMessage)
         }
+
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }

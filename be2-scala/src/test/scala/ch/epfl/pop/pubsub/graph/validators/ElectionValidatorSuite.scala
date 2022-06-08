@@ -329,10 +329,52 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  //Key Election
+  test("KeyElection works as intended") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
+    message should equal(Left(KEY_ELECTION_RPC))
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("KeyElection fails with invalid election id") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_WRONG_ID_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("KeyElection fails with wrong sender") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_WRONG_OWNER_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("KeyElection fails with invalid PoP token") {
+    val dbActorRef = mockDbWrongTokenSetup
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("KeyElection fails with wrong channel") {
+    val dbActorRef = mockDbWrongChannel
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("KeyElection without Params does not work in validateKeyElection") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(RPC_NO_PARAMS)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   //Open Election
   test("Open up an election works as intended") {
     val dbActorRef = mockDbWorking
-    println(dbActorRef)
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
     message should equal(Left(OPEN_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)

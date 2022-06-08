@@ -36,16 +36,14 @@ describe('Recover wallet roll call tokens function', () => {
       rollCallName: mockRC.name,
     });
 
-    const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
-    const rct = await recoverWalletRollCallTokens(state, mockLao.id);
+    const rct = await recoverWalletRollCallTokens([mockRC], mockLao.id);
     expect(rct).toEqual([expected]);
   });
 
   it('Should return an empty array when no corresponding token', async () => {
     const mockRC = createMockRCWithAttendee(mockRollCallState.attendees[0]);
 
-    const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
-    const rct = await recoverWalletRollCallTokens(state, mockLao.id);
+    const rct = await recoverWalletRollCallTokens([mockRC], mockLao.id);
     expect(rct).toEqual([]);
   });
 });

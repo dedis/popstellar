@@ -30,6 +30,7 @@ public enum Action {
   NOTIFY_ADD("notify_add"),
   DELETE("delete"),
   NOTIFY_DELETE("notify_delete"),
+  KEY("key");
   POST_TRANSACTION("post_transaction");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));

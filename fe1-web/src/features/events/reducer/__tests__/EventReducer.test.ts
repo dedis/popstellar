@@ -240,21 +240,12 @@ describe('makeEventSelector', () => {
 
 describe('makeEventByTypeSelector', () => {
   it('should return the correct value', () => {
-    expect(makeEventByTypeSelector(RollCall.EVENT_TYPE)(filledState)).toEqual({
-      [mockLaoId]: {
-        [mockRollCallWithAliasState.id]: {
-          eventType: RollCall.EVENT_TYPE,
-          id: mockRollCallWithAliasState.id,
-          start: mockRollCallWithAlias.start.valueOf(),
-          end: mockRollCallWithAlias.end.valueOf(),
-        },
-      },
-      someOtherId: {
-        otherId: {
-          eventType: RollCall.EVENT_TYPE,
-          id: 'otherId',
-          start: 0,
-        },
+    expect(makeEventByTypeSelector(mockLaoId, RollCall.EVENT_TYPE)(filledState)).toEqual({
+      [mockRollCallWithAliasState.id]: {
+        eventType: RollCall.EVENT_TYPE,
+        id: mockRollCallWithAliasState.id,
+        start: mockRollCallWithAlias.start.valueOf(),
+        end: mockRollCallWithAlias.end.valueOf(),
       },
     });
   });

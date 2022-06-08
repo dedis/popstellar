@@ -318,375 +318,380 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                         style={
                           Object {
                             "flex": 1,
-                            "justifyContent": "space-evenly",
+                            "overflow": "hidden",
                           }
                         }
                       >
                         <View
                           style={
                             Object {
-                              "alignItems": "center",
-                              "borderWidth": 1,
-                              "flex": 8,
-                              "justifyContent": "center",
-                              "margin": 10,
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                              "zIndex": 0,
                             }
                           }
                         >
-                          <Text
-                            style={
-                              Object {
-                                "color": "black",
-                                "fontSize": 25,
-                                "marginHorizontal": 10,
-                                "textAlign": "center",
-                              }
-                            }
-                          >
-                            Please scan each participant’s Roll-call QR code exactly once.
-                          </Text>
                           <View />
-                          <View
-                            style={Object {}}
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "alignSelf": "center",
-                                  "backgroundColor": "#52c41a",
-                                  "borderColor": "#fff",
-                                  "borderRadius": 9,
-                                  "borderWidth": 0.5,
-                                  "height": 18,
-                                  "justifyContent": "center",
-                                  "minWidth": 18,
-                                }
-                              }
-                            >
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "white",
-                                    "fontSize": 12,
-                                    "paddingHorizontal": 4,
-                                  }
-                                }
-                              >
-                                0
-                              </Text>
-                            </View>
-                          </View>
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "flex": 1,
+                              "flexDirection": "column",
+                              "margin": 16,
+                            }
+                          }
+                        >
                           <View
                             style={
                               Object {
-                                "marginHorizontal": 50,
-                                "marginVertical": 10,
+                                "bottom": 0,
+                                "flex": 1,
                               }
                             }
                           >
                             <View
-                              accessibilityRole="button"
-                              accessibilityState={
-                                Object {
-                                  "disabled": false,
-                                }
-                              }
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              nativeID="animatedComponent"
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                  "justifyContent": "space-between",
                                 }
                               }
                             >
-                              <View
-                                style={
-                                  Array [
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                <Text
-                                  disabled={false}
+                              <View>
+                                <View
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#007AFF",
-                                        "fontSize": 18,
-                                        "margin": 8,
-                                        "textAlign": "center",
-                                      },
-                                    ]
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
                                   }
                                 >
-                                  Close Roll-Call
-                                </Text>
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-stop-scanning"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        <Text />
+                                      </View>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-add-manually"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        <Text />
+                                      </View>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </View>
                           </View>
                           <View
                             style={
                               Object {
-                                "marginHorizontal": 50,
-                                "marginVertical": 10,
+                                "flexDirection": "column",
                               }
                             }
                           >
                             <View
-                              accessibilityRole="button"
-                              accessibilityState={
-                                Object {
-                                  "disabled": false,
-                                }
-                              }
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              nativeID="animatedComponent"
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
                                 }
                               }
                             >
                               <View
+                                accessible={true}
+                                focusable={true}
+                                onClick={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
                                 style={
-                                  Array [
-                                    Object {},
-                                  ]
+                                  Object {
+                                    "alignSelf": "flex-end",
+                                    "marginLeft": "auto",
+                                    "opacity": 1,
+                                  }
                                 }
                               >
-                                <Text
-                                  disabled={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#007AFF",
-                                        "fontSize": 18,
-                                        "margin": 8,
-                                        "textAlign": "center",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Add an attendee manually
-                                </Text>
+                                <View>
+                                  <Text />
+                                </View>
                               </View>
                             </View>
                           </View>
                         </View>
-                        <Modal
-                          hardwareAccelerated={false}
-                          transparent={true}
-                          visible={false}
+                      </View>
+                      <Modal
+                        hardwareAccelerated={false}
+                        onRequestClose={[Function]}
+                        transparent={true}
+                        visible={false}
+                      >
+                        <RNGestureHandlerButton
+                          collapsable={false}
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
+                          style={
+                            Object {
+                              "backgroundColor": "rgba(0,0,0,0.25)",
+                              "bottom": 0,
+                              "flex": 1,
+                              "left": 0,
+                              "padding": 32,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                            }
+                          }
                         >
                           <View
-                            style={
-                              Object {
-                                "backgroundColor": "white",
-                                "borderRadius": 10,
-                                "borderWidth": 1,
-                                "margin": "auto",
-                                "width": 550,
-                              }
+                            accessible={true}
+                            style={Object {}}
+                          />
+                        </RNGestureHandlerButton>
+                        <RCTScrollView
+                          collapsable={false}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "borderRadius": 16,
+                              "margin": 32,
+                              "padding": 32,
                             }
-                          >
+                          }
+                        >
+                          <View>
                             <View
                               style={
                                 Object {
-                                  "borderBottomWidth": 1,
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                  "marginBottom": 16,
+                                  "width": "100%",
                                 }
                               }
                             >
                               <Text
                                 style={
                                   Object {
-                                    "alignSelf": "flex-start",
-                                    "fontSize": 25,
-                                    "fontWeight": "bold",
-                                    "marginHorizontal": 10,
-                                    "padding": 20,
-                                    "paddingLeft": 10,
-                                    "textAlign": "center",
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "500",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                               >
                                 Add an attendee
                               </Text>
+                              <RNGestureHandlerButton
+                                collapsable={false}
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
+                                style={
+                                  Object {
+                                    "position": "absolute",
+                                    "right": 0,
+                                  }
+                                }
+                                testID="modal-header-close"
+                              >
+                                <View
+                                  accessible={true}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Object {
+                                        "color": "#3742fa",
+                                        "fontSize": 20,
+                                        "fontWeight": "500",
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      }
+                                    }
+                                  >
+                                    Done
+                                  </Text>
+                                </View>
+                              </RNGestureHandlerButton>
                             </View>
                             <Text
                               style={
                                 Object {
-                                  "alignSelf": "flex-start",
+                                  "color": "#000",
                                   "fontSize": 20,
-                                  "marginHorizontal": 10,
-                                  "padding": 20,
-                                  "paddingLeft": 10,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
                                   "textAlign": "left",
                                 }
                               }
                             >
                               Enter token:
                             </Text>
-                            <TextInput
-                              defaultValue=""
-                              onChangeText={[Function]}
-                              placeholder="Attendee token"
-                              selectTextOnFocus={true}
-                              style={
-                                Object {
-                                  "borderBottomWidth": 2,
-                                  "fontSize": 25,
-                                  "marginHorizontal": 50,
-                                  "marginVertical": 20,
-                                  "textAlign": "center",
-                                }
-                              }
-                            />
                             <View
                               style={
                                 Object {
-                                  "alignSelf": "center",
+                                  "flex": 1,
                                   "flexDirection": "row",
-                                  "paddingBottom": 20,
                                 }
                               }
                             >
-                              <View
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Attendee token"
                                 style={
-                                  Object {
-                                    "marginHorizontal": 50,
-                                    "marginVertical": 10,
-                                  }
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 8,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
                                 }
-                              >
-                                <View
-                                  accessibilityRole="button"
-                                  accessibilityState={
-                                    Object {
-                                      "disabled": false,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  nativeID="animatedComponent"
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      disabled={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#007AFF",
-                                            "fontSize": 18,
-                                            "margin": 8,
-                                            "textAlign": "center",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "marginHorizontal": 50,
-                                    "marginVertical": 10,
-                                  }
-                                }
-                              >
-                                <View
-                                  accessibilityRole="button"
-                                  accessibilityState={
-                                    Object {
-                                      "disabled": false,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  nativeID="animatedComponent"
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      disabled={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#007AFF",
-                                            "fontSize": 18,
-                                            "margin": 8,
-                                            "textAlign": "center",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Cancel
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
+                                testID="confirm-modal-input"
+                                value=""
+                              />
                             </View>
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "marginBottom": 16,
+                                }
+                              }
+                              testID="confirm-modal-confirm"
+                            >
+                              <View
+                                accessible={true}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 16,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Add
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
-                        </Modal>
-                      </View>
+                        </RCTScrollView>
+                      </Modal>
                     </View>
                   </View>
                 </View>
@@ -1018,367 +1023,437 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                         style={
                           Object {
                             "flex": 1,
-                            "justifyContent": "space-evenly",
+                            "overflow": "hidden",
                           }
                         }
                       >
                         <View
                           style={
                             Object {
-                              "alignItems": "center",
-                              "borderWidth": 1,
-                              "flex": 8,
-                              "justifyContent": "center",
-                              "margin": 10,
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                              "zIndex": 0,
                             }
                           }
                         >
-                          <Text
-                            style={
-                              Object {
-                                "color": "black",
-                                "fontSize": 25,
-                                "marginHorizontal": 10,
-                                "textAlign": "center",
-                              }
-                            }
-                          >
-                            Please scan each participant’s Roll-call QR code exactly once.
-                          </Text>
                           <View />
-                          <View
-                            style={Object {}}
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "alignSelf": "center",
-                                  "backgroundColor": "#52c41a",
-                                  "borderColor": "#fff",
-                                  "borderRadius": 9,
-                                  "borderWidth": 0.5,
-                                  "height": 18,
-                                  "justifyContent": "center",
-                                  "minWidth": 18,
-                                }
-                              }
-                            >
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "white",
-                                    "fontSize": 12,
-                                    "paddingHorizontal": 4,
-                                  }
-                                }
-                              >
-                                3
-                              </Text>
-                            </View>
-                          </View>
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "flex": 1,
+                              "flexDirection": "column",
+                              "margin": 16,
+                            }
+                          }
+                        >
                           <View
                             style={
                               Object {
-                                "marginHorizontal": 50,
-                                "marginVertical": 10,
+                                "bottom": 0,
+                                "flex": 1,
                               }
                             }
                           >
                             <View
-                              accessibilityRole="button"
-                              accessibilityState={
-                                Object {
-                                  "disabled": false,
-                                }
-                              }
-                              accessible={true}
-                              focusable={true}
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                  "justifyContent": "space-between",
                                 }
                               }
                             >
-                              <View
-                                style={
-                                  Array [
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                <Text
-                                  disabled={false}
+                              <View>
+                                <View
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#007AFF",
-                                        "fontSize": 18,
-                                        "margin": 8,
-                                        "textAlign": "center",
-                                      },
-                                    ]
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
                                   }
                                 >
-                                  Close Roll-Call
-                                </Text>
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-stop-scanning"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#3742fa",
+                                                "fontSize": 25,
+                                              },
+                                              undefined,
+                                              Object {
+                                                "fontFamily": "ionicons",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                        >
+                                          
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
+                              </View>
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    testID="roll-call-open-add-manually"
+                                  >
+                                    <View
+                                      accessible={true}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#3742fa",
+                                                "fontSize": 25,
+                                              },
+                                              undefined,
+                                              Object {
+                                                "fontFamily": "ionicons",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                        >
+                                          
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </View>
                           </View>
                           <View
                             style={
                               Object {
-                                "marginHorizontal": 50,
-                                "marginVertical": 10,
+                                "flexDirection": "column",
                               }
                             }
                           >
                             <View
-                              accessibilityRole="button"
-                              accessibilityState={
-                                Object {
-                                  "disabled": false,
-                                }
-                              }
-                              accessible={true}
-                              focusable={true}
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
                                 }
                               }
                             >
                               <View
+                                accessible={true}
+                                focusable={true}
+                                onClick={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
                                 style={
-                                  Array [
-                                    Object {},
-                                  ]
+                                  Object {
+                                    "alignSelf": "flex-end",
+                                    "marginLeft": "auto",
+                                    "opacity": 1,
+                                  }
                                 }
                               >
-                                <Text
-                                  disabled={false}
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#007AFF",
-                                        "fontSize": 18,
-                                        "margin": 8,
-                                        "textAlign": "center",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Add an attendee manually
-                                </Text>
+                                <View>
+                                  <Text
+                                    allowFontScaling={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#3742fa",
+                                          "fontSize": 25,
+                                        },
+                                        undefined,
+                                        Object {
+                                          "fontFamily": "ionicons",
+                                          "fontStyle": "normal",
+                                          "fontWeight": "normal",
+                                        },
+                                        Object {},
+                                      ]
+                                    }
+                                  >
+                                    
+                                  </Text>
+                                </View>
                               </View>
                             </View>
                           </View>
                         </View>
-                        <Modal
-                          hardwareAccelerated={false}
-                          transparent={true}
-                          visible={false}
+                      </View>
+                      <Modal
+                        hardwareAccelerated={false}
+                        onRequestClose={[Function]}
+                        transparent={true}
+                        visible={false}
+                      >
+                        <RNGestureHandlerButton
+                          collapsable={false}
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
+                          style={
+                            Object {
+                              "backgroundColor": "rgba(0,0,0,0.25)",
+                              "bottom": 0,
+                              "flex": 1,
+                              "left": 0,
+                              "padding": 32,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                            }
+                          }
                         >
                           <View
-                            style={
-                              Object {
-                                "backgroundColor": "white",
-                                "borderRadius": 10,
-                                "borderWidth": 1,
-                                "margin": "auto",
-                                "width": 550,
-                              }
+                            accessible={true}
+                            style={Object {}}
+                          />
+                        </RNGestureHandlerButton>
+                        <RCTScrollView
+                          collapsable={false}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "rgb(242, 242, 242)",
+                              "borderRadius": 16,
+                              "margin": 32,
+                              "padding": 32,
                             }
-                          >
+                          }
+                        >
+                          <View>
                             <View
                               style={
                                 Object {
-                                  "borderBottomWidth": 1,
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                  "marginBottom": 16,
+                                  "width": "100%",
                                 }
                               }
                             >
                               <Text
                                 style={
                                   Object {
-                                    "alignSelf": "flex-start",
-                                    "fontSize": 25,
-                                    "fontWeight": "bold",
-                                    "marginHorizontal": 10,
-                                    "padding": 20,
-                                    "paddingLeft": 10,
-                                    "textAlign": "center",
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "fontWeight": "500",
+                                    "lineHeight": 26,
+                                    "textAlign": "left",
                                   }
                                 }
                               >
                                 Add an attendee
                               </Text>
+                              <RNGestureHandlerButton
+                                collapsable={false}
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
+                                style={
+                                  Object {
+                                    "position": "absolute",
+                                    "right": 0,
+                                  }
+                                }
+                                testID="modal-header-close"
+                              >
+                                <View
+                                  accessible={true}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Object {
+                                        "color": "#3742fa",
+                                        "fontSize": 20,
+                                        "fontWeight": "500",
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      }
+                                    }
+                                  >
+                                    Done
+                                  </Text>
+                                </View>
+                              </RNGestureHandlerButton>
                             </View>
                             <Text
                               style={
                                 Object {
-                                  "alignSelf": "flex-start",
+                                  "color": "#000",
                                   "fontSize": 20,
-                                  "marginHorizontal": 10,
-                                  "padding": 20,
-                                  "paddingLeft": 10,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
                                   "textAlign": "left",
                                 }
                               }
                             >
                               Enter token:
                             </Text>
-                            <TextInput
-                              defaultValue=""
-                              onChangeText={[Function]}
-                              placeholder="Attendee token"
-                              selectTextOnFocus={true}
-                              style={
-                                Object {
-                                  "borderBottomWidth": 2,
-                                  "fontSize": 25,
-                                  "marginHorizontal": 50,
-                                  "marginVertical": 20,
-                                  "textAlign": "center",
-                                }
-                              }
-                            />
                             <View
                               style={
                                 Object {
-                                  "alignSelf": "center",
+                                  "flex": 1,
                                   "flexDirection": "row",
-                                  "paddingBottom": 20,
                                 }
                               }
                             >
-                              <View
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Attendee token"
                                 style={
-                                  Object {
-                                    "marginHorizontal": 50,
-                                    "marginVertical": 10,
-                                  }
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 8,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
                                 }
-                              >
-                                <View
-                                  accessibilityRole="button"
-                                  accessibilityState={
-                                    Object {
-                                      "disabled": false,
-                                    }
-                                  }
-                                  accessible={true}
-                                  focusable={true}
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      disabled={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#007AFF",
-                                            "fontSize": 18,
-                                            "margin": 8,
-                                            "textAlign": "center",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "marginHorizontal": 50,
-                                    "marginVertical": 10,
-                                  }
-                                }
-                              >
-                                <View
-                                  accessibilityRole="button"
-                                  accessibilityState={
-                                    Object {
-                                      "disabled": false,
-                                    }
-                                  }
-                                  accessible={true}
-                                  focusable={true}
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      disabled={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#007AFF",
-                                            "fontSize": 18,
-                                            "margin": 8,
-                                            "textAlign": "center",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Cancel
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
+                                testID="confirm-modal-input"
+                                value=""
+                              />
                             </View>
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "marginBottom": 16,
+                                }
+                              }
+                              testID="confirm-modal-confirm"
+                            >
+                              <View
+                                accessible={true}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 16,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Add
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
-                        </Modal>
-                      </View>
+                        </RCTScrollView>
+                      </Modal>
                     </View>
                   </View>
                 </View>

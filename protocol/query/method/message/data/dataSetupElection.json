@@ -10,6 +10,11 @@
         "action": {
             "const": "setup"
         },
+        "version": {
+            "type": "string",
+            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
+            "$comment": "features/implementation identifier"
+        },
         "id": {
             "type": "string",
             "contentEncoding": "base64",
@@ -22,11 +27,8 @@
         },
         "name": {
             "type": "string",
-            "$comment": "name of the election"
-        },
-        "version": {
-            "type": "string",
-            "$comment": "features/implementation identifier"
+            "$comment": "name of the election",
+            "minLength": 1
         },
         "created_at": {
             "description": "[Timestamp] time created in UTC",
@@ -60,8 +62,8 @@
                     },
                     "voting_method": {
                         "type": "string",
-                        "enum": ["Plurality", "Approval"],
-                        "$comment": "supported voting method"
+                        "enum": ["Plurality"],
+                        "$comment": "supported voting methods"
                     },
                     "ballot_options": {
                         "description": "[Array[String]] ballot options",
@@ -74,8 +76,8 @@
                         "uniqueItems": true
                     },
                     "write_in": {
-                        "type": "boolean",
-                        "$comment": "whether write-in is allowed"
+                        "const": false,
+                        "$comment": "whether write-in is allowed. not supported yet"
                     }
                 },
                 "additionalProperties": false,
@@ -95,10 +97,10 @@
     "required": [
         "object",
         "action",
+        "version",
         "id",
         "lao",
         "name",
-        "version",
         "created_at",
         "start_time",
         "end_time",

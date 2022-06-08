@@ -1,4 +1,5 @@
 import { Hash } from 'core/objects';
+import { isDefined } from 'core/types';
 
 import { WalletFeature } from '../interface';
 import { RollCallToken } from './RollCallToken';
@@ -9,13 +10,12 @@ import { generateToken } from './Token';
  * @return Promise<RollCallToken[]>
  */
 export async function recoverWalletRollCallTokens(
-  rollCalls: Record<string, Record<string, WalletFeature.RollCall>>,
+  rollCalls: WalletFeature.RollCall[],
   laoId: Hash,
 ): Promise<RollCallToken[]> {
   // For all the roll calls of the current lao
-  const tokens = Object.values(rollCalls[laoId.valueOf()]).map((rc) => {
-    // Generate the token corresponding to this roll call
-    return generateToken(laoId, rc.id).then((popToken) => {
+  const tokens = rollCalls.map((rc) =>
+    generateToken(laoId, rc.id).then((popToken) => {
       // If the token participated in the roll call, create a RollCallToken object
       if (rc.containsToken(popToken)) {
         return new RollCallToken({
@@ -26,7 +26,8 @@ export async function recoverWalletRollCallTokens(
         });
       }
       return undefined;
-    });
-  });
-  return (await Promise.all(tokens)).filter((rct) => rct !== undefined) as RollCallToken[];
+    }),
+  );
+
+  return (await Promise.all(tokens)).filter(isDefined);
 }

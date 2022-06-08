@@ -91,14 +91,7 @@ class NetworkManager {
   }
 
   /** Connects to a server or returns an existing connection to the server
-   * Mockserver port: 8080
-   * Go backend default organizer port: 9000
-   * The full path to connect to the backend is:
-   * as organizer ws://host:clientport/organizer/client/
-   * as a witness: ws://host:witnessport/organizer/witness/
-   *
    * @param address the server's full address (URI)
-   *
    * @returns a new connection to the server, or an existing one if it's already established
    */
   public connect(address: string): NetworkConnection {
@@ -106,13 +99,15 @@ class NetworkManager {
       throw new Error('No address provided in connect');
     }
 
-    const existingConnection = this.getConnectionByAddress(address);
+    const { href } = new URL(address); // validate address
+
+    const existingConnection = this.getConnectionByAddress(href);
 
     if (existingConnection !== undefined) {
       return existingConnection;
     }
 
-    const connection: NetworkConnection = new NetworkConnection(address, this.rpcHandler);
+    const connection: NetworkConnection = new NetworkConnection(href, this.rpcHandler);
     this.connections.push(connection);
     return connection;
   }

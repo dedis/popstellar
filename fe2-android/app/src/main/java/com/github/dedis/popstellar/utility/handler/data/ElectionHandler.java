@@ -6,10 +6,10 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,11 @@ public final class ElectionHandler {
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election =
-          new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
+          new Election(
+              lao.getId(),
+              electionSetup.getCreation(),
+              electionSetup.getName(),
+              electionSetup.getElectionVersion());
       election.setChannel(channel.subChannel(election.getId()));
       election.setElectionQuestions(electionSetup.getQuestions());
 
@@ -199,5 +202,21 @@ public final class ElectionHandler {
             + "Message ID : "
             + messageId);
     return message;
+  }
+
+  /**
+   * Simple way to handle a election key, add the given key to the given election
+   * @param context context
+   * @param electionKey key to add
+   */
+  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleElectionKey: channel " + channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    election.setElectionKey(electionKey.getElectionVoteKey());
+    Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }

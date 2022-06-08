@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,6 +10,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -48,7 +50,8 @@ public class ElectionTest {
   private final long startTime = 0;
   private final long endTime = 1;
   private final Channel channel = Channel.ROOT.subChannel("election_channel");
-  private final Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
+  private final Election election =
+          new Election("lao id", Instant.now().getEpochSecond(), name, OPEN_BALLOT);
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -162,5 +165,17 @@ public class ElectionTest {
     QuestionResult fourthResult = sortedResults.get(3);
     assertThat(fourthResult.getBallot(), is("Candidate3"));
     assertThat(fourthResult.getCount(), is(16));
+  }
+
+  @Test
+  public void getVersionTest() {
+    assertThat(ElectionVersion.OPEN_BALLOT, is(election.getElectionVersion()));
+  }
+
+  @Test
+  public void testAndSetElectionKey() {
+    String key = "key";
+    election.setElectionKey("key");
+    assertThat(key, is(election.getElectionKey()));
   }
 }

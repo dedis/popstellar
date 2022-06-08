@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
@@ -385,7 +386,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Creates new Election event.
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
-   *
+   * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
    * @param start the start time of the election
@@ -396,6 +397,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @return the id of the newly created election event, null if fails to create the event
    */
   public String createNewElection(
+      ElectionVersion electionVersion,
       String name,
       long creation,
       long start,
@@ -414,16 +416,9 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Channel channel = lao.getChannel();
     ElectionSetup electionSetup =
-        new ElectionSetup(
-            name,
-            creation,
-            start,
-            end,
-            votingMethod,
-            writeIn,
-            ballotOptions,
-            question,
-            lao.getId());
+            new ElectionSetup(
+                    writeIn, name, creation, start, end, votingMethod, lao.getId(), ballotOptions, question, electionVersion
+            );
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =

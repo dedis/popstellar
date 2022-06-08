@@ -32,7 +32,7 @@ func Test_Election_Setup(t *testing.T) {
 	require.Equal(t, "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=", msg.ID)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.Lao)
 	require.Equal(t, "Election", msg.Name)
-	require.Equal(t, "1.0.0", msg.Version)
+	require.Equal(t, "open-ballot", msg.Version)
 	require.Equal(t, int64(1633098941), msg.CreatedAt)
 	require.Equal(t, int64(1633098941), msg.StartTime)
 	require.Equal(t, int64(1633099812), msg.EndTime)

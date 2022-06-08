@@ -16,7 +16,7 @@ import { connectToLao } from '../LaoReducer';
 import {
   addServer,
   clearAllServers,
-  getLaoOrganizerBackendPublicKey,
+  makeLaoOrganizerBackendPublicKeySelector,
   removeServer,
   serverReduce,
   ServerReducerState,
@@ -188,7 +188,7 @@ describe('ServerReducer', () => {
     });
   });
 
-  describe('getLaoOrganizerBackendPublicKey', () => {
+  describe('makeLaoOrganizerBackendPublicKeySelector', () => {
     it('should return the correct value if a lao and server entry exist', () => {
       const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
       mockStore.dispatch(connectToLao(mockLaoState));
@@ -202,9 +202,9 @@ describe('ServerReducer', () => {
         }),
       );
 
-      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())?.valueOf()).toEqual(
-        org.valueOf(),
-      );
+      expect(
+        makeLaoOrganizerBackendPublicKeySelector(mockLaoId)(mockStore.getState())?.valueOf(),
+      ).toEqual(org.valueOf());
     });
 
     it('should return undefined if there is no lao entry for the given id', () => {
@@ -219,7 +219,9 @@ describe('ServerReducer', () => {
         }),
       );
 
-      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())).toBeUndefined();
+      expect(
+        makeLaoOrganizerBackendPublicKeySelector(mockLaoId)(mockStore.getState()),
+      ).toBeUndefined();
     });
 
     it('should return undefined if there is no server entry for the organizer public key', () => {
@@ -235,7 +237,9 @@ describe('ServerReducer', () => {
         }),
       );
 
-      expect(getLaoOrganizerBackendPublicKey(mockLaoId, mockStore.getState())).toBeUndefined();
+      expect(
+        makeLaoOrganizerBackendPublicKeySelector(mockLaoId)(mockStore.getState()),
+      ).toBeUndefined();
     });
   });
 });

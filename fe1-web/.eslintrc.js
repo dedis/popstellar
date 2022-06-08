@@ -95,6 +95,13 @@ module.exports = {
         selector: 'WithStatement',
         message: '`with` is disallowed in strict mode because it makes code impossible to predict and optimize.',
       },
-    ]
+    ],
+
+    "react-native/no-inline-styles": 'error',
+    "react-native/no-unused-styles": 'error',
+    "react-native/no-single-element-style-arrays": 'error',
+    // enforce the use of color variables. this should make programmers use the defined color palette
+    // or extend it if really necessary but not add new colors for every new component
+    "react-native/no-color-literals": 'error',
   },
 }

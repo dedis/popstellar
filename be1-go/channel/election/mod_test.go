@@ -35,7 +35,7 @@ const (
 func Test_Election_Channel_Subscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "subscribe", "subscribe.json")
 	buf, err := os.ReadFile(file)
@@ -58,7 +58,7 @@ func Test_Election_Channel_Subscribe(t *testing.T) {
 func Test_Election_Channel_Unsubscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -83,7 +83,7 @@ func Test_Election_Channel_Unsubscribe(t *testing.T) {
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -101,7 +101,7 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 func Test_Election_Channel_Catchup(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	// Create the messages
 	numMessages := 5
@@ -126,8 +126,8 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
-	for i := 0; i < numMessages; i++ {
-		require.Equal(t, messages[i].MessageID, catchupAnswer[i].MessageID,
+	for i := 1; i < numMessages+1; i++ {
+		require.Equal(t, messages[i-1].MessageID, catchupAnswer[i].MessageID,
 			catchupAnswer)
 	}
 }
@@ -136,7 +136,7 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 func Test_Election_Channel_Broadcast(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -160,7 +160,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 	electChannel.started = true
 
 	// create a fakeSocket that is listening to the channel
@@ -268,7 +268,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 
 	// check the created election has only one question
 	require.Equal(t, 1, len(electChannel.questions))
@@ -344,7 +344,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 func Test_Publish_Election_Open(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -397,7 +397,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 func Test_Process_Election_Open(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
 	buf, err := os.ReadFile(file)
@@ -429,10 +429,40 @@ func Test_Process_Election_Open(t *testing.T) {
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
 }
 
+func Test_Sending_Election_Key(t *testing.T) {
+	// create secret ballot election channel: election with one question
+	electChannel, _ := newFakeChannel(t, true)
+
+	require.Equal(t, messagedata.SecretBallot, electChannel.electionType)
+
+	// Compute the catchup method
+	catchupAnswer := electChannel.Catchup(method.Catchup{ID: 0})
+
+	electionKeyMsg := catchupAnswer[1]
+
+	data := messagedata.ElectionKey{}.NewEmpty()
+
+	err := electionKeyMsg.UnmarshalData(data)
+	require.NoError(t, err)
+
+	dataKey, ok := data.(*messagedata.ElectionKey)
+	require.True(t, ok)
+
+	key, err := base64.URLEncoding.DecodeString(dataKey.Key)
+	require.NoError(t, err)
+
+	keyPoint := crypto.Suite.Point()
+	err = keyPoint.UnmarshalBinary(key)
+	require.NoError(t, err)
+
+	// Compare the key received and the public key of the channel
+	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
-func newFakeChannel(t *testing.T) (*Channel, string) {
+func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 	pkOrganizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -440,7 +470,13 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	file := filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup.json")
+	file := ""
+	if secret {
+		file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup_secret_ballot.json")
+	} else {
+		file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup.json")
+	}
+
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -461,7 +497,8 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	channel, err := NewChannel(channelPath, message.Message{}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	require.NoError(t, err)
 
 	channelElec, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -478,7 +515,6 @@ type keypair struct {
 }
 
 var nolog = zerolog.New(io.Discard)
-var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
@@ -544,13 +580,6 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	}
 
 	return &hub, nil
-}
-
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Mul(secret, nil)
-
-	return point, secret
 }
 
 func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {

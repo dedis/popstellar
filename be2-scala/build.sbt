@@ -145,6 +145,7 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 
 // Cryptography
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
+libraryDependencies += "ch.epfl.dedis" % "cothority" % "3.3.1"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
