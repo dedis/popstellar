@@ -33,7 +33,7 @@ const k = (...args: string[]) => args.join(',');
 
 const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   // Lao
-  [k(LAO, CREATE), { type: WitnessingType.ACTIVE }],
+  [k(LAO, CREATE), { type: WitnessingType.NO_WITNESSING }],
   [k(LAO, STATE), { type: WitnessingType.NO_WITNESSING }],
   [k(LAO, UPDATE_PROPERTIES), { type: WitnessingType.NO_WITNESSING }],
 
@@ -44,13 +44,13 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   // Roll call
   // FIXME: This is only set to ACTIVE for testing purposes of the witnessing feature
   [k(ROLL_CALL, CREATE), { type: WitnessingType.ACTIVE }],
-  [k(ROLL_CALL, OPEN), { type: WitnessingType.ACTIVE }],
-  [k(ROLL_CALL, CLOSE), { type: WitnessingType.ACTIVE }],
-  [k(ROLL_CALL, REOPEN), { type: WitnessingType.ACTIVE }],
+  [k(ROLL_CALL, OPEN), { type: WitnessingType.NO_WITNESSING }],
+  [k(ROLL_CALL, CLOSE), { type: WitnessingType.NO_WITNESSING }],
+  [k(ROLL_CALL, REOPEN), { type: WitnessingType.NO_WITNESSING }],
 
   // Election
-  [k(ELECTION, SETUP), { type: WitnessingType.ACTIVE }],
-  [k(ELECTION, OPEN), { type: WitnessingType.ACTIVE }],
+  [k(ELECTION, SETUP), { type: WitnessingType.NO_WITNESSING }],
+  [k(ELECTION, OPEN), { type: WitnessingType.NO_WITNESSING }],
   [k(ELECTION, CAST_VOTE), { type: WitnessingType.PASSIVE }],
   [k(ELECTION, END), { type: WitnessingType.NO_WITNESSING }],
   [k(ELECTION, RESULT), { type: WitnessingType.NO_WITNESSING }],

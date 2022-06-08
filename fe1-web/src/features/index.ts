@@ -79,7 +79,7 @@ export function configureFeatures() {
 
   const socialConfiguration = social.configure(messageRegistry);
   const witnessConfiguration = witness.configure({
-    enabled: true,
+    enabled: false,
     messageRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
