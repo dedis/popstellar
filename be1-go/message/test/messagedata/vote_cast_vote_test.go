@@ -40,10 +40,12 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, 0, msg.Votes[0].Vote)
 }
 
-func Test_New_Empty_Cast_vote(t *testing.T) {
-	var castVote messagedata.VoteCastVote
+func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
+	var msg messagedata.VoteCastVote
 
-	require.Empty(t, castVote.NewEmpty())
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
 }
 
 func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
@@ -72,12 +74,4 @@ func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
 	t.Run("vote is an array", testWithWrongType([]int{0}))
 	t.Run("vote is a boolean", testWithWrongType(false))
 	t.Run("vote is a float", testWithWrongType(3.4))
-}
-
-func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
-	var msg messagedata.VoteCastVote
-
-	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
-	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
-	require.Empty(t, msg.NewEmpty())
 }
