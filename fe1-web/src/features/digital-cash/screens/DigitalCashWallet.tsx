@@ -1,8 +1,9 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -10,10 +11,12 @@ import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 import TransactionHistory from '../components/TransactionHistory';
 import { DigitalCashHooks } from '../hooks';
 import { DigitalCashFeature } from '../interface';
 import { RollCallAccount } from '../objects/Account';
+import { makeBalanceSelector, makeBalancesSelector } from '../reducer/DigitalCashReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
@@ -38,32 +41,20 @@ const rollCallAccounts: RollCallAccount[] = [
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+  const [rollCallTokens, setRollCallTokens] = useState<RollCallToken[]>([]);
 
   const { laoId } = route.params;
 
-  DigitalCashHooks.useRollCallTokensByLaoId(laoId)
-    .then((rollCallTokens) => console.log(rollCallTokens));
+  const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
+
+  DigitalCashHooks.useRollCallTokensByLaoId(laoId).then((rcts) => setRollCallTokens(rcts));
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
-  const balance = rollCallAccounts.reduce((sum, account) => sum + (account.balance || 0), 0);
-
-  /**
-   * Add coin issuance account for organizers
-   */
-  const accounts: RollCallAccount[] = useMemo(() => {
-    if (isOrganizer) {
-      return [
-        {
-          rollCallName: STRINGS.digital_cash_coin_issuance,
-          rollCallId: STRINGS.digital_cash_coin_issuance_description,
-          balance: null,
-        } as RollCallAccount,
-        ...rollCallAccounts,
-      ];
-    }
-    return rollCallAccounts;
-  }, [isOrganizer]);
+  const balance = rollCallTokens.reduce(
+    (sum, account) => sum + (balances[account.token.publicKey.valueOf()] || 0),
+    0,
+  );
 
   return (
     <ScreenWrapper>
@@ -73,30 +64,32 @@ const DigitalCashWallet = () => {
       <Text style={Typography.paragraph}>{STRINGS.digital_cash_wallet_description}</Text>
 
       <View style={List.container}>
-        {accounts.map((account, idx) => {
-          const listStyle = List.getListItemStyles(idx === 0, idx === accounts.length - 1);
+        {rollCallTokens.map((rollCallToken, idx) => {
+          const listStyle = List.getListItemStyles(idx === 0, idx === rollCallToken.length - 1);
 
           return (
             <ListItem
-              key={account.rollCallId}
+              key={rollCallToken.rollCallId.valueOf()}
               containerStyle={listStyle}
               style={listStyle}
               bottomDivider
               onPress={() => {
                 navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
                   laoId,
-                  rollCallId: account.rollCallId,
+                  rollCallId: rollCallToken.rollCallId.valueOf(),
                 });
               }}>
               <ListItem.Content>
-                <ListItem.Title style={Typography.base}>{account.rollCallName}</ListItem.Title>
+                <ListItem.Title style={Typography.base}>{rollCallToken.rollCallName}</ListItem.Title>
                 <ListItem.Subtitle
                   style={Typography.small}
-                  numberOfLines={account.balance ? 1 : undefined}>
-                  {account.rollCallId}
+                  numberOfLines={undefined}>
+                  {rollCallToken.rollCallId.valueOf()}
                 </ListItem.Subtitle>
               </ListItem.Content>
-              <ListItem.Title style={Typography.base}>${account.balance || '∞'}</ListItem.Title>
+              <ListItem.Title style={Typography.base}>
+                ${balances[rollCallToken.token.publicKey.valueOf()] || 0}
+              </ListItem.Title>
               <ListItem.Chevron />
             </ListItem>
           );

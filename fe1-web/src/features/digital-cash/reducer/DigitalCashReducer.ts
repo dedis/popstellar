@@ -123,12 +123,19 @@ export default {
 export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
 
+export const makeBalancesSelector = (laoId: Hash | string) =>
+  createSelector(
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
+    (laoState: DigitalCashReducerState | undefined) => {
+      return laoState?.balances || {};
+    },
+  );
 /**
  * Balance selector
  * @param laoId the lao in which to search for the balance
  * @param publicKey the public key that possesses this balance
  */
-export const makeBalanceSelector = (laoId: Hash, publicKey: string) =>
+export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
   createSelector(
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
