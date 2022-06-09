@@ -37,3 +37,11 @@ func Test_Roll_Call_Create(t *testing.T) {
 	require.Equal(t, "EPFL", msg.Location)
 	require.Equal(t, "Food is welcome!", msg.Description)
 }
+
+func Test_Roll_Call_Create_Interface_Functions(t *testing.T) {
+	var msg messagedata.RollCallCreate
+
+	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
+	require.Equal(t, messagedata.RollCallActionCreate, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

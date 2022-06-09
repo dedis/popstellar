@@ -42,3 +42,11 @@ func Test_Meeting_State(t *testing.T) {
 	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.ModificationSignatures[0].Witness)
 	require.Equal(t, "XXX", msg.ModificationSignatures[0].Signature)
 }
+
+func Test_Meeting_State_Interface_Functions(t *testing.T) {
+	var msg messagedata.MeetingState
+
+	require.Equal(t, messagedata.MeetingObject, msg.GetObject())
+	require.Equal(t, messagedata.MeetingActionState, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

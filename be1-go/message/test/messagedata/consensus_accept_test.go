@@ -39,118 +39,41 @@ func Test_Consensus_Accept(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func Test_Consensus_Accept_Not_Base64_Instance(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_accept", "wrong_accept_not_base_64_instance.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "accept", action)
-
+func Test_Consensus_Accept_Interface_Functions(t *testing.T) {
 	var msg messagedata.ConsensusAccept
 
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "accept", msg.Action)
-	require.Equal(t, "@@@", msg.InstanceID)
-	require.Equal(t, "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=", msg.MessageID)
-	require.Equal(t, int64(1634760180), msg.CreatedAt)
-	require.Equal(t, int64(4), msg.Value.AcceptedTry)
-	require.True(t, msg.Value.AcceptedValue)
-
-	err = msg.Verify()
-	require.Error(t, err, "instance id is %s, should be base64URL encoded", msg.MessageID)
+	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
+	require.Equal(t, messagedata.ConsensusActionAccept, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
 }
 
-func Test_Consensus_Accept_Not_Base64_Message(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_accept", "wrong_accept_not_base_64_message.json")
+func Test_Consensus_Accept_Verify(t *testing.T) {
+	var consensusAccept messagedata.ConsensusAccept
 
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
+	object, action := "consensus", "accept"
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
+	getTestBadExample := func(file string) func(*testing.T) {
+		return func(t *testing.T) {
+			// read the bad example file
+			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "consensus_accept", file))
+			require.NoError(t, err)
 
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "accept", action)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
+			require.NoError(t, err)
 
-	var msg messagedata.ConsensusAccept
+			require.Equal(t, object, obj)
+			require.Equal(t, action, act)
 
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
+			err = json.Unmarshal(buf, &consensusAccept)
+			require.NoError(t, err)
 
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "accept", msg.Action)
-	require.Equal(t, "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=", msg.InstanceID)
-	require.Equal(t, "@@@", msg.MessageID)
-	require.Equal(t, int64(1634760180), msg.CreatedAt)
-	require.Equal(t, int64(4), msg.Value.AcceptedTry)
-	require.True(t, msg.Value.AcceptedValue)
+			err = consensusAccept.Verify()
+			require.Error(t, err)
+		}
+	}
 
-	err = msg.Verify()
-	require.Error(t, err, "message id is %s, should be base64URL encoded", msg.MessageID)
-}
-
-func Test_Consensus_Accept_Negative_Created_At(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_accept", "wrong_accept_negative_created_at.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "accept", action)
-
-	var msg messagedata.ConsensusAccept
-
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "accept", msg.Action)
-	require.Equal(t, "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=", msg.InstanceID)
-	require.Equal(t, "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=", msg.MessageID)
-	require.Equal(t, int64(-1634760180), msg.CreatedAt)
-	require.Equal(t, int64(4), msg.Value.AcceptedTry)
-	require.True(t, msg.Value.AcceptedValue)
-
-	err = msg.Verify()
-	require.Error(t, err, "created at is %d, should be minimum 0", msg.CreatedAt)
-}
-
-func Test_Consensus_Accept_Too_Low_Accepted_Try(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_accept", "wrong_accept_negative_accepted_try.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", object)
-	require.Equal(t, "accept", action)
-
-	var msg messagedata.ConsensusAccept
-
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
-
-	require.Equal(t, "consensus", msg.Object)
-	require.Equal(t, "accept", msg.Action)
-	require.Equal(t, "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=", msg.InstanceID)
-	require.Equal(t, "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=", msg.MessageID)
-	require.Equal(t, int64(1634760180), msg.CreatedAt)
-	require.Equal(t, int64(-4), msg.Value.AcceptedTry)
-	require.True(t, msg.Value.AcceptedValue)
-
-	err = msg.Verify()
-	require.Error(t, err, "accepted try is %d, should be minimum -1", msg.CreatedAt)
+	t.Run("accepted try is negative", getTestBadExample("wrong_accept_negative_accepted_try.json"))
+	t.Run("created at is negative", getTestBadExample("wrong_accept_negative_created_at.json"))
+	t.Run("instance is not base64", getTestBadExample("wrong_accept_not_base_64_instance.json"))
+	t.Run("message is not base64", getTestBadExample("wrong_accept_not_base_64_message.json"))
 }
