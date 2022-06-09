@@ -29,16 +29,16 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 
 	require.Equal(t, "coin", msg.Object)
 	require.Equal(t, "post_transaction", msg.Action)
-	require.Equal(t, "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=", msg.TransactionID)
+	require.Equal(t, "MzEaazm7WJNRquKKkElVjPDLd-CpYijMEUYFcc6cGN4=", msg.TransactionID)
 	require.Equal(t, 1, msg.Transaction.Version)
-	require.Equal(t, "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=", msg.Transaction.Inputs[0].Hash)
+	require.Equal(t, "01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=", msg.Transaction.Inputs[0].Hash)
 	require.Equal(t, 0, msg.Transaction.Inputs[0].Index)
 	require.Equal(t, "P2PKH", msg.Transaction.Inputs[0].Script.Type)
-	require.Equal(t, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", msg.Transaction.Inputs[0].Script.PubKey)
-	require.Equal(t, "CAFEBABE", msg.Transaction.Inputs[0].Script.Sig)
+	require.Equal(t, "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=", msg.Transaction.Inputs[0].Script.PubKey)
+	require.Equal(t, "DNnBoBvY4Bd8-WMUA3Cw17qyIiy_J2722-WKnr5uPhyJY8BCRZeHCOVTxsnhanu3Q8Ry11Czcm6YY_xjEJOJDQ==", msg.Transaction.Inputs[0].Script.Sig)
 	require.Equal(t, 32, msg.Transaction.Outputs[0].Value)
 	require.Equal(t, "P2PKH", msg.Transaction.Outputs[0].Script.Type)
-	require.Equal(t, "2jmj7l5rSw0yVb-vlWAYkK-YBwk=", msg.Transaction.Outputs[0].Script.PubKeyHash)
+	require.Equal(t, "-_qR4IHwsiq50raa8jURNArds54=", msg.Transaction.Outputs[0].Script.PubKeyHash)
 	require.Equal(t, 0, msg.Transaction.Locktime)
 }
 
