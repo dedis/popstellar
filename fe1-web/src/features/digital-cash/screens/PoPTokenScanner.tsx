@@ -41,7 +41,7 @@ const PoPTokenScanner = () => {
   const route = useRoute<NavigationProps['route']>();
 
   // these parameters are required to navigate back to the digital cash wallet
-  const { laoId, rollCallId, beneficiaryIndex } = route.params;
+  const { laoId, rollCallId } = route.params;
 
   const toast = useToast();
 
@@ -71,7 +71,6 @@ const PoPTokenScanner = () => {
       laoId,
       rollCallId,
       scannedPoPToken: popToken,
-      scannedPoPTokenBeneficiaryIndex: beneficiaryIndex,
     });
   };
 

@@ -38,6 +38,10 @@ export interface DigitalCashCompositionConfiguration {
   };
 
   useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
+  useRollCallTokenByRollCallId: (
+    laoId: string,
+    rollCallId: string,
+  ) => Promise<RollCallToken | undefined>;
 }
 
 /**
@@ -45,7 +49,10 @@ export interface DigitalCashCompositionConfiguration {
  */
 export type DigitalCashReactContext = Pick<
   DigitalCashCompositionConfiguration,
-  'useCurrentLaoId' | 'useIsLaoOrganizer' | 'useRollCallTokensByLaoId'
+  | 'useCurrentLaoId'
+  | 'useIsLaoOrganizer'
+  | 'useRollCallTokensByLaoId'
+  | 'useRollCallTokenByRollCallId'
 >;
 
 /**

@@ -15,28 +15,12 @@ import { RollCallToken } from '../../../core/objects/RollCallToken';
 import TransactionHistory from '../components/TransactionHistory';
 import { DigitalCashHooks } from '../hooks';
 import { DigitalCashFeature } from '../interface';
-import { RollCallAccount } from '../objects/Account';
-import { makeBalanceSelector, makeBalancesSelector } from '../reducer/DigitalCashReducer';
+import { makeBalancesSelector } from '../reducer/DigitalCashReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
-
-const rollCallAccounts: RollCallAccount[] = [
-  {
-    rollCallId: 'l1d1c5VwRmz2oiRRjEJh78eEhOnEf8QJ4W5PrmZfxcE=',
-    rollCallName: 'a roll call',
-    popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
-    balance: 21.3,
-  },
-  {
-    rollCallId: 'THFll04mCvZxOhCL9DYygnbTBSR2fjQAYGkfTzPf-zc=',
-    rollCallName: 'another roll call',
-    popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
-    balance: 20.9,
-  },
-];
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
@@ -65,7 +49,7 @@ const DigitalCashWallet = () => {
 
       <View style={List.container}>
         {rollCallTokens.map((rollCallToken, idx) => {
-          const listStyle = List.getListItemStyles(idx === 0, idx === rollCallToken.length - 1);
+          const listStyle = List.getListItemStyles(idx === 0, idx === rollCallTokens.length - 1);
 
           return (
             <ListItem
@@ -80,10 +64,10 @@ const DigitalCashWallet = () => {
                 });
               }}>
               <ListItem.Content>
-                <ListItem.Title style={Typography.base}>{rollCallToken.rollCallName}</ListItem.Title>
-                <ListItem.Subtitle
-                  style={Typography.small}
-                  numberOfLines={undefined}>
+                <ListItem.Title style={Typography.base}>
+                  {rollCallToken.rollCallName}
+                </ListItem.Title>
+                <ListItem.Subtitle style={Typography.small} numberOfLines={undefined}>
                   {rollCallToken.rollCallId.valueOf()}
                 </ListItem.Subtitle>
               </ListItem.Content>

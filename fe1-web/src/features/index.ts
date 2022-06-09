@@ -95,6 +95,7 @@ export function configureFeatures() {
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
+    useRollCallTokenByRollCallId: rollCallConfiguration.hooks.useRollCallTokenByRollCallId,
   });
 
   const socialConfiguration = social.configure(messageRegistry);

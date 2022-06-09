@@ -1,7 +1,7 @@
 import { mockPopToken } from '__tests__/utils';
 
 import {
-  SendReciveStateActionType,
+  SendReceiveStateActionType,
   digitalCashWalletStateReducer as reduce,
 } from '../SendReceiveState';
 
@@ -21,7 +21,7 @@ describe('SendReceiveState', () => {
 
     it('sets the error correctly', () => {
       const newState = reduce(emptyState, {
-        type: SendReciveStateActionType.SET_ERROR,
+        type: SendReceiveStateActionType.SET_ERROR,
         error: mockError,
       });
 
@@ -32,7 +32,7 @@ describe('SendReceiveState', () => {
       const newState = reduce(
         { ...emptyState, error: mockError },
         {
-          type: SendReciveStateActionType.CLEAR_ERROR,
+          type: SendReceiveStateActionType.CLEAR_ERROR,
         },
       );
 
@@ -50,7 +50,7 @@ describe('SendReceiveState', () => {
           ],
         },
         {
-          type: SendReciveStateActionType.INSERT_SCANNED_POP_TOKEN,
+          type: SendReceiveStateActionType.INSERT_SCANNED_POP_TOKEN,
           beneficiaryIndex: 2,
           beneficiaryPopToken: mockPopToken.publicKey.valueOf(),
         },
@@ -74,7 +74,7 @@ describe('SendReceiveState', () => {
           ],
         },
         {
-          type: SendReciveStateActionType.UPDATE_BENEFICIARY,
+          type: SendReceiveStateActionType.UPDATE_BENEFICIARY,
           beneficiaryIndex: 1,
           amount: '0',
           popToken: 'a',
@@ -99,7 +99,7 @@ describe('SendReceiveState', () => {
           ],
         },
         {
-          type: SendReciveStateActionType.UPDATE_BENEFICIARY,
+          type: SendReceiveStateActionType.UPDATE_BENEFICIARY,
           beneficiaryIndex: 1,
           popToken: 'a',
         },
@@ -123,7 +123,7 @@ describe('SendReceiveState', () => {
           ],
         },
         {
-          type: SendReciveStateActionType.UPDATE_BENEFICIARY,
+          type: SendReceiveStateActionType.UPDATE_BENEFICIARY,
           beneficiaryIndex: 1,
           amount: '42',
         },
@@ -147,7 +147,7 @@ describe('SendReceiveState', () => {
           ],
         },
         {
-          type: SendReciveStateActionType.ADD_BENEFICIARY,
+          type: SendReceiveStateActionType.ADD_BENEFICIARY,
         },
       );
 

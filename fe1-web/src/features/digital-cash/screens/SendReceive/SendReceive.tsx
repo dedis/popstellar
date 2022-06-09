@@ -1,12 +1,13 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, TextStyle, View } from 'react-native';
 import {
   ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 
 import { Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
@@ -18,9 +19,12 @@ import { getNavigator } from 'core/platform/Navigator';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { PublicKey } from '../../../../core/objects';
+import { RollCallToken } from '../../../../core/objects/RollCallToken';
+import { DigitalCashHooks } from '../../hooks';
 import { DigitalCashFeature } from '../../interface';
-import { RollCallAccount } from '../../objects/Account';
-import { SendReciveStateActionType, digitalCashWalletStateReducer } from './SendReceiveState';
+import { requestSendTransaction } from '../../network';
+import { makeBalanceSelector } from '../../reducer/DigitalCashReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
@@ -35,144 +39,96 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-// the account should be retrieved from the redux store using the roll
-// call id provdied in the route parameters
-const account: RollCallAccount = {
-  rollCallId: 'l1d1c5VwRmz2oiRRjEJh78eEhOnEf8QJ4W5PrmZfxcE=',
-  rollCallName: 'a roll call',
-  popToken: '-uac6_xEos4Dz8ESBpoAnqLD4vsd3viScjIEcPEQilo=',
-  balance: 21.3,
-};
-
 const SendReceive = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
 
-  const { laoId, scannedPoPToken, scannedPoPTokenBeneficiaryIndex } = route.params;
+  const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
 
-  /**
-   * The component state. This is a react reducer, similar to redux reducers and allows
-   * us to hide the complex state update logic from the UI code
-   */
-  const [{ beneficiaries, error }, dispatch] = useReducer(digitalCashWalletStateReducer, {
-    beneficiaries: [{ amount: '', popToken: '' }],
-    error: null,
-  });
+  const [beneficiary, setBeneficiary] = useState('');
+  const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
 
-  const totalAmount = beneficiaries.reduce((sum, target) => sum + parseFloat(target.amount), 0);
+  const { laoId, rollCallId, scannedPoPToken } = route.params;
+
+  DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId).then(setRollCallToken);
+
+  const balanceSelector = useMemo(() => {
+    if (rollCallToken) {
+      return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
+    }
+    return () => 0;
+  }, [rollCallToken, laoId]);
+
+  const balance = useSelector(balanceSelector);
+
+  useEffect(() => {
+    if (scannedPoPToken) {
+      setBeneficiary(scannedPoPToken);
+    }
+  }, [scannedPoPToken]);
 
   const onSendTransaction = () => {
-    if (!account) {
-      throw new Error('It should not be possible to send money without selecting an account first');
+    if (!rollCallToken) {
+      throw new Error('The roll call token is not defined');
     }
-
-    if (Number.isNaN(totalAmount)) {
-      dispatch({
-        type: SendReciveStateActionType.SET_ERROR,
-        error: STRINGS.digital_cash_wallet_amount_must_be_number,
-      });
+    if (beneficiary === '') {
+      setError('Euuu');
       return;
     }
-
-    if (account.balance && totalAmount > account.balance) {
-      dispatch({
-        type: SendReciveStateActionType.SET_ERROR,
-        error: STRINGS.digital_cash_wallet_amount_too_high,
-      });
-      return;
-    }
-
-    dispatch({
-      type: SendReciveStateActionType.CLEAR_ERROR,
-    });
-
-    if (account.balance) {
-      // TODO: transaction
-    } else {
-      // TODO: coin issuance
-    }
+    requestSendTransaction(
+      rollCallToken.token,
+      new PublicKey(beneficiary),
+      Number.parseInt(amount, 10),
+      rollCallToken.laoId,
+    ).then(
+      () => {
+        console.log('Transaction sent');
+      },
+      () => {
+        console.log('Transaction failed');
+      },
+    );
   };
 
   const cannotSendTransaction =
-    Number.isNaN(totalAmount) || (!!account?.balance && account && totalAmount > account?.balance);
-
-  useEffect(() => {
-    if (
-      scannedPoPTokenBeneficiaryIndex !== undefined &&
-      scannedPoPTokenBeneficiaryIndex < beneficiaries.length &&
-      scannedPoPToken
-    ) {
-      dispatch({
-        type: SendReciveStateActionType.INSERT_SCANNED_POP_TOKEN,
-        beneficiaryIndex: scannedPoPTokenBeneficiaryIndex,
-        beneficiaryPopToken: scannedPoPToken,
-      });
-    }
-    // should only be re-executed of the navigation parameters change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scannedPoPToken, scannedPoPTokenBeneficiaryIndex]);
+    Number.isNaN(amount) || balance < Number.parseInt(amount, 10) || amount === '';
 
   return (
     <ScreenWrapper>
       <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.digital_cash_wallet_balance}: ${account?.balance || '∞'}
+        {STRINGS.digital_cash_wallet_balance}: ${balance}
       </Text>
 
       <Text style={Typography.paragraph}>
         {STRINGS.digital_cash_wallet_transaction_description}
       </Text>
+      <View>
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.digital_cash_wallet_beneficiary}
+        </Text>
+        <ScannerInput
+          value={beneficiary}
+          onChange={setBeneficiary}
+          onPress={() => {
+            navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
+              laoId: laoId.valueOf(),
+              rollCallId: rollCallId,
+            });
+          }}
+          placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
+        />
 
-      {beneficiaries.map(({ amount, popToken }, index) => (
-        <View key={index.toString()}>
-          <Text style={[Typography.paragraph, Typography.important]}>
-            {STRINGS.digital_cash_wallet_beneficiary}
-          </Text>
-          <ScannerInput
-            value={popToken}
-            onChange={(newPopToken) =>
-              dispatch({
-                type: SendReciveStateActionType.UPDATE_BENEFICIARY,
-                beneficiaryIndex: index,
-                popToken: newPopToken,
-              })
-            }
-            onPress={() => {
-              if (!account) {
-                throw new Error(
-                  'It should not be possible to get here without selecting an account first',
-                );
-              }
-
-              navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                laoId: laoId.valueOf(),
-                rollCallId: account.rollCallId,
-                beneficiaryIndex: index,
-              });
-            }}
-            placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
-          />
-
-          <Text style={[Typography.paragraph, Typography.important]}>
-            {STRINGS.digital_cash_wallet_amount}
-          </Text>
-          <Input
-            value={amount}
-            onChange={(newAmount) =>
-              dispatch({
-                type: SendReciveStateActionType.UPDATE_BENEFICIARY,
-                beneficiaryIndex: index,
-                amount: newAmount,
-              })
-            }
-            placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
-          />
-        </View>
-      ))}
-
-      {error && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
-      <PoPTextButton onPress={() => dispatch({ type: SendReciveStateActionType.ADD_BENEFICIARY })}>
-        {STRINGS.digital_cash_wallet_add_beneficiary}
-      </PoPTextButton>
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.digital_cash_wallet_amount}
+        </Text>
+        <Input
+          value={amount}
+          onChange={setAmount}
+          placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
+        />
+      </View>
+      {error !== '' && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
 
       <PoPTextButton disabled={cannotSendTransaction} onPress={onSendTransaction}>
         {STRINGS.digital_cash_wallet_send_transaction}
@@ -190,9 +146,9 @@ export default SendReceive;
 export const SendReceiveHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  if (!account.balance) {
-    return null;
-  }
+  const account = {
+    popToken: 'iuztu',
+  };
 
   return (
     <>

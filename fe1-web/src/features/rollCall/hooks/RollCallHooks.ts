@@ -8,7 +8,7 @@ import { isDefined } from 'core/types';
 
 import { RollCallFeature, RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from '../interface';
 import { RollCall } from '../objects';
-import { makeRollCallByIdSelector } from '../reducer';
+import { makeRollCallByIdSelector, makeRollCallSelector } from '../reducer';
 
 export namespace RollCallHooks {
   export const useRollCallContext = (): RollCallReactContext => {
@@ -94,5 +94,20 @@ export namespace RollCallHooks {
       );
       return (await Promise.all(tokens)).filter(isDefined);
     }, [laoId, rollCalls, generate]);
+  };
+
+  export const useRollCallTokenByRollCallId = (
+    laoId: string,
+    rollCallId: string,
+  ): Promise<RollCallToken | undefined> => {
+    const rollCall = useSelector(makeRollCallSelector(rollCallId));
+    const context = useRollCallContext();
+    if (!rollCall) return new Promise(() => undefined);
+    return context.generateToken(new Hash(laoId), new Hash(rollCallId)).then((popToken) => ({
+      rollCallId: rollCall.id,
+      rollCallName: rollCall.name,
+      token: popToken,
+      laoId: new Hash(laoId),
+    }));
   };
 }

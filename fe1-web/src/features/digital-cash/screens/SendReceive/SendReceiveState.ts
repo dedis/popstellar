@@ -1,6 +1,6 @@
 // This file handles the complex state of the 'SendReceive' screen
 
-type SendReciveState = {
+type SendReceiveState = {
   /**
    * The list of all beneficiaries that should receive a certain
    * amount of money
@@ -13,7 +13,7 @@ type SendReciveState = {
   error: string | null;
 };
 
-export enum SendReciveStateActionType {
+export enum SendReceiveStateActionType {
   /**
    * Sets the error to be displayed.
    */
@@ -42,29 +42,29 @@ export enum SendReciveStateActionType {
 }
 
 type SetError = {
-  type: SendReciveStateActionType.SET_ERROR;
+  type: SendReceiveStateActionType.SET_ERROR;
   error: string;
 };
 
 type ClearError = {
-  type: SendReciveStateActionType.CLEAR_ERROR;
+  type: SendReceiveStateActionType.CLEAR_ERROR;
 };
 
 type InsertScannedPopToken = {
-  type: SendReciveStateActionType.INSERT_SCANNED_POP_TOKEN;
+  type: SendReceiveStateActionType.INSERT_SCANNED_POP_TOKEN;
   beneficiaryIndex: number;
   beneficiaryPopToken: string;
 };
 
 type UpdateBeneficiary = {
-  type: SendReciveStateActionType.UPDATE_BENEFICIARY;
+  type: SendReceiveStateActionType.UPDATE_BENEFICIARY;
   beneficiaryIndex: number;
   amount?: string;
   popToken?: string;
 };
 
 type AddBeneficiary = {
-  type: SendReciveStateActionType.ADD_BENEFICIARY;
+  type: SendReceiveStateActionType.ADD_BENEFICIARY;
 };
 
 export type DigitalCashWalletAction =
@@ -79,22 +79,22 @@ export type DigitalCashWalletAction =
  * easier to read
  */
 export const digitalCashWalletStateReducer = (
-  state: SendReciveState,
+  state: SendReceiveState,
   action: DigitalCashWalletAction,
-): SendReciveState => {
+): SendReceiveState => {
   const { type } = action;
   switch (type) {
-    case SendReciveStateActionType.SET_ERROR:
+    case SendReceiveStateActionType.SET_ERROR:
       return {
         ...state,
         error: action.error,
       };
-    case SendReciveStateActionType.CLEAR_ERROR:
+    case SendReceiveStateActionType.CLEAR_ERROR:
       return {
         ...state,
         error: null,
       };
-    case SendReciveStateActionType.INSERT_SCANNED_POP_TOKEN: {
+    case SendReceiveStateActionType.INSERT_SCANNED_POP_TOKEN: {
       const newBeneficiaries = [...state.beneficiaries];
 
       newBeneficiaries[action.beneficiaryIndex] = {
@@ -107,7 +107,7 @@ export const digitalCashWalletStateReducer = (
         beneficiaries: newBeneficiaries,
       };
     }
-    case SendReciveStateActionType.UPDATE_BENEFICIARY: {
+    case SendReceiveStateActionType.UPDATE_BENEFICIARY: {
       if (action.beneficiaryIndex >= state.beneficiaries.length) {
         throw new Error(
           `Cannot update inexistent benenficiary with index ${action.beneficiaryIndex}`,
@@ -129,7 +129,7 @@ export const digitalCashWalletStateReducer = (
 
       return { ...state, beneficiaries: newBeneficiaries };
     }
-    case SendReciveStateActionType.ADD_BENEFICIARY:
+    case SendReceiveStateActionType.ADD_BENEFICIARY:
       return {
         ...state,
         beneficiaries: [...state.beneficiaries, { amount: '', popToken: '' }],

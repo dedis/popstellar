@@ -25,6 +25,5 @@ export type WalletParamList = {
   [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {
     laoId: string;
     rollCallId: string;
-    beneficiaryIndex: number;
   };
 };
