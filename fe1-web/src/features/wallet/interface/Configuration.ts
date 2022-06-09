@@ -85,6 +85,8 @@ export interface WalletCompositionConfiguration {
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
+  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
+
   /**
    * A list of item generators that given a laoId return a list of items
    * to be displayed in the wallet for a given lao
@@ -108,11 +110,8 @@ export type WalletReactContext = Pick<
   | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
+  | 'useRollCallTokensByLaoId'
 >;
-
-export type WalletCompositionFunction = {
-  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
-};
 
 /**
  * The interface the wallet feature exposes
@@ -124,8 +123,6 @@ export interface WalletCompositionInterface extends FeatureInterface {
   laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;
-
-  functions: WalletCompositionFunction;
 
   reducers: {
     [WALLET_REDUCER_PATH]: Reducer<WalletReducerState>;

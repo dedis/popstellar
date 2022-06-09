@@ -41,6 +41,9 @@ const DigitalCashWallet = () => {
 
   const { laoId } = route.params;
 
+  DigitalCashHooks.useRollCallTokensByLaoId(laoId)
+    .then((rollCallTokens) => console.log(rollCallTokens));
+
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
   const balance = rollCallAccounts.reduce((sum, account) => sum + (account.balance || 0), 0);

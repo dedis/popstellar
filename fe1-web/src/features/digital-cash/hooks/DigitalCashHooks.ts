@@ -24,4 +24,7 @@ export namespace DigitalCashHooks {
    */
   export const useIsLaoOrganizer = (laoId: string) =>
     useDigitalCashContext().useIsLaoOrganizer(laoId);
+
+  export const useRollCallTokensByLaoId = (laoId: string) =>
+    useDigitalCashContext().useRollCallTokensByLaoId(laoId);
 }

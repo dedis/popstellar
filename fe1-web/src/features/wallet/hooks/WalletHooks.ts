@@ -35,6 +35,9 @@ export namespace WalletHooks {
   export const useRollCallsByLaoId = (laoId: string) =>
     useWalletContext().useRollCallsByLaoId(laoId);
 
+  export const useRollCallTokensByLaoId = (laoId: string) =>
+    useWalletContext().useRollCallTokensByLaoId(laoId);
+
   /**
    * Gets a map from laoIds to names
    */

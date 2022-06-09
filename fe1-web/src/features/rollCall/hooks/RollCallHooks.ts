@@ -2,6 +2,9 @@ import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Hash } from 'core/objects';
+import { RollCallToken } from 'core/objects/RollCallToken';
+import { isDefined } from 'core/types';
 
 import { RollCallFeature, RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from '../interface';
 import { RollCall } from '../objects';
@@ -67,5 +70,29 @@ export namespace RollCallHooks {
     );
 
     return useSelector(rollCallByIdSelector);
+  };
+
+  export const useRollCallTokensByLaoId = (laoId: string): Promise<RollCallToken[]> => {
+    const rollCalls = useRollCallsByLaoId(laoId);
+    const generate = useRollCallContext().generateToken;
+
+    return useMemo(async () => {
+      const laoIdHash = new Hash(laoId);
+      const tokens = Object.values(rollCalls).map((rc) =>
+        generate(laoIdHash, rc.id).then((popToken) => {
+          // If the token participated in the roll call, create a RollCallToken object
+          if (rc.containsToken(popToken)) {
+            return new RollCallToken({
+              token: popToken,
+              laoId: laoIdHash,
+              rollCallId: rc.id,
+              rollCallName: rc.name,
+            });
+          }
+          return undefined;
+        }),
+      );
+      return (await Promise.all(tokens)).filter(isDefined);
+    }, [laoId, rollCalls, generate]);
   };
 }

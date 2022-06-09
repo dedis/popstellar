@@ -80,6 +80,7 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
     walletItemGenerators: [...digitalCashConfiguration.walletItemGenerators],
     walletNavigationScreens: [...digitalCashConfiguration.walletScreens],
   });
@@ -93,7 +94,7 @@ export function configureFeatures() {
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
-    useRollCallTokensByLaoId: walletComposition.functions.useRollCallTokensByLaoId,
+    useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
   });
 
   const socialConfiguration = social.configure(messageRegistry);

@@ -9,6 +9,7 @@ import STRINGS from 'resources/strings';
 import { RollCall } from '../objects';
 import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
 import { RollCallFeature } from './Feature';
+import { RollCallToken } from "../../../core/objects/RollCallToken";
 
 export const ROLLCALL_FEATURE_IDENTIFIER = 'rollCall';
 
@@ -113,6 +114,7 @@ export interface RollCallInterface extends FeatureInterface {
     useRollCallsByLaoId: (laoId: string) => {
       [rollCallId: string]: RollCall;
     };
+    useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
   };
 
   context: RollCallReactContext;

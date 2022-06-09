@@ -21,6 +21,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
     functions,
     hooks: {
       useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
+      useRollCallTokensByLaoId: RollCallHooks.useRollCallTokensByLaoId,
     },
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,

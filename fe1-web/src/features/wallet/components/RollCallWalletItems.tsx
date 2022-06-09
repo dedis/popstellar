@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 
@@ -11,29 +11,14 @@ import STRINGS from 'resources/strings';
 import { RollCallToken } from '../../../core/objects/RollCallToken';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
-import { recoverWalletRollCallTokens } from '../objects';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
-  const rollCallsById = WalletHooks.useRollCallsByLaoId(laoId.valueOf());
-
   const [tokens, setTokens] = useState<RollCallToken[]>([]);
 
-  useEffect(() => {
-    let updateWasCanceled = false;
-
-    recoverWalletRollCallTokens(Object.values(rollCallsById), laoId).then((value) => {
-      // then update the state if no new update was triggered
-      if (!updateWasCanceled) {
-        setTokens(value);
-      }
-    });
-
-    return () => {
-      // cancel update if the hook is called again
-      updateWasCanceled = true;
-    };
-  }, [rollCallsById, laoId]);
+  WalletHooks.useRollCallTokensByLaoId(laoId.valueOf()).then((value) => {
+    setTokens(value);
+  });
 
   if (tokens.length > 0) {
     return (

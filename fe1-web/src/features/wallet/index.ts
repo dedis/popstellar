@@ -38,14 +38,8 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       ...walletReducer,
       ...digitalCashReducer,
     },
-    functions: {
-      useRollCallTokensByLaoId: (laoId: string) =>
-        recoverWalletRollCallTokens(
-          Object.values(configuration.useRollCallsByLaoId(laoId)),
-          new Hash(laoId),
-        ),
-    },
     context: {
+      useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
       useLaoIds: configuration.useLaoIds,
