@@ -8,6 +8,7 @@ import common.utils.JsonUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -18,6 +19,9 @@ import static common.utils.JsonUtils.getJSON;
  * MockBackend#setReplyProducer(Function)}
  */
 public class ReplyMethods {
+  private final static Logger logger = new Logger(ReplyMethods.class.getSimpleName());
+
+
   private static final String SUBSCRIBE = "subscribe";
 
   private static final String CATCHUP = "catchup";
@@ -102,11 +106,16 @@ public class ReplyMethods {
       msg ->{
         Json param = getJSON(Json.of(msg), "params");
         String channel = param.get("channel");
+        logger.info("params are : {}", param.toString());
+        logger.info("channel is : {}", channel.toString());
 
-        Json jsonMsg = getJSON(param, "message");
+        Map msgMap = param.get(MESSAGE);
+        logger.info("jsonMsg is : {}", msgMap.toString());
         Json send = Json.object();
         send.set("channel", channel);
-        send.set("message", jsonMsg);
+        send.set("message", msgMap);
+
+        logger.info("send is : {}", send.toString());
 
         String broadCast = RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
         String result = ALWAYS_VALID.apply(msg).get(0);

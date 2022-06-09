@@ -123,7 +123,6 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   public boolean receiveNoMoreResponses(){
     return queue.takeTimeout(5000) == null;
-
   }
 
   public void setLaoCreateMode(){

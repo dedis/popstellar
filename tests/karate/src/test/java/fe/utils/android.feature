@@ -31,7 +31,7 @@ Feature: android page object
     * def roll_call_open_selector = '#com.github.dedis.popstellar:id/roll_call_open'
     * def roll_call_confirm_selector = '#com.github.dedis.popstellar:id/roll_call_confirm'
     * def roll_call_close_confirm_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
-
+    * def event_name_selector = '#com.github.dedis.popstellar:id/event_card_text_view'
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
