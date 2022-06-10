@@ -35,10 +35,7 @@ const DigitalCashWallet = () => {
   const rollCallTokensFetcher = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
 
   useEffect(() => {
-    rollCallTokensFetcher.then((rcts) => {
-      console.log('rctss');
-      setRollCallTokens(rcts);
-    });
+    rollCallTokensFetcher.then(setRollCallTokens);
   }, [rollCallTokensFetcher]);
 
   const balance = rollCallTokens.reduce(

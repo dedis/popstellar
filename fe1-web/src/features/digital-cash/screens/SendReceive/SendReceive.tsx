@@ -58,10 +58,7 @@ const SendReceive = () => {
   const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
   const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
   useEffect(() => {
-    rollCallFetcher.then((rct) => {
-      console.log('sss');
-      setRollCallToken(rct);
-    });
+    rollCallFetcher.then(setRollCallToken);
   }, [rollCallFetcher]);
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
@@ -216,9 +213,18 @@ export default SendReceive;
 export const SendReceiveHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const account = {
-    popToken: 'iuztu',
-  };
+  const route = useRoute<NavigationProps['route']>();
+
+  const { laoId, rollCallId } = route.params;
+
+  const [publicKey, setPublicKey] = useState('');
+  const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+
+  useEffect(() => {
+    rollCallFetcher.then((rollCallToken) =>
+      setPublicKey(rollCallToken?.token.publicKey.valueOf() || ''),
+    );
+  }, [rollCallFetcher]);
 
   return (
     <>
@@ -244,11 +250,11 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={account.popToken} visibility />
+            <QRCode value={publicKey} visibility />
           </View>
 
-          <Text style={[Typography.small, styles.publicKey]}>{account.popToken}</Text>
-          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(account.popToken)}>
+          <Text style={[Typography.small, styles.publicKey]}>{publicKey}</Text>
+          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(publicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>
