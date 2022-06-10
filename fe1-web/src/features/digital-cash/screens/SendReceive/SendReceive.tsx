@@ -59,7 +59,10 @@ const SendReceive = () => {
   const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
   const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
   useEffect(() => {
-    rollCallFetcher.then(setRollCallToken);
+    rollCallFetcher.then((rct) => {
+      console.log('sss');
+      setRollCallToken(rct);
+    });
   }, [rollCallFetcher]);
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);

@@ -75,7 +75,7 @@ export namespace RollCallHooks {
   export const useRollCallTokensByLaoId = (laoId: string): Promise<RollCallToken[]> => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
-    return useMemo(async () => {
+    const rollCallTokensSelector = useMemo(async () => {
       const laoIdHash = new Hash(laoId);
       const tokens = Object.values(rollCalls).map((rc) =>
         generate(laoIdHash, rc.id).then((popToken) => {
@@ -93,20 +93,28 @@ export namespace RollCallHooks {
       );
       return (await Promise.all(tokens)).filter(isDefined);
     }, [laoId, rollCalls, generate]);
+    return useSelector(() => rollCallTokensSelector);
   };
 
   export const useRollCallTokenByRollCallId = (
     laoId: string,
     rollCallId: string,
   ): Promise<RollCallToken | undefined> => {
-    const rollCall = useSelector(makeRollCallSelector(rollCallId));
-    const context = useRollCallContext();
-    if (!rollCall) return new Promise(() => undefined);
-    return context.generateToken(new Hash(laoId), new Hash(rollCallId)).then((popToken) => ({
-      rollCallId: rollCall.id,
-      rollCallName: rollCall.name,
-      token: popToken,
-      laoId: new Hash(laoId),
-    }));
+    const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+    const rollCall = useSelector(rollCallSelector);
+    const generate = useRollCallContext().generateToken;
+    const tokenSelector = useMemo(async () => {
+      if (!rollCall) return undefined;
+      const token = await generate(new Hash(laoId), rollCall.id).then(
+        (popToken): RollCallToken => ({
+          rollCallId: rollCall.id,
+          rollCallName: rollCall.name,
+          token: popToken,
+          laoId: new Hash(laoId),
+        }),
+      );
+      return token;
+    }, [generate, rollCall, laoId]);
+    return useSelector(() => tokenSelector);
   };
 }
