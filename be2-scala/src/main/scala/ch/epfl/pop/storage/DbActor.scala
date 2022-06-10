@@ -219,7 +219,7 @@ final case class DbActor(
     this.synchronized {
       val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
         case Success(data) => data
-        case Failure(_) => RollCallData(null, null)
+        case Failure(_) => RollCallData(Hash(Base64Data("")), ActionType.CREATE)
       }
       val rollCallDataKey: String = generateRollCallDataKey(laoId)
       storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)
