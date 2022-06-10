@@ -111,6 +111,7 @@ export interface RollCallInterface extends FeatureInterface {
   };
 
   hooks: {
+    useRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
     useRollCallsByLaoId: (laoId: string) => {
       [rollCallId: string]: RollCall;
     };

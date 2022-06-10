@@ -14,6 +14,7 @@ export namespace DigitalCashFeature {
   export interface RollCall {
     id: Hash;
     name: string;
+    attendees?: string[];
 
     containsToken(token: PopToken | undefined): boolean;
   }

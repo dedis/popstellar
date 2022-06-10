@@ -20,6 +20,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
     laoEventScreens: [CreateRollCallScreen, RollCallOpenedScreen, ViewSingleRollCallScreen],
     functions,
     hooks: {
+      useRollCallById: RollCallHooks.useRollCallById,
       useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
       useRollCallTokensByLaoId: RollCallHooks.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: RollCallHooks.useRollCallTokenByRollCallId,

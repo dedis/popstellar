@@ -33,6 +33,8 @@ export interface DigitalCashCompositionConfiguration {
   useIsLaoOrganizer: (laoId: string) => boolean;
   getLaoOrganizer: (laoId: string) => PublicKey | undefined;
 
+  useRollCallById: (rollCallId: Hash | string) => DigitalCashFeature.RollCall | undefined;
+
   useRollCallsByLaoId: (laoId: string) => {
     [rollCallId: string]: DigitalCashFeature.RollCall;
   };
@@ -51,6 +53,7 @@ export type DigitalCashReactContext = Pick<
   DigitalCashCompositionConfiguration,
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
+  | 'useRollCallById'
   | 'useRollCallTokensByLaoId'
   | 'useRollCallTokenByRollCallId'
 >;

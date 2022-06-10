@@ -55,6 +55,12 @@ const SendReceive = () => {
 
   const { laoId, rollCallId, scannedPoPToken } = route.params;
 
+  const rollCall = DigitalCashHooks.useRollCallById(rollCallId);
+
+  if (!rollCall) {
+    throw new Error('The selected roll call is not defined');
+  }
+
   const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
   const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
   useEffect(() => {
@@ -90,27 +96,43 @@ const SendReceive = () => {
     if (!rollCallToken) {
       throw new Error('The roll call token is not defined');
     }
+
     if (beneficiary === '') {
-      setError('Euuu');
+      setError(STRINGS.digital_cash_wallet_add_beneficiary);
+      return;
+    }
+
+    if (Number.isNaN(amount)) {
+      setError(STRINGS.digital_cash_wallet_amount_must_be_number);
+      return;
+    }
+
+    const intAmount = Number.parseInt(amount, 10);
+    if (intAmount > balance) {
+      setError(STRINGS.digital_cash_wallet_amount_too_high);
       return;
     }
 
     if (coinbaseState[0]) {
-      console.log(beneficiary);
-      const recipients = coinbaseState[1]
-        ? [new PublicKey(beneficiary)]
+      if (!rollCall.attendees) {
+        throw new Error('The selected roll call has no attendees');
+      }
+
+      const beneficiaries = coinbaseState[1]
+        ? rollCall.attendees.map((attendee) => new PublicKey(attendee))
         : [new PublicKey(beneficiary)];
+
       requestCoinbaseTransaction(
         KeyPairStore.get(),
-        recipients,
+        beneficiaries,
         Number.parseInt(amount, 10),
         new Hash(laoId),
       ).then(
         () => {
           console.log('Coinbase transaction sent');
         },
-        () => {
-          console.log('Coinbase transaction failed');
+        (reason) => {
+          console.log('Coinbase transaction failed : ');
         },
       );
     } else {
@@ -123,7 +145,7 @@ const SendReceive = () => {
         () => {
           console.log('Transaction sent');
         },
-        () => {
+        (reason) => {
           console.log('Transaction failed');
         },
       );

@@ -28,6 +28,7 @@ export function compose(
   return {
     identifier: DIGITAL_CASH_FEATURE_IDENTIFIER,
     context: {
+      useRollCallById: configuration.useRollCallById,
       useCurrentLaoId: configuration.useCurrentLaoId,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,

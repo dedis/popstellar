@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Hash } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
 
@@ -30,4 +31,7 @@ export namespace DigitalCashHooks {
 
   export const useRollCallTokenByRollCallId = (laoId: string, rollCallId: string) =>
     useDigitalCashContext().useRollCallTokenByRollCallId(laoId, rollCallId);
+
+  export const useRollCallById = (rollCallId: Hash | string) =>
+    useDigitalCashContext().useRollCallById(rollCallId);
 }

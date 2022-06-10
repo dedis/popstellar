@@ -34,6 +34,14 @@ export namespace RollCallHooks {
     return laoId;
   };
 
+  export const useRollCallById = (rollCallId: Hash | string) => {
+    const rollCallSelector = useMemo(
+      () => makeRollCallSelector(rollCallId.valueOf()),
+      [rollCallId],
+    );
+    return useSelector(rollCallSelector);
+  };
+
   /**
    * Gets the generateToken function
    */
