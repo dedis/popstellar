@@ -322,7 +322,7 @@ final case class DbActor(
       }
 
     case ReadRollCallData(laoId) =>
-      log.info(s"Actor $self (db) received an ReadRollCallData request for lao '$laoId'")
+      log.info(s"Actor $self (db) received an ReadRollCallData request for RollCall '$laoId'")
       Try(readRollCallData(laoId)) match {
         case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
         case failure => sender() ! failure.recover(Status.Failure(_))
