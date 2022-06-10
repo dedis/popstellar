@@ -55,6 +55,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               }
               case _ => Future {}
             }
+            //we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
+            //otherwise, we never write in this channel
             _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
             _ <- dbAskWritePropagate(rpcRequest)
             _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
