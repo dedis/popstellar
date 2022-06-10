@@ -1,5 +1,4 @@
 import { SignatureType } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
 
 import * as functions from './functions';
 import {
@@ -9,7 +8,7 @@ import {
   WALLET_FEATURE_IDENTIFIER,
 } from './interface';
 import { WalletNavigationScreen } from './navigation/WalletNavigation';
-import { getCurrentPopTokenFromStore, recoverWalletRollCallTokens } from './objects';
+import { getCurrentPopTokenFromStore } from './objects';
 import { digitalCashReducer, walletReducer } from './reducer';
 import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';
 import { WalletSetSeedScreen } from './screens/WalletSetSeed';

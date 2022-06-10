@@ -13,6 +13,7 @@ import { Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash, PublicKey } from 'core/objects';
@@ -21,12 +22,10 @@ import { getNavigator } from 'core/platform/Navigator';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { KeyPairStore } from '../../../../core/keypair';
-import { removeLao } from '../../../lao/reducer';
 import { DigitalCashHooks } from '../../hooks';
 import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
-import { makeBalanceSelector, makeBalancesSelector } from '../../reducer/DigitalCashReducer';
+import { makeBalanceSelector } from '../../reducer/DigitalCashReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
@@ -80,7 +79,7 @@ const SendReceive = () => {
         return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
       }
       return () => 0;
-    }, [laoId]),
+    }, [rollCallToken, laoId]),
   );
 
   useEffect(() => {

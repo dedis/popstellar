@@ -6,10 +6,10 @@ import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
+import { RollCallToken } from '../../../core/objects/RollCallToken';
 import { RollCall } from '../objects';
 import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
 import { RollCallFeature } from './Feature';
-import { RollCallToken } from "../../../core/objects/RollCallToken";
 
 export const ROLLCALL_FEATURE_IDENTIFIER = 'rollCall';
 

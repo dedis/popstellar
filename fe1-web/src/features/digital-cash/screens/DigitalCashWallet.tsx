@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
@@ -8,10 +8,11 @@ import { useSelector } from 'react-redux';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { Hash } from 'core/objects';
+import { RollCallToken } from 'core/objects/RollCallToken';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { RollCallToken } from '../../../core/objects/RollCallToken';
 import TransactionHistory from '../components/TransactionHistory';
 import { DigitalCashHooks } from '../hooks';
 import { DigitalCashFeature } from '../interface';
@@ -41,7 +42,7 @@ const DigitalCashWallet = () => {
   }, [rollCallTokensFetcher]);
 
   const balance = rollCallTokens.reduce(
-    (sum, account) => sum + (balances[account.token.publicKey.valueOf()] || 0),
+    (sum, account) => sum + (balances[Hash.fromPublicKey(account.token.publicKey).valueOf()] || 0),
     0,
   );
 
@@ -77,7 +78,7 @@ const DigitalCashWallet = () => {
                 </ListItem.Subtitle>
               </ListItem.Content>
               <ListItem.Title style={Typography.base}>
-                ${balances[rollCallToken.token.publicKey.valueOf()] || 0}
+                ${balances[Hash.fromPublicKey(rollCallToken.token.publicKey).valueOf()] || 0}
               </ListItem.Title>
               <ListItem.Chevron />
             </ListItem>
