@@ -207,7 +207,7 @@ final case class DbActor(
 
   @throws [DbActorNAckException]
   private def readRollCallData(laoId: Hash): RollCallData = {
-    Try(storage.read(s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}")) match {
+    Try(storage.read(generateRollCallDataKey(laoId))) match {
       case Success(Some(json)) => RollCallData.buildFromJson(json)
       case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadElectionData for election $laoId not in the database")
       case Failure(ex) => throw ex
@@ -217,12 +217,12 @@ final case class DbActor(
   @throws [DbActorNAckException]
   private def writeRollCallData(laoId: Hash, message: Message): Unit = {
     this.synchronized {
-      val rollcallData: RollCallData = Try(readRollCallData(laoId)) match {
+      val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
         case Success(data) => data
         case Failure(_) => RollCallData(null, null)
       }
-      val rollcallDataKey: String = generateRollCallDataKey(laoId)
-      storage.write(rollcallDataKey -> rollcallData.updateWith(message).toJsonString)
+      val rollCallDataKey: String = generateRollCallDataKey(laoId)
+      storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)
     }
   }
 
