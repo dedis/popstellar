@@ -209,7 +209,7 @@ final case class DbActor(
   private def readRollCallData(laoId: Hash): RollCallData = {
     Try(storage.read(generateRollCallDataKey(laoId))) match {
       case Success(Some(json)) => RollCallData.buildFromJson(json)
-      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadElectionData for election $laoId not in the database")
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadRollCallData for RollCAll $laoId not in the database")
       case Failure(ex) => throw ex
     }
   }
@@ -322,14 +322,14 @@ final case class DbActor(
       }
 
     case ReadRollCallData(laoId) =>
-      log.info(s"Actor $self (db) received an ReadRollcallData request for lao '$laoId'")
+      log.info(s"Actor $self (db) received an ReadRollCallData request for lao '$laoId'")
       Try(readRollCallData(laoId)) match {
         case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteRollCallData(laoId, message) =>
-      log.info(s"Actor $self (db) received a WriteLaoData request for LAO id $laoId")
+      log.info(s"Actor $self (db) received a WriteRollCallData request for RollCall id $laoId")
       Try(writeRollCallData(laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
