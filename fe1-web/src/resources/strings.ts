@@ -415,6 +415,11 @@ namespace STRINGS {
   export const digital_cash_wallet_transaction_history = 'Transaction History';
   export const digital_cash_wallet_transaction_inputs = 'Inputs';
   export const digital_cash_wallet_transaction_outputs = 'Ouputs';
+  export const digital_cash_wallet_this_is_a_coin_issuance = 'This is a coin issuance';
+  export const digital_cash_wallet_issue_to_every_participants =
+    'Issue to every participants of this roll call';
+  export const digital_cash_wallet_all_participants_of_roll_call =
+    'All participants of roll call: ';
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';
   export const meeting_message_decline = 'Decline Message';

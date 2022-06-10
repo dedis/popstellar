@@ -33,8 +33,6 @@ const DigitalCashWallet = () => {
 
   DigitalCashHooks.useRollCallTokensByLaoId(laoId).then((rcts) => setRollCallTokens(rcts));
 
-  const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
-
   const balance = rollCallTokens.reduce(
     (sum, account) => sum + (balances[account.token.publicKey.valueOf()] || 0),
     0,
