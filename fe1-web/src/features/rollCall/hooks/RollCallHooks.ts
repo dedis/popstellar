@@ -75,7 +75,6 @@ export namespace RollCallHooks {
   export const useRollCallTokensByLaoId = (laoId: string): Promise<RollCallToken[]> => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
-
     return useMemo(async () => {
       const laoIdHash = new Hash(laoId);
       const tokens = Object.values(rollCalls).map((rc) =>

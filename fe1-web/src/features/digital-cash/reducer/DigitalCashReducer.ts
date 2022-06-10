@@ -139,6 +139,8 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
   createSelector(
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
+      if(laoState) console.log(Object.keys(laoState?.balances));
+      console.log(Hash.fromPublicKey(publicKey).valueOf());
       return laoState?.balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
     },
   );

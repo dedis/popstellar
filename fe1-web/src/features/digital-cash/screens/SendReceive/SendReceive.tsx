@@ -22,10 +22,11 @@ import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { KeyPairStore } from '../../../../core/keypair';
+import { removeLao } from '../../../lao/reducer';
 import { DigitalCashHooks } from '../../hooks';
 import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
-import { makeBalanceSelector } from '../../reducer/DigitalCashReducer';
+import { makeBalanceSelector, makeBalancesSelector } from '../../reducer/DigitalCashReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
@@ -56,7 +57,10 @@ const SendReceive = () => {
   const { laoId, rollCallId, scannedPoPToken } = route.params;
 
   const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
-  DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId).then(setRollCallToken);
+  const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+  useEffect(() => {
+    rollCallFetcher.then(setRollCallToken);
+  }, [rollCallFetcher]);
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
@@ -73,13 +77,14 @@ const SendReceive = () => {
         return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
       }
       return () => 0;
-    }, [rollCallToken, laoId]),
+    }, [laoId]),
   );
 
   useEffect(() => {
     if (scannedPoPToken) {
       setBeneficiary(scannedPoPToken);
     }
+    return () => {};
   }, [scannedPoPToken]);
 
   const onSendTransaction = () => {
@@ -92,6 +97,7 @@ const SendReceive = () => {
     }
 
     if (coinbaseState[0]) {
+      console.log(beneficiary);
       const recipients = coinbaseState[1]
         ? [new PublicKey(beneficiary)]
         : [new PublicKey(beneficiary)];

@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
@@ -31,7 +31,11 @@ const DigitalCashWallet = () => {
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
 
-  DigitalCashHooks.useRollCallTokensByLaoId(laoId).then((rcts) => setRollCallTokens(rcts));
+  const rollCallTokensFetcher = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
+
+  useEffect(() => {
+    rollCallTokensFetcher.then(setRollCallTokens);
+  }, [rollCallTokensFetcher]);
 
   const balance = rollCallTokens.reduce(
     (sum, account) => sum + (balances[account.token.publicKey.valueOf()] || 0),
