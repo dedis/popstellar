@@ -138,7 +138,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/coin/post_transaction.json")
     val messageData = PostTransaction.buildFromJson(example)
 
-    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), outputs=List(TxOut(32, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")))
+    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")), Base64Data("DNnBoBvY4Bd8-WMUA3Cw17qyIiy_J2722-WKnr5uPhyJY8BCRZeHCOVTxsnhanu3Q8Ry11Czcm6YY_xjEJOJDQ==")))), outputs=List(TxOut(32, LockScript("P2PKH",Address(Base64Data("-_qR4IHwsiq50raa8jURNArds54="))))), lockTime=0), transactionId=Hash(Base64Data("MzEaazm7WJNRquKKkElVjPDLd-CpYijMEUYFcc6cGN4=")))
 
     messageData shouldBe a[PostTransaction]
     messageData should equal (expected)
@@ -148,7 +148,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/coin/post_transaction_max_amount.json")
     val messageData = PostTransaction.buildFromJson(example)
 
-    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), outputs=List(TxOut((1L << 53) - 1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("K6GbqfHbCxLaihkDI88BEobHYNRKqYpASXp1QNSXPOo=")))
+    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")), Base64Data("TlQjVZ-Z6q-ZHNoFkqMDxfFWGbUpkz5t3iL--wBOEpOu6GZ-4CmqVIhXjBwqenSfWCUjplKdjPWMX9Wn6eObBw==")))), outputs=List(TxOut((1L << 53) - 1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("pgX_-DbIbDqT3mhCgdTb24yAocZQ84ITgzwkQv9-_zE=")))
 
     messageData shouldBe a[PostTransaction]
     messageData should equal (expected)

@@ -50,6 +50,28 @@ final case class Transaction(
     strings += version.toString
     Hash.fromStrings(strings.toSeq: _*)
   }
+
+  private def signaturePayload =
+    Base64Data.encode(inputs.map { txin => f"${txin.TxOutHash}${txin.TxOutIndex}" }.reduce(_+_) +
+      outputs.map { txout => f"${txout.Value}${txout.Script.Type}${txout.Script.PubkeyHash}" }.reduce(_+_))
+
+  /**
+   * This ensures the validity of the signatures, not that the funds are unspent.
+   */
+  def checkSignatures(): Boolean =
+    inputs.forall { txin =>
+      Signature(txin.Script.Sig).verify(txin.Script.Pubkey, signaturePayload)
+    }
+
+  def sign(keypairs: Seq[KeyPair]): Transaction = {
+    val privateKeyIndex = Map.from(keypairs.map(p => p.publicKey -> p.privateKey))
+    copy(inputs=inputs.map { txin =>
+      val pk = txin.Script.Pubkey
+      val k = privateKeyIndex.getOrElse(pk, throw new IllegalArgumentException(s"No private key for $pk"))
+      val sig = k.signData(signaturePayload).signature
+      txin.copy(Script=txin.Script.copy(Sig=sig))
+    })
+  }
 }
 
 object Transaction extends Parsable {
