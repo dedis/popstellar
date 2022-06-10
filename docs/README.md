@@ -111,7 +111,7 @@ In an attempt to avoid as many as these merge conflicts, here's what you should 
 
 Here's how we suggest you work on feature `X` with two (or more) teammates:
 1. Create a branch that is common between both of you. If feature `X` relies on branch `Y` (that is awaiting reviews, i.e. not merged into `master`), then create your common branch originating from branch `Y`. If it is not related to any unmerged branches, then default to a copy of `master`.
-2. create a personal branch for each student that is originating from the common branch. Additionally (arguably optionally), you may decide to never push changes directly to the common branch but instead use PRs from either of your personal branches to the common branch.
+2. Create a personal branch for each student that is originating from the common branch. Additionally (arguably optionally), you may decide to never push changes directly to the common branch but instead use PRs from either of your personal branches to the common branch.
 3. When you have a self-contained piece of code that works, add it to the common branch (either through PRs or `git merge`). This way, your partner will be able to use it without the need of copy-pastas.
 4. When you need new code that is on the common branch but not yet on your personal branch, simply merge the common branch inside your personal branch.
 5. Once you are all happy and the feature is fully finished (and thus operational on the common branch), simply create a PR from the common branch to branch `Y` if `Y` has not been merged yet or `master` if `Y` has already been merged.
