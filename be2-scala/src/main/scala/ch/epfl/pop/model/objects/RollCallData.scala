@@ -28,5 +28,5 @@ object RollCallData extends Parsable {
 
   override def buildFromJson(payload: String): RollCallData = payload.parseJson.asJsObject.convertTo[RollCallData]
 
-  def getName: String = "rollcallData"
+  def getName: String = "rollCallData"
 }

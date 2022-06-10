@@ -357,7 +357,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   }
 
-  implicit object RollcallDataFormat extends JsonFormat[RollCallData] {
+  implicit object RollCallDataFormat extends JsonFormat[RollCallData] {
     final private val PARAM_UPDATE_ID: String = "update_id"
     final private val PARAM_STATE: String = "state"
 
