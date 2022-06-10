@@ -116,6 +116,8 @@ Here's how we suggest you work on feature `X` with two (or more) teammates:
 4. When you need new code that is on the common branch but not yet on your personal branch, simply merge the common branch inside your personal branch.
 5. Once you are all happy and the feature is fully finished (and thus operational on the common branch), simply create a PR from the common branch to branch `Y` if `Y` has not been merged yet or `master` if `Y` has already been merged.
 
+ℹ️ It is desirable to merge `master` into your common branch from time to time in order to avoid said branch from getting too out-of-date with the rest the team.
+
 Here's what it could look like with student Pierluca and student Nicolas working together on the feature `X` in a common branch that is using features from `Y`:
 
 ```
