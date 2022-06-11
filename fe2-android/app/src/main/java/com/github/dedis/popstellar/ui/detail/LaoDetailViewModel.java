@@ -1083,6 +1083,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void subscribeToLao(String laoId) {
+    System.out.println(" LAO id is " + laoId);
     disposables.add(
         laoRepository
             .getLaoObservable(laoId)
