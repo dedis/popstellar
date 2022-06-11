@@ -21,6 +21,8 @@ case object CoinValidator extends MessageDataContentValidator {
         val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
         if (data.transactionId != data.transaction.transactionId) {
           Right(validationError("incorrect transaction id"))
+        } else if (!data.transaction.checkSignatures()) {
+          Right(validationError("bad signature"))
         } else {
           Left(rpcMessage)
         }

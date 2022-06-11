@@ -803,7 +803,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
 
-		if !ok || earlierVote.voteTime > castVote.CreatedAt {
+		if !ok || earlierVote.voteTime < castVote.CreatedAt {
 			qs.validVotes[sender] = validVote{
 				msgID,
 				vote.ID,

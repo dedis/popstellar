@@ -5,8 +5,9 @@ import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -203,6 +204,31 @@ final case class DbActor(
     }
   }
 
+  //generates the key of the RollCallData to store in the database
+  private def generateRollCallDataKey(laoId: Hash): String = {
+    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+  }
+
+  @throws [DbActorNAckException]
+  private def readRollCallData(laoId: Hash): RollCallData = {
+    Try(storage.read(generateRollCallDataKey(laoId))) match {
+      case Success(Some(json)) => RollCallData.buildFromJson(json)
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadRollCallData for RollCAll $laoId not in the database")
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws [DbActorNAckException]
+  private def writeRollCallData(laoId: Hash, message: Message): Unit = {
+    this.synchronized {
+      val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
+        case Success(data) => data
+        case Failure(_) => RollCallData(Hash(Base64Data("")), ActionType.CREATE)
+      }
+      val rollCallDataKey: String = generateRollCallDataKey(laoId)
+      storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)
+    }
+  }
 
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
@@ -296,6 +322,20 @@ final case class DbActor(
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(channel, messageId, signature)) match {
         case Success(witnessMessage) => sender() ! DbActorAddWitnessMessage(witnessMessage)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadRollCallData(laoId) =>
+      log.info(s"Actor $self (db) received an ReadRollCallData request for RollCall '$laoId'")
+      Try(readRollCallData(laoId)) match {
+        case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteRollCallData(laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteRollCallData request for RollCall id $laoId")
+      Try(writeRollCallData(laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
@@ -418,6 +458,31 @@ object DbActor {
    */
   final case class AddWitnessSignature(channel: Channel, messageId: Hash, signature: Signature) extends Event
 
+  /**
+   * Request to read the rollcallData of the LAO, with key laoId
+   *
+   * @param laoId
+   * the channel we need the Rollcall's data for
+   */
+  final case class ReadRollCallData(laoId: Hash) extends Event
+
+  /**
+   * Request to write the rollcallData of the LAO, with key laoId
+   *
+   * @param laoId    the channel we need the Rollcall's data for
+   * @param message  rollcall message sent through the channel
+   */
+  final case class WriteRollCallData(laoId: Hash, message: Message) extends Event
+
+  /**
+   * Request to create a rollcall data in the db with state and updateId
+   *
+   * @param laoId    unique id of the lao in which the rollcall messages are
+   * @param updateId the updateId of the last rollcall message
+   * @param state    the state of the last rollcall message, i.e., CREATE, OPEN or CLOSE
+   */
+  final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -470,6 +535,14 @@ object DbActor {
    * @param messages requested messages
    */
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
+
+  /**
+   * Response for a [[ReadRollcallData]] db request Receiving [[DbActorReadRollcallDataAck]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param rollcallData requested channel data
+   */
+  final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
 
   /**
    * Response for a general db actor ACK

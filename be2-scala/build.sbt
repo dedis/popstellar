@@ -118,6 +118,9 @@ assembly/ assemblyMergeStrategy := {
     case PathList("module-info.class") => MergeStrategy.discard
     case PathList("reference.conf") => MergeStrategy.concat
     case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
+    // exclude digital signatures because the merging process can invalidate them
+    case PathList(ps@_*) if Seq(".SF", ".DSA", ".RSA").exists(ps.last.endsWith(_)) =>
+     MergeStrategy.discard
     case _ => MergeStrategy.defaultMergeStrategy("")
 }
 
