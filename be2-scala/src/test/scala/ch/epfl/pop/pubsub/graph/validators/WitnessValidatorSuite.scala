@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
@@ -44,16 +43,14 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   private final val PK_WRONG_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
   private final val laoDataRight: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(PK_WRONG_OWNER, List(PK_WRONG_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataWrong: ChannelData = ChannelData(ObjectType.INVALID, List.empty)
 
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
-        case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelData)
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock)
@@ -64,8 +61,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
-        case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelData)
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock)
