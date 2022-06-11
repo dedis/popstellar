@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.CastVoteFragmentPageObject.castVoteButton;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.CastVoteFragmentPageObject.castVoteElectionName;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.CastVoteFragmentPageObject.castVoteLaoTitle;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.CastVoteFragmentPageObject.castVotePager;
@@ -154,6 +157,12 @@ public class CastVoteFragmentTest {
     onView(withText(ELECTION_QUESTION_TEXT2)).check(matches(isDisplayed()));
     onView(withText(ELECTION_BALLOT_TEXT21)).check(matches(isDisplayed()));
     onView(withText(ELECTION_BALLOT_TEXT22)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void castVoteButtonIsEnabledWhenAnElementIsClicked() {
+    onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
+    castVoteButton().check(matches(isEnabled()));
   }
 
   private void initializeElection() {
