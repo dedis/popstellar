@@ -25,8 +25,9 @@ object CloseRollCallExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingClosesRollCall: CloseRollCall = CloseRollCall(UPDATE_ID, CLOSES, NOT_STALE_CLOSED_AT, ATTENDEES)
+  final val DATA_CLOSE_ROLL_CALL_WORKING: Base64Data = Base64Data.encode(workingClosesRollCall.toJson.toString)
   final val MESSAGE_CLOSE_ROLL_CALL_WORKING: Message = new Message(
-    Base64Data.encode(workingClosesRollCall.toJson.toString),
+    DATA_CLOSE_ROLL_CALL_WORKING,
     SENDER,
     SIGNATURE,
     Hash(Base64Data("")),
@@ -54,6 +55,18 @@ object CloseRollCallExamples {
     List.empty,
     Some(wrongIdCloseRollCall)
   )
+
+  val wrongClosesCloseRollCall: CloseRollCall = CloseRollCall(UPDATE_ID, invalidId, NOT_STALE_CLOSED_AT, ATTENDEES)
+  final val DATA_CLOSE_ROLL_CALL_WRONG_CLOSES: Base64Data = Base64Data.encode(wrongClosesCloseRollCall.toJson.toString)
+  final val MESSAGE_CLOSE_ROLL_CALL_WRONG_CLOSES: Message = new Message(
+    DATA_CLOSE_ROLL_CALL_WRONG_CLOSES,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongClosesCloseRollCall)
+  )
+
 
   val wrongAlreadyClosedCloseRollCall: CloseRollCall = CloseRollCall(CLOSES, CLOSES, NOT_STALE_CLOSED_AT, ATTENDEES)
   final val MESSAGE_CLOSE_ROLL_CALL_ALREADY_CLOSED: Message = new Message(
