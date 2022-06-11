@@ -52,6 +52,9 @@ final case class Transaction(
       Signature(txin.script.sig).verify(txin.script.pubkey, signaturePayload)
     }
 
+  def sumOutputs(): Either[Error, Uint53] =
+    Uint53.safeSum(outputs.map(_.value))
+
   def sign(keypairs: Seq[KeyPair]): Transaction = {
     val privateKeyIndex = Map.from(keypairs.map(p => p.publicKey -> p.privateKey))
     copy(inputs=inputs.map { txin =>
