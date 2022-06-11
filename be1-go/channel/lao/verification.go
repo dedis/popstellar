@@ -278,43 +278,22 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 		return xerrors.Errorf("election name should not be empty")
 	}
 
-	// verify created at is positive
-	if electionSetup.CreatedAt < 0 {
-		return xerrors.Errorf("election setup created at is %d, should be minimum 0",
-			electionSetup.CreatedAt)
+	// verify ballot type is correct
+	switch electionSetup.Version {
+	case messagedata.OpenBallot:
+	case messagedata.SecretBallot:
+	default:
+		return xerrors.Errorf("Version should not be %s", electionSetup.Version)
 	}
 
-	// verify start time is positive
-	if electionSetup.StartTime < 0 {
-		return xerrors.Errorf("election setup start time is %d, should be minimum 0",
-			electionSetup.StartTime)
+	err = verifyElectionSetupTime(electionSetup.CreatedAt, electionSetup.StartTime, electionSetup.EndTime)
+	if err != nil {
+		return err
 	}
 
-	// verify end time is positive
-	if electionSetup.EndTime < 0 {
-		return xerrors.Errorf("election setup end time is %d, should be minimum 0",
-			electionSetup.EndTime)
-	}
-
-	// verify start time after created at
-	if electionSetup.StartTime < electionSetup.CreatedAt {
-		return xerrors.Errorf("election setup start time is %d, "+
-			"should be greater or equal to created at %d",
-			electionSetup.StartTime, electionSetup.CreatedAt)
-	}
-
-	// verify end time after created at
-	if electionSetup.EndTime < electionSetup.CreatedAt {
-		return xerrors.Errorf("election setup end time is %d, "+
-			"should be greater or equal to created at %d",
-			electionSetup.EndTime, electionSetup.CreatedAt)
-	}
-
-	// verify end time after start time
-	if electionSetup.EndTime < electionSetup.StartTime {
-		return xerrors.Errorf("election end time is %d, "+
-			"should be greater or equal to start time %d",
-			electionSetup.EndTime, electionSetup.StartTime)
+	// verify questions is not empty
+	if len(electionSetup.Questions) == 0 {
+		return xerrors.Errorf("number of questions is 0 should be positive")
 	}
 
 	// verify the questions
@@ -323,6 +302,49 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 		if err != nil {
 			return xerrors.Errorf("problem verifying question: %v", err)
 		}
+	}
+
+	return nil
+}
+
+func verifyElectionSetupTime(createdAt, start, end int64) error {
+	// verify created at is positive
+	if createdAt < 0 {
+		return xerrors.Errorf("election setup created at is %d, should be minimum 0",
+			createdAt)
+	}
+
+	// verify start time is positive
+	if start < 0 {
+		return xerrors.Errorf("election setup start time is %d, should be minimum 0",
+			start)
+	}
+
+	// verify end time is positive
+	if end < 0 {
+		return xerrors.Errorf("election setup end time is %d, should be minimum 0",
+			end)
+	}
+
+	// verify start time after created at
+	if start < createdAt {
+		return xerrors.Errorf("election setup start time is %d, "+
+			"should be greater or equal to created at %d",
+			start, createdAt)
+	}
+
+	// verify end time after created at
+	if end < createdAt {
+		return xerrors.Errorf("election setup end time is %d, "+
+			"should be greater or equal to created at %d",
+			end, createdAt)
+	}
+
+	// verify end time after start time
+	if end < start {
+		return xerrors.Errorf("election end time is %d, "+
+			"should be greater or equal to start time %d",
+			end, start)
 	}
 
 	return nil

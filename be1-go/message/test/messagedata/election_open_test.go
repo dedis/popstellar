@@ -34,8 +34,10 @@ func Test_Election_Open(t *testing.T) {
 	require.Equal(t, int64(1633099883), msg.OpenedAt)
 }
 
-func Test_New_Empty(t *testing.T) {
+func Test_Election_Open_Interface_Functions(t *testing.T) {
 	var msg messagedata.ElectionOpen
 
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.ElectionActionOpen, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

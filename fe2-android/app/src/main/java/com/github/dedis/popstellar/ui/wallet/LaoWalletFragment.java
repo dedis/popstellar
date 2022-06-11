@@ -5,14 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoWalletFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
@@ -54,7 +52,6 @@ public class LaoWalletFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    setupPropertiesButton();
     setupWalletListAdapter();
     setupWalletListUpdates();
 
@@ -69,12 +66,6 @@ public class LaoWalletFragment extends Fragment {
 
     mLaoWalletFragmentBinding.backButton.setOnClickListener(
         clicked -> mLaoDetailViewModel.openHome());
-  }
-
-  private void setupPropertiesButton() {
-    Button propertiesButton = requireActivity().findViewById(R.id.tab_properties);
-
-    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
 
   private void setupWalletListAdapter() {

@@ -21,6 +21,7 @@ public final class Output {
     this.script = script;
   }
 
+
   public long getValue() {
     return value;
   }

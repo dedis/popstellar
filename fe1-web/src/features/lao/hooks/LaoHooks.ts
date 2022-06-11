@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -6,6 +6,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
+  makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoOrganizer,
@@ -28,9 +29,13 @@ export namespace LaoHooks {
 
   /**
    * Gets the event list component
-   * @returns The event list component
    */
   export const useEventListComponent = () => useLaoContext().EventList;
+
+  /**
+   * Gets the event create event button component
+   */
+  export const useCreateEventButtonComponent = () => useLaoContext().CreateEventButton;
 
   /**
    * Gets the function that can encode a lao connection ready to be rendered as a QR code
@@ -40,15 +45,13 @@ export namespace LaoHooks {
 
   /**
    * Gets the lao navigation screens
-   * @returns The lao navigation screens
    */
   export const useLaoNavigationScreens = () => useLaoContext().laoNavigationScreens;
 
   /**
-   * Gets the organizer navigation screens
-   * @returns The organizer navigation screens
+   * Gets the events navigation screens
    */
-  export const useOrganizerNavigationScreens = () => useLaoContext().organizerNavigationScreens;
+  export const useEventsNavigationScreens = () => useLaoContext().eventsNavigationScreens;
 
   /** Hooks defined by the lao feature */
 
@@ -92,4 +95,14 @@ export namespace LaoHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
+
+  /**
+   * Returns the public key of the organizer's backend for a given lao id
+   * @param laoId The lao id for which the key should be retrieved
+   * @returns The public key or undefined if there is none
+   */
+  export const useLaoOrganizerBackendPublicKey = (laoId: string) => {
+    const selector = useMemo(() => makeLaoOrganizerBackendPublicKeySelector(laoId), [laoId]);
+    return useSelector(selector);
+  };
 }

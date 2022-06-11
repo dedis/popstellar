@@ -104,20 +104,19 @@ You may start the organizer server at ports `9000` for clients and `9001` for
 witnesses by executing
 
 ```
-HUB_DB="path/to/db.db" ./pop organizer --pk "<base64url encoded pk>" serve
+./pop organizer serve
+```
+
+if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
+
+```
+./pop organizer --pk "<base64url encoded pk of server owner>" serve
 ```
 
 Please use the `-cp` and `-wp` flags to specify an alternative port. The full
 path to connect to the organizer as a client is
 `ws://host:clientport/organizer/client/` and as a witness
 `ws://host:witnessport/organizer/witness/`.
-
-`HUB_DB` is optional. If set, it will load/save the server from/in a sqlite
-database. To initialize the db file, go in `db/sqlite/cli` and use to cli:
-
-```
-go run mod.go --db <saving path> --schema <schema path>
-```
 
 You may start the witness server at ports `9000` for clients and `9002` for
 witness, connected to the organizer at `localhost:9000` by executing `./pop

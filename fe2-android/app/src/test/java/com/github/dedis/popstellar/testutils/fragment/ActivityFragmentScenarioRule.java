@@ -51,6 +51,20 @@ public class ActivityFragmentScenarioRule<A extends AppCompatActivity, F extends
                 activityClass, activityArgs, contentId, fragmentClass, supplier));
   }
 
+  public static <A extends AppCompatActivity, F extends Fragment>
+      ActivityFragmentScenarioRule<A, F> launchIn(
+          Class<A> activityClass,
+          Bundle activityArgs,
+          @IdRes int contentId,
+          Class<F> fragmentClass,
+          Supplier<F> supplier,
+          Bundle fragmentArgs) {
+    return new ActivityFragmentScenarioRule<>(
+        () ->
+            FragmentScenario.launchIn(
+                activityClass, activityArgs, contentId, fragmentClass, supplier, fragmentArgs));
+  }
+
   @Override
   protected void before() throws Throwable {
     scenario = scenarioSupplier.get();

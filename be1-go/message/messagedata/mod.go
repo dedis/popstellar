@@ -21,10 +21,11 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
 	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
-	ElectionActionSetup  = "setup"
 
 	LAOObject       = "lao"
 	LAOActionCreate = "create"
@@ -43,7 +44,7 @@ const (
 	RollCallActionClose  = "close"
 	RollCallActionCreate = "create"
 	RollCallActionOpen   = "open"
-	RollCallActionReopen = "reopen"
+	RollCallActionReOpen = "reopen"
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
