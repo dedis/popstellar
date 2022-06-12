@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
@@ -17,6 +16,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
+
+    private static String VOTE_INDEX = "vote";
 
     @Override
     public CastVote deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -37,13 +38,12 @@ public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
         boolean typeValidationString = true;
         // Vote type of a CastVote is either an integer for an OpenBallot election or a
         // String for an Encrypted election, type should be valid for all votes
-        String voteIndex = "vote";
         for (int i = 0; i < jsonVote.size(); i++) {
             JsonObject voteContent = jsonVote.get(i).getAsJsonObject();
             typeValidationInt =
-                    typeValidationInt && voteContent.get(voteIndex).getAsJsonPrimitive().isNumber();
+                    typeValidationInt && voteContent.get(VOTE_INDEX).getAsJsonPrimitive().isNumber();
             typeValidationString =
-                    typeValidationString && voteContent.get(voteIndex).getAsJsonPrimitive().isString();
+                    typeValidationString && voteContent.get(VOTE_INDEX).getAsJsonPrimitive().isString();
         }
         if (typeValidationInt && !typeValidationString) {
             Type token = new TypeToken<List<ElectionVote>>() {}.getType();
