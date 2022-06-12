@@ -70,4 +70,10 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
     message should matchPattern { case Right(_) => }
   }
+
+  test("Posting a transaction with an arithmetic overflow does not work") {
+    val postTransaction = postTransactionOverflowSum
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
+    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: uint53 addition overflow",Some(1)))
+  }
 }

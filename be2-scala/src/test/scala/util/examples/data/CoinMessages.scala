@@ -21,6 +21,7 @@ object PostTransactionMessages extends CoinMessagesTrait {
   final val postTransactionBadSignature: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_bad_signature.json")()
   final val postTransactionMaxAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_max_amount.json")()
   final val postTransactionOverflowAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_overflow_amount.json")()
+  final val postTransactionOverflowSum: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_overflow_sum.json")()
   final val postTransactionZeroAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_zero_amount.json")()
   final val postTransactionNegativeAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_negative_amount.json")()
   final val postTransactionWrongTransactionId: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_wrong_transaction_id.json")()
