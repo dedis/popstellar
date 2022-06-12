@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;

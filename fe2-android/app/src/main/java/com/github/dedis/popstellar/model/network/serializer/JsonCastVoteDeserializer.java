@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.model.network.serializer;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
@@ -12,13 +11,10 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 
 public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
 
