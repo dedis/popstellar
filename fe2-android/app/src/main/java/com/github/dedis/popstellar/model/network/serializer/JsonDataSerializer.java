@@ -56,6 +56,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
               + action.getAction()
               + ") does not exists in the protocol");
     }
+
     return context.deserialize(json, clazz.get());
   }
 

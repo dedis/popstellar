@@ -47,11 +47,12 @@ public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
                     typeValidationString && voteContent.get("vote").getAsJsonPrimitive().isString();
         }
         if (typeValidationInt && !typeValidationString) {
-
-            List<ElectionVote> votes = context.deserialize(jsonVote, List<ElectionVote>.class);
+            Type token = new TypeToken<List<ElectionEncryptedVote>>() {}.getType();
+            List<ElectionVote> votes = context.deserialize(jsonVote, token);
             return new CastVote(votes, electionId, laoId);
         } else if (!typeValidationInt && typeValidationString) {
-            List<ElectionEncryptedVote> votes = context.deserialize(jsonVote, ElectionVote.class);
+            Type token = new TypeToken<List<ElectionEncryptedVote>>() {}.getType();
+            List<ElectionEncryptedVote> votes = context.deserialize(jsonVote, token);
             return new CastVote(votes, electionId, laoId);
         } else {
             throw new JsonParseException("Unknown vote type in cast vote message");
