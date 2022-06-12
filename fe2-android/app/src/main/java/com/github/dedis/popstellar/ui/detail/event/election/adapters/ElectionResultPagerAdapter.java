@@ -51,6 +51,7 @@ public class ElectionResultPagerAdapter
 
     List<QuestionResult> questionResults =
         election.getResultsForQuestionId(electionQuestion.getId());
+
     List<ElectionResultListAdapter.ElectionResult> electionResults = new ArrayList<>();
     for (int i = 0; i < questionResults.size(); i++) {
       electionResults.add(
