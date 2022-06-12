@@ -64,19 +64,19 @@ public class ElectionResultFragmentTest {
   private static final long CREATION = 10323411;
   private static final long START = 10323421;
   private static final long END = 10323431;
-  private static final String ELECTION_QUESTION_TEXT1 = "question 1";
-  private static final String ELECTION_BALLOT_TEXT11 = "ballot option 1";
-  private static final String ELECTION_BALLOT_TEXT12 = "ballot option 2";
-  private static final String ELECTION_BALLOT_TEXT13 = "ballot option 3";
+  private static final String ELECTION_QUESTION_TEXT = "question";
+  private static final String ELECTION_BALLOT_TEXT1 = "ballot option 1";
+  private static final String ELECTION_BALLOT_TEXT2 = "ballot option 2";
+  private static final String ELECTION_BALLOT_TEXT3 = "ballot option 3";
 
   private static final String PLURALITY = "Plurality";
-  private static final int RESULT11 = 7;
-  private static final int RESULT12 = 0;
-  private static final int RESULT13 = 5;
+  private static final int RESULT1 = 7;
+  private static final int RESULT2 = 0;
+  private static final int RESULT3 = 5;
 
   private static Election election;
 
-  ElectionQuestion electionQuestion1;
+  ElectionQuestion electionQuestion;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
@@ -142,32 +142,32 @@ public class ElectionResultFragmentTest {
 
   @Test
   public void question1ElementsAreDisplayed() {
-    onView(withText(ELECTION_QUESTION_TEXT1)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT11)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT12)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT13)).check(matches(isDisplayed()));
+    onView(withText(ELECTION_QUESTION_TEXT)).check(matches(isDisplayed()));
+    onView(withText(ELECTION_BALLOT_TEXT1)).check(matches(isDisplayed()));
+    onView(withText(ELECTION_BALLOT_TEXT2)).check(matches(isDisplayed()));
+    onView(withText(ELECTION_BALLOT_TEXT3)).check(matches(isDisplayed()));
   }
 
   private void initializeElection() {
     election = new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
 
-    electionQuestion1 =
+    electionQuestion =
         new ElectionQuestion(
-            ELECTION_QUESTION_TEXT1,
+            ELECTION_QUESTION_TEXT,
             PLURALITY,
             false,
-            Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
+            Arrays.asList(ELECTION_BALLOT_TEXT1, ELECTION_BALLOT_TEXT2, ELECTION_BALLOT_TEXT3),
             election.getId());
 
-    QuestionResult result11 = new QuestionResult(ELECTION_BALLOT_TEXT11, RESULT11);
-    QuestionResult result12 = new QuestionResult(ELECTION_BALLOT_TEXT12, RESULT12);
-    QuestionResult result13 = new QuestionResult(ELECTION_BALLOT_TEXT13, RESULT13);
+    QuestionResult result11 = new QuestionResult(ELECTION_BALLOT_TEXT1, RESULT1);
+    QuestionResult result12 = new QuestionResult(ELECTION_BALLOT_TEXT2, RESULT2);
+    QuestionResult result13 = new QuestionResult(ELECTION_BALLOT_TEXT3, RESULT3);
 
     ElectionResultQuestion questionResult1 =
         new ElectionResultQuestion(
-            electionQuestion1.getId(), Arrays.asList(result11, result12, result13));
+            electionQuestion.getId(), Arrays.asList(result11, result12, result13));
 
-    election.setElectionQuestions(singletonList(electionQuestion1));
+    election.setElectionQuestions(singletonList(electionQuestion));
     election.setResults(singletonList(questionResult1));
 
     election.setStart(START);
