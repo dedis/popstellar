@@ -31,9 +31,12 @@ public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
         // Parse fields of the Json
         JsonElement electionIdField = json.getAsJsonObject().get("election");
         JsonElement laoIdField = json.getAsJsonObject().get("lao");
+        JsonElement createdAtField = json.getAsJsonObject().get("created_at");
 
+        // Get content
         String electionId = context.deserialize(electionIdField, String.class);
         String laoId = context.deserialize(laoIdField, String.class);
+        long createdAt = context.deserialize(createdAtField, long.class);
 
         boolean typeValidationInt = true;
         boolean typeValidationString = true;
@@ -47,13 +50,13 @@ public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
                     typeValidationString && voteContent.get("vote").getAsJsonPrimitive().isString();
         }
         if (typeValidationInt && !typeValidationString) {
-            Type token = new TypeToken<List<ElectionEncryptedVote>>() {}.getType();
+            Type token = new TypeToken<List<ElectionVote>>() {}.getType();
             List<ElectionVote> votes = context.deserialize(jsonVote, token);
-            return new CastVote(votes, electionId, laoId);
+            return new CastVote(votes, electionId, laoId, createdAt);
         } else if (!typeValidationInt && typeValidationString) {
             Type token = new TypeToken<List<ElectionEncryptedVote>>() {}.getType();
             List<ElectionEncryptedVote> votes = context.deserialize(jsonVote, token);
-            return new CastVote(votes, electionId, laoId);
+            return new CastVote(votes, electionId, laoId, createdAt);
         } else {
             throw new JsonParseException("Unknown vote type in cast vote message");
         }

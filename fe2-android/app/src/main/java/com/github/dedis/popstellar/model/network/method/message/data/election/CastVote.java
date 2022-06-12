@@ -31,9 +31,22 @@ public class CastVote<E> extends Data {
    * @param electionId election id
    * @param laoId lao id
    */
-  @JsonCreator
   public CastVote(List<E> votes, String electionId, String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
+    this.electionId = electionId;
+    this.laoId = laoId;
+    this.votes = votes;
+  }
+
+  /**
+   * Constructor used while receiving a CastVote message
+   * @param votes list of the votes to cast (null if this is an OPEN_BALLOT election)
+   * @param electionId election id
+   * @param laoId lao id
+   * @param createdAt timestamp for creation
+   */
+  public CastVote(List<E> votes, String electionId, String laoId, Long createdAt) {
+    this.createdAt = createdAt;
     this.electionId = electionId;
     this.laoId = laoId;
     this.votes = votes;
