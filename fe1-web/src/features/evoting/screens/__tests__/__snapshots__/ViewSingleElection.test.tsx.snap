@@ -4446,6 +4446,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -4934,6 +4935,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -5854,6 +5856,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -5866,6 +5869,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -6312,6 +6316,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -6324,6 +6329,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -7624,6 +7630,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -8200,6 +8207,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -9208,6 +9216,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -9220,6 +9229,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -9666,6 +9676,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -9678,6 +9689,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -10818,6 +10830,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -11306,6 +11319,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -12226,6 +12240,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -12238,6 +12253,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -12662,6 +12678,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -12674,6 +12691,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -13933,6 +13951,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -14467,6 +14486,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -15433,6 +15453,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -15445,6 +15466,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -15891,6 +15913,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -15903,6 +15926,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
