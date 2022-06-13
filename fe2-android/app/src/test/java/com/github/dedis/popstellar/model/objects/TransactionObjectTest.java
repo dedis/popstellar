@@ -5,10 +5,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -303,30 +311,34 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertEquals(0, transactionObject.getIndexTransaction(sender));
   }
-
-  // compute test
+  
   @Test
   public void computeIdTest() {
+    String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
+    String validJson = JsonTestUtils.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    Transaction transactionModel = postTransactionModel.getTransaction();
+
     TransactionObject transactionObject = new TransactionObject();
-    String type = "P2PKH";
+    transactionObject.setLockTime(transactionModel.getLockTime());
+    transactionObject.setVersion(transactionModel.getVersion());
 
-    // INPUTS
-    Signature sign = new Signature("gTd8DUAd4omIRMD_d2Qd3Gsnuj0lmfP7YijNH1apunYOTxDr_fR9xOWHw6C3w-qMhkdF4xG1tfpVCIzxnermDA==");
-    String pubKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-    ScriptInputObject scriptInputObject = new ScriptInputObject(type, new PublicKey(pubKey), sign);
-    InputObject inputObject = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, scriptInputObject);
+    List<InputObject> inpObj = new ArrayList<>();
+    List<OutputObject> outObj = new ArrayList<>();
 
-    //OUTPUTS
-    ScriptOutputObject scriptOutputObject =
-        new ScriptOutputObject(type, "SGnNfF533PBEUMYPMqBSQY83z5U=");
-    OutputObject outputObject = new OutputObject(32, scriptOutputObject);
+    for (Input i: transactionModel.getInputs()) {
+      ScriptInput scriptInput = i.getScript();
+      inpObj.add(new InputObject(i.getTxOutHash(), i.getTxOutIndex(), new ScriptInputObject(scriptInput.getType(), scriptInput.getPubkey(), scriptInput.getSig())));
+    }
 
-    transactionObject.setLockTime(0);
+    for (Output o: transactionModel.getOutputs()) {
+      ScriptOutput scriptOutput = o.getScript();
+      outObj.add(new OutputObject(o.getValue(), new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
+    }
 
-    transactionObject.setInputs(Collections.singletonList(inputObject));
-    transactionObject.setOutputs(Collections.singletonList(outputObject));
-    transactionObject.setVersion(1);
+    transactionObject.setInputs(inpObj);
+    transactionObject.setOutputs(outObj);
 
-    assertEquals("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=", transactionObject.computeId());
+    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeId());
   }
 }
