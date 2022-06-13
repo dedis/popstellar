@@ -192,6 +192,7 @@ public class RollCallHandlerTest {
         laoRepository.getLaoByChannel(LAO_CHANNEL).getRollCall(closeRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
     assertEquals(EventState.CLOSED, rollCallOpt.get().getState().getValue());
+    assertTrue(rollCallOpt.get().isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
