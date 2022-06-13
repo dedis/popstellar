@@ -17,7 +17,7 @@ import java.util.List;
 
 public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
 
-    private static String voteIndex = "vote";
+    private final static String VOTE_INDEX = "vote";
 
     @Override
     public CastVote deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -41,9 +41,9 @@ public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
         for (int i = 0; i < jsonVote.size(); i++) {
             JsonObject voteContent = jsonVote.get(i).getAsJsonObject();
             typeValidationInt =
-                    typeValidationInt && voteContent.get(voteIndex).getAsJsonPrimitive().isNumber();
+                    typeValidationInt && voteContent.get(VOTE_INDEX).getAsJsonPrimitive().isNumber();
             typeValidationString =
-                    typeValidationString && voteContent.get(voteIndex).getAsJsonPrimitive().isString();
+                    typeValidationString && voteContent.get(VOTE_INDEX).getAsJsonPrimitive().isString();
         }
         if (typeValidationInt && !typeValidationString) {
             Type token = new TypeToken<List<ElectionVote>>() {}.getType();
