@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +239,8 @@ public class TransactionObjectTest {
   // public void computeSigOutputsInputs()
 
   // test int get_miniLao_per_receiver(PublicKey receiver)
+  // send to your self still work
+  // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
   @Test
   public void getMiniLaoPerReceiverTest() {
     KeyPair senderKey = generateKeyPair();
@@ -252,6 +255,36 @@ public class TransactionObjectTest {
     List<OutputObject> listOutput = Collections.singletonList(output);
     transactionObject.setOutputs(listOutput);
     assertEquals(value, transactionObject.getMiniLaoPerReceiver(sender));
+    KeyPair senderKey1 = generateKeyPair();
+    PublicKey sender1 = senderKey1.getPublicKey();
+    assertThrows(
+        IllegalArgumentException.class, () -> transactionObject.getMiniLaoPerReceiver(sender1));
+    assertEquals(value, transactionObject.getMiniLaoPerReceiverFirst(sender));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> transactionObject.getMiniLaoPerReceiverFirst(sender1));
+  }
+
+  // test getMiniLaoPerReceiverSetTransaction
+  @Test
+  public void getMiniLaoPerReceiverSetTransactionTest() {
+    KeyPair senderKey = generateKeyPair();
+    PublicKey sender = senderKey.getPublicKey();
+    String type = "P2PKH";
+    String pubKeyHash = sender.computeHash();
+    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
+    int value = 32;
+    OutputObject output = new OutputObject(value, scriptTxOut);
+    List<OutputObject> listOutput = Collections.singletonList(output);
+    transactionObject.setOutputs(listOutput);
+    assertEquals(
+        32,
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(
+            Collections.singletonList(transactionObject), sender));
+    List<TransactionObject> list = new ArrayList<>();
+    list.add(transactionObject);
+    list.add(transactionObject);
+    assertEquals(64, TransactionObject.getMiniLaoPerReceiverSetTransaction(list, sender));
   }
 
   // test int get_index_transaction(PublicKey publicKey)
