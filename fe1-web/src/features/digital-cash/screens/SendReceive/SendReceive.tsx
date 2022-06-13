@@ -107,42 +107,43 @@ const SendReceive = () => {
     return true;
   };
 
-  const onSendTransaction = () => {
-    if (checkAmountValidity() && checkBeneficiaryValidity()) {
-      let transactionPromise: Promise<void>;
+  const sendCoinbase = () => {
+    let beneficiaries: PublicKey[] = [];
 
-      if (isCoinbase) {
-        let beneficiaries: PublicKey[] = [];
-
-        if (selectedRollCallId !== '') {
-          if (!selectedRollCall) {
-            throw new Error(
-              'Something went terribly wrong, an invalid roll call id could be selected by the user!',
-            );
-          }
-          beneficiaries = selectedRollCall.attendees || [];
-        } else {
-          beneficiaries = [new PublicKey(beneficiary)];
-        }
-
-        transactionPromise = requestCoinbaseTransaction(
-          KeyPairStore.get(),
-          beneficiaries,
-          Number.parseInt(amount, 10),
-          new Hash(laoId),
-        );
-      } else {
-        if (!rollCallToken) {
-          throw new Error('The roll call token is not defined');
-        }
-
-        transactionPromise = requestSendTransaction(
-          rollCallToken.token,
-          new PublicKey(beneficiary),
-          Number.parseInt(amount, 10),
-          rollCallToken.laoId,
+    if (selectedRollCallId !== '') {
+      if (!selectedRollCall) {
+        throw new Error(
+          'Something went terribly wrong, an invalid roll call id could be selected by the user!',
         );
       }
+      beneficiaries = selectedRollCall.attendees || [];
+    } else {
+      beneficiaries = [new PublicKey(beneficiary)];
+    }
+
+    return requestCoinbaseTransaction(
+      KeyPairStore.get(),
+      beneficiaries,
+      Number.parseInt(amount, 10),
+      new Hash(laoId),
+    );
+  };
+
+  const send = () => {
+    if (!rollCallToken) {
+      throw new Error('The roll call token is not defined');
+    }
+
+    return requestSendTransaction(
+      rollCallToken.token,
+      new PublicKey(beneficiary),
+      Number.parseInt(amount, 10),
+      rollCallToken.laoId,
+    );
+  };
+  const onSendTransaction = () => {
+    if (checkAmountValidity() && checkBeneficiaryValidity()) {
+      const transactionPromise: Promise<void> = isCoinbase ? sendCoinbase() : send();
 
       transactionPromise
         .then(() => {

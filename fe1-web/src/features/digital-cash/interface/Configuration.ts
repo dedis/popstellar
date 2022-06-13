@@ -51,10 +51,13 @@ export interface DigitalCashCompositionConfiguration {
  */
 export type DigitalCashReactContext = Pick<
   DigitalCashCompositionConfiguration,
+  /* lao */
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
+  /* roll call */
   | 'useRollCallById'
   | 'useRollCallsByLaoId'
+  /* roll call tokens */
   | 'useRollCallTokensByLaoId'
   | 'useRollCallTokenByRollCallId'
 >;
