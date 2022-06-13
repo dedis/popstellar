@@ -6,12 +6,12 @@ import { Hash } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
 import { Transaction } from '../objects/transaction';
-import { makeTransactionsSelector } from '../reducer';
+import { makeTransactionsByHashSelector, makeTransactionsSelector } from '../reducer';
 
 export namespace DigitalCashHooks {
   export const useDigitalCashContext = (): DigitalCashReactContext => {
     const featureContext = useContext(FeatureContext);
-    // assert that the evoting context exists
+    // assert that the digital cash context exists
     if (!(DIGITAL_CASH_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Events context could not be found!');
     }
@@ -63,5 +63,13 @@ export namespace DigitalCashHooks {
       () => transactionStates.map((state) => Transaction.fromState(state)),
       [transactionStates],
     );
+  };
+
+  /**
+   * Gets the mapping between transaction hashes and the transaction states in a lao
+   * @param laoId the id of the LAO
+   */
+  export const useTransactionsByHash = (laoId: Hash | string) => {
+    return useSelector(useMemo(() => makeTransactionsByHashSelector(laoId), [laoId]));
   };
 }

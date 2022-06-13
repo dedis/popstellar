@@ -503,6 +503,15 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               }
                             >
                               <View
+                                accessible={true}
+                                focusable={true}
+                                onClick={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
                                 style={
                                   Array [
                                     Object {
@@ -632,7 +641,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       }
                                       testID="listItemTitle"
                                     >
-                                      No PoP tokens
+                                      myRollCall
                                     </Text>
                                     <Text
                                       style={
@@ -645,8 +654,37 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       }
                                       testID="listItemTitle"
                                     >
-                                      You haven't received any PoP token received in this LAO yet.
+                                      A PoP token received in a roll call
                                     </Text>
+                                  </View>
+                                  <View
+                                    style={
+                                      Object {
+                                        "paddingLeft": 16,
+                                      }
+                                    }
+                                  />
+                                  <View
+                                    style={
+                                      Object {
+                                        "alignSelf": "center",
+                                        "overflow": "hidden",
+                                      }
+                                    }
+                                  >
+                                    <View>
+                                      <View
+                                        style={
+                                          Object {
+                                            "alignItems": "center",
+                                            "backgroundColor": "transparent",
+                                            "justifyContent": "center",
+                                          }
+                                        }
+                                      >
+                                        <Text />
+                                      </View>
+                                    </View>
                                   </View>
                                 </View>
                               </View>

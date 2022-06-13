@@ -8,6 +8,10 @@ export namespace DigitalCashStore {
   export function getTransactionsById(laoId: string): Record<string, TransactionState> {
     return getDigitalCashState(getStore().getState()).byLaoId[laoId]?.transactionsByHash || {};
   }
+
+  /**
+   * Gets all transactions available for this public key in this lao
+   */
   export function getTransactionsByPublicKey(laoId: string, pk: string): TransactionState[] {
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
     if (!laoState) {
@@ -17,6 +21,10 @@ export namespace DigitalCashStore {
     const transactionsById = getTransactionsById(laoId);
     return laoState.transactionsByPubHash[pkHash.valueOf()]?.map((hash) => transactionsById[hash]);
   }
+
+  /**
+   * Gets the balance of a particular public key in a lao
+   */
   export function getBalance(laoId: string, pk: string): number {
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
     if (!laoState) {

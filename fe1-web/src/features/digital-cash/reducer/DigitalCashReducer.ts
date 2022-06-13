@@ -148,6 +148,10 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
     },
   );
 
+/**
+ * Selector for all transaction states by lao id
+ * @param laoId
+ */
 export const makeTransactionsSelector = (laoId: Hash | string) =>
   createSelector(
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
@@ -160,5 +164,17 @@ export const makeTransactionsSelector = (laoId: Hash | string) =>
         return transactionHashes.map((hash) => transactionsByHash[hash]);
       }
       return [];
+    },
+  );
+
+/**
+ * Selector for the mapping between hashes and the transaction states by lao id
+ * @param laoId
+ */
+export const makeTransactionsByHashSelector = (laoId: Hash | string) =>
+  createSelector(
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (transactionsByHash: Record<string, TransactionState> | undefined) => {
+      return transactionsByHash || {};
     },
   );

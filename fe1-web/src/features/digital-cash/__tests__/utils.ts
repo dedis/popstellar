@@ -26,6 +26,9 @@ export const mockDigitalCashContextValue = (isOrganizer: boolean) => ({
     useCurrentLaoId: () => mockLaoIdHash,
     useIsLaoOrganizer: () => isOrganizer,
     useRollCallById: () => mockRollCall,
+    useRollCallsByLaoId: () => ({
+      [mockRollCall.id.valueOf()]: mockRollCall,
+    }),
     useRollCallTokensByLaoId: () => [mockRollCallToken],
     useRollCallTokenByRollCallId: () => mockRollCallToken,
   } as DigitalCashReactContext,

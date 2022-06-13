@@ -398,7 +398,7 @@ exports[`CreateElection renders correctly 1`] = `
                             style={
                               Object {
                                 "backgroundColor": "#fff",
-                                "borderRadius": 16,
+                                "borderRadius": 8,
                                 "borderWidth": 0,
                                 "color": "#000",
                                 "fontSize": 20,

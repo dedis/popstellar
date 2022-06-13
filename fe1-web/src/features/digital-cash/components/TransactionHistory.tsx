@@ -1,33 +1,21 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import ModalHeader from 'core/components/ModalHeader';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { List, ModalStyles, Typography } from 'core/styles';
+import { COINBASE_HASH } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../hooks';
-import { Transaction } from '../objects/transaction';
-import { COINBASE_HASH } from "../../../resources/const";
+import { Transaction, TransactionState } from '../objects/transaction';
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<
-    WalletParamList,
-    typeof STRINGS.navigation_wallet_digital_cash_transaction_history
-  >,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
-
-const TransactionHistory = () => {
-  const route = useRoute<NavigationProps['route']>();
-
-  const { laoId } = route.params;
-
+/**
+ * UI for the transactions history
+ */
+const TransactionHistory = ({ laoId }: IPropTypes) => {
   const [showTransactionHistory, setShowTransactionHistory] = useState<boolean>(false);
   const [showInputs, setShowInputs] = useState<boolean>(true);
   const [showOutputs, setShowOutputs] = useState<boolean>(true);
@@ -36,6 +24,10 @@ const TransactionHistory = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const transactions: Transaction[] = DigitalCashHooks.useTransactions(laoId);
+
+  // We need this mapping to show the amount for each input
+  const transactionsByHash: Record<string, TransactionState> =
+    DigitalCashHooks.useTransactionsByHash(laoId);
 
   return (
     <>
@@ -143,7 +135,13 @@ const TransactionHistory = () => {
                             STRINGS.digital_cash_coin_issuance}
                         </ListItem.Subtitle>
                       </ListItem.Content>
-                      <ListItem.Title style={Typography.base}>${1087479784}</ListItem.Title>
+                      <ListItem.Title style={Typography.base}>
+                        $
+                        {input.txOutHash.valueOf() === COINBASE_HASH
+                          ? '∞'
+                          : transactionsByHash[input.txOutHash.valueOf()].outputs[input.txOutIndex]
+                              .value}
+                      </ListItem.Title>
                     </ListItem>
                   );
                 })}
@@ -191,5 +189,13 @@ const TransactionHistory = () => {
     </>
   );
 };
+
+const propTypes = {
+  laoId: PropTypes.string.isRequired,
+};
+
+TransactionHistory.propTypes = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default TransactionHistory;

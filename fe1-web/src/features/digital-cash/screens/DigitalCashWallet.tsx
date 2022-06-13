@@ -106,7 +106,7 @@ const DigitalCashWallet = () => {
         })}
       </View>
 
-      <TransactionHistory />
+      <TransactionHistory laoId={laoId} />
     </ScreenWrapper>
   );
 };

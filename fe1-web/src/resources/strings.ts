@@ -83,7 +83,8 @@ namespace STRINGS {
 
   export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
 
-  export const navigation_wallet_digital_cash_transaction_history = 'Digital Cash Transaction History';
+  export const navigation_wallet_digital_cash_transaction_history =
+    'Digital Cash Transaction History';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
