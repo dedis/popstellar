@@ -12,8 +12,8 @@ import {
   handleGreetLaoMessage,
   selectCurrentLao,
   selectUnhandledGreetLaoWitnessSignaturesByMessageId,
+  addServer,
 } from '../reducer';
-import { addServer } from "../reducer";
 import { GreetLao } from './messages/GreetLao';
 
 /**

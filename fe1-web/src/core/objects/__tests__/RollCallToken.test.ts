@@ -1,7 +1,7 @@
 import { mockKeyPair, mockLao } from '__tests__/utils';
-import { PopToken } from "../PopToken";
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
+import { PopToken } from '../PopToken';
 import { RollCallToken } from '../RollCallToken';
 
 const mockToken = PopToken.fromState(mockKeyPair.toState());

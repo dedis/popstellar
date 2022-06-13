@@ -4,14 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import {
-  mockKeyPair,
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  mockPopToken,
-} from '__tests__/utils';
+import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp, RollCallToken, PopToken } from 'core/objects';
 import { getEventById } from 'features/events/functions';

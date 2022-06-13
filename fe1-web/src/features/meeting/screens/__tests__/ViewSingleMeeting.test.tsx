@@ -11,7 +11,7 @@ import { mockMeeting } from 'features/meeting/__tests__/utils';
 import { MeetingReactContext, MEETING_FEATURE_IDENTIFIER } from 'features/meeting/interface';
 import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 
-import { Meeting } from "../../objects";
+import { Meeting } from '../../objects';
 import ViewSingleMeeting, { ViewSingleMeetingScreenHeader } from '../ViewSingleMeeting';
 
 beforeAll(() => {

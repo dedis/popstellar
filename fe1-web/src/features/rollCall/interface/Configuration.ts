@@ -2,11 +2,10 @@ import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, PopToken } from 'core/objects';
+import { Hash, PopToken, RollCallToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
-import { RollCallToken } from "../../../core/objects";
 import { RollCall } from '../objects';
 import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
 import { RollCallFeature } from './Feature';

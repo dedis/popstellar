@@ -16,7 +16,7 @@ import STRINGS from 'resources/strings';
 import TransactionHistory from '../components/TransactionHistory';
 import { DigitalCashHooks } from '../hooks';
 import { DigitalCashFeature } from '../interface';
-import { makeBalancesSelector } from "../reducer";
+import { makeBalancesSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
