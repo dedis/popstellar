@@ -342,4 +342,17 @@ public class TransactionObjectTest {
     assertEquals(true, transactionObject.isCoinBaseTransaction());
     assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeId());
   }
+
+  // test lastLockeTransactionObject
+  @Test
+  public void lastLockedTransactionObjectTest() {
+    TransactionObject transactionObject1 = new TransactionObject();
+    TransactionObject transactionObject2 = new TransactionObject();
+    transactionObject1.setLockTime(0);
+    transactionObject2.setLockTime(1);
+    List<TransactionObject> list = new ArrayList<>();
+    list.add(transactionObject1);
+    list.add(transactionObject2);
+    assertEquals(transactionObject2, TransactionObject.lastLockedTransactionObject(list));
+  }
 }

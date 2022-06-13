@@ -14,12 +14,15 @@ import static org.junit.Assert.assertTrue;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+
+import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 
 public class LaoTest {
 
@@ -200,6 +203,13 @@ public class LaoTest {
           }
         });
     assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
+    r1.setEnd(1);
+    r2.setEnd(2);
+    try {
+      assertEquals(r2, LAO_1.lastRollCallClosed());
+    } catch (NoRollCallException e) {
+      throw new IllegalArgumentException();
+    }
   }
 
   @Test
