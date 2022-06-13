@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from '../interface/Configuration';
+import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from "../interface";
 
 export namespace WitnessHooks {
   /* Hooks passed by dependencies */

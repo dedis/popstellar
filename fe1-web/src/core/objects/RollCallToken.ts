@@ -1,8 +1,9 @@
-import { Hash, PopToken } from 'core/objects/index';
-
 /**
  * A Roll Call Token object, defined by a Pop token, its lao id hash and its Roll Call id hash
  */
+import { Hash } from './Hash';
+import { PopToken } from './PopToken';
+
 export class RollCallToken {
   public readonly token: PopToken;
 

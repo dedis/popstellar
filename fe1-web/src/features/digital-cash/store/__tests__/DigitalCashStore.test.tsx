@@ -8,7 +8,7 @@ import {
   mockLaoId,
   mockTransactionValue,
 } from '__tests__/utils';
-import { getDigitalCashState } from 'features/wallet/reducer';
+import { getDigitalCashState } from 'features/digital-cash/reducer';
 
 import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from '../DigitalCashStore';
@@ -32,7 +32,7 @@ const filledState = {
   },
 };
 
-jest.mock('features/wallet/reducer/DigitalCashReducer');
+jest.mock('features/digital-cash/reducer/DigitalCashReducer');
 
 beforeAll(() => {
   (getDigitalCashState as jest.Mock).mockReturnValue(filledState);

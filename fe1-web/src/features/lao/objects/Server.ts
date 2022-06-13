@@ -1,7 +1,7 @@
 import { OmitMethods } from 'core/types';
 
-import { Hash } from '../../../core/objects/Hash';
-import { PublicKey } from '../../../core/objects/PublicKey';
+import { Hash } from "../../../core/objects";
+import { PublicKey } from "../../../core/objects";
 
 export type ServerAddress = string;
 

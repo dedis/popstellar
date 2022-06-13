@@ -9,12 +9,12 @@ import {
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
-import { DigitalCashStore } from 'features/wallet/store';
+import { Transaction } from 'features/digital-cash/objects/transaction';
+import { DigitalCashStore } from 'features/digital-cash/store';
 
-import { Transaction } from '../../objects/transaction';
 import { handleTransactionPost } from '../DigitalCashHandler';
 
-jest.mock('features/wallet/store/DigitalCashStore');
+jest.mock('features/digital-cash/store/DigitalCashStore');
 
 const mockCoinbaseTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
 const mockCoinbasePost = new PostTransaction({

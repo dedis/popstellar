@@ -25,7 +25,7 @@ import STRINGS from 'resources/strings';
 import { DigitalCashHooks } from '../../hooks';
 import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
-import { makeBalanceSelector } from '../../reducer/DigitalCashReducer';
+import { makeBalanceSelector } from '../../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
@@ -62,10 +62,10 @@ const SendReceive = () => {
   }
 
   const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
-  const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+  const rollCallTokenFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
   useEffect(() => {
-    rollCallFetcher.then(setRollCallToken);
-  }, [rollCallFetcher]);
+    rollCallTokenFetcher.then(setRollCallToken);
+  }, [rollCallTokenFetcher]);
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
@@ -108,7 +108,7 @@ const SendReceive = () => {
     }
 
     const intAmount = Number.parseInt(amount, 10);
-    if (intAmount > balance) {
+    if (!coinbaseState[0] && intAmount > balance) {
       setError(STRINGS.digital_cash_wallet_amount_too_high);
       return;
     }
@@ -118,9 +118,7 @@ const SendReceive = () => {
         throw new Error('The selected roll call has no attendees');
       }
 
-      const beneficiaries = coinbaseState[1]
-        ? rollCall.attendees.map((attendee) => new PublicKey(attendee))
-        : [new PublicKey(beneficiary)];
+      const beneficiaries = coinbaseState[1] ? rollCall.attendees : [new PublicKey(beneficiary)];
 
       requestCoinbaseTransaction(
         KeyPairStore.get(),
@@ -129,10 +127,13 @@ const SendReceive = () => {
         new Hash(laoId),
       ).then(
         () => {
+          navigation.goBack();
           console.log('Coinbase transaction sent');
         },
         (reason) => {
-          console.log('Coinbase transaction failed : ');
+          const err = `Coinbase transaction failed : ${reason}`;
+          setError(err);
+          console.log(err);
         },
       );
     } else {
@@ -143,10 +144,13 @@ const SendReceive = () => {
         rollCallToken.laoId,
       ).then(
         () => {
-          console.log('Transaction sent');
+          navigation.goBack();
+          console.log('Coinbase transaction sent');
         },
         (reason) => {
-          console.log('Transaction failed');
+          const err = `Coinbase transaction failed : ${reason}`;
+          setError(err);
+          console.log(err);
         },
       );
     }

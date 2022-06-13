@@ -93,6 +93,7 @@ export function configureFeatures() {
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
+    useRollCallById: rollCallConfiguration.hooks.useRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
     useRollCallTokenByRollCallId: rollCallConfiguration.hooks.useRollCallTokenByRollCallId,
@@ -177,6 +178,7 @@ export function configureFeatures() {
   addReducers({
     ...notificationConfiguration.reducers,
     ...laoConfiguration.reducers,
+    ...digitalCashComposition.reducers,
     ...socialConfiguration.reducers,
     ...eventConfiguration.reducers,
     ...walletComposition.reducers,

@@ -10,7 +10,7 @@ import {
   RegisteredVote,
   Vote,
   ElectionVersion,
-} from '../objects/Election';
+} from "../objects";
 import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

@@ -1,6 +1,6 @@
 import { NavigationScreen } from 'core/navigation/typing/Screen';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Hash, PopToken } from 'core/objects';
+import { Hash, PopToken, PublicKey } from 'core/objects';
 
 export namespace DigitalCashFeature {
   export interface Lao {
@@ -14,7 +14,7 @@ export namespace DigitalCashFeature {
   export interface RollCall {
     id: Hash;
     name: string;
-    attendees?: string[];
+    attendees?: PublicKey[];
 
     containsToken(token: PopToken | undefined): boolean;
   }

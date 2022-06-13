@@ -2,27 +2,16 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import {
-  DigitalCashReactContext,
-  DIGITAL_CASH_FEATURE_IDENTIFIER,
-} from 'features/digital-cash/interface';
-import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
+import { mockContextValue, mockRollCall } from '../../__tests__/utils';
 import PoPTokenScanner from '../PoPTokenScanner';
-
-const contextValue = (isOrganizer: boolean) => ({
-  [DIGITAL_CASH_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
-    useIsLaoOrganizer: () => isOrganizer,
-  } as DigitalCashReactContext,
-});
 
 describe('DigitalCashWallet', () => {
   it('renders correctly for organizers', () => {
     const { toJSON } = render(
-      <FeatureContext.Provider value={contextValue(true)}>
+      <FeatureContext.Provider value={mockContextValue(true)}>
         <MockNavigator
           component={PoPTokenScanner}
           params={{ laoId: mockLaoId, rollCallId: mockRollCall.id.valueOf(), beneficiaryIndex: 0 }}
@@ -34,7 +23,7 @@ describe('DigitalCashWallet', () => {
 
   it('renders correctly for non-organizers', () => {
     const { toJSON } = render(
-      <FeatureContext.Provider value={contextValue(false)}>
+      <FeatureContext.Provider value={mockContextValue(false)}>
         <MockNavigator
           component={PoPTokenScanner}
           params={{ laoId: mockLaoId, rollCallId: mockRollCall.id.valueOf(), beneficiaryIndex: 0 }}

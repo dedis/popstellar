@@ -4,11 +4,10 @@ import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
-import { Hash } from 'core/objects';
+import { Hash, RollCallToken } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { RollCallToken } from '../../../core/objects/RollCallToken';
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import RollCallWalletItem from './RollCallWalletItem';

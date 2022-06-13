@@ -2,8 +2,8 @@ import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/me
 import { Hash, PublicKey } from 'core/objects';
 import { dispatch } from 'core/redux';
 
-import { addTransaction } from '../../wallet/reducer';
 import { Transaction } from '../objects/transaction';
+import { addTransaction } from '../reducer';
 import { handleTransactionPost } from './DigitalCashHandler';
 import { PostTransaction } from './messages';
 

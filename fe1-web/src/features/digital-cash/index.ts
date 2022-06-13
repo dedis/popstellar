@@ -6,6 +6,7 @@ import {
   DigitalCashCompositionInterface,
 } from './interface';
 import { configureNetwork } from './network';
+import { digitalCashReducer } from './reducer';
 import { DigitalCashWalletScreen } from './screens/DigitalCashWallet';
 import { PoPTokenScannerScreen } from './screens/PoPTokenScanner';
 import { SendReceiveScreen } from './screens/SendReceive';
@@ -27,6 +28,9 @@ export function compose(
   configureNetwork(configuration.messageRegistry, configuration.getLaoOrganizer);
   return {
     identifier: DIGITAL_CASH_FEATURE_IDENTIFIER,
+    reducers: {
+      ...digitalCashReducer,
+    },
     context: {
       useRollCallById: configuration.useRollCallById,
       useCurrentLaoId: configuration.useCurrentLaoId,

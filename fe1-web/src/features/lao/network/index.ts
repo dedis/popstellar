@@ -2,7 +2,7 @@ import { catchup, getNetworkManager, subscribeToChannel } from 'core/network';
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 
-import { getLaoChannel } from '../functions/lao';
+import { getLaoChannel } from "../functions";
 import { selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {

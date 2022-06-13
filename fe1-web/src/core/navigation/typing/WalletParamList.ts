@@ -19,7 +19,6 @@ export type WalletParamList = {
 
     /* parameters used to return from the scanner */
     scannedPoPToken?: string;
-    scannedPoPTokenBeneficiaryIndex?: number;
   };
 
   [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {

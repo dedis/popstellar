@@ -9,7 +9,7 @@ import {
 } from './interface';
 import { WalletNavigationScreen } from './navigation/WalletNavigation';
 import { getCurrentPopTokenFromStore } from './objects';
-import { digitalCashReducer, walletReducer } from './reducer';
+import { walletReducer } from './reducer';
 import { WalletCreateSeedScreen } from './screens/WalletCreateSeed';
 import { WalletSetSeedScreen } from './screens/WalletSetSeed';
 
@@ -35,7 +35,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     laoScreens: [WalletNavigationScreen],
     reducers: {
       ...walletReducer,
-      ...digitalCashReducer,
     },
     context: {
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,

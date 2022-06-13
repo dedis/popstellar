@@ -4,9 +4,16 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoId, mockLaoIdHash, mockLaoName, mockPopToken } from '__tests__/utils';
+import {
+  mockKeyPair,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockLaoName,
+  mockPopToken,
+} from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EventTags, Hash, Timestamp } from 'core/objects';
+import { EventTags, Hash, Timestamp, RollCallToken, PopToken } from 'core/objects';
 import { getEventById } from 'features/events/functions';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCallHooks } from 'features/rollCall/hooks';
@@ -17,13 +24,11 @@ import { hasSeed } from 'features/wallet/functions';
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
 import { walletReducer } from 'features/wallet/reducer';
 
-import { RollCallToken } from '../../../../core/objects/RollCallToken';
-import { generateToken, recoverWalletRollCallTokens } from '../../objects';
+import { generateToken } from '../../objects';
 import { WalletHome } from '../index';
 
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
-jest.mock('features/wallet/objects/Wallet');
 jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 
 // disable animations
@@ -65,12 +70,19 @@ const mockRollCallState = {
   attendees: mockRCAttendees,
 };
 const mockRollCall = RollCall.fromState(mockRollCallState);
+const mockRollCallToken: RollCallToken = {
+  laoId: mockLaoIdHash,
+  rollCallId: mockRollCall.id,
+  rollCallName: mockRollCall.name,
+  token: PopToken.fromState(mockKeyPair.toState()),
+};
 
-const contextValue = {
+const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
+    useRollCallTokensByLaoId: () => new Promise<RollCallToken[]>(() => rollCallTokens),
     useLaoIds: () => [mockLaoIdHash],
     useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
     walletItemGenerators: [],
@@ -82,7 +94,7 @@ const contextValue = {
     hasSeed,
     makeEventByTypeSelector,
   } as RollCallReactContext,
-};
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -94,11 +106,9 @@ describe('Wallet home', () => {
       combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
-    (recoverWalletRollCallTokens as jest.Mock).mockImplementation(() => Promise.resolve([]));
-
     const component = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
+        <FeatureContext.Provider value={contextValue([])}>
           <MockNavigator component={WalletHome} />
         </FeatureContext.Provider>
       </Provider>,
@@ -111,13 +121,6 @@ describe('Wallet home', () => {
       combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
     );
 
-    const mockRCToken = new RollCallToken({
-      token: mockPopToken,
-      laoId: mockLao.id,
-      rollCallId: mockRollCall.id,
-      rollCallName: mockRollCall.name,
-    });
-
     // make the selector return data
     mockStore.dispatch(
       addEvent(mockLaoId, {
@@ -129,13 +132,9 @@ describe('Wallet home', () => {
     );
     mockStore.dispatch(addRollCall(mockRollCallState));
 
-    (recoverWalletRollCallTokens as jest.Mock).mockImplementation(() =>
-      Promise.resolve([mockRCToken]),
-    );
-
     const component = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
+        <FeatureContext.Provider value={contextValue([mockRollCallToken])}>
           <MockNavigator component={WalletHome} />
         </FeatureContext.Provider>
       </Provider>,

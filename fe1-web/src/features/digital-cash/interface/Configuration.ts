@@ -1,9 +1,12 @@
+import { Reducer } from 'redux';
+
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import { RollCallToken } from 'core/objects/RollCallToken';
 
+import { DIGITAL_CASH_REDUCER_PATH, DigitalCashLaoReducerState } from '../reducer';
 import { DigitalCashFeature } from './Feature';
 
 export const DIGITAL_CASH_FEATURE_IDENTIFIER = 'digital-cash';
@@ -68,4 +71,7 @@ export interface DigitalCashInterface extends FeatureInterface {
 
 export interface DigitalCashCompositionInterface extends FeatureInterface {
   context: DigitalCashReactContext;
+  reducers: {
+    [DIGITAL_CASH_REDUCER_PATH]: Reducer<DigitalCashLaoReducerState>;
+  };
 }

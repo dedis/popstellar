@@ -1,5 +1,5 @@
 import { mockKeyPair, mockLao } from '__tests__/utils';
-import { PopToken } from 'core/objects/index';
+import { PopToken } from "../PopToken";
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
 import { RollCallToken } from '../RollCallToken';

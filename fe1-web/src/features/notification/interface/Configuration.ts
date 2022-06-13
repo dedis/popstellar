@@ -5,7 +5,7 @@ import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
-import { NotificationState } from '../reducer/NotificationReducer';
+import { NotificationState } from "../reducer";
 import { NotificationFeature } from './Feature';
 
 export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';

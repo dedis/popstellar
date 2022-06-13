@@ -5,14 +5,9 @@ import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import { RollCallToken } from 'core/objects/RollCallToken';
 
-import { RollCallToken } from '../../../core/objects/RollCallToken';
-import {
-  WalletReducerState,
-  WALLET_REDUCER_PATH,
-  DIGITAL_CASH_REDUCER_PATH,
-  DigitalCashLaoReducerState,
-} from '../reducer';
+import { WalletReducerState, WALLET_REDUCER_PATH } from '../reducer';
 import { WalletFeature } from './Feature';
 
 export const WALLET_FEATURE_IDENTIFIER = 'wallet';
@@ -126,6 +121,5 @@ export interface WalletCompositionInterface extends FeatureInterface {
 
   reducers: {
     [WALLET_REDUCER_PATH]: Reducer<WalletReducerState>;
-    [DIGITAL_CASH_REDUCER_PATH]: Reducer<DigitalCashLaoReducerState>;
   };
 }

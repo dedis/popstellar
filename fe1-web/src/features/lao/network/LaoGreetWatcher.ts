@@ -13,7 +13,7 @@ import {
   selectCurrentLao,
   selectUnhandledGreetLaoWitnessSignaturesByMessageId,
 } from '../reducer';
-import { addServer } from '../reducer/ServerReducer';
+import { addServer } from "../reducer";
 import { GreetLao } from './messages/GreetLao';
 
 /**
