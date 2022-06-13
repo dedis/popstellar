@@ -23,7 +23,7 @@ import me.relex.circleindicator.CircleIndicator3;
 
 @AndroidEntryPoint
 public class ElectionResultFragment extends Fragment {
-  public static final String TAG = ElectionResultFragment.class.getSimpleName();
+  private static final String TAG = ElectionResultFragment.class.getSimpleName();
 
   public ElectionResultFragment() {
     // Required empty public constructor
