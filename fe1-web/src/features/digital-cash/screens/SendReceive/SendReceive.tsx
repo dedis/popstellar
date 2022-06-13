@@ -85,7 +85,7 @@ const SendReceive = () => {
   }, [scannedPoPToken]);
 
   const onSendTransaction = () => {
-    if (beneficiary === '') {
+    if (!isCoinbase && beneficiary === '') {
       setError(STRINGS.digital_cash_wallet_add_beneficiary);
       return;
     }
@@ -143,7 +143,7 @@ const SendReceive = () => {
         console.log('Coinbase transaction sent');
       })
       .catch((reason) => {
-        const errorMessage = 'toString' in reason ? reason.toString() : 'Unkown error';
+        const errorMessage = 'toString' in reason ? reason.toString() : 'Unknown error';
 
         const err = `Coinbase transaction failed: ${errorMessage}`;
         setError(err);
@@ -194,6 +194,7 @@ const SendReceive = () => {
               navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
                 laoId: laoId.valueOf(),
                 rollCallId: rollCallId,
+                isCoinbase: isCoinbase,
               });
             }}
             placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
