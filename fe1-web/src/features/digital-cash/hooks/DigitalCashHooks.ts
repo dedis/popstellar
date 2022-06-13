@@ -1,9 +1,12 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
+import { Transaction } from '../objects/transaction';
+import { makeTransactionsSelector } from '../reducer';
 
 export namespace DigitalCashHooks {
   export const useDigitalCashContext = (): DigitalCashReactContext => {
@@ -33,7 +36,7 @@ export namespace DigitalCashHooks {
     useDigitalCashContext().useRollCallTokensByLaoId(laoId);
 
   /**
-   * Gets the roll call tokens for a given lao id and a given roll call id
+   * Gets the roll call token for a given lao id and a given roll call id
    */
   export const useRollCallTokenByRollCallId = (laoId: string, rollCallId: string) =>
     useDigitalCashContext().useRollCallTokenByRollCallId(laoId, rollCallId);
@@ -49,4 +52,16 @@ export namespace DigitalCashHooks {
    */
   export const useRollCallsByLaoId = (laoId: string) =>
     useDigitalCashContext().useRollCallsByLaoId(laoId);
+
+  /**
+   * Gets the list of all transactions that happened in this LAO
+   * @param laoId the id of the LAO
+   */
+  export const useTransactions = (laoId: Hash | string) => {
+    const transactionStates = useSelector(useMemo(() => makeTransactionsSelector(laoId), [laoId]));
+    return useMemo(
+      () => transactionStates.map((state) => Transaction.fromState(state)),
+      [transactionStates],
+    );
+  };
 }

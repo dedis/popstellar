@@ -23,6 +23,10 @@ export type WalletParamList = {
     scannedPoPToken?: string;
   };
 
+  [STRINGS.navigation_wallet_digital_cash_transaction_history]: {
+    laoId: string;
+  };
+
   [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {
     laoId: string;
     rollCallId?: string;

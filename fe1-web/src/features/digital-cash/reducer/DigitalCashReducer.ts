@@ -123,6 +123,10 @@ export default {
 export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
 
+/**
+ * Selector for mapping between public key hashes and balance
+ * @param laoId the lao in which to search for the balances mapping
+ */
 export const makeBalancesSelector = (laoId: Hash | string) =>
   createSelector(
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
@@ -130,6 +134,7 @@ export const makeBalancesSelector = (laoId: Hash | string) =>
       return laoState?.balances || {};
     },
   );
+
 /**
  * Balance selector
  * @param laoId the lao in which to search for the balance
@@ -140,5 +145,20 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
     (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
       return laoState?.balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
+    },
+  );
+
+export const makeTransactionsSelector = (laoId: Hash | string) =>
+  createSelector(
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
+    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (
+      transactionHashes: string[] | undefined,
+      transactionsByHash: Record<string, TransactionState> | undefined,
+    ) => {
+      if (transactionHashes && transactionsByHash) {
+        return transactionHashes.map((hash) => transactionsByHash[hash]);
+      }
+      return [];
     },
   );
