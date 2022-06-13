@@ -490,7 +490,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 }
                               >
                                 <Text
-                                  selectable={true}
                                   style={
                                     Object {
                                       "color": "#fff",
@@ -506,7 +505,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   one
                                 </Text>
                                 <Text
-                                  selectable={true}
                                   style={
                                     Object {
                                       "color": "#fff",
@@ -522,7 +520,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   two
                                 </Text>
                                 <Text
-                                  selectable={true}
                                   style={
                                     Object {
                                       "color": "#fff",
