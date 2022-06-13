@@ -172,7 +172,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
             ))
         }
       case error @ Right(_) => error
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcRequest.id))
+      case null             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcRequest.id))
     }
   }
 

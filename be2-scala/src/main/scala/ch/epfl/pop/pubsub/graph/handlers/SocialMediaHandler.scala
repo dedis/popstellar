@@ -56,7 +56,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
       case error @ Right(_) => error
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+      case null             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 
@@ -79,7 +79,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
       case error @ Right(_) => error
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+      case null             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 

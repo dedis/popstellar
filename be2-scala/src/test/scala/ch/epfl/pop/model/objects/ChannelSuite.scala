@@ -64,7 +64,6 @@ class ChannelSuite extends FunSuite with Matchers {
     def channel = Channel("/root/full/pop")
 
     val expected = Hash(Base64Data("pop"))
-    an[IllegalArgumentException] shouldNot be(thrownBy(channel))
     channel.extractChildChannel should equal(expected)
   }
   test("Encoded LaoId extraction channel test") {

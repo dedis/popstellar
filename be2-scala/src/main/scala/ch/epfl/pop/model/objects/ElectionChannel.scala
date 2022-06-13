@@ -21,7 +21,7 @@ object ElectionChannel {
       * @return
       *   Future of a list of tuple containing the message and the data extracted
       */
-    def extractMessages[T: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
+    def extractMessages[T: reflect.ClassTag](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
         DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
         result <- Future.traverse(messages.flatMap(message =>

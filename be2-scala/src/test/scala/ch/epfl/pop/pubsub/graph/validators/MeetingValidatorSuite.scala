@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
@@ -46,12 +46,12 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     deleteRecursively(directory)
   }
 
-  private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
+  private final val SENDER: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
 
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataRight: LaoData = LaoData(SENDER, List(SENDER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)

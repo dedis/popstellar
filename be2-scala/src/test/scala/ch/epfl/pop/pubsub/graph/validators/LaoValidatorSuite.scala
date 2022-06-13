@@ -5,7 +5,7 @@ import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Base64Data, ChannelData, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}

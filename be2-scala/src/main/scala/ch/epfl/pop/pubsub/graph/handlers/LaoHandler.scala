@@ -53,7 +53,7 @@ case object LaoHandler extends MessageHandler {
           _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
           // after creating the lao, we need to send a lao#greet message to the frontend
           greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
-          broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
+          broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString)
           _ <- dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
         } yield ()
 
