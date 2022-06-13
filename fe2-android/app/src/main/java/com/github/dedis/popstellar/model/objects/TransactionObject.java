@@ -171,15 +171,6 @@ public class TransactionObject {
   /**
    * Function that given a key pair change the sig of an input considering all the outputs
    *
-   * @return sig other all the outputs and inputs with the public key
-   */
-  public String computeSigOutputsInputs() throws GeneralSecurityException {
-    return computeSigOutputsInputs();
-  }
-
-  /**
-   * Function that given a key pair change the sig of an input considering all the outputs
-   *
    * @param keyPair of one input sender
    * @return sig other all the outputs and inputs with the public key
    */
