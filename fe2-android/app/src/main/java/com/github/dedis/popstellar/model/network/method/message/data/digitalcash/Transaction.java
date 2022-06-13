@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
@@ -102,28 +101,27 @@ public final class Transaction {
   /**
    * Function that given a key pair change the sig of an input considering all the outputs
    *
-   * @param keyPair of one input sender
    * @return sig other all the outputs and inputs with the public key
    */
   public static String computeSigOutputsPairTxOutHashAndIndex(
-      KeyPair keyPair, List<Output> outputs, Map<String, Integer> inputs_pairs) {
+      List<Output> outputs, Map<String, Integer> inputsPairs) {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
     // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
     // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
     List<String> sig = new ArrayList<>();
-    Iterator<Map.Entry<String, Integer>> ite_input = inputs_pairs.entrySet().iterator();
-    Iterator<Output> ite_output = outputs.iterator();
+    Iterator<Map.Entry<String, Integer>> iteInput = inputsPairs.entrySet().iterator();
+    Iterator<Output> iteOutput = outputs.iterator();
 
-    while (ite_input.hasNext()) {
-      Map.Entry<String, Integer> current = ite_input.next();
+    while (iteInput.hasNext()) {
+      Map.Entry<String, Integer> current = iteInput.next();
       sig.add(current.getKey());
       sig.add(String.valueOf(current.getValue()));
     }
 
-    while (ite_output.hasNext()) {
-      Output current = ite_output.next();
+    while (iteOutput.hasNext()) {
+      Output current = iteOutput.next();
       sig.add(String.valueOf(current.getValue()));
       sig.add(current.getScript().getType());
       sig.add(current.getScript().getPubkeyHash());
