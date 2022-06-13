@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
-import { Hash, RollCallToken } from 'core/objects';
+import { Hash } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -13,11 +13,9 @@ import { WalletFeature } from '../interface';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
-  const [tokens, setTokens] = useState<RollCallToken[]>([]);
+  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId.valueOf());
 
-  WalletHooks.useRollCallTokensByLaoId(laoId.valueOf()).then((value) => {
-    setTokens(value);
-  });
+  console.log(tokens);
 
   if (tokens.length > 0) {
     return (

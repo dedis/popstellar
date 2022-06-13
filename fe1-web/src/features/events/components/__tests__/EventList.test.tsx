@@ -78,6 +78,7 @@ const getContextValue = (isOrganizer: boolean) => ({
     useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
     walletItemGenerators: [],
     walletNavigationScreens: [],
+    useRollCallTokensByLaoId: () => [],
   } as WalletReactContext,
 });
 

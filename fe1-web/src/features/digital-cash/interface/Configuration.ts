@@ -42,11 +42,8 @@ export interface DigitalCashCompositionConfiguration {
     [rollCallId: string]: DigitalCashFeature.RollCall;
   };
 
-  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
-  useRollCallTokenByRollCallId: (
-    laoId: string,
-    rollCallId: string,
-  ) => Promise<RollCallToken | undefined>;
+  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
+  useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
 }
 
 /**

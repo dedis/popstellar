@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,6 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash } from 'core/objects';
-import { RollCallToken } from 'core/objects/RollCallToken';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -26,17 +25,12 @@ type NavigationProps = CompositeScreenProps<
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const [rollCallTokens, setRollCallTokens] = useState<RollCallToken[]>([]);
 
   const { laoId } = route.params;
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
 
-  const rollCallTokensFetcher = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
-
-  useEffect(() => {
-    rollCallTokensFetcher.then(setRollCallTokens);
-  }, [rollCallTokensFetcher]);
+  const rollCallTokens = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
 
   const balance = rollCallTokens.reduce(
     (sum, account) => sum + (balances[Hash.fromPublicKey(account.token.publicKey).valueOf()] || 0),

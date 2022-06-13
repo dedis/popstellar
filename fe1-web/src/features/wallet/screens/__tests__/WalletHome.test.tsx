@@ -75,7 +75,7 @@ const contextValue = (rollCallTokens: RollCallToken[]) => ({
     useCurrentLaoId: () => mockLaoIdHash,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
-    useRollCallTokensByLaoId: () => new Promise<RollCallToken[]>(() => rollCallTokens),
+    useRollCallTokensByLaoId: () => rollCallTokens,
     useLaoIds: () => [mockLaoIdHash],
     useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
     walletItemGenerators: [],

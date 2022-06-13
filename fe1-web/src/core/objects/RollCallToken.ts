@@ -1,6 +1,8 @@
 /**
  * A Roll Call Token object, defined by a Pop token, its lao id hash and its Roll Call id hash
  */
+import { OmitMethods } from 'core/types';
+
 import { Hash } from './Hash';
 import { PopToken } from './PopToken';
 
@@ -13,7 +15,7 @@ export class RollCallToken {
 
   public readonly rollCallName: string;
 
-  constructor(obj: Partial<RollCallToken>) {
+  constructor(obj: OmitMethods<RollCallToken>) {
     if (obj === undefined || obj === null) {
       throw new Error(
         'Error encountered while creating a RollCallToken object: undefined/null parameters',

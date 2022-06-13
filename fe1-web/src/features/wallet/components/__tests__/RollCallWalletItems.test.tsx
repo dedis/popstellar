@@ -17,7 +17,7 @@ const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
     useLaoIds: () => [],
-    useRollCallTokensByLaoId: () => new Promise(() => []),
+    useRollCallTokensByLaoId: () => [],
     useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
     useRollCallsByLaoId: () => useRollCallsByLaoId,
     walletItemGenerators: [],

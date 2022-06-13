@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -80,10 +80,16 @@ export namespace RollCallHooks {
     return useSelector(rollCallByIdSelector);
   };
 
-  export const useRollCallTokensByLaoId = (laoId: string): Promise<RollCallToken[]> => {
+  export const useRollCallTokensByLaoId = (laoId: string): RollCallToken[] => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
-    const rollCallTokensSelector = useMemo(async () => {
+
+    const [rollCallTokens, setRollCallTokens] = useState<RollCallToken[]>([]);
+
+    useEffect(() => {
+      // allows the promise to be cancelled in cases of re-rendering the component
+      let wasCanceled = false;
+
       const laoIdHash = new Hash(laoId);
       const tokens = Object.values(rollCalls).map((rc) =>
         generate(laoIdHash, rc.id).then((popToken) => {
@@ -99,30 +105,57 @@ export namespace RollCallHooks {
           return undefined;
         }),
       );
-      return (await Promise.all(tokens)).filter(isDefined);
+
+      Promise.all(tokens).then((newRollCallTokens) => {
+        if (!wasCanceled) {
+          setRollCallTokens(newRollCallTokens.filter(isDefined));
+        }
+      });
+
+      return () => {
+        wasCanceled = true;
+      };
     }, [laoId, rollCalls, generate]);
-    return useSelector(() => rollCallTokensSelector);
+
+    return rollCallTokens;
   };
 
   export const useRollCallTokenByRollCallId = (
     laoId: string,
     rollCallId: string,
-  ): Promise<RollCallToken | undefined> => {
+  ): RollCallToken | undefined => {
     const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
     const rollCall = useSelector(rollCallSelector);
     const generate = useRollCallContext().generateToken;
-    const tokenSelector = useMemo(async () => {
+
+    const [rollCallToken, setRollCallToken] = useState<RollCallToken | undefined>(undefined);
+
+    useEffect(() => {
+      // allows the promise to be cancelled in cases of re-rendering the component
+      let wasCanceled = false;
+
       if (!rollCall) return undefined;
-      const token = await generate(new Hash(laoId), rollCall.id).then(
-        (popToken): RollCallToken => ({
-          rollCallId: rollCall.id,
-          rollCallName: rollCall.name,
-          token: popToken,
-          laoId: new Hash(laoId),
-        }),
-      );
-      return token;
-    }, [generate, rollCall, laoId]);
-    return useSelector(() => tokenSelector);
+
+      generate(new Hash(laoId), rollCall.id)
+        .then(
+          (popToken): RollCallToken => ({
+            rollCallId: rollCall.id,
+            rollCallName: rollCall.name,
+            token: popToken,
+            laoId: new Hash(laoId),
+          }),
+        )
+        .then((newRollCallToken) => {
+          if (!wasCanceled) {
+            setRollCallToken(newRollCallToken);
+          }
+        });
+
+      return () => {
+        wasCanceled = true;
+      };
+    }, [laoId, rollCall, generate]);
+
+    return rollCallToken;
   };
 }

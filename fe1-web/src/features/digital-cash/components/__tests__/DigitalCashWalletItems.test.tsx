@@ -5,7 +5,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { mockContextValue } from '../../__tests__/utils';
+import { mockDigitalCashContextValue } from '../../__tests__/utils';
 import DigitalCashWalletItems from '../DigitalCashWalletItems';
 
 describe('DigitalCashWalletItems', () => {
@@ -13,7 +13,7 @@ describe('DigitalCashWalletItems', () => {
     const Screen = () => <DigitalCashWalletItems laoId={mockLaoIdHash} />;
 
     const { toJSON } = render(
-      <FeatureContext.Provider value={mockContextValue(true)}>
+      <FeatureContext.Provider value={mockDigitalCashContextValue(true)}>
         <MockNavigator component={Screen} />
       </FeatureContext.Provider>,
     );

@@ -35,6 +35,9 @@ export namespace WalletHooks {
   export const useRollCallsByLaoId = (laoId: string) =>
     useWalletContext().useRollCallsByLaoId(laoId);
 
+  /**
+   * Gets the function for obtain roll call tokens by lao id
+   */
   export const useRollCallTokensByLaoId = (laoId: string) =>
     useWalletContext().useRollCallTokensByLaoId(laoId);
 

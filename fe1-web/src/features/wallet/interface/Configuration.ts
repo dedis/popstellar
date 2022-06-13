@@ -80,7 +80,7 @@ export interface WalletCompositionConfiguration {
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
-  useRollCallTokensByLaoId: (laoId: string) => Promise<RollCallToken[]>;
+  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
 
   /**
    * A list of item generators that given a laoId return a list of items

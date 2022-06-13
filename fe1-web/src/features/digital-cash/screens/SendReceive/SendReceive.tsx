@@ -17,7 +17,6 @@ import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash, PublicKey } from 'core/objects';
-import { RollCallToken } from 'core/objects/RollCallToken';
 import { getNavigator } from 'core/platform/Navigator';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -61,11 +60,7 @@ const SendReceive = () => {
     throw new Error('The selected roll call is not defined');
   }
 
-  const [rollCallToken, setRollCallToken] = useState<RollCallToken>();
-  const rollCallTokenFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
-  useEffect(() => {
-    rollCallTokenFetcher.then(setRollCallToken);
-  }, [rollCallTokenFetcher]);
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
@@ -76,14 +71,14 @@ const SendReceive = () => {
   // isCoinbase and issueToAllRollCallParticipants
   const [coinbaseState, setCoinbaseState] = useState<[boolean, boolean]>([false, false]);
 
-  const balance = useSelector(
-    useMemo(() => {
-      if (rollCallToken) {
-        return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
-      }
-      return () => 0;
-    }, [rollCallToken, laoId]),
-  );
+  const balanceSelector = useMemo(() => {
+    if (rollCallToken) {
+      return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
+    }
+    return () => 0;
+  }, [rollCallToken, laoId]);
+
+  const balance = useSelector(balanceSelector);
 
   useEffect(() => {
     if (scannedPoPToken) {
@@ -113,6 +108,8 @@ const SendReceive = () => {
       return;
     }
 
+    let transactionPromise: Promise<void>;
+
     if (coinbaseState[0]) {
       if (!rollCall.attendees) {
         throw new Error('The selected roll call has no attendees');
@@ -120,40 +117,33 @@ const SendReceive = () => {
 
       const beneficiaries = coinbaseState[1] ? rollCall.attendees : [new PublicKey(beneficiary)];
 
-      requestCoinbaseTransaction(
+      transactionPromise = requestCoinbaseTransaction(
         KeyPairStore.get(),
         beneficiaries,
         Number.parseInt(amount, 10),
         new Hash(laoId),
-      ).then(
-        () => {
-          navigation.goBack();
-          console.log('Coinbase transaction sent');
-        },
-        (reason) => {
-          const err = `Coinbase transaction failed : ${reason}`;
-          setError(err);
-          console.log(err);
-        },
       );
     } else {
-      requestSendTransaction(
+      transactionPromise = requestSendTransaction(
         rollCallToken.token,
         new PublicKey(beneficiary),
         Number.parseInt(amount, 10),
         rollCallToken.laoId,
-      ).then(
-        () => {
-          navigation.goBack();
-          console.log('Coinbase transaction sent');
-        },
-        (reason) => {
-          const err = `Coinbase transaction failed : ${reason}`;
-          setError(err);
-          console.log(err);
-        },
       );
     }
+
+    transactionPromise
+      .then(() => {
+        navigation.goBack();
+        console.log('Coinbase transaction sent');
+      })
+      .catch((reason) => {
+        const errorMessage = 'toString' in reason ? reason.toString() : 'Unkown error';
+
+        const err = `Coinbase transaction failed: ${errorMessage}`;
+        setError(err);
+        console.log(err);
+      });
   };
 
   const cannotSendTransaction =
@@ -244,13 +234,11 @@ export const SendReceiveHeaderRight = () => {
   const { laoId, rollCallId } = route.params;
 
   const [publicKey, setPublicKey] = useState('');
-  const rollCallFetcher = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   useEffect(() => {
-    rollCallFetcher.then((rollCallToken) =>
-      setPublicKey(rollCallToken?.token.publicKey.valueOf() || ''),
-    );
-  }, [rollCallFetcher]);
+    setPublicKey(rollCallToken?.token.publicKey.valueOf() || '');
+  }, [rollCallToken]);
 
   return (
     <>

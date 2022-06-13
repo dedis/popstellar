@@ -21,13 +21,12 @@ export const mockRollCallToken = new RollCallToken({
   token: PopToken.fromState(mockKeyPair.toState()),
 });
 
-export const mockContextValue = (isOrganizer: boolean) => ({
+export const mockDigitalCashContextValue = (isOrganizer: boolean) => ({
   [DIGITAL_CASH_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
     useIsLaoOrganizer: () => isOrganizer,
     useRollCallById: () => mockRollCall,
-    useRollCallTokensByLaoId: () => new Promise<RollCallToken[]>(() => [mockRollCallToken]),
-    useRollCallTokenByRollCallId: () =>
-      new Promise<RollCallToken | undefined>(() => mockRollCallToken),
+    useRollCallTokensByLaoId: () => [mockRollCallToken],
+    useRollCallTokenByRollCallId: () => mockRollCallToken,
   } as DigitalCashReactContext,
 });
