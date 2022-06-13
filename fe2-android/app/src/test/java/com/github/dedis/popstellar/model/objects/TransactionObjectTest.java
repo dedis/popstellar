@@ -336,7 +336,7 @@ public class TransactionObjectTest {
     TransactionObject transactionObject1 = new TransactionObject();
     TransactionObject transactionObject2 = new TransactionObject();
     transactionObject1.setLockTime(0);
-    transactionObject1.setLockTime(1);
+    transactionObject2.setLockTime(1);
     List<TransactionObject> list = new ArrayList<>();
     list.add(transactionObject1);
     list.add(transactionObject2);
