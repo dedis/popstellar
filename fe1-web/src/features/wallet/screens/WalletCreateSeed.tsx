@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { CopiableTextInput, PoPTextButton } from 'core/components';
+import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { Color, Typography } from 'core/styles';
+import { Border, Color, Spacing, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -21,6 +21,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.accent,
   } as ViewStyle,
+  words: {
+    flex: 1,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    borderColor: Color.contrast,
+    borderWidth: Border.width,
+    borderRadius: Border.radius,
+    backgroundColor: Color.secondaryAccent,
+    marginBottom: Spacing.x1,
+    paddingVertical: Spacing.x05,
+  } as ViewStyle,
+  word: {
+    ...Typography.base,
+    ...Typography.code,
+    color: Color.contrast,
+    paddingHorizontal: Spacing.x05,
+    paddingVertical: Spacing.x025,
+  } as TextStyle,
 });
 
 type NavigationProps = StackScreenProps<
@@ -108,7 +126,13 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_4}
             </Text>
           </Text>
-          <CopiableTextInput text={seed} negative />
+          <View style={styles.words}>
+            {seed.split(' ').map((word, idx) => (
+              <Text key={idx.toString()} style={styles.word} selectable>
+                {word}
+              </Text>
+            ))}
+          </View>
           <Text style={Typography.paragraph}>
             <Text style={Typography.negative}>
               {STRINGS.wallet_welcome_text_wallet_explanation_5}

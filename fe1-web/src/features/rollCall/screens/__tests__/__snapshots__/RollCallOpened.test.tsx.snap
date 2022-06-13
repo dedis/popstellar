@@ -611,13 +611,11 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   },
                                   Object {
                                     "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
                                     "borderRadius": 8,
+                                    "borderWidth": 1,
                                     "flex": 1,
                                     "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
                                   },
                                 ]
                               }
@@ -1367,13 +1365,11 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   },
                                   Object {
                                     "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
                                     "borderRadius": 8,
+                                    "borderWidth": 1,
                                     "flex": 1,
                                     "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
                                   },
                                 ]
                               }

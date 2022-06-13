@@ -429,7 +429,9 @@ exports[`Identity renders correctly 1`] = `
                             },
                             Object {
                               "backgroundColor": "#fff",
+                              "borderColor": "#fff",
                               "borderRadius": 8,
+                              "borderWidth": 1,
                               "flex": 1,
                               "padding": 8,
                             },
@@ -472,7 +474,9 @@ exports[`Identity renders correctly 1`] = `
                             },
                             Object {
                               "backgroundColor": "#fff",
+                              "borderColor": "#fff",
                               "borderRadius": 8,
+                              "borderWidth": 1,
                               "flex": 1,
                               "padding": 8,
                             },
@@ -515,7 +519,9 @@ exports[`Identity renders correctly 1`] = `
                             },
                             Object {
                               "backgroundColor": "#fff",
+                              "borderColor": "#fff",
                               "borderRadius": 8,
+                              "borderWidth": 1,
                               "flex": 1,
                               "padding": 8,
                             },
@@ -558,7 +564,9 @@ exports[`Identity renders correctly 1`] = `
                             },
                             Object {
                               "backgroundColor": "#fff",
+                              "borderColor": "#fff",
                               "borderRadius": 8,
+                              "borderWidth": 1,
                               "flex": 1,
                               "padding": 8,
                             },
@@ -601,7 +609,9 @@ exports[`Identity renders correctly 1`] = `
                             },
                             Object {
                               "backgroundColor": "#fff",
+                              "borderColor": "#fff",
                               "borderRadius": 8,
+                              "borderWidth": 1,
                               "flex": 1,
                               "padding": 8,
                             },
