@@ -17,7 +17,7 @@ import java.util.List;
 
 public class JsonCastVoteDeserializer implements JsonDeserializer<CastVote> {
 
-    private final static String VOTE_INDEX = "vote";
+    private static final String VOTE_INDEX = "vote";
 
     @Override
     public CastVote deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
