@@ -2,18 +2,18 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import {
-  mockCBHash,
-  mockCoinbaseTransactionJSON,
-  mockLaoId,
-  mockTransactionHash,
-  mockTransactionState,
-} from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { DigitalCashHooks } from 'features/digital-cash/hooks';
 import { Transaction } from 'features/digital-cash/objects/transaction';
 
-import { mockDigitalCashContextValue } from '../../__tests__/utils';
+import {
+  mockCBHash,
+  mockCoinbaseTransactionJSON,
+  mockTransactionHash,
+  mockTransactionState,
+  mockDigitalCashContextValue,
+} from '../../__tests__/utils';
 import TransactionHistory from '../TransactionHistory';
 
 jest.mock('features/digital-cash/hooks');

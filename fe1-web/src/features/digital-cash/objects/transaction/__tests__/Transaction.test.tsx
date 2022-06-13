@@ -1,18 +1,17 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
+import { mockKeyPair, mockPublicKey2 } from '__tests__/utils';
+import { Hash, PopToken, PublicKey } from 'core/objects';
+import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
+
 import {
   mockCBHash,
   mockCBSig,
   mockCoinbaseTransactionJSON,
-  mockKeyPair,
-  mockPublicKey2,
   mockTransactionState,
   mockTransactionValue,
-} from '__tests__/utils';
-import { Hash, PopToken, PublicKey } from 'core/objects';
-import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
-
+} from '../../../__tests__/utils';
 import { Transaction, TransactionState } from '../Transaction';
 import { TransactionInput } from '../TransactionInput';
 import { TransactionOutput } from '../TransactionOutput';

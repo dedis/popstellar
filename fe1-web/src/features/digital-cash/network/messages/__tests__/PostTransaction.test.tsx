@@ -1,6 +1,6 @@
-import { mockCBHash, mockCoinbaseTransactionJSON } from '__tests__/utils';
 import { Hash, ProtocolError } from 'core/objects';
 
+import { mockCBHash, mockCoinbaseTransactionJSON } from '../../../__tests__/utils';
 import { PostTransaction } from '../PostTransaction';
 
 const postTransactionObject = {

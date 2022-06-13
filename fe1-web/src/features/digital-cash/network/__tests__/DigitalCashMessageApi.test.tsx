@@ -1,13 +1,4 @@
-import {
-  configureTestFeatures,
-  mockCBHash,
-  mockCoinbaseTransactionJSON,
-  mockKeyPair,
-  mockLaoId,
-  mockPopToken,
-  mockTransactionState,
-  mockTransactionValue,
-} from '__tests__/utils';
+import { configureTestFeatures, mockKeyPair, mockLaoId, mockPopToken } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish } from 'core/network/JsonRpcApi';
 import { Hash, PopToken } from 'core/objects';
@@ -15,6 +6,12 @@ import { PostTransaction } from 'features/digital-cash/network/messages';
 import { Transaction } from 'features/digital-cash/objects/transaction';
 import { DigitalCashStore } from 'features/digital-cash/store';
 
+import {
+  mockCBHash,
+  mockCoinbaseTransactionJSON,
+  mockTransactionState,
+  mockTransactionValue,
+} from '../../__tests__/utils';
 import { requestSendTransaction, requestCoinbaseTransaction } from '../DigitalCashMessageApi';
 
 jest.mock('features/digital-cash/store/DigitalCashStore');

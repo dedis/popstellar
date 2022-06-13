@@ -1,17 +1,15 @@
-import {
-  mockCBHash,
-  mockCoinbaseTransactionJSON,
-  mockKeyPair,
-  mockLaoId,
-  mockPublicKey2,
-  mockTransactionState,
-} from '__tests__/utils';
+import { mockKeyPair, mockLaoId, mockPublicKey2 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
 import { Transaction } from 'features/digital-cash/objects/transaction';
 import { DigitalCashStore } from 'features/digital-cash/store';
 
+import {
+  mockCBHash,
+  mockCoinbaseTransactionJSON,
+  mockTransactionState,
+} from '../../__tests__/utils';
 import { handleTransactionPost } from '../DigitalCashHandler';
 
 jest.mock('features/digital-cash/store/DigitalCashStore');

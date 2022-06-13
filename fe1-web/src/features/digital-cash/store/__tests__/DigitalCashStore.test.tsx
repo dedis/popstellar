@@ -1,15 +1,14 @@
 import 'jest-extended';
 
+import { mockKeyPair, mockLaoId } from '__tests__/utils';
+import { getDigitalCashState } from 'features/digital-cash/reducer';
+
 import {
   mockCBHash,
   mockCoinbaseTransactionJSON,
-  mockKeyPair,
   mockKPHash,
-  mockLaoId,
   mockTransactionValue,
-} from '__tests__/utils';
-import { getDigitalCashState } from 'features/digital-cash/reducer';
-
+} from '../../__tests__/utils';
 import { Transaction } from '../../objects/transaction';
 import { DigitalCashStore } from '../DigitalCashStore';
 

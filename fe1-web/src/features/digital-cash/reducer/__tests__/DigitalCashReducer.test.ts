@@ -2,15 +2,15 @@ import 'jest-extended';
 
 import { AnyAction } from 'redux';
 
+import { mockLaoId } from '__tests__/utils';
+import { Hash } from 'core/objects';
+
 import {
   mockCBHash,
   mockCoinbaseTransactionJSON,
   mockKPHash,
-  mockLaoId,
   mockTransactionValue,
-} from '__tests__/utils';
-import { Hash } from 'core/objects';
-
+} from '../../__tests__/utils';
 import { Transaction } from '../../objects/transaction';
 import {
   digitalCashReduce,
