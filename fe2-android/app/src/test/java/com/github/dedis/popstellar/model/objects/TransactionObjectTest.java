@@ -311,7 +311,7 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertEquals(0, transactionObject.getIndexTransaction(sender));
   }
-  
+
   @Test
   public void computeIdTest() {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
@@ -339,6 +339,7 @@ public class TransactionObjectTest {
     transactionObject.setInputs(inpObj);
     transactionObject.setOutputs(outObj);
 
+    assertEquals(true, transactionObject.isCoinBaseTransaction());
     assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeId());
   }
 }

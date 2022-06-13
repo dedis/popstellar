@@ -362,7 +362,7 @@ public class TransactionObject {
    */
   public boolean isCoinBaseTransaction() {
     return (getSendersTransaction().size() == 1)
-        && getInputs().get(0).getTxOutHash().equals(Hash.hash("none"))
+        && getInputs().get(0).getTxOutHash().equals("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
         && (getInputs().get(0).getTxOutIndex() == 0);
   }
 }
