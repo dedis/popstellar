@@ -303,4 +303,24 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertEquals(0, transactionObject.getIndexTransaction(sender));
   }
+
+  // compute test
+  @Test
+  public void computeIdTest() {
+    TransactionObject transactionObject = new TransactionObject();
+    String type = "P2PKH";
+    Signature sign = new Signature("CAFEBABE");
+    String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    ScriptInputObject scriptInputObject = new ScriptInputObject(type, new PublicKey(PUBKEY), sign);
+    ScriptOutputObject scriptOutputObject =
+        new ScriptOutputObject(type, "2jmj7l5rSw0yVb-vlWAYkK-YBwk=");
+    OutputObject outputObject = new OutputObject(32, scriptOutputObject);
+    InputObject inputObject =
+        new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, scriptInputObject);
+    transactionObject.setLockTime(0);
+    transactionObject.setInputs(Collections.singletonList(inputObject));
+    transactionObject.setOutputs(Collections.singletonList(outputObject));
+    transactionObject.setVersion(1);
+    assertEquals("ifmcRwMQWiXyshJwsb7Aojw2G15kKUVGlOhQN_2DNB4=", transactionObject.computeId());
+  }
 }
