@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -301,59 +303,41 @@ public class TransactionObject {
 
   public String computeId() {
     // Make a list all the string in the transaction
-    List<String> stringList = new ArrayList<>();
+    List<String> collectTransaction = new ArrayList<>();
     // Add them in lexicographic order
 
     // Inputs
-    for (int i = 0; i < inputs.size(); i++) {
-      InputObject currentTxin = inputs.get(i);
+    for (InputObject currentTxin : inputs) {
       // Script
       // PubKey
-      stringList.add(currentTxin.getScript().getPubkey().getEncoded());
+      collectTransaction.add(currentTxin.getScript().getPubkey().getEncoded());
       // Sig
-      stringList.add(currentTxin.getScript().getSig().toString());
+      collectTransaction.add(currentTxin.getScript().getSig().getEncoded());
       // Type
-      stringList.add(currentTxin.getScript().getType());
+      collectTransaction.add(currentTxin.getScript().getType());
       // TxOutHash
-      stringList.add(currentTxin.getTxOutHash());
+      collectTransaction.add(currentTxin.getTxOutHash());
       // TxOutIndex
-      stringList.add(String.valueOf(currentTxin.getTxOutIndex()));
+      collectTransaction.add(String.valueOf(currentTxin.getTxOutIndex()));
     }
 
     // lock_time
-    stringList.add(String.valueOf(lockTime));
+    collectTransaction.add(String.valueOf(lockTime));
     // Outputs
-    for (int i = 0; i < outputs.size(); i++) {
-      OutputObject currentTxout = outputs.get(i);
+    for (OutputObject currentTxout : outputs) {
       // Script
       // PubKeyHash
-      stringList.add(currentTxout.getScript().getPubkeyHash());
+      collectTransaction.add(currentTxout.getScript().getPubkeyHash());
       // Type
-      stringList.add(currentTxout.getScript().getType());
+      collectTransaction.add(currentTxout.getScript().getType());
       // Value
-      stringList.add(String.valueOf(currentTxout.getValue()));
+      collectTransaction.add(String.valueOf(currentTxout.getValue()));
     }
     // Version
-    stringList.add(String.valueOf(version));
+    collectTransaction.add(String.valueOf(version));
 
-    String concat = "";
-    for (int i = 0; i < stringList.size(); i++) {
-      String toAdd = stringList.get(i);
-      concat = concat.concat(toAdd.length() + toAdd);
-    }
-
-    MessageDigest digest;
-    try {
-      digest = MessageDigest.getInstance("SHA-256");
-      byte[] hash = digest.digest(concat.getBytes(StandardCharsets.UTF_8));
-      return Base64.getUrlEncoder().encodeToString(hash);
-    } catch (NoSuchAlgorithmException e) {
-      Log.e(
-          this.getClass().toString(),
-          "Something is wrong with the hash calculation",
-          new IllegalArgumentException("Error in the computation of the transaction id"));
-      return "-1";
-    }
+    // Use already implemented hash function
+    return Hash.hash(collectTransaction.toArray(new String[0]));
   }
 
   /**

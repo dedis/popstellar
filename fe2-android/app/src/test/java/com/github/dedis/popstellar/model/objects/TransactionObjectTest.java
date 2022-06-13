@@ -309,18 +309,24 @@ public class TransactionObjectTest {
   public void computeIdTest() {
     TransactionObject transactionObject = new TransactionObject();
     String type = "P2PKH";
-    Signature sign = new Signature("CAFEBABE");
-    String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-    ScriptInputObject scriptInputObject = new ScriptInputObject(type, new PublicKey(PUBKEY), sign);
+
+    // INPUTS
+    Signature sign = new Signature("gTd8DUAd4omIRMD_d2Qd3Gsnuj0lmfP7YijNH1apunYOTxDr_fR9xOWHw6C3w-qMhkdF4xG1tfpVCIzxnermDA==");
+    String pubKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+    ScriptInputObject scriptInputObject = new ScriptInputObject(type, new PublicKey(pubKey), sign);
+    InputObject inputObject = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, scriptInputObject);
+
+    //OUTPUTS
     ScriptOutputObject scriptOutputObject =
-        new ScriptOutputObject(type, "2jmj7l5rSw0yVb-vlWAYkK-YBwk=");
+        new ScriptOutputObject(type, "SGnNfF533PBEUMYPMqBSQY83z5U=");
     OutputObject outputObject = new OutputObject(32, scriptOutputObject);
-    InputObject inputObject =
-        new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, scriptInputObject);
+
     transactionObject.setLockTime(0);
+
     transactionObject.setInputs(Collections.singletonList(inputObject));
     transactionObject.setOutputs(Collections.singletonList(outputObject));
     transactionObject.setVersion(1);
+
     assertEquals("ifmcRwMQWiXyshJwsb7Aojw2G15kKUVGlOhQN_2DNB4=", transactionObject.computeId());
   }
 }
