@@ -7,6 +7,7 @@ import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.{BufferedSource, Source}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -71,23 +72,23 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val messageData = SetupElection.buildFromJson(example)
 
     val question = ElectionQuestion(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), "Is this project fun?", "Plurality", "Yes" :: "No" :: Nil, write_in = false)
-    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", "1.0.0", Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
+    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", OPEN_BALLOT, Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
 
     messageData shouldBe a[SetupElection]
     messageData should equal(expected)
   }
 
-  test("Parser correctly decodes a ResultElection message data") {
-    val example: String = getExampleMessage("messageData/election_result.json")
+  test("Parser correctly decodes a OpenElection message data") {
+    val example: String = getExampleMessage("messageData/election_open/election_open.json")
 
-    val messageData = ResultElection.buildFromJson(example)
+    val messageData = OpenElection.buildFromJson(example)
 
-    val result1 = ElectionBallotVotes("Yes", 1)
-    val result2 = ElectionBallotVotes("No", 0)
-    val questionResult = ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), result1 :: result2 :: Nil)
-    val expected = ResultElection(questionResult :: Nil, Nil)
+    val lao = Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="))
+    val election = Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="))
+    val opened_at = Timestamp(1633099883L)
+    val expected = OpenElection(lao, election, opened_at)
 
-    messageData shouldBe a[ResultElection]
+    messageData shouldBe a[OpenElection]
     messageData should equal(expected)
   }
 
@@ -101,22 +102,43 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly decodes a CastVoteElection write_in message data") {
-    val example: String = getExampleMessage("messageData/vote_cast_write_in.json")
+  test("Parser correctly decodes a CastVoteElection message data") {
+    val example: String = getExampleMessage("messageData/vote_cast_vote/vote_cast_vote.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
-    val votes = VoteElection(Hash(Base64Data("DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=")), Hash(Base64Data("WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=")), "Computer Science")
-    val expected = CastVoteElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=")), Timestamp(1633098996L), votes :: Nil)
+    val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), 0)
+    val expected = CastVoteElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Timestamp(1633098941L), votes :: Nil)
 
     messageData shouldBe a[CastVoteElection]
     messageData shouldEqualTo (expected)
+  }
+
+  test("Parser correctly decodes a KeyElection message data") {
+    val example: String = getExampleMessage("messageData/election_key/election_key.json")
+    val messageData = KeyElection.buildFromJson(example)
+
+    val expected = KeyElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), PublicKey(Base64Data("JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ")))
+
+    messageData shouldBe a[KeyElection]
+    messageData should equal(expected)
+  }
+
+  test("Parser correctly decodes a ResultElection write_in message data") {
+    val example: String = getExampleMessage("messageData/election_result.json")
+    val messageData = ResultElection.buildFromJson(example)
+
+    val result = List(ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), List(ElectionBallotVotes("Yes", 1), ElectionBallotVotes("No", 0))))
+    val expected = ResultElection(result, List.empty)
+
+    messageData shouldBe a[ResultElection]
+    messageData should equal (expected)
   }
 
   test("Parser correctly encodes/decodes a PostTransaction message data") {
     val example: String = getExampleMessage("messageData/coin/post_transaction.json")
     val messageData = PostTransaction.buildFromJson(example)
 
-    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), outputs=List(TxOut(32, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")))
+    val expected = PostTransaction(Transaction(version=1, inputs=List(Transaction.Input(Hash(Base64Data("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")), Base64Data("DNnBoBvY4Bd8-WMUA3Cw17qyIiy_J2722-WKnr5uPhyJY8BCRZeHCOVTxsnhanu3Q8Ry11Czcm6YY_xjEJOJDQ==")))), outputs=List(Transaction.Output(32, LockScript("P2PKH",Address(Base64Data("-_qR4IHwsiq50raa8jURNArds54="))))), lockTime=0), transactionId=Hash(Base64Data("MzEaazm7WJNRquKKkElVjPDLd-CpYijMEUYFcc6cGN4=")))
 
     messageData shouldBe a[PostTransaction]
     messageData should equal (expected)
@@ -126,7 +148,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/coin/post_transaction_max_amount.json")
     val messageData = PostTransaction.buildFromJson(example)
 
-    val expected = PostTransaction(Transaction(version=1, inputs=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), outputs=List(TxOut((1L << 53) - 1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("K6GbqfHbCxLaihkDI88BEobHYNRKqYpASXp1QNSXPOo=")))
+    val expected = PostTransaction(Transaction(version=1, inputs=List(Transaction.Input(Hash(Base64Data("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")), Base64Data("TlQjVZ-Z6q-ZHNoFkqMDxfFWGbUpkz5t3iL--wBOEpOu6GZ-4CmqVIhXjBwqenSfWCUjplKdjPWMX9Wn6eObBw==")))), outputs=List(Transaction.Output((1L << 53) - 1, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk="))))), lockTime=0), transactionId=Hash(Base64Data("pgX_-DbIbDqT3mhCgdTb24yAocZQ84ITgzwkQv9-_zE=")))
 
     messageData shouldBe a[PostTransaction]
     messageData should equal (expected)

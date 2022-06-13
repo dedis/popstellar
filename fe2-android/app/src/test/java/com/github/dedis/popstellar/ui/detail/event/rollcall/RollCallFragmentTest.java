@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -120,7 +121,8 @@ public class RollCallFragmentTest {
               .build(),
           containerId(),
           RollCallFragment.class,
-          () -> RollCallFragment.newInstance(ROLL_CALL));
+          () -> RollCallFragment.newInstance(ROLL_CALL),
+          new BundleBuilder().putString(Constants.RC_PK_EXTRA, SENDER.getEncoded()).build());
 
   @Test
   public void rollCallTitleMatches() {
@@ -153,10 +155,6 @@ public class RollCallFragmentTest {
     managementButton().check(matches(withText("OPEN")));
   }
 
-  private void openRollCall() {
-    ROLL_CALL.setState(EventState.OPENED);
-  }
-
   @Test
   public void statusOpenedTest() {
     openRollCall();
@@ -169,10 +167,6 @@ public class RollCallFragmentTest {
     managementButton().check(matches(withText("CLOSE")));
   }
 
-  private void closeRollCall() {
-    ROLL_CALL.setState(EventState.CLOSED);
-  }
-
   @Test
   public void statusClosedTest() {
     closeRollCall();
@@ -183,5 +177,13 @@ public class RollCallFragmentTest {
   public void managementButtonClosedTest() {
     closeRollCall();
     managementButton().check(matches(withText("REOPEN")));
+  }
+
+  private void openRollCall() {
+    ROLL_CALL.setState(EventState.OPENED);
+  }
+
+  private void closeRollCall() {
+    ROLL_CALL.setState(EventState.CLOSED);
   }
 }

@@ -4,7 +4,7 @@ exports[`ParagraphBlock renders correctly 1`] = `
 <Text
   style={
     Object {
-      "marginHorizontal": 10,
+      "marginHorizontal": 16,
     }
   }
 >
@@ -16,8 +16,10 @@ exports[`ParagraphBlock renders correctly using bold prop 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 25,
+      "color": "#000",
+      "fontSize": 20,
       "fontWeight": "bold",
+      "lineHeight": 26,
       "marginHorizontal": 10,
       "textAlign": "center",
     }

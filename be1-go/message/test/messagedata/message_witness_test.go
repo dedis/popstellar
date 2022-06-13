@@ -32,3 +32,11 @@ func Test_Message_Witness(t *testing.T) {
 	require.Equal(t, "kAG_m4nEQXkguuO_LVphXFE_c_dPoQrHNsb0MvwhXTA=", msg.MessageID)
 	require.Equal(t, "Lgax5s25xVVF-6j5KNPE85oP3RyUtRZR0OSD5nNH34YT1DzlOFixmYyIcB5wZKjuKJ_nB3YkNwVGW5z96LC7Bw==", msg.Signature)
 }
+
+func Test_Message_Witness_Interface_Functions(t *testing.T) {
+	var msg messagedata.MessageWitness
+
+	require.Equal(t, messagedata.MessageObject, msg.GetObject())
+	require.Equal(t, messagedata.MessageActionWitness, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

@@ -11,11 +11,16 @@ export enum ElectionStatus {
   RESULT = 'result', // When result is available
 }
 
+export enum ElectionVersion {
+  OPEN_BALLOT = 'OPEN_BALLOT',
+  SECRET_BALLOT = 'SECRET_BALLOT',
+}
+
 export interface ElectionState {
   id: string;
   lao: string;
   name: string;
-  version: string;
+  version: ElectionVersion;
   createdAt: number;
   start: number;
   end: number;
@@ -37,16 +42,22 @@ export interface Question {
 export interface Vote {
   id: string;
   question: string;
-  vote: number[];
+  vote: number;
+}
+
+export interface EncryptedVote {
+  id: string;
+  question: string;
+  vote: string;
 }
 
 // This type ensures that for each question there is a unique set of option indices
-export type SelectedBallots = { [questionIndex: number]: Set<number> };
+export type SelectedBallots = { [questionIndex: number]: number };
 
 export interface RegisteredVote {
   createdAt: number;
   sender: string;
-  votes: Vote[];
+  votes: Vote[] | EncryptedVote[];
   messageId: string;
 }
 
@@ -69,7 +80,7 @@ export class Election {
 
   public readonly name: string;
 
-  public readonly version: string;
+  public readonly version: ElectionVersion;
 
   public readonly createdAt: Timestamp;
 

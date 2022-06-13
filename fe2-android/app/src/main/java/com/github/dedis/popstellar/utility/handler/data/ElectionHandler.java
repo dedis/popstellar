@@ -10,9 +10,11 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -53,7 +55,11 @@ public final class ElectionHandler {
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election =
-          new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
+          new Election(
+              lao.getId(),
+              electionSetup.getCreation(),
+              electionSetup.getName(),
+              electionSetup.getElectionVersion());
       election.setChannel(channel.subChannel(election.getId()));
       election.setElectionQuestions(electionSetup.getQuestions());
 
@@ -176,7 +182,12 @@ public final class ElectionHandler {
 
       // Verify the current cast vote message is the last one received
       if (previousMessageCreation <= castVote.getCreation()) {
-        election.putVotesBySender(senderPk, castVote.getVotes());
+        // Filter given the content of the vote
+        if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+          election.putOpenBallotVotesBySender(senderPk, castVote.getVotes());
+        } else {
+          election.putEncryptedVotesBySender(senderPk, castVote.getVotes());
+        }
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
       }
@@ -199,5 +210,21 @@ public final class ElectionHandler {
             + "Message ID : "
             + messageId);
     return message;
+  }
+
+  /**
+   * Simple way to handle a election key, add the given key to the given election
+   * @param context context
+   * @param electionKey key to add
+   */
+  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleElectionKey: channel " + channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    election.setElectionKey(electionKey.getElectionVoteKey());
+    Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }

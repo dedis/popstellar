@@ -31,12 +31,12 @@
   <integer name="requested_preview_width">1600</integer>
   <dimen name="camera_close_button_end_margin">8dp</dimen>
 
-  <!-- Button -->
+  <!-- QR code -->
   <dimen name="channel_qr_code_size">250dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
-  <dimen name="event_buttons_width">110dp</dimen>
 
-  <!-- QR code -->
+  <!-- Button -->
+  <dimen name="event_buttons_width">110dp</dimen>
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
@@ -77,6 +77,7 @@
   <dimen name="election_setup_titles_margin_top">16dp</dimen>
   <dimen name="election_setup_spinner_width">150dp</dimen>
   <dimen name="election_setup_spinner_height">40dp</dimen>
+  <dimen name="election_setup_spinner_margin_right">10dp</dimen>
   <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
   <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
   <dimen name="cast_vote_dynamic_height">0dp</dimen>

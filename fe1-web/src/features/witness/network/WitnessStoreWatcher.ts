@@ -153,18 +153,15 @@ export const makeWitnessStoreWatcher = (
     // get all message ids that are part of currentAllIds
     for (const msgId of currentAllIds) {
       // and that are currently not part of unprocessedIds
-      if (currentUnprocessedIds.includes(msgId)) {
-        return;
+      if (!currentUnprocessedIds.includes(msgId)) {
+        // and that either have not been part of previousAllIds OR
+        // have been part of previousUnprocessedIds
+        if (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)) {
+          // i.e. all messages that have been processed
+          // since the last call of this function
+          afterProcessingHandler(ExtendedMessage.fromState(msgState.byId[msgId]));
+        }
       }
-      // and that either have not been part of previousAllIds OR
-      // have been part of previousUnprocessedIds
-      if (previousAllIds.includes(msgId) && !previousUnprocessedIds.includes(msgId)) {
-        return;
-      }
-
-      // i.e. all messages that have been processed
-      // since the last call of this function
-      afterProcessingHandler(ExtendedMessage.fromState(msgState.byId[msgId]));
     }
   };
 };

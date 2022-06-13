@@ -9,6 +9,10 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * The purpose of this class is to provide a custom separator between elements of the event list In
+ * particular we want only separators between sections and not between events or at the end
+ */
 public class EventListDivider extends RecyclerView.ItemDecoration {
   public static final String TAG = EventListDivider.class.getSimpleName();
   private final Paint mPaint;

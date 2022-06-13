@@ -3,8 +3,7 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
-
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 )
 
 // Message defines a JSON RPC message
@@ -23,12 +22,12 @@ type Message struct {
 func (m Message) UnmarshalData(e interface{}) error {
 	jsonData, err := base64.URLEncoding.DecodeString(m.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode base64: %v", err)
+		return answer.NewInvalidMessageFieldError("failed to decode base64: %v", err)
 	}
 
 	err = json.Unmarshal(jsonData, e)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal jsonData: %v", err)
+		return answer.NewInvalidMessageFieldError("failed to unmarshal jsonData: %v", err)
 	}
 
 	return nil

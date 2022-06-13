@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail.event.rollcall;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
           String meetingTitle = rollCallTitleEditText.getText().toString().trim();
           boolean areFieldsFilled =
               !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
-          Log.d(TAG, "areFeils is " + areFieldsFilled);
           confirmButton.setEnabled(areFieldsFilled);
           openButton.setEnabled(areFieldsFilled);
         }

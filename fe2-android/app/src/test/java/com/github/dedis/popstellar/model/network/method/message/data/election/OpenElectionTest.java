@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
-
 import org.junit.Test;
 
 public class OpenElectionTest {
 
-  //Hardcoded strings for election
+  // Hardcoded strings for election
   private static final String laoId = "laoId";
   private static final String electionId = "electionId";
   private static final long openedAt = 1633099883;

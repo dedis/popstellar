@@ -2,12 +2,14 @@ package ch.epfl.pop.model.network.method.message.data.election
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.model.objects.{Base64Data, Hash}
 import spray.json._
 
-class VoteElection(val id: Hash, val question: Hash, val vote: Option[List[Int]], val write_in: Option[String]) {
+class VoteElection(val id: Hash, val question: Hash, val vote: Option[Either[Int, Base64Data]], val write_in: Option[String]) {
 
-  def this(id: Hash, question: Hash, vote: List[Int]) = this(id, question, Some(vote), None)
+  def this(id: Hash, question: Hash, vote: Int) = this(id, question, Some(Left(vote)), None)
+
+  def this(id: Hash, question: Hash, vote: Base64Data) = this(id, question, Some(Right(vote)), None)
 
   def this(id: Hash, question: Hash, write_in: String) = this(id, question, None, Some(write_in))
 
@@ -15,16 +17,14 @@ class VoteElection(val id: Hash, val question: Hash, val vote: Option[List[Int]]
 }
 
 object VoteElection extends Parsable {
-  def apply(id: Hash, question: Hash, vote: List[Int]): VoteElection = new VoteElection(id, question, Some(vote), None)
+  def apply(id: Hash, question: Hash, vote: Int): VoteElection = new VoteElection(id, question, Some(Left(vote)), None)
+
+  def apply(id: Hash, question: Hash, vote: Base64Data): VoteElection = new VoteElection(id, question, Some(Right(vote)), None)
+
+  def apply(id: Hash, question: Hash, vote: Option[Either[Int, Base64Data]], writeInOpt: Option[String]): VoteElection =
+    new VoteElection(id, question, vote, writeInOpt)
 
   def apply(id: Hash, question: Hash, writeIn: String): VoteElection = new VoteElection(id, question, None, Some(writeIn))
-
-  def apply(
-             id: Hash,
-             question: Hash,
-             vote: Option[List[Int]],
-             write_in: Option[String]
-           ): VoteElection = new VoteElection(id, question, vote, write_in)
 
   override def buildFromJson(payload: String): VoteElection = payload.parseJson.asJsObject.convertTo[VoteElection]
 }

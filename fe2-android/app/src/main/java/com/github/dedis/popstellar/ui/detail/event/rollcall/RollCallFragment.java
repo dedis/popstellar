@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
@@ -21,11 +24,13 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.Constants;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -33,7 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
   public static final String TAG = RollCallFragment.class.getSimpleName();
-  private final SimpleDateFormat DATE_FORMAT =
+  private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
   private RollCall rollCall;
@@ -41,26 +46,24 @@ public class RollCallFragment extends Fragment {
   private TextView title;
   private TextView statusText;
   private ImageView statusIcon;
-  private PublicKey pk;
+
+
+  private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
+  private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
+  private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
+  private final EnumMap<EventState, Integer> managementIconMap = buildManagementIconMap();
+  private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
 
   public RollCallFragment() {
     // Required empty public constructor
   }
 
-  public RollCallFragment(PublicKey pk) {
-    this.pk = pk;
-  }
-
   public static RollCallFragment newInstance(PublicKey pk) {
-    return new RollCallFragment(pk);
-  }
-
-  public static RollCallFragment newInstance(RollCall rollCall) {
-    return new RollCallFragment(rollCall);
-  }
-
-  public RollCallFragment(RollCall rollCall) {
-    this.rollCall = rollCall;
+    RollCallFragment fragment = new RollCallFragment();
+    Bundle bundle = new Bundle(1);
+    bundle.putString(Constants.RC_PK_EXTRA, pk.getEncoded());
+    fragment.setArguments(bundle);
+    return fragment;
   }
 
   @Override
@@ -93,8 +96,8 @@ public class RollCallFragment extends Fragment {
               // will add the scan to this fragment in the future
               laoDetailViewModel.closeRollCall();
               break;
-            case RESULTS_READY:
-              throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
+            default:
+              throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
           }
         };
 
@@ -104,16 +107,7 @@ public class RollCallFragment extends Fragment {
         .getState()
         .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
 
-    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
-    if (pk != null) {
-      Log.d(TAG, "key displayed is " + pk.getEncoded());
-      Bitmap myBitmap = QRCode.from(pk.getEncoded()).bitmap();
-      qrCode.setImageBitmap(myBitmap);
-    }
-    qrCode.setVisibility(
-        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
-            ? View.INVISIBLE
-            : View.VISIBLE);
+    retrieveAndDisplayPublicKey(view);
 
     return view;
   }
@@ -125,53 +119,20 @@ public class RollCallFragment extends Fragment {
     title.setText(rollCall.getName());
     managementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
 
-    Drawable imgStatus = null;
-    Drawable imgManagement = null;
+    managementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
 
-    int managementTextId = 0;
-    int statusTextId = 0;
+    Drawable imgManagement =
+        AppCompatResources.getDrawable(
+            getContext(), managementIconMap.getOrDefault(rcState, ID_NULL));
+    managementButton.setCompoundDrawablesWithIntrinsicBounds(imgManagement, null, null, null);
 
-    switch (rcState) {
-      case CREATED:
-        managementTextId = R.string.open;
-        statusTextId = R.string.closed;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
-        setImageColor(statusIcon, R.color.red);
-        statusText.setTextColor(getResources().getColor(R.color.red, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
-        break;
-      case OPENED:
-        statusTextId = R.string.open;
-        managementTextId = R.string.close;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_unlock);
-        setImageColor(statusIcon, R.color.green);
-        statusText.setTextColor(getResources().getColor(R.color.green, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_lock);
-        break;
-      case CLOSED:
-        statusTextId = R.string.closed;
-        managementTextId = R.string.reopen_rollcall;
-
-        imgStatus = getDrawableFromContext(R.drawable.ic_lock);
-        setImageColor(statusIcon, R.color.red);
-        statusText.setTextColor(getResources().getColor(R.color.red, null));
-
-        imgManagement = AppCompatResources.getDrawable(getContext(), R.drawable.ic_unlock);
-        break;
-      case RESULTS_READY:
-        // Should never happened for a Roll-Call
-        throw new IllegalStateException("Roll-Call should not be in a Result Ready state");
-    }
-
-    managementButton.setText(managementTextId);
-    managementButton.setCompoundDrawables(imgManagement, null, null, null);
-
+    Drawable imgStatus = getDrawableFromContext(statusIconMap.getOrDefault(rcState, ID_NULL));
     statusIcon.setImageDrawable(imgStatus);
-    statusText.setText(statusTextId);
+    setImageColor(statusIcon, statusColorMap.getOrDefault(rcState, ID_NULL));
+
+    statusText.setText(statusTextMap.getOrDefault(rcState, ID_NULL));
+    statusText.setTextColor(
+        getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
   }
 
   private void setupTime(View view) {
@@ -181,8 +142,8 @@ public class RollCallFragment extends Fragment {
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
     Date endTime = new Date(rollCall.getEndTimestampInMillis());
 
-    startTimeDisplay.setText(DATE_FORMAT.format(startTime));
-    endTimeDisplay.setText(DATE_FORMAT.format(endTime));
+    startTimeDisplay.setText(dateFormat.format(startTime));
+    endTimeDisplay.setText(dateFormat.format(endTime));
   }
 
   private Drawable getDrawableFromContext(int id) {
@@ -191,5 +152,71 @@ public class RollCallFragment extends Fragment {
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
+  }
+
+  private void retrieveAndDisplayPublicKey(View view) {
+    String pk = requireArguments().getString(Constants.RC_PK_EXTRA);
+    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
+    Log.d(TAG, "key displayed is " + pk);
+    Bitmap myBitmap = QRCode.from(pk).bitmap();
+    qrCode.setImageBitmap(myBitmap);
+    qrCode.setVisibility(
+        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
+            ? View.INVISIBLE
+            : View.VISIBLE);
+  }
+
+  private EnumMap<EventState, Integer> buildManagementTextMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.string.open);
+    map.put(EventState.OPENED, R.string.close);
+    map.put(EventState.CLOSED, R.string.reopen_rollcall);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusTextMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.string.closed);
+    map.put(EventState.OPENED, R.string.open);
+    map.put(EventState.CLOSED, R.string.closed);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusIconMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.drawable.ic_lock);
+    map.put(EventState.OPENED, R.drawable.ic_unlock);
+    map.put(EventState.CLOSED, R.drawable.ic_lock);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildStatusColorMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.color.red);
+    map.put(EventState.OPENED, R.color.green);
+    map.put(EventState.CLOSED, R.color.red);
+    return map;
+  }
+
+  private EnumMap<EventState, Integer> buildManagementIconMap() {
+    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
+    map.put(EventState.CREATED, R.drawable.ic_unlock);
+    map.put(EventState.OPENED, R.drawable.ic_lock);
+    map.put(EventState.CLOSED, R.drawable.ic_unlock);
+    return map;
+  }
+
+  /**
+   * The following is only for testing purposes. Production should never pass arguments to a
+   * fragment instantiation but should rather use arguments
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public static RollCallFragment newInstance(RollCall rollCall) {
+    return new RollCallFragment(rollCall);
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  public RollCallFragment(RollCall rollCall) {
+    this.rollCall = rollCall;
   }
 }

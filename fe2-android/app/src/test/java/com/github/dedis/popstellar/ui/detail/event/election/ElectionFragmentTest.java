@@ -32,6 +32,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -75,7 +76,9 @@ public class ElectionFragmentTest {
   private static final long CREATION = 10323411;
   private static final long START = 10323421;
   private static final long END = 10323431;
-  private static final Election election = new Election(LAO_ID, CREATION, TITLE);
+  private static final Election election =
+      new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
+
   ElectionQuestion electionQuestion1 =
       new ElectionQuestion(
           "ElectionQuestion", "Plurality", false, Arrays.asList("1", "2"), election.getId());
@@ -165,10 +168,6 @@ public class ElectionFragmentTest {
     electionActionButton().check(matches(not(isEnabled())));
   }
 
-  private void openElection() {
-    election.setEventState(OPENED);
-  }
-
   @Test
   public void statusOpenTest() {
     openElection();
@@ -188,10 +187,6 @@ public class ElectionFragmentTest {
     electionActionButton().check(matches(isEnabled()));
   }
 
-  private void closeElection() {
-    election.setEventState(CLOSED);
-  }
-
   @Test
   public void statusClosedTest() {
     closeElection();
@@ -209,10 +204,6 @@ public class ElectionFragmentTest {
     closeElection();
     electionActionButton().check(matches(withText("Results")));
     electionActionButton().check(matches(not(isEnabled())));
-  }
-
-  private void receiveResults() {
-    election.setEventState(RESULTS_READY);
   }
 
   @Test
@@ -247,5 +238,17 @@ public class ElectionFragmentTest {
     electionManagementButton().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("Yes"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("No"), isDisplayed()));
+  }
+
+  private void openElection() {
+    election.setEventState(OPENED);
+  }
+
+  private void closeElection() {
+    election.setEventState(CLOSED);
+  }
+
+  private void receiveResults() {
+    election.setEventState(RESULTS_READY);
   }
 }

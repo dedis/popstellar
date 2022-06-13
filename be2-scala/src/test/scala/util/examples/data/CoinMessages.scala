@@ -13,10 +13,12 @@ import util.examples.data.traits.CoinMessagesTrait
  */
 object PostTransactionMessages extends CoinMessagesTrait {
 
-  override val action: ActionType = ActionType.POST
+  override val action: ActionType = ActionType.POST_TRANSACTION
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "coin")
 
   final val postTransaction: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction.json")()
+  final val postTransactionCoinbase: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_coinbase.json")()
+  final val postTransactionBadSignature: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_bad_signature.json")()
   final val postTransactionMaxAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_max_amount.json")()
   final val postTransactionOverflowAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_overflow_amount.json")()
   final val postTransactionZeroAmount: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction_zero_amount.json")()
