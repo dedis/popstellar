@@ -3,21 +3,21 @@ package fe.net;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
-
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
-import common.utils.JsonUtils;
+import fe.utils.verification.RollCallVerification;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-
-import static common.utils.JsonUtils.*;
-import static common.utils.JsonUtils.getJSON;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -72,7 +72,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
     String frameText = frame.text();
     logger.info("message received : {}", frameText);
-    if (!frameText.contains("consensus")) {
+    if (!frameText.contains("consensus") && !frameText.contains("coin")) {
       // We don't want consensus messages to interfere since we do not test them yet
       queue.onNewMsg(frameText);
     }
@@ -131,5 +131,16 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   public void setRollCallCreateMode(){
     replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
+  }
+
+  public boolean checkRollCallCreateMessage (String karateMessage) {
+    logger.info("type is " + karateMessage.getClass());
+    String message = karateMessage.toString();
+    try {
+      return RollCallVerification.rollCallCreateVerification(message);
+    } catch (NoSuchAlgorithmException e) {
+      logger.info("Error " + e +" for message " + message);
+      return false;
+    }
   }
 }

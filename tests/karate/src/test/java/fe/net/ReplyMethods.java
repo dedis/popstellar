@@ -2,16 +2,14 @@ package fe.net;
 
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
-import common.net.MessageBuffer;
-import common.utils.JsonUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
+import static common.JsonKeys.*;
 import static common.utils.JsonUtils.getJSON;
 
 /**
@@ -21,24 +19,6 @@ import static common.utils.JsonUtils.getJSON;
 public class ReplyMethods {
   private final static Logger logger = new Logger(ReplyMethods.class.getSimpleName());
 
-
-  private static final String SUBSCRIBE = "subscribe";
-
-  private static final String CATCHUP = "catchup";
-
-  private static final String BROADCAST = "broadcast";
-
-  private static final String ID = "id";
-
-  private static final String MESSAGE = "message";
-
-  private static final String PARAMS = "params";
-
-  private static final String METHOD = "method";
-
-  private static final String PUBLISH = "publish";
-
-  private static final String CONSENSUS = "consensus";
 
   private static final String VALID_REPLY_TEMPLATE =
       "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":0}";
@@ -60,7 +40,7 @@ public class ReplyMethods {
         Json msgJson = Json.of(msg);
         int id = msgJson.get("id");
         String template =
-            msgJson.get("method").equals("catchup")
+            msgJson.get(METHOD).equals(CATCHUP)
                 ? VALID_CATCHUP_REPLY_TEMPLATE
                 : VALID_REPLY_TEMPLATE;
         return buildSingleton(template.replace("%ID%", Integer.toString(id)));
@@ -76,16 +56,16 @@ public class ReplyMethods {
 
   public static Function<String, List<String>> LAO_CREATE_CATCHUP =
       msg -> {
-        if (msg.contains(CONSENSUS)) {
+        if (msg.contains(CONSENSUS) || msg.contains(COIN)) {
           return ALWAYS_VALID_CONSENSUS.apply(msg);
         }
         Json msgJson = Json.of(msg);
         String replaceId =
-            VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString((int) msgJson.get("id")));
+            VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString(msgJson.get(ID)));
         if (laoCreatePublishJson == null) { // Should not happen
           return buildSingleton(replaceId);
         }
-        return buildSingleton(replaceId.replace("[]", "[" + laoCreatePublishJson.toString() + "]"));
+        return buildSingleton(replaceId.replace("[]", "[" + laoCreatePublishJson + "]"));
       };
 
   public static Function<String, List<String>> LAO_CREATE =
@@ -93,7 +73,7 @@ public class ReplyMethods {
         Json msgJson = Json.of(msg);
         String method = msgJson.get(METHOD);
         if (PUBLISH.equals(method)) {
-          laoCreatePublishJson = getJSON(getJSON(Json.of(msg), "params"), "message");
+          laoCreatePublishJson = getJSON(getJSON(Json.of(msg), PARAMS), MESSAGE);
         }
         if (CATCHUP.equals(method)) {
           return LAO_CREATE_CATCHUP.apply(msg);
@@ -104,16 +84,16 @@ public class ReplyMethods {
 
   public static Function<String, List<String>>  ROLL_CALL_CREATE_BROADCAST =
       msg ->{
-        Json param = getJSON(Json.of(msg), "params");
-        String channel = param.get("channel");
+        Json param = getJSON(Json.of(msg), PARAMS);
+        String channel = param.get(CHANNEL);
         logger.info("params are : {}", param.toString());
-        logger.info("channel is : {}", channel.toString());
+//        logger.info("channel is : {}", channel.toString());
 
         Map msgMap = param.get(MESSAGE);
-        logger.info("jsonMsg is : {}", msgMap.toString());
+//        logger.info("jsonMsg is : {}", msgMap.toString());
         Json send = Json.object();
-        send.set("channel", channel);
-        send.set("message", msgMap);
+        send.set(CHANNEL, channel);
+        send.set(MESSAGE, msgMap);
 
         logger.info("send is : {}", send.toString());
 

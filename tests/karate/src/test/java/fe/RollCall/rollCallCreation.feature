@@ -16,9 +16,11 @@ Feature: Create RollCall
     When click(roll_call_confirm_selector)
 
     # Retrieving sent messages
-    * json create_rc = buffer.takeTimeout(timeout)
+    * json create_rc_json = buffer.takeTimeout(timeout)
+    * string create_rc_string = create_rc_json
 
-    Then match create_rc contains deep { method: 'publish'}
+    Then match create_rc_json contains deep { method: 'publish'}
+    And match backend.checkRollCallCreateMessage(create_rc_string) == true
     And match backend.receiveNoMoreResponses() == true
     And match text(event_name_selector) == 'RC name'
     # check display
