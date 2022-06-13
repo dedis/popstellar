@@ -223,6 +223,7 @@ namespace STRINGS {
 
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
+  export const cast_vote_success = 'Sucessfully casted vote';
 
   /* --- Roll-Call Feature Strings --- */
   export const roll_call_event_name = 'Roll-Call';
