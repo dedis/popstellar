@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class TransactionObject {
   private Channel channel;
@@ -362,7 +364,12 @@ public class TransactionObject {
    */
   public static TransactionObject lastLockedTransactionObject(
       List<TransactionObject> listTransaction) {
-    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
+    Optional<TransactionObject> transactionObject =
+        listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime));
+    if (!transactionObject.isPresent()) {
+      throw new Resources.NotFoundException();
+    }
+    return transactionObject.get();
   }
 
   /**
