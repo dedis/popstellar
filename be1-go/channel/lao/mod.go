@@ -1,7 +1,6 @@
 package lao
 
 import (
-	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -15,7 +14,6 @@ import (
 	"popstellar/channel/reaction"
 	"popstellar/channel/registry"
 	"popstellar/crypto"
-	"popstellar/db/sqlite"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -44,13 +42,9 @@ const (
 
 	failedToDecodeData = "failed to decode message data: %v"
 
-	dbPrepareErr  = "failed to prepare query: %v"
-	dbParseRowErr = "failed to parse row: %v"
-	dbRowIterErr  = "error in row iteration: %v"
-	dbQueryRowErr = "failed to query rows: %v"
-	msgID         = "msg id"
-	social        = "/social/"
-	chirps        = "chirps"
+	msgID  = "msg id"
+	social = "/social/"
+	chirps = "chirps"
 
 	// Open represents the open roll call state.
 	Open rollCallState = "open"
@@ -115,7 +109,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
-	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+	consensusCh := consensus.NewChannel(consensusPath, hub, log, organizerPubKey)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	newChannel := &Channel{
@@ -138,6 +132,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	if err != nil {
 		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}
+
+	newChannel.createCoinChannel(socket, newChannel.log)
 
 	return newChannel, err
 }
@@ -420,36 +416,13 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	c.rollCall.id = data.UpdateID
 	c.rollCall.state = Closed
 
-	var db *sql.DB
-
-	if sqlite.GetDBPath() != "" {
-		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
-		if err != nil {
-			c.log.Err(err).Msg("failed to connect to db")
-			db = nil
-		} else {
-			defer db.Close()
-		}
-	}
-
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
 		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
-
-		if db != nil {
-			c.log.Info().Msgf("inserting attendee %s into db", attendee)
-
-			err := insertAttendee(db, attendee, c.channelID)
-			if err != nil {
-				c.log.Err(err).Msgf("failed to insert attendee %s into db", attendee)
-			}
-		}
 	}
-
-	c.createCoinChannel(senderSocket, c.log)
 
 	return nil
 }
@@ -551,7 +524,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
+		return answer.NewDuplicateResourceError("message already exists")
 	}
 
 	return nil
@@ -625,7 +598,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be "+
+		return answer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
@@ -746,160 +719,7 @@ func (c *Channel) extractLaoID() string {
 	return strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 }
 
-// ---
-// DB operations
-// ---
-
-func insertAttendee(db *sql.DB, key string, channelID string) error {
-	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
-	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(key, channelID)
-	if err != nil {
-		return xerrors.Errorf("failed to exec query: %v", err)
-	}
-
-	return nil
-}
-
 // checkPrevID is a helper method which validates the roll call ID.
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
-}
-
-// CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities,
-	log zerolog.Logger) (channel.Channel, error) {
-
-	log = log.With().Str("channel", "lao").Logger()
-
-	channel := Channel{
-		channelID: channelPath,
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
-		hub:       hub,
-		witnesses: make(map[string]struct{}),
-		rollCall:  rollCall{},
-		attendees: make(map[string]struct{}),
-		log:       log,
-	}
-
-	attendees, err := getAttendeesChannelFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get attendees: %v", err)
-	}
-
-	for _, attendee := range attendees {
-		channel.attendees[attendee] = struct{}{}
-	}
-
-	witnesses, err := getWitnessChannelFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get witnesses: %v", err)
-	}
-
-	for _, witness := range witnesses {
-		channel.witnesses[witness] = struct{}{}
-	}
-
-	inbox, err := inbox.CreateInboxFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load inbox: %v", err)
-	}
-
-	channel.inbox = inbox
-
-	return &channel, nil
-}
-
-func getAttendeesChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
-	query := `
-		SELECT
-			attendee_key
-		FROM
-			lao_attendee
-		WHERE
-			lao_channel_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]string, 0)
-
-	for rows.Next() {
-		var attendeeKey string
-
-		err = rows.Scan(&attendeeKey)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		result = append(result, attendeeKey)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
-}
-
-func getWitnessChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
-	query := `
-		SELECT
-			pub_key
-		FROM
-			lao_witness
-		WHERE
-			lao_channel_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]string, 0)
-
-	for rows.Next() {
-		var pubKey string
-
-		err = rows.Scan(&pubKey)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		result = append(result, pubKey)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
 }

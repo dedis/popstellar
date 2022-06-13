@@ -82,8 +82,7 @@ public class TransactionObject {
 
     //Through the inputs look at the sender
     while (inputIte.hasNext()) {
-      PublicKey currentSender = new PublicKey(inputIte.next().getScript().getPubkey());
-      senders.add(currentSender);
+      senders.add(inputIte.next().getScript().getPubkey());
     }
 
     return senders;
@@ -173,13 +172,13 @@ public class TransactionObject {
    * @param receiver Public Key of a potential receiver
    * @return int amount of Lao Coin
    */
-  public int getMiniLaoPerReceiver(PublicKey receiver) {
+  public long getMiniLaoPerReceiver(PublicKey receiver) {
     // Check in the future if useful
     if (!isReceiver(receiver)) {
       throw new IllegalArgumentException("The public Key is not contained in the receiver public key");
     }
     // Set the return value to nothing
-    int miniLao = 0;
+    long miniLao = 0;
     // Compute the hash of the public key
     String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key

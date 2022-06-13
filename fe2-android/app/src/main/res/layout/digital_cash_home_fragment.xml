@@ -25,10 +25,22 @@
       android:gravity="center"
       style="@style/title_style"
       android:text="@string/digital_cash_home"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_address"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_home_address"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/digital_cash_home_address"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      style="@style/style_border"
+      android:text="@string/digital_cash_my_address"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_home_title"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_address" />
 
     <TextView
       android:id="@+id/digital_cash_send_address"
@@ -40,7 +52,7 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_home_title" />
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_home_address" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -88,8 +88,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
       case Seq(id@JsString(_), question@JsString(_)) =>
 
-        val voteOpt: Option[Int] = json.asJsObject.getFields(PARAM_VOTE) match {
-          case Seq(vote@JsNumber(_)) => Some(vote.convertTo[Int])
+        val voteOpt: Option[Either[Int, Base64Data]] = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(JsNumber(value)) => Some(Left(value.intValue))
+          case Seq(JsString(s)) => Some(Right(Base64Data(s)))
           case _ => None
         }
         val writeInOpt: Option[String] = json.asJsObject.getFields(PARAM_WRITE_IN) match {
@@ -356,6 +357,24 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   }
 
+  implicit object RollCallDataFormat extends JsonFormat[RollCallData] {
+    final private val PARAM_UPDATE_ID: String = "update_id"
+    final private val PARAM_STATE: String = "state"
+
+    override def read(json: JsValue): RollCallData = json.asJsObject().getFields(PARAM_UPDATE_ID, PARAM_STATE) match {
+      case Seq(updateId@JsString(_), state@JsString(_)) => RollCallData(
+        updateId.convertTo[Hash],
+        state.convertTo[ActionType]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RollcallData object")
+    }
+
+    override def write(obj: RollCallData): JsValue = JsObject(
+      PARAM_UPDATE_ID -> obj.updateId.toJson,
+      PARAM_STATE -> obj.state.toJson
+    )
+  }
+
   implicit object ElectionDataFormat extends JsonFormat[ElectionData] {
     final private val PARAM_ELECTION_ID: String = "electionId"
     final private val PARAM_PRIVATE_KEY: String = "privateKey"
@@ -374,7 +393,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_PRIVATE_KEY -> obj.keyPair.privateKey.toJson,
       PARAM_PUBLIC_KEY -> obj.keyPair.publicKey.toJson
     )
-
   }
 
   implicit object LaoDataFormat extends JsonFormat[LaoData] {

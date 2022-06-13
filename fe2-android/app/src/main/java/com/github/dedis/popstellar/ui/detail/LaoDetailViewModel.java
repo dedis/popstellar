@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
@@ -162,8 +163,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
-  private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes =
-      new MutableLiveData<>();
+  private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
           mCurrentLao,
@@ -339,14 +339,15 @@ public class LaoDetailViewModel extends AndroidViewModel
    */
   public void sendVote(List<ElectionVote> votes) {
     Election election = mCurrentElection.getValue();
+
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
       return;
     }
     Log.d(
-        TAG,
-        "sending a new vote in election : "
-            + election
+            TAG,
+            "sending a new vote in election : "
+                    + election
             + " with election start time"
             + election.getStartTimestamp());
     Lao lao = getCurrentLaoValue();
@@ -357,14 +358,22 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote castVote = new CastVote(votes, election.getId(), lao.getId());
+      CastVote vote;
+      // Construct the cast vote depending if the messages need to be encrypted or not
+      if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+        vote = new CastVote<>(votes, election.getId(), lao.getId());
+      } else {
+        List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
+        vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
+        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
+                .show();
+      }
       Channel electionChannel = election.getChannel();
-
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
           networkManager
               .getMessageSender()
-              .publish(token, electionChannel, castVote)
+              .publish(token, electionChannel, vote)
               .doFinally(this::openLaoDetail)
               .subscribe(
                   () -> {
@@ -381,6 +390,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
+
 
   /**
    * Creates new Election event.
@@ -894,6 +904,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     mCurrentElection.setValue(e);
   }
 
+  public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
+    return mCurrentElectionVotes;
+  }
+
   public RollCall getCurrentRollCall() {
     return mCurrentRollCall.getValue();
   }
@@ -902,23 +916,22 @@ public class LaoDetailViewModel extends AndroidViewModel
     mCurrentRollCall.setValue(rc);
   }
 
-  public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {
-    return mCurrentElectionVotes;
-  }
-
-  public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
+  public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
     if (currentElectionVotes == null) {
       throw new IllegalArgumentException();
     }
     mCurrentElectionVotes.setValue(currentElectionVotes);
   }
 
-  public void setCurrentElectionQuestionVotes(List<Integer> votes, int position) {
-    if (votes == null || position < 0 || position >= mCurrentElectionVotes.getValue().size()) {
+  public void setCurrentElectionQuestionVotes(Integer votes, int position) {
+    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
       throw new IllegalArgumentException();
     }
-
-    mCurrentElectionVotes.getValue().set(position, votes);
+    if (mCurrentElectionVotes.getValue().size() <= position) {
+      mCurrentElectionVotes.getValue().add(votes);
+    } else {
+      mCurrentElectionVotes.getValue().set(position, votes);
+    }
   }
 
   /*
