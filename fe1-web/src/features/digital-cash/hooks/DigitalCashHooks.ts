@@ -26,12 +26,27 @@ export namespace DigitalCashHooks {
   export const useIsLaoOrganizer = (laoId: string) =>
     useDigitalCashContext().useIsLaoOrganizer(laoId);
 
+  /**
+   * Gets the roll call tokens for a given lao id
+   */
   export const useRollCallTokensByLaoId = (laoId: string) =>
     useDigitalCashContext().useRollCallTokensByLaoId(laoId);
 
+  /**
+   * Gets the roll call tokens for a given lao id and a given roll call id
+   */
   export const useRollCallTokenByRollCallId = (laoId: string, rollCallId: string) =>
     useDigitalCashContext().useRollCallTokenByRollCallId(laoId, rollCallId);
 
+  /**
+   * Gets the roll call for a given id
+   */
   export const useRollCallById = (rollCallId: Hash | string) =>
     useDigitalCashContext().useRollCallById(rollCallId);
+
+  /**
+   * Gets all roll calls for a given lao id
+   */
+  export const useRollCallsByLaoId = (laoId: string) =>
+    useDigitalCashContext().useRollCallsByLaoId(laoId);
 }

@@ -29,6 +29,7 @@ const DigitalCashWallet = () => {
   const { laoId } = route.params;
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
+  const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
   const rollCallTokens = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
 
@@ -45,8 +46,35 @@ const DigitalCashWallet = () => {
       <Text style={Typography.paragraph}>{STRINGS.digital_cash_wallet_description}</Text>
 
       <View style={List.container}>
+        {isOrganizer && (
+          <ListItem
+            containerStyle={List.getListItemStyles(true, rollCallTokens.length === 0)}
+            style={List.getListItemStyles(true, rollCallTokens.length === 0)}
+            bottomDivider
+            onPress={() => {
+              navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
+                laoId,
+                isCoinbase: true,
+              });
+            }}>
+            <ListItem.Content>
+              <ListItem.Title style={Typography.base}>
+                {STRINGS.digital_cash_coin_issuance}
+              </ListItem.Title>
+              <ListItem.Subtitle style={Typography.small}>
+                {STRINGS.digital_cash_coin_issuance_description}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+            <ListItem.Title style={Typography.base}>$∞</ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+        )}
+
         {rollCallTokens.map((rollCallToken, idx) => {
-          const listStyle = List.getListItemStyles(idx === 0, idx === rollCallTokens.length - 1);
+          const listStyle = List.getListItemStyles(
+            !isOrganizer && idx === 0,
+            idx === rollCallTokens.length - 1,
+          );
 
           return (
             <ListItem
@@ -58,13 +86,14 @@ const DigitalCashWallet = () => {
                 navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
                   laoId,
                   rollCallId: rollCallToken.rollCallId.valueOf(),
+                  isCoinbase: false,
                 });
               }}>
               <ListItem.Content>
                 <ListItem.Title style={Typography.base}>
                   {rollCallToken.rollCallName}
                 </ListItem.Title>
-                <ListItem.Subtitle style={Typography.small} numberOfLines={undefined}>
+                <ListItem.Subtitle style={Typography.small} numberOfLines={1}>
                   {rollCallToken.rollCallId.valueOf()}
                 </ListItem.Subtitle>
               </ListItem.Content>

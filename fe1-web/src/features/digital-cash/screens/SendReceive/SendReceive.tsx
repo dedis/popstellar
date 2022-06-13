@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, StyleSheet, Switch, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Modal, StyleSheet, Text, TextStyle, View } from 'react-native';
 import {
   ScrollView,
   TouchableOpacity,
@@ -9,7 +9,7 @@ import {
 } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
-import { Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
+import { DropdownSelector, Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -37,46 +37,44 @@ const styles = StyleSheet.create({
     color: Color.inactive,
     textAlign: 'center',
   } as TextStyle,
-  issuanceBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  } as ViewStyle,
-  switchBox: {
-    padding: Spacing.contentSpacing,
-    justifyContent: 'center',
-    alignItems: 'center',
-  } as ViewStyle,
 });
 
 const SendReceive = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
 
-  const { laoId, rollCallId, scannedPoPToken } = route.params;
+  const { laoId, rollCallId, isCoinbase, scannedPoPToken } = route.params;
 
-  const rollCall = DigitalCashHooks.useRollCallById(rollCallId);
+  // will be undefined for the organizer
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
 
-  if (!rollCall) {
-    throw new Error('The selected roll call is not defined');
-  }
+  const allRollCalls = DigitalCashHooks.useRollCallsByLaoId(laoId);
 
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
-
-  const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
+  // will always be '' in non-coinbase transactions, indicates a single beneficiary
+  const [selectedRollCallId, setSelectedRollCallId] = useState<string>('');
+  const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId || '');
 
   const [beneficiary, setBeneficiary] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
-  // isCoinbase and issueToAllRollCallParticipants
-  const [coinbaseState, setCoinbaseState] = useState<[boolean, boolean]>([false, false]);
+  if (!(rollCallId || isCoinbase)) {
+    throw new Error(
+      'The source of a transaction must either be a roll call token or it must be a coinbase transaction',
+    );
+  }
 
   const balanceSelector = useMemo(() => {
+    if (isCoinbase) {
+      return () => Number.POSITIVE_INFINITY;
+    }
+
     if (rollCallToken) {
       return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
     }
+
     return () => 0;
-  }, [rollCallToken, laoId]);
+  }, [isCoinbase, rollCallToken, laoId]);
 
   const balance = useSelector(balanceSelector);
 
@@ -84,38 +82,41 @@ const SendReceive = () => {
     if (scannedPoPToken) {
       setBeneficiary(scannedPoPToken);
     }
-    return () => {};
   }, [scannedPoPToken]);
 
   const onSendTransaction = () => {
-    if (!rollCallToken) {
-      throw new Error('The roll call token is not defined');
-    }
-
     if (beneficiary === '') {
       setError(STRINGS.digital_cash_wallet_add_beneficiary);
       return;
     }
 
-    if (Number.isNaN(amount)) {
+    const intAmount = Number.parseInt(amount, 10);
+
+    if (Number.isNaN(intAmount) || intAmount < 0) {
       setError(STRINGS.digital_cash_wallet_amount_must_be_number);
       return;
     }
 
-    const intAmount = Number.parseInt(amount, 10);
-    if (!coinbaseState[0] && intAmount > balance) {
+    if (!isCoinbase && intAmount > balance) {
       setError(STRINGS.digital_cash_wallet_amount_too_high);
       return;
     }
 
     let transactionPromise: Promise<void>;
 
-    if (coinbaseState[0]) {
-      if (!rollCall.attendees) {
-        throw new Error('The selected roll call has no attendees');
-      }
+    if (isCoinbase) {
+      let beneficiaries: PublicKey[] = [];
 
-      const beneficiaries = coinbaseState[1] ? rollCall.attendees : [new PublicKey(beneficiary)];
+      if (selectedRollCallId !== '') {
+        if (!selectedRollCall) {
+          throw new Error(
+            'Something went terribly wrong, an invalid roll call id could be selected by the user!',
+          );
+        }
+        beneficiaries = selectedRollCall.attendees || [];
+      } else {
+        beneficiaries = [new PublicKey(beneficiary)];
+      }
 
       transactionPromise = requestCoinbaseTransaction(
         KeyPairStore.get(),
@@ -124,6 +125,10 @@ const SendReceive = () => {
         new Hash(laoId),
       );
     } else {
+      if (!rollCallToken) {
+        throw new Error('The roll call token is not defined');
+      }
+
       transactionPromise = requestSendTransaction(
         rollCallToken.token,
         new PublicKey(beneficiary),
@@ -147,50 +152,41 @@ const SendReceive = () => {
   };
 
   const cannotSendTransaction =
-    Number.isNaN(amount) ||
-    (!coinbaseState[0] && balance < Number.parseInt(amount, 10)) ||
-    amount === '';
+    Number.isNaN(amount) || (!isCoinbase && balance < Number.parseInt(amount, 10)) || amount === '';
 
   return (
     <ScreenWrapper>
       <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.digital_cash_wallet_balance}: ${balance}
+        {STRINGS.digital_cash_wallet_balance}: ${Number.isFinite(balance) ? balance : '∞'}
       </Text>
       <Text style={Typography.paragraph}>
         {STRINGS.digital_cash_wallet_transaction_description}
       </Text>
-      {isOrganizer && (
-        <>
-          <Text style={Typography.paragraph}>{STRINGS.digital_cash_coin_issuance_description}</Text>
-          <View style={styles.issuanceBox}>
-            <View style={styles.switchBox}>
-              <Text>{STRINGS.digital_cash_wallet_this_is_a_coin_issuance}</Text>
-              <Switch
-                value={coinbaseState[0]}
-                onValueChange={() => setCoinbaseState([!coinbaseState[0], coinbaseState[1]])}
-              />
-            </View>
-          </View>
-          {coinbaseState[0] && (
-            <View style={styles.switchBox}>
-              <Text>{STRINGS.digital_cash_wallet_issue_to_every_participants}</Text>
-              <Switch
-                value={coinbaseState[1]}
-                onValueChange={() => setCoinbaseState([coinbaseState[0], !coinbaseState[1]])}
-              />
-            </View>
-          )}
-        </>
-      )}
       <View>
         <Text style={[Typography.paragraph, Typography.important]}>
           {STRINGS.digital_cash_wallet_beneficiary}
         </Text>
-        {coinbaseState[1] ? (
-          <Text style={Typography.paragraph}>
-            {`${STRINGS.digital_cash_wallet_all_participants_of_roll_call} ${rollCallToken?.rollCallName}`}
-          </Text>
-        ) : (
+        {isCoinbase && (
+          <DropdownSelector
+            selected={selectedRollCallId}
+            onChange={(value) => {
+              if (value !== null) {
+                setSelectedRollCallId(value);
+              }
+            }}
+            options={[
+              {
+                value: '',
+                label: STRINGS.digital_cash_wallet_issue_single_beneficiary,
+              },
+              ...Object.entries(allRollCalls).map(([rcId, rc]) => ({
+                value: rcId,
+                label: `${STRINGS.digital_cash_wallet_issue_all_attendees} "${rc.name}"`,
+              })),
+            ]}
+          />
+        )}
+        {selectedRollCallId === '' && (
           <ScannerInput
             value={beneficiary}
             onChange={setBeneficiary}
@@ -231,14 +227,18 @@ export const SendReceiveHeaderRight = () => {
 
   const route = useRoute<NavigationProps['route']>();
 
-  const { laoId, rollCallId } = route.params;
+  const { laoId, rollCallId, isCoinbase } = route.params;
 
   const [publicKey, setPublicKey] = useState('');
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
 
   useEffect(() => {
     setPublicKey(rollCallToken?.token.publicKey.valueOf() || '');
   }, [rollCallToken]);
+
+  if (isCoinbase) {
+    return null;
+  }
 
   return (
     <>

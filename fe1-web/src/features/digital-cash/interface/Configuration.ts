@@ -54,6 +54,7 @@ export type DigitalCashReactContext = Pick<
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
   | 'useRollCallById'
+  | 'useRollCallsByLaoId'
   | 'useRollCallTokensByLaoId'
   | 'useRollCallTokenByRollCallId'
 >;

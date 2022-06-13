@@ -37,6 +37,7 @@ export function compose(
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: configuration.useRollCallTokenByRollCallId,
+      useRollCallsByLaoId: configuration.useRollCallsByLaoId,
     },
   };
 }

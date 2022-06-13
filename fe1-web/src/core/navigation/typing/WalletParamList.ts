@@ -15,7 +15,9 @@ export type WalletParamList = {
 
   [STRINGS.navigation_wallet_digital_cash_send_receive]: {
     laoId: string;
-    rollCallId: string;
+    /* undefined indicates coinbase transactions (coin issuance from the organizer) */
+    rollCallId?: string;
+    isCoinbase: boolean;
 
     /* parameters used to return from the scanner */
     scannedPoPToken?: string;
@@ -23,6 +25,6 @@ export type WalletParamList = {
 
   [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {
     laoId: string;
-    rollCallId: string;
+    rollCallId?: string;
   };
 };
