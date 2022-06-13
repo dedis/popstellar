@@ -126,7 +126,7 @@ assembly/ assemblyMergeStrategy := {
 
 // ------------------------ DEPENDENCIES ------------------------ 77
 
-val AkkaVersion = "2.6.8"
+val AkkaVersion = "2.6.19"
 val AkkaHttpVersion = "10.2.0"
 
 libraryDependencies ++= Seq(
