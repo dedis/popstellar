@@ -124,7 +124,7 @@ export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
 
 /**
- * Selector for mapping between public key hashes and balance
+ * Selector for the mapping between public key hashes and balances
  * @param laoId the lao in which to search for the balances mapping
  */
 export const makeBalancesSelector = (laoId: Hash | string) =>
@@ -136,7 +136,7 @@ export const makeBalancesSelector = (laoId: Hash | string) =>
   );
 
 /**
- * Balance selector
+ * Selector for the balance of a user
  * @param laoId the lao in which to search for the balance
  * @param publicKey the public key that possesses this balance
  */

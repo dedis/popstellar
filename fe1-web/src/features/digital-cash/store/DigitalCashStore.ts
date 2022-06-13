@@ -4,7 +4,15 @@ import { getStore } from 'core/redux';
 import { TransactionState } from '../objects/transaction';
 import { getDigitalCashState } from '../reducer';
 
+/**
+ * Digital cash namespace to access the digital cash store
+ *
+ * Those functions should not be called inside a component
+ */
 export namespace DigitalCashStore {
+  /**
+   * Get all transactions from a lao
+   */
   export function getTransactionsById(laoId: string): Record<string, TransactionState> {
     return getDigitalCashState(getStore().getState()).byLaoId[laoId]?.transactionsByHash || {};
   }

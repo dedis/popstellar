@@ -42,7 +42,7 @@ const filledState = {
   },
 };
 
-describe('digital cash reducer', () => {
+describe('Digital Cash reducer', () => {
   it('should return the initial state', () => {
     expect(digitalCashReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
@@ -55,22 +55,24 @@ describe('digital cash reducer', () => {
       ),
     ).toEqual(filledState);
   });
-});
-describe('make balance selector', () => {
-  it('should be able to recover a balance', () => {
-    expect(
-      makeBalanceSelector(
-        new Hash(mockLaoId),
-        mockCoinbaseTransactionJSON.inputs[0].script.pubkey,
-      )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
-    ).toEqual(100);
-  });
-  it('should return 0 when public key is not found', () => {
-    expect(
-      makeBalanceSelector(
-        new Hash(mockLaoId),
-        'pubkey',
-      )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
-    ).toEqual(0);
+
+  describe('make balance selector', () => {
+    it('should be able to recover a balance', () => {
+      expect(
+        makeBalanceSelector(
+          new Hash(mockLaoId),
+          mockCoinbaseTransactionJSON.inputs[0].script.pubkey,
+        )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
+      ).toEqual(100);
+    });
+
+    it('should return 0 when public key is not found', () => {
+      expect(
+        makeBalanceSelector(
+          new Hash(mockLaoId),
+          'pubkey',
+        )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
+      ).toEqual(0);
+    });
   });
 });

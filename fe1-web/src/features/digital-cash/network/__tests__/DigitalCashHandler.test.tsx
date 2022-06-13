@@ -85,6 +85,7 @@ describe('DigitalCash handler', () => {
     };
     expect(handleTransactionPost(mockAddTransaction, mockGetLaoOrganizer)(mockMessage)).toBeFalse();
   });
+
   it('should return false when organizer did not sign the coinbase transaction', () => {
     const mockMessage = createMockMessage(mockCoinbasePost);
     expect(

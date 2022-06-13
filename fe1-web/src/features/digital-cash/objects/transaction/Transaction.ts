@@ -201,7 +201,7 @@ export class Transaction {
     // Concatenate the data to sign
     const dataString = Transaction.concatenateTxData([input], outputs);
 
-    // Sign with the popToken
+    // Sign with the organizer's key
     const signature = organizerKP.privateKey.sign(Base64UrlData.encode(dataString));
 
     // Reconstruct the inputs with the signature of the organizer
@@ -236,10 +236,15 @@ export class Transaction {
         .filter(
           (output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf(),
         )
-        .map((output, index) => ({
-          txOutHash: tr.transactionId!.valueOf(),
-          txOutIndex: index,
-        })),
+        .map((output, index) => {
+          if (!tr.transactionId) {
+            throw new Error('The transaction hash of an input is undefined');
+          }
+          return {
+            txOutHash: tr.transactionId.valueOf(),
+            txOutIndex: index,
+          };
+        }),
     );
 
   /**

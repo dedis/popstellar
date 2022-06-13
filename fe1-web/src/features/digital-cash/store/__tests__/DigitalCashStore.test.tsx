@@ -33,9 +33,7 @@ const filledState = {
 
 jest.mock('features/digital-cash/reducer/DigitalCashReducer');
 
-beforeAll(() => {
-  (getDigitalCashState as jest.Mock).mockReturnValue(filledState);
-});
+(getDigitalCashState as jest.Mock).mockReturnValue(filledState);
 
 describe('Digital Cash Store', () => {
   it('should be able to recover a balance', () => {
@@ -43,12 +41,15 @@ describe('Digital Cash Store', () => {
       mockTransactionValue,
     );
   });
+
   it('should recover 0 as a balance if public key is not found', () => {
     expect(DigitalCashStore.getBalance(mockLaoId, 'pk')).toEqual(0);
   });
+
   it('should recover 0 as a balance if lao id is not found', () => {
     expect(DigitalCashStore.getBalance('mockId', mockKeyPair.publicKey.valueOf())).toEqual(0);
   });
+
   it('should recover the transaction by public key correctly', () => {
     expect(
       DigitalCashStore.getTransactionsByPublicKey(
@@ -57,11 +58,13 @@ describe('Digital Cash Store', () => {
       ),
     ).toEqual([mockTransaction]);
   });
+
   it('should recover an empty array if lao id is not found', () => {
     expect(
       DigitalCashStore.getTransactionsByPublicKey('mockId', mockKeyPair.publicKey.valueOf()),
     ).toEqual([]);
   });
+
   it('should recover an empty array if public key is not found', () => {
     expect(DigitalCashStore.getTransactionsByPublicKey('mockId', 'publicKey')).toEqual([]);
   });

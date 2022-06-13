@@ -119,13 +119,16 @@ describe('Transaction', () => {
     const coinbaseTransaction = Transaction.fromState(validCoinbaseState);
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
+
   it('should be able to do a JSON round trip', () => {
     const coinbaseTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
     expect(coinbaseTransaction.toJSON()).toEqual(mockCoinbaseTransactionJSON);
   });
+
   it('should fail to create a transaction with invalid hash', () => {
     expect(() => Transaction.fromJSON(mockCoinbaseTransactionJSON, 'hash')).toThrow(Error);
   });
+
   it('should be able to create a transaction from a valid partial transaction', () => {
     const transactionObject = {
       version: validCoinbaseState.version,
@@ -138,9 +141,11 @@ describe('Transaction', () => {
     const coinbaseTransaction = new Transaction(transactionObject);
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
+
   it('should fail to create a transaction from a undefined object', () => {
     expect(() => new Transaction({})).toThrow(Error);
   });
+
   it('should fail to create a transaction from a partial transaction without version', () => {
     const transactionObject = {
       lockTime: validCoinbaseState.lockTime,
@@ -151,6 +156,7 @@ describe('Transaction', () => {
     };
     expect(() => new Transaction(transactionObject)).toThrow(Error);
   });
+
   it('should fail to create a transaction from a partial transaction without lockTime', () => {
     const transactionObject = {
       version: validCoinbaseState.version,
@@ -161,6 +167,7 @@ describe('Transaction', () => {
     };
     expect(() => new Transaction(transactionObject)).toThrow(Error);
   });
+
   it('should fail to create a transaction from a partial transaction without inputs', () => {
     const transactionObject = {
       lockTime: validCoinbaseState.lockTime,
@@ -171,6 +178,7 @@ describe('Transaction', () => {
     };
     expect(() => new Transaction(transactionObject)).toThrow(Error);
   });
+
   it('should fail to create a transaction from a partial transaction without outputs', () => {
     const transactionObject = {
       lockTime: validCoinbaseState.lockTime,
@@ -179,6 +187,7 @@ describe('Transaction', () => {
     };
     expect(() => new Transaction(transactionObject)).toThrow(Error);
   });
+
   it('should fail to create a transaction from a partial transaction with empty inputs or outputs', () => {
     const transactionObject = {
       version: validCoinbaseState.version,
@@ -198,6 +207,7 @@ describe('Transaction', () => {
     };
     expect(() => new Transaction(transactionObject1)).toThrow(Error);
   });
+
   it('should be able to hash a transaction correctly', () => {
     const coinbaseTransaction = Transaction.fromState({
       ...validCoinbaseState,
@@ -205,6 +215,7 @@ describe('Transaction', () => {
     });
     expect(coinbaseTransaction.transactionId.valueOf()).toEqual(mockCBHash.valueOf());
   });
+
   it('should be able to create a coinbase transaction properly', () => {
     const coinbaseTransaction = Transaction.createCoinbase(
       mockKeyPair,
@@ -215,44 +226,7 @@ describe('Transaction', () => {
     expect(coinbaseTransaction.toJSON()).toEqual(mockCoinbaseTransactionJSON);
     expect(coinbaseTransaction.toState()).toEqual(validCoinbaseState);
   });
-  it('should validate a properly signed coinbase transaction', () => {
-    const coinbaseTransaction = Transaction.createCoinbase(
-      mockKeyPair,
-      [mockKeyPair.publicKey],
-      mockTransactionValue,
-    );
-    const isValid = coinbaseTransaction.checkTransactionValidity(
-      mockKeyPair.publicKey,
-      mockTransactionRecordByHash,
-    );
-    expect(isValid).toBeTrue();
-  });
-  it('should invalidate a badly signed transaction', () => {
-    const coinbaseTransaction = Transaction.createCoinbase(
-      mockKeyPair,
-      [mockKeyPair.publicKey],
-      mockTransactionValue,
-    );
-    const isValid = coinbaseTransaction.checkTransactionValidity(
-      new PublicKey(mockPublicKey2),
-      mockTransactionRecordByHash,
-    );
-    expect(isValid).toBeFalse();
-  });
-  it('should validate a properly signed transaction', () => {
-    const transaction = Transaction.create(
-      mockPopToken,
-      mockKeyPair.publicKey,
-      mockTransactionValue,
-      mockTransactionValue,
-      [validCoinbaseState],
-    );
-    const isValid = transaction.checkTransactionValidity(
-      new PublicKey(mockPublicKey2),
-      mockTransactionRecordByHash,
-    );
-    expect(isValid).toBeTrue();
-  });
+
   it('should be able to create a transaction from other valid transaction inputs', () => {
     const transaction = Transaction.create(
       mockPopToken,
@@ -263,6 +237,7 @@ describe('Transaction', () => {
     );
     expect(transaction.toState()).toEqual(mockTransactionState);
   });
+
   it('should be able to create a transaction with split outputs', () => {
     const transaction = Transaction.create(
       mockPopToken,
@@ -273,6 +248,7 @@ describe('Transaction', () => {
     );
     expect(transaction.toState()).toEqual(validTransactionState1);
   });
+
   it('should fail to create a transaction from empty transaction inputs', () => {
     expect(() =>
       Transaction.create(
@@ -284,6 +260,7 @@ describe('Transaction', () => {
       ),
     ).toThrow(Error);
   });
+
   it('should fail to create a transaction from invalid transaction inputs', () => {
     expect(() =>
       Transaction.create(
@@ -294,5 +271,48 @@ describe('Transaction', () => {
         [randomTransactionState],
       ),
     ).toThrow(Error);
+  });
+
+  describe('validation', () => {
+    it('should validate a properly signed coinbase transaction', () => {
+      const coinbaseTransaction = Transaction.createCoinbase(
+        mockKeyPair,
+        [mockKeyPair.publicKey],
+        mockTransactionValue,
+      );
+      const isValid = coinbaseTransaction.checkTransactionValidity(
+        mockKeyPair.publicKey,
+        mockTransactionRecordByHash,
+      );
+      expect(isValid).toBeTrue();
+    });
+
+    it('should invalidate a badly signed transaction', () => {
+      const coinbaseTransaction = Transaction.createCoinbase(
+        mockKeyPair,
+        [mockKeyPair.publicKey],
+        mockTransactionValue,
+      );
+      const isValid = coinbaseTransaction.checkTransactionValidity(
+        new PublicKey(mockPublicKey2),
+        mockTransactionRecordByHash,
+      );
+      expect(isValid).toBeFalse();
+    });
+
+    it('should validate a properly signed transaction', () => {
+      const transaction = Transaction.create(
+        mockPopToken,
+        mockKeyPair.publicKey,
+        mockTransactionValue,
+        mockTransactionValue,
+        [validCoinbaseState],
+      );
+      const isValid = transaction.checkTransactionValidity(
+        new PublicKey(mockPublicKey2),
+        mockTransactionRecordByHash,
+      );
+      expect(isValid).toBeTrue();
+    });
   });
 });

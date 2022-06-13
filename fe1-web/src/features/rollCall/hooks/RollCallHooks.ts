@@ -134,7 +134,9 @@ export namespace RollCallHooks {
       // allows the promise to be cancelled in cases of re-rendering the component
       let wasCanceled = false;
 
-      if (!rollCall) return undefined;
+      if (!rollCall) {
+        return undefined;
+      }
 
       generate(new Hash(laoId), rollCall.id)
         .then(

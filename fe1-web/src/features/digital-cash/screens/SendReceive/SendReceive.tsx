@@ -84,71 +84,79 @@ const SendReceive = () => {
     }
   }, [scannedPoPToken]);
 
-  const onSendTransaction = () => {
+  const checkBeneficiaryValidity = (): boolean => {
     if (!isCoinbase && beneficiary === '') {
       setError(STRINGS.digital_cash_wallet_add_beneficiary);
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const checkAmountValidity = (): boolean => {
     const intAmount = Number.parseInt(amount, 10);
 
     if (Number.isNaN(intAmount) || intAmount < 0) {
       setError(STRINGS.digital_cash_wallet_amount_must_be_number);
-      return;
+      return false;
     }
 
     if (!isCoinbase && intAmount > balance) {
       setError(STRINGS.digital_cash_wallet_amount_too_high);
-      return;
+      return false;
     }
+    return true;
+  };
 
-    let transactionPromise: Promise<void>;
+  const onSendTransaction = () => {
+    if (checkAmountValidity() && checkBeneficiaryValidity()) {
+      let transactionPromise: Promise<void>;
 
-    if (isCoinbase) {
-      let beneficiaries: PublicKey[] = [];
+      if (isCoinbase) {
+        let beneficiaries: PublicKey[] = [];
 
-      if (selectedRollCallId !== '') {
-        if (!selectedRollCall) {
-          throw new Error(
-            'Something went terribly wrong, an invalid roll call id could be selected by the user!',
-          );
+        if (selectedRollCallId !== '') {
+          if (!selectedRollCall) {
+            throw new Error(
+              'Something went terribly wrong, an invalid roll call id could be selected by the user!',
+            );
+          }
+          beneficiaries = selectedRollCall.attendees || [];
+        } else {
+          beneficiaries = [new PublicKey(beneficiary)];
         }
-        beneficiaries = selectedRollCall.attendees || [];
+
+        transactionPromise = requestCoinbaseTransaction(
+          KeyPairStore.get(),
+          beneficiaries,
+          Number.parseInt(amount, 10),
+          new Hash(laoId),
+        );
       } else {
-        beneficiaries = [new PublicKey(beneficiary)];
+        if (!rollCallToken) {
+          throw new Error('The roll call token is not defined');
+        }
+
+        transactionPromise = requestSendTransaction(
+          rollCallToken.token,
+          new PublicKey(beneficiary),
+          Number.parseInt(amount, 10),
+          rollCallToken.laoId,
+        );
       }
 
-      transactionPromise = requestCoinbaseTransaction(
-        KeyPairStore.get(),
-        beneficiaries,
-        Number.parseInt(amount, 10),
-        new Hash(laoId),
-      );
-    } else {
-      if (!rollCallToken) {
-        throw new Error('The roll call token is not defined');
-      }
+      transactionPromise
+        .then(() => {
+          navigation.goBack();
+          console.log('Coinbase transaction sent');
+        })
+        .catch((reason) => {
+          const errorMessage = 'toString' in reason ? reason.toString() : 'Unknown error';
 
-      transactionPromise = requestSendTransaction(
-        rollCallToken.token,
-        new PublicKey(beneficiary),
-        Number.parseInt(amount, 10),
-        rollCallToken.laoId,
-      );
+          const err = `Coinbase transaction failed: ${errorMessage}`;
+          setError(err);
+          console.log(err);
+        });
     }
-
-    transactionPromise
-      .then(() => {
-        navigation.goBack();
-        console.log('Coinbase transaction sent');
-      })
-      .catch((reason) => {
-        const errorMessage = 'toString' in reason ? reason.toString() : 'Unknown error';
-
-        const err = `Coinbase transaction failed: ${errorMessage}`;
-        setError(err);
-        console.log(err);
-      });
   };
 
   const cannotSendTransaction =
