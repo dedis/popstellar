@@ -195,7 +195,6 @@ public class LaoTest {
   public void getRollCall() {
     RollCall r1 = new RollCall(rollCallId1);
     RollCall r2 = new RollCall(rollCallId1);
-    assertThrows(NoRollCallException.class, () -> LAO_1.lastRollCallClosed());
     LAO_1.setRollCalls(
         new HashMap<String, RollCall>() {
           {
