@@ -4745,7 +4745,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -4759,7 +4759,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      2
+                                      4
                                     </Text>
                                   </View>
                                 </View>
@@ -4894,7 +4894,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -4908,7 +4908,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      4
+                                      2
                                     </Text>
                                   </View>
                                 </View>
@@ -5233,7 +5233,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -5247,7 +5247,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      1
+                                      10
                                     </Text>
                                   </View>
                                 </View>
@@ -5382,7 +5382,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -5396,7 +5396,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      10
+                                      1
                                     </Text>
                                   </View>
                                 </View>
@@ -11117,7 +11117,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -11131,7 +11131,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      2
+                                      4
                                     </Text>
                                   </View>
                                 </View>
@@ -11266,7 +11266,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -11280,7 +11280,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      4
+                                      2
                                     </Text>
                                   </View>
                                 </View>
@@ -11605,7 +11605,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -11619,7 +11619,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      1
+                                      10
                                     </Text>
                                   </View>
                                 </View>
@@ -11754,7 +11754,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -11768,7 +11768,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      10
+                                      1
                                     </Text>
                                   </View>
                                 </View>
