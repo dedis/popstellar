@@ -127,7 +127,7 @@ assembly/ assemblyMergeStrategy := {
 // ------------------------ DEPENDENCIES ------------------------ 77
 
 val AkkaVersion = "2.6.19"
-val AkkaHttpVersion = "10.2.0"
+val AkkaHttpVersion = "10.2.9"
 
 libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,   // Akka streams (Graph)
