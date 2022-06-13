@@ -144,7 +144,7 @@ libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
 libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
 
 // Json Parser (https://github.com/spray/spray-json)
-libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
+libraryDependencies += "io.spray" %%  "spray-json" % "1.3.6"
 
 // Cryptography
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
