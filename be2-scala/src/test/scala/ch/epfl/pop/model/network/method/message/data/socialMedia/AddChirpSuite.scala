@@ -29,7 +29,7 @@ class AddChirpSuite extends FunSuite with Matchers {
 object AddChirpExample {
   final val TEXT: String = "text"
   final val PARENT_ID: Option[String] = None
-  final val TIMESTAMP = Timestamp(0)
+  final val TIMESTAMP: Timestamp = Timestamp(0)
 
   final val ADDCHIRP_MESSAGE: AddChirp = AddChirp(TEXT, PARENT_ID, TIMESTAMP)
 }

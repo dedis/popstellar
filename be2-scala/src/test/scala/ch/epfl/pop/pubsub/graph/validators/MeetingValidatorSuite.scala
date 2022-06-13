@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
+import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
@@ -22,7 +23,6 @@ import util.examples.JsonRpcRequestExample._
 
 import java.io.File
 import java.util.concurrent.TimeUnit
-import scala.reflect.io.Directory
 
 class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
     with FunSuiteLike
@@ -42,8 +42,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     TestKit.shutdownActorSystem(system)
 
     // Deletes the test database
-    val directory = new Directory(new File(DB_TEST_FOLDER))
-    directory.deleteRecursively()
+    val directory = new File(DB_TEST_FOLDER)
+    deleteRecursively(directory)
   }
 
   private final val sender: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))

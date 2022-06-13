@@ -7,6 +7,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
+import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -16,8 +17,6 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.data.PostTransactionMessages._
-
-import scala.reflect.io.Directory
 
 class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSystem"))
     with FunSuiteLike
@@ -34,8 +33,8 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
     TestKit.shutdownActorSystem(system)
 
     // Deletes the test database
-    val directory = new Directory(new File(DB_TEST_FOLDER))
-    directory.deleteRecursively()
+    val directory = new File(DB_TEST_FOLDER)
+    deleteRecursively(directory)
   }
 
   test("Posting a transaction works as intended") {

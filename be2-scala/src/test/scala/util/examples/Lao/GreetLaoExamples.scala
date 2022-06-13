@@ -14,8 +14,8 @@ object GreetLaoExamples {
   final val PEERS: List[String] = List.empty
   final val SIGNATURE: Signature = Signature(Base64Data(""))
 
-  final val wrongSender = PublicKey(Base64Data.encode("wrong_sender"))
-  final val wrongLao = Hash(Base64Data.encode("wrong_lao"))
+  final val wrongSender: PublicKey = PublicKey(Base64Data.encode("wrong_sender"))
+  final val wrongLao: Hash = Hash(Base64Data.encode("wrong_lao"))
   final val wrongAddress = "popdemo.dedis.ch"
 
   final val greetLao: GreetLao = GreetLao(LAO, SENDER, ADDRESS, PEERS)

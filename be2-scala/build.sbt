@@ -158,6 +158,5 @@ libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
 // Scala file system handling
-libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 conflictManager := ConflictManager.latestCompatible

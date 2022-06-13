@@ -21,7 +21,7 @@ final case class Transaction(
     outputs: List[Transaction.Output],
     lockTime: Int
 ) {
-  lazy val transactionId = {
+  lazy val transactionId: Hash = {
     val strings = collection.mutable.ListBuffer.empty[String]
     strings ++= inputs.foldRight(List.empty[String]) { (txin, acc) =>
       txin.script.pubkey.base64Data.toString ::

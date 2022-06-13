@@ -16,11 +16,11 @@ object SetupElectionExamples {
   final val ID: Hash = Hash(Base64Data("fSk3oxJfmhUlRzhpP2rLypTtxboGMhfFaaYKDeZn1SY="))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val ELECTION_NAME: String = "valid"
-  final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
-  final val NOT_STALE_START_TIME = Timestamp(1649089860L)
-  final val NOT_STALE_END_TIME = Timestamp(1649093440L)
+  final val NOT_STALE_CREATED_AT: Timestamp = Timestamp(1649089855L)
+  final val NOT_STALE_START_TIME: Timestamp = Timestamp(1649089860L)
+  final val NOT_STALE_END_TIME: Timestamp = Timestamp(1649093440L)
   final val ELECTION_ID: Hash = Hash.fromStrings("Election", LAO_ID.toString, NOT_STALE_CREATED_AT.toString, ELECTION_NAME)
-  final val QUESTIONS = List(ElectionQuestion(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), "valid", VOTING_METHOD, List("yes", "no"), false))
+  final val QUESTIONS: List[ElectionQuestion] = List(ElectionQuestion(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), "valid", VOTING_METHOD, List("yes", "no"), false))
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))

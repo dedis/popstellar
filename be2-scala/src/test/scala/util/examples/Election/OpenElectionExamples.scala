@@ -13,7 +13,7 @@ object OpenElectionExamples {
   final val SIGNATURE: Signature = SetupElectionExamples.SIGNATURE
 
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
-  final val NOT_STALE_OPENED_AT = Timestamp(1649089860L)
+  final val NOT_STALE_OPENED_AT: Timestamp = Timestamp(1649089860L)
   final val ELECTION_ID: Hash = Hash(Base64Data.encode("election"))
 
   val invalidTimestamp: Timestamp = Timestamp(0)

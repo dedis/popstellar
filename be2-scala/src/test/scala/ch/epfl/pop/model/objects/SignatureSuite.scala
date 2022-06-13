@@ -20,9 +20,9 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     TestObj(ed_signer, kpair)
   }
   // Data used for testing signature
-  final val dataTest = Seq("PoP-scala", "HelloWorld", "Not true is false", "😀", "OMEGA \u03A9", "\u03A8", "Non empty can be fully non empty", "Not false is true")
+  final val dataTest: Seq[String] = Seq("PoP-scala", "HelloWorld", "Not true is false", "😀", "OMEGA \u03A9", "\u03A8", "Non empty can be fully non empty", "Not false is true")
 
-  final val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
+  final val verify_pk: PublicKey = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
 
   /*Provides correct signature for a msg*/
   private def getTrueSignatureTest(msg: String): Signature = {

@@ -14,7 +14,7 @@ final case class Address(base64Data: Base64Data) {
 object Address {
 
   private val bytesCount = 20
-  val sha2_256 = MessageDigest.getInstance("SHA-256")
+  val sha2_256: MessageDigest = MessageDigest.getInstance("SHA-256")
 
   /** Compute the address of the given public key
     *

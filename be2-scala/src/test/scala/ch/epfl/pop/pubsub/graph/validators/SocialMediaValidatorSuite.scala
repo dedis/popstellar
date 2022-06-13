@@ -7,6 +7,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
+import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -17,8 +18,6 @@ import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample._
 import util.examples.socialMedia.AddChirpExamples
-
-import scala.reflect.io.Directory
 
 class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidatorTestActorSystem"))
     with FunSuiteLike
@@ -38,8 +37,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     TestKit.shutdownActorSystem(system)
 
     // Deletes the test database
-    val directory = new Directory(new File(DB_TEST_FOLDER))
-    directory.deleteRecursively()
+    val directory = new File(DB_TEST_FOLDER)
+    deleteRecursively(directory)
   }
 
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))

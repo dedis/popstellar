@@ -8,7 +8,7 @@ import spray.json._
 
 object AddChirpExamples {
 
-  final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
+  final val NOT_STALE_TIMESTAMP: Timestamp = Timestamp(1577833201L)
   final val SENDER_ADDCHIRP: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="))
 
   val invalidTimestamp: Timestamp = Timestamp(0)

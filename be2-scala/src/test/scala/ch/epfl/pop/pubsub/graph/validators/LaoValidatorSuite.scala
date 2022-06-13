@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Base64Data, ChannelData, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
@@ -19,8 +20,6 @@ import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample._
 
-import scala.reflect.io.Directory
-
 class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem"))
     with FunSuiteLike
     with ImplicitSender
@@ -38,8 +37,8 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     TestKit.shutdownActorSystem(system)
 
     // Deletes the test database
-    val directory = new Directory(new File(DB_TEST_FOLDER))
-    directory.deleteRecursively()
+    val directory = new File(DB_TEST_FOLDER)
+    deleteRecursively(directory)
   }
 
   test("LAO creation works as intended") {

@@ -4,7 +4,6 @@ import java.io.File
 
 import com.typesafe.config.{Config, ConfigFactory}
 
-import scala.reflect.io.Directory
 import scala.sys.SystemProperties
 
 /** RuntimeConfiguration object provider This object provides application config for setting up akka http/actor environment
@@ -16,6 +15,14 @@ import scala.sys.SystemProperties
   */
 object RuntimeEnvironment {
 
+  def deleteRecursively(f: File): Boolean = {
+    f.listFiles match {
+      case null    =>
+      case entries => entries.foreach(deleteRecursively)
+    }
+    f.delete()
+  }
+
   private lazy val sp = new SystemProperties()
 
   private def getConfDir: String = {
@@ -24,9 +31,9 @@ object RuntimeEnvironment {
       // starting the program with fresh database
       println("Starting the server without any previous persistent state")
 
-      // removing database folder
-      val directory = new Directory(new File("database"))
-      if (directory.deleteRecursively()) {
+      // removing database directory
+      val database = new File("database/")
+      if (deleteRecursively(database)) {
         println("Removed old database folder")
       }
     }

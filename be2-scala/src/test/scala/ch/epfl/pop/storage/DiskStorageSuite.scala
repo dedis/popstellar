@@ -2,13 +2,13 @@ package ch.epfl.pop.storage
 
 import java.io.File
 
+import ch.epfl.pop.config.RuntimeEnvironment.deleteRecursively
 import ch.epfl.pop.model.objects.DbActorNAckException
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.concurrent.TrieMap
-import scala.reflect.io.Directory
 
 class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   // concurrent map storing all instances of DiskStorage
@@ -28,8 +28,8 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     for ((storeName, store) <- stores) {
       store.close()
 
-      val directory = new Directory(new File(storeName))
-      directory.deleteRecursively()
+      val directory = new File(storeName)
+      deleteRecursively(directory)
     }
   }
 
