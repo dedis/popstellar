@@ -37,10 +37,6 @@ scalacOptions ++= Seq(
     "-Ycache-macro-class-loader:last-modified", // and macro definitions. This can lead to performance improvements.
 )
 
-Scapegoat/ scalacOptions -= "-Xfatal-warnings"
-// Temporarily report scapegoat errors as warnings, to avoid broken builds
-Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
-
 // Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / cancelable := true
@@ -95,10 +91,6 @@ lazy val scoverageSettings = Seq(
   packageBin/ coverageEnabled := false,
 )
 
-ThisBuild/ scapegoatVersion := "1.4.11"
-
-scapegoatReports := Seq("xml", "html")
-
 // Configure Sonar
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
@@ -111,7 +103,6 @@ sonarProperties := Map(
   "sonar.scala.version" -> "2.13.7",
   // Paths to the test and coverage reports
   "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
-  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
 assembly/ assemblyMergeStrategy := {

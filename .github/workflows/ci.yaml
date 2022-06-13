@@ -259,9 +259,6 @@ jobs:
       - name: Report coverage
         run: sbt coverageReport
 
-      - name: Run static analysis (ScapeGoat)
-        run: sbt scapegoat
-
       - name: Run Sonar scanner
         env:
           SONAR_HOST_URL: https://sonarcloud.io
