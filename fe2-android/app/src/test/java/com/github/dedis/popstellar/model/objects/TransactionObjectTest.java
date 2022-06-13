@@ -327,6 +327,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(Collections.singletonList(outputObject));
     transactionObject.setVersion(1);
 
-    assertEquals("ifmcRwMQWiXyshJwsb7Aojw2G15kKUVGlOhQN_2DNB4=", transactionObject.computeId());
+    assertEquals("01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=", transactionObject.computeId());
   }
 }
