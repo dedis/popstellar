@@ -128,7 +128,7 @@ const WalletCreateSeed = () => {
           </Text>
           <View style={styles.words}>
             {seed.split(' ').map((word, idx) => (
-              <Text key={idx.toString()} style={styles.word} selectable>
+              <Text key={idx.toString()} style={styles.word}>
                 {word}
               </Text>
             ))}
