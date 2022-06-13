@@ -1,6 +1,6 @@
-const path = require('path');
-const fs = require('fs');
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const gitHash = execSync('git rev-parse HEAD', { encoding: 'ascii' }).trim();
 const isDirty = execSync("git diff --quiet || echo '-dirty'", { encoding: 'ascii' }).trim();
