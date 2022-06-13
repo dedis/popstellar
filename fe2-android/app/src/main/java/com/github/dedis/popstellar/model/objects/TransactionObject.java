@@ -301,7 +301,7 @@ public class TransactionObject {
 
   public String computeId() {
     // Make a list all the string in the transaction
-    List<String> stringList = new ArrayList<String>();
+    List<String> stringList = new ArrayList<>();
     // Add them in lexicographic order
 
     // Inputs
