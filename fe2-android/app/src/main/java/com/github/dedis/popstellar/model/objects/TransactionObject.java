@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class TransactionObject {
   private Channel channel;
@@ -132,14 +134,14 @@ public class TransactionObject {
   /**
    * Function that give the Public Key receiver and the amount on the Output of transaction
    *
-   * @param map_hash_key Map<String,PublicKey> dictionary public key by public key hash
+   * @param mapHashKey Map<String,PublicKey> dictionary public key by public key hash
    * @return List<PublicKey,Long> outputs public keys
    */
-  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> map_hash_key) {
-    Iterator<String> receiver_hash_ite = getReceiversHashTransaction().iterator();
+  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey) {
+    Iterator<String> receiverHashIte = getReceiversHashTransaction().iterator();
     Map<PublicKey, Long> receivers = new HashMap<>();
-    while (receiver_hash_ite.hasNext()) {
-      PublicKey pub = map_hash_key.getOrDefault(receiver_hash_ite.next(), null);
+    while (receiverHashIte.hasNext()) {
+      PublicKey pub = mapHashKey.getOrDefault(receiverHashIte.next(), null);
       if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
@@ -166,15 +168,6 @@ public class TransactionObject {
    */
   public boolean isSender(PublicKey publicKey) {
     return getSendersTransaction().contains(publicKey);
-  }
-
-  /**
-   * Function that given a key pair change the sig of an input considering all the outputs
-   *
-   * @return sig other all the outputs and inputs with the public key
-   */
-  public String computeSigOutputsInputs() throws GeneralSecurityException {
-    return computeSigOutputsInputs();
   }
 
   /**
@@ -249,7 +242,6 @@ public class TransactionObject {
     Iterator<TransactionObject> transactionIte = transaction.iterator();
     long totalAmount = 0;
     while (transactionIte.hasNext()) {
-      // TODO error !!!!
       long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
       totalAmount += current;
     }
@@ -273,12 +265,12 @@ public class TransactionObject {
     // Set the return value to nothing
     long miniLao = 0;
     // Compute the hash of the public key
-    String hash_key = receiver.computeHash();
+    String computeHash = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     Iterator<OutputObject> iterator = getOutputs().iterator();
     while (iterator.hasNext()) {
       OutputObject current = iterator.next();
-      if (current.getScript().getPubkeyHash().equals(hash_key)) {
+      if (current.getScript().getPubkeyHash().equals(computeHash)) {
         // return after first occurrence
         return current.getValue();
       }
@@ -309,7 +301,7 @@ public class TransactionObject {
 
   public String computeId() {
     // Make a list all the string in the transaction
-    List<String> collect_transaction = new ArrayList<String>();
+    List<String> stringList = new ArrayList<>();
     // Add them in lexicographic order
 
     // Inputs
@@ -317,36 +309,36 @@ public class TransactionObject {
       InputObject currentTxin = inputs.get(i);
       // Script
       // PubKey
-      collect_transaction.add(currentTxin.getScript().getPubkey().getEncoded());
+      stringList.add(currentTxin.getScript().getPubkey().getEncoded());
       // Sig
-      collect_transaction.add(currentTxin.getScript().getSig().toString());
+      stringList.add(currentTxin.getScript().getSig().toString());
       // Type
-      collect_transaction.add(currentTxin.getScript().getType());
+      stringList.add(currentTxin.getScript().getType());
       // TxOutHash
-      collect_transaction.add(currentTxin.getTxOutHash());
+      stringList.add(currentTxin.getTxOutHash());
       // TxOutIndex
-      collect_transaction.add(String.valueOf(currentTxin.getTxOutIndex()));
+      stringList.add(String.valueOf(currentTxin.getTxOutIndex()));
     }
 
     // lock_time
-    collect_transaction.add(String.valueOf(lockTime));
+    stringList.add(String.valueOf(lockTime));
     // Outputs
     for (int i = 0; i < outputs.size(); i++) {
       OutputObject currentTxout = outputs.get(i);
       // Script
       // PubKeyHash
-      collect_transaction.add(currentTxout.getScript().getPubkeyHash());
+      stringList.add(currentTxout.getScript().getPubkeyHash());
       // Type
-      collect_transaction.add(currentTxout.getScript().getType());
+      stringList.add(currentTxout.getScript().getType());
       // Value
-      collect_transaction.add(String.valueOf(currentTxout.getValue()));
+      stringList.add(String.valueOf(currentTxout.getValue()));
     }
     // Version
-    collect_transaction.add(String.valueOf(version));
+    stringList.add(String.valueOf(version));
 
     String concat = "";
-    for (int i = 0; i < collect_transaction.size(); i++) {
-      String toAdd = collect_transaction.get(i);
+    for (int i = 0; i < stringList.size(); i++) {
+      String toAdd = stringList.get(i);
       concat = concat.concat(toAdd.length() + toAdd);
     }
 
@@ -371,7 +363,12 @@ public class TransactionObject {
    */
   public static TransactionObject lastLockedTransactionObject(
       List<TransactionObject> listTransaction) {
-    return listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime)).get();
+    Optional<TransactionObject> transactionObject =
+        listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime));
+    if (!transactionObject.isPresent()) {
+      throw new Resources.NotFoundException();
+    }
+    return transactionObject.get();
   }
 
   /**
