@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -9,9 +8,11 @@ import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
