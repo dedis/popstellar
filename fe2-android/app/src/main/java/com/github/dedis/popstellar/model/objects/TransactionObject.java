@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
 import java.util.Comparator;
