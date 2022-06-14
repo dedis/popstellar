@@ -35,6 +35,8 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -285,7 +287,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
           Signature sig =
               new Signature(
                   Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                      token, outputs, Collections.singletonMap(transactionHash, index)));
+                          token, outputs, Collections.singletonMap(transactionHash, index))
+                      .getBytes(StandardCharsets.UTF_8));
           inputs.add(
               new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
         }
@@ -293,7 +296,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
         Signature sig =
             new Signature(
                 Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                    token, outputs, Collections.singletonMap(transactionHash, index)));
+                        token, outputs, Collections.singletonMap(transactionHash, index))
+                    .getBytes(StandardCharsets.UTF_8));
         inputs.add(
             new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
       }
@@ -330,7 +334,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                           getApplication(), TAG, error, R.string.error_post_transaction));
 
       disposables.add(disposable);
-    } catch (KeyException e) {
+    } catch (KeyException | GeneralSecurityException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }

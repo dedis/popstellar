@@ -1,8 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,7 +111,8 @@ public final class Transaction {
    * @return sig other all the outputs and inputs with the public key
    */
   public static String computeSigOutputsPairTxOutHashAndIndex(
-      List<Output> outputs, Map<String, Integer> inputsPairs) {
+      KeyPair keyPair, List<Output> outputs, Map<String, Integer> inputsPairs)
+      throws GeneralSecurityException {
     // input #1: tx_out_hash Value //input #1: tx_out_index Value
     // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
     // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
@@ -126,7 +134,7 @@ public final class Transaction {
       sig.add(current.getScript().getType());
       sig.add(current.getScript().getPubkeyHash());
     }
-    return Hash.hash(sig.toArray(new String[0]));
+    return String.join(" ", sig);
   }
 
   @Override
