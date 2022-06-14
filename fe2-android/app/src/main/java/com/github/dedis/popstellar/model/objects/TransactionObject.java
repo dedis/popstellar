@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -378,7 +377,7 @@ public class TransactionObject {
    */
   public boolean isCoinBaseTransaction() {
     return (getSendersTransaction().size() == 1)
-        && getInputs().get(0).getTxOutHash().equals(Hash.hash("none"))
+        && getInputs().get(0).getTxOutHash().equals("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
         && (getInputs().get(0).getTxOutIndex() == 0);
   }
 }
