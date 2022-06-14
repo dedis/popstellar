@@ -264,7 +264,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       // First there would be only one Input
 
       // Case no transaction before
-      String transactionHash = Hash.hash("none");
+      String transactionHash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
       int index = 0;
 
       List<Input> inputs = new ArrayList<>();
