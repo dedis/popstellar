@@ -2,14 +2,11 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import {
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import { PoPIcon, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
@@ -60,12 +57,12 @@ export const LaoHomeScreenHeader = () => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
+      <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
         <Text style={Typography.topNavigationHeading}>{lao.name}</Text>
         <View style={styles.infoIcon}>
           <PoPIcon name="info" color={Color.primary} size={Icon.size} />
         </View>
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
 
       <Modal
         transparent
@@ -104,10 +101,10 @@ export const LaoHomeScreenHeaderRight = () => {
   return (
     <>
       <View style={styles.buttons}>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
           <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </PoPTouchableOpacity>
+        <PoPTouchableOpacity
           containerStyle={styles.notificationButton}
           onPress={() =>
             navigation.push(STRINGS.navigation_app_lao, {
@@ -118,7 +115,7 @@ export const LaoHomeScreenHeaderRight = () => {
             })
           }>
           <PoPIcon name="notification" color={Color.inactive} size={Icon.size} />
-        </TouchableOpacity>
+        </PoPTouchableOpacity>
 
         <Modal
           transparent

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Typography } from '../styles';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 import TextBlock from './TextBlock';
 
 const CollapsibleContainerStyles = StyleSheet.create({
@@ -17,14 +18,14 @@ const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) 
 
   return (
     <View>
-      <TouchableOpacity onPress={() => setShowChildren(!showChildren)}>
+      <PoPTouchableOpacity onPress={() => setShowChildren(!showChildren)}>
         <View>
           <TextBlock bold text={title || ''} />
           <Text style={[Typography.baseCentered, CollapsibleContainerStyles.headerIcon]}>
             {showChildren ? 'v' : '<'}
           </Text>
         </View>
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
 
       {showChildren && children}
     </View>

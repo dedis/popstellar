@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Border, Color, Spacing } from '../styles';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,12 +43,12 @@ const PoPButton = (props: IPropTypes) => {
   }
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       containerStyle={styles.container}
       onPress={disabled ? undefined : onPress}
       testID={testID || undefined}>
       <View style={viewStyles}>{children}</View>
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

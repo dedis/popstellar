@@ -2,11 +2,11 @@ import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -157,7 +157,7 @@ const RollCallOpened = () => {
         <View style={styles.buttonContainer}>
           <View>
             <View style={styles.leftButtons}>
-              <TouchableOpacity
+              <PoPTouchableOpacity
                 testID="roll-call-open-stop-scanning"
                 onPress={() =>
                   navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
@@ -169,16 +169,16 @@ const RollCallOpened = () => {
                   })
                 }>
                 <PoPIcon name="close" color={Color.accent} size={Icon.size} />
-              </TouchableOpacity>
+              </PoPTouchableOpacity>
             </View>
           </View>
           <View>
             <View style={styles.rightButtons}>
-              <TouchableOpacity
+              <PoPTouchableOpacity
                 onPress={() => setInputModalIsVisible(true)}
                 testID="roll-call-open-add-manually">
                 <PoPIcon name="addPerson" color={Color.accent} size={Icon.size} />
-              </TouchableOpacity>
+              </PoPTouchableOpacity>
             </View>
           </View>
         </View>

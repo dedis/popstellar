@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon, PoPTextButton } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Border, Color, Icon, List, Spacing, Typography } from 'core/styles';
@@ -219,12 +219,12 @@ export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
   }
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       onPress={() =>
         showActionSheet([{ displayName: STRINGS.election_end, action: onTerminateElection }])
       }>
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

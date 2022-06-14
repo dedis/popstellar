@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
@@ -13,6 +13,7 @@ import { FOUR_SECONDS } from 'resources/const';
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
 import PoPIcon from './PoPIcon';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
   backgroundColor: Color.contrast,
@@ -82,13 +83,13 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
         <View style={styles.children}>{children}</View>
         <View style={styles.buttonContainer}>
           <View style={styles.flipButtonContainer}>
-            <TouchableOpacity
+            <PoPTouchableOpacity
               style={styles.flipButton}
               onPress={() => {
                 setFacingMode(facingMode === 'user' ? 'environment' : 'user');
               }}>
               <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
-            </TouchableOpacity>
+            </PoPTouchableOpacity>
           </View>
         </View>
       </View>

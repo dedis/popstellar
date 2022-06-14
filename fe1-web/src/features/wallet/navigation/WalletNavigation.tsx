@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/core';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { PoPIcon } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -53,9 +53,9 @@ const WalletNavigationHeaderRight = () => {
   };
 
   return (
-    <TouchableOpacity onPress={onPressOptions}>
+    <PoPTouchableOpacity onPress={onPressOptions}>
       <PoPIcon name="options" color={Color.primary} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

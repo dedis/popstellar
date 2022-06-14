@@ -2,9 +2,9 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Icon } from 'core/styles';
@@ -47,9 +47,9 @@ const CreateEventButton = () => {
   };
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <PoPTouchableOpacity onPress={onPress}>
       <PoPIcon name="create" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 
