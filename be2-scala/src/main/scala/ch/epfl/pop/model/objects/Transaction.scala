@@ -42,7 +42,7 @@ final case class Transaction(
 
   private def signaturePayload =
     Base64Data.encode(inputs.map { txin => f"${txin.txOutHash}${txin.txOutIndex}" }.reduce(_+_) +
-      outputs.map { txout => f"${txout.value}${txout.script.`type`}${txout.script.pubkeyHash}" }.reduce(_+_))
+      outputs.map { txout => f"${txout.value}${txout.script.`type`}${txout.script.pubkeyHash.base64Data}" }.reduce(_+_))
 
   /**
    * This ensures the validity of the signatures, not that the funds are unspent.
