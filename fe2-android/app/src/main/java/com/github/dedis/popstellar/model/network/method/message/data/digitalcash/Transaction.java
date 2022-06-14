@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -95,32 +94,6 @@ public final class Transaction {
 
     // Use already implemented hash function
     return Hash.hash(collectTransaction.toArray(new String[0]));
-  }
-
-  /**
-   * Function that given a key pair change the sig of an input considering all the outputs
-   *
-   * @return sig other all the outputs and inputs with the public key
-   */
-  public static String computeSigOutputsPairTxOutHashAndIndex(
-      List<Output> outputs, Map<String, Integer> inputsPairs) {
-    // input #1: tx_out_hash Value //input #1: tx_out_index Value
-    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
-    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
-    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
-    // Value...
-    List<String> sig = new ArrayList<>();
-    for ( Map.Entry<String, Integer> current : inputsPairs.entrySet()) {
-      sig.add(current.getKey());
-      sig.add(String.valueOf(current.getValue()));
-    }
-
-    for(Output current : outputs) {
-      sig.add(String.valueOf(current.getValue()));
-      sig.add(current.getScript().getType());
-      sig.add(current.getScript().getPubkeyHash());
-    }
-    return Hash.hash(sig.toArray(new String[0]));
   }
 
   @Override
