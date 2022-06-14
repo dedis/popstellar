@@ -11,8 +11,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -209,13 +207,13 @@ public class LaoTest {
     r1.setEnd(1);
     r2.setEnd(2);
     r1.setState(EventState.CLOSED);
-    //Wait that thread concurrency updates
-    while(EventState.CLOSED.equals(r1.getState().getValue()))
-    try {
-      assertEquals(r2, LAO_1.lastRollCallClosed());
-    } catch (NoRollCallException e) {
-      throw new IllegalArgumentException();
-    }
+    // Wait that thread concurrency updates
+    while (EventState.CLOSED.equals(r1.getState().getValue()))
+      try {
+        assertEquals(r2, LAO_1.lastRollCallClosed());
+      } catch (NoRollCallException e) {
+        throw new IllegalArgumentException();
+      }
   }
 
   @Test

@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
@@ -31,7 +32,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -285,19 +285,25 @@ public class DigitalCashViewModel extends AndroidViewModel {
           transactionHash = transactionPrevious.computeId();
           index = transactionPrevious.getIndexTransaction(token.getPublicKey());
           Signature sig =
-              new Signature(
-                  Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                          token, outputs, Collections.singletonMap(transactionHash, index))
-                      .getBytes(StandardCharsets.UTF_8));
+              token
+                  .getPrivateKey()
+                  .sign(
+                      new Base64URLData(
+                          Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                                  outputs, Collections.singletonMap(transactionHash, index))
+                              .getBytes(StandardCharsets.UTF_8)));
           inputs.add(
               new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
         }
       } else {
         Signature sig =
-            new Signature(
-                Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                        token, outputs, Collections.singletonMap(transactionHash, index))
-                    .getBytes(StandardCharsets.UTF_8));
+            token
+                .getPrivateKey()
+                .sign(
+                    new Base64URLData(
+                        Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                                outputs, Collections.singletonMap(transactionHash, index))
+                            .getBytes(StandardCharsets.UTF_8)));
         inputs.add(
             new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
       }

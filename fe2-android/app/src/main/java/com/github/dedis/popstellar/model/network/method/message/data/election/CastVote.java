@@ -39,6 +39,7 @@ public class CastVote<E> extends Data {
 
   /**
    * Constructor used while receiving a CastVote message
+   *
    * @param votes list of the votes to cast (null if this is an OPEN_BALLOT election)
    * @param electionId election id
    * @param laoId lao id
