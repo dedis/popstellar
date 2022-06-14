@@ -166,40 +166,6 @@ public class TransactionObject {
   }
 
   /**
-   * Function that given a key pair change the sig of an input considering all the outputs
-   *
-   * @param keyPair of one input sender
-   * @return sig other all the outputs and inputs with the public key
-   */
-  public String computeSigOutputsInputs(KeyPair keyPair) throws GeneralSecurityException {
-    // input #1: tx_out_hash Value //input #1: tx_out_index Value
-    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
-    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
-    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
-    // Value...
-    String[] sig = new String[inputs.size() * 2 + outputs.size() * 3];
-    Iterator<InputObject> iteInput = inputs.iterator();
-    Iterator<OutputObject> iteOutput = outputs.iterator();
-
-    int index = 0;
-    while (iteInput.hasNext()){
-      InputObject current = iteInput.next();
-      sig[index] = current.getTxOutHash();
-      sig[index + 1] = String.valueOf(current.getTxOutIndex());
-      index = index + 2;
-    }
-
-    while (iteOutput.hasNext()){
-      OutputObject current = iteOutput.next();
-      sig[index] = String.valueOf(current.getValue());
-      sig[index + 1] = current.getScript().getType();
-      sig[index + 2] = current.getScript().getPubkeyHash();
-      index = index + 3;
-    }
-    return keyPair.sign(new Base64URLData(String.join("", sig))).getEncoded();
-  }
-
-  /**
    * Function that given a Public Key gives the miniLaoCoin received
    *
    * @param receiver Public Key of a potential receiver
