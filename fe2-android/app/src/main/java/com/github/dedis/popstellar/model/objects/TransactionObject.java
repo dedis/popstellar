@@ -133,10 +133,11 @@ public class TransactionObject {
     Iterator<String> receiverHashIte = getReceiversHashTransaction().iterator();
     Map<PublicKey, Long> receivers = new HashMap<>();
     while (receiverHashIte.hasNext()) {
-      PublicKey pub = mapHashKey.getOrDefault(receiverHashIte.next(), null);
-      if (pub == null) {
+       if (!mapHashKey.containsKey(receiverHashIte.next())) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
+      
+      PublicKey pub = mapHashKey.get(receiverHashIte.next());
       receivers.putIfAbsent(pub, this.getMiniLaoPerReceiver(pub));
     }
     return receivers;
