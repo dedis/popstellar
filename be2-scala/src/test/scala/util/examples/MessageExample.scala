@@ -185,6 +185,18 @@ object MessageExample {
     Some(mettingCreate)
   )
 
+  final val laoIdMeetingWrongChannel: String = "wrongMeetingChannel/somethingMore"
+  final val HASH_MEETING_OBJECT_WRONG_CHANNEL: Hash = Hash.fromStrings("M", laoIdMeetingWrongChannel, ""+creationMeeting, nameMeeting)
+  final val mettingCreateWrongChannel: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None)
+  final val MESSAGE_CREATE_MEETING_WRONG_CHANNEL: Message = new Message(
+    Base64Data.encode(mettingCreateWrongChannel.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(mettingCreateWrongChannel)
+  )
+
 
 
 

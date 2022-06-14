@@ -218,9 +218,9 @@ object JsonRpcRequestExample {
 
   // For Create Meeting testing
   private final val laoChannelMeeting: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
-  private final val laoChannelMeetingWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "wrongMeetingChannel")
+  private final val laoChannelMeetingWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "wrongMeetingChannel/somethingMore")
   private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING)
-  private final val paramsWithCreateMeetingWrongChannel: ParamsWithMessage = new ParamsWithMessage(laoChannelMeetingWrong, MESSAGE_CREATE_MEETING)
+  private final val paramsWithCreateMeetingWrongChannel: ParamsWithMessage = new ParamsWithMessage(laoChannelMeetingWrong, MESSAGE_CREATE_MEETING_WRONG_CHANNEL)
   final val CREATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeeting, id)
   final val CREATE_MEETING_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingWrongChannel, id)
 
