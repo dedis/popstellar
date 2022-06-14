@@ -41,6 +41,12 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
     message should equal(Left(postTransaction))
   }
 
+  test("Posting a coinbase transaction works as intended") {
+    val postTransaction = postTransactionCoinbase
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
+    message should equal(Left(postTransaction))
+  }
+
   test("Posting a large transaction works as intended") {
     val postTransaction = postTransactionMaxAmount
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
@@ -59,4 +65,9 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
     message should matchPattern { case Right(_) => }
   }
 
+  test("Posting a transaction with an incorrect signature does not work") {
+    val postTransaction = postTransactionBadSignature
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
+    message should matchPattern { case Right(_) => }
+  }
 }

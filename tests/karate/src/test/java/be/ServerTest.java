@@ -43,6 +43,11 @@ public class ServerTest {
   Karate testElectionEnd(){
     return Karate.run("classpath:be/election/electionEnd.feature");
   }
+
+  @Karate.Test
+  Karate testTransaction(){
+    return Karate.run("classpath:be/digitalCash/transaction.feature");
+  }
 }
 
 

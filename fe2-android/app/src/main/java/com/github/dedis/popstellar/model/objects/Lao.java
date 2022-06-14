@@ -205,10 +205,7 @@ public final class Lao {
 
     /* Contained in the receiver there are also the sender
     which has to be in the list of attendees of the roll call*/
-    Iterator<PublicKey> receiversIte =
-        transactionObject.getReceiversTransaction(pubKeyByHash).iterator();
-    while (receiversIte.hasNext()) {
-      PublicKey current = receiversIte.next();
+    for (PublicKey current : transactionObject.getReceiversTransaction(pubKeyByHash)) {
       // Add the transaction in the current state  / for the sender and the receiver
 
       /* The only case where the map has a list of transaction in memory is when we have several
@@ -441,8 +438,9 @@ public final class Lao {
    */
   public RollCall lastRollCallClosed() throws NoRollCallException {
     return this.getRollCalls().values().stream()
-        .max(Comparator.comparing(RollCall::getEnd))
-        .orElseThrow(() -> new NoRollCallException(this));
+            .filter(RollCall::isClosed)
+            .max(Comparator.comparing(RollCall::getEnd))
+            .orElseThrow(() -> new NoRollCallException(this));
   }
 
   /**

@@ -139,7 +139,6 @@ public class TransactionObjectTest {
       }
       return receivers;
     }*/
-
     KeyPair senderKey1 = generateKeyPair();
     PublicKey sender1 = senderKey1.getPublicKey();
     PublicKey sender2 = null;
@@ -179,18 +178,7 @@ public class TransactionObjectTest {
   // test Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey)
   @Test
   public void getReceiversTransactionMapTest() {
-    /*  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey) {
-      Iterator<String> receiverHashIte = getReceiversHashTransaction().iterator();
-      Map<PublicKey, Long> receivers = new HashMap<>();
-      while (receiverHashIte.hasNext()) {
-        PublicKey pub = mapHashKey.getOrDefault(receiverHashIte.next(), null);
-        if (pub == null) {
-          throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
-        }
-        receivers.putIfAbsent(pub, this.getMiniLaoPerReceiver(pub));
-      }
-      return receivers;
-    }*/
+
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -242,12 +230,14 @@ public class TransactionObjectTest {
     assertEquals(true, transactionObject.isSender(sender));
   }
 
+
   // test String compute_sig_outputs_inputs(KeyPair keyPair)
   // @Test
   // public void computeSigOutputsInputs()
 
   // test int get_miniLao_per_receiver(PublicKey receiver)
   // send to your self still work
+
   // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
   @Test
   public void getMiniLaoPerReceiverTest() {
@@ -325,7 +315,6 @@ public class TransactionObjectTest {
 
     List<InputObject> inpObj = new ArrayList<>();
     List<OutputObject> outObj = new ArrayList<>();
-
     for (Input i : transactionModel.getInputs()) {
       ScriptInput scriptInput = i.getScript();
       inpObj.add(
@@ -342,6 +331,7 @@ public class TransactionObjectTest {
           new OutputObject(
               o.getValue(),
               new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
+
     }
 
     transactionObject.setInputs(inpObj);

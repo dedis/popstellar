@@ -42,7 +42,11 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _)  =>
+          system.log.info(s"Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -62,6 +66,10 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info(s"Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
