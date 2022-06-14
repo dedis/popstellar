@@ -7,11 +7,8 @@ Feature: web test
 
     # ================= Page Object Start ====================
     # Introduction screen
-    * def exploring_selector = '{^}Start exploring POPStellar'
-    #* def exploring_selector = "[data-testid='exploring_selector']"
-    #* def exploring_selector = '[data-testid="exploring_selector"]'
+    * def exploring_selector = "[data-testid='exploring_selector']"
 
-   # * def exploring_selector = "//input[@testId='exploring_selector']"
 
     # Tab buttons
     * def tab_home_selector = '{}Home'
@@ -49,6 +46,6 @@ Feature: web test
               }
             }
           """
-    * mouse().move(exploring_selector).down()
+    * click(exploring_selector)
     And click(tab_connect_selector)
    # And input(tab_launch_address_selector, backendURL)
