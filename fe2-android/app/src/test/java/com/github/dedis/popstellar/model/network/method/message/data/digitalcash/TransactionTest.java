@@ -2,14 +2,32 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
+import android.util.Base64;
 import android.util.Log;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.objects.InputObject;
+import com.github.dedis.popstellar.model.objects.OutputObject;
+import com.github.dedis.popstellar.model.objects.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+
+import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -80,9 +98,26 @@ public class TransactionTest {
   }
 
   @Test
-  public void testComputeId() {
-    String result = TRANSACTION.computeId();
-    String expected = "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=";
-    assertEquals(result, expected);
+  public void computeIdTest() {
+    String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
+    String validJson = JsonTestUtils.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    Transaction transactionModel = postTransactionModel.getTransaction();
+
+    assertEquals(postTransactionModel.getTransactionId(), transactionModel.computeId());
   }
+
+  @Test
+  public void computeSignature() {
+    String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
+    String validJson = JsonTestUtils.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    Transaction transactionModel = postTransactionModel.getTransaction();
+    Input single = transactionModel.getInputs().get(0);
+    Signature sig = single.getScript().getSig();
+    PublicKey pk = single.getScript().getPubkey();
+    System.out.println(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())));
+    assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
+  }
+
 }

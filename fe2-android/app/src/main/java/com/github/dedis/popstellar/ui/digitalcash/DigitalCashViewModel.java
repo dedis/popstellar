@@ -59,7 +59,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
   private static final String COIN = "coin";
 
-  private static final String TYPE = "Pay-to-Pubkey-Hash";
+  private static final String TYPE = "P2PKH";
   private static final int VERSION = 1;
 
   /*
