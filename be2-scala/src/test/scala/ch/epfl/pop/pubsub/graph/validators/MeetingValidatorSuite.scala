@@ -86,7 +86,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
       }
@@ -114,6 +114,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
+   // invalid sender
    test("Creating an invalid meeting with invalid sender") {
     val dbActorRef = mockDbInvalidSetupWrongOwner
     println(dbActorRef)
@@ -121,6 +122,22 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
+  // invalid data hash
+  test("Creating an invalid meeting with invalid data hash") {
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_DATA_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
 
+  // invalid creation time
+  test("Creating an invalid meeting with invalid creation time") {
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_CREATION_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
 
 }
