@@ -13,7 +13,7 @@ Feature: android page object
     # Tab buttons
     * def tab_home_selector = '#com.github.dedis.popstellar:id/home_home_menu'
     * def tab_connect_selector = '#com.github.dedis.popstellar:id/home_connect_menu'
-    * def tab_launch_selector = '#com.github.dedis.popstellar:id/home_launch_menu'
+    * def launch_selector = '#com.github.dedis.popstellar:id/home_launch_menu'
     * def tab_wallet_selector = '#com.github.dedis.popstellar:id/home_wallet_menu'
 
     # Launch tab
@@ -58,4 +58,5 @@ Feature: android page object
     * click(tab_wallet_new_wallet_selector)
     * click(tab_wallet_confirm_selector)
     * dialog(true)
+    * click(launch_selector)
 
