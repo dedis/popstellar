@@ -45,6 +45,8 @@ sealed class  MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
         } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
+        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
+          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
