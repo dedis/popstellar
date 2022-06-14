@@ -591,6 +591,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                     "width": "100%",
                                   }
                                 }
+                                testID="exploring_selector"
                               >
                                 <RNGestureHandlerButton
                                   collapsable={false}
