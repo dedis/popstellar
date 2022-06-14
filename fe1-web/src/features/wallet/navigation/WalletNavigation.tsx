@@ -65,4 +65,5 @@ export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.La
   tabBarIcon: makeIcon('wallet'),
   order: 99999999,
   headerRight: () => <WalletNavigationHeaderRight />,
+  testID: 'navigation-wallet-screen',
 };
