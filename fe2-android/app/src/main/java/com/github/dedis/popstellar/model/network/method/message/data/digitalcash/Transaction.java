@@ -1,14 +1,18 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -162,9 +166,9 @@ public final class Transaction {
       sig.add(current.getScript().getPubkeyHash());
     }
 
-    String toSign = String.join(" ", sig.toArray(new String[0]));
+    String toSign = String.join("", sig.toArray(new String[0]));
     try{
-      Signature signa = keyPair.sign(new Base64URLData(toSign));
+      Signature signa = keyPair.sign(new Base64URLData(toSign.getBytes(StandardCharsets.UTF_8)));
       return signa.getEncoded();
     } catch (GeneralSecurityException e){
       throw new IllegalArgumentException();
