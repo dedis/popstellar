@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
+	"popstellar/channel/coin/uint53"
 	"popstellar/crypto"
 	"popstellar/message/answer"
 	"strconv"
@@ -35,8 +36,8 @@ type Input struct {
 
 // Output defines the destination for the money used in transaction
 type Output struct {
-	Value  int        `json:"value"`
-	Script LockScript `json:"script"`
+	Value  uint53.Uint53 `json:"value"`
+	Script LockScript    `json:"script"`
 }
 
 // LockScript defines the locking value for transaction
@@ -52,17 +53,30 @@ type UnlockScript struct {
 	Sig    string `json:"sig"`
 }
 
-// Verify verifies that the PostTransaction message is valid
-func (message PostTransaction) Verify() error {
-	for _, out := range message.Transaction.Outputs {
-		if out.Value < 0 {
-			return answer.NewErrorf(-4, "transaction output value is %d, "+
-				"shouldn't be negative", out.Value)
+// SumOutputs computes the sum of the amounts in all outputs.
+// It may signal an overflow error
+func (transaction Transaction) SumOutputs() (uint53.Uint53, error) {
+	var acc uint53.Uint53 = 0
+	var err error
+	for _, out := range transaction.Outputs {
+		acc, err = uint53.SafePlus(acc, out.Value)
+		if err != nil {
+			return 0, xerrors.Errorf("failed to perform uint53 addition: %v", err)
 		}
 	}
 
+	return acc, nil
+}
+
+// Verify verifies that the PostTransaction message is valid
+func (message PostTransaction) Verify() error {
+	_, err := message.Transaction.SumOutputs()
+	if err != nil {
+		return xerrors.Errorf("failed to compute the sum of outputs: %w", err)
+	}
+
 	// verify id is base64URL encoded
-	_, err := base64.URLEncoding.DecodeString(message.TransactionID)
+	_, err = base64.URLEncoding.DecodeString(message.TransactionID)
 	if err != nil {
 		return xerrors.Errorf("transaction id is %s, should be base64URL "+
 			"encoded", message.TransactionID)
@@ -114,7 +128,7 @@ func (message PostTransaction) verifyTransactionId() error {
 		typee := out.Script.Type
 		hashFields = append(hashFields, typee)
 
-		value := strconv.Itoa(out.Value)
+		value := strconv.FormatUint(out.Value, 10)
 		hashFields = append(hashFields, value)
 	}
 
@@ -141,7 +155,7 @@ func (message PostTransaction) verifySignature() error {
 	}
 
 	for _, out := range message.Transaction.Outputs {
-		value := strconv.Itoa(out.Value)
+		value := strconv.FormatUint(out.Value, 10)
 		sigComp.WriteString(value)
 
 		typee := out.Script.Type
