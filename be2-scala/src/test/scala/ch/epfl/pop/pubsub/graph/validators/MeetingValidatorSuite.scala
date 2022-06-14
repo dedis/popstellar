@@ -56,7 +56,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
 
   private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
   private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  
+
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -76,6 +76,15 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_RPC)
     message should equal(Left(CREATE_MEETING_RPC))
+    system.stop(dbActorRef.actorRef)
+  }
+
+  // Invalid meeting setups
+  test("Creating an invalid meeting with invalid channel") {
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_WRONG_CHANNEL_RPC)
+    message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
