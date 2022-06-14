@@ -239,7 +239,7 @@ final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
     Some(meetingCreateInvalidEnd)
   )
 
-  final val meetingCreateSmallEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633102500), Some(Timestamp(1633098200)), None)
+  final val meetingCreateSmallEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633102500), Some(Timestamp(1633102000)), None)
   final val MESSAGE_CREATE_MEETING_START_BIGGER_THAN_END: Message = new Message(
     Base64Data.encode(meetingCreateSmallEnd.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
