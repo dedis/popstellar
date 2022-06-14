@@ -65,7 +65,7 @@ const DigitalCashWallet = () => {
                 {STRINGS.digital_cash_coin_issuance_description}
               </ListItem.Subtitle>
             </ListItem.Content>
-            <ListItem.Title style={Typography.base}>$∞</ListItem.Title>
+            <ListItem.Title style={Typography.base}>{STRINGS.digital_cash_infinity}</ListItem.Title>
             <ListItem.Chevron />
           </ListItem>
         )}

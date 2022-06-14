@@ -408,11 +408,12 @@ namespace STRINGS {
     'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
 
   export const digital_cash_wallet_amount = 'Amount';
-  export const digital_cash_wallet_amount_placeholder = '42.50';
+  export const digital_cash_wallet_amount_placeholder = '42';
 
   export const digital_cash_wallet_amount_must_be_number = 'Invalid amount, please enter a number.';
   export const digital_cash_wallet_amount_too_high =
     'You cannot send more money than you have. Please enter a value smaller than your balance.';
+  export const digital_cash_wallet_amount_must_be_integer = 'The amount must be an integer.';
 
   export const digital_cash_wallet_transaction = 'Transaction';
   export const digital_cash_wallet_transaction_history = 'Transaction History';
@@ -423,6 +424,9 @@ namespace STRINGS {
   export const digital_cash_wallet_issue_all_attendees = 'All attendees of roll call';
   export const digital_cash_wallet_issue_to_every_participants =
     'Issue to every attendee of this roll call';
+
+  export const digital_cash_infinity = '∞';
+
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';
   export const meeting_message_decline = 'Decline Message';

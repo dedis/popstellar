@@ -24,6 +24,7 @@ export namespace DigitalCashFeature {
      * The react component that returns a set of list items
      */
     ListItems: React.ComponentType<{ laoId: Hash }>;
+
     /**
      * This number is here to order the different item groups.
      * In order to be able to insert components in between two existing groups,

@@ -1,7 +1,7 @@
 import { configureTestFeatures, mockKeyPair, mockLaoId, mockPopToken } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish } from 'core/network/JsonRpcApi';
-import { Hash, PopToken } from 'core/objects';
+import { Hash, PopToken, ROOT_CHANNEL } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
 import { Transaction } from 'features/digital-cash/objects/transaction';
 import { DigitalCashStore } from 'features/digital-cash/store';
@@ -60,7 +60,7 @@ describe('Digital Cash Message Api', () => {
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}/coin`);
+    expect(channel).toBe(`${ROOT_CHANNEL}/${mockLaoId}/coin`);
 
     const postTransaction = msgData as PostTransaction;
     expect(postTransaction).toEqual(mockPostCoinbase);
@@ -77,7 +77,7 @@ describe('Digital Cash Message Api', () => {
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}/coin`);
+    expect(channel).toBe(`${ROOT_CHANNEL}/${mockLaoId}/coin`);
 
     const postTransaction = msgData as PostTransaction;
     expect(postTransaction).toEqual(mockPost);

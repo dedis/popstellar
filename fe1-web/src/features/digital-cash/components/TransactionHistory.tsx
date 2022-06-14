@@ -127,7 +127,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       style={listStyle}
                       bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title style={Typography.base}>
+                        <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {input.script.publicKey.valueOf()}
                         </ListItem.Title>
                         <ListItem.Subtitle>
@@ -138,7 +138,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       <ListItem.Title style={Typography.base}>
                         $
                         {input.txOutHash.valueOf() === COINBASE_HASH
-                          ? '∞'
+                          ? STRINGS.digital_cash_infinity
                           : transactionsByHash[input.txOutHash.valueOf()].outputs[input.txOutIndex]
                               .value}
                       </ListItem.Title>

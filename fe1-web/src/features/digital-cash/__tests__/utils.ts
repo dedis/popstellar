@@ -2,19 +2,11 @@ import { mockKeyPair, mockLaoIdHash } from '__tests__/utils';
 import { Hash, PopToken, RollCallToken } from 'core/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
-import {
-  DIGITAL_CASH_FEATURE_IDENTIFIER,
-  DigitalCashFeature,
-  DigitalCashReactContext,
-} from '../interface';
+import { mockRollCall as mockRC } from '../../rollCall/__tests__/utils';
+import { DIGITAL_CASH_FEATURE_IDENTIFIER, DigitalCashReactContext } from '../interface';
 import { TransactionJSON, TransactionState } from '../objects/transaction';
 
-export const mockRollCall = {
-  id: new Hash('rcid'),
-  name: 'rc',
-  attendees: [mockKeyPair.publicKey],
-  containsToken: () => true,
-} as DigitalCashFeature.RollCall;
+export const mockRollCall = mockRC;
 
 export const mockRollCallToken = new RollCallToken({
   laoId: mockLaoIdHash,

@@ -58,7 +58,10 @@ export namespace DigitalCashHooks {
    * @param laoId the id of the LAO
    */
   export const useTransactions = (laoId: Hash | string) => {
-    const transactionStates = useSelector(useMemo(() => makeTransactionsSelector(laoId), [laoId]));
+    const transactionsSelector = useMemo(() => makeTransactionsSelector(laoId), [laoId]);
+
+    const transactionStates = useSelector(transactionsSelector);
+
     return useMemo(
       () => transactionStates.map((state) => Transaction.fromState(state)),
       [transactionStates],
@@ -70,6 +73,10 @@ export namespace DigitalCashHooks {
    * @param laoId the id of the LAO
    */
   export const useTransactionsByHash = (laoId: Hash | string) => {
-    return useSelector(useMemo(() => makeTransactionsByHashSelector(laoId), [laoId]));
+    const transactionsByHashSelector = useMemo(
+      () => makeTransactionsByHashSelector(laoId),
+      [laoId],
+    );
+    return useSelector(transactionsByHashSelector);
   };
 }

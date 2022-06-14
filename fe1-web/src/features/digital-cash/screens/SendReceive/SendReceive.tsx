@@ -104,10 +104,15 @@ const SendReceive = () => {
       setError(STRINGS.digital_cash_wallet_amount_too_high);
       return false;
     }
+
+    if (Number.parseInt(amount, 10) !== Number.parseFloat(amount)){
+      setError(STRINGS.digital_cash_wallet_amount_must_be_integer);
+      return false;
+    }
     return true;
   };
 
-  const sendCoinbase = () => {
+  const sendCoinbaseTransaction = () => {
     let beneficiaries: PublicKey[] = [];
 
     if (selectedRollCallId !== '') {
@@ -129,7 +134,7 @@ const SendReceive = () => {
     );
   };
 
-  const send = () => {
+  const sendTransaction = () => {
     if (!rollCallToken) {
       throw new Error('The roll call token is not defined');
     }
@@ -143,7 +148,7 @@ const SendReceive = () => {
   };
   const onSendTransaction = () => {
     if (checkAmountValidity() && checkBeneficiaryValidity()) {
-      const transactionPromise: Promise<void> = isCoinbase ? sendCoinbase() : send();
+      const transactionPromise: Promise<void> = isCoinbase ? sendCoinbaseTransaction() : sendTransaction();
 
       transactionPromise
         .then(() => {
@@ -166,7 +171,8 @@ const SendReceive = () => {
   return (
     <ScreenWrapper>
       <Text style={[Typography.paragraph, Typography.important]}>
-        {STRINGS.digital_cash_wallet_balance}: ${Number.isFinite(balance) ? balance : '∞'}
+        {STRINGS.digital_cash_wallet_balance}: $
+        {Number.isFinite(balance) ? balance : STRINGS.digital_cash_infinity}
       </Text>
       <Text style={Typography.paragraph}>
         {STRINGS.digital_cash_wallet_transaction_description}
@@ -239,12 +245,9 @@ export const SendReceiveHeaderRight = () => {
 
   const { laoId, rollCallId, isCoinbase } = route.params;
 
-  const [publicKey, setPublicKey] = useState('');
   const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
 
-  useEffect(() => {
-    setPublicKey(rollCallToken?.token.publicKey.valueOf() || '');
-  }, [rollCallToken]);
+  const publicKey = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 
   if (isCoinbase) {
     return null;
