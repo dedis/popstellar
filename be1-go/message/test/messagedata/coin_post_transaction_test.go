@@ -36,7 +36,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 	require.Equal(t, "P2PKH", msg.Transaction.Inputs[0].Script.Type)
 	require.Equal(t, "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=", msg.Transaction.Inputs[0].Script.PubKey)
 	require.Equal(t, "6hY16bDKnb7bRA5j7IMDR1CJDqAJKOLuQRgKxdpYQIrtSTVTRjo5jigqPhYQEPcK5a1WAF86V739ENFnlp6YCw==", msg.Transaction.Inputs[0].Script.Sig)
-	require.Equal(t, 32, msg.Transaction.Outputs[0].Value)
+	require.EqualValues(t, 32, msg.Transaction.Outputs[0].Value)
 	require.Equal(t, "P2PKH", msg.Transaction.Outputs[0].Script.Type)
 	require.Equal(t, "-_qR4IHwsiq50raa8jURNArds54=", msg.Transaction.Outputs[0].Script.PubKeyHash)
 	require.Equal(t, 0, msg.Transaction.Locktime)
@@ -77,5 +77,4 @@ func Test_Coin_Post_Transaction_Verify(t *testing.T) {
 
 	t.Run("transaction id not base64", getTestBadExample("wrong_post_transaction_transaction_id_not_base_64.json"))
 	t.Run("transaction id is wrong", getTestBadExample("post_transaction_wrong_transaction_id.json"))
-	t.Run("amount is negative", getTestBadExample("post_transaction_negative_amount.json"))
 }
