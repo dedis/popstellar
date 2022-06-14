@@ -5,12 +5,13 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
-import common.utils.Base64Utils;
 
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import static common.JsonKeys.*;
+import static common.utils.Base64Utils.convertB64URLToString;
 
 public class VerifierUtils {
   private final static Logger logger = new Logger(VerifierUtils.class.getSimpleName());
@@ -25,6 +26,7 @@ public class VerifierUtils {
 
     boolean signatureValidity = verifySignature(messageFieldJson);
     boolean messageIdValidity = verifyMessageIdField(messageFieldJson);
+    logger.info("sig val = " + signatureValidity + " and msgId val is " + messageIdValidity);
 
     return signatureValidity && messageIdValidity;
   }
@@ -56,15 +58,19 @@ public class VerifierUtils {
 
   private static boolean verifySignature(Json messageFieldJson) {
     String senderB64 = messageFieldJson.get(SENDER);
-    String signature = messageFieldJson.get(SIGNATURE);
-    String data = messageFieldJson.get(DATA);
-    String sender = Base64Utils.convertB64ToString(senderB64);
-    logger.info("sender is " + sender);
+    String signatureB64 = messageFieldJson.get(SIGNATURE);
+    String dataB64 = messageFieldJson.get(DATA);
 
-    PublicKeyVerify verify = new Ed25519Verify(sender.getBytes());
+    byte[] sender = convertB64URLToString(senderB64);
+    byte[] signature = convertB64URLToString(signatureB64);
+    byte[] data = convertB64URLToString(dataB64);
+    logger.info("signature is " + signature);
+    logger.info("sender is " + Arrays.toString(sender));
+
+    PublicKeyVerify verify = new Ed25519Verify(sender);
 
     try {
-      verify.verify(signature.getBytes(), data.getBytes());
+      verify.verify(signature, data);
       return true;
     } catch (GeneralSecurityException e) {
       logger.info("verification failed with error: " + e);

@@ -6,6 +6,8 @@ Feature: web test
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
+    # Introduction screen
+    * exploring_selector = '{^}Start exploring POPStellar'
 
     # Tab buttons
     * def tab_home_selector = '{}Home'
