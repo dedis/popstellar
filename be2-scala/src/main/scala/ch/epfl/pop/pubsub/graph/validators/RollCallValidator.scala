@@ -3,12 +3,17 @@ package ch.epfl.pop.pubsub.graph.validators
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN, REOPEN}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, RollCallData}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
+
+import scala.concurrent.Await
+import scala.util.Success
 
 
 object RollCallValidator extends MessageDataContentValidator with EventValidator {
@@ -30,6 +35,18 @@ object RollCallValidator extends MessageDataContentValidator with EventValidator
 sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = "R"
+
+  /**
+   * @param laoId  LAO id of the channel
+   * @return       Rollcall Data of the channel
+   */
+  private def getRollCallData(laoId: Hash): Option[RollCallData] = {
+    val ask = dbActorRef ? DbActor.ReadRollCallData(laoId)
+    Await.ready(ask, duration).value match {
+      case Some(Success(DbActorReadRollCallDataAck(rollcallData))) => Some(rollcallData)
+      case _ => None
+    }
+  }
 
   //remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -89,6 +106,8 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
+        } else if (!validateOpens(laoId, data.opens)) {
+          Right(validationError("unexpected id 'opens'"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
@@ -97,6 +116,15 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Left(rpcMessage)
         }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
+  private def validateOpens(laoId: Hash, opens: Hash): Boolean = {
+    val rollCallData: Option[RollCallData] = getRollCallData(laoId)
+    rollCallData match {
+      case Some(data) =>
+        (data.state == CREATE || data.state == CLOSE) && data.updateId == opens
+      case _ => false
     }
   }
 
@@ -135,8 +163,8 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (data.update_id == data.closes) {
-          Right(validationError("a closed roll call cannot be closed once again"))
+        } else if (!validateCloses(laoId, data.closes)) {
+          Right(validationError("unexpected id 'closes'"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
@@ -145,6 +173,14 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Left(rpcMessage)
         }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
+  private def validateCloses(laoId: Hash, closes: Hash): Boolean = {
+    val rollCallData: Option[RollCallData] = getRollCallData(laoId)
+    rollCallData match {
+      case Some(data) => (data.state == OPEN || data.state == REOPEN) && data.updateId == closes
+      case _ => false
     }
   }
 }

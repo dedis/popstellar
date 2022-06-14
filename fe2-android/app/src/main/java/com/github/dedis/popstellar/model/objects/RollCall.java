@@ -175,6 +175,13 @@ public class RollCall extends Event {
     return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
   }
 
+  /**
+   * @return true if the roll-call is closed, false otherwise
+   */
+  public boolean isClosed() {
+    return EventState.CLOSED.equals(state.getValue());
+  }
+
   @Override
   public String toString() {
     return "RollCall{"

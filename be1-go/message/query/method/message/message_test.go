@@ -17,15 +17,24 @@ func Test_UnmarshalData(t *testing.T) {
 	messageDataBuf, err := os.ReadFile(messageDataPath)
 	require.NoError(t, err)
 
-	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
+	laoCreate := messagedata.LaoCreate{}
+	electionSetup := messagedata.ElectionSetup{}
 
 	message := Message{
-		Data: messageData,
+		Data: string(messageDataBuf),
 	}
 
-	// > I should be able to decode this message into a LaoCreate datamessage
+	err = message.UnmarshalData(&laoCreate)
+	require.Error(t, err)
 
-	laoCreate := messagedata.LaoCreate{}
+	err = message.UnmarshalData(&electionSetup)
+	require.Error(t, err)
+
+	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
+
+	message = Message{
+		Data: messageData,
+	}
 
 	err = message.UnmarshalData(&laoCreate)
 	require.NoError(t, err)
