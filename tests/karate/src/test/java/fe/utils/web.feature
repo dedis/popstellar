@@ -6,6 +6,12 @@ Feature: web test
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
+    # Introduction screen
+    * def exploring_selector = '{^}Start exploring POPStellar'
+    #* def exploring_selector = "[data-testid='exploring_selector']"
+    #* def exploring_selector = '[data-testid="exploring_selector"]'
+
+   # * def exploring_selector = "//input[@testId='exploring_selector']"
 
     # Tab buttons
     * def tab_home_selector = '{}Home'
@@ -14,7 +20,7 @@ Feature: web test
     * def tab_wallet_selector = '{}Wallet'
 
     # Launch tab
-    * def tab_launch_lao_name_selector = "[data-testid='Organization name']"
+    * def tab_launch_lao_name_selector = "input[testID='Organization name']"
     * def tab_launch_address_selector = "input[placeholder='Address']"
     * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
 
@@ -43,7 +49,6 @@ Feature: web test
               }
             }
           """
-
-    And click(tab_launch_selector)
-    And input(tab_launch_address_selector, backendURL)
-    And click(tab_home_selector)
+    * mouse().move(exploring_selector).down()
+    And click(tab_connect_selector)
+   # And input(tab_launch_address_selector, backendURL)
