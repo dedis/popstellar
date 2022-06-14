@@ -15,8 +15,6 @@ import RollCallWalletItem from './RollCallWalletItem';
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
   const tokens = WalletHooks.useRollCallTokensByLaoId(laoId.valueOf());
 
-  console.log(tokens);
-
   if (tokens.length > 0) {
     return (
       <>

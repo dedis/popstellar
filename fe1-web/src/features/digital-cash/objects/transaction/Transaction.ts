@@ -1,6 +1,7 @@
 import { Base64UrlData, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
 import { SCRIPT_TYPE, COINBASE_HASH } from 'resources/const';
 
+import { isDefined } from '../../../../core/types';
 import { TransactionInput, TransactionInputJSON, TransactionInputState } from './TransactionInput';
 import {
   TransactionOutput,
@@ -233,18 +234,19 @@ export class Transaction {
   ): Omit<TransactionInputState, 'script'>[] =>
     transactions.flatMap((tr) =>
       tr.outputs
-        .filter(
-          (output) => output.script.publicKeyHash.valueOf() === Hash.fromPublicKey(pk).valueOf(),
-        )
         .map((output, index) => {
           if (!tr.transactionId) {
             throw new Error('The transaction hash of an input is undefined');
+          }
+          if (output.script.publicKeyHash.valueOf() !== Hash.fromPublicKey(pk).valueOf()) {
+            return undefined;
           }
           return {
             txOutHash: tr.transactionId.valueOf(),
             txOutIndex: index,
           };
-        }),
+        })
+        .filter(isDefined),
     );
 
   /**
