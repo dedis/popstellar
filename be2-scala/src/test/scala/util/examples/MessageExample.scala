@@ -197,7 +197,26 @@ object MessageExample {
     Some(mettingCreateWrongChannel)
   )
 
+  final val HASH_MEETING_OBJECT_WRONG_DATA: Hash = Hash.fromStrings("M", laoIdMeetingWrongChannel, ""+creationMeeting, nameMeeting, "wrongElement")
+  final val meetingCreateWrongData: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT_WRONG_DATA, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None)
+  final val MESSAGE_CREATE_MEETING_WRONG_DATA: Message = new Message(
+    Base64Data.encode(meetingCreateWrongData.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(meetingCreateWrongData)
+  )
 
-
+  final val creationMeetingSmall: Timestamp = Timestamp(123)
+  final val meetingCreateSmallCreation: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeetingSmall, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None)
+  final val MESSAGE_CREATE_MEETING_SMALL_CREATION: Message = new Message(
+    Base64Data.encode(meetingCreateSmallCreation.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(meetingCreateSmallCreation)
+  )
 
 }

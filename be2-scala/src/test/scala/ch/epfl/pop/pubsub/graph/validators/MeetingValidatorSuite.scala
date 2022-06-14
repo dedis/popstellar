@@ -82,6 +82,18 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.actorOf(dbActorMock)
   }
 
+  private def mockDbInvalidSetupWrongOwner: AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
   // Valid meeting setup
   test("Creating a valid meeting works as intended") {
     val dbActorRef = mockDbWorkingSetup
@@ -92,10 +104,20 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Invalid meeting setups
+
+  // invalid channel
   test("Creating an invalid meeting with invalid channel") {
     val dbActorRef = mockDbWrongSetupBadChannel
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_WRONG_CHANNEL_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+   test("Creating an invalid meeting with invalid sender") {
+    val dbActorRef = mockDbInvalidSetupWrongOwner
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
