@@ -7,9 +7,9 @@ Feature: web test
 
     # ================= Page Object Start ====================
     # Introduction screen
-    #* def exploring_selector = '{^}Start exploring POPStellar'
-    #* def exploring_selector = "[data-testID='exploring_selector']"
-    * def exploring_selector = 'input[testID=exploring_selector]'
+    * def exploring_selector = '{^}Start exploring POPStellar'
+    #* def exploring_selector = "[data-testid='exploring_selector']"
+    #* def exploring_selector = '[data-testid="exploring_selector"]'
 
    # * def exploring_selector = "//input[@testId='exploring_selector']"
 
@@ -49,7 +49,6 @@ Feature: web test
               }
             }
           """
-    * click(exploring_selector)
-    And click(tab_launch_selector)
-    And input(tab_launch_address_selector, backendURL)
-    And click(tab_home_selector)
+    * mouse().move(exploring_selector).down()
+    And click(tab_connect_selector)
+   # And input(tab_launch_address_selector, backendURL)
