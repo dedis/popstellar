@@ -229,7 +229,7 @@ object MessageExample {
     Some(meetingCreateSmallStart)
   )
 
-final val meetingCreateInvalidEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633098800)), None)
+final val meetingCreateInvalidEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633098200)), None)
 final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
     Base64Data.encode(meetingCreateInvalidEnd.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
