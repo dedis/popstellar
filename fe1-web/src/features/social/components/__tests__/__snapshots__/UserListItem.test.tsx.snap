@@ -54,13 +54,19 @@ exports[`UserListItem renders correctly 1`] = `
           }
         }
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             Object {
               "marginBottom": 16,
@@ -68,52 +74,67 @@ exports[`UserListItem renders correctly 1`] = `
             }
           }
         >
-          <View
-            accessible={true}
+          <RNGestureHandlerButton
             collapsable={false}
-            nativeID="animatedComponent"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
             style={
               Object {
-                "opacity": 1,
+                "marginBottom": 16,
+                "width": "100%",
               }
             }
           >
             <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
               style={
-                Array [
-                  Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                ]
+                Object {
+                  "opacity": 1,
+                }
               }
             >
-              <Text
+              <View
                 style={
                   Array [
                     Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 16,
+                      "borderWidth": 1,
+                      "padding": 8,
                     },
                   ]
                 }
               >
-                Follow
-              </Text>
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "color": "#000",
+                        "fontSize": 20,
+                        "lineHeight": 26,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "textAlign": "center",
+                      },
+                      Object {
+                        "color": "#fff",
+                      },
+                    ]
+                  }
+                >
+                  Follow
+                </Text>
+              </View>
             </View>
-          </View>
-        </RNGestureHandlerButton>
+          </RNGestureHandlerButton>
+        </View>
       </View>
       <View
         style={
@@ -122,13 +143,19 @@ exports[`UserListItem renders correctly 1`] = `
           }
         }
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             Object {
               "marginBottom": 16,
@@ -136,56 +163,71 @@ exports[`UserListItem renders correctly 1`] = `
             }
           }
         >
-          <View
-            accessible={true}
+          <RNGestureHandlerButton
             collapsable={false}
-            nativeID="animatedComponent"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
             style={
               Object {
-                "opacity": 1,
+                "marginBottom": 16,
+                "width": "100%",
               }
             }
           >
             <View
+              accessible={true}
+              collapsable={false}
+              nativeID="animatedComponent"
               style={
-                Array [
-                  Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                  Object {
-                    "backgroundColor": "#8E8E8E",
-                    "borderColor": "#8E8E8E",
-                  },
-                ]
+                Object {
+                  "opacity": 1,
+                }
               }
             >
-              <Text
+              <View
                 style={
                   Array [
                     Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 16,
+                      "borderWidth": 1,
+                      "padding": 8,
                     },
                     Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
+                      "backgroundColor": "#8E8E8E",
+                      "borderColor": "#8E8E8E",
                     },
                   ]
                 }
               >
-                Profile
-              </Text>
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "color": "#000",
+                        "fontSize": 20,
+                        "lineHeight": 26,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "textAlign": "center",
+                      },
+                      Object {
+                        "color": "#fff",
+                      },
+                    ]
+                  }
+                >
+                  Profile
+                </Text>
+              </View>
             </View>
-          </View>
-        </RNGestureHandlerButton>
+          </RNGestureHandlerButton>
+        </View>
       </View>
     </View>
   </View>
@@ -246,13 +288,19 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           }
         }
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             Object {
               "marginBottom": 16,
@@ -260,54 +308,69 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             }
           }
         >
-          <View
-            accessible={true}
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
             style={
               Object {
-                "opacity": 1,
+                "marginBottom": 16,
+                "width": "100%",
               }
             }
           >
             <View
+              accessible={true}
               style={
-                Array [
-                  Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                  Object {
-                    "backgroundColor": "#8E8E8E",
-                    "borderColor": "#8E8E8E",
-                  },
-                ]
+                Object {
+                  "opacity": 1,
+                }
               }
             >
-              <Text
+              <View
                 style={
                   Array [
                     Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 16,
+                      "borderWidth": 1,
+                      "padding": 8,
                     },
                     Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
+                      "backgroundColor": "#8E8E8E",
+                      "borderColor": "#8E8E8E",
                     },
                   ]
                 }
               >
-                Follow
-              </Text>
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "color": "#000",
+                        "fontSize": 20,
+                        "lineHeight": 26,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "textAlign": "center",
+                      },
+                      Object {
+                        "color": "#fff",
+                      },
+                    ]
+                  }
+                >
+                  Follow
+                </Text>
+              </View>
             </View>
-          </View>
-        </RNGestureHandlerButton>
+          </RNGestureHandlerButton>
+        </View>
       </View>
       <View
         style={
@@ -316,13 +379,19 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           }
         }
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             Object {
               "marginBottom": 16,
@@ -330,50 +399,65 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             }
           }
         >
-          <View
-            accessible={true}
+          <RNGestureHandlerButton
+            collapsable={false}
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
             style={
               Object {
-                "opacity": 1,
+                "marginBottom": 16,
+                "width": "100%",
               }
             }
           >
             <View
+              accessible={true}
               style={
-                Array [
-                  Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                ]
+                Object {
+                  "opacity": 1,
+                }
               }
             >
-              <Text
+              <View
                 style={
                   Array [
                     Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 16,
+                      "borderWidth": 1,
+                      "padding": 8,
                     },
                   ]
                 }
               >
-                Profile
-              </Text>
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "color": "#000",
+                        "fontSize": 20,
+                        "lineHeight": 26,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "textAlign": "center",
+                      },
+                      Object {
+                        "color": "#fff",
+                      },
+                    ]
+                  }
+                >
+                  Profile
+                </Text>
+              </View>
             </View>
-          </View>
-        </RNGestureHandlerButton>
+          </RNGestureHandlerButton>
+        </View>
       </View>
     </View>
   </View>

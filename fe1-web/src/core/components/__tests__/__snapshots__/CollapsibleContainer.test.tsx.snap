@@ -4,55 +4,71 @@ exports[`CollapsibleContainer container can be opened 1`] = `
 <View>
   <View
     accessible={true}
+    collapsable={false}
     focusable={true}
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "opacity": 1,
-      }
-    }
   >
-    <View>
-      <Text
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
+    >
+      <View
+        accessible={true}
         style={
           Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
+            "opacity": 1,
           }
         }
       >
-        open me
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
-            },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
-          ]
-        }
-      >
-        v
-      </Text>
-    </View>
+        <View>
+          <Text
+            style={
+              Object {
+                "color": "black",
+                "fontSize": 25,
+                "fontWeight": "bold",
+                "lineHeight": 26,
+                "marginHorizontal": 10,
+                "textAlign": "center",
+              }
+            }
+          >
+            open me
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "marginHorizontal": 10,
+                  "textAlign": "center",
+                },
+                Object {
+                  "position": "absolute",
+                  "right": 0,
+                },
+              ]
+            }
+          >
+            v
+          </Text>
+        </View>
+      </View>
+    </RNGestureHandlerButton>
   </View>
   <Text>
     a first child
@@ -69,55 +85,71 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
     accessible={true}
     collapsable={false}
     focusable={true}
-    nativeID="animatedComponent"
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "opacity": 1,
-      }
-    }
   >
-    <View>
-      <Text
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
+    >
+      <View
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
         style={
           Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
+            "opacity": 1,
           }
         }
       >
-        A collapsible container
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
-            },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
-          ]
-        }
-      >
-        &lt;
-      </Text>
-    </View>
+        <View>
+          <Text
+            style={
+              Object {
+                "color": "black",
+                "fontSize": 25,
+                "fontWeight": "bold",
+                "lineHeight": 26,
+                "marginHorizontal": 10,
+                "textAlign": "center",
+              }
+            }
+          >
+            A collapsible container
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "marginHorizontal": 10,
+                  "textAlign": "center",
+                },
+                Object {
+                  "position": "absolute",
+                  "right": 0,
+                },
+              ]
+            }
+          >
+            &lt;
+          </Text>
+        </View>
+      </View>
+    </RNGestureHandlerButton>
   </View>
 </View>
 `;
@@ -128,55 +160,71 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
     accessible={true}
     collapsable={false}
     focusable={true}
-    nativeID="animatedComponent"
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "opacity": 1,
-      }
-    }
   >
-    <View>
-      <Text
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
+    >
+      <View
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
         style={
           Object {
-            "color": "black",
-            "fontSize": 25,
-            "fontWeight": "bold",
-            "lineHeight": 26,
-            "marginHorizontal": 10,
-            "textAlign": "center",
+            "opacity": 1,
           }
         }
       >
-        A collapsible container
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
-            },
-            Object {
-              "position": "absolute",
-              "right": 0,
-            },
-          ]
-        }
-      >
-        v
-      </Text>
-    </View>
+        <View>
+          <Text
+            style={
+              Object {
+                "color": "black",
+                "fontSize": 25,
+                "fontWeight": "bold",
+                "lineHeight": 26,
+                "marginHorizontal": 10,
+                "textAlign": "center",
+              }
+            }
+          >
+            A collapsible container
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "marginHorizontal": 10,
+                  "textAlign": "center",
+                },
+                Object {
+                  "position": "absolute",
+                  "right": 0,
+                },
+              ]
+            }
+          >
+            v
+          </Text>
+        </View>
+      </View>
+    </RNGestureHandlerButton>
   </View>
   <Text>
     a first child
