@@ -7,7 +7,11 @@ Feature: web test
 
     # ================= Page Object Start ====================
     # Introduction screen
-    * exploring_selector = '{^}Start exploring POPStellar'
+    #* def exploring_selector = '{^}Start exploring POPStellar'
+    #* def exploring_selector = "[data-testID='exploring_selector']"
+    * def exploring_selector = 'input[testID=exploring_selector]'
+
+   # * def exploring_selector = "//input[@testId='exploring_selector']"
 
     # Tab buttons
     * def tab_home_selector = '{}Home'
@@ -16,7 +20,7 @@ Feature: web test
     * def tab_wallet_selector = '{}Wallet'
 
     # Launch tab
-    * def tab_launch_lao_name_selector = "[data-testid='Organization name']"
+    * def tab_launch_lao_name_selector = "input[testID='Organization name']"
     * def tab_launch_address_selector = "input[placeholder='Address']"
     * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
 
@@ -45,7 +49,7 @@ Feature: web test
               }
             }
           """
-
+    * click(exploring_selector)
     And click(tab_launch_selector)
     And input(tab_launch_address_selector, backendURL)
     And click(tab_home_selector)

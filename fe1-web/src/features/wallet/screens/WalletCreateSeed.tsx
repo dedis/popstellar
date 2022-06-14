@@ -121,7 +121,7 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_6}
             </Text>
           </Text>
-          <PoPTextButton onPress={() => connectWithSeed()} negative>
+          <PoPTextButton onPress={() => connectWithSeed()} negative testID="exploring_selector">
             {STRINGS.wallet_welcome_start_exploring}
           </PoPTextButton>
           <PoPTextButton
