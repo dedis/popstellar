@@ -96,7 +96,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWrongSetupBadChannel
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_WRONG_CHANNEL_RPC)
-    message should equal(Right(CREATE_MEETING_WRONG_CHANNEL_RPC))
+    message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
