@@ -14,7 +14,7 @@ Feature: web test
     * def tab_wallet_selector = '{}Wallet'
 
     # Launch tab
-    * def tab_launch_lao_name_selector = "input[placeholder='Organization name']"
+    * def tab_launch_lao_name_selector = "[data-testid='Organization name']"
     * def tab_launch_address_selector = "input[placeholder='Address']"
     * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
 
