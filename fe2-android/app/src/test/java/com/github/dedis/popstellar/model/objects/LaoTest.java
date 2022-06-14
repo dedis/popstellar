@@ -209,7 +209,8 @@ public class LaoTest {
     r1.setEnd(1);
     r2.setEnd(2);
     r1.setState(EventState.CLOSED);
-    r2.setState(EventState.CLOSED);
+    //Wait that thread concurrency updates
+    while(EventState.CLOSED.equals(r1.getState().getValue()))
     try {
       assertEquals(r2, LAO_1.lastRollCallClosed());
     } catch (NoRollCallException e) {

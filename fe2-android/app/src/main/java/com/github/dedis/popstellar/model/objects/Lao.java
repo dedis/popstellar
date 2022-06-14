@@ -438,7 +438,7 @@ public final class Lao {
    */
   public RollCall lastRollCallClosed() throws NoRollCallException {
     return this.getRollCalls().values().stream()
-            //.filter(RollCall::isClosed)
+            .filter(RollCall::isClosed)
             .max(Comparator.comparing(RollCall::getEnd))
             .orElseThrow(() -> new NoRollCallException(this));
   }
