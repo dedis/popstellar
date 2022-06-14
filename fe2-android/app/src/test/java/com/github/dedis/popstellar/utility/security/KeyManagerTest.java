@@ -13,11 +13,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -54,6 +56,8 @@ public class KeyManagerTest {
   private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule public RuleChain rule = RuleChain.outerRule(hiltRule).around(MockitoJUnit.testRule(this));
+
+  @Rule public InstantTaskExecutorRule executorRule = new InstantTaskExecutorRule();
 
   @Inject @DeviceKeyset AndroidKeysetManager androidKeysetManager;
   @Mock private Wallet wallet;
@@ -92,6 +96,9 @@ public class KeyManagerTest {
     RollCall rollCall1 = new RollCall(lao.getId(), 5421364, "rollcall1");
     RollCall rollCall2 = new RollCall(lao.getId(), 5421363, "rollcall2");
 
+    rollCall1.setState(EventState.CLOSED);
+    rollCall2.setState(EventState.CLOSED);
+
     lao.updateRollCall(rollCall1.getId(), rollCall1);
     lao.updateRollCall(rollCall2.getId(), rollCall2);
 
@@ -110,6 +117,7 @@ public class KeyManagerTest {
     // create LAO and RollCall
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
     RollCall rollCall = new RollCall(lao.getId(), 5421364, "rollcall");
+    rollCall.setState(EventState.CLOSED);
     lao.updateRollCall(rollCall.getId(), rollCall);
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);

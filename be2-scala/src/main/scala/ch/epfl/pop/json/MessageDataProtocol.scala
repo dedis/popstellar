@@ -357,6 +357,24 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   }
 
+  implicit object RollCallDataFormat extends JsonFormat[RollCallData] {
+    final private val PARAM_UPDATE_ID: String = "update_id"
+    final private val PARAM_STATE: String = "state"
+
+    override def read(json: JsValue): RollCallData = json.asJsObject().getFields(PARAM_UPDATE_ID, PARAM_STATE) match {
+      case Seq(updateId@JsString(_), state@JsString(_)) => RollCallData(
+        updateId.convertTo[Hash],
+        state.convertTo[ActionType]
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RollcallData object")
+    }
+
+    override def write(obj: RollCallData): JsValue = JsObject(
+      PARAM_UPDATE_ID -> obj.updateId.toJson,
+      PARAM_STATE -> obj.state.toJson
+    )
+  }
+
   implicit object ElectionDataFormat extends JsonFormat[ElectionData] {
     final private val PARAM_ELECTION_ID: String = "electionId"
     final private val PARAM_PRIVATE_KEY: String = "privateKey"
@@ -375,7 +393,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_PRIVATE_KEY -> obj.keyPair.privateKey.toJson,
       PARAM_PUBLIC_KEY -> obj.keyPair.publicKey.toJson
     )
-
   }
 
   implicit object LaoDataFormat extends JsonFormat[LaoData] {

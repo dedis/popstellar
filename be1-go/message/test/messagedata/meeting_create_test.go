@@ -36,3 +36,11 @@ func Test_Meeting_Create(t *testing.T) {
 	require.Equal(t, int64(1633098900), msg.Start)
 	require.Equal(t, int64(1633102500), msg.End)
 }
+
+func Test_Meeting_Create_Interface_Functions(t *testing.T) {
+	var msg messagedata.MeetingCreate
+
+	require.Equal(t, messagedata.MeetingObject, msg.GetObject())
+	require.Equal(t, messagedata.MeetingActionCreate, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}
