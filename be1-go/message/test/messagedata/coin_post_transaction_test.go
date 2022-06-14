@@ -75,6 +75,7 @@ func Test_Coin_Post_Transaction_Verify(t *testing.T) {
 		}
 	}
 
+	t.Run("output amount overflows", getTestBadExample("post_transaction_overflow_sum.json"))
 	t.Run("transaction id not base64", getTestBadExample("wrong_post_transaction_transaction_id_not_base_64.json"))
 	t.Run("transaction id is wrong", getTestBadExample("post_transaction_wrong_transaction_id.json"))
 }
