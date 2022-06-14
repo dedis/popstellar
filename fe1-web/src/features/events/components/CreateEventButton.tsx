@@ -47,7 +47,7 @@ const CreateEventButton = () => {
   };
 
   return (
-    <PoPTouchableOpacity onPress={onPress}>
+    <PoPTouchableOpacity onPress={onPress} testID="create_event_selector">
       <PoPIcon name="create" color={Color.inactive} size={Icon.size} />
     </PoPTouchableOpacity>
   );

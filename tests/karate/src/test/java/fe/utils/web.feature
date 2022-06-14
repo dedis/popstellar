@@ -20,6 +20,13 @@ Feature: web test
     * def launch_address_selector = "input[data-testid='launch_address_selector']"
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
+    # Lao Event List
+    * def add_event_selector = "[data-testid='create_event_selector']"
+    * def add_roll_call_selector = '{}Create Roll-Call'
+    * def tab_events_selector = '{}Events'
+    * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
+    * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
+
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
@@ -52,3 +59,12 @@ Feature: web test
 
     * click(launch_selector)
     * input(launch_address_selector, backendURL)
+
+  #roll call web procedure
+  @name=create_roll_call
+  Scenario: Create a roll call for an already created LAO
+    Given click(tab_events_selector)
+    And click(add_event_selector)
+    And click(add_roll_call_selector)
+    And input(roll_call_title_selector, 'RC name')
+    And input(roll_call_location_selector, 'EPFL')

@@ -1,7 +1,7 @@
 @env=android,web
 Feature: Simple Scenarios
 
-    @name=basic_setup
+  @name=basic_setup
   Scenario: Basic setup
     * def page_object = 'classpath:fe/utils/<env>.feature@name=basic_setup'
     * replace page_object.env = karate.env

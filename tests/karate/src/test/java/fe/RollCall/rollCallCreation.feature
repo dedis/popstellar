@@ -3,13 +3,11 @@ Feature: Create RollCall
 
   Background:
     * call read('classpath:fe/utils/simpleScenarios.feature@name=create_lao')
-
+    * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=create_roll_call'
+    * replace rc_page_object.env = karate.env
+    * call read(rc_page_object)
 
   Scenario: Creating a Roll Call send right message to backend and displays element
-    When click(add_event_selector)
-    And click(add_roll_call_selector)
-    And input(roll_call_title_selector, 'RC name')
-
     Given backend.clearBuffer()
     And backend.setRollCallCreateMode()
 

@@ -78,6 +78,7 @@ const Launch = () => {
             value={inputLaoName}
             onChange={setInputLaoName}
             placeholder={STRINGS.launch_organization_name}
+            testID="launch_organization_name_selector"
           />
 
           <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.launch_address}</Text>
@@ -85,10 +86,13 @@ const Launch = () => {
             value={inputAddress}
             onChange={setInputAddress}
             placeholder={STRINGS.launch_address}
+            testID="launch_address_selector"
           />
         </View>
         <View style={styles.viewBottom}>
-          <PoPTextButton onPress={() => onButtonLaunchPress(inputLaoName)}>
+          <PoPTextButton
+            onPress={() => onButtonLaunchPress(inputLaoName)}
+            testID="launch_launch_selector">
             {STRINGS.launch_button_launch}
           </PoPTextButton>
 

@@ -141,7 +141,8 @@ const ConnectOpenScan = () => {
           <View style={styles.rightButtons}>
             <PoPTouchableOpacity
               style={styles.buttonMargin}
-              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}
+              testID="launch_selector">
               <PoPIcon name="create" color={Color.accent} size={Icon.size} />
             </PoPTouchableOpacity>
             <PoPTouchableOpacity
