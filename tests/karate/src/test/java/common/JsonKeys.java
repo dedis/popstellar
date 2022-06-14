@@ -28,4 +28,6 @@ public class JsonKeys {
   public static final String SIGNATURE = "signature";
 
   public static final String MESSAGE_ID = "message_id";
+
+  public static final String SENDER = "sender";
 }

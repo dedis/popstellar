@@ -11,7 +11,6 @@ import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -36,8 +35,6 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   private Json laoCreationMessageData;
 
   private String laoID;
-
-
 
   public MockBackend(MessageQueue queue, int port) {
     this.queue = queue;
@@ -121,26 +118,19 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     queue.clear();
   }
 
-  public boolean receiveNoMoreResponses(){
+  public boolean receiveNoMoreResponses() {
     return queue.takeTimeout(5000) == null;
   }
 
-  public void setLaoCreateMode(){
+  public void setLaoCreateMode() {
     replyProducer = ReplyMethods.LAO_CREATE;
   }
 
-  public void setRollCallCreateMode(){
+  public void setRollCallCreateMode() {
     replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
   }
 
-  public boolean checkRollCallCreateMessage (String karateMessage) {
-    logger.info("type is " + karateMessage.getClass());
-    String message = karateMessage.toString();
-    try {
-      return RollCallVerification.rollCallCreateVerification(message);
-    } catch (NoSuchAlgorithmException e) {
-      logger.info("Error " + e +" for message " + message);
-      return false;
-    }
+  public boolean checkRollCallCreateMessage(String message) {
+    return RollCallVerification.rollCallCreateVerification(message);
   }
 }
