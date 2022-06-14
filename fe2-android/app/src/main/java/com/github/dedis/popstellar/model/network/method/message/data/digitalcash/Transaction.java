@@ -111,17 +111,12 @@ public final class Transaction {
     // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
     // Value...
     List<String> sig = new ArrayList<>();
-    Iterator<Map.Entry<String, Integer>> iteInput = inputsPairs.entrySet().iterator();
-    Iterator<Output> iteOutput = outputs.iterator();
-
-    while (iteInput.hasNext()) {
-      Map.Entry<String, Integer> current = iteInput.next();
+    for ( Map.Entry<String, Integer> current : inputsPairs.entrySet()) {
       sig.add(current.getKey());
       sig.add(String.valueOf(current.getValue()));
     }
 
-    while (iteOutput.hasNext()) {
-      Output current = iteOutput.next();
+    for(Output current : outputs) {
       sig.add(String.valueOf(current.getValue()));
       sig.add(current.getScript().getType());
       sig.add(current.getScript().getPubkeyHash());
