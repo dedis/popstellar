@@ -197,13 +197,9 @@ public class TransactionObject {
    */
   public static long getMiniLaoPerReceiverSetTransaction(
       List<TransactionObject> transaction, PublicKey receiver) {
-    Iterator<TransactionObject> transactionIte = transaction.iterator();
-    long totalAmount = 0;
-    while (transactionIte.hasNext()) {
-      long current = transactionIte.next().getMiniLaoPerReceiver(receiver);
-      totalAmount += current;
-    }
-    return totalAmount;
+    return transaction.stream()
+            .mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver))
+            .sum();
   }
 
   /**
