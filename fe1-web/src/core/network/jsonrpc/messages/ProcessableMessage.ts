@@ -17,7 +17,7 @@ export interface ProcessableMessage {
   receivedFrom: string;
 
   channel: Channel;
-  laoId: Hash;
+  laoId?: Hash;
 
   data: Base64UrlData;
   sender: PublicKey;

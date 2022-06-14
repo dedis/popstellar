@@ -1,7 +1,10 @@
+import { AnyAction, Reducer } from 'redux';
+
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { WITNESS_REDUCER_PATH, MessagesToWitnessReducerState } from '../reducer';
 import { WitnessFeature } from './Feature';
 
 export const WITNESS_FEATURE_IDENTIFIER = 'witness';
@@ -23,6 +26,12 @@ export interface WitnessConfiguration {
   getCurrentLao: () => WitnessFeature.Lao;
 
   /**
+   * A hook returning the current lao id
+   * @returns The current lao id
+   */
+  useCurrentLaoId: () => Hash | undefined;
+
+  /**
    * Returns the currently active lao id. Should be used outside react components
    * @returns The current lao or undefined if there is none.
    */
@@ -34,20 +43,60 @@ export interface WitnessConfiguration {
   isLaoWitness: () => boolean;
 
   /**
-   * Returns the currently active lao. Can only be used inside react components
-   * @returns The current lao
+   * Creates an action to add a notification to the redux store
+   * @returns A redux action that can be dispatched
    */
-  useCurrentLao: () => WitnessFeature.Lao;
+  addNotification: (notification: Omit<WitnessFeature.Notification, 'id'>) => AnyAction;
+
+  /**
+   * Creates an action that marks a message as read inside the redux store
+   * @returns A redux action that can be dispatched
+   */
+  markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
+
+  /**
+   * Creates an action to discard a notification
+   * @returns A redux action that can be dispatched
+   */
+  discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
 }
 
 /**
  * The type of the context that is provided to react witness components
  */
-export type WintessReactContext = Pick<WitnessConfiguration, 'useCurrentLao'>;
+export type WitnessReactContext = Pick<
+  WitnessConfiguration,
+  | 'enabled'
+  | 'useCurrentLaoId'
+  | 'addNotification'
+  | 'markNotificationAsRead'
+  | 'discardNotifications'
+>;
 
 /**
  * The interface the witness feature exposes
  */
 export interface WitnessInterface extends FeatureInterface {
-  context: WintessReactContext;
+  notificationTypes: {
+    isOfType: (notification: WitnessFeature.Notification) => boolean;
+
+    delete?: (notification: WitnessFeature.Notification) => void;
+
+    Component: React.ComponentType<{
+      notification: WitnessFeature.Notification;
+      navigateToNotificationScreen: () => void;
+    }>;
+
+    Icon: React.ComponentType<{
+      color: string;
+      size: number;
+    }>;
+  }[];
+
+  context: WitnessReactContext;
+
+  /* reducers */
+  reducers: {
+    [WITNESS_REDUCER_PATH]: Reducer<MessagesToWitnessReducerState>;
+  };
 }

@@ -20,6 +20,9 @@
             "$ref": "dataCreateRollCall.json"
         },
         {
+            "$ref": "dataKeyElection.json"
+        },
+        {
             "$ref": "dataEndElection.json"
         },
         {
@@ -28,14 +31,17 @@
         {
             "$ref": "dataSetupElection.json"
         },
-		{
-			"$ref": "dataOpenElection.json"
-		},
+        {
+            "$ref": "dataOpenElection.json"
+        },
         {
             "$ref": "dataOpenRollCall.json"
         },
         {
             "$ref": "dataStateLao.json"
+        },
+        {
+            "$ref": "dataGreetLao.json"
         },
         {
             "$ref": "dataStateMeeting.json"
@@ -89,7 +95,7 @@
             "$ref": "dataFailure.json"
         },
         {
-            "$ref": "dataCashTransaction.json"
+            "$ref": "dataPostTransactionCoin.json"
         }
     ]
 }

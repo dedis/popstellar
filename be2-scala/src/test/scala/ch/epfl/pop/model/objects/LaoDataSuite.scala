@@ -60,29 +60,35 @@ class LaoDataSuite extends FunSuite with Matchers {
     val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     val messageAddChirp: Message = MessageExample.MESSAGE_ADDCHIRP
     val messageWithoutMessageData: Message = MessageExample.MESSAGE
+    val address: Option[String] = Option("ws://popdemo.dedis.ch")
 
     val emptyData: LaoData = LaoData()
 
-    val chirpData: LaoData = emptyData.updateWith(messageAddChirp)
+    val chirpData: LaoData = emptyData.updateWith(messageAddChirp, address)
 
     chirpData should equal(emptyData)
 
-    val withoutMessageDataData: LaoData = chirpData.updateWith(messageWithoutMessageData)
+    val withoutMessageDataData: LaoData = chirpData.updateWith(messageWithoutMessageData, address)
 
     withoutMessageDataData should equal(chirpData)
 
-    val createData: LaoData = withoutMessageDataData.updateWith(messageCreateLao)
+    val createData: LaoData = withoutMessageDataData.updateWith(messageCreateLao, address)
 
     createData.owner should equal(PublicKey(Base64Data("a2V5")))
     createData.attendees should equal(List(PublicKey(Base64Data("a2V5"))))
     createData.witnesses should equal(List.empty)
+    createData.address should equal(address.get)
 
-    val rollCallData: LaoData = createData.updateWith(messageCloseRollCall)
+    val rollCallData: LaoData = createData.updateWith(messageCloseRollCall, address)
 
     rollCallData.owner should equal(PublicKey(Base64Data("a2V5")))
-    rollCallData.attendees should equal(List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU="))))
+    rollCallData.attendees should equal(List(PublicKey(Base64Data("a2V5")), PublicKey(Base64Data("a2V5QXR0ZW5kZWU="))))
     rollCallData.witnesses should equal(List.empty)
+    rollCallData.address should equal(address.get)
 
+    val rollCallDataNoChange: LaoData = createData.updateWith(messageCloseRollCall, None)
+
+    rollCallDataNoChange.address should equal(address.get)
   }
 
 }

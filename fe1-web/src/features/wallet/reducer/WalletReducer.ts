@@ -9,7 +9,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
  * This file represents the reducer for the wallet.
  * Its job is to store the wallet state, which is represented by the wallet's encrypted seed.
  */
-interface WalletReducerState {
+export interface WalletReducerState {
   seed?: string;
   mnemonic?: string;
 }
@@ -20,11 +20,11 @@ const initialState: WalletReducerState = {
 };
 
 /* Name of wallet slice in storage */
-const walletReducerPath = 'wallet';
+export const WALLET_REDUCER_PATH = 'wallet';
 
 /* The store slice in charge of the wallet state */
 const walletSlice = createSlice({
-  name: walletReducerPath,
+  name: WALLET_REDUCER_PATH,
   initialState,
   reducers: {
     setWallet: (state, action: PayloadAction<WalletReducerState>) => {
@@ -53,7 +53,7 @@ export const { setWallet, clearWallet } = walletSlice.actions;
 export const walletReduce = walletSlice.reducer;
 
 export default {
-  [walletReducerPath]: walletSlice.reducer,
+  [WALLET_REDUCER_PATH]: walletSlice.reducer,
 };
 
-export const getWalletState = (state: any): WalletReducerState => state[walletReducerPath];
+export const getWalletState = (state: any): WalletReducerState => state[WALLET_REDUCER_PATH];

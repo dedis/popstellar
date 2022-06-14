@@ -8,8 +8,10 @@ import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
+import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.serializer.JsonAnswerSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonBase64DataSerializer;
+import com.github.dedis.popstellar.model.network.serializer.JsonCastVoteDeserializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonChannelSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonDataSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDeserializer;
@@ -44,6 +46,7 @@ public class JsonModule {
         .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer(dataRegistry))
+        .registerTypeAdapter(CastVote.class, new JsonCastVoteDeserializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())

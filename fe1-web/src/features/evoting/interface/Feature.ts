@@ -1,3 +1,5 @@
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { NavigationScreen } from 'core/navigation/typing/Screen';
 import { Hash, PublicKey } from 'core/objects';
 
 export namespace EvotingFeature {
@@ -8,22 +10,15 @@ export namespace EvotingFeature {
   }
 
   export interface EventState {
-    readonly eventType: string;
+    eventType: string;
+    id: string;
+    idAlias?: string;
 
-    readonly id: string;
-
-    readonly idAlias?: string;
-
-    readonly name: string;
-
-    readonly start: number;
-
-    readonly end?: number;
+    start: number;
+    end?: number;
   }
 
-  export interface Event {
-    readonly id: Hash;
-
-    toState(): EventState;
+  export interface LaoEventScreen extends NavigationScreen {
+    id: keyof LaoEventsParamList;
   }
 }

@@ -1,11 +1,8 @@
 import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
-import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 /**
  * Object to represent a roll call.
  */
-
-export const EventTypeRollCall = 'ROLL_CALL';
 
 export enum RollCallStatus {
   CREATED,
@@ -14,7 +11,9 @@ export enum RollCallStatus {
   REOPENED,
 }
 
-export interface RollCallState extends LaoEventState {
+export interface RollCallState {
+  id: string;
+  idAlias?: string;
   name: string;
   location: string;
   description?: string;
@@ -28,6 +27,8 @@ export interface RollCallState extends LaoEventState {
 }
 
 export class RollCall {
+  public static EVENT_TYPE = 'ROLL_CALL';
+
   public readonly id: Hash;
 
   public readonly idAlias?: Hash;
@@ -53,11 +54,11 @@ export class RollCall {
   public readonly attendees?: PublicKey[];
 
   public get start() {
-    return this.openedAt ?? this.proposedStart;
+    return this.openedAt || this.proposedStart;
   }
 
   public get end() {
-    return this.closedAt ?? this.proposedEnd;
+    return this.closedAt || this.proposedEnd;
   }
 
   /* Not yet implemented:
@@ -104,6 +105,9 @@ export class RollCall {
     this.proposedEnd = obj.proposedEnd;
     this.status = obj.status;
     this.attendees = obj.attendees;
+
+    this.openedAt = obj.openedAt;
+    this.closedAt = obj.closedAt;
   }
 
   /**
@@ -134,13 +138,7 @@ export class RollCall {
    * Creates a RollCallState object from the current RollCall object.
    */
   public toState(): RollCallState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return {
-      ...obj,
-      start: this.start.valueOf(),
-      end: this.end.valueOf(),
-      eventType: EventTypeRollCall,
-    };
+    return JSON.parse(JSON.stringify(this));
   }
 
   /**

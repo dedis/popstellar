@@ -1,6 +1,6 @@
-import { Lao } from 'features/lao/objects';
-import { RollCall } from 'features/rollCall/objects';
+import { Hash } from 'core/objects';
 
+import { WalletFeature } from '../interface';
 import { RollCallToken } from './RollCallToken';
 import { generateToken } from './Token';
 
@@ -9,18 +9,18 @@ import { generateToken } from './Token';
  * @return Promise<RollCallToken[]>
  */
 export async function recoverWalletRollCallTokens(
-  rollCalls: Record<string, Record<string, RollCall>>,
-  currentLao: Lao,
+  rollCalls: Record<string, Record<string, WalletFeature.RollCall>>,
+  laoId: Hash,
 ): Promise<RollCallToken[]> {
   // For all the roll calls of the current lao
-  const tokens = Object.values(rollCalls[currentLao.id.valueOf()]).map((rc) => {
+  const tokens = Object.values(rollCalls[laoId.valueOf()] || {}).map((rc) => {
     // Generate the token corresponding to this roll call
-    return generateToken(currentLao.id, rc.id).then((popToken) => {
+    return generateToken(laoId, rc.id).then((popToken) => {
       // If the token participated in the roll call, create a RollCallToken object
       if (rc.containsToken(popToken)) {
         return new RollCallToken({
           token: popToken,
-          laoId: currentLao.id,
+          laoId: laoId,
           rollCallId: rc.id,
           rollCallName: rc.name,
         });

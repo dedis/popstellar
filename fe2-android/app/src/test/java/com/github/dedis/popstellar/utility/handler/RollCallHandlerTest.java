@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -28,6 +30,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -35,6 +38,7 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -63,11 +67,14 @@ public class RollCallHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
+  private ServerRepository serverRepository;
 
   private RollCall rollCall;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
+
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
   @Before
   public void setup() throws GeneralSecurityException, IOException, KeyException {
@@ -78,7 +85,7 @@ public class RollCallHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     // Create one LAO
     Lao lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -124,7 +131,7 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getRollCall(createRollCall.getId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CREATED, rollCallOpt.get().getState());
+    assertEquals(EventState.CREATED, rollCallOpt.get().getState().getValue());
     assertEquals(createRollCall.getId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -154,7 +161,7 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getRollCall(openRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.OPENED, rollCallOpt.get().getState());
+    assertEquals(EventState.OPENED, rollCallOpt.get().getState().getValue());
     assertEquals(openRollCall.getUpdateId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -184,7 +191,8 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getRollCall(closeRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CLOSED, rollCallOpt.get().getState());
+    assertEquals(EventState.CLOSED, rollCallOpt.get().getState().getValue());
+    assertTrue(rollCallOpt.get().isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created

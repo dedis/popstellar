@@ -2,6 +2,7 @@ package election
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,6 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"go.dedis.ch/kyber/v3/util/random"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 )
@@ -35,7 +37,7 @@ const (
 func Test_Election_Channel_Subscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "subscribe", "subscribe.json")
 	buf, err := os.ReadFile(file)
@@ -58,7 +60,7 @@ func Test_Election_Channel_Subscribe(t *testing.T) {
 func Test_Election_Channel_Unsubscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -83,7 +85,7 @@ func Test_Election_Channel_Unsubscribe(t *testing.T) {
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -101,24 +103,25 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 func Test_Election_Channel_Catchup(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	// Create the messages
-	numMessages := 5
+	numMessages := 6
 
 	messages := make([]message.Message, numMessages)
+	messages[0] = message.Message{MessageID: "0"}
 
-	for i := 0; i < numMessages; i++ {
+	for i := 1; i < numMessages; i++ {
 		// Create a new message containing only an id
 		msg := message.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = msg
 
-		// Store the message in the inbox
-		electChannel.inbox.StoreMessage(msg)
-
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
 		time.Sleep(time.Millisecond)
+
+		// Store the message in the inbox
+		electChannel.inbox.StoreMessage(msg)
 	}
 
 	// Compute the catchup method
@@ -136,7 +139,7 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 func Test_Election_Channel_Broadcast(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -160,7 +163,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 	electChannel.started = true
 
 	// create a fakeSocket that is listening to the channel
@@ -268,7 +271,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 
 	// check the created election has only one question
 	require.Equal(t, 1, len(electChannel.questions))
@@ -323,7 +326,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	// gather results of election
-	results, err := gatherResults(electChannel.questions, nolog)
+	results, err := electChannel.gatherResults(electChannel.questions, nolog)
 	require.NoError(t, err)
 
 	// check that the result contains one question
@@ -341,10 +344,43 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, expectedRes[1].BallotOption, res[1].BallotOption)
 }
 
+func Test_Update_Vote_Works(t *testing.T) {
+	// create election channel: election with one question
+	electChannel, _ := newFakeChannel(t, false)
+
+	// get cast vote message data
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	castVote.Votes[0].Question = "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="
+
+	// vote for index 0
+	castVote.Votes[0].Vote = 0
+
+	err = updateVote("", "@@@", castVote, electChannel.questions)
+	require.NoError(t, err)
+
+	// vote for index 1 at a later time
+	castVote.Votes[0].Vote = 1
+	castVote.CreatedAt++
+
+	err = updateVote("", "@@@", castVote, electChannel.questions)
+	require.NoError(t, err)
+
+	// check that the last vote was counted
+	vote := electChannel.questions["2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU="].validVotes["@@@"]
+	require.Equal(t, 1, vote.index)
+}
+
 func Test_Publish_Election_Open(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -397,7 +433,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 func Test_Process_Election_Open(t *testing.T) {
 
 	// create election channel: election with one question
-	electChannel, _ := newFakeChannel(t)
+	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
 	buf, err := os.ReadFile(file)
@@ -429,10 +465,107 @@ func Test_Process_Election_Open(t *testing.T) {
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
 }
 
+func Test_Sending_Election_Key(t *testing.T) {
+	// create secret ballot election channel: election with one question
+	electChannel, _ := newFakeChannel(t, true)
+
+	require.Equal(t, messagedata.SecretBallot, electChannel.electionType)
+
+	// Compute the catchup method
+	catchupAnswer := electChannel.Catchup(method.Catchup{ID: 0})
+
+	electionKeyMsg := catchupAnswer[1]
+
+	data := messagedata.ElectionKey{}.NewEmpty()
+
+	err := electionKeyMsg.UnmarshalData(data)
+	require.NoError(t, err)
+
+	dataKey, ok := data.(*messagedata.ElectionKey)
+	require.True(t, ok)
+
+	key, err := base64.URLEncoding.DecodeString(dataKey.Key)
+	require.NoError(t, err)
+
+	keyPoint := crypto.Suite.Point()
+	err = keyPoint.UnmarshalBinary(key)
+	require.NoError(t, err)
+
+	// Compare the key received and the public key of the channel
+	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
+}
+
+func Test_GetVoteIndex(t *testing.T) {
+	electChannel, _ := newFakeChannel(t, true)
+
+	real := 1
+
+	msgBuf := make([]byte, 2)
+
+	binary.BigEndian.PutUint16(msgBuf, uint16(real))
+
+	K, C := electChannel.Encrypt(electChannel.pubElectionKey, msgBuf)
+
+	kBuf, err := K.MarshalBinary()
+	require.NoError(t, err)
+
+	cBuf, err := C.MarshalBinary()
+	require.NoError(t, err)
+
+	buf := append(kBuf, cBuf...)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	validVote := validVote{"", "", 1, buf64}
+
+	index, ok := electChannel.getVoteIndex(validVote)
+	require.True(t, ok)
+
+	require.Equal(t, real, index)
+}
+
+func Test_Decrypt(t *testing.T) {
+	slice32 := make([]byte, 32)
+	for i := range slice32 {
+		slice32[i] = 0
+	}
+
+	// create secret ballot election channel: election with one question
+	electChannel, _ := newFakeChannel(t, true)
+
+	// vote is not base64
+	_, err := electChannel.decryptVote("@@@")
+	require.Error(t, err)
+
+	// first 32 bytes are not a kyber.Point
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(slice32))
+	require.Error(t, err)
+
+	// last 32 bytes are not a kyber.Point
+	K := crypto.Suite.Point()
+	KBuf, err := K.MarshalBinary()
+	require.NoError(t, err)
+	KBuf = append(KBuf, slice32...)
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(KBuf))
+	require.Error(t, err)
+
+	// embeded data is empty
+	K, C := electChannel.Encrypt(electChannel.pubElectionKey, []byte{})
+
+	KBuf, err = K.MarshalBinary()
+	require.NoError(t, err)
+
+	CBuf, err := C.MarshalBinary()
+	require.NoError(t, err)
+
+	_, err = electChannel.decryptVote(base64.URLEncoding.EncodeToString(append(KBuf, CBuf...)))
+	require.Error(t, err)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
-func newFakeChannel(t *testing.T) (*Channel, string) {
+func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 	pkOrganizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -440,7 +573,13 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	file := filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup.json")
+	var file string
+	if secret {
+		file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup_secret_ballot.json")
+	} else {
+		file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup.json")
+	}
+
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -461,7 +600,8 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	channel, err := NewChannel(channelPath, message.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	require.NoError(t, err)
 
 	channelElec, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -478,7 +618,6 @@ type keypair struct {
 }
 
 var nolog = zerolog.New(io.Discard)
-var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
@@ -546,13 +685,6 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Mul(secret, nil)
-
-	return point, secret
-}
-
 func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
@@ -567,6 +699,11 @@ func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
+}
+
+// GetServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetServerAddress() string {
+	return ""
 }
 
 // Sign implements channel.HubFunctionalities
@@ -636,4 +773,15 @@ func (f *fakeSocket) SendError(id *int, err error) {
 
 func (f *fakeSocket) ID() string {
 	return f.id
+}
+
+// Encrypt performs the ElGamal encryption algorithm to test decryption
+func (c *Channel) Encrypt(public kyber.Point, msg []byte) (K, C kyber.Point) {
+	M := crypto.Suite.Point().Embed(msg, random.New())
+
+	k := crypto.Suite.Scalar().Pick(random.New())
+	K = crypto.Suite.Point().Mul(k, nil)
+	S := crypto.Suite.Point().Mul(k, public)
+	C = S.Add(S, M)
+	return
 }

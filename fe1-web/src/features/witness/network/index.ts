@@ -25,7 +25,7 @@ export const configureNetwork = (config: WitnessConfiguration) => {
     makeWitnessStoreWatcher(
       store,
       config.getCurrentLaoId,
-      afterMessageProcessingHandler(config.enabled),
+      afterMessageProcessingHandler(config.enabled, config.addNotification, config.getCurrentLao),
     ),
   );
 };

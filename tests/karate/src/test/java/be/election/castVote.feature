@@ -14,70 +14,160 @@ Feature: Cast a vote
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
-    * def castVoteId = 41
-    * string electionChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/ZVxXK2QN60uCNxNsIzShYYQmtwGttWLpQPQapYCNg4g="
+    * call read('classpath:be/constants.feature')
+    * string electionChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   # Testing if after creating an election correctly, casting a valid vote succeeds
   Scenario: Casting a valid vote on a started election
-    Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
-    And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    When eval frontend.send(castVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', result: 0}
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def validCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    When frontend.publish(JSON.stringify(validCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    Then match answer contains VALID_MESSAGE
+    And match frontend.receiveNoMoreResponses() == true
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote on an LAO channel instead of an election one
   Scenario: Casting a vote on a lao channel should return an error
-    Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-    And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, laoChannel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    When eval frontend.send(castVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def validCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    When frontend.publish(JSON.stringify(validCastVote), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
 
-  # Testing if before creating an election, the backend returns an error
-  # upon casting a vote
+# Testing if before creating an election, the backend returns an error
+# upon casting a vote
   Scenario: Casting a valid vote on non existent election should return an error
-    Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_election_id_data.json')
-    And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    When eval frontend.send(badCastVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
-
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def validCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getInvalidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    When frontend.publish(JSON.stringify(validCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with wrong vote id
-  Scenario: Casting a valid vote with wrong vote id should return an error
-    Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_invalid_vote_id_data.json')
-    And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    When eval frontend.send(badCastVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
-
+  Scenario: Casting a vote with wrong vote id should return an error
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def invalidCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getInvalidVoteId)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
   # Testing if after creating an election correctly, the backend returns an error
-  # upon casting a valid vote but after the election end time
-  Scenario: Casting a valid vote too late should return an error
-    Given string badCastVoteData = read('classpath:data/election/data/castVote/bad_cast_vote_late_vote_data.json')
-    And string badCastVote = converter.publishМessageFromData(badCastVoteData, castVoteId, electionChannel)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And eval frontend.send(badCastVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
+  # upon casting a vote but with lao id as vote id
+  Scenario: Casting a vote with lao id as vote id should return an error
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def invalidCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getLaoValid)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon a non-attendee casting a valid vote.
   Scenario: Non attendee casting a vote should return an error
-    Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    * string nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
-    * string nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b"
-    * converter.setSenderSk(nonAttendeeSkHex)
-    * converter.setSenderPk(nonAttendeePk)
-    And string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
-    When eval frontend.send(castVote)
-    * json cast_vote = frontend_buffer.takeTimeout(timeout)
-    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(castVoteId)', error: {code: -4, description: '#string'}}
-
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def invalidCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": [0]
+            }
+          ]
+        }
+      """
+    And frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true

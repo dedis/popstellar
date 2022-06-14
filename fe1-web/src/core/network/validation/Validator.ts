@@ -29,6 +29,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CREATE]: 'dataCreateLao',
     [ActionType.STATE]: 'dataStateLao',
     [ActionType.UPDATE_PROPERTIES]: 'dataUpdateLao',
+    [ActionType.GREET]: 'dataGreetLao',
   },
   [ObjectType.MESSAGE]: {
     [ActionType.WITNESS]: 'dataWitnessMessage',
@@ -44,6 +45,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CLOSE]: 'dataCloseRollCall',
   },
   [ObjectType.ELECTION]: {
+    [ActionType.KEY]: 'dataKeyElection',
     [ActionType.SETUP]: 'dataSetupElection',
     [ActionType.OPEN]: 'dataOpenElection',
     [ActionType.CAST_VOTE]: 'dataCastVote',

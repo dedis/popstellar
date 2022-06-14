@@ -64,7 +64,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:theme="@style/button_style"
-          android:layout_marginEnd="@dimen/margin_button"
+          android:layout_marginHorizontal="@dimen/inter_buttons_margin"
           android:gravity="center"
           android:text="@string/button_own_seed"
           style="@style/Theme.AppCompat" />

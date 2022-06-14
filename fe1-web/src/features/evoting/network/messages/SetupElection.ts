@@ -1,10 +1,10 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
+import { EventTags, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 
-import { Question } from '../../objects';
+import { ElectionVersion, Question } from '../../objects';
 
 /** Data sent to setup an Election event */
 export class SetupElection implements MessageData {
@@ -12,13 +12,13 @@ export class SetupElection implements MessageData {
 
   public readonly action: ActionType = ActionType.SETUP;
 
-  public readonly lao: Hash;
+  public readonly version: string;
 
   public readonly id: Hash;
 
-  public readonly name: string;
+  public readonly lao: Hash;
 
-  public readonly version: string;
+  public readonly name: string;
 
   public readonly created_at: Timestamp;
 
@@ -28,26 +28,33 @@ export class SetupElection implements MessageData {
 
   public readonly questions: Question[];
 
-  constructor(msg: MessageDataProperties<SetupElection>) {
-    if (!msg.id) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
-    }
-    this.id = msg.id;
-
+  constructor(msg: MessageDataProperties<SetupElection>, laoId: Hash) {
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'SetupElection'");
     }
     this.lao = msg.lao;
 
+    if (!msg.version) {
+      throw new ProtocolError("Undefined 'version' parameter encountered during 'SetupElection'");
+    }
+    if (
+      ![ElectionVersion.OPEN_BALLOT, ElectionVersion.SECRET_BALLOT].includes(
+        msg.version as ElectionVersion,
+      )
+    ) {
+      throw new ProtocolError("Invalid 'version' parameter encountered during 'SetupElection'");
+    }
+    this.version = msg.version;
+
+    if (!msg.id) {
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
+    }
+    this.id = msg.id;
+
     if (!msg.name) {
       throw new ProtocolError("Undefined 'name' parameter encountered during 'SetupElection'");
     }
     this.name = msg.name;
-
-    if (!msg.version) {
-      throw new ProtocolError("Undefined 'version' parameter encountered during 'SetupElection'");
-    }
-    this.version = msg.version;
 
     if (!msg.created_at) {
       throw new ProtocolError(
@@ -79,6 +86,19 @@ export class SetupElection implements MessageData {
     }
     this.end_time = msg.end_time;
 
+    if (!msg.id) {
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
+    }
+
+    const expectedId = SetupElection.computeElectionId(laoId, this.created_at, this.name);
+    if (!expectedId.equals(msg.id)) {
+      throw new ProtocolError(
+        "Invalid 'id' parameter encountered during 'SetupElection':" +
+          ' re-computing the value yields a different result (' +
+          `(expected: '${expectedId}', actual: '${msg.id}')`,
+      );
+    }
+
     if (!msg.questions) {
       throw new ProtocolError("Undefined 'questions' parameter encountered during 'SetupElection'");
     }
@@ -87,34 +107,25 @@ export class SetupElection implements MessageData {
   }
 
   /**
-   * Validates the SetupElection object based on external information
+   * Computes the id of an election
    *
    * @param laoId - The ID of the LAO this message was sent to
+   * @param createdAt - The time the election was created
+   * @param name The name of the election
    */
-  public validate(laoId: Hash) {
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION,
-      laoId.toString(),
-      this.created_at.toString(),
-      this.name,
-    );
-    if (!expectedHash.equals(this.id)) {
-      throw new ProtocolError(
-        "Invalid 'id' parameter encountered during 'SetupElection':" +
-          ' re-computing the value yields a different result',
-      );
-    }
+  public static computeElectionId(laoId: Hash, createdAt: Timestamp, name: string) {
+    return Hash.fromStringArray(EventTags.ELECTION, laoId.toString(), createdAt.toString(), name);
   }
 
   /**
    * Checks that an array of questions is valid.
    *
    * @param questions - The array of questions to be checked
-   * @param electID- The id of the election
+   * @param electionId - The id of the election
    */
-  public static validateQuestions(questions: Question[], electID: string) {
+  public static validateQuestions(questions: Question[], electionId: string) {
     questions.forEach((question) => {
-      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electID, question.question);
+      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electionId, question.question);
 
       if (expectedHash.valueOf() !== question.id) {
         throw new ProtocolError(
@@ -148,21 +159,33 @@ export class SetupElection implements MessageData {
   /**
    * Creates a SetupElection object from a given object.
    *
-   * @param obj
+   * @param obj The parsed json data
+   * @param laoId The id of the lao this message belongs to
    */
-  public static fromJson(obj: any): SetupElection {
+  public static fromJson(obj: any, laoId?: Hash): SetupElection {
+    if (!laoId) {
+      throw new Error(
+        "Tried build a 'SetupElection' message without knowing the associated lao id",
+      );
+    }
+
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.SETUP, obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid election setup\n\n${errors}`);
     }
 
-    return new SetupElection({
-      ...obj,
-      created_at: new Timestamp(obj.created_at),
-      start_time: new Timestamp(obj.start_time),
-      end_time: new Timestamp(obj.end_time),
-      id: new Hash(obj.id),
-    });
+    return new SetupElection(
+      {
+        ...obj,
+        id: new Hash(obj.id),
+        lao: new Hash(obj.lao),
+        key: obj.key ? new PublicKey(obj.key) : undefined,
+        created_at: new Timestamp(obj.created_at),
+        start_time: new Timestamp(obj.start_time),
+        end_time: new Timestamp(obj.end_time),
+      },
+      laoId,
+    );
   }
 }

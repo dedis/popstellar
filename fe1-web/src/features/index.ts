@@ -1,14 +1,16 @@
+import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
 import STRINGS from '../resources/strings';
-import * as connect from './connect';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
 import * as meeting from './meeting';
+import * as notification from './notification';
+import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
 import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
@@ -19,126 +21,130 @@ export function configureFeatures() {
   const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
-  const eventsConfiguration = events.configure();
+  const eventConfiguration = events.configure();
+  const walletConfiguration = wallet.configure();
+
+  const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
-  const connectConfiguration = connect.configure({
-    addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
-    getLaoChannel: laoConfiguration.functions.getLaoChannel,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-  });
 
   const evotingConfiguration = evoting.configure({
     /* LAO FEATURE */
     /* lao: functions */
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+    useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     /* EVENTS FEATURE */
     /* events: action creators */
-    addEvent: eventsConfiguration.actionCreators.addEvent,
-    updateEvent: eventsConfiguration.actionCreators.updateEvent,
+    addEvent: eventConfiguration.actionCreators.addEvent,
+    updateEvent: eventConfiguration.actionCreators.updateEvent,
     /* events: functions */
-    getEventById: eventsConfiguration.functions.getEventById,
+    getEventById: eventConfiguration.functions.getEventById,
     /* other dependencies */
     messageRegistry,
   });
-  const meetingConfiguration = meeting.configure(messageRegistry);
-  const rollCallConfiguration = rollCall.configure(messageRegistry);
+
+  const meetingConfiguration = meeting.configure({
+    messageRegistry,
+    addEvent: eventConfiguration.actionCreators.addEvent,
+    updateEvent: eventConfiguration.actionCreators.updateEvent,
+    getEventById: eventConfiguration.functions.getEventById,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+  });
+
+  const rollCallConfiguration = rollCall.configure({
+    messageRegistry,
+    addEvent: eventConfiguration.actionCreators.addEvent,
+    updateEvent: eventConfiguration.actionCreators.updateEvent,
+    getEventById: eventConfiguration.functions.getEventById,
+    makeEventByTypeSelector: eventConfiguration.functions.makeEventByTypeSelector,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    generateToken: walletConfiguration.functions.generateToken,
+    hasSeed: walletConfiguration.functions.hasSeed,
+  });
+
+  const walletComposition = wallet.compose({
+    keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    getEventById: eventConfiguration.functions.getEventById,
+    getRollCallById: rollCallConfiguration.functions.getRollCallById,
+    useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+  });
+
   const socialConfiguration = social.configure(messageRegistry);
-  witness.configure({
+  const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
-    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    addNotification: notificationConfiguration.actionCreators.addNotification,
+    markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
+    discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
-  const walletConfiguration = wallet.configure(keyPairRegistry);
 
   // compose features
-
+  const notificationComposition = notification.compose({
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    notificationTypes: [
+      ...witnessConfiguration.notificationTypes,
+    ] as NotificationCompositionConfiguration['notificationTypes'],
+  });
   const homeComposition = home.compose({
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
+    getLaoChannel: laoConfiguration.functions.getLaoChannel,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    /* components */
     LaoList: laoConfiguration.components.LaoList,
-    mainNavigationScreens: [
-      {
-        id: STRINGS.navigation_tab_connect,
-        Component: connectConfiguration.navigation.ConnectNavigation,
-        order: -10000,
-      },
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletConfiguration.navigation.WalletNavigation,
-        order: 99999999,
-      },
-    ],
+    /* screens */
+    homeNavigationScreens: [...walletComposition.homeScreens],
   });
 
   const eventsComposition = events.compose({
-    eventTypeComponents: [
-      ...meetingConfiguration.eventTypeComponents,
-      ...rollCallConfiguration.eventTypeComponents,
-      ...evotingConfiguration.eventTypeComponents,
+    eventTypes: [
+      ...meetingConfiguration.eventTypes,
+      ...rollCallConfiguration.eventTypes,
+      ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
 
   const laoComposition = lao.compose({
     /* events */
-    EventList: eventsConfiguration.components.EventList,
+    EventList: eventConfiguration.components.EventList,
+    CreateEventButton: eventConfiguration.components.CreateEventButton,
     /* connect */
-    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionForQRCode,
+    encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
       {
-        id: STRINGS.navigation_tab_home,
-        Component: homeComposition.screens.Home,
-        order: -99999999,
-      },
-      {
-        id: STRINGS.navigation_tab_social_media,
+        id: STRINGS.navigation_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
-        order: 0,
-      },
-      {
-        id: STRINGS.navigation_tab_wallet,
-        Component: walletConfiguration.navigation.WalletNavigation,
-        order: 99999999,
-      },
-    ],
-    organizerNavigationScreens: [
-      {
-        id: STRINGS.organizer_navigation_tab_create_event,
-        Component: eventsConfiguration.screens.CreateEvent,
-        order: 0,
-      },
-      {
-        id: STRINGS.organizer_navigation_creation_meeting,
-        Component: meetingConfiguration.screens.CreateMeeting,
+        headerShown: false,
+        tabBarIcon: makeIcon('socialMedia'),
         order: 10000,
       },
-      {
-        id: STRINGS.organizer_navigation_creation_roll_call,
-        Component: rollCallConfiguration.screens.CreateRollCall,
-        order: 20000,
-      },
-      {
-        id: STRINGS.organizer_navigation_creation_election,
-        Component: evotingConfiguration.screens.CreateElection,
-        order: 30000,
-      },
-      {
-        id: STRINGS.roll_call_open,
-        Component: rollCallConfiguration.screens.RollCallOpened,
-        order: 40000,
-      },
+      ...notificationConfiguration.laoScreens,
+      ...walletComposition.laoScreens,
+    ],
+    eventsNavigationScreens: [
+      ...meetingConfiguration.laoEventScreens,
+      ...rollCallConfiguration.laoEventScreens,
+      ...evotingConfiguration.laoEventScreens,
     ],
   });
 
@@ -148,10 +154,16 @@ export function configureFeatures() {
 
   // setup all reducers
   addReducers({
+    ...notificationConfiguration.reducers,
     ...laoConfiguration.reducers,
     ...socialConfiguration.reducers,
-    ...eventsConfiguration.reducers,
-    ...walletConfiguration.reducers,
+    ...eventConfiguration.reducers,
+    ...walletComposition.reducers,
+    ...meetingConfiguration.reducers,
+    ...rollCallConfiguration.reducers,
+    ...evotingConfiguration.reducers,
+    ...walletComposition.reducers,
+    ...witnessConfiguration.reducers,
   });
 
   return {
@@ -160,22 +172,21 @@ export function configureFeatures() {
 
     navigationOpts: {
       screens: [
-        {
-          id: STRINGS.app_navigation_tab_home,
-          component: homeComposition.navigation.MainNavigation,
-        },
-        {
-          id: STRINGS.app_navigation_tab_user,
-          component: laoComposition.navigation.LaoNavigation,
-        },
+        ...homeComposition.appScreens,
+        ...walletComposition.appScreens,
+        ...laoComposition.appScreens,
       ],
     },
     context: {
-      [connectConfiguration.identifier]: connectConfiguration.context,
+      [notificationComposition.identifier]: notificationComposition.context,
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
+      [meetingConfiguration.identifier]: meetingConfiguration.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
+      [walletConfiguration.identifier]: walletComposition.context,
+      [rollCallConfiguration.identifier]: rollCallConfiguration.context,
+      [witnessConfiguration.identifier]: witnessConfiguration.context,
     },
   };
 }

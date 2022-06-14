@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -66,6 +66,32 @@ case object LaoValidator extends MessageDataContentValidator {
           Left(rpcMessage)
         }
 
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
+  def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "GreetLao", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: GreetLao = message.decodedData.get.asInstanceOf[GreetLao]
+
+        val channel: Channel = rpcMessage.getParamsChannel
+
+        val expectedLaoId: Hash = rpcMessage.extractLaoId
+
+        if (expectedLaoId != data.lao) {
+          Right(validationError("unexpected id"))
+        } else if (data.frontend != message.sender) {
+          Right(validationError("unexpected frontend"))
+        } else if (!data.address.startsWith("ws://")) {
+          Right(validationError("invalid address"))
+        } else if (channel != Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.lao}")) {
+          Right(validationError(s"trying to write an GreetLao message on wrong channel $channel"))
+        } else {
+          Left(rpcMessage)
+        }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }

@@ -244,7 +244,8 @@ func newFakeChannel(t *testing.T) channel.Channel {
 
 	messages := make([]message.Message, numMessages)
 
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, keypair.public, nil)
+	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, keypair.public, nil)
+	require.NoError(t, err)
 
 	return channel
 }

@@ -19,11 +19,14 @@ const message_data_roll_call_open_schema = require("../query/method/message/data
 const message_data_lao_create_schema = require("../query/method/message/data/dataCreateLao.json");
 const message_data_lao_update_schema = require("../query/method/message/data/dataUpdateLao.json");
 const message_data_lao_state_schema = require("../query/method/message/data/dataStateLao.json");
+const message_data_lao_greet_schema = require("../query/method/message/data/dataGreetLao.json");
 const message_data_vote_cast_schema = require("../query/method/message/data/dataCastVote.json");
+const message_data_election_key_schema = require("../query/method/message/data/dataKeyElection.json");
 const message_data_election_open_schema = require("../query/method/message/data/dataOpenElection.json");
 const message_data_election_end_schema = require("../query/method/message/data/dataEndElection.json");
 const message_data_election_result_schema = require("../query/method/message/data/dataResultElection.json");
 const message_data_election_setup_schema = require("../query/method/message/data/dataSetupElection.json");
+
 const message_data_meeting_create_schema = require("../query/method/message/data/dataCreateMeeting.json");
 const message_data_meeting_state_schema = require("../query/method/message/data/dataStateMeeting.json");
 const message_data_message_witness_schema = require("../query/method/message/data/dataWitnessMessage.json");
@@ -44,7 +47,7 @@ const message_data_accept_schema = require("../query/method/message/data/dataAcc
 const message_data_learn_schema = require("../query/method/message/data/dataLearn.json");
 const message_data_failure_schema = require("../query/method/message/data/dataFailure.json");
 
-const message_data_cash_transaction = require("../query/method/message/data/dataCashTransaction.json");
+const message_data_coin_post_transaction = require("../query/method/message/data/dataPostTransactionCoin.json");
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
@@ -69,9 +72,11 @@ ajv.addSchema([
     message_data_lao_create_schema,
     message_data_lao_update_schema,
     message_data_lao_state_schema,
+    message_data_lao_greet_schema,
 
     message_data_vote_cast_schema,
 
+    message_data_election_key_schema,
     message_data_election_open_schema,
     message_data_election_end_schema,
     message_data_election_result_schema,
@@ -97,7 +102,7 @@ ajv.addSchema([
     message_data_learn_schema,
     message_data_failure_schema,
 
-    message_data_cash_transaction
+    message_data_coin_post_transaction
 ]);
 
 module.exports = ajv;

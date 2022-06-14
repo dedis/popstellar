@@ -39,7 +39,7 @@ func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -67,7 +67,7 @@ func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -96,7 +96,7 @@ func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -123,7 +123,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	messages := make([]message.Message, numMessages)
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -161,7 +161,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -225,7 +225,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	consensusChanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -297,7 +297,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -421,7 +421,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -543,7 +543,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -668,7 +668,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -793,7 +793,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -917,7 +917,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1046,7 +1046,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1145,7 +1145,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1241,7 +1241,7 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1299,7 +1299,7 @@ func Test_Timeout_Elect(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1387,7 +1387,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1518,7 +1518,7 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1649,7 +1649,7 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1782,7 +1782,7 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	// Create the channel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog)
+	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
@@ -1998,6 +1998,11 @@ func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
+}
+
+// GetServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetServerAddress() string {
+	return ""
 }
 
 // Sign implements channel.HubFunctionalities

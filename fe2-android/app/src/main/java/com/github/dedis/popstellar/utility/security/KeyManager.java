@@ -74,12 +74,16 @@ public class KeyManager {
     keyPair = getKeyPair(keysetManager.getKeysetHandle());
   }
 
-  /** @return the device public key */
+  /**
+   * @return the device public key
+   */
   public PublicKey getMainPublicKey() {
     return keyPair.getPublicKey();
   }
 
-  /** @return the deice keypair */
+  /**
+   * @return the device keypair
+   */
   public KeyPair getMainKeyPair() {
     return keyPair;
   }
@@ -111,6 +115,7 @@ public class KeyManager {
     // Find the latest closed RollCall and use the wallet to retrieve the key
     RollCall rollCall =
         lao.getRollCalls().values().stream()
+            .filter(RollCall::isClosed)
             .max(Comparator.comparing(RollCall::getEnd))
             .orElseThrow(() -> new NoRollCallException(lao));
 

@@ -29,10 +29,26 @@ import (
 )
 
 func main() {
+	run(context.Background(), os.Args)
+}
+
+func run(ctx context.Context, args []string) {
 	publicKeyFlag := &cli.StringFlag{
 		Name:    "public-key",
 		Aliases: []string{"pk"},
 		Usage:   "base64url encoded server's public key",
+	}
+	serverPublicAddressFlag := &cli.StringFlag{
+		Name:    "server-public-address",
+		Aliases: []string{"spa"},
+		Usage:   "address for clients to connect to",
+		Value:   "localhost",
+	}
+	serverListenAddressFlag := &cli.StringFlag{
+		Name:    "server-listen-address",
+		Aliases: []string{"sla"},
+		Usage:   "address where the server should listen to",
+		Value:   "localhost",
 	}
 	organizerAddressFlag := &cli.StringFlag{
 		Name:    "organizer-address",
@@ -73,6 +89,8 @@ func main() {
 						Name:  "serve",
 						Usage: "start the organizer server",
 						Flags: []cli.Flag{
+							serverPublicAddressFlag,
+							serverListenAddressFlag,
 							clientPortFlag,
 							witnessPortFlag,
 						},
@@ -94,6 +112,8 @@ func main() {
 						Name:  "serve",
 						Usage: "start the witness server",
 						Flags: []cli.Flag{
+							serverPublicAddressFlag,
+							serverListenAddressFlag,
 							organizerAddressFlag,
 							clientPortFlag,
 							witnessPortFlag,
@@ -109,7 +129,7 @@ func main() {
 		},
 	}
 
-	err := app.RunContext(context.Background(), os.Args)
+	err := app.RunContext(ctx, args)
 	if err != nil {
 		log.Fatal(err)
 	}

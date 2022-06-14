@@ -5,6 +5,8 @@ import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
@@ -14,10 +16,10 @@ import ch.epfl.pop.storage.DbActor._
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
-                       private val mediatorRef: ActorRef,
-                       private val registry: MessageRegistry,
-                       private val storage: Storage = new DiskStorage()
-                     ) extends Actor with ActorLogging {
+                          private val mediatorRef: ActorRef,
+                          private val registry: MessageRegistry,
+                          private val storage: Storage = new DiskStorage()
+                        ) extends Actor with ActorLogging {
 
   override def postStop(): Unit = {
     storage.close()
@@ -28,7 +30,7 @@ final case class DbActor(
 
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def write(channel: Channel, message: Message): Unit = {
     // determine data object type. Assumption: all payloads carry header fields.
     val (_object, action) = MessageDataProtocol.parseHeader(message.data.decodeToString()).get
@@ -45,7 +47,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
     Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
@@ -54,7 +56,7 @@ final case class DbActor(
         MessageDataProtocol.parseHeader(data) match {
           case Success((_object, action)) =>
             val builder = registry.getBuilder(_object, action).get
-            Some(msg.copy(decodedData=Some(builder(data))))
+            Some(msg.copy(decodedData = Some(builder(data))))
           case Failure(ex) =>
             log.error(s"Unable to decode message data: $ex")
             Some(msg)
@@ -64,7 +66,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def readChannelData(channel: Channel): ChannelData = {
     Try(storage.read(channel.toString)) match {
       case Success(Some(json)) => ChannelData.buildFromJson(json)
@@ -73,7 +75,16 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
+  private def readElectionData(electionId: Hash): ElectionData = {
+    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
+      case Success(Some(json)) => ElectionData.buildFromJson(json)
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def readLaoData(channel: Channel): LaoData = {
     Try(storage.read(generateLaoDataKey(channel))) match {
       case Success(Some(json)) => LaoData.buildFromJson(json)
@@ -83,18 +94,18 @@ final case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def writeLaoData(channel: Channel, message: Message): Unit = {
+  private def writeLaoData(channel: Channel, message: Message, address: Option[String]): Unit = {
     this.synchronized {
       val laoData: LaoData = Try(readLaoData(channel)) match {
         case Success(data) => data
         case Failure(_) => LaoData()
       }
       val laoDataKey: String = generateLaoDataKey(channel)
-      storage.write(laoDataKey -> laoData.updateWith(message).toJsonString)
+      storage.write(laoDataKey -> laoData.updateWith(message, address).toJsonString)
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def catchupChannel(channel: Channel): List[Message] = {
 
     @scala.annotation.tailrec
@@ -115,13 +126,13 @@ final case class DbActor(
     buildCatchupList(channelData.messages, Nil)
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def writeAndPropagate(channel: Channel, message: Message): Unit = {
     write(channel, message)
     mediatorRef ! PubSubMediator.Propagate(channel, message)
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
@@ -129,7 +140,16 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
+  private def createElectionData(electionId: Hash, keyPair: KeyPair): Unit = {
+    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")
+    if (!checkChannelExistence(channel)) {
+      val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
+      storage.write(pair)
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def createChannels(channels: List[(Channel, ObjectType.ObjectType)]): Unit = {
 
     @scala.annotation.tailrec
@@ -152,7 +172,7 @@ final case class DbActor(
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
 
-    Try(storage.write(mapped : _*))
+    Try(storage.write(mapped: _*))
   }
 
   private def checkChannelExistence(channel: Channel): Boolean = {
@@ -162,7 +182,7 @@ final case class DbActor(
     }
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def addWitnessSignature(messageId: Hash, signature: Signature): Unit = {
     throw DbActorNAckException(
       ErrorCodes.SERVER_ERROR.id,
@@ -170,7 +190,7 @@ final case class DbActor(
     )
   }
 
-  @throws [DbActorNAckException]
+  @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
       case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
@@ -180,6 +200,31 @@ final case class DbActor(
     }
   }
 
+  //generates the key of the RollCallData to store in the database
+  private def generateRollCallDataKey(laoId: Hash): String = {
+    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+  }
+
+  @throws [DbActorNAckException]
+  private def readRollCallData(laoId: Hash): RollCallData = {
+    Try(storage.read(generateRollCallDataKey(laoId))) match {
+      case Success(Some(json)) => RollCallData.buildFromJson(json)
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ReadRollCallData for RollCAll $laoId not in the database")
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws [DbActorNAckException]
+  private def writeRollCallData(laoId: Hash, message: Message): Unit = {
+    this.synchronized {
+      val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
+        case Success(data) => data
+        case Failure(_) => RollCallData(Hash(Base64Data("")), ActionType.CREATE)
+      }
+      val rollCallDataKey: String = generateRollCallDataKey(laoId)
+      storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)
+    }
+  }
 
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
@@ -203,6 +248,13 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case ReadElectionData(electionId) =>
+      log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
+      Try(readElectionData(electionId)) match {
+        case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case ReadLaoData(channel) =>
       log.info(s"Actor $self (db) received a ReadLaoData request")
       Try(readLaoData(channel)) match {
@@ -210,9 +262,9 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteLaoData(channel, message) =>
+    case WriteLaoData(channel, message, address) =>
       log.info(s"Actor $self (db) received a WriteLaoData request for channel $channel")
-      Try(writeLaoData(channel, message)) match {
+      Try(writeLaoData(channel, message, address)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -238,6 +290,15 @@ final case class DbActor(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case CreateElectionData(id, keyPair) =>
+      log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
+        s"\n\tprivate key = ${keyPair.privateKey.toString}" +
+        s"\n\tpublic key = ${keyPair.publicKey.toString}")
+      Try(createElectionData(id, keyPair)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case CreateChannelsFromList(list) =>
       log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
       Try(createChannels(list)) match {
@@ -256,6 +317,20 @@ final case class DbActor(
     case AddWitnessSignature(messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(messageId, signature)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadRollCallData(laoId) =>
+      log.info(s"Actor $self (db) received an ReadRollCallData request for RollCall '$laoId'")
+      Try(readRollCallData(laoId)) match {
+        case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteRollCallData(laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteRollCallData request for RollCall id $laoId")
+      Try(writeRollCallData(laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -287,7 +362,7 @@ object DbActor {
   /**
    * Request to read a specific message with id <messageId> from <channel>
    *
-   * @param channel the channel where the message was published
+   * @param channel   the channel where the message was published
    * @param messageId the id of the message (message_id) we want to read
    */
   final case class Read(channel: Channel, messageId: Hash) extends Event
@@ -299,6 +374,13 @@ object DbActor {
    * the channel we need the data for
    */
   final case class ReadChannelData(channel: Channel) extends Event
+
+  /**
+   * Request to read the ElectionData for election <id>
+   *
+   * @param electionId the election unique id
+   */
+  final case class ReadElectionData(electionId: Hash) extends Event
 
   /**
    * Request to read the laoData of the LAO, with key laoId
@@ -314,7 +396,7 @@ object DbActor {
    * @param channel the channel part of the LAO which data we need to update
    * @param message the message we use to update it
    */
-  final case class WriteLaoData(channel: Channel, message: Message) extends Event
+  final case class WriteLaoData(channel: Channel, message: Message, address: Option[String]) extends Event
 
   /**
    * Request to read all messages from a specific <channel>
@@ -341,6 +423,14 @@ object DbActor {
   final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
 
   /**
+   * Request to create election data in the db with an id and a keypair
+   *
+   * @param id      unique id of the election
+   * @param keyPair the keypair of the election
+   */
+  final case class CreateElectionData(id: Hash, keyPair: KeyPair) extends Event
+
+  /**
    * Request to create List of channels in the db with given types
    *
    * @param list list from which channels are created
@@ -363,6 +453,31 @@ object DbActor {
    */
   final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
 
+  /**
+   * Request to read the rollcallData of the LAO, with key laoId
+   *
+   * @param laoId
+   * the channel we need the Rollcall's data for
+   */
+  final case class ReadRollCallData(laoId: Hash) extends Event
+
+  /**
+   * Request to write the rollcallData of the LAO, with key laoId
+   *
+   * @param laoId    the channel we need the Rollcall's data for
+   * @param message  rollcall message sent through the channel
+   */
+  final case class WriteRollCallData(laoId: Hash, message: Message) extends Event
+
+  /**
+   * Request to create a rollcall data in the db with state and updateId
+   *
+   * @param laoId    unique id of the lao in which the rollcall messages are
+   * @param updateId the updateId of the last rollcall message
+   * @param state    the state of the last rollcall message, i.e., CREATE, OPEN or CLOSE
+   */
+  final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -383,6 +498,15 @@ object DbActor {
   final case class DbActorReadChannelDataAck(channelData: ChannelData) extends DbActorMessage
 
   /**
+   * Response for a [[ReadElectionData]] db request Receiving [[DbActorReadElectionDataAck]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param electionData requested channel data
+   */
+  final case class DbActorReadElectionDataAck(electionData: ElectionData) extends DbActorMessage
+
+
+  /**
    * Response for a [[ReadLaoData]] db request Receiving [[DbActorReadLaoDataAck]] works as
    * an acknowledgement that the request was successful
    *
@@ -397,6 +521,14 @@ object DbActor {
    * @param messages requested messages
    */
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
+
+  /**
+   * Response for a [[ReadRollcallData]] db request Receiving [[DbActorReadRollcallDataAck]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param rollcallData requested channel data
+   */
+  final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
 
   /**
    * Response for a general db actor ACK

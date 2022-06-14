@@ -83,7 +83,6 @@ export namespace WalletStore {
 
   /**
    * Indicates whether a seed is present in the store.
-   *
    * @returns true if a seed exists, false otherwise
    */
   export function hasSeed(): boolean {

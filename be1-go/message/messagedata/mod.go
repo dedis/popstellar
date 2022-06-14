@@ -21,15 +21,17 @@ const (
 	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
 	ElectionActionOpen   = "open"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
-	ElectionActionSetup  = "setup"
 
 	LAOObject       = "lao"
 	LAOActionCreate = "create"
 	LAOActionState  = "state"
 	LAOActionUpdate = "update_properties"
+	LAOActionGreet  = "greet"
 
 	MeetingObject       = "meeting"
 	MeetingActionCreate = "create"
@@ -42,7 +44,7 @@ const (
 	RollCallActionClose  = "close"
 	RollCallActionCreate = "create"
 	RollCallActionOpen   = "open"
-	RollCallActionReopen = "reopen"
+	RollCallActionReOpen = "reopen"
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
@@ -57,8 +59,8 @@ const (
 	ReactionActionAdd    = "add"
 	ReactionActionDelete = "delete"
 
-	TransactionObject     = "transaction"
-	TransactionActionPost = "post"
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"

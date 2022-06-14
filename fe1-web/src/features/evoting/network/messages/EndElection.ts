@@ -65,18 +65,13 @@ export class EndElection implements MessageData {
   }
 
   public static computeRegisteredVotesHash(election: Election) {
-    // sort array in-place
-    election.registeredVotes
-      // First sort by timestamp, than by message ID as tiebreaker
-      .sort((a, b) => {
-        const tiebreaker = a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1;
-        return a !== b ? a.createdAt - b.createdAt : tiebreaker;
-      });
-
-    const sortedVoteIds = election.registeredVotes
-      // Now expand each registered vote to the contained vote ids
+    const sortedVoteIds = [...election.registeredVotes]
+      // Expand each registered vote to the contained vote ids
       // flatMap = map + flatten array
-      .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id));
+      .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id))
+      // Sort by vote ID
+      // see https://github.com/dedis/popstellar/blob/master/docs/messageData.md#ending-an-election-electionend
+      .sort((a, b) => (a.valueOf() < b.valueOf() ? -1 : 1));
 
     return Hash.fromStringArray(...sortedVoteIds);
   }

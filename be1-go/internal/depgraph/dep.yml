@@ -6,7 +6,6 @@ includes:
 excludes:
   - popstellar/internal
   - popstellar/crypto
-  - popstellar/db
   - popstellar/cli
   - popstellar/docs
   - popstellar/message

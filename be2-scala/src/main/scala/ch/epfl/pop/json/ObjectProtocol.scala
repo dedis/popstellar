@@ -95,11 +95,11 @@ object ObjectProtocol extends DefaultJsonProtocol {
     )
   }
 
-  implicit val lockScriptFormat: JsonFormat[LockScript] = jsonFormat[String, Address, LockScript](LockScript.apply, "Type", "PubkeyHash")
-  implicit val unlockScriptFormat: JsonFormat[UnlockScript] = jsonFormat[String, PublicKey, Base64Data, UnlockScript](UnlockScript.apply, "Type", "Pubkey", "Sig")
+  implicit val lockScriptFormat: JsonFormat[LockScript] = jsonFormat[String, Address, LockScript](LockScript.apply, "type", "pubkey_hash")
+  implicit val unlockScriptFormat: JsonFormat[UnlockScript] = jsonFormat[String, PublicKey, Base64Data, UnlockScript](UnlockScript.apply, "type", "pubkey", "sig")
 
-  implicit val txInFormat: JsonFormat[TxIn] = jsonFormat[Hash, Int, UnlockScript, TxIn](TxIn.apply, "TxOutHash", "TxOutIndex", "Script")
-  implicit val txOutFormat: JsonFormat[TxOut] = jsonFormat[Int, LockScript, TxOut](TxOut.apply, "Value", "Script")
+  implicit val txInFormat: JsonFormat[Transaction.Input] = jsonFormat[Hash, Int, UnlockScript, Transaction.Input](Transaction.Input.apply, "tx_out_hash", "tx_out_index", "script")
+  implicit val txOutFormat: JsonFormat[Transaction.Output] = jsonFormat[Long, LockScript, Transaction.Output](Transaction.Output.apply, "value", "script")
 
-  implicit val transactionFormat: JsonFormat[Transaction] = jsonFormat[Int, List[TxIn], List[TxOut], Transaction](Transaction.apply, "Version", "TxIn", "TxOut")
+  implicit val transactionFormat: JsonFormat[Transaction] = jsonFormat[Int, List[Transaction.Input], List[Transaction.Output], Int, Transaction](Transaction.apply, "version", "inputs", "outputs", "lock_time")
 }

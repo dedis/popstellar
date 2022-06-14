@@ -314,54 +314,59 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                         }
                       }
                     >
-                      <View
+                      <RCTScrollView
+                        collapsable={false}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "flex": 1,
-                            "justifyContent": "center",
+                            "padding": 16,
                           }
                         }
                       >
-                        <Text
-                          style={
-                            Object {
-                              "color": "black",
-                              "fontSize": 25,
-                              "fontWeight": "bold",
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                        <View>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "lineHeight": 41,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
                             }
-                          }
-                        >
-                          Welcome to Personhood.Online!
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "black",
-                              "fontSize": 25,
-                              "fontWeight": "bold",
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                          >
+                            POPStellar 🤩
+                          </Text>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
                             }
-                          }
-                        >
-                          To connect to a local organization (LAO), please tap to Connect above
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "black",
-                              "fontSize": 25,
-                              "fontWeight": "bold",
-                              "marginHorizontal": 10,
-                              "textAlign": "center",
+                          >
+                            The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
+                          </Text>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
                             }
-                          }
-                        >
-                          To launch a new LAO as on organizer, please tap Launch tab above
-                        </Text>
-                      </View>
+                          >
+                            You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.
+                          </Text>
+                        </View>
+                      </RCTScrollView>
                     </View>
                   </View>
                 </View>
@@ -689,190 +694,59 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                         }
                       }
                     >
-                      <View
+                      <RCTScrollView
+                        collapsable={false}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
                         style={
                           Object {
-                            "flex": 1,
-                            "justifyContent": "center",
+                            "padding": 16,
                           }
                         }
                       >
-                        <RCTScrollView
-                          data={
-                            Array [
-                              Lao {
-                                "creation": Timestamp {},
-                                "id": Hash {
-                                  "0": "-",
-                                  "1": "M",
-                                  "10": "k",
-                                  "11": "L",
-                                  "12": "V",
-                                  "13": "l",
-                                  "14": "X",
-                                  "15": "B",
-                                  "16": "R",
-                                  "17": "a",
-                                  "18": "8",
-                                  "19": "9",
-                                  "2": "2",
-                                  "20": "3",
-                                  "21": "p",
-                                  "22": "c",
-                                  "23": "E",
-                                  "24": "-",
-                                  "25": "4",
-                                  "26": "s",
-                                  "27": "7",
-                                  "28": "s",
-                                  "29": "s",
-                                  "3": "5",
-                                  "30": "O",
-                                  "31": "8",
-                                  "32": "J",
-                                  "33": "v",
-                                  "34": "5",
-                                  "35": "g",
-                                  "36": "X",
-                                  "37": "O",
-                                  "38": "v",
-                                  "39": "t",
-                                  "4": "9",
-                                  "40": "r",
-                                  "41": "e",
-                                  "42": "E",
-                                  "43": "=",
-                                  "5": "c",
-                                  "6": "5",
-                                  "7": "J",
-                                  "8": "l",
-                                  "9": "a",
-                                },
-                                "last_modified": Timestamp {},
-                                "last_roll_call_id": undefined,
-                                "last_tokenized_roll_call_id": undefined,
-                                "name": "MyLao",
-                                "organizer": PublicKey {
-                                  "0": "J",
-                                  "1": "9",
-                                  "10": "k",
-                                  "11": "5",
-                                  "12": "c",
-                                  "13": "-",
-                                  "14": "i",
-                                  "15": "3",
-                                  "16": "2",
-                                  "17": "7",
-                                  "18": "7",
-                                  "19": "U",
-                                  "2": "f",
-                                  "20": "q",
-                                  "21": "4",
-                                  "22": "C",
-                                  "23": "m",
-                                  "24": "e",
-                                  "25": "L",
-                                  "26": "4",
-                                  "27": "t",
-                                  "28": "5",
-                                  "29": "3",
-                                  "3": "B",
-                                  "30": "W",
-                                  "31": "D",
-                                  "32": "f",
-                                  "33": "U",
-                                  "34": "g",
-                                  "35": "h",
-                                  "36": "a",
-                                  "37": "K",
-                                  "38": "0",
-                                  "39": "H",
-                                  "4": "z",
-                                  "40": "p",
-                                  "41": "e",
-                                  "42": "M",
-                                  "43": "=",
-                                  "5": "J",
-                                  "6": "V",
-                                  "7": "7",
-                                  "8": "0",
-                                  "9": "J",
-                                },
-                                "server_addresses": Array [],
-                                "witnesses": Array [],
-                              },
-                            ]
-                          }
-                          getItem={[Function]}
-                          getItemCount={[Function]}
-                          keyExtractor={[Function]}
-                          onContentSizeChange={[Function]}
-                          onLayout={[Function]}
-                          onMomentumScrollBegin={[Function]}
-                          onMomentumScrollEnd={[Function]}
-                          onScroll={[Function]}
-                          onScrollBeginDrag={[Function]}
-                          onScrollEndDrag={[Function]}
-                          removeClippedSubviews={false}
-                          renderItem={[Function]}
-                          scrollEventThrottle={50}
-                          stickyHeaderIndices={Array []}
-                          style={
-                            Object {
-                              "marginTop": 20,
+                        <View>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "lineHeight": 41,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
                             }
-                          }
-                          viewabilityConfigCallbackPairs={Array []}
-                        >
-                          <View>
-                            <View
-                              onLayout={[Function]}
-                              style={null}
-                            >
-                              <View
-                                style={
-                                  Object {
-                                    "marginBottom": 10,
-                                  }
-                                }
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  nativeID="animatedComponent"
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "borderRadius": 5,
-                                        "borderWidth": 1,
-                                        "fontSize": 25,
-                                        "marginHorizontal": 10,
-                                        "textAlign": "center",
-                                      }
-                                    }
-                                  >
-                                    MyLao
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                        </RCTScrollView>
-                      </View>
+                          >
+                            POPStellar 🤩
+                          </Text>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
+                            }
+                          >
+                            The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
+                          </Text>
+                          <Text
+                            style={
+                              Object {
+                                "color": "#000",
+                                "fontSize": 20,
+                                "lineHeight": 26,
+                                "marginBottom": 16,
+                                "textAlign": "left",
+                              }
+                            }
+                          >
+                            You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.
+                          </Text>
+                        </View>
+                      </RCTScrollView>
                     </View>
                   </View>
                 </View>

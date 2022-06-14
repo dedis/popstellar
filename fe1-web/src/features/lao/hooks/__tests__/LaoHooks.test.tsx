@@ -7,23 +7,25 @@ import { combineReducers, createStore, Store } from 'redux';
 import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
-import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
+import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import { LaoHooks } from '../LaoHooks';
 
 const EventList = jest.fn();
+const CreateEventButton = jest.fn();
 
-const laoNavigationScreens: LaoFeature.Screen[] = [];
-const organizerNavigationScreens: LaoFeature.Screen[] = [];
+const laoNavigationScreens: LaoFeature.LaoScreen[] = [];
+const organizerNavigationScreens: LaoFeature.LaoEventScreen[] = [];
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     encodeLaoConnectionForQRCode,
     laoNavigationScreens,
-    organizerNavigationScreens,
+    eventsNavigationScreens: organizerNavigationScreens,
     EventList,
+    CreateEventButton,
   } as LaoReactContext,
 };
 
@@ -44,7 +46,7 @@ const wrapper =
     );
 
 describe('LaoHooks', () => {
-  describe('LaoHooks.useCurrentLao', () => {
+  describe('useCurrentLao', () => {
     it('should return the current lao if there is one', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLao(), {
         wrapper: wrapper(mockStore),
@@ -53,7 +55,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id if there is one', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(mockStore),
@@ -69,7 +71,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useEncodeLaoConnectionForQRCode', () => {
+  describe('useEncodeLaoConnectionForQRCode', () => {
     it('should return the function for encoding a connection', () => {
       const { result } = renderHook(() => LaoHooks.useEncodeLaoConnectionForQRCode(), {
         wrapper: wrapper(mockStore),
@@ -78,7 +80,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useEventListComponent', () => {
+  describe('useEventListComponent', () => {
     it('should return the current event list component', () => {
       const { result } = renderHook(() => LaoHooks.useEventListComponent(), {
         wrapper: wrapper(mockStore),
@@ -87,7 +89,16 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useIsLaoOrganizer', () => {
+  describe('useCreateEventButtonComponent', () => {
+    it('should return the current event list component', () => {
+      const { result } = renderHook(() => LaoHooks.useCreateEventButtonComponent(), {
+        wrapper: wrapper(mockStore),
+      });
+      expect(result.current).toBe(CreateEventButton);
+    });
+  });
+
+  describe('useIsLaoOrganizer', () => {
     it('should return true if the current user is the organizer', () => {
       // make us the organizer
       mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
@@ -109,7 +120,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoList', () => {
+  describe('useLaoList', () => {
     it('should return the list of stored laos', () => {
       const { result } = renderHook(() => LaoHooks.useLaoList(), {
         wrapper: wrapper(mockStore),
@@ -118,7 +129,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoMap', () => {
+  describe('useLaoMap', () => {
     it('should return all stored laos in a mapping from ids to laos', () => {
       const { result } = renderHook(() => LaoHooks.useLaoMap(), {
         wrapper: wrapper(mockStore),
@@ -127,7 +138,7 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useLaoNavigationScreens', () => {
+  describe('useLaoNavigationScreens', () => {
     it('should return the list of lao navigation screens', () => {
       const { result } = renderHook(() => LaoHooks.useLaoNavigationScreens(), {
         wrapper: wrapper(mockStore),
@@ -138,9 +149,9 @@ describe('LaoHooks', () => {
     });
   });
 
-  describe('LaoHooks.useOrganizerNavigationScreens', () => {
+  describe('useOrganizerNavigationScreens', () => {
     it('should return the list of organizer navigation screens', () => {
-      const { result } = renderHook(() => LaoHooks.useOrganizerNavigationScreens(), {
+      const { result } = renderHook(() => LaoHooks.useEventsNavigationScreens(), {
         wrapper: wrapper(mockStore),
       });
 

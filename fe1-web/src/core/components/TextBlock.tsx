@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 
 import { Typography } from '../styles';
-import { black } from '../styles/colors';
+import { black } from '../styles/color';
 
 /**
  * Block of text that gets displayed
@@ -12,17 +12,13 @@ import { black } from '../styles/colors';
  */
 
 const TextBlock = (props: IPropTypes) => {
-  const { text } = props;
-  const { bold } = props;
-  const { visibility } = props;
-  const { color } = props;
-  const { size } = props;
+  const { text, bold, visibility, color, size } = props;
 
   if (!visibility) {
     return null;
   }
 
-  const fontStyle = bold ? Typography.important : Typography.base;
+  const fontStyle = bold ? Typography.importantCentered : Typography.baseCentered;
   const styles = StyleSheet.create({
     text: {
       ...fontStyle,

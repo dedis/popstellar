@@ -1,27 +1,35 @@
-import 'react-datepicker/dist/react-datepicker.css';
-
+import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import {
-  ConfirmModal,
-  DatePicker,
-  DismissModal,
-  ParagraphBlock,
-  TextInputLine,
-  WideButtonView,
-} from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { onConfirmEventCreation } from 'core/functions/UI';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { RollCallHooks } from '../hooks';
+import { RollCallFeature } from '../interface';
 import { requestCreateRollCall } from '../network';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_roll_call>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 /**
  * Screen to create a roll-call event
@@ -29,11 +37,11 @@ const DEFAULT_ROLL_CALL_DURATION = 3600;
  * TODO Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
-const CreateRollCall = ({ route }: any) => {
-  const styles = route.params;
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
+const CreateRollCall = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
+
+  const laoId = RollCallHooks.useCurrentLaoId();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(
@@ -51,29 +59,30 @@ const CreateRollCall = ({ route }: any) => {
     const endDate = proposedEndTime.toDate();
 
     return (
-      <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
-          <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
-          <DatePicker
-            selected={startDate}
-            onChange={(date: Date) =>
-              onChangeStartTime(
-                date,
-                setProposedStartTime,
-                setProposedEndTime,
-                DEFAULT_ROLL_CALL_DURATION,
-              )
-            }
-          />
-        </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
-          <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
-          <DatePicker
-            selected={endDate}
-            onChange={(date: Date) => onChangeEndTime(date, proposedStartTime, setProposedEndTime)}
-          />
-        </View>
-      </View>
+      <>
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.roll_call_create_proposed_start}
+        </Text>
+        <DatePicker
+          selected={startDate}
+          onChange={(date: Date) =>
+            onChangeStartTime(
+              date,
+              setProposedStartTime,
+              setProposedEndTime,
+              DEFAULT_ROLL_CALL_DURATION,
+            )
+          }
+        />
+
+        <Text style={[Typography.paragraph, Typography.important]}>
+          {STRINGS.roll_call_create_proposed_end}
+        </Text>
+        <DatePicker
+          selected={endDate}
+          onChange={(date: Date) => onChangeEndTime(date, proposedStartTime, setProposedEndTime)}
+        />
+      </>
     );
   };
 
@@ -82,6 +91,7 @@ const CreateRollCall = ({ route }: any) => {
   const createRollCall = () => {
     const description = rollCallDescription === '' ? undefined : rollCallDescription;
     requestCreateRollCall(
+      laoId,
       rollCallName,
       rollCallLocation,
       proposedStartTime,
@@ -89,7 +99,7 @@ const CreateRollCall = ({ route }: any) => {
       description,
     )
       .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        navigation.navigate(STRINGS.navigation_lao_events_home);
       })
       .catch((err) => {
         console.error('Could not create roll call, error:', err);
@@ -102,31 +112,36 @@ const CreateRollCall = ({ route }: any) => {
   };
 
   return (
-    <ScrollView>
+    <ScreenWrapper>
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.roll_call_create_name}
+      </Text>
+      <Input
+        value={rollCallName}
+        onChange={setRollCallName}
+        placeholder={STRINGS.roll_call_create_name_placeholder}
+      />
+
+      <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.roll_call_location}</Text>
+      <Input
+        value={rollCallLocation}
+        onChange={setRollCallLocation}
+        placeholder={STRINGS.roll_call_create_location_placeholder}
+      />
+
+      <Text style={[Typography.paragraph, Typography.important]}>
+        {STRINGS.roll_call_description}
+      </Text>
+      <Input
+        value={rollCallDescription}
+        onChange={setRollCallDescription}
+        placeholder={STRINGS.roll_call_create_description_placeholder}
+      />
+
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
 
-      <TextInputLine
-        placeholder={STRINGS.roll_call_create_name}
-        onChangeText={(text: string) => {
-          setRollCallName(text);
-        }}
-      />
-      <TextInputLine
-        placeholder={STRINGS.roll_call_create_location}
-        onChangeText={(text: string) => {
-          setRollCallLocation(text);
-        }}
-      />
-      <TextInputLine
-        placeholder={STRINGS.roll_call_create_description}
-        onChangeText={(text: string) => {
-          setRollCallDescription(text);
-        }}
-      />
-
-      <WideButtonView
-        title={STRINGS.general_button_confirm}
+      <PoPTextButton
         onPress={() =>
           onConfirmEventCreation(
             proposedStartTime,
@@ -136,9 +151,9 @@ const CreateRollCall = ({ route }: any) => {
             setModalEndIsVisible,
           )
         }
-        disabled={!buttonsVisibility}
-      />
-      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
+        disabled={!buttonsVisibility}>
+        {STRINGS.general_button_confirm}
+      </PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}
@@ -153,10 +168,14 @@ const CreateRollCall = ({ route }: any) => {
         description={STRINGS.modal_event_starts_in_past}
         onConfirmPress={() => createRollCall()}
         buttonConfirmText={STRINGS.modal_button_start_now}
-        buttonCancelText={STRINGS.modal_button_go_back}
       />
-    </ScrollView>
+    </ScreenWrapper>
   );
 };
 
 export default CreateRollCall;
+
+export const CreateRollCallScreen: RollCallFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_create_roll_call,
+  Component: CreateRollCall,
+};

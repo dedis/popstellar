@@ -2,23 +2,24 @@ package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
+import com.github.dedis.popstellar.model.objects.Server;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,15 @@ public final class LaoHandler {
               () -> Log.d(TAG, "subscription to consensus channel was a success"),
               error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
     }
+
+    /* Creation channel coin*/
+    context
+            .getMessageSender()
+            .subscribe(channel.subChannel("coin"))
+            .subscribe(
+                    () -> Log.d(TAG, "subscription to the coin channel was a success"),
+                    error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
+
     laoRepository.updateNodes(channel);
   }
 
@@ -193,5 +203,36 @@ public final class LaoHandler {
             + "New Witness ID : "
             + tempList.get(tempList.size() - 1));
     return message;
+  }
+
+  public static void handleGreetLao(HandlerContext context, GreetLao greetLao) {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
+    Lao lao = laoRepository.getLaoByChannel(channel);
+
+    // Check the correctness of the LAO id
+    if (!lao.getId().equals(greetLao.getId())) {
+      Log.d(
+          TAG,
+          "Current lao id "
+              + lao.getId()
+              + " doesn't match the lao id from greetLao message ("
+              + greetLao.getId()
+              + ")");
+      throw new IllegalArgumentException(
+          "Current lao doesn't march the lao id from the greetLao message");
+    }
+    Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
+
+    Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
+
+    Log.d(TAG, "Adding the server to the repository for lao id : " + lao.getId());
+    ServerRepository serverRepository = context.getServerRepository();
+    serverRepository.addServer(greetLao.getId(), server);
+
+    // In the future, implement automatic connection to all the peers contained in the peers
+    // message
   }
 }

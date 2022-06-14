@@ -5,7 +5,6 @@ import ConfirmModal from '../ConfirmModal';
 
 const TITLE = 'Title';
 const DESCRIPTION = 'Description';
-const CANCEL = 'Cancel';
 const CONFIRM = 'Confirm';
 
 let setModalIsVisible: Function;
@@ -45,23 +44,22 @@ describe('ConfirmModal', () => {
   });
 
   it('disappears correctly after dismissing', () => {
-    const { getByText, toJSON } = render(
+    const { getByTestId, toJSON } = render(
       <ConfirmModal
         visibility
         setVisibility={setModalIsVisible}
         title={TITLE}
         description={DESCRIPTION}
         onConfirmPress={() => onConfirmPress()}
-        buttonCancelText={CANCEL}
       />,
     );
-    const cancelButton = getByText(CANCEL);
+    const cancelButton = getByTestId('modal-header-close');
     fireEvent.press(cancelButton);
     expect(toJSON()).toMatchSnapshot();
   });
 
   it('calls onConfirmPress correctly', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ConfirmModal
         visibility
         setVisibility={setModalIsVisible}
@@ -71,13 +69,15 @@ describe('ConfirmModal', () => {
         buttonConfirmText={CONFIRM}
       />,
     );
-    const confirmButton = getByText(CONFIRM);
+    const confirmButton = getByTestId('confirm-modal-confirm');
     fireEvent.press(confirmButton);
     expect(onConfirmPress).toHaveBeenCalledTimes(1);
   });
 
   it('calls onConfirmPress with textInput', () => {
-    const { getByText, getByDisplayValue } = render(
+    const mockInput = 'input';
+
+    const { getByTestId } = render(
       <ConfirmModal
         visibility
         setVisibility={setModalIsVisible}
@@ -88,10 +88,11 @@ describe('ConfirmModal', () => {
         hasTextInput
       />,
     );
-    const textInput = getByDisplayValue('');
-    fireEvent.changeText(textInput, 'input');
-    const confirmButton = getByText(CONFIRM);
+    const textInput = getByTestId('confirm-modal-input');
+    fireEvent.changeText(textInput, mockInput);
+
+    const confirmButton = getByTestId('confirm-modal-confirm');
     fireEvent.press(confirmButton);
-    expect(onConfirmPress).toHaveBeenCalledWith('input');
+    expect(onConfirmPress).toHaveBeenCalledWith(mockInput);
   });
 });

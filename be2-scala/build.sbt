@@ -3,8 +3,6 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 
 name := "pop"
 
-version := "0.1"
-
 scalaVersion := "2.13.7"
 
 // Recommended 2.13 Scala flags (https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13) slightly adapted for PoP
@@ -120,6 +118,9 @@ assembly/ assemblyMergeStrategy := {
     case PathList("module-info.class") => MergeStrategy.discard
     case PathList("reference.conf") => MergeStrategy.concat
     case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
+    // exclude digital signatures because the merging process can invalidate them
+    case PathList(ps@_*) if Seq(".SF", ".DSA", ".RSA").exists(ps.last.endsWith(_)) =>
+     MergeStrategy.discard
     case _ => MergeStrategy.defaultMergeStrategy("")
 }
 
@@ -147,6 +148,7 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 
 // Cryptography
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
+libraryDependencies += "ch.epfl.dedis" % "cothority" % "3.3.1"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test

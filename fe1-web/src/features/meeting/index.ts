@@ -1,19 +1,26 @@
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
-
-import { MeetingEventTypeComponent } from './components';
+import { MeetingEventType } from './components';
+import { MeetingConfiguration, MeetingInterface, MEETING_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
-import * as screens from './screens';
+import { meetingReducer } from './reducer';
+import { CreateMeetingScreen, ViewSingleMeetingScreen } from './screens';
 
 /**
  * Configures the meeting feature
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the meeting feature
  */
-export function configure(registry: MessageRegistry) {
-  configureNetwork(registry);
+export const configure = (configuration: MeetingConfiguration): MeetingInterface => {
+  configureNetwork(configuration);
 
   return {
-    eventTypeComponents: [MeetingEventTypeComponent],
-    screens,
+    identifier: MEETING_FEATURE_IDENTIFIER,
+    eventTypes: [MeetingEventType],
+    laoEventScreens: [CreateMeetingScreen, ViewSingleMeetingScreen],
+    context: {
+      useCurrentLaoId: configuration.useCurrentLaoId,
+    },
+    reducers: {
+      ...meetingReducer,
+    },
   };
-}
+};

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -18,7 +20,7 @@ public class RollCall extends Event {
   private long creation;
   private long start;
   private long end;
-  private EventState state;
+  private final MutableLiveData<EventState> state = new MutableLiveData<>();
   private Set<PublicKey> attendees;
 
   private String location;
@@ -83,12 +85,8 @@ public class RollCall extends Event {
     this.end = end;
   }
 
-  public EventState getState() {
-    return state;
-  }
-
   public void setState(EventState state) {
-    this.state = state;
+    this.state.postValue(state);
   }
 
   public Set<PublicKey> getAttendees() {
@@ -133,6 +131,11 @@ public class RollCall extends Event {
     return end;
   }
 
+  @Override
+  public MutableLiveData<EventState> getState() {
+    return state;
+  }
+
   /**
    * Generate the id for dataCreateRollCall.
    * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCreateRollCall.json
@@ -172,6 +175,13 @@ public class RollCall extends Event {
     return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
   }
 
+  /**
+   * @return true if the roll-call is closed, false otherwise
+   */
+  public boolean isClosed() {
+    return EventState.CLOSED.equals(state.getValue());
+  }
+
   @Override
   public String toString() {
     return "RollCall{"
@@ -191,7 +201,7 @@ public class RollCall extends Event {
         + ", end="
         + end
         + ", state="
-        + state
+        + state.getValue()
         + ", attendees="
         + Arrays.toString(attendees.toArray())
         + ", location='"

@@ -34,4 +34,18 @@ export namespace EvotingHooks {
   export const useCurrentLao = () => {
     return useEvotingContext().useCurrentLao();
   };
+
+  /**
+   * Gets the organizer backend's public key for a given lao id
+   * @param laoId The lao id for which the key should be retrieved
+   */
+  export const useLaoOrganizerBackendPublicKey = (laoId: string) => {
+    const key = useEvotingContext().useLaoOrganizerBackendPublicKey(laoId);
+
+    if (!key) {
+      throw new Error("Could not obtain the public key of the lao organizer's backend");
+    }
+
+    return key;
+  };
 }

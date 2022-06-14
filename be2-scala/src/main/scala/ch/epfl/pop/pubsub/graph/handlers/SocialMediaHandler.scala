@@ -37,34 +37,6 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
-  /**
-   * Helper function for both Social Media broadcasts
-   *
-   * @param rpcMessage       : message for which we want to generate the broadcast
-   * @param broadcastData    : the message data we broadcast converted to Base64Data
-   * @param broadcastChannel : the Channel in which we broadcast
-   */
-  private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
-    val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
-
-    Await.ready(askLaoData, duration).value match {
-      case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
-        val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
-        val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-        //FIXME: once consensus is implemented, fix the WitnessSignaturePair list handling
-        val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
-
-        val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
-        Await.ready(askWritePropagate, duration).value.get match {
-          case Success(_) => Left(rpcMessage)
-          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
-        }
-
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
-    }
-  }
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     writeAndPropagate(rpcMessage) match {
@@ -80,7 +52,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
                 val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
-                broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
+                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
             }
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
@@ -103,7 +75,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
                 val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
-                broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
+                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
             }
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))

@@ -1,0 +1,58 @@
+import { render } from '@testing-library/react-native';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { combineReducers, createStore } from 'redux';
+
+import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import FeatureContext from 'core/contexts/FeatureContext';
+import {
+  NotificationReactContext,
+  NOTIFICATION_FEATURE_IDENTIFIER,
+} from 'features/notification/interface/Configuration';
+import { addNotification, notificationReducer } from 'features/notification/reducer';
+import { WitnessNotificationType } from 'features/witness/components';
+
+import NotificationBadge from '../NotificationBadge';
+
+const contextValue = {
+  [NOTIFICATION_FEATURE_IDENTIFIER]: {
+    useCurrentLaoId: () => mockLaoIdHash,
+    notificationTypes: [WitnessNotificationType],
+  } as NotificationReactContext,
+};
+
+describe('NotificationScreen', () => {
+  it('renders correctly for an empty store', () => {
+    const mockStore = createStore(combineReducers({ ...notificationReducer }));
+
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <NotificationBadge />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders correctly for a non-empty store', () => {
+    const mockStore = createStore(combineReducers({ ...notificationReducer }));
+    mockStore.dispatch(
+      addNotification({
+        laoId: mockLaoId,
+        title: 'a notification',
+        timestamp: 0,
+        type: 'mock-notification',
+      }),
+    );
+
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <NotificationBadge />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});

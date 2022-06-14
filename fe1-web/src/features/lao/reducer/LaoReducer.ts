@@ -213,6 +213,22 @@ export function makeLao(id: string | undefined = undefined) {
 }
 
 /**
+ * Gets a lao by its id or returns undefined if there is none with the given id
+ * @remark This function does not memoize its results, only use it outside of react components
+ * @param laoId The id of the lao
+ * @param state The redux state
+ */
+export const getLaoById = (laoId: string, state: unknown) => {
+  const laoMap = getLaosState(state).byId;
+
+  if (!(laoId in laoMap)) {
+    return undefined;
+  }
+
+  return Lao.fromState(laoMap[laoId]);
+};
+
+/**
  * Shorthand selector for widely used variant of makeLao()
  * Selects the current lao from the redux store
  * @returns The current lao
@@ -254,35 +270,51 @@ export const selectLaosMap = createSelector(
     }, {} as Record<string, Lao>),
 );
 
-export const selectIsLaoOrganizer = createSelector(
-  // First input: all LAOs map
-  (state) => getLaosState(state).byId,
-  // Second input: current LAO id
-  (state) => getLaosState(state)?.currentId,
-  // Third input: the public key of the user
-  (state) => getKeyPairState(state)?.keyPair?.publicKey,
-  // Selector: returns whether the user is an organizer of the current lao
-  (
-    laoMap: Record<string, LaoState>,
-    laoId: string | undefined,
-    pKey: string | undefined,
-  ): boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
-);
+/**
+ * Creates a selector that returns whether the current user is an organizer
+ * of the given lao. Defaults to the current lao.
+ * @param laoId Id of the lao the selector should be created for
+ */
+export const makeIsLaoOrganizerSelector = (laoId?: string) =>
+  createSelector(
+    // First input: all LAOs map
+    (state) => getLaosState(state).byId,
+    // Second input: current LAO id
+    (state) => laoId || getLaosState(state)?.currentId,
+    // Third input: the public key of the user
+    (state) => getKeyPairState(state)?.keyPair?.publicKey,
+    // Selector: returns whether the user is an organizer of the current lao
+    (
+      laoMap: Record<string, LaoState>,
+      selectedLaoId: string | undefined,
+      pKey: string | undefined,
+    ): boolean => !!selectedLaoId && laoMap[selectedLaoId]?.organizer === pKey,
+  );
 
-export const selectIsLaoWitness = createSelector(
-  // First input: all LAOs map
-  (state) => getLaosState(state).byId,
-  // Second input: current LAO id
-  (state) => getLaosState(state)?.currentId,
-  // Third input: the public key of the user
-  (state) => getKeyPairState(state)?.keyPair?.publicKey,
-  // Selector: returns whether the user is a witness of the current lao
-  (
-    laoMap: Record<string, LaoState>,
-    laoId: string | undefined,
-    pKey: string | undefined,
-  ): boolean => !!(laoId && pKey) && laoMap[laoId]?.witnesses.includes(pKey),
-);
+export const selectIsLaoOrganizer = makeIsLaoOrganizerSelector();
+
+/**
+ * Creates a selector that returns whether the current user is a witness
+ * of the given lao. Defaults to the current lao.
+ * @param laoId Id of the lao the selector should be created for
+ */
+export const makeIsLaoWitnessSelector = (laoId?: string) =>
+  createSelector(
+    // First input: all LAOs map
+    (state) => getLaosState(state).byId,
+    // Second input: current LAO id
+    (state) => laoId || getLaosState(state)?.currentId,
+    // Third input: the public key of the user
+    (state) => getKeyPairState(state)?.keyPair?.publicKey,
+    // Selector: returns whether the user is a witness of the current lao
+    (
+      laoMap: Record<string, LaoState>,
+      selectedLaoId: string | undefined,
+      pKey: string | undefined,
+    ): boolean => !!(selectedLaoId && pKey) && laoMap[selectedLaoId]?.witnesses.includes(pKey),
+  );
+
+export const selectIsLaoWitness = makeIsLaoWitnessSelector();
 
 export const laoReduce = laosSlice.reducer;
 

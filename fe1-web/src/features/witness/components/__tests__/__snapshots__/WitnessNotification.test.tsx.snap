@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WitnessNotification renders correctly 1`] = `
+<View>
+  <Text>
+    {"id":0,"laoId":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","title":"a notification","timestamp":0,"type":"message-to-witness","hasBeenRead":false,"messageId":"some message id"}
+  </Text>
+  <Text />
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+    style={
+      Object {
+        "marginBottom": 16,
+        "width": "100%",
+      }
+    }
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      nativeID="animatedComponent"
+      style={
+        Object {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "backgroundColor": "#3742fa",
+              "borderColor": "#3742fa",
+              "borderRadius": 16,
+              "borderWidth": 1,
+              "padding": 8,
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "textAlign": "center",
+              },
+              Object {
+                "color": "#fff",
+              },
+            ]
+          }
+        >
+          Witness Message
+        </Text>
+      </View>
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+    style={
+      Object {
+        "marginBottom": 16,
+        "width": "100%",
+      }
+    }
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      nativeID="animatedComponent"
+      style={
+        Object {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "backgroundColor": "#3742fa",
+              "borderColor": "#3742fa",
+              "borderRadius": 16,
+              "borderWidth": 1,
+              "padding": 8,
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "textAlign": "center",
+              },
+              Object {
+                "color": "#fff",
+              },
+            ]
+          }
+        >
+          Decline Message
+        </Text>
+      </View>
+    </View>
+  </RNGestureHandlerButton>
+</View>
+`;

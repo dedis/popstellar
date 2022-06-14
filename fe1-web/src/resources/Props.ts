@@ -62,6 +62,16 @@ const PROPS_TYPE = {
     name: string,
     witnesses: arrayOf(string),
   }),
+
+  // --- notification type ---
+  notification: shape({
+    // WitnessFeature.MessageToWitnessNotification
+    id: number.isRequired,
+    timestamp: number.isRequired,
+    title: string.isRequired,
+    type: string.isRequired,
+    messageId: string.isRequired,
+  }),
 };
 
 export interface INavigation {

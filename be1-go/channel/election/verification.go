@@ -2,6 +2,8 @@ package election
 
 import (
 	"encoding/base64"
+	"fmt"
+	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
@@ -66,6 +68,10 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 		return xerrors.Errorf("election was already started or terminated")
 	}
 
+	if electionOpen.OpenedAt < c.createdAt {
+		return xerrors.Errorf("election open cannot have a creation time prior to election setup")
+	}
+
 	return nil
 }
 
@@ -120,6 +126,13 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	// verify created at is positive
 	if castVote.CreatedAt < 0 {
 		return xerrors.Errorf("cast vote created at is %d, should be minimum 0", castVote.CreatedAt)
+	}
+
+	for i, vote := range castVote.Votes {
+		err := c.verifyVote(vote, electionID)
+		if err != nil {
+			return xerrors.Errorf("failed to validate vote %d: %v", i, err)
+		}
 	}
 
 	return nil
@@ -212,17 +225,17 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 			// that the validVotes contain one vote for one question by every voter
 			validVotes[validVote.msgID] = validVote.ID
 			msgIDs = append(msgIDs, validVote.msgID)
+			validVotesSorted = append(validVotesSorted, validVote.ID)
 		}
 		question.validVotesMu.Unlock()
 
-		// sort the valid votes alphabetically by msg ID
-		sort.Strings(msgIDs)
 		for _, msgID := range msgIDs {
 			log.Info().Msgf("valid votes is %s for msg id %s", validVotes[msgID], msgID)
-			validVotesSorted = append(validVotesSorted, validVotes[msgID])
 		}
-
 	}
+
+	// sort valid votes by vote id
+	sort.Strings(validVotesSorted)
 
 	// hash all valid vote ids
 	validVotesHash := messagedata.Hash(validVotesSorted...)
@@ -235,4 +248,47 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	}
 
 	return nil
+}
+
+func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
+	qs, ok := c.questions[vote.Question]
+	if !ok {
+		return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
+	}
+
+	var vs string
+	switch c.electionType {
+	case messagedata.OpenBallot:
+		v, ok := vote.Vote.(int)
+		if !ok {
+			return answer.NewErrorf(-4, "votes in open ballot should be int")
+		}
+		vs = fmt.Sprintf("%d", v)
+	case messagedata.SecretBallot:
+		vs, ok = vote.Vote.(string)
+		if !ok {
+			return answer.NewErrorf(-4, "votes in secret ballot should be string")
+		}
+
+		temp, err := base64.URLEncoding.DecodeString(vs)
+		if err != nil {
+			return answer.NewErrorf(-4, "vote should be base64 encoded")
+		}
+
+		length := len(temp)
+		if length != 64 {
+			return answer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", length)
+		}
+	}
+
+	hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
+	if vote.ID != hash {
+		return xerrors.Errorf("vote ID is incorrect")
+	}
+
+	return nil
+}
+
+func arrayToString(a []int, delim string) string {
+	return strings.Trim(strings.Replace(fmt.Sprint(a), " ", delim, -1), "[]")
 }

@@ -119,11 +119,27 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     validator(exampleJson) shouldBe a[Failure[_]]
   }
 
-  test("Correct CashTransaction data") {
-    val examplePath = "../protocol/examples/messageData/cash/post_transaction.json"
+  test("Correct CoinTransaction data") {
+    val examplePath = "../protocol/examples/messageData/coin/post_transaction.json"
     val exampleJson = getJsonStringFromFile(examplePath)
-    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.TRANSACTION, ActionType.POST).get
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.COIN, ActionType.POST_TRANSACTION).get
 
     validator(exampleJson) should be (Success((): Unit))
+  }
+
+  test("Incorrect CashTransaction data: overflow amount") {
+    val examplePath = "../protocol/examples/messageData/coin/post_transaction_overflow_amount.json"
+    val exampleJson = getJsonStringFromFile(examplePath)
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.COIN, ActionType.POST_TRANSACTION).get
+
+    validator(exampleJson) shouldBe a[Failure[_]]
+  }
+
+  test("Incorrect CashTransaction data: negative amount") {
+    val examplePath = "../protocol/examples/messageData/coin/post_transaction_negative_amount.json"
+    val exampleJson = getJsonStringFromFile(examplePath)
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.COIN, ActionType.POST_TRANSACTION).get
+
+    validator(exampleJson) shouldBe a[Failure[_]]
   }
 }

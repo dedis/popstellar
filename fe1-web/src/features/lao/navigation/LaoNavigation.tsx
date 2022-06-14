@@ -1,130 +1,103 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo } from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { useSelector, useStore } from 'react-redux';
 
-import { getKeyPairState } from 'core/keypair';
-import { PublicKey } from 'core/objects';
+import { makeIcon } from 'core/components/PoPIcon';
+import { AppScreen } from 'core/navigation/AppNavigation';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import { selectCurrentLao } from '../reducer';
-import { AttendeeScreen, Identity } from '../screens';
-import OrganizerNavigation from './OrganizerNavigation';
+import LaoHomeScreen, {
+  LaoHomeScreenHeader,
+  LaoHomeScreenHeaderRight,
+} from '../screens/LaoHomeScreen';
+import EventsNavigation from './EventsNavigation';
 
-const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
+const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 /**
  * Navigation when connected to a lao
- *
- * Displays the following components:
- *  - Home
- *  - Social Media
- *  - Lao tab (corresponding to user role)
- *  - Identity
- *  - Wallet
- *  - Name of the connected lao (fake link)
  */
-const styles = StyleSheet.create({
-  navigator: {
-    ...Platform.select({
-      web: {
-        width: '100vw',
-      },
-      default: {},
-    }),
-  },
-});
-
-const getLaoTabName = (isOrganizer: boolean, isWitness: boolean): string => {
-  if (isOrganizer) {
-    return STRINGS.organization_navigation_tab_organizer;
-  }
-
-  if (isWitness) {
-    return STRINGS.organization_navigation_tab_witness;
-  }
-
-  return STRINGS.organization_navigation_tab_attendee;
-};
-
-// Cannot omit the "component" attribute in Screen
-// Moreover, cannot use a lambda in "component"
-const DummyComponent = () => null;
 
 const LaoNavigation: React.FC = () => {
-  const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const store = useStore();
-
-  const publicKeyRaw = getKeyPairState(store.getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
-
-  const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
-  const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
-
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = lao ? lao.name : STRINGS.unused;
-
   // add the organizer or attendee screen depeding on the user
-  const screens: LaoFeature.Screen[] = useMemo(() => {
-    const screenName = getLaoTabName(isOrganizer, isWitness);
-
-    let Component: React.ComponentType<any>;
-
-    if (isOrganizer || isWitness) {
-      Component = OrganizerNavigation;
-    } else {
-      Component = AttendeeScreen;
-    }
-
+  const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     return [
       ...passedScreens,
       {
-        id: STRINGS.organization_navigation_tab_identity,
-        Component: Identity,
-        order: 10000,
-      },
+        id: STRINGS.navigation_lao_home,
+        title: STRINGS.navigation_lao_lao_title,
+        headerTitle: LaoHomeScreenHeader,
+        Component: LaoHomeScreen,
+        headerRight: LaoHomeScreenHeaderRight,
+        tabBarIcon: makeIcon('home'),
+        order: -9999999,
+      } as LaoFeature.LaoScreen,
       {
-        id: STRINGS.organization_navigation_tab_user,
-        title: screenName,
-        Component,
-        order: 20000,
-      } as LaoFeature.Screen,
+        id: STRINGS.navigation_lao_events,
+        tabBarIcon: makeIcon('event'),
+        Component: EventsNavigation,
+        headerShown: false,
+        order: 0,
+      } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
-  }, [passedScreens, isOrganizer, isWitness]);
+  }, [passedScreens]);
 
   return (
     <OrganizationTopTabNavigator.Navigator
-      style={styles.navigator}
-      initialRouteName={tabName}
+      initialRouteName={STRINGS.navigation_lao_home}
       screenOptions={{
-        swipeEnabled: false,
+        tabBarActiveTintColor: Color.accent,
+        tabBarInactiveTintColor: Color.inactive,
+        headerLeftContainerStyle: {
+          paddingLeft: Spacing.contentSpacing,
+        },
+        headerRightContainerStyle: {
+          paddingRight: Spacing.contentSpacing,
+        },
+        headerTitleStyle: Typography.topNavigationHeading,
+        headerTitleAlign: 'center',
       }}>
-      {screens.map(({ id, title, Component }) => (
-        <OrganizationTopTabNavigator.Screen
-          key={id}
-          name={id}
-          component={Component}
-          options={{ title: title || id }}
-        />
-      ))}
-
-      <OrganizationTopTabNavigator.Screen
-        name={laoName}
-        component={DummyComponent}
-        listeners={{
-          tabPress: (e) => {
-            // => do nothing
-            e.preventDefault();
-          },
-        }}
-      />
+      {screens.map(
+        ({
+          id,
+          title,
+          headerTitle,
+          Component,
+          headerShown,
+          headerLeft,
+          headerRight,
+          tabBarIcon,
+        }) => (
+          <OrganizationTopTabNavigator.Screen
+            key={id}
+            name={id}
+            component={Component}
+            options={{
+              title: title || id,
+              headerTitle: headerTitle || title || id,
+              headerLeft,
+              headerRight,
+              tabBarIcon: tabBarIcon || undefined,
+              // hide the item if tabBarIcon is set to null
+              tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+              headerShown,
+            }}
+          />
+        ),
+      )}
     </OrganizationTopTabNavigator.Navigator>
   );
 };
 
 export default LaoNavigation;
+
+export const LaoNavigationAppScreen: AppScreen = {
+  id: STRINGS.navigation_app_lao,
+  Component: LaoNavigation,
+};

@@ -9,6 +9,7 @@
   - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
   - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
   - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
+  - [Greeting new lao subscribers (lao#greet)](#greeting-new-lao-subscribers-laogreet)
   - [Witness a message (message#witness)](#witness-a-message-messagewitness)
   - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
   - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
@@ -19,6 +20,7 @@
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
+  - [Receiving a key for an encrypted election (election#key)](#receiving-a-key-for-an-encrypted-election-electionkey)
   - [Opening an Election (election#open)](#opening-an-election-electionopen)
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
   - [Ending an Election (election#end)](#ending-an-election-electionend)
@@ -391,6 +393,106 @@ the required number of witness signatures.
 }
 
 ```
+
+## Greeting new lao subscribers (lao#greet)
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*lao#greet*)
+
+This is a message that is broadcasted by the server on the lao channel after it is created. Clients can then receive this message by sending a [catchup message](./protocol.md#catching-up-on-past-messages-on-a-channel).
+
+
+The message contains the server's (canonical) address, its public key (not in the message content but it is part of the Mid Level) and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning. There is one greeting message per LAO since the list of peers can differ between LAOs run on the same server.
+
+Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
+
+In order to bind the server owner's (either an organizer or a witness) frontend to the server, the lao#greet message contains the public key of the frontend of server's owner. At this point the claim is only one-directional and this a lao#greet message should only be treated as being valid if it has been signed by the corresponding frontend key using a witness signature. This then makes the binding bidirectional. (For now this check is omitted since the witnessing functionality has not been implemented in all subsystems)
+
+Last but not least, the greeting message contains a list of peers that tells client which other servers it can or should connect to. These severs run by other organizers or witnesses allow the client to send messages to multiple servers which increases the likelihood of sending it to a honest one.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/lao_greet/greeting.json
+
+{
+    "object": "lao",
+    "action": "greet",
+    "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+    "frontend": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "address": "wss://popdemo.dedis.ch:8000/demo",
+    "peers": [
+        {
+            "address": "wss://popdemo.dedis.ch:8000/second-organizer-demo"
+        },
+        {
+            "address": "wss://popdemo.dedis.ch:8000/witness-demo"
+        }
+    ]
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataGreetLao.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetLao.json",
+    "description": "Match a lao greeting query",
+    "$comment": "A message the back-end sends to clients when they subscribe to a LAO. It informs clients about the servers public key and its peers for this lao",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "greet"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "frontend": {
+            "description": "[Base64String] public key of the frontend of the server owner",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "address": {
+            "description": "Canonical address of the server with a protocol prefix and the port number",
+            "type": "string",
+            "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+        },
+        "peers": {
+            "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "description": "Canonical address of the peer with a protocol prefix and the port number",
+                        "type": "string",
+                        "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+                    }
+                },
+                "required": ["address"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "frontend", "address", "peers"]
+}
+
+```
+
+</details>
 
 ## Witness a message (message#witness)
 
@@ -1049,9 +1151,10 @@ the organizer forgets to scan an attendee’s public key.
 
 An election has the following phases:
 
-Setup → Open → Cast vote(s) → End → Result
+Setup (→ Receive key) → Open → Cast vote(s) → End → Result
 
 **Setup**: This phase consists of the organizer creating a new election.
+**(Receive key)**: If the election was setup with the secret ballot option. The backend will send this message after generating the key.
 **Open**: This state consists of the organizer opening the election.
 **Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
 **End**: This phase consists of the organizer ending the election. No new votes are accepted from now on.
@@ -1063,13 +1166,16 @@ Setup → Open → Cast vote(s) → End → Result
 **Mid Level** > **High level** (*election#setup*)
 
 By sending the election/setup message to the organizer’s server’s channel
-(“/root/lao-channel”), the main channel of the election will be created with the identifier id.
+(“/root/lao-channel”), the main channel of the election will be created with the identifier id, i.e. `/root/<lao_id>/<election_id>`.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
-The election may allow write-in or have ballot options.
+
+An election can either be open or secret ballot and the `version` property has to be set to `OPEN_BALLOT` or `SECRET_BALLOT`, respectively.
+
+In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
 <details>
 <summary>
-💡 See an example
+💡 See an example of an open ballot election setup
 </summary>
 
 ```json5
@@ -1078,10 +1184,43 @@ The election may allow write-in or have ballot options.
 {
     "object": "election",
     "action": "setup",
+    "version": "OPEN_BALLOT",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
-    "version": "1.0.0",
+    "created_at": 1633098941,
+    "start_time": 1633098941,
+    "end_time": 1633099812,
+    "questions": [
+        {
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "question": "Is this project fun?",
+            "voting_method": "Plurality",
+            "ballot_options": ["Yes", "No"],
+            "write_in": false
+        }
+    ]
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+💡 See an example of a secret ballot election setup
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_setup/election_setup_secret_ballot.json
+
+{
+    "object": "election",
+    "action": "setup",
+    "version": "SECRET_BALLOT",
+    "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "Election",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
@@ -1115,6 +1254,11 @@ The election may allow write-in or have ballot options.
         "action": {
             "const": "setup"
         },
+        "version": {
+            "type": "string",
+            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
+            "$comment": "features/implementation identifier"
+        },
         "id": {
             "type": "string",
             "contentEncoding": "base64",
@@ -1127,11 +1271,8 @@ The election may allow write-in or have ballot options.
         },
         "name": {
             "type": "string",
-            "$comment": "name of the election"
-        },
-        "version": {
-            "type": "string",
-            "$comment": "features/implementation identifier"
+            "$comment": "name of the election",
+            "minLength": 1
         },
         "created_at": {
             "description": "[Timestamp] time created in UTC",
@@ -1165,8 +1306,8 @@ The election may allow write-in or have ballot options.
                     },
                     "voting_method": {
                         "type": "string",
-                        "enum": ["Plurality", "Approval"],
-                        "$comment": "supported voting method"
+                        "enum": ["Plurality"],
+                        "$comment": "supported voting methods"
                     },
                     "ballot_options": {
                         "description": "[Array[String]] ballot options",
@@ -1179,8 +1320,8 @@ The election may allow write-in or have ballot options.
                         "uniqueItems": true
                     },
                     "write_in": {
-                        "type": "boolean",
-                        "$comment": "whether write-in is allowed"
+                        "const": false,
+                        "$comment": "whether write-in is allowed. not supported yet"
                     }
                 },
                 "additionalProperties": false,
@@ -1200,15 +1341,79 @@ The election may allow write-in or have ballot options.
     "required": [
         "object",
         "action",
+        "version",
         "id",
         "lao",
         "name",
-        "version",
         "created_at",
         "start_time",
         "end_time",
         "questions"
     ]
+}
+
+```
+
+## Receiving a key for an encrypted election (election#key)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#key*)
+
+After receiving an [election#setup](#setting-up-an-election-electionsetup) message with a secret ballot voting method, the backend will generate a key pair and broadcast an election#key message to all the channel subscribers to encrypt the votes.
+
+**Security Considerations**
+
+The receiver has to authenticate the message by checking whether it was sent by the backend of the lao's organizer.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_key/election_key.json
+
+{
+    "object": "election",
+    "action": "key",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataKeyElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json",
+    "description": "Match an ElectionKey query. This message is sent by the server",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "key"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The election id the new election key is associated with",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        },
+        "election_key": {
+            "description": "[Base64String] public key of the election",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "election", "election_key"]
 }
 
 ```
@@ -1285,7 +1490,6 @@ The election can be opened by publishing an election/open message on the electio
 
 A member of the LAO can cast a vote by publishing an election/cast_vote message to the
 election’s channel. Each member may cast multiple votes, only the last one will be counted.
-If write-in is allowed for the election then the vote has to have a write-in.
 
 For the generated vote ids, it has to be made sure that the hash is unique and
 consistent across all subsystems. The hash is computed based on the list of
@@ -1303,6 +1507,8 @@ For example if the user select the ballot options with indices 5 and 2, then the
 💡 See some examples
 </summary>
 
+A vote in an open ballot election
+
 ```json5
 // ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote.json
 
@@ -1316,26 +1522,29 @@ For example if the user select the ballot options with indices 5 and 2, then the
         {
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": [0]
+            "vote": 0
         }
     ]
 }
 
 ```
+
+A vote in a secret ballot election
+
 ```json5
-// ../protocol/examples/messageData/vote_cast_write_in.json
+// ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote_encrypted.json
 
 {
     "object": "election",
     "action": "cast_vote",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
-    "election": "QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=",
-    "created_at": 1633098996,
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633098941,
     "votes": [
         {
-            "id": "DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=",
-            "question": "WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=",
-            "write_in": "Computer Science"
+            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
         }
     ]
 }
@@ -1379,50 +1588,48 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "type": "array",
             "items": {
                 "type": "object",
-                "allOf": [
+                "oneOf": [
                     {
                         "properties": {
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in))"
                             },
                             "question": {
                                 "type": "string",
                                 "contentEncoding": "base64",
                                 "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "index corresponding to the ballot_option",
+                                "type": "integer",
+                                "$comment": "index of the option to vote for"
                             }
-                        },
-                        "required": ["id", "question"]
+                        }
                     },
                     {
-                        "oneOf": [
-                            {
-                                "properties": {
-                                    "vote": {
-                                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "$comment": "vote index"
-                                        },
-                                        "minItems": 1,
-                                        "uniqueItems": true
-                                    }
-                                },
-                                "required": ["vote"]
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index | encrypted_write_in)))"
                             },
-                            {
-                                "properties": {
-                                    "write_in": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": ["write_in"]
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "encrypted index corresponding to the ballot_option",
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "encrypted index of the option to vote for"
                             }
-                        ]
+                        }
                     }
-                ]
+                ],
+                "required": ["id", "question", "vote"]
             },
             "minItems": 1,
             "uniqueItems": true
@@ -1493,7 +1700,7 @@ message on the election channel. This message indicates that the organizer will 
         "registered_votes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered alphabetically by message_id; the multiple vote_ids in a election#cast_vote message should stay the same as in the original message"
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...) - the different vote_ids from different election#cast_vote messages need to be ordered in ascii order by vote_id"
         }
     },
     "additionalProperties": false,

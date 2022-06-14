@@ -37,7 +37,7 @@ This bug was reproduced on:
 ##### Environment (as applicable):
  - Device: [e.g. Pixel 5 emulator on Mac]
  - OS: [e.g. Android 11, Windows 10]
- - Browser [e.g. Chrome 57]x
+ - Browser: [e.g. Chrome 57]
 
 ### Workaround
 If there's a way to work around the problem and still use the PoP system, explain how one can do it.

@@ -21,6 +21,13 @@ type ElectionSetup struct {
 	Questions []ElectionSetupQuestion `json:"questions"`
 }
 
+const (
+	// OpenBallot is a type of election
+	OpenBallot = "OPEN_BALLOT"
+	// SecretBallot is a type of election
+	SecretBallot = "SECRET_BALLOT"
+)
+
 // ElectionSetupQuestion defines a question of an election setup
 type ElectionSetupQuestion struct {
 	ID            string   `json:"id"`

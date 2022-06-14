@@ -9,6 +9,7 @@ import {
   ExtendedJsonRpcResponse,
   Publish,
   Subscribe,
+  Unsubscribe,
 } from './jsonrpc';
 import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 import { NetworkConnection } from './NetworkConnection';
@@ -48,7 +49,7 @@ export async function publish(
   connections?: NetworkConnection[],
 ): Promise<void> {
   const keyPair = await getSigningKeyPair(msgData);
-  const message = Message.fromData(msgData, keyPair);
+  const message = Message.fromData(msgData, keyPair, channel);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
@@ -80,7 +81,29 @@ export async function subscribe(
   });
 
   await getNetworkManager().sendPayload(request, connections);
-  // propagate the catch() with the full error message, as it needs to be handled on a higher level
+  // do not catch exceptions at this level, as the full error message needs to be handled at a higher level
+}
+
+/**
+ * Unsubscribe from a channel
+ *
+ * @param channel - The channel from which we want to unsubscribe
+ * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
+ */
+export async function unsubscribe(
+  channel: Channel,
+  connections?: NetworkConnection[],
+): Promise<void> {
+  const request = new JsonRpcRequest({
+    method: JsonRpcMethod.UNSUBSCRIBE,
+    params: new Unsubscribe({
+      channel,
+    }),
+    id: AUTO_ASSIGN_ID,
+  });
+
+  await getNetworkManager().sendPayload(request, connections);
+  // do not catch exceptions at this level, as the full error message needs to be handled at a higher level
 }
 
 interface ReceivedMessage {
@@ -92,7 +115,7 @@ function* messageGenerator(msgs: ReceivedMessage[], channel: Channel) {
   for (const m of msgs) {
     const message = Message.fromJson(m.message, channel);
 
-    yield ExtendedMessage.fromMessage(message, channel, m.receivedFrom);
+    yield ExtendedMessage.fromMessage(message, m.receivedFrom, channel);
   }
 }
 

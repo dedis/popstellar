@@ -1,19 +1,14 @@
-import React from 'react';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { NavigationScreen, NavigationTabScreen } from 'core/navigation/typing/Screen';
 
 export namespace LaoFeature {
-  export interface Screen {
-    id: string;
-    title?: string;
-    Component: React.ComponentType<unknown>;
+  export interface LaoEventScreen extends NavigationScreen {
+    id: keyof LaoEventsParamList;
+  }
 
-    /**
-     * This number is here to order the screens.
-     * The numbers have to be unique, otherwise an error will be thrown.
-     * In order to be able to insert screens in between two existing screens,
-     * do *not* use numbers 1,2,3,... but rather ones with big gaps in between,
-     * e.g. -9999999999, -1000, -10, 0, 100, ... etc.
-     */
-    order: number;
+  export interface LaoScreen extends NavigationTabScreen {
+    id: keyof LaoParamList;
   }
 
   export interface LaoConnection {

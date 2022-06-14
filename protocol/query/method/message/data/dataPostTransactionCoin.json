@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPostTransactionCoin.json",
+  "title": "Post a digital cash transaction",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "coin"
+    },
+    "action": {
+      "const": "post_transaction"
+    },
+	"transaction_id": {
+        "type": "string",
+        "contentEncoding": "base64",
+        "description": "SHA 256 Hash over base64 of transaction - must be verified"
+    },
+    "transaction": {
+      "type": "object",
+      "description": "The transaction object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "description": "The version of the transaction inputs"
+        },
+        "inputs": {
+          "type": "array",
+          "description": "[Array[Objects]] array of output transactions to use as inputs",
+          "items": {
+            "type": "object",
+            "description": "Object representing a transaction output to use as an input for this transaction",
+            "properties": {
+              "tx_out_hash": {
+                "type": "string",
+                "contentEncoding": "base64",
+                "description": "Previous (to-be-used) transaction hash"
+              },
+              "tx_out_index": {
+                "type": "integer",
+                "description": "Index of the previous to-be-used transaction"
+              },
+              "script": {
+                "type": "object",
+                "description": "The script describing the unlock mechanism",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type of script"
+                  },
+                  "pubkey": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "description": "The recipient’s public key"
+                  },
+                  "sig": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "description": "Signature on all txins and txouts using the recipient's private key"
+                  }
+                },
+                "required": ["type", "pubkey", "sig"]
+              }
+            },
+            "required": ["tx_out_hash", "tx_out_index", "script"]
+          },
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "description": "[Array[Objects]] array of outputs from this transactions",
+          "items": {
+            "type": "object",
+            "description": "Object representing an output of this transaction",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "the value of the output transaction, expressed in miniLAOs"
+              },
+              "script": {
+                "type": "object",
+                "description": "The script describing the TxOut unlock mechanism",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type of script"
+                  },
+                  "pubkey_hash": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "description": "Hash of the recipient’s public key"
+                  }
+                },
+                "required": ["type", "pubkey_hash"]
+              }
+            },
+            "required": ["value", "script"]
+          },
+          "minItems": 1
+        },
+        "lock_time": {
+          "type": "integer",
+          "description": "Timestamp"
+        }
+      },
+      "required": ["version", "inputs", "outputs", "lock_time"]
+    }
+  },
+  "required": ["object", "action", "transaction_id", "transaction"]
+}

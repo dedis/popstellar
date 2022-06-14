@@ -84,7 +84,15 @@ public class LAONetworkManager implements MessageSender {
             .subscribe(
                 event ->
                     subscribedChannels.forEach(
-                        channel -> disposables.add(subscribe(channel).subscribe()))));
+                        channel ->
+                            disposables.add(
+                                subscribe(channel)
+                                    .subscribe(
+                                        () ->
+                                            Log.d(TAG, "resubscription successful to :" + channel),
+                                        error ->
+                                            Log.d(TAG, "error on resubscription to" + error)))),
+                error -> Log.d(TAG, "Error on resubscription : " + error)));
   }
 
   private void processIncomingMessages() {
@@ -112,6 +120,7 @@ public class LAONetworkManager implements MessageSender {
         .map(ResultMessages::getMessages)
         .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
         .doOnSuccess(messages -> handleMessages(messages, channel))
+        .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
         .ignoreElement();
   }
 
@@ -134,6 +143,7 @@ public class LAONetworkManager implements MessageSender {
     return request(subscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
+        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
@@ -147,6 +157,7 @@ public class LAONetworkManager implements MessageSender {
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
+        .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
         .ignoreElement();
   }
 

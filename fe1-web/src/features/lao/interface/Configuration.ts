@@ -1,8 +1,9 @@
 import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
+import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, Hash } from 'core/objects';
+import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { Lao } from '../objects';
@@ -19,7 +20,9 @@ export interface LaoConfiguration {
 export interface LaoCompositionConfiguration {
   /* events */
 
-  EventList: React.ComponentType<any>;
+  EventList: React.ComponentType<unknown>;
+
+  CreateEventButton: React.VFC<unknown>;
 
   /* connect */
 
@@ -27,19 +30,19 @@ export interface LaoCompositionConfiguration {
    * Given the lao server address and the lao id, this computes the data
    * that is encoded in a QR code that can be used to connect to a LAO
    */
-  encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
+  encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
 
   /* other */
 
   /**
    * The screens that should additionally be included in the lao navigation
    */
-  laoNavigationScreens: LaoFeature.Screen[];
+  laoNavigationScreens: LaoFeature.LaoScreen[];
 
   /**
-   * The screens that should additionally be included in the lao navigation
+   * The screens that should additionally be included in the lao events navigation
    */
-  organizerNavigationScreens: LaoFeature.Screen[];
+  eventsNavigationScreens: LaoFeature.LaoEventScreen[];
 }
 
 /**
@@ -53,7 +56,19 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
   /* action creators */
   actionCreators: {
+    /**
+     * Creates a redux action to add a server address for a given lao
+     */
     addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+
+    /**
+     * Creates a redux action to set the last roll call for a given lao
+     */
+    setLaoLastRollCall: (
+      laoId: Hash | string,
+      rollCallId: Hash | string,
+      hasToken: boolean,
+    ) => AnyAction;
   };
 
   /* hooks */
@@ -92,6 +107,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The current lao id or undefined if there is none
      */
     useCurrentLaoId: () => Hash | undefined;
+
+    /**
+     * Returns the public key of the organizer's backend for a given lao id
+     * @param laoId The lao id for which the key should be retrieved
+     * @returns The public key or undefined if there is none
+     */
+    useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
   };
 
   /* functions */
@@ -103,10 +125,23 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     getCurrentLao: () => Lao;
 
     /**
+     * Gets a lao by its id
+     * @returns The lao with the given id or undefined if there is none
+     */
+    getLaoById: (laoId: string) => Lao | undefined;
+
+    /**
      * Gets the current lao id
      * @returns The current lao id or undefined if there is none
      */
     getCurrentLaoId: () => Hash | undefined;
+
+    /**
+     * Gets the organizer backend's public key for a given lao
+     * @param laoId The lao id
+     * @returns The organizer's backend public key for the given lao or undefined if it is not known
+     */
+    getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
 
     /**
      * Sends a network request to create a new lao and returns
@@ -146,18 +181,16 @@ export type LaoReactContext = Pick<
   LaoCompositionConfiguration,
   /* events */
   | 'EventList'
+  | 'CreateEventButton'
   /* connect */
   | 'encodeLaoConnectionForQRCode'
   /* navigation screens */
   | 'laoNavigationScreens'
-  | 'organizerNavigationScreens'
+  | 'eventsNavigationScreens'
 >;
 
 export interface LaoCompositionInterface extends FeatureInterface {
-  /* navigation */
-  navigation: {
-    LaoNavigation: React.ComponentType<unknown>;
-  };
-  /* react context */
+  appScreens: AppScreen[];
+
   context: LaoReactContext;
 }

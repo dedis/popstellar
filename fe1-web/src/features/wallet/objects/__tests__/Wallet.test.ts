@@ -1,5 +1,6 @@
-import { mockLao, mockRollCallState, configureTestFeatures } from '__tests__/utils';
+import { mockLao, configureTestFeatures } from '__tests__/utils';
 import { Hash } from 'core/objects';
+import { mockRollCallState } from 'features/rollCall/__tests__/utils';
 import { RollCall } from 'features/rollCall/objects';
 
 import { RollCallToken } from '../RollCallToken';
@@ -36,14 +37,15 @@ describe('Recover wallet roll call tokens function', () => {
     });
 
     const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
-    const rct = await recoverWalletRollCallTokens(state, mockLao);
+    const rct = await recoverWalletRollCallTokens(state, mockLao.id);
     expect(rct).toEqual([expected]);
   });
+
   it('Should return an empty array when no corresponding token', async () => {
     const mockRC = createMockRCWithAttendee(mockRollCallState.attendees[0]);
 
     const state = { [mockLao.id.valueOf()]: { [mockRC.id.valueOf()]: mockRC } };
-    const rct = await recoverWalletRollCallTokens(state, mockLao);
+    const rct = await recoverWalletRollCallTokens(state, mockLao.id);
     expect(rct).toEqual([]);
   });
 });

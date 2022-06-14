@@ -1,23 +1,21 @@
 import { publicComponents } from './components';
 import * as functions from './functions';
 import {
-  EventsCompositionConfiguration,
-  EventsCompositionInterface,
-  EventsInterface,
-  EVENTS_FEATURE_IDENTIFIER,
+  EventCompositionConfiguration,
+  EventCompositionInterface,
+  EventInterface,
+  EVENT_FEATURE_IDENTIFIER,
 } from './interface';
-import { eventsReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
-import * as screens from './screens';
+import { eventReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
 
 /**
  * Configures the events feature
  */
-export function configure(): EventsInterface {
+export function configure(): EventInterface {
   return {
-    identifier: EVENTS_FEATURE_IDENTIFIER,
+    identifier: EVENT_FEATURE_IDENTIFIER,
     functions,
     components: publicComponents,
-    screens,
     actionCreators: {
       addEvent,
       updateEvent,
@@ -25,17 +23,18 @@ export function configure(): EventsInterface {
       clearAllEvents,
     },
     reducers: {
-      ...eventsReducer,
+      ...eventReducer,
     },
   };
 }
 
-export function compose(config: EventsCompositionConfiguration): EventsCompositionInterface {
+export function compose(config: EventCompositionConfiguration): EventCompositionInterface {
   return {
-    identifier: EVENTS_FEATURE_IDENTIFIER,
+    identifier: EVENT_FEATURE_IDENTIFIER,
     context: {
+      useCurrentLaoId: config.useCurrentLaoId,
       useIsLaoOrganizer: config.useIsLaoOrganizer,
-      eventTypeComponents: config.eventTypeComponents,
+      eventTypes: config.eventTypes,
     },
   };
 }

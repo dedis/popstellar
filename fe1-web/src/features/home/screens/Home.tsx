@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import { View } from 'react-native';
+import { Text } from 'react-native';
 
-import { TextBlock } from 'core/components';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import ScreenWrapper from 'core/components/ScreenWrapper';
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
@@ -16,13 +16,15 @@ const Home: FunctionComponent = () => {
   const LaoList = HomeHooks.useLaoListComponent();
 
   return laos && laos.length > 0 ? (
-    <LaoList />
+    <ScreenWrapper>
+      <LaoList />
+    </ScreenWrapper>
   ) : (
-    <View style={containerStyles.centeredY}>
-      <TextBlock bold text={STRINGS.home_welcome} />
-      <TextBlock bold text={STRINGS.home_connect_lao} />
-      <TextBlock bold text={STRINGS.home_launch_lao} />
-    </View>
+    <ScreenWrapper>
+      <Text style={Typography.heading}>{STRINGS.home_setup_heading}</Text>
+      <Text style={Typography.paragraph}>{STRINGS.home_setup_description_1}</Text>
+      <Text style={Typography.paragraph}>{STRINGS.home_setup_description_2}</Text>
+    </ScreenWrapper>
   );
 };
 

@@ -1,5 +1,6 @@
-import { mockKeyPair, mockLao, mockRC } from '__tests__/utils';
+import { mockKeyPair, mockLao } from '__tests__/utils';
 import { PopToken } from 'core/objects';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
 import { RollCallToken } from '../RollCallToken';
 
@@ -12,8 +13,8 @@ describe('Roll call token object', () => {
         new RollCallToken({
           token: mockToken,
           laoId: mockLao.id,
-          rollCallId: mockRC.id,
-          rollCallName: mockRC.name,
+          rollCallId: mockRollCall.id,
+          rollCallName: mockRollCall.name,
         }),
     ).not.toThrow(Error);
   });
@@ -32,7 +33,7 @@ describe('Roll call token object', () => {
 
   it('throws when rollCallName is undefined', () => {
     expect(
-      () => new RollCallToken({ token: mockToken, laoId: mockLao.id, rollCallId: mockRC.id }),
+      () => new RollCallToken({ token: mockToken, laoId: mockLao.id, rollCallId: mockRollCall.id }),
     ).toThrow(Error);
   });
 });

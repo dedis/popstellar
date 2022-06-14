@@ -1,7 +1,5 @@
 import { publish } from 'core/network';
-import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
+import { channelFromIds, Hash, Timestamp } from 'core/objects';
 
 import { CreateMeeting } from './messages';
 
@@ -12,31 +10,35 @@ import { CreateMeeting } from './messages';
 /**
  * Sends a server query asking for the creation of a meeting.
  *
+ * @param laoId - The id of the lao to create this event in
  * @param name - The name of the meeting
  * @param startTime - The start time of the meeting
  * @param location - The location of the meeting (optional)
  * @param endTime - The end time of the meeting (optional)
  * @param extra - Json object containing extra information about the meeting (optional)
  */
-export function requestCreateMeeting(
+export const requestCreateMeeting = (
+  laoId: Hash,
   name: string,
   startTime: Timestamp,
   location: string,
   endTime: Timestamp,
   extra?: {},
-): Promise<void> {
+): Promise<void> => {
   const time = Timestamp.EpochNow();
-  const currentLao: Lao = OpenedLaoStore.get();
 
-  const message = new CreateMeeting({
-    id: Hash.fromStringArray(EventTags.MEETING, currentLao.id.toString(), time.toString(), name),
-    name,
-    start: Timestamp.max(time, startTime),
-    creation: time,
-    location,
-    end: endTime,
-    extra,
-  });
+  const message = new CreateMeeting(
+    {
+      id: CreateMeeting.computeMeetingId(laoId, time, name),
+      name,
+      start: Timestamp.max(time, startTime),
+      creation: time,
+      location,
+      end: endTime,
+      extra,
+    },
+    laoId,
+  );
 
-  return publish(channelFromIds(currentLao.id), message);
-}
+  return publish(channelFromIds(laoId), message);
+};

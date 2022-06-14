@@ -6,6 +6,7 @@ import { RehydrateAction } from 'redux-persist';
 
 import {
   mockLaoCreationTime,
+  mockLao,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
@@ -31,6 +32,8 @@ import {
   setLaoLastRollCall,
   updateLao,
   LAO_REDUCER_PATH,
+  getLaoById,
+  LaoReducerState,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -220,5 +223,33 @@ describe('Lao selector', () => {
 
   it('should return true for makeIsLaoOrganizer when it is true', () => {
     expect(selectIsLaoOrganizer.resultFunc(laoRecord, mockLaoId, org.toString())).toEqual(true);
+  });
+
+  describe('getLaoById', () => {
+    it('should return undefined if there is no lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toBeUndefined();
+    });
+
+    it('should return the correct value if there is a lao with this id', () => {
+      expect(
+        getLaoById(mockLaoId, {
+          [LAO_REDUCER_PATH]: {
+            byId: {
+              [mockLaoId]: mockLao.toState(),
+            },
+            allIds: [mockLaoId],
+            currentId: undefined,
+          } as LaoReducerState,
+        }),
+      ).toEqual(mockLao);
+    });
   });
 });

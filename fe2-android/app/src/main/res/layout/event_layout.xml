@@ -1,38 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <import type="com.github.dedis.popstellar.model.objects.event.EventType" />
-
-    <variable
-      name="event"
-      type="com.github.dedis.popstellar.model.objects.event.Event" />
-  </data>
-
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/event_layout"
+  <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <!-- Display for a Roll Call -->
-    <include
-      android:id="@+id/include_layout_roll_call"
-      layout="@layout/roll_call_event_layout"
+    <androidx.cardview.widget.CardView
+      android:id="@+id/event_card_view"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="@{event.getType() == EventType.ROLL_CALL ? View.VISIBLE : View.GONE}" />
+      android:layout_height="@dimen/event_layout_card_view_height"
+      android:clickable="true"
+      android:foreground="?android:attr/selectableItemBackground"
+      app:cardElevation="@dimen/card_view_elevation"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <!-- Display for an Election -->
-    <include
-      android:id="@+id/include_layout_election"
-      layout="@layout/election_display_layout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="@{event.getType() == EventType.ELECTION ? View.VISIBLE : View.GONE}" />
+        <ImageView
+          android:id="@+id/event_type_image"
+          android:layout_width="@dimen/event_layout_type_image_side"
+          android:layout_height="@dimen/event_layout_type_image_side"
+          android:layout_marginStart="@dimen/event_layout_type_start_margin"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:contentDescription="@string/event_type_icon_description" />
 
-  </LinearLayout>
+        <TextView
+          android:id="@+id/event_card_text_view"
+          style="@style/explication_text_style"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/margin_text_small"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toEndOf="@id/event_type_image"
+          android:textColor="@color/colorPrimaryDark"
+          app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+          android:layout_width="@dimen/event_layout_arrow_image_side"
+          android:layout_height="@dimen/event_layout_arrow_image_side"
+          android:src="@drawable/ic_right_arrow"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:layout_marginEnd="@dimen/event_layout_arrow_end_margin"
+          android:contentDescription="@string/event_right_arrow" />
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

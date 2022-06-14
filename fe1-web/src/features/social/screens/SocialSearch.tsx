@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
-import { makeRollCallAttendeesList } from 'features/events/reducer';
+import { gray } from 'core/styles/color';
 import { selectCurrentLao } from 'features/lao/reducer';
+import { makeRollCallAttendeesListSelector } from 'features/rollCall/reducer';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
@@ -43,7 +43,7 @@ const SocialSearch = (props: IPropTypes) => {
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
-  const attendeesSelect = makeRollCallAttendeesList(currentLao.id, rollCallId);
+  const attendeesSelect = makeRollCallAttendeesListSelector(rollCallId);
   const attendees = useSelector(attendeesSelect);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {

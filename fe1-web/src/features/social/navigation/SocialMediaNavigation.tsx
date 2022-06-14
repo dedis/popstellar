@@ -1,20 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
-import { gray, popBlue } from 'core/styles/colors';
-import { makeEventGetter } from 'features/events/reducer';
+import { Color, Spacing, Typography } from 'core/styles';
 import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import { makeRollCallSelector } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
-const Tab = createMaterialTopTabNavigator();
+const Tab = createBottomTabNavigator<SocialParamList>();
 
 const iconSelector =
   (routeName: string) =>
@@ -57,7 +58,7 @@ const SocialMediaNavigation = () => {
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeEventGetter(lao.id, rollCallId);
+  const eventSelect = makeRollCallSelector(rollCallId);
   const rollCall: RollCall = useSelector(eventSelect) as RollCall;
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
@@ -78,9 +79,17 @@ const SocialMediaNavigation = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: iconSelector(route.name),
-        tabBarActiveTintColor: popBlue,
-        tabBarInactiveTintColor: gray,
-        swipeEnabled: false,
+
+        tabBarActiveTintColor: Color.accent,
+        tabBarInactiveTintColor: Color.inactive,
+        headerLeftContainerStyle: {
+          paddingLeft: Spacing.contentSpacing,
+        },
+        headerRightContainerStyle: {
+          paddingRight: Spacing.contentSpacing,
+        },
+        headerTitleStyle: Typography.topNavigationHeading,
+        headerTitleAlign: 'center',
       })}>
       <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
         {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}

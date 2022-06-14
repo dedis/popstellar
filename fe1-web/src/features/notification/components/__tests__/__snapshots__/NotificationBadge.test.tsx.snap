@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotificationScreen renders correctly for a non-empty store 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "backgroundColor": "red",
+      "borderRadius": 50,
+      "flex": 1,
+      "height": 18,
+      "justifyContent": "center",
+      "margin": 4,
+      "width": 18,
+    }
+  }
+/>
+`;
+
+exports[`NotificationScreen renders correctly for an empty store 1`] = `null`;

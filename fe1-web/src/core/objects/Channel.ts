@@ -6,12 +6,12 @@ export const ROOT_CHANNEL: Channel = '/root';
 
 export function getLaoIdFromChannel(ch: Channel): Hash {
   if (!ch || !ch.startsWith(ROOT_CHANNEL)) {
-    throw new Error('Invalid channel path');
+    throw new Error(`Invalid channel path: '${ch}'`);
   }
 
   const pathComponents = ch.split('/');
   if (pathComponents.length < 3) {
-    throw new Error('LAO is absent from channel path');
+    throw new Error(`LAO is absent from channel path '${ch}'`);
   }
 
   return new Hash(pathComponents[2]);

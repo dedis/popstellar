@@ -1,24 +1,62 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
+import { dispatch, getStore } from 'core/redux';
 
+import { MeetingConfiguration } from '../interface';
+import { Meeting } from '../objects';
+import { addMeeting, getMeetingById, updateMeeting } from '../reducer';
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from './MeetingHandler';
 import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the meeting feature
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (configuration: MeetingConfiguration) => {
+  // getMeetingById bound to the global state
+  const boundGetMeetingById = (meetingId: Hash | string) =>
+    getMeetingById(meetingId, getStore().getState());
+
+  const addMeetingEvent = (laoId: Hash | string, meeting: Meeting) => {
+    const meetingState = meeting.toState();
+
+    dispatch(addMeeting(meetingState));
+    dispatch(
+      configuration.addEvent(laoId, {
+        eventType: Meeting.EVENT_TYPE,
+        id: meetingState.id,
+        start: meetingState.start,
+        end: meetingState.end,
+      }),
+    );
+  };
+
+  const updateMeetingEvent = (meeting: Meeting) => {
+    const meetingState = meeting.toState();
+
+    dispatch(updateMeeting(meetingState));
+    dispatch(
+      configuration.updateEvent({
+        eventType: Meeting.EVENT_TYPE,
+        id: meetingState.id,
+        start: meetingState.start,
+        end: meetingState.end,
+      }),
+    );
+  };
+
+  configuration.messageRegistry.add(
     ObjectType.MEETING,
     ActionType.CREATE,
-    handleMeetingCreateMessage,
+    handleMeetingCreateMessage(addMeetingEvent),
     CreateMeeting.fromJson,
   );
-  registry.add(
+
+  configuration.messageRegistry.add(
     ObjectType.MEETING,
     ActionType.STATE,
-    handleMeetingStateMessage,
+    handleMeetingStateMessage(configuration.getLaoById, boundGetMeetingById, updateMeetingEvent),
     StateMeeting.fromJson,
   );
-}
+};
