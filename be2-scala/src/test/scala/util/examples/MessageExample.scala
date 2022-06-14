@@ -219,4 +219,25 @@ object MessageExample {
     Some(meetingCreateSmallCreation)
   )
 
+  final val meetingCreateSmallStart: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(170), Some(Timestamp(1633102500)), None)
+  final val MESSAGE_CREATE_MEETING_SMALL_START: Message = new Message(
+    Base64Data.encode(meetingCreateSmallStart.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(meetingCreateSmallStart)
+  )
+
+final val meetingCreateSmallEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633102500), Some(Timestamp(1633098900)), None)
+  final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
+    Base64Data.encode(meetingCreateSmallEnd.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(meetingCreateSmallEnd)
+  )
+
+
 }
