@@ -6,7 +6,12 @@ import { mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
 import { mockDigitalCashContextValue } from '../../__tests__/utils';
+import { DigitalCashHooks } from '../../hooks';
 import DigitalCashWalletItems from '../DigitalCashWalletItems';
+
+jest.mock('features/digital-cash/hooks');
+
+(DigitalCashHooks.useTotalBalance as jest.Mock).mockReturnValue(10);
 
 describe('DigitalCashWalletItems', () => {
   it('renders correctly for organizers', () => {

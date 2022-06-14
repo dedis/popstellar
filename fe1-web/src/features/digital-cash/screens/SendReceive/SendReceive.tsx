@@ -105,7 +105,7 @@ const SendReceive = () => {
       return false;
     }
 
-    if (Number.parseInt(amount, 10) !== Number.parseFloat(amount)){
+    if (Number.parseInt(amount, 10) !== Number.parseFloat(amount)) {
       setError(STRINGS.digital_cash_wallet_amount_must_be_integer);
       return false;
     }
@@ -148,7 +148,9 @@ const SendReceive = () => {
   };
   const onSendTransaction = () => {
     if (checkAmountValidity() && checkBeneficiaryValidity()) {
-      const transactionPromise: Promise<void> = isCoinbase ? sendCoinbaseTransaction() : sendTransaction();
+      const transactionPromise: Promise<void> = isCoinbase
+        ? sendCoinbaseTransaction()
+        : sendTransaction();
 
       transactionPromise
         .then(() => {

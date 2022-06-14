@@ -12,6 +12,7 @@ import { Hash } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { DigitalCashHooks } from '../hooks';
 import { DigitalCashFeature } from '../interface';
 
 type NavigationProps = CompositeScreenProps<
@@ -20,7 +21,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
-  const balance = 0.0;
+  const balance = DigitalCashHooks.useTotalBalance(laoId);
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 

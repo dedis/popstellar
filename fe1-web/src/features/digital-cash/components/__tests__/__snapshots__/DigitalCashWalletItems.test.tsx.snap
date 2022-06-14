@@ -468,7 +468,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                             >
                               Your account balance
                               : $
-                              0
+                              10
                             </Text>
                           </View>
                           <View

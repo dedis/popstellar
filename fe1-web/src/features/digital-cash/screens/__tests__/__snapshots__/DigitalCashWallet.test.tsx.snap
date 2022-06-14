@@ -494,7 +494,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     }
                                     testID="listItemTitle"
                                   >
-                                    rc
+                                    myRollCall
                                   </Text>
                                   <Text
                                     numberOfLines={1}
@@ -508,7 +508,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     }
                                     testID="listItemTitle"
                                   >
-                                    rcid
+                                    By0KY3p7Ppu7JCqyIy-_JTQWwS8uPB2yI4U9_NB7BPU=
                                   </Text>
                                 </View>
                                 <View
@@ -1847,7 +1847,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   }
                                   testID="listItemTitle"
                                 >
-                                  $∞
+                                  ∞
                                 </Text>
                                 <View
                                   style={
@@ -2002,7 +2002,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     }
                                     testID="listItemTitle"
                                   >
-                                    rc
+                                    myRollCall
                                   </Text>
                                   <Text
                                     numberOfLines={1}
@@ -2016,7 +2016,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     }
                                     testID="listItemTitle"
                                   >
-                                    rcid
+                                    By0KY3p7Ppu7JCqyIy-_JTQWwS8uPB2yI4U9_NB7BPU=
                                   </Text>
                                 </View>
                                 <View

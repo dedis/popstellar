@@ -499,7 +499,7 @@ exports[`SendReceive renders correctly 1`] = `
                               <TextInput
                                 editable={true}
                                 onChangeText={[Function]}
-                                placeholder="42.50"
+                                placeholder="42"
                                 style={
                                   Array [
                                     Object {
@@ -1117,7 +1117,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                               <TextInput
                                 editable={true}
                                 onChangeText={[Function]}
-                                placeholder="42.50"
+                                placeholder="42"
                                 style={
                                   Array [
                                     Object {

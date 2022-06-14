@@ -6,7 +6,11 @@ import { Hash } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
 import { Transaction } from '../objects/transaction';
-import { makeTransactionsByHashSelector, makeTransactionsSelector } from '../reducer';
+import {
+  makeBalancesSelector,
+  makeTransactionsByHashSelector,
+  makeTransactionsSelector,
+} from '../reducer';
 
 export namespace DigitalCashHooks {
   export const useDigitalCashContext = (): DigitalCashReactContext => {
@@ -55,6 +59,7 @@ export namespace DigitalCashHooks {
 
   /**
    * Gets the list of all transactions that happened in this LAO
+   * To use only in a React component
    * @param laoId the id of the LAO
    */
   export const useTransactions = (laoId: Hash | string) => {
@@ -70,6 +75,7 @@ export namespace DigitalCashHooks {
 
   /**
    * Gets the mapping between transaction hashes and the transaction states in a lao
+   * To use only in a react component
    * @param laoId the id of the LAO
    */
   export const useTransactionsByHash = (laoId: Hash | string) => {
@@ -78,5 +84,27 @@ export namespace DigitalCashHooks {
       [laoId],
     );
     return useSelector(transactionsByHashSelector);
+  };
+
+  /**
+   * Gets the total balance of all roll call tokens belonging to the current user and its seed
+   * To use only in a React component
+   * @param laoId
+   */
+  export const useTotalBalance = (laoId: string | Hash) => {
+    const rollCallTokens = useRollCallTokensByLaoId(laoId.valueOf());
+
+    const balancesSelector = useMemo(() => makeBalancesSelector(laoId), [laoId]);
+    const balances = useSelector(balancesSelector);
+
+    return useMemo(
+      () =>
+        rollCallTokens.reduce(
+          (sum, rollCallToken) =>
+            sum + (balances[Hash.fromPublicKey(rollCallToken.token.publicKey).valueOf()] || 0),
+          0,
+        ),
+      [rollCallTokens, balances],
+    );
   };
 }
