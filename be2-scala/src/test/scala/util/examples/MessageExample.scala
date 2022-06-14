@@ -5,8 +5,10 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
+import ch.epfl.pop.model.network.method.message.data.meeting.CreateMeeting
 import ch.epfl.pop.model.objects._
 import spray.json._
+import java.sql.Time
 
 object MessageExample {
 
@@ -169,21 +171,13 @@ object MessageExample {
     Some(AddChirp("abc", None, Timestamp(0)))
   )
 
-{
-    "id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
-    "name": "Meeting",
-    "creation": 1633098331,
-    "location": "EPFL",
-    "start": 1633098900,
-    "end": 1633102500
-}
-
-  final val creationMeeting: Int = 1633098331
+  final val creationMeeting: Timestamp = Timestamp(1633098331)
   final val nameMeeting : String = "Meeting"
-  final val HASH_MEETING_OBJECT: Hash = Hash.fromStrings("M", laoIdMEeeting, creationMeeting, nameMeeting)
-  final val mettingCreate: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, "EPFL",  1633098900, 1633102500, None)
+  final val laoIdMEeeting: String = "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+  final val HASH_MEETING_OBJECT: Hash = Hash.fromStrings("M", laoIdMEeeting, ""+creationMeeting, nameMeeting)
+  final val mettingCreate: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING: Message = new Message(
-    Base64Data.encode(mettingCreate),
+    Base64Data.encode(mettingCreate.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     Signature(Base64Data("")),
     Hash(Base64Data("")),

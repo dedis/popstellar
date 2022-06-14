@@ -217,8 +217,8 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
 
   // For Create Meeting testing
-  private final val laoChannelMeeting: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "")
-  private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage()
+  private final val laoChannelMeeting: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
+  private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING)
   final val CREATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeeting, id)
 
   // broadcast JsonRpcRequest
