@@ -15,11 +15,6 @@ import STRINGS from 'resources/strings';
 
 import { DigitalCashFeature } from '../interface';
 
-/**
- * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
- * manually. At the end, he can close it by pressing on the close button.
- */
-
 const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,

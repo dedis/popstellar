@@ -56,7 +56,7 @@ export const ViewSingleRollCallScreenHeader = () => {
 
 /**
  * Component shown in the top right of the navigation bar. Allows the user to interact
- * show the qr code if their pop token.
+ * show the qr code of their pop token.
  */
 export const WalletSingleHeaderRight = () => {
   const route = useRoute<NavigationProps['route']>();

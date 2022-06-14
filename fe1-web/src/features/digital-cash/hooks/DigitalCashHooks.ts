@@ -13,7 +13,7 @@ export namespace DigitalCashHooks {
     const featureContext = useContext(FeatureContext);
     // assert that the digital cash context exists
     if (!(DIGITAL_CASH_FEATURE_IDENTIFIER in featureContext)) {
-      throw new Error('Events context could not be found!');
+      throw new Error('Digital cash context could not be found!');
     }
     return featureContext[DIGITAL_CASH_FEATURE_IDENTIFIER] as DigitalCashReactContext;
   };
