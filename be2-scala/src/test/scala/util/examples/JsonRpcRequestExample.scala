@@ -216,7 +216,7 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
 
-  // For Create Meeting testing
+  // For Meeting testing
   private final val laoChannelMeeting: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
   private final val laoChannelMeetingWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "wrongMeetingChannel/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
   private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING)
@@ -232,6 +232,7 @@ object JsonRpcRequestExample {
   private final val paramsWithStateMeetingInvalidStart: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_INVALID_START)
   private final val paramsWithStateMeetingSmallStart: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_SMALL_START)
   private final val paramsWithStateMeetingSmallEnd: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_SMALL_END)
+  private final val paramsWithStateMeetingBigStart:  ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_BIG_START)
   final val CREATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeeting, id)
   final val CREATE_MEETING_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingWrongChannel, id)
   final val CREATE_MEETING_INVALID_DATA_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongDataCreateMeeting, id)
@@ -245,6 +246,7 @@ object JsonRpcRequestExample {
   final val STATE_MEETING_INVALID_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidStart, id)
   final val STATE_MEETING_SMALL_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallStart, id)
   final val STATE_MEETING_SMALL_END_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallEnd, id)
+  final val STATE_MEETING_BIG_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingBigStart, id)
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
 }

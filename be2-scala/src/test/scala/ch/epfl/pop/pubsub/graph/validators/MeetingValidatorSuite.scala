@@ -206,10 +206,19 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Creation time > End Time
-   test("Creating and invalid meeting state with stale start time"){
+   test("Creating and invalid meeting state with end time < creation time"){
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALL_END_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  // Start time > End Time
+   test("Creating and invalid meeting state with start time > end time"){
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_BIG_START_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
