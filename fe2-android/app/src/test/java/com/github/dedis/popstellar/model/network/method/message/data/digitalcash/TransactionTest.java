@@ -27,6 +27,7 @@ import net.i2p.crypto.eddsa.Utils;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,16 +109,41 @@ public class TransactionTest {
   }
 
   @Test
-  public void computeSignature() {
+  public void computeSignature() throws GeneralSecurityException {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
     Input single = transactionModel.getInputs().get(0);
-    Signature sig = single.getScript().getSig();
-    PublicKey pk = single.getScript().getPubkey();
-    System.out.println(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())));
-    assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
+    //Signature sig = single.getScript().getSig();
+    //PublicKey pk = single.getScript().getPubkey();
+    //System.out.println(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8));
+    KeyPair kp1 = Base64DataUtils.generateKeyPair();
+    KeyPair kp2 = Base64DataUtils.generateKeyPair();
+
+    //OUTPUT
+    Output singleo = transactionModel.getOutputs().get(0);
+    transactionModel.getOutputs().remove(0);
+    Output newo = new Output(32, new ScriptOutput(singleo.getScript().getType(), kp2.getPublicKey().computeHash()));
+    transactionModel.getOutputs().add(newo);
+
+    //INPUT
+    String signTxt = Transaction.computeSigOutputsPairTxOutHashAndIndex(
+            Collections.singletonList(newo), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()));
+    Base64URLData data = new Base64URLData(signTxt.getBytes(StandardCharsets.UTF_8));
+    Signature sig = kp1.sign(data);
+
+    transactionModel.getInputs().remove(0);
+    Input newOne = new Input(single.getTxOutHash(), single.getTxOutIndex(), new ScriptInput(single.getScript().getType(), kp1.getPublicKey(), sig));
+    transactionModel.getInputs().add(newOne);
+    System.out.println(postTransactionModel.toString());
+    System.out.println(kp1.toString());
+    System.out.println(kp2.toString());
+    System.out.println("TextToBeSigned: "+signTxt);
+    System.out.println("Encoded Base64 bef sign: "+data.getEncoded());
+    System.out.println("kp1: "+transactionModel.getInputs().get(0).getScript().getPubkey().verify(sig, data));
+
+    //assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes())));
   }
 
 }
