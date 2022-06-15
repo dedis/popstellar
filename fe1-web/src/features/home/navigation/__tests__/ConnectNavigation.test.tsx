@@ -23,6 +23,7 @@ const contextValue = {
     LaoList: () => null,
     homeNavigationScreens: [],
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 

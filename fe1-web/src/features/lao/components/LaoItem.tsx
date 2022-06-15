@@ -52,13 +52,17 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
         getNetworkManager().connect(address),
       );
 
-      const channel = getLaoChannel(lao.id.valueOf());
-      if (!channel) {
+      const laoChannel = getLaoChannel(lao.id.valueOf());
+      if (!laoChannel) {
         throw new Error('The given LAO ID is invalid');
       }
 
-      // subscribe to the lao channel on the new connections
-      await subscribeToChannel(lao.id, dispatch, channel, connections);
+      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
+      await Promise.all(
+        lao.subscribed_channels.map((channel) =>
+          subscribeToChannel(lao.id, dispatch, channel, connections),
+        ),
+      );
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,

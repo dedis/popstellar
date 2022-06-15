@@ -41,18 +41,28 @@ const ConnectConfirm = () => {
 
   const toast = useToast();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
+  const getLaoById = HomeHooks.useGetLaoById();
 
   const onButtonConfirm = async () => {
     try {
       const connection = getNetworkManager().connect(serverUrl);
 
-      const channel = getLaoChannel(laoId);
-      if (!channel) {
+      const laoChannel = getLaoChannel(laoId);
+      if (!laoChannel) {
         throw new Error('The given LAO ID is invalid');
       }
 
-      // subscribe to the lao channel on the new connection
-      await subscribeToChannel(laoId, dispatch, channel, [connection]);
+      const lao = getLaoById(laoId);
+      let channels = [laoChannel];
+
+      if (lao) {
+        channels = lao.subscribed_channels;
+      }
+
+      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
+      await Promise.all(
+        channels.map((channel) => subscribeToChannel(laoId, dispatch, channel, [connection])),
+      );
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,

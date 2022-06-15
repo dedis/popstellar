@@ -7,6 +7,8 @@ export namespace HomeFeature {
   }
 
   export interface Lao {
+    subscribed_channels: string[];
+
     toState: () => LaoState;
   }
 

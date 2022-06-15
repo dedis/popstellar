@@ -102,6 +102,7 @@ export function configureFeatures() {
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
     getLaoChannel: laoConfiguration.functions.getLaoChannel,
+    getLaoById: laoConfiguration.functions.getLaoById,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */

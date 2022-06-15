@@ -23,6 +23,7 @@ const contextValueEmpyList = {
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 
@@ -38,6 +39,7 @@ const contextValue = {
     useCurrentLaoId: () => mockLaoIdHash,
     hasSeed: () => true,
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 

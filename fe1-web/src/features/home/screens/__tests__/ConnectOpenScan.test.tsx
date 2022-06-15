@@ -23,6 +23,7 @@ const contextValue = {
     requestCreateLao: () => Promise.resolve(mockChannel),
     useLaoList: () => [],
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 

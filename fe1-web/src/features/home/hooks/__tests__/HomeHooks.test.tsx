@@ -34,6 +34,7 @@ const contextValue = {
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
     hasSeed,
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 

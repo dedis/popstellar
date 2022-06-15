@@ -46,6 +46,7 @@ const ConnectOpenScan = () => {
 
   const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
+  const getLaoById = HomeHooks.useGetLaoById();
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -102,8 +103,8 @@ const ConnectOpenScan = () => {
         return;
       }
 
-      const channel = getLaoChannel(connectToLao.lao);
-      if (!channel) {
+      const laoChannel = getLaoChannel(connectToLao.lao);
+      if (!laoChannel) {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'warning',
@@ -113,8 +114,19 @@ const ConnectOpenScan = () => {
         return;
       }
 
-      // subscribe to the lao channel on the new connection
-      subscribeToChannel(connectToLao.lao, dispatch, channel, connections).then(() => {
+      const lao = getLaoById(connectToLao.lao);
+      let channels = [laoChannel];
+
+      if (lao) {
+        channels = lao.subscribed_channels;
+      }
+
+      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
+      Promise.all(
+        channels.map((channel) =>
+          subscribeToChannel(connectToLao.lao, dispatch, channel, connections),
+        ),
+      ).then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_home,
         });

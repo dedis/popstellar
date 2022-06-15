@@ -20,6 +20,13 @@ export interface HomeCompositionConfiguration {
   getLaoChannel(laoId: string): Channel | undefined;
 
   /**
+   * Gets a lao from the store by its id
+   * @param laoId The id of the lao
+   * @returns A lao or undefined if none was found
+   */
+  getLaoById(laoId: string): HomeFeature.Lao | undefined;
+
+  /**
    * A hook returning the current lao id
    * @returns The current lao id
    */
@@ -81,6 +88,7 @@ export type HomeReactContext = Pick<
   | 'getLaoChannel'
   | 'useCurrentLaoId'
   | 'useDisconnectFromLao'
+  | 'getLaoById'
 >;
 
 /**

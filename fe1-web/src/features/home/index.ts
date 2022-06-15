@@ -21,6 +21,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
       getLaoChannel: config.getLaoChannel,
       useCurrentLaoId: config.useCurrentLaoId,
       useDisconnectFromLao: config.useDisconnectFromLao,
+      getLaoById: config.getLaoById,
     },
   };
 }

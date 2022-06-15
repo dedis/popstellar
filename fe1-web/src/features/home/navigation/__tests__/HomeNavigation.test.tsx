@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { Home } from 'features/home/screens';
@@ -23,6 +23,7 @@ const contextValue = {
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
     useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
   } as HomeReactContext,
 };
 
