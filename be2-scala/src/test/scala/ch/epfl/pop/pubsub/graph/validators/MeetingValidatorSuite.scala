@@ -167,4 +167,13 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
+  // Valid meeting state
+  test("Creating a valid meeting state works as intended") {
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(STATE_MEETING_RPC)
+    message should equal(Left(STATE_MEETING_RPC))
+    system.stop(dbActorRef.actorRef)
+  }
+
 }
