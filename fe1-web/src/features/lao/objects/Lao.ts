@@ -1,4 +1,4 @@
-import { channelFromIds, Hash, PublicKey, Timestamp } from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { getLaoChannel } from '../functions/network';
 
