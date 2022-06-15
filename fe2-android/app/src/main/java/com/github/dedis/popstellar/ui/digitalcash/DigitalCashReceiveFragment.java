@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import net.glxn.qrgen.android.QRCode;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
@@ -66,16 +67,16 @@ public class DigitalCashReceiveFragment extends Fragment {
       if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction =
             TransactionObject.lastLockedTransactionObject(
-                lao.getTransactionByUser().get(token.getPublicKey()));
+                Objects.requireNonNull(lao.getTransactionByUser().get(token.getPublicKey())));
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
-        mBinding.digitalCashReceiveAddress.setText("Received from : \n" + sender);
-
-        long timeAgo = Instant.now().getEpochSecond() - transaction.getLockTime();
-        mBinding.digitalCashReceiveTime.setText(timeAgo + " seconds ago ");
+        mBinding.digitalCashReceiveAddress.setText(String.format("Received from : \n %s", sender));
+        mBinding.digitalCashReceiveTime.setText(
+            String.format(
+                "%s seconds ago", Instant.now().getEpochSecond() - transaction.getLockTime()));
         mBinding.digitalCashReceiveAmount.setText(
-            String.valueOf(transaction.getMiniLaoPerReceiverFirst(token.getPublicKey()))
-                + " LAOcoin");
+            String.format(
+                "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
       }
     } catch (KeyException e) {
       Toast.makeText(

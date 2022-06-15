@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.List;
@@ -54,15 +55,22 @@ public class DigitalCashHomeFragment extends Fragment {
 
     try {
       Lao lao = mViewModel.getCurrentLao();
+      if (lao == null) {
+        Toast.makeText(
+                requireContext(),
+                getString(R.string.digital_cash_please_enter_a_lao),
+                Toast.LENGTH_SHORT)
+            .show();
+      }
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+      PublicKey publicKey = token.getPublicKey();
 
-      mBinding.digitalCashHomeAddress.setText(token.getPublicKey().getEncoded());
+      mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
 
-      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-        List<TransactionObject> transactions = lao.getTransactionByUser().get(token.getPublicKey());
+      if (lao.getTransactionByUser().containsKey(publicKey)) {
+        List<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
         long totalAmount =
-            TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                transactions, token.getPublicKey());
+            TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
         mBinding.digitalCashSendAddress.setText(String.format("LAO coin : %s", totalAmount));
       }
 

@@ -176,7 +176,7 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
-  private void postTransaction(Map<String, String> publicKeyAmount) throws KeyException {
+  private void postTransaction(Map<String, String> publicKeyAmount) {
     if (mViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
