@@ -59,8 +59,9 @@ public class ReplyMethods {
         Json msgJson = Json.of(msg);
         String replaceId =
             VALID_CATCHUP_REPLY_TEMPLATE.replace("%ID%", Integer.toString(msgJson.get(ID)));
-        if (laoCreatePublishJson == null) { // Should not happen
-          return buildSingleton(replaceId);
+        if (laoCreatePublishJson == null) {
+          throw new IllegalStateException(
+              "When creating a catchup the laoCreate should not be null");
         }
         return buildSingleton(replaceId.replace("[]", "[" + laoCreatePublishJson + "]"));
       };
@@ -79,8 +80,8 @@ public class ReplyMethods {
         }
       };
 
-  public static Function<String, List<String>>  ROLL_CALL_CREATE_BROADCAST =
-      msg ->{
+  public static Function<String, List<String>> ROLL_CALL_CREATE_BROADCAST =
+      msg -> {
         Json param = getJSON(Json.of(msg), PARAMS);
         String channel = param.get(CHANNEL);
 

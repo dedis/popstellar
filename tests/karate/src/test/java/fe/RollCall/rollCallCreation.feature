@@ -20,8 +20,9 @@ Feature: Create RollCall
     Then match create_rc_json contains deep { method: 'publish'}
     And match backend.checkRollCallCreateMessage(create_rc_string) == true
     And match backend.receiveNoMoreResponses() == true
-    And match text(event_name_selector) == 'RC name'
+
     # check display
+    And match text(event_name_selector) == 'RC name'
 
 
 
