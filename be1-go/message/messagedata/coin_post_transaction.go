@@ -152,11 +152,6 @@ func (message PostTransaction) verifySignature() error {
 	}
 
 	dataBytes := []byte(strings.Join(sigComp, ""))
-	/*if err != nil {
-		return xerrors.Errorf("failed to decode data string: %v", err)
-	}
-
-	*/
 
 	for _, inp := range message.Transaction.Inputs {
 		signatureBytes, err := base64.URLEncoding.DecodeString(inp.Script.Sig)
