@@ -22,6 +22,7 @@ const contextValue = {
     useLaoList: () => [],
     LaoList: () => null,
     homeNavigationScreens: [],
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 

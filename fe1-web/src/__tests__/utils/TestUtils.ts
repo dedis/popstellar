@@ -42,6 +42,7 @@ export const mockLaoState: LaoState = {
   organizer: org.valueOf(),
   witnesses: [],
   server_addresses: [],
+  subscribed_channels: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 

@@ -18,6 +18,7 @@ const contextValue = {
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 describe('Launch', () => {

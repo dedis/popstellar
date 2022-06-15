@@ -22,6 +22,7 @@ const contextValue = {
     ],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 

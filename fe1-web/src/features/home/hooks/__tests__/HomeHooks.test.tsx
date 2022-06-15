@@ -33,6 +33,7 @@ const contextValue = {
     getLaoChannel,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
     hasSeed,
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 

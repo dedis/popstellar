@@ -23,6 +23,7 @@ const contextValueEmpyList = {
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 
@@ -37,6 +38,7 @@ const contextValue = {
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: LaoHooks.useCurrentLaoId,
     hasSeed: () => true,
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 

@@ -22,6 +22,7 @@ const contextValue = {
     homeNavigationScreens: [],
     requestCreateLao: () => Promise.resolve(mockChannel),
     useLaoList: () => [],
+    useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
 
