@@ -50,6 +50,11 @@ const SendReceive = () => {
 
   const allRollCalls = DigitalCashHooks.useRollCallsByLaoId(laoId);
 
+  const allClosedRollCall = useMemo(
+    () => Object.values(allRollCalls).filter((rc) => rc.status === 2),
+    [allRollCalls],
+  );
+
   // will always be '' in non-coinbase transactions, indicates a single beneficiary
   const [selectedRollCallId, setSelectedRollCallId] = useState<string>('');
   const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId || '');
@@ -196,8 +201,8 @@ const SendReceive = () => {
                 value: '',
                 label: STRINGS.digital_cash_wallet_issue_single_beneficiary,
               },
-              ...Object.entries(allRollCalls).map(([rcId, rc]) => ({
-                value: rcId,
+              ...allClosedRollCall.map((rc) => ({
+                value: rc.id.valueOf(),
                 label: `${STRINGS.digital_cash_wallet_issue_all_attendees} "${rc.name}"`,
               })),
             ]}
