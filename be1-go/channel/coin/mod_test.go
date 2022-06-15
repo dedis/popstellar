@@ -579,6 +579,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
 }
 
+/*
 // Tests that the channel works correctly when it receives a transaction
 func Test_SendTransactionMultInpAndOut(t *testing.T) {
 	// Create the hub
@@ -635,6 +636,7 @@ func Test_SendTransactionMultInpAndOut(t *testing.T) {
 
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
+*/
 
 // Tests that the channel works correctly when it receives a transaction
 func Test_SendTransactionCoinbase(t *testing.T) {
