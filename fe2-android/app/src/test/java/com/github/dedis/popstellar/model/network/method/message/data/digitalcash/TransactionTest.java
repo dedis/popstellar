@@ -115,8 +115,14 @@ public class TransactionTest {
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
     Input single = transactionModel.getInputs().get(0);
-    //Signature sig = single.getScript().getSig();
-    //PublicKey pk = single.getScript().getPubkey();
+
+    Signature sig2 = single.getScript().getSig();
+    PublicKey pk2 = single.getScript().getPubkey();
+
+    System.out.println("given json: "+pk2.verify(sig2, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
+    System.out.println("given pk2: "+pk2.toString());
+    System.out.println("given encoded:" + sig2.getEncoded());
+
     //System.out.println(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8));
     KeyPair kp1 = Base64DataUtils.generateKeyPair();
     KeyPair kp2 = Base64DataUtils.generateKeyPair();
