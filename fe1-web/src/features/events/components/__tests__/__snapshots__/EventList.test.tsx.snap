@@ -335,6 +335,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -347,6 +348,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -511,6 +513,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -523,6 +526,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -687,6 +691,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -699,6 +704,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -1729,6 +1735,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -1741,6 +1748,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -1927,6 +1935,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -1939,6 +1948,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -2125,6 +2135,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -2137,6 +2148,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
