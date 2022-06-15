@@ -103,7 +103,7 @@ public class EventListAdapterTest {
               EventListAdapter adapter =
                   new EventListAdapter(
                       Arrays.asList(ROLL_CALL, ROLL_CALL2), laoDetailViewModel, activity);
-              assertEquals(4, adapter.getItemCount());
+              assertEquals(5, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(1));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(2));
