@@ -8,22 +8,17 @@ import { ExtendType } from 'core/types';
 /**
  * Wraps a touchable opacity in a pressable component to make karate tests work :)
  */
-const PoPTouchableOpacity = ({
-  onPress,
-  containerStyle,
-  style,
-  testID,
-  ref,
-  children,
-}: IPropTypes) => {
-  return (
-    <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
-      <TouchableOpacity containerStyle={containerStyle} style={style}>
-        {children}
-      </TouchableOpacity>
-    </Pressable>
-  );
-};
+const PoPTouchableOpacity = React.forwardRef<View, IPropTypes>(
+  ({ onPress, containerStyle, style, testID, children }: IPropTypes, ref) => {
+    return (
+      <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
+        <TouchableOpacity containerStyle={containerStyle} style={style}>
+          {children}
+        </TouchableOpacity>
+      </Pressable>
+    );
+  },
+);
 
 const propTypes = {
   children: PropTypes.node.isRequired,
@@ -35,10 +30,6 @@ const propTypes = {
   containerStyle: PropTypes.any,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.any,
-
-  // ref types are opaque to us
-  // eslint-disable-next-line react/forbid-prop-types
-  ref: PropTypes.any,
 };
 
 PoPTouchableOpacity.propTypes = propTypes;
@@ -48,7 +39,6 @@ PoPTouchableOpacity.defaultProps = {
   testID: undefined,
   containerStyle: undefined,
   style: undefined,
-  ref: undefined,
 };
 
 type IPropTypes = ExtendType<
@@ -56,7 +46,6 @@ type IPropTypes = ExtendType<
   {
     containerStyle?: StyleProp<ViewStyle>;
     style?: StyleProp<ViewStyle>;
-    ref?: React.Ref<View>;
   }
 >;
 
