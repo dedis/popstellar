@@ -116,12 +116,18 @@ const RollCallOpened = () => {
     [updateAttendeePopTokens, attendeePopTokens],
   );
 
-  const addAttendeePopTokenAndShowToast = (popToken: string, toastMessage: string) => {
+  const addAttendeePopTokenAndShowToast = (popToken: string) => {
     if (tokenMatcher.test(popToken)) {
       // only show a toast if an actual *new* token is added
       if (addAttendeePopToken(popToken)) {
-        toast.show(toastMessage, {
+        toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      } else {
+        toast.show(STRINGS.roll_call_scan_participant_twice, {
+          type: 'danger',
           placement: 'top',
           duration: FOUR_SECONDS,
         });
@@ -153,7 +159,7 @@ const RollCallOpened = () => {
         showCamera={showScanner}
         handleScan={(data) => {
           if (data) {
-            addAttendeePopTokenAndShowToast(data, STRINGS.roll_call_scan_participant);
+            addAttendeePopTokenAndShowToast(data);
           }
         }}>
         <View style={styles.buttonContainer}>
