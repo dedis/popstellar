@@ -14,7 +14,6 @@ import { List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { getLaoChannel } from '../functions';
 import { Lao } from '../objects';
 import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector } from '../reducer';
 
@@ -51,11 +50,6 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       const connections = lao.server_addresses.map((address) =>
         getNetworkManager().connect(address),
       );
-
-      const laoChannel = getLaoChannel(lao.id.valueOf());
-      if (!laoChannel) {
-        throw new Error('The given LAO ID is invalid');
-      }
 
       // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
       await Promise.all(

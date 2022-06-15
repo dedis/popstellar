@@ -35,7 +35,6 @@ const Home: FunctionComponent = () => {
       if (laoId) {
         // if we enter this screen and connected to a lao
         // disconnect from this lao
-
         // FIXME
         // In the best case we would just call the function here
         // unfortunately react-native-navigation sometimes still has lao screens loaded
@@ -44,7 +43,7 @@ const Home: FunctionComponent = () => {
         // the cleanest solution would probably be to navigate to this screen
         // if no an error indicating no active lao is thrown
         // react error boundaries might help achieving this
-        setTimeout(disconnectFromLao, 1000);
+        // setTimeout(disconnectFromLao, 1000);
       }
     });
   }, [navigation, laoId, disconnectFromLao]);

@@ -1,5 +1,7 @@
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
+import { getLaoChannel } from '../functions/network';
+
 export interface LaoState {
   name: string;
   id: string;
@@ -78,7 +80,13 @@ export class Lao {
     this.last_roll_call_id = obj.last_roll_call_id;
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
-    this.subscribed_channels = obj.subscribed_channels || [];
+
+    const laoChannel = getLaoChannel(obj.id.valueOf());
+    if (!laoChannel) {
+      throw new Error('Obtained invalid lao channel from valid lao id???');
+    }
+
+    this.subscribed_channels = obj.subscribed_channels || [laoChannel];
   }
 
   public static fromState(lao: LaoState): Lao {
