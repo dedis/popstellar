@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockChannel, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
@@ -21,12 +23,17 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
+
+const mockStore = createStore(combineReducers({}));
+
 describe('Launch', () => {
   it('renders correctly', () => {
     const component = render(
-      <FeatureContext.Provider value={contextValue}>
-        <MockNavigator component={Launch} />
-      </FeatureContext.Provider>,
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={Launch} />
+        </FeatureContext.Provider>
+      </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
   });

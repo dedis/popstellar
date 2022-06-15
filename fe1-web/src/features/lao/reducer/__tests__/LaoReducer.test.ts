@@ -78,6 +78,8 @@ const initializeData = () => {
     witnesses: [],
     last_roll_call_id: rollCallId,
     last_tokenized_roll_call_id: rollCallId,
+    server_addresses: [],
+    subscribed_channels: [],
   }).toState();
 
   filledStateAfterRollCall = {

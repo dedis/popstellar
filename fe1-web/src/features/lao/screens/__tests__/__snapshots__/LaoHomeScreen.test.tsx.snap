@@ -1004,7 +1004,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                             }
                           >
                             <View>
-                              <Text />
+                              {"name":"ios-information-circle-outline","size":25,"color":"#000"}
                             </View>
                           </View>
                         </View>
@@ -1746,26 +1746,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                             }
                           >
                             <View>
-                              <Text
-                                allowFontScaling={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#8E8E8E",
-                                      "fontSize": 25,
-                                    },
-                                    undefined,
-                                    Object {
-                                      "fontFamily": "ionicons",
-                                      "fontStyle": "normal",
-                                      "fontWeight": "normal",
-                                    },
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                
-                              </Text>
+                              {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
                             </View>
                           </View>
                         </RNGestureHandlerButton>
@@ -1793,26 +1774,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                             }
                           >
                             <View>
-                              <Text
-                                allowFontScaling={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#8E8E8E",
-                                      "fontSize": 25,
-                                    },
-                                    undefined,
-                                    Object {
-                                      "fontFamily": "ionicons",
-                                      "fontStyle": "normal",
-                                      "fontWeight": "normal",
-                                    },
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                
-                              </Text>
+                              {"name":"ios-notifications","size":25,"color":"#8E8E8E"}
                             </View>
                           </View>
                         </RNGestureHandlerButton>

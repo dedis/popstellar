@@ -42,6 +42,9 @@ export class Lao {
   // Addresses of all servers of the LAO
   public server_addresses: string[];
 
+  // Names of all channels we are subscribed to
+  public subscribed_channels: string[];
+
   constructor(obj: Partial<Lao>) {
     if (obj === undefined || obj === null) {
       throw new Error('Error encountered while creating a LAO object: undefined/null parameters');
@@ -75,6 +78,7 @@ export class Lao {
     this.last_roll_call_id = obj.last_roll_call_id;
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
+    this.subscribed_channels = obj.subscribed_channels || [];
   }
 
   public static fromState(lao: LaoState): Lao {
@@ -90,6 +94,7 @@ export class Lao {
         ? new Hash(lao.last_tokenized_roll_call_id)
         : undefined,
       server_addresses: lao.server_addresses,
+      subscribed_channels: lao.subscribed_channels,
     });
   }
 

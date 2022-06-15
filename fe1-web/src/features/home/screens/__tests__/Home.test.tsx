@@ -4,11 +4,10 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoList } from 'features/lao/components';
-import { LaoHooks } from 'features/lao/hooks';
 import { addLao, laoReducer, selectLaosList } from 'features/lao/reducer';
 
 import Home from '../Home';
@@ -22,7 +21,7 @@ const contextValueEmpyList = {
     LaoList: () => null,
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useCurrentLaoId: () => mockLaoIdHash,
     useDisconnectFromLao: () => () => {},
   } as HomeReactContext,
 };
@@ -36,7 +35,7 @@ const contextValue = {
     LaoList,
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useCurrentLaoId: () => mockLaoIdHash,
     hasSeed: () => true,
     useDisconnectFromLao: () => () => {},
   } as HomeReactContext,

@@ -284,7 +284,11 @@ describe('ElectionHandler', () => {
       );
 
       expect(subscribeToChannel).toHaveBeenCalledTimes(1);
-      expect(subscribeToChannel).toHaveBeenCalledWith(mockChannelId);
+      expect(subscribeToChannel).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        mockChannelId,
+      );
 
       // check whether addEvent has been called correctly
       expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted);
