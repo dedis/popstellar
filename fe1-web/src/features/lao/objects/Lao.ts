@@ -1,4 +1,4 @@
-import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { channelFromIds, Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { getLaoChannel } from '../functions/network';
 
@@ -82,8 +82,9 @@ export class Lao {
     this.server_addresses = obj.server_addresses || [];
 
     const laoChannel = getLaoChannel(obj.id.valueOf());
+    const x = channelFromIds(new Hash(obj.id.valueOf()));
     if (!laoChannel) {
-      throw new Error('Obtained invalid lao channel from valid lao id???');
+      throw new Error(`Obtained invalid lao channel from valid lao id '${obj.id.valueOf()}'???`);
     }
 
     this.subscribed_channels = obj.subscribed_channels || [laoChannel];
