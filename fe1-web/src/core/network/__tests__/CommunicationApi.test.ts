@@ -1,5 +1,4 @@
 import { mockChannel, mockLaoId } from '__tests__/utils';
-import { addSubscribedChannel, removeSubscribedChannel } from 'features/lao/reducer';
 
 import { subscribeToChannel, unsubscribeFromChannel } from '../CommunicationApi';
 import { catchup, subscribe, unsubscribe } from '../JsonRpcApi';
@@ -52,9 +51,6 @@ describe('CommunicationApi', () => {
 
       expect(catchup).toHaveBeenCalledWith(mockChannel, connections);
       expect(catchup).toHaveBeenCalledTimes(1);
-
-      expect(dispatch).toHaveBeenCalledWith(addSubscribedChannel(mockLaoId, mockChannel));
-      expect(dispatch).toHaveBeenCalledTimes(1);
     });
 
     it('should call subscribe but no catchup if specified so', async () => {
@@ -67,9 +63,6 @@ describe('CommunicationApi', () => {
       expect(subscribe).toHaveBeenCalledTimes(1);
 
       expect(catchup).not.toHaveBeenCalled();
-
-      expect(dispatch).toHaveBeenCalledWith(addSubscribedChannel(mockLaoId, mockChannel));
-      expect(dispatch).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -95,9 +88,6 @@ describe('CommunicationApi', () => {
       ).toResolve();
       expect(unsubscribe).toHaveBeenCalledWith(mockChannel, connections);
       expect(unsubscribe).toHaveBeenCalledTimes(1);
-
-      expect(dispatch).toHaveBeenCalledWith(removeSubscribedChannel(mockLaoId, mockChannel));
-      expect(dispatch).toHaveBeenCalledTimes(1);
     });
   });
 });

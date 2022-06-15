@@ -1,11 +1,30 @@
 import { Dispatch } from 'redux';
 
 import { Channel, Hash } from 'core/objects';
-import { addSubscribedChannel, removeSubscribedChannel } from 'features/lao/reducer';
 
 import { storeMessage } from './ingestion';
 import { catchup, subscribe, unsubscribe } from './JsonRpcApi';
 import { NetworkConnection } from './NetworkConnection';
+
+type ChannelSubscriptionHandler = (
+  laoId: Hash | string,
+  dispatch: Dispatch,
+  channel: Channel,
+) => void;
+type ChannelUnsubscriptionHandler = (
+  laoId: Hash | string,
+  dispatch: Dispatch,
+  channel: Channel,
+) => void;
+
+const onChannelSubscriptionHandlers: ChannelSubscriptionHandler[] = [];
+const onChannelUnsubscriptionHandlers: ChannelUnsubscriptionHandler[] = [];
+
+export const addOnChannelSubscriptionHandlers = (handler: ChannelSubscriptionHandler) =>
+  onChannelSubscriptionHandlers.push(handler);
+
+export const addOnChannelUnsubscriptionHandlers = (handler: ChannelUnsubscriptionHandler) =>
+  onChannelUnsubscriptionHandlers.push(handler);
 
 /**
  * Subscribes to a channel and optionally catches up to previously sent messages
@@ -30,7 +49,7 @@ export async function subscribeToChannel(
   }
 
   console.debug('Subscribing to channel: ', channel);
-  dispatch(addSubscribedChannel(laoId, channel));
+  onChannelSubscriptionHandlers.forEach((handler) => handler(laoId, dispatch, channel));
 
   try {
     // Subscribe to the channel
@@ -71,7 +90,7 @@ export async function unsubscribeFromChannel(
   }
 
   console.debug('Unsubscribing from channel: ', channel);
-  dispatch(removeSubscribedChannel(laoId, channel));
+  onChannelUnsubscriptionHandlers.forEach((handler) => handler(laoId, dispatch, channel));
 
   try {
     // Unsubscribe from the channel
