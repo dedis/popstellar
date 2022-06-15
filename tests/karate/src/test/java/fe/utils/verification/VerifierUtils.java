@@ -8,11 +8,13 @@ import com.intuit.karate.Logger;
 
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import static common.JsonKeys.*;
-import static common.utils.Base64Utils.convertB64URLToString;
+import static common.utils.Base64Utils.convertB64URLToByteArray;
 
+/**
+ * This class contains functions useful to test message fields for several kind of high level messages
+ */
 public class VerifierUtils {
   private final static Logger logger = new Logger(VerifierUtils.class.getSimpleName());
 
@@ -40,8 +42,7 @@ public class VerifierUtils {
     String signature = messageFieldJson.get(SIGNATURE);
     String msgId = messageFieldJson.get(MESSAGE_ID);
     try {
-      boolean validity = msgId.equals(JsonConverter.hash(data.getBytes(), signature.getBytes()));
-      return validity;
+      return msgId.equals(JsonConverter.hash(data.getBytes(), signature.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
@@ -51,18 +52,16 @@ public class VerifierUtils {
   /**
    * Verify the signature of a network message
    * @param messageFieldJson the "message" field of the network message
-   * @return
+   * @return true if signature field of the message matches the sender and data
    */
   private static boolean verifySignature(Json messageFieldJson) {
     String senderB64 = messageFieldJson.get(SENDER);
     String signatureB64 = messageFieldJson.get(SIGNATURE);
     String dataB64 = messageFieldJson.get(DATA);
 
-    byte[] sender = convertB64URLToString(senderB64);
-    byte[] signature = convertB64URLToString(signatureB64);
-    byte[] data = convertB64URLToString(dataB64);
-    logger.info("signature is " + signature);
-    logger.info("sender is " + Arrays.toString(sender));
+    byte[] sender = convertB64URLToByteArray(senderB64);
+    byte[] signature = convertB64URLToByteArray(signatureB64);
+    byte[] data = convertB64URLToByteArray(dataB64);
 
     PublicKeyVerify verify = new Ed25519Verify(sender);
 

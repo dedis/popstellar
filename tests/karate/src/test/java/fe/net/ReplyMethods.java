@@ -17,7 +17,6 @@ import static common.utils.JsonUtils.getJSON;
  */
 public class ReplyMethods {
 
-
   private static final String VALID_REPLY_TEMPLATE =
       "{\"jsonrpc\":\"2.0\",\"id\":%ID%,\"result\":0}";
   private static final String VALID_CATCHUP_REPLY_TEMPLATE =
