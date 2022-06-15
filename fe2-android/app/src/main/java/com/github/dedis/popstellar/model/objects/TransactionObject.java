@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class TransactionObject {
 
-  private static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  public static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
   private Channel channel;
 
@@ -310,7 +310,7 @@ public class TransactionObject {
    */
   public boolean isCoinBaseTransaction() {
     return (getSendersTransaction().size() == 1)
-        && getInputs().get(0).getTxOutHash().equals("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
+        && getInputs().get(0).getTxOutHash().equals(TX_OUT_HASH_COINBASE)
         && (getInputs().get(0).getTxOutIndex() == 0);
   }
 }
