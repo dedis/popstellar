@@ -40,7 +40,9 @@ namespace STRINGS {
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
   export const navigation_connect_launch = 'Launch';
+  export const navigation_connect_launch_title = 'Launch a new LAO';
   export const navigation_connect_confirm = 'Confirm';
+  export const navigation_connect_confirm_title = 'Manually Connect to a LAO';
 
   /* --- Notification Navigation Strings --- */
   export const navigation_notification_notifications = 'NotificationNavigation Notifications';

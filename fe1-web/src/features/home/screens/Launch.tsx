@@ -99,8 +99,6 @@ const Launch = () => {
           <PoPTextButton onPress={onTestClearStorage}>
             [TEST] Clear (persistent) storage
           </PoPTextButton>
-
-          <PoPTextButton onPress={navigation.goBack}>{STRINGS.general_button_cancel}</PoPTextButton>
         </View>
       </View>
     </ScreenWrapper>
