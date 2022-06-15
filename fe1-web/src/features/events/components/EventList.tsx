@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
@@ -43,16 +43,47 @@ const EventList = () => {
     throw new Error('Cannot show an event list if you are not connected to a lao!');
   }
 
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const events = useSelector(eventListSelector);
+
+  const [{ pastEvents, currentEvents, futureEvents }, setEvents] = useState<{
+    pastEvents: EventState[];
+    currentEvents: EventState[];
+    futureEvents: EventState[];
+  }>(() => {
+    const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
+      Timestamp.EpochNow().valueOf(),
+      events,
+    );
+
+    return {
+      pastEvents: newPastEvents,
+      currentEvents: newCurrentEvents,
+      futureEvents: newFutureEvents,
+    };
+  });
+
   const [showUpcoming, setShowUpcoming] = useState(true);
   const [showCurrent, setShowCurrent] = useState(true);
   const [showPast, setShowPast] = useState(false);
 
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
-  const events = useSelector(eventListSelector);
-  const [pastEvents, currentEvents, futureEvents] = categorizeEventsByTime(
-    Timestamp.EpochNow().valueOf(),
-    events,
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
+        Timestamp.EpochNow().valueOf(),
+        events,
+      );
+
+      setEvents({
+        pastEvents: newPastEvents,
+        currentEvents: newCurrentEvents,
+        futureEvents: newFutureEvents,
+      });
+    }, 1000);
+
+    // clear the interval when unmouting the component
+    return () => clearInterval(interval);
+  }, [events]);
 
   return (
     <View style={List.container}>
