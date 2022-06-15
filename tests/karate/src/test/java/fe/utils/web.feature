@@ -26,6 +26,10 @@ Feature: web test
     * def tab_events_selector = '{}Events'
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
     * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
+    * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
+    #* def event_name_selector = "[data-testid='current_event_selector_0']"
+    * def event_name_selector = '{}RC name'
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -65,6 +69,9 @@ Feature: web test
   Scenario: Create a roll call for an already created LAO
     Given click(tab_events_selector)
     And click(add_event_selector)
-    And click(add_roll_call_selector)
+
+    #Does not work for now
+    And retry(5, 2000).click(add_roll_call_selector)
+
     And input(roll_call_title_selector, 'RC name')
     And input(roll_call_location_selector, 'EPFL')
