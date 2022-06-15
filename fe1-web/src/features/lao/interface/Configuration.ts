@@ -114,6 +114,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The public key or undefined if there is none
      */
     useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
+    /**
+     * Returns the function to disconnect from the current lao
+     */
+    useDisconnectFromLao: () => () => void;
   };
 
   /* functions */

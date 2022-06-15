@@ -46,6 +46,11 @@ export interface HomeCompositionConfiguration {
    */
   useLaoList: () => HomeFeature.Lao[];
 
+  /**
+   * Gets the function to disconnect from the current lao
+   */
+  useDisconnectFromLao: () => () => void;
+
   /* components */
 
   /**
@@ -75,6 +80,7 @@ export type HomeReactContext = Pick<
   | 'homeNavigationScreens'
   | 'getLaoChannel'
   | 'useCurrentLaoId'
+  | 'useDisconnectFromLao'
 >;
 
 /**

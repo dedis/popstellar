@@ -1,11 +1,13 @@
-import { useContext, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback, useContext, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { getNetworkManager } from 'core/network';
 
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
+  disconnectFromLao,
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
@@ -79,7 +81,6 @@ export namespace LaoHooks {
    * Returns the current lao and throws an error if there is none
    * @returns The current lao
    */
-
   export const useCurrentLao = () => {
     const currentLao = useSelector(selectCurrentLao);
 
@@ -104,5 +105,18 @@ export namespace LaoHooks {
   export const useLaoOrganizerBackendPublicKey = (laoId: string) => {
     const selector = useMemo(() => makeLaoOrganizerBackendPublicKeySelector(laoId), [laoId]);
     return useSelector(selector);
+  };
+
+  /**
+   * Returns the function to disconnect from the current lao
+   */
+
+  export const useDisconnectFromLao = () => {
+    const dispatch = useDispatch();
+
+    return useCallback(() => {
+      getNetworkManager().disconnectFromAll();
+      dispatch(disconnectFromLao());
+    }, [dispatch]);
   };
 }

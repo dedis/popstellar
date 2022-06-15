@@ -107,6 +107,7 @@ export function configureFeatures() {
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useDisconnectFromLao: laoConfiguration.hooks.useDisconnectFromLao,
     /* components */
     LaoList: laoConfiguration.components.LaoList,
     /* screens */

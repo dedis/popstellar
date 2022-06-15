@@ -20,6 +20,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
       homeNavigationScreens: config.homeNavigationScreens,
       getLaoChannel: config.getLaoChannel,
       useCurrentLaoId: config.useCurrentLaoId,
+      useDisconnectFromLao: config.useDisconnectFromLao,
     },
   };
 }
