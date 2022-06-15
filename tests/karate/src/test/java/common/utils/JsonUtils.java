@@ -7,7 +7,7 @@ import java.util.Map;
 public class JsonUtils {
 
   public static Json getJSON(Json json, String key){
-    Map map = json.get(key);
+    Map<String, String> map = json.get(key);
     return Json.of(map);
   }
 }
