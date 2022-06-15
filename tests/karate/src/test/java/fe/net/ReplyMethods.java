@@ -1,7 +1,6 @@
 package fe.net;
 
 import com.intuit.karate.Json;
-import com.intuit.karate.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,7 +16,6 @@ import static common.utils.JsonUtils.getJSON;
  * MockBackend#setReplyProducer(Function)}
  */
 public class ReplyMethods {
-  private final static Logger logger = new Logger(ReplyMethods.class.getSimpleName());
 
 
   private static final String VALID_REPLY_TEMPLATE =
@@ -38,7 +36,7 @@ public class ReplyMethods {
   public static Function<String, List<String>> ALWAYS_VALID_CONSENSUS =
       msg -> {
         Json msgJson = Json.of(msg);
-        int id = msgJson.get("id");
+        int id = msgJson.get(ID);
         String template =
             msgJson.get(METHOD).equals(CATCHUP)
                 ? VALID_CATCHUP_REPLY_TEMPLATE
@@ -86,16 +84,11 @@ public class ReplyMethods {
       msg ->{
         Json param = getJSON(Json.of(msg), PARAMS);
         String channel = param.get(CHANNEL);
-        logger.info("params are : {}", param.toString());
-//        logger.info("channel is : {}", channel.toString());
 
-        Map msgMap = param.get(MESSAGE);
-//        logger.info("jsonMsg is : {}", msgMap.toString());
+        Map<String, String> msgMap = param.get(MESSAGE);
         Json send = Json.object();
         send.set(CHANNEL, channel);
         send.set(MESSAGE, msgMap);
-
-        logger.info("send is : {}", send.toString());
 
         String broadCast = RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
         String result = ALWAYS_VALID.apply(msg).get(0);

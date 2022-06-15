@@ -26,36 +26,33 @@ public class VerifierUtils {
 
     boolean signatureValidity = verifySignature(messageFieldJson);
     boolean messageIdValidity = verifyMessageIdField(messageFieldJson);
-    logger.info("sig val = " + signatureValidity + " and msgId val is " + messageIdValidity);
 
     return signatureValidity && messageIdValidity;
   }
 
   /**
    * Verify the message_id of a network message
-   * @param base64MsgData the "data" field
-   * @param signature
-   * @param msgId
-   * @return
-   * @throws NoSuchAlgorithmException
+   * @param messageFieldJson the "message" field of the network message
+   * @return true if the computed message_id matches the one provided in Json
    */
-  private static boolean verifyMessageId(String base64MsgData, String signature, String msgId)
-      throws NoSuchAlgorithmException {
-    return msgId.equals(JsonConverter.hash(base64MsgData.getBytes(), signature.getBytes()));
-  }
-
   private static boolean verifyMessageIdField(Json messageFieldJson) {
     String data = messageFieldJson.get(DATA);
     String signature = messageFieldJson.get(SIGNATURE);
     String msgId = messageFieldJson.get(MESSAGE_ID);
     try {
-      return VerifierUtils.verifyMessageId(data, signature, msgId);
+      boolean validity = msgId.equals(JsonConverter.hash(data.getBytes(), signature.getBytes()));
+      return validity;
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
     }
   }
 
+  /**
+   * Verify the signature of a network message
+   * @param messageFieldJson the "message" field of the network message
+   * @return
+   */
   private static boolean verifySignature(Json messageFieldJson) {
     String senderB64 = messageFieldJson.get(SENDER);
     String signatureB64 = messageFieldJson.get(SIGNATURE);
