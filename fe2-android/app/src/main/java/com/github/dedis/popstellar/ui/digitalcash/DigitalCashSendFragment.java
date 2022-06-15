@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +28,9 @@ import java.util.Map;
  * method to create an instance of this fragment.
  */
 public class DigitalCashSendFragment extends Fragment {
-    private DigitalCashSendFragmentBinding mBinding;
-    private DigitalCashViewModel mViewModel;
-  private String TAG = DigitalCashSendFragment.class.toString();
+  private DigitalCashSendFragmentBinding mBinding;
+  private DigitalCashViewModel mViewModel;
+  private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
 
     public DigitalCashSendFragment() {
         // not implemented yet
@@ -69,15 +68,15 @@ public class DigitalCashSendFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                String current_amount = mBinding.digitalCashSendAmount.getText().toString();
-                // Log.d(this.getClass().toString(), "the current amount is " + current_amount);
-                String current_public_key_selected =
+                String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
+                // Log.d(this.getClass().toString(), "the current amount is " + currentAmount);
+                String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
+                if ((currentAmount.isEmpty()) || (Integer.valueOf(currentAmount) < 0)) {
                   // create in View Model a function that toast : please enter amount
                   mViewModel.requireToPutAnAmount();
                   return;
-                } else if (current_public_key_selected.isEmpty()) {
+                } else if (currentPublicKeySelected.isEmpty()) {
                   // create in View Model a function that toast : please enter key
                   mViewModel.requireToPutLAOMember();
                   return;
@@ -106,7 +105,7 @@ public class DigitalCashSendFragment extends Fragment {
                               .getTransactionByUser()
                               .get(token.getPublicKey()),
                           token.getPublicKey());
-                  if (amount < (Integer.valueOf(current_amount))) {
+                  if (amount < (Integer.valueOf(currentAmount))) {
                     Toast.makeText(
                             requireContext(),
                             "Can't send more money than you have !",
@@ -119,20 +118,18 @@ public class DigitalCashSendFragment extends Fragment {
                       .show();
                   return;
                 }
-
-                try {
-                  postTransaction(
-                      Collections.singletonMap(current_public_key_selected, current_amount));
-                  mViewModel.updateReceiptAddressEvent(current_public_key_selected);
-                  mViewModel.updateReceiptAmountEvent(current_amount);
-                  mViewModel.openReceipt();
-                } catch (KeyException e) {
-                  e.printStackTrace();
-                  Log.d(TAG, "error couldn't post the transaction due to key exception");
-                }
+                postTransaction(Collections.singletonMap(currentPublicKeySelected, currentAmount));
+                mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
+                mViewModel.updateReceiptAmountEvent(currentAmount);
+                mViewModel.openReceipt();
               }
             });
 
+    setUpTheAdapter();
+  }
+
+  /** Funciton that set up the Adapter */
+  private void setUpTheAdapter() {
     /* Roll Call attendees to which we can send*/
     List<String> myArray = null;
     try {
@@ -156,18 +153,18 @@ public class DigitalCashSendFragment extends Fragment {
   /**
    * Function that post the transaction (call the function of the view model)
    *
-   * @param PublicKeyAmount Map<String, String> containing the Public Keys and the related amount to
+   * @param publicKeyAmount Map<String, String> containing the Public Keys and the related amount to
    *     issue to
    * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
-  private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
+  private void postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
     if (mViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond(), false);
+      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false);
       mViewModel.updateLaoCoinEvent();
     }
   }

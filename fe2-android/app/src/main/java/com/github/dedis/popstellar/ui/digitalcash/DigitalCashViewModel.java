@@ -135,16 +135,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return updateReceiptAddressEvent;
   }
 
-  public void updateReceiptAddressEvent(String Address) {
-    updateReceiptAddressEvent.postValue(new SingleEvent<>(Address));
+  public void updateReceiptAddressEvent(String address) {
+    updateReceiptAddressEvent.postValue(new SingleEvent<>(address));
   }
 
   public LiveData<SingleEvent<String>> getUpdateReceiptAmountEvent() {
     return updateReceiptAmountEvent;
   }
 
-  public void updateReceiptAmountEvent(String Amount) {
-    updateReceiptAmountEvent.postValue(new SingleEvent<>(Amount));
+  public void updateReceiptAmountEvent(String amount) {
+    updateReceiptAmountEvent.postValue(new SingleEvent<>(amount));
   }
 
   public void requireToPutAnAmount() {

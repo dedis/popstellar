@@ -28,7 +28,6 @@ public class DigitalCashMain extends AppCompatActivity {
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
   public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
-  // public static final String LAO = "LAO";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

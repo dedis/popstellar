@@ -39,9 +39,9 @@ public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
-  private static int SELECT_ALL_LAO_MEMBERS;
-  private static int SELECT_ALL_ROLL_CALL_ATTENDEES;
-  private static int SELECT_ALL_LAO_WITNESSES;
+  private static int selectAllLaoMembers;
+  private static int selectAllRollCallAttendees;
+  private static int selectAllLaoWitnesses;
   private static final int NOTHING_SELECTED = -1;
   private static final int MIN_LAO_COIN = 0;
 
@@ -64,11 +64,11 @@ public class DigitalCashIssueFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
-    SELECT_ALL_LAO_MEMBERS =
+    selectAllLaoMembers =
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(0));
-    SELECT_ALL_ROLL_CALL_ATTENDEES =
+    selectAllRollCallAttendees =
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(1));
-    SELECT_ALL_LAO_WITNESSES =
+    selectAllLaoWitnesses =
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(2));
     return mBinding.getRoot();
   }
@@ -111,16 +111,16 @@ public class DigitalCashIssueFragment extends Fragment {
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
                     } else {
                       Set<PublicKey> attendees = new HashSet<>();
-                      if (radioGroup == SELECT_ALL_LAO_MEMBERS) {
+                      if (radioGroup == selectAllLaoMembers) {
                         for (RollCall current :
                             Objects.requireNonNull(mViewModel.getCurrentLao())
                                 .getRollCalls()
                                 .values()) {
                           attendees.addAll(current.getAttendees());
                         }
-                      } else if (radioGroup == SELECT_ALL_ROLL_CALL_ATTENDEES) {
+                      } else if (radioGroup == selectAllRollCallAttendees) {
                         attendees = mViewModel.getAttendeesFromTheRollCall();
-                      } else if (radioGroup == SELECT_ALL_LAO_WITNESSES) {
+                      } else if (radioGroup == selectAllLaoWitnesses) {
                         attendees =
                             Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
                       }
