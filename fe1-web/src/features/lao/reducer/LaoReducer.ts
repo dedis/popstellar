@@ -97,7 +97,7 @@ const laosSlice = createSlice({
       state.currentId = undefined;
     },
 
-    // Set the LAO server address
+    // Add a LAO server address
     addLaoServerAddress: {
       prepare(laoId: Hash | string, serverAddress: string) {
         return {
@@ -125,6 +125,67 @@ const laosSlice = createSlice({
         if (!state.byId[laoId].server_addresses.find((a) => a === serverAddress)) {
           state.byId[laoId].server_addresses.push(serverAddress);
         }
+      },
+    },
+
+    // Add a subscribed to channel
+    addSubscribedChannel: {
+      prepare(laoId: Hash | string, channel: string) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            channel,
+          },
+        };
+      },
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          channel: string;
+        }>,
+      ) {
+        const { laoId, channel } = action.payload;
+
+        // Lao not initialized, return
+        if (!(laoId in state.byId)) {
+          return;
+        }
+
+        // if not already in the list, add the new channel
+        if (!state.byId[laoId].subscribed_channels.find((a) => a === channel)) {
+          state.byId[laoId].subscribed_channels.push(channel);
+        }
+      },
+    },
+
+    // Add a subscribed to channel
+    removeSubscribedChannel: {
+      prepare(laoId: Hash | string, channel: string) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            channel,
+          },
+        };
+      },
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          channel: string;
+        }>,
+      ) {
+        const { laoId, channel } = action.payload;
+
+        // Lao not initialized, return
+        if (!(laoId in state.byId)) {
+          return;
+        }
+
+        state.byId[laoId].subscribed_channels = state.byId[laoId].subscribed_channels.filter(
+          (a) => a !== channel,
+        );
       },
     },
 
@@ -191,6 +252,8 @@ export const {
   disconnectFromLao,
   setLaoLastRollCall,
   addLaoServerAddress,
+  addSubscribedChannel,
+  removeSubscribedChannel,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];

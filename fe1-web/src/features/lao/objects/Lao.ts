@@ -8,10 +8,16 @@ export interface LaoState {
   organizer: string;
   witnesses: string[];
 
-  // the following properties are not related to the PoP protocol:
+  // the following properties are not directly related to the PoP protocol:
   last_roll_call_id?: string;
   last_tokenized_roll_call_id?: string;
+
+  // the addresses of all known servers hosting this lao
   server_addresses: string[];
+
+  // the name of all channels we are subscribed to
+  // workaround for https://github.com/dedis/popstellar/issues/1078
+  subscribed_channels: string[];
 }
 
 export class Lao {

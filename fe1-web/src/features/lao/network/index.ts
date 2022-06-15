@@ -53,7 +53,7 @@ export function configureNetwork(registry: MessageRegistry) {
       throw new Error('The current LAO ID is invalid');
     }
 
-    await subscribeToChannel(channel);
+    await subscribeToChannel(laoId, store.dispatch, channel);
     await catchup(channel);
   });
 }

@@ -3,6 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
@@ -39,6 +40,7 @@ type NavigationProps = CompositeScreenProps<
  */
 const ConnectOpenScan = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const dispatch = useDispatch();
 
   const toast = useToast();
 
@@ -112,7 +114,7 @@ const ConnectOpenScan = () => {
       }
 
       // subscribe to the lao channel on the new connection
-      subscribeToChannel(channel, connections).then(() => {
+      subscribeToChannel(connectToLao.lao, dispatch, channel, connections).then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_home,
         });

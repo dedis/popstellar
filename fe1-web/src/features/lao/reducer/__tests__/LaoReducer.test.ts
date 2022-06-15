@@ -12,6 +12,8 @@ import {
   mockLaoName,
   mockLaoState,
   org,
+  mockAddress,
+  mockChannel,
 } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 
@@ -34,6 +36,9 @@ import {
   LAO_REDUCER_PATH,
   getLaoById,
   LaoReducerState,
+  addLaoServerAddress,
+  addSubscribedChannel,
+  removeSubscribedChannel,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -194,6 +199,63 @@ describe('LaoReducer', () => {
       } as RehydrateAction),
     ).toEqual({ ...connectedState1, currentId: undefined });
   });
+
+  it('should add server addresses', () => {
+    expect(
+      laoReduce(
+        {
+          allIds: [mockLaoId],
+          byId: {
+            [mockLaoId]: { ...mockLaoState, server_addresses: [] },
+          },
+        } as LaoReducerState,
+        addLaoServerAddress(mockLaoId, mockAddress),
+      ),
+    ).toEqual({
+      allIds: [mockLaoId],
+      byId: {
+        [mockLaoId]: { ...mockLaoState, server_addresses: [mockAddress] },
+      },
+    } as LaoReducerState);
+  });
+});
+
+it('should add subscribed channels', () => {
+  expect(
+    laoReduce(
+      {
+        allIds: [mockLaoId],
+        byId: {
+          [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
+        },
+      } as LaoReducerState,
+      addSubscribedChannel(mockLaoId, mockChannel),
+    ),
+  ).toEqual({
+    allIds: [mockLaoId],
+    byId: {
+      [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
+    },
+  } as LaoReducerState);
+});
+
+it('should remove subscribed channels', () => {
+  expect(
+    laoReduce(
+      {
+        allIds: [mockLaoId],
+        byId: {
+          [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
+        },
+      } as LaoReducerState,
+      removeSubscribedChannel(mockLaoId, mockChannel),
+    ),
+  ).toEqual({
+    allIds: [mockLaoId],
+    byId: {
+      [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
+    },
+  } as LaoReducerState);
 });
 
 describe('Lao selector', () => {

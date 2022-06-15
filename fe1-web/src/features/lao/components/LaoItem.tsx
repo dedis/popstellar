@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
@@ -33,6 +33,8 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const isWitness = useSelector(isWitnessSelector);
   const isOrganizer = useSelector(isOrganizerSelector);
 
+  const dispatch = useDispatch();
+
   const role = useMemo(() => {
     if (isOrganizer) {
       return STRINGS.user_role_organizer;
@@ -56,7 +58,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       }
 
       // subscribe to the lao channel on the new connections
-      await subscribeToChannel(channel, connections);
+      await subscribeToChannel(lao.id, dispatch, channel, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,

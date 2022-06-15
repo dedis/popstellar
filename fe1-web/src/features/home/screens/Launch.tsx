@@ -2,14 +2,14 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel } from 'core/objects';
-import { dispatch } from 'core/redux';
+import { Channel, getLaoIdFromChannel } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -37,6 +37,7 @@ type NavigationProps = CompositeScreenProps<
 
 const Launch = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const dispatch = useDispatch();
 
   const [inputLaoName, setInputLaoName] = useState('');
   const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
@@ -52,14 +53,16 @@ const Launch = () => {
     getNetworkManager().connect(inputAddress);
 
     requestCreateLao(laoName)
-      .then((channel: Channel) =>
-        subscribeToChannel(channel).then(() => {
+      .then((channel: Channel) => {
+        const laoId = getLaoIdFromChannel(channel);
+
+        subscribeToChannel(laoId, dispatch, channel).then(() => {
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.navigation_app_lao, {
             screen: STRINGS.navigation_lao_home,
           });
-        }),
-      )
+        });
+      })
       .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
   };
 

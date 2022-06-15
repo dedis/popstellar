@@ -3,6 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -31,6 +32,7 @@ type NavigationProps = CompositeScreenProps<
 const ConnectConfirm = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+  const dispatch = useDispatch();
 
   const laoIdIn = route.params?.laoId || '';
   const url = route.params?.serverUrl || 'ws://localhost:9000/organizer/client';
@@ -50,7 +52,7 @@ const ConnectConfirm = () => {
       }
 
       // subscribe to the lao channel on the new connection
-      await subscribeToChannel(channel, [connection]);
+      await subscribeToChannel(laoId, dispatch, channel, [connection]);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,
