@@ -290,7 +290,10 @@ export const ViewSinglRollCallScreenRightHeader = () => {
         screen: STRINGS.navigation_lao_events,
         params: {
           screen: STRINGS.navigation_lao_events_open_roll_call,
-          params: { rollCallId: rollCall.id.toString() },
+          params: {
+            rollCallId: rollCall.id.toString(),
+            initialAttendeePopTokens: attendeePopTokens || [],
+          },
         },
       });
     } else {

@@ -47,8 +47,10 @@ type NavigationProps = CompositeScreenProps<
 const RollCallOpened = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const { rollCallId } = route.params;
-  const [attendeePopTokens, updateAttendeePopTokens] = useState(new Set<string>());
+  const { rollCallId, initialAttendeePopTokens } = route.params;
+  const [attendeePopTokens, updateAttendeePopTokens] = useState(
+    new Set<string>(initialAttendeePopTokens),
+  );
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
 
