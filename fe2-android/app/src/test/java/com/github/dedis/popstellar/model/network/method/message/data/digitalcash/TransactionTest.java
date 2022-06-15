@@ -1,37 +1,20 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Base64;
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.objects.InputObject;
-import com.github.dedis.popstellar.model.objects.OutputObject;
-import com.github.dedis.popstellar.model.objects.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.ScriptOutputObject;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
-import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
-import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class TransactionTest {
   // Version
@@ -109,47 +92,28 @@ public class TransactionTest {
   }
 
   @Test
-  public void computeSignature() throws GeneralSecurityException {
+  public void verifySignature() {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
     Input single = transactionModel.getInputs().get(0);
 
-    Signature sig2 = single.getScript().getSig();
-    PublicKey pk2 = single.getScript().getPubkey();
+    Signature sig = single.getScript().getSig();
+    PublicKey pk = single.getScript().getPubkey();
 
-    System.out.println("given json: "+pk2.verify(sig2, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
-    System.out.println("given pk2: "+pk2.toString());
-    System.out.println("given encoded:" + sig2.getEncoded());
+    assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
 
-    //System.out.println(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8));
-    KeyPair kp1 = Base64DataUtils.generateKeyPair();
-    KeyPair kp2 = Base64DataUtils.generateKeyPair();
+    path = "protocol/examples/messageData/coin/post_transaction_bad_signature.json";
+    validJson = JsonTestUtils.loadFile(path);
+    postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    transactionModel = postTransactionModel.getTransaction();
+    single = transactionModel.getInputs().get(0);
 
-    //OUTPUT
-    Output singleo = transactionModel.getOutputs().get(0);
-    transactionModel.getOutputs().remove(0);
-    Output newo = new Output(32, new ScriptOutput(singleo.getScript().getType(), kp2.getPublicKey().computeHash()));
-    transactionModel.getOutputs().add(newo);
+    sig = single.getScript().getSig();
+    pk = single.getScript().getPubkey();
 
-    //INPUT
-    String signTxt = Transaction.computeSigOutputsPairTxOutHashAndIndex(
-            Collections.singletonList(newo), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()));
-    Base64URLData data = new Base64URLData(signTxt.getBytes(StandardCharsets.UTF_8));
-    Signature sig = kp1.sign(data);
-
-    transactionModel.getInputs().remove(0);
-    Input newOne = new Input(single.getTxOutHash(), single.getTxOutIndex(), new ScriptInput(single.getScript().getType(), kp1.getPublicKey(), sig));
-    transactionModel.getInputs().add(newOne);
-    System.out.println(postTransactionModel.toString());
-    System.out.println(kp1.toString());
-    System.out.println(kp2.toString());
-    System.out.println("TextToBeSigned: "+signTxt);
-    System.out.println("Encoded Base64 bef sign: "+data.getEncoded());
-    System.out.println("kp1: "+transactionModel.getInputs().get(0).getScript().getPubkey().verify(sig, data));
-
-    //assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes())));
+    assertFalse(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
   }
 
 }
