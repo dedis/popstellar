@@ -254,7 +254,7 @@ final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
   final val modificationId: Hash = HASH_MEETING_OBJECT
   final val lastModified: Timestamp = Timestamp(1633098340)
   final val witnessSignatures: List[WitnessSignaturePair] = WitnessSignaturePair.apply(PublicKey(Base64Data("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")), Signature(Base64Data(""))) :: List.empty
-  final val validStateMeeting: StateMeeting = StateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, lastModified, Some("EPFL"),  Timestamp(1633102500), Some(Timestamp(1633102000)), None, modificationId, witnessSignatures)
+  final val validStateMeeting: StateMeeting = StateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, lastModified, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None, modificationId, witnessSignatures)
   final val MESSAGE_STATE_MEETING: Message = new Message(
     Base64Data.encode(meetingCreateSmallEnd.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
@@ -264,5 +264,14 @@ final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
     Some(meetingCreateSmallEnd)
   )
 
+  final val invalidStateMeetingWrongData: StateMeeting = StateMeeting(HASH_MEETING_OBJECT_WRONG_DATA, nameMeeting, creationMeeting, lastModified, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None, modificationId, witnessSignatures)
+  final val MESSAGE_STATE_MEETING_INVALID_DATA: Message = new Message(
+    Base64Data.encode(invalidStateMeetingWrongData.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(invalidStateMeetingWrongData)
+  )
 
 }
