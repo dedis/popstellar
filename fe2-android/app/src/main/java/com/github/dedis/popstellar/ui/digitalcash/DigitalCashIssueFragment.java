@@ -23,9 +23,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -38,7 +38,12 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
-  private String TAG = DigitalCashIssueFragment.class.toString();
+  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+  private static int SELECT_ALL_LAO_MEMBERS;
+  private static int SELECT_ALL_ROLL_CALL_ATTENDEES;
+  private static int SELECT_ALL_LAO_WITNESSES;
+  private static final int NOTHING_SELECTED = -1;
+  private static final int MIN_LAO_COIN = 0;
 
   public DigitalCashIssueFragment() {
     // not implemented yet
@@ -59,6 +64,12 @@ public class DigitalCashIssueFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
+    SELECT_ALL_LAO_MEMBERS =
+        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(0));
+    SELECT_ALL_ROLL_CALL_ATTENDEES =
+        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(1));
+    SELECT_ALL_LAO_WITNESSES =
+        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(2));
     return mBinding.getRoot();
   }
 
@@ -66,7 +77,12 @@ public class DigitalCashIssueFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
+    setUpGetPostTransactionEvent();
+    setTheAdapterRollCallAttendee();
+  }
 
+  /** Function which call the view model post transaction when a post transaction event occur */
+  public void setUpGetPostTransactionEvent() {
     mViewModel
         .getPostTransactionEvent()
         .observe(
@@ -76,53 +92,53 @@ public class DigitalCashIssueFragment extends Fragment {
               if (event != null) {
 
                 /*Take the amount entered by the user*/
-                String current_amount = mBinding.digitalCashIssueAmount.getText().toString();
-                String current_public_key_selected =
+                String currentAmount = mBinding.digitalCashIssueAmount.getText().toString();
+                String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
 
-                int radio_group = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                Log.d(TAG, "radio group : " + radio_group);
-
-                if ((current_amount.isEmpty()) || (Integer.valueOf(current_amount) < 0)) {
+                int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
+                if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
                   // create in View Model a function that toast : please enter amount
                   mViewModel.requireToPutAnAmount();
-                } else if (current_public_key_selected.isEmpty() && (radio_group == -1)) {
+                } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
                   // create in View Model a function that toast : please enter key
                   mViewModel.requireToPutLAOMember();
                 } else {
 
                   try {
-                    if (radio_group == -1) {
+                    if (radioGroup == NOTHING_SELECTED) {
                       postTransaction(
-                          Collections.singletonMap(current_public_key_selected, current_amount));
+                          Collections.singletonMap(currentPublicKeySelected, currentAmount));
                     } else {
                       Set<PublicKey> attendees = new HashSet<>();
-                      if (radio_group == 2131231314) {
-                        Iterator<RollCall> rollCallIterator =
-                            mViewModel.getCurrentLao().getRollCalls().values().iterator();
-                        while (rollCallIterator.hasNext()) {
-                          RollCall current = rollCallIterator.next();
+                      if (radioGroup == SELECT_ALL_LAO_MEMBERS) {
+                        for (RollCall current :
+                            Objects.requireNonNull(mViewModel.getCurrentLao())
+                                .getRollCalls()
+                                .values()) {
                           attendees.addAll(current.getAttendees());
                         }
-                      } else if (radio_group == 2131231315) {
+                      } else if (radioGroup == SELECT_ALL_ROLL_CALL_ATTENDEES) {
                         attendees = mViewModel.getAttendeesFromTheRollCall();
+                      } else if (radioGroup == SELECT_ALL_LAO_WITNESSES) {
+                        attendees =
+                            Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
+                      }
+
+                      if (attendees.isEmpty()) {
+                        Toast.makeText(
+                                requireContext(),
+                                R.string.digital_cash_no_attendees,
+                                Toast.LENGTH_LONG)
+                            .show();
+                        return;
                       } else {
-                        attendees = mViewModel.getCurrentLao().getWitnesses();
-                        if (attendees.isEmpty()) {
-                          Toast.makeText(
-                              requireContext(),
-                              "Can't issue there are no witnesses",
-                              Toast.LENGTH_LONG);
-                          return;
+                        Map<String, String> issueMap = new HashMap<>();
+                        for (PublicKey publicKey : attendees) {
+                          issueMap.putIfAbsent(publicKey.getEncoded(), currentAmount);
                         }
+                        postTransaction(issueMap);
                       }
-                      Map<String, String> issueMap = new HashMap<>();
-                      Iterator<PublicKey> publicKeyIterator = attendees.iterator();
-                      while (publicKeyIterator.hasNext()) {
-                        PublicKey publicKey = publicKeyIterator.next();
-                        issueMap.putIfAbsent(publicKey.getEncoded(), current_amount);
-                      }
-                      postTransaction(issueMap);
                     }
                   } catch (KeyException e) {
                     Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
@@ -130,19 +146,6 @@ public class DigitalCashIssueFragment extends Fragment {
                 }
               }
             });
-
-    /* Roll Call attendees to which we can send*/
-    List<String> myArray = null;
-    try {
-      myArray = mViewModel.getAttendeesFromTheRollCallList();
-    } catch (NoRollCallException e) {
-      mViewModel.openHome();
-      Log.d(this.getClass().toString(), "error : no RollCall in the Lao");
-      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT)
-          .show();
-    }
-    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
 
   /** Function that setup the Button */
@@ -150,20 +153,36 @@ public class DigitalCashIssueFragment extends Fragment {
     mBinding.digitalCashIssueIssue.setOnClickListener(v -> mViewModel.postTransactionEvent());
   }
 
+  /** Function that set the Adapter */
+  public void setTheAdapterRollCallAttendee() {
+    /* Roll Call attendees to which we can send*/
+    List<String> myArray = null;
+    try {
+      myArray = mViewModel.getAttendeesFromTheRollCallList();
+    } catch (NoRollCallException e) {
+      mViewModel.openHome();
+      Log.d(TAG, "error : no RollCall in the Lao");
+      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT)
+          .show();
+    }
+    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
+  }
+
   /**
    * Function that post the transaction (call the function of the view model)
    *
-   * @param PublicKeyAmount Map<String, String> containing the Public Keys and the related amount to
+   * @param publicKeyAmount Map<String, String> containing the Public Keys and the related amount to
    *     issue to
    * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
-  private void postTransaction(Map<String, String> PublicKeyAmount) throws KeyException {
+  private void postTransaction(Map<String, String> publicKeyAmount) throws KeyException {
     if (mViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(PublicKeyAmount, Instant.now().getEpochSecond(), true);
+      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true);
       mViewModel.updateLaoCoinEvent();
     }
   }

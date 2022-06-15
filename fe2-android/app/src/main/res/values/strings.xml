@@ -234,6 +234,7 @@
   <string name="digital_cash_time">time</string>
   <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
   <string name="digital_cash_post_transaction">Post transaction !</string>
+  <string name="digital_cash_no_attendees">"There are no attendees !"</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>

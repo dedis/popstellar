@@ -63,7 +63,7 @@ public class DigitalCashHomeFragment extends Fragment {
         long totalAmount =
             TransactionObject.getMiniLaoPerReceiverSetTransaction(
                 transactions, token.getPublicKey());
-        mBinding.digitalCashSendAddress.setText("LAOcoin : " + totalAmount);
+        mBinding.digitalCashSendAddress.setText(String.format("LAO coin : %s", totalAmount));
       }
 
     } catch (KeyException e) {
