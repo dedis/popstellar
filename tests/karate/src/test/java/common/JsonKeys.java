@@ -1,11 +1,11 @@
 package common;
 
+/**
+ * This files contains keys used in Json messages
+ */
 public class JsonKeys {
-  public static final String SUBSCRIBE = "subscribe";
 
   public static final String CATCHUP = "catchup";
-
-  public static final String BROADCAST = "broadcast";
 
   public static final String ID = "id";
 

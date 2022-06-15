@@ -13,7 +13,7 @@ Feature: android page object
     # Tab buttons
     * def tab_home_selector = '#com.github.dedis.popstellar:id/home_home_menu'
     * def tab_connect_selector = '#com.github.dedis.popstellar:id/home_connect_menu'
-    * def tab_launch_selector = '#com.github.dedis.popstellar:id/home_launch_menu'
+    * def launch_selector = '#com.github.dedis.popstellar:id/home_launch_menu'
     * def tab_wallet_selector = '#com.github.dedis.popstellar:id/home_wallet_menu'
 
     # Launch tab
@@ -32,6 +32,7 @@ Feature: android page object
     * def roll_call_confirm_selector = '#com.github.dedis.popstellar:id/roll_call_confirm'
     * def roll_call_close_confirm_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
     * def event_name_selector = '#com.github.dedis.popstellar:id/event_card_text_view'
+
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
@@ -58,4 +59,12 @@ Feature: android page object
     * click(tab_wallet_new_wallet_selector)
     * click(tab_wallet_confirm_selector)
     * dialog(true)
+    * click(launch_selector)
+
+  #roll call android procedure
+  @name=create_roll_call
+  Scenario: Create a roll call for an already created LAO
+    When click(add_event_selector)
+    And click(add_roll_call_selector)
+    And input(roll_call_title_selector, 'RC name')
 

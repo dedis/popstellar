@@ -6,23 +6,30 @@ Feature: web test
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
+
     # Introduction screen
-    * def exploring_selector = '{^}Start exploring POPStellar'
-    #* def exploring_selector = "[data-testid='exploring_selector']"
-    #* def exploring_selector = '[data-testid="exploring_selector"]'
+    * def exploring_selector = "[data-testid='exploring_selector']"
 
-   # * def exploring_selector = "//input[@testId='exploring_selector']"
-
-    # Tab buttons
-    * def tab_home_selector = '{}Home'
+    #Home Screen
     * def tab_connect_selector = '{}Connect'
-    * def tab_launch_selector = '{}Launch'
-    * def tab_wallet_selector = '{}Wallet'
+    * def block_camera_selector = '{}block'
+    * def launch_selector = "[data-testid='launch_selector']"
 
-    # Launch tab
-    * def tab_launch_lao_name_selector = "input[testID='Organization name']"
-    * def tab_launch_address_selector = "input[placeholder='Address']"
-    * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
+    # Launch screen
+    * def tab_launch_lao_name_selector = "input[data-testid='launch_organization_name_selector']"
+    * def launch_address_selector = "input[data-testid='launch_address_selector']"
+    * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
+
+    # Lao Event List
+    * def add_event_selector = "[data-testid='create_event_selector']"
+    * def add_roll_call_selector = '{}Create Roll-Call'
+    * def tab_events_selector = '{}Events'
+    * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
+    * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
+    * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
+    #* def event_name_selector = "[data-testid='current_event_selector_0']"
+    * def event_name_selector = '{}RC name'
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -49,6 +56,22 @@ Feature: web test
               }
             }
           """
-    * mouse().move(exploring_selector).down()
-    And click(tab_connect_selector)
-   # And input(tab_launch_address_selector, backendURL)
+    * click(exploring_selector)
+    * click(tab_connect_selector)
+
+    #refuse camera access
+
+    * click(launch_selector)
+    * input(launch_address_selector, backendURL)
+
+  #roll call web procedure
+  @name=create_roll_call
+  Scenario: Create a roll call for an already created LAO
+    Given click(tab_events_selector)
+    And click(add_event_selector)
+
+    #Does not work for now
+    And retry(5, 2000).click(add_roll_call_selector)
+
+    And input(roll_call_title_selector, 'RC name')
+    And input(roll_call_location_selector, 'EPFL')
