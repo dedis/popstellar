@@ -336,6 +336,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -348,6 +349,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -1029,6 +1031,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                   Object {
                                     "backgroundColor": "rgb(242, 242, 242)",
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                               >
@@ -1041,6 +1044,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                       "flexDirection": "row",
                                       "padding": 14,
                                       "paddingLeft": 0,
+                                      "paddingRight": 0,
                                     }
                                   }
                                   testID="padView"
@@ -1204,6 +1208,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                   Object {
                                     "backgroundColor": "rgb(242, 242, 242)",
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                               >
@@ -1216,6 +1221,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                       "flexDirection": "row",
                                       "padding": 14,
                                       "paddingLeft": 0,
+                                      "paddingRight": 0,
                                     }
                                   }
                                   testID="padView"

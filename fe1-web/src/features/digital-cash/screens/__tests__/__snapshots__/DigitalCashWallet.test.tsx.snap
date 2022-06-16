@@ -609,6 +609,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -621,6 +622,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -925,6 +927,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       Object {
                                         "backgroundColor": "rgb(242, 242, 242)",
                                         "paddingLeft": 0,
+                                        "paddingRight": 0,
                                       }
                                     }
                                   >
@@ -937,6 +940,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "flexDirection": "row",
                                           "padding": 14,
                                           "paddingLeft": 0,
+                                          "paddingRight": 0,
                                         }
                                       }
                                       testID="padView"
@@ -1122,6 +1126,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       Object {
                                         "backgroundColor": "rgb(242, 242, 242)",
                                         "paddingLeft": 0,
+                                        "paddingRight": 0,
                                       }
                                     }
                                   >
@@ -1134,6 +1139,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "flexDirection": "row",
                                           "padding": 14,
                                           "paddingLeft": 0,
+                                          "paddingRight": 0,
                                         }
                                       }
                                       testID="padView"
@@ -2095,6 +2101,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -2107,6 +2114,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -2389,6 +2397,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       Object {
                                         "backgroundColor": "rgb(242, 242, 242)",
                                         "paddingLeft": 0,
+                                        "paddingRight": 0,
                                       }
                                     }
                                   >
@@ -2401,6 +2410,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "flexDirection": "row",
                                           "padding": 14,
                                           "paddingLeft": 0,
+                                          "paddingRight": 0,
                                         }
                                       }
                                       testID="padView"
@@ -2564,6 +2574,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       Object {
                                         "backgroundColor": "rgb(242, 242, 242)",
                                         "paddingLeft": 0,
+                                        "paddingRight": 0,
                                       }
                                     }
                                   >
@@ -2576,6 +2587,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "flexDirection": "row",
                                           "padding": 14,
                                           "paddingLeft": 0,
+                                          "paddingRight": 0,
                                         }
                                       }
                                       testID="padView"
