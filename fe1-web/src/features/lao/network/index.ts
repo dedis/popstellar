@@ -1,14 +1,13 @@
 import {
   addOnChannelSubscriptionHandlers,
   addOnChannelUnsubscriptionHandlers,
-  catchup,
   getNetworkManager,
   subscribeToChannel,
 } from 'core/network';
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 
-import { getLaoChannel } from '../functions/network';
+import { getLaoById } from '../functions';
 import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
@@ -57,18 +56,13 @@ export function configureNetwork(registry: MessageRegistry) {
     // after reconnecting, check whether we have already been connected to a LAO
 
     const laoId = selectCurrentLaoId(getStore().getState());
-    if (!laoId) {
+    const lao = getLaoById(laoId?.valueOf() || '');
+    if (!laoId || !lao) {
       return;
     }
 
-    // if yes - then subscribe to the LAO channel and send a catchup
-    const channel = getLaoChannel(laoId.valueOf());
-
-    if (!channel) {
-      throw new Error('The current LAO ID is invalid');
-    }
-
-    await subscribeToChannel(laoId, store.dispatch, channel);
-    await catchup(channel);
+    await Promise.all(
+      lao.subscribed_channels.map((channel) => subscribeToChannel(laoId, store.dispatch, channel)),
+    );
   });
 }
