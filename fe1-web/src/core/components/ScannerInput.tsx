@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 });
 
 const ScannerInput = (props: IPropTypes) => {
-  const { value, placeholder, onChange, onPress, enabled, border, testID } = props;
+  const { value, placeholder, onChange, onPress, enabled, testID } = props;
 
   return (
     <View style={styles.container}>
@@ -28,7 +28,6 @@ const ScannerInput = (props: IPropTypes) => {
         placeholder={placeholder}
         onChange={onChange}
         enabled={enabled}
-        border={border}
         testID={testID}
       />
       <View style={styles.button}>
@@ -42,7 +41,6 @@ const ScannerInput = (props: IPropTypes) => {
 
 const propTypes = {
   enabled: PropTypes.bool,
-  border: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
@@ -53,7 +51,6 @@ ScannerInput.propTypes = propTypes;
 ScannerInput.defaultProps = {
   placeholder: '',
   enabled: true,
-  border: false,
   onChange: undefined,
   testID: undefined,
 };
