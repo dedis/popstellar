@@ -19,42 +19,42 @@ Feature: Close a Roll Call
   # Testing if after setting up a valid lao, subscribing to it, sending a catchup
   # creating a valid roll call and opening it, we send a valid roll call close
   # message and expect to receive a valid response from the backend
-#  Scenario: Close a valid roll should succeed
-#    Given call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
-#    And def validCloseRollCall =
-#      """
-#        {
-#          "object": "roll_call",
-#          "action": "close",
-#          "update_id": '#(getRollCallCloseValidUpdateId)',
-#          "closes": '#(getRollCallCloseValidId)',
-#          "closed_at": '#(getRollCallCloseValidCreationTime)',
-#          "attendees": ['#(getAttendee)']
-#        }
-#      """
-#    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-#    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
-#    Then match answer contains VALID_MESSAGE
-#    And match frontend.receiveNoMoreResponses() == true
-#
-#  Scenario: Non-organizer closing a roll call should fail
-#    Given call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
-#    And def validCloseRollCall =
-#      """
-#        {
-#          "object": "roll_call",
-#          "action": "close",
-#          "update_id": '#(getRollCallCloseValidUpdateId)',
-#          "closes": '#(getRollCallCloseValidId)',
-#          "closed_at": '#(getRollCallCloseValidCreationTime)',
-#          "attendees": ['#(getAttendee)']
-#        }
-#      """
-#    * frontend.changeSenderToBeNonAttendee()
-#    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-#    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
-#    Then match answer contains INVALID_MESSAGE_FIELD
-#    And match frontend.receiveNoMoreResponses() == true
+  Scenario: Close a valid roll should succeed
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
+    And def validCloseRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "close",
+          "update_id": '#(getRollCallCloseValidUpdateId)',
+          "closes": '#(getRollCallCloseValidId)',
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
+          "attendees": ['#(getAttendee)']
+        }
+      """
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    Then match answer contains VALID_MESSAGE
+    And match frontend.receiveNoMoreResponses() == true
+
+  Scenario: Non-organizer closing a roll call should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
+    And def validCloseRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "close",
+          "update_id": '#(getRollCallCloseValidUpdateId)',
+          "closes": '#(getRollCallCloseValidId)',
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
+          "attendees": ['#(getAttendee)']
+        }
+      """
+    * frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
 
   # After the usual setup open a valid roll call and then send an invalid request for roll call close, here
   # we provide an invalid update_id field in the message. We expect an error message in return
@@ -77,21 +77,21 @@ Feature: Close a Roll Call
     And match frontend.receiveNoMoreResponses() == true
   # After the usual setup, create a roll cal but never open it. Then trying to send a valid
   # roll call close message should result in an error sent by the backend
-#  Scenario: Close a valid roll call that was never opened should return an error
-#    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-#    And def validCloseRollCall =
-#      """
-#        {
-#          "object": "roll_call",
-#          "action": "close",
-#          "update_id": '#(getRollCallCloseValidUpdateId)',
-#          "closes": '#(getRollCallCloseValidId)',
-#          "closed_at": '#(getRollCallCloseValidCreationTime)',
-#          "attendees": ['#(getAttendee)']
-#        }
-#      """
-#    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-#    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
-#    Then match answer contains INVALID_MESSAGE_FIELD
-#    And match frontend.receiveNoMoreResponses() == true
+  Scenario: Close a valid roll call that was never opened should return an error
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+    And def validCloseRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "close",
+          "update_id": '#(getRollCallCloseValidUpdateId)',
+          "closes": '#(getRollCallCloseValidId)',
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
+          "attendees": ['#(getAttendee)']
+        }
+      """
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
 
