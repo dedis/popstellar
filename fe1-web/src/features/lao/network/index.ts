@@ -7,7 +7,7 @@ import {
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 
-import { getLaoById } from '../functions';
+import { getLaoById } from '../functions/lao';
 import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
