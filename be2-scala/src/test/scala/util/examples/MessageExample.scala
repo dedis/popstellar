@@ -318,12 +318,12 @@ final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
 
   final val invalidStateMeetingSmallModificationTime: StateMeeting = StateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Timestamp(1633098300), Some("EPFL"),  Timestamp(1633098400), Some(Timestamp(1633098500)), None, modificationId, witnessSignatures)
   final val MESSAGE_STATE_MEETING_SMALL_MODIFICATION_TIME: Message = new Message(
-    Base64Data.encode(invalidStateMeetingSmallEndTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingSmallModificationTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     Signature(Base64Data("")),
     Hash(Base64Data("")),
     List.empty,
-    Some(invalidStateMeetingSmallEndTime)
+    Some(invalidStateMeetingSmallModificationTime)
   )
   
   final val invalidStateMeetingBigStartTime: StateMeeting = StateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, lastModified, Some("EPFL"),  Timestamp(1633102500), Some(Timestamp(1633098900)), None, modificationId, witnessSignatures)
