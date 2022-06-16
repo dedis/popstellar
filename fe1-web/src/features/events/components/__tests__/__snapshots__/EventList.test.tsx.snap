@@ -870,7 +870,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_0"
                           >
                             <View
                               style={
@@ -1047,7 +1047,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_1"
                           >
                             <View
                               style={
@@ -1219,7 +1219,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_2"
                           >
                             <View
                               style={
@@ -2333,7 +2333,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_0"
                           >
                             <View
                               style={
@@ -2551,7 +2551,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_1"
                           >
                             <View
                               style={
@@ -2764,7 +2764,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_2"
                           >
                             <View
                               style={

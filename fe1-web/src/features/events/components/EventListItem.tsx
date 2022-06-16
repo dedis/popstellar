@@ -21,7 +21,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 const EventListItem = (props: IPropTypes) => {
-  const { eventId, eventType, isFirstItem, isLastItem, testID} = props;
+  const { eventId, eventType, isFirstItem, isLastItem, testID } = props;
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
