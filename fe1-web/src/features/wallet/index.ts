@@ -28,7 +28,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     SignatureType.POP_TOKEN,
     getCurrentPopTokenFromStore(configuration.getCurrentLao, configuration.getRollCallById),
   );
-
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
     appScreens: [WalletCreateSeedScreen, WalletSetSeedScreen],
@@ -38,8 +37,13 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       ...walletReducer,
     },
     context: {
+      useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
+      useLaoIds: configuration.useLaoIds,
+      useNamesByLaoId: configuration.useNamesByLaoId,
+      walletItemGenerators: configuration.walletItemGenerators,
+      walletNavigationScreens: configuration.walletNavigationScreens,
     },
   };
 }

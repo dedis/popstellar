@@ -74,15 +74,20 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* hooks */
   hooks: {
     /**
-     * Gets the list of LAOs
-     * @returns The list of LAOs
+     * Gets the list of laos
      */
     useLaoList: () => Lao[];
 
     /**
-     * Checks whether the current user is an organizer of the current lao
+     * Gets the list of lao ids
      */
-    useIsLaoOrganizer: () => boolean;
+    useLaoIds: () => Hash[];
+
+    /**
+     * Checks whether the current user is an organizer of the given lao
+     * If no laoId is passed, it is checked for the current lao
+     */
+    useIsLaoOrganizer: (laoId?: string) => boolean;
 
     /**
      * Checks whether the current user is a witness of the current lao
@@ -114,6 +119,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The public key or undefined if there is none
      */
     useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
+    /**
+     * Returns a map from lao id to the respective name
+     */
+    useNamesByLaoId: () => { [laoId: string]: string };
   };
 
   /* functions */
@@ -159,6 +169,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Returns whether the user is witness of the current lao
      */
     isLaoWitness: () => boolean;
+
+    /**
+     * Returns the lao organizer's public key
+     */
+    getLaoOrganizer: (laoId: string) => PublicKey | undefined;
 
     /**
      * Get a LAOs channel by its id

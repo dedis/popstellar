@@ -351,29 +351,41 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             >
                               Server URI
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Server URI"
+                            <View
                               style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                ]
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                              value="ws://localhost:9000/organizer/client"
-                            />
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Server URI"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value="ws://localhost:9000/organizer/client"
+                              />
+                            </View>
                             <Text
                               style={
                                 Array [
@@ -392,110 +404,101 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             >
                               LAO ID
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="LAO ID"
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                ]
-                              }
-                              value=""
-                            />
                             <View
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "marginBottom": 16,
-                                  "width": "100%",
+                                  "flex": 1,
+                                  "flexDirection": "row",
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="LAO ID"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "marginBottom": 16,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
                                 collapsable={false}
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
+                                nativeID="animatedComponent"
                                 style={
                                   Object {
-                                    "marginBottom": 16,
-                                    "width": "100%",
+                                    "opacity": 1,
                                   }
                                 }
                               >
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 16,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
+                                  <Text
                                     style={
                                       Array [
                                         Object {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 16,
-                                          "borderWidth": 1,
-                                          "padding": 8,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
                                         },
                                       ]
                                     }
                                   >
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "textAlign": "center",
-                                          },
-                                          Object {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Connect
-                                    </Text>
-                                  </View>
+                                    Connect
+                                  </Text>
                                 </View>
-                              </RNGestureHandlerButton>
-                            </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
                         </View>
                       </RCTScrollView>

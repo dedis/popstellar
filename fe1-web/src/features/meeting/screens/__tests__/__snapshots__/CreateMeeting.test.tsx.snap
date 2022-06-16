@@ -343,29 +343,41 @@ exports[`CreateMeeting renders correctly 1`] = `
                           >
                             Name
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="Global PoP Meeting"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Global PoP Meeting"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              value=""
+                            />
+                          </View>
                           <Text
                             style={
                               Array [
@@ -384,29 +396,41 @@ exports[`CreateMeeting renders correctly 1`] = `
                           >
                             Location
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="BC410"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="BC410"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              value=""
+                            />
+                          </View>
                           <View
                             style={
                               Object {
@@ -430,8 +454,8 @@ exports[`CreateMeeting renders correctly 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
+                                  "flex": 1,
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                             >
@@ -582,8 +606,8 @@ exports[`CreateMeeting renders correctly 1`] = `
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -690,7 +714,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               style={
                                 Object {
-                                  "backgroundColor": "#fff",
+                                  "backgroundColor": "rgb(242, 242, 242)",
                                   "borderRadius": 16,
                                   "margin": 32,
                                   "padding": 32,
@@ -813,8 +837,8 @@ What do you want to do ?
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                   testID="confirm-modal-confirm"

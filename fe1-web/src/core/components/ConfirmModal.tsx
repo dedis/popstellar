@@ -51,7 +51,6 @@ const ConfirmModal = (props: IPropTypes) => {
             value={textInput}
             onChange={setTextInput}
             placeholder={textInputPlaceholder}
-            border
           />
         ) : null}
         <PoPTextButton onPress={() => onConfirmPress(textInput)} testID="confirm-modal-confirm">

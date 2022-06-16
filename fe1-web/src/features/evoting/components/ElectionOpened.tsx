@@ -69,14 +69,22 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
   const onCastVote = () => {
     console.log('Casting Vote');
-    castVote(election, electionKey || undefined, selectedBallots).catch((err) => {
-      console.error('Could not cast Vote, error:', err);
-      toast.show(`Could not cast Vote, error: ${err}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
+    castVote(election, electionKey || undefined, selectedBallots)
+      .then(() => {
+        toast.show(STRINGS.cast_vote_success, {
+          type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      })
+      .catch((err) => {
+        console.error('Could not cast Vote, error:', err);
+        toast.show(`Could not cast Vote, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
-    });
   };
 
   if (!canCastVote) {

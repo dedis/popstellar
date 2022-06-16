@@ -40,7 +40,7 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -72,19 +72,13 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         >
           Title
         </Text>
-        <View
-          accessible={true}
+        <RNGestureHandlerButton
           collapsable={false}
-          focusable={true}
-          onBlur={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
+          onGestureEvent={[Function]}
+          onGestureHandlerEvent={[Function]}
+          onGestureHandlerStateChange={[Function]}
+          onHandlerStateChange={[Function]}
+          rippleColor={0}
           style={
             Object {
               "position": "absolute",
@@ -93,46 +87,31 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
+          <View
+            accessible={true}
             collapsable={false}
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
+            nativeID="animatedComponent"
             style={
               Object {
-                "position": "absolute",
-                "right": 0,
+                "opacity": 1,
               }
             }
           >
-            <View
-              accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
+            <Text
               style={
                 Object {
-                  "opacity": 1,
+                  "color": "#3742fa",
+                  "fontSize": 20,
+                  "fontWeight": "500",
+                  "lineHeight": 26,
+                  "textAlign": "left",
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
-            </View>
-          </RNGestureHandlerButton>
-        </View>
+              Done
+            </Text>
+          </View>
+        </RNGestureHandlerButton>
       </View>
       <Text
         style={
@@ -147,88 +126,67 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
       >
         Description
       </Text>
-      <View
-        accessible={true}
+      <RNGestureHandlerButton
         collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
         style={
           Object {
+            "flex": 1,
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          nativeID="animatedComponent"
           style={
             Object {
-              "marginBottom": 16,
-              "width": "100%",
+              "opacity": 1,
             }
           }
         >
           <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
-              Object {
-                "opacity": 1,
-              }
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 16,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
             }
           >
-            <View
+            <Text
               style={
                 Array [
                   Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  Object {
+                    "textAlign": "center",
+                  },
+                  Object {
+                    "color": "#fff",
                   },
                 ]
               }
             >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
+              Confirm
+            </Text>
           </View>
-        </RNGestureHandlerButton>
-      </View>
+        </View>
+      </RNGestureHandlerButton>
     </View>
   </RCTScrollView>
 </Modal>
@@ -274,7 +232,7 @@ exports[`ConfirmModal renders correctly 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -306,19 +264,13 @@ exports[`ConfirmModal renders correctly 1`] = `
         >
           Title
         </Text>
-        <View
-          accessible={true}
+        <RNGestureHandlerButton
           collapsable={false}
-          focusable={true}
-          onBlur={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
+          onGestureEvent={[Function]}
+          onGestureHandlerEvent={[Function]}
+          onGestureHandlerStateChange={[Function]}
+          onHandlerStateChange={[Function]}
+          rippleColor={0}
           style={
             Object {
               "position": "absolute",
@@ -327,46 +279,31 @@ exports[`ConfirmModal renders correctly 1`] = `
           }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
+          <View
+            accessible={true}
             collapsable={false}
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
+            nativeID="animatedComponent"
             style={
               Object {
-                "position": "absolute",
-                "right": 0,
+                "opacity": 1,
               }
             }
           >
-            <View
-              accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
+            <Text
               style={
                 Object {
-                  "opacity": 1,
+                  "color": "#3742fa",
+                  "fontSize": 20,
+                  "fontWeight": "500",
+                  "lineHeight": 26,
+                  "textAlign": "left",
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
-            </View>
-          </RNGestureHandlerButton>
-        </View>
+              Done
+            </Text>
+          </View>
+        </RNGestureHandlerButton>
       </View>
       <Text
         style={
@@ -381,88 +318,67 @@ exports[`ConfirmModal renders correctly 1`] = `
       >
         Description
       </Text>
-      <View
-        accessible={true}
+      <RNGestureHandlerButton
         collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
         style={
           Object {
+            "flex": 1,
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          nativeID="animatedComponent"
           style={
             Object {
-              "marginBottom": 16,
-              "width": "100%",
+              "opacity": 1,
             }
           }
         >
           <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
-              Object {
-                "opacity": 1,
-              }
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 16,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
             }
           >
-            <View
+            <Text
               style={
                 Array [
                   Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  Object {
+                    "textAlign": "center",
+                  },
+                  Object {
+                    "color": "#fff",
                   },
                 ]
               }
             >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
+              Confirm
+            </Text>
           </View>
-        </RNGestureHandlerButton>
-      </View>
+        </View>
+      </RNGestureHandlerButton>
     </View>
   </RCTScrollView>
 </Modal>
@@ -508,7 +424,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -540,19 +456,13 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         >
           Title
         </Text>
-        <View
-          accessible={true}
+        <RNGestureHandlerButton
           collapsable={false}
-          focusable={true}
-          onBlur={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
+          onGestureEvent={[Function]}
+          onGestureHandlerEvent={[Function]}
+          onGestureHandlerStateChange={[Function]}
+          onHandlerStateChange={[Function]}
+          rippleColor={0}
           style={
             Object {
               "position": "absolute",
@@ -561,46 +471,31 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
+          <View
+            accessible={true}
             collapsable={false}
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
+            nativeID="animatedComponent"
             style={
               Object {
-                "position": "absolute",
-                "right": 0,
+                "opacity": 1,
               }
             }
           >
-            <View
-              accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
+            <Text
               style={
                 Object {
-                  "opacity": 1,
+                  "color": "#3742fa",
+                  "fontSize": 20,
+                  "fontWeight": "500",
+                  "lineHeight": 26,
+                  "textAlign": "left",
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
-            </View>
-          </RNGestureHandlerButton>
-        </View>
+              Done
+            </Text>
+          </View>
+        </RNGestureHandlerButton>
       </View>
       <Text
         style={
@@ -615,116 +510,103 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
       >
         Description
       </Text>
-      <TextInput
-        editable={true}
-        onChangeText={[Function]}
-        placeholder=""
-        style={
-          Array [
-            Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginBottom": 16,
-              "textAlign": "left",
-            },
-            Object {
-              "backgroundColor": "#fff",
-              "borderRadius": 8,
-              "flex": 1,
-              "padding": 8,
-            },
-            Object {
-              "borderColor": "#000",
-              "borderWidth": 1,
-            },
-          ]
-        }
-        testID="confirm-modal-input"
-        value=""
-      />
       <View
-        accessible={true}
-        collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
         style={
           Object {
+            "flex": 1,
+            "flexDirection": "row",
+          }
+        }
+      >
+        <TextInput
+          editable={true}
+          onChangeText={[Function]}
+          placeholder=""
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "marginBottom": 16,
+                "textAlign": "left",
+              },
+              Object {
+                "backgroundColor": "#fff",
+                "borderColor": "#fff",
+                "borderRadius": 8,
+                "borderWidth": 1,
+                "flex": 1,
+                "padding": 8,
+                "width": 50,
+              },
+            ]
+          }
+          testID="confirm-modal-input"
+          value=""
+        />
+      </View>
+      <RNGestureHandlerButton
+        collapsable={false}
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        style={
+          Object {
+            "flex": 1,
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
+        <View
+          accessible={true}
           collapsable={false}
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
+          nativeID="animatedComponent"
           style={
             Object {
-              "marginBottom": 16,
-              "width": "100%",
+              "opacity": 1,
             }
           }
         >
           <View
-            accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
-              Object {
-                "opacity": 1,
-              }
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 16,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
             }
           >
-            <View
+            <Text
               style={
                 Array [
                   Object {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 16,
-                    "borderWidth": 1,
-                    "padding": 8,
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  Object {
+                    "textAlign": "center",
+                  },
+                  Object {
+                    "color": "#fff",
                   },
                 ]
               }
             >
-              <Text
-                style={
-                  Array [
-                    Object {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    Object {
-                      "textAlign": "center",
-                    },
-                    Object {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
+              Confirm
+            </Text>
           </View>
-        </RNGestureHandlerButton>
-      </View>
+        </View>
+      </RNGestureHandlerButton>
     </View>
   </RCTScrollView>
 </Modal>

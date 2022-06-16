@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -47,7 +50,7 @@ public final class Lao {
   // Map for the history
   private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, TransactionObject> transactionByUser;
+  private Map<PublicKey, List<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -162,8 +165,8 @@ public final class Lao {
   }
 
   /**
-   * Function which update the transaction map publickey by transacation hash on the list of the
-   * roll call attendees
+   * Function which update the transaction map public key by transaction hash on the list of the
+   * roll call attendees Update pubKeyByHash, Initialize transactionByUser, transactionHistoryByUser
    *
    * @param attendees List<PublicKey> of the roll call attendees
    */
@@ -181,13 +184,18 @@ public final class Lao {
     transactionHistoryByUser = new HashMap<>();
   }
 
-  // add a function that update all the transaction
+  /**
+   * Function that update all the transaction Update transactionByUser (current state of money)
+   * Update transactionHistory (current transaction perform per user)
+   *
+   * @param transactionObject object which was posted and now should update the lao map
+   */
   public void updateTransactionMaps(TransactionObject transactionObject) {
     if (transactionObject == null) {
       throw new IllegalArgumentException("The transaction is null");
     }
-    // Change the transaction per public key in transacionperUser
-    // for the sender and the receiver
+    /* Change the transaction per public key in transacionperUser
+    for the sender and the receiver*/
     if (this.getRollCalls().values().isEmpty()) {
       throw new IllegalStateException("A transaction need a roll call creation ");
     }
@@ -195,20 +203,35 @@ public final class Lao {
       throw new IllegalStateException("A transaction need attendees !");
     }
 
-    // Contained in the receiver there are also the sender
-    // which has to be in the list of attendees of the roll call
-    Iterator<PublicKey> receiversIte =
-        transactionObject.getReceiversTransaction(pubKeyByHash).iterator();
-    while (receiversIte.hasNext()) {
-      PublicKey current = receiversIte.next();
+    /* Contained in the receiver there are also the sender
+    which has to be in the list of attendees of the roll call*/
+    for (PublicKey current : transactionObject.getReceiversTransaction(pubKeyByHash)) {
       // Add the transaction in the current state  / for the sender and the receiver
-      transactionByUser.put(current, transactionObject);
+
+      /* The only case where the map has a list of transaction in memory is when we have several
+      coin base transaction (in fact the issuer send several time money to someone)
+      or our receiver is no sender */
+      if (transactionByUser.containsKey(current)
+          && (transactionObject.isCoinBaseTransaction()
+              || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
+        transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
+        List<TransactionObject> list = new ArrayList<>(transactionByUser.get(current));
+        list.add(transactionObject);
+        transactionByUser.replace(current, list);
+      } else {
+        transactionByUser.put(current, Collections.singletonList(transactionObject));
+      }
+
       // Add the transaction in the history / for the sender and the receiver
       transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
       if (!transactionHistoryByUser.get(current).add(transactionObject)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
+    Log.d(
+        this.getClass().toString(),
+        "Transaction by history : " + transactionHistoryByUser.toString());
+    Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -388,7 +411,7 @@ public final class Lao {
     return transactionHistoryByUser;
   }
 
-  public Map<PublicKey, TransactionObject> getTransactionByUser() {
+  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
     return transactionByUser;
   }
 
@@ -406,6 +429,18 @@ public final class Lao {
 
   public void setElections(Map<String, Election> elections) {
     this.elections = elections;
+  }
+
+  /**
+   * Class which return the last roll call open
+   *
+   * @return Rollcall the roll call with the last ending tim e
+   */
+  public RollCall lastRollCallClosed() throws NoRollCallException {
+    return this.getRollCalls().values().stream()
+            .filter(RollCall::isClosed)
+            .max(Comparator.comparing(RollCall::getEnd))
+            .orElseThrow(() -> new NoRollCallException(this));
   }
 
   /**
@@ -452,6 +487,12 @@ public final class Lao {
         + elections
         + ", electInstances="
         + messageIdToElectInstance.values()
+        + ", transactionPerUser="
+        + transactionByUser.toString()
+        + ", transactionHistoryByUser"
+        + transactionHistoryByUser.toString()
+        + ", pubKeyByHash"
+        + pubKeyByHash.toString()
         + '}';
   }
 }

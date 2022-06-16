@@ -46,7 +46,8 @@ public class RollCallFragment extends Fragment {
   private TextView title;
   private TextView statusText;
   private ImageView statusIcon;
-
+  private TextView startTimeDisplay;
+  private TextView endTimeDisplay;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
   private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
@@ -80,9 +81,10 @@ public class RollCallFragment extends Fragment {
     title = view.findViewById(R.id.roll_call_fragment_title);
     statusText = view.findViewById(R.id.roll_call_fragment_status);
     statusIcon = view.findViewById(R.id.roll_call_fragment_status_icon);
+    startTimeDisplay = view.findViewById(R.id.roll_call_fragment_start_time);
+    endTimeDisplay = view.findViewById(R.id.roll_call_fragment_end_time);
 
     setUpStateDependantContent();
-    setupTime(view);
 
     View.OnClickListener listener =
         v -> {
@@ -113,6 +115,8 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
+    setupTime(); // Suggested time is updated in case of early/late close/open/reopen
+
     EventState rcState = rollCall.getState().getValue();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
@@ -135,10 +139,7 @@ public class RollCallFragment extends Fragment {
         getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
   }
 
-  private void setupTime(View view) {
-    TextView startTimeDisplay = view.findViewById(R.id.roll_call_fragment_start_time);
-    TextView endTimeDisplay = view.findViewById(R.id.roll_call_fragment_end_time);
-
+  private void setupTime() {
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
     Date endTime = new Date(rollCall.getEndTimestampInMillis());
 

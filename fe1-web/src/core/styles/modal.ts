@@ -1,7 +1,7 @@
 import { TextStyle, ViewStyle } from 'react-native';
 
 import { radius } from './border';
-import { contrast } from './color';
+import { background } from './color';
 import { x2 } from './spacing';
 import { topNavigationHeading } from './typography';
 
@@ -20,6 +20,6 @@ export const modalBackground: ViewStyle = {
 export const modalContainer: ViewStyle = {
   margin: x2,
   padding: x2,
-  backgroundColor: contrast,
+  backgroundColor: background,
   borderRadius: radius,
 };
