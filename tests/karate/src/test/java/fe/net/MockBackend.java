@@ -5,6 +5,7 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
+import fe.utils.verification.PublishMessageVerification;
 import fe.utils.verification.RollCallVerification;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
@@ -133,7 +134,14 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
   }
 
+  public boolean checkPublishMessage(String message) {
+    return PublishMessageVerification.verifyPublishMessage(message);
+  }
   public boolean checkRollCallCreateMessage(String message) {
-    return RollCallVerification.rollCallCreateVerification(message);
+    return RollCallVerification.verifyCreate(message);
+  }
+
+  public boolean checkRollCallOpenMessage(String message){
+    return RollCallVerification.verifyOpen(message);
   }
 }

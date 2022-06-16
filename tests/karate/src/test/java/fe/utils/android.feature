@@ -33,6 +33,10 @@ Feature: android page object
     * def roll_call_close_confirm_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
     * def event_name_selector = '#com.github.dedis.popstellar:id/event_card_text_view'
 
+    # Roll Call Screen
+    * def roll_call_action_selector = '#com.github.dedis.popstellar:id/roll_call_management_button'
+
+
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
@@ -61,10 +65,15 @@ Feature: android page object
     * dialog(true)
     * click(launch_selector)
 
-  #roll call android procedure
+  #roll call create android procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
-    When click(add_event_selector)
-    And click(add_roll_call_selector)
+    * click(add_event_selector)
+    * click(add_roll_call_selector)
     And input(roll_call_title_selector, 'RC name')
+
+  #roll call open android procedure
+  Scenario: Opens the created roll-call
+    * click(event_name_selector)
+    * click(roll_call_action_selector)
 
