@@ -1,4 +1,4 @@
-import { TextStyle } from 'react-native';
+import { Platform, TextStyle } from 'react-native';
 
 import {
   contrast,
@@ -67,6 +67,18 @@ export const centered: TextStyle = {
 
 export const important: TextStyle = {
   fontWeight: 'bold',
+};
+
+// https://www.skcript.com/svr/react-native-fonts/
+export const code: TextStyle = {
+  ...Platform.select({
+    ios: {
+      fontFamily: 'Courier New',
+    },
+    default: {
+      fontFamily: 'monospace',
+    },
+  }),
 };
 
 export const baseCentered: TextStyle = {

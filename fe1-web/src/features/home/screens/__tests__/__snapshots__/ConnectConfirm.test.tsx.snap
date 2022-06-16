@@ -351,39 +351,31 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             >
                               Server URI
                             </Text>
-                            <View
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Server URI"
                               style={
-                                Object {
-                                  "flex": 1,
-                                  "flexDirection": "row",
-                                }
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                  },
+                                ]
                               }
-                            >
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Server URI"
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderRadius": 8,
-                                      "flex": 1,
-                                      "padding": 8,
-                                      "width": 50,
-                                    },
-                                  ]
-                                }
-                                value="ws://localhost:9000/organizer/client"
-                              />
-                            </View>
+                              value="ws://localhost:9000/organizer/client"
+                            />
                             <Text
                               style={
                                 Array [
@@ -402,39 +394,31 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             >
                               LAO ID
                             </Text>
-                            <View
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="LAO ID"
                               style={
-                                Object {
-                                  "flex": 1,
-                                  "flexDirection": "row",
-                                }
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                  },
+                                ]
                               }
-                            >
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="LAO ID"
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderRadius": 8,
-                                      "flex": 1,
-                                      "padding": 8,
-                                      "width": 50,
-                                    },
-                                  ]
-                                }
-                                value=""
-                              />
-                            </View>
+                              value=""
+                            />
                             <RNGestureHandlerButton
                               collapsable={false}
                               onGestureEvent={[Function]}
@@ -444,8 +428,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               rippleColor={0}
                               style={
                                 Object {
-                                  "flex": 1,
                                   "marginBottom": 16,
+                                  "width": "100%",
                                 }
                               }
                             >

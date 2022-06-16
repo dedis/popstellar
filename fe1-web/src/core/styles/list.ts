@@ -11,6 +11,7 @@ export const item: ViewStyle = {
 export const accordionItem: ViewStyle = {
   backgroundColor: background,
   paddingLeft: 0,
+  paddingRight: 0,
 };
 
 export const firstItem: ViewStyle = {

@@ -487,41 +487,33 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     >
                                       Name
                                     </Text>
-                                    <View
+                                    <TextInput
+                                      editable={false}
+                                      placeholder="John Doe"
                                       style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderColor": "#fff",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "flex": 1,
+                                            "padding": 8,
+                                          },
+                                          Object {
+                                            "color": "gray",
+                                          },
+                                        ]
                                       }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="John Doe"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
+                                      value=""
+                                    />
                                     <Text
                                       style={
                                         Array [
@@ -540,41 +532,33 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     >
                                       Title
                                     </Text>
-                                    <View
+                                    <TextInput
+                                      editable={false}
+                                      placeholder="LAO Organizer"
                                       style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderColor": "#fff",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "flex": 1,
+                                            "padding": 8,
+                                          },
+                                          Object {
+                                            "color": "gray",
+                                          },
+                                        ]
                                       }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="LAO Organizer"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
+                                      value=""
+                                    />
                                     <Text
                                       style={
                                         Array [
@@ -593,41 +577,33 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     >
                                       Organization
                                     </Text>
-                                    <View
+                                    <TextInput
+                                      editable={false}
+                                      placeholder="DEDIS Lab"
                                       style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderColor": "#fff",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "flex": 1,
+                                            "padding": 8,
+                                          },
+                                          Object {
+                                            "color": "gray",
+                                          },
+                                        ]
                                       }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="DEDIS Lab"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
+                                      value=""
+                                    />
                                     <Text
                                       style={
                                         Array [
@@ -646,41 +622,33 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     >
                                       Email
                                     </Text>
-                                    <View
+                                    <TextInput
+                                      editable={false}
+                                      placeholder="john.doe@epfl.ch"
                                       style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderColor": "#fff",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "flex": 1,
+                                            "padding": 8,
+                                          },
+                                          Object {
+                                            "color": "gray",
+                                          },
+                                        ]
                                       }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="john.doe@epfl.ch"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
+                                      value=""
+                                    />
                                     <Text
                                       style={
                                         Array [
@@ -699,41 +667,33 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     >
                                       Phone number
                                     </Text>
-                                    <View
+                                    <TextInput
+                                      editable={false}
+                                      placeholder="+41 12 345 67 89"
                                       style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderColor": "#fff",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "flex": 1,
+                                            "padding": 8,
+                                          },
+                                          Object {
+                                            "color": "gray",
+                                          },
+                                        ]
                                       }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="+41 12 345 67 89"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderRadius": 8,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
+                                      value=""
+                                    />
                                   </View>
                                 </RCTScrollView>
                               </View>
@@ -920,7 +880,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           onGestureHandlerStateChange={[Function]}
                                           style={
                                             Object {
-                                              "backgroundColor": "rgb(242, 242, 242)",
+                                              "backgroundColor": "#fff",
                                               "borderRadius": 16,
                                               "margin": 32,
                                               "padding": 32,
@@ -1148,8 +1108,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 rippleColor={0}
                                                 style={
                                                   Object {
-                                                    "flex": 1,
                                                     "marginBottom": 16,
+                                                    "width": "100%",
                                                   }
                                                 }
                                               >
@@ -1208,8 +1168,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 rippleColor={0}
                                                 style={
                                                   Object {
-                                                    "flex": 1,
                                                     "marginBottom": 16,
+                                                    "width": "100%",
                                                   }
                                                 }
                                               >
@@ -1378,7 +1338,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             onGestureHandlerStateChange={[Function]}
                                             style={
                                               Object {
-                                                "backgroundColor": "rgb(242, 242, 242)",
+                                                "backgroundColor": "#fff",
                                                 "borderRadius": 16,
                                                 "margin": 32,
                                                 "padding": 32,

@@ -411,6 +411,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -1356,6 +1357,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -10663,6 +10665,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -19970,6 +19973,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -20877,6 +20881,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -21822,6 +21827,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -22648,6 +22654,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -23534,6 +23541,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"

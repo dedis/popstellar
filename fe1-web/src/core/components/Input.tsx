@@ -15,11 +15,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.contrast,
     borderRadius: Border.inputRadius,
+    borderWidth: Border.width,
+    borderColor: Color.contrast,
     padding: Spacing.x05,
   },
-  border: {
-    borderWidth: 1,
-    borderColor: Color.primary,
+  negative: {
+    ...Typography.negative,
+    ...Border.negativeColor,
+    backgroundColor: Color.accent,
   },
   disabled: {
     color: Color.gray,
@@ -27,16 +30,18 @@ const styles = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, enabled, border, testID } = props;
+  const { value, placeholder, onChange, enabled, negative, testID } = props;
 
   const inputStyles = [Typography.paragraph, styles.input];
+
   if (!enabled) {
     inputStyles.push(styles.disabled);
   }
 
-  if (border) {
-    inputStyles.push(styles.border);
+  if (negative) {
+    inputStyles.push(styles.negative);
   }
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -52,19 +57,19 @@ const Input = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  enabled: PropTypes.bool,
-  border: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
+  enabled: PropTypes.bool,
+  negative: PropTypes.bool,
   testID: PropTypes.string,
 };
 Input.propTypes = propTypes;
 Input.defaultProps = {
   placeholder: '',
-  enabled: true,
-  border: false,
   onChange: undefined,
+  enabled: true,
+  negative: false,
   testID: undefined,
 };
 
