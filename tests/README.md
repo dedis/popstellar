@@ -121,8 +121,8 @@ Last updated  :
 ## Issuance
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |        |        |        |
-| Be2 |        |        |        |
+| Be1 |Operational|    X    |    X    |
+| Be2 |Operational|    X   |     X  |
 | Fe1 |        |        |        |
 | Fe2 |        |        |        |
 ## Send/Receive
