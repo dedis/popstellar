@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    #* configure driver = { type: 'chrome' }
+    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    * configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -22,12 +22,10 @@ Feature: web test
 
     # Lao Event List
     * def add_event_selector = "[data-testid='create_event_selector']"
-    * def add_roll_call_selector = '{}Create Roll-Call'
     * def tab_events_selector = '{}Events'
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
     * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
     * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
-    #* def event_name_selector = "[data-testid='current_event_selector_0']"
     * def event_name_selector = '{}RC name'
 
 
@@ -70,8 +68,8 @@ Feature: web test
     Given click(tab_events_selector)
     And click(add_event_selector)
 
-    #Does not work for now
-    And retry(5, 2000).click(add_roll_call_selector)
+    # Clicking on Create Roll-Call
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     And input(roll_call_title_selector, 'RC name')
     And input(roll_call_location_selector, 'EPFL')
