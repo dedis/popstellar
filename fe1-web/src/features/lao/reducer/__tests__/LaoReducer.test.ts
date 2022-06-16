@@ -15,7 +15,7 @@ import {
   mockAddress,
   mockChannel,
 } from '__tests__/utils/TestUtils';
-import { Hash, Timestamp } from 'core/objects';
+import { channelFromIds, Hash, Timestamp } from 'core/objects';
 
 import { Lao, LaoState } from '../../objects';
 import {
@@ -79,7 +79,7 @@ const initializeData = () => {
     last_roll_call_id: rollCallId,
     last_tokenized_roll_call_id: rollCallId,
     server_addresses: [],
-    subscribed_channels: [],
+    subscribed_channels: [channelFromIds(mockLaoIdHash)],
   }).toState();
 
   filledStateAfterRollCall = {
