@@ -1,12 +1,15 @@
-import { render } from '@testing-library/react-native';
+import { useNavigation } from '@react-navigation/core';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
+import { mockAddress, mockChannel, mockLao, mockLaoId, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { subscribeToChannel } from 'core/network';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
+import { getLaoChannel } from 'features/lao/functions';
 import { LaoHooks } from 'features/lao/hooks';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 
@@ -27,6 +30,37 @@ const contextValue = {
   } as HomeReactContext,
 };
 
+jest.mock('websocket');
+
+jest.mock('@react-navigation/core', () => {
+  const actualNavigation = jest.requireActual('@react-navigation/core');
+
+  const mockNavigate = jest.fn();
+
+  return {
+    ...actualNavigation,
+    useNavigation: () => ({
+      navigate: mockNavigate,
+    }),
+  };
+});
+
+// Is mocked
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const mockNavigate = useNavigation().navigate;
+
+const mockConnection = 0;
+
+jest.mock('core/network', () => {
+  return {
+    ...jest.requireActual('core/network'),
+    subscribeToChannel: jest.fn(() => Promise.resolve()),
+    connect: jest.fn(() => Promise.resolve(mockConnection)),
+  };
+});
+
+beforeEach(jest.clearAllMocks);
+
 const mockStore = createStore(combineReducers(laoReducer));
 mockStore.dispatch(connectToLao(mockLao.toState()));
 
@@ -40,5 +74,31 @@ describe('ConnectNavigation', () => {
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
+  });
+
+  it('can connect to a lao', async () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator
+            component={ConnectConfirm}
+            params={{ laoId: mockLaoId, serverUrl: mockAddress }}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('connect-button'));
+
+    await waitFor(() => {
+      expect(subscribeToChannel).toHaveBeenCalledWith(
+        mockLaoId,
+        expect.anything(),
+        getLaoChannel(mockLaoId),
+        expect.anything(),
+      );
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -88,7 +88,9 @@ const ConnectConfirm = () => {
         <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
         <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
 
-        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.connect_connect}</PoPTextButton>
+        <PoPTextButton onPress={onButtonConfirm} testID="connect-button">
+          {STRINGS.connect_connect}
+        </PoPTextButton>
       </View>
     </ScreenWrapper>
   );

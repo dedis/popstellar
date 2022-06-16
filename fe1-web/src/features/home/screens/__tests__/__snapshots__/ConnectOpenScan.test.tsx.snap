@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConnectNavigation renders correctly 1`] = `
+exports[`ConnectOpenScan renders correctly 1`] = `
 <View
   style={
     Object {
@@ -333,9 +333,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               "zIndex": 0,
                             }
                           }
-                        >
-                          <View />
-                        </View>
+                        />
                         <View
                           style={
                             Object {
@@ -374,7 +372,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
@@ -406,7 +406,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
@@ -427,7 +429,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                   </View>
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}

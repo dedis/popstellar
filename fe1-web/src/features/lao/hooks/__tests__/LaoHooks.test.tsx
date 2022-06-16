@@ -159,4 +159,14 @@ describe('LaoHooks', () => {
       expect(result.current).toBe(organizerNavigationScreens);
     });
   });
+
+  describe('useDisconnectFromLao', () => {
+    it('should return the function to disconnect from a lao', () => {
+      const { result } = renderHook(() => LaoHooks.useDisconnectFromLao(), {
+        wrapper: wrapper(mockStore),
+      });
+
+      expect(result.current).toBeFunction();
+    });
+  });
 });

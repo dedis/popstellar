@@ -432,6 +432,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                   "width": "100%",
                                 }
                               }
+                              testID="connect-button"
                             >
                               <View
                                 accessible={true}

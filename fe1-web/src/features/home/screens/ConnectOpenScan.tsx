@@ -73,8 +73,11 @@ const ConnectOpenScan = () => {
       return;
     }
 
+    console.log('read', data);
+
     try {
       const obj = JSON.parse(data);
+
       const connectToLao = ConnectToLao.fromJson(obj);
 
       // if we are already connected to a LAO, then only allow new connections
