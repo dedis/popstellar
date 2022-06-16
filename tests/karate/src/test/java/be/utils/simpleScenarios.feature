@@ -115,9 +115,6 @@
           ]
         }
       """
-      * karate.log("---------55555555555555555555555555-------------------------")
-      * karate.log(JSON.stringify(validElectionSetup))
-      * karate.log("---------55555555555555555555555555-------------------------")
       When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
       And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
       * def subscribe =

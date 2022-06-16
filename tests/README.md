@@ -24,7 +24,7 @@ Last updated  : 16.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Unstable|   X    |    X   |
-| Be2 |        |   X    |    X   |
+| Be2 |Reliable|   X    |    X   |
 | Fe1 |        |        |        |
 | Fe2 |        |        |        |
 
@@ -34,7 +34,7 @@ Last updated  : 16.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Unstable|   X    |    X   |
-| Be2 |        |   X    |    X   |
+| Be2 |Reliable|   X    |    X   |
 | Fe1 |        |        |        |
 | Fe2 |        |        |        |
 
@@ -44,7 +44,7 @@ Last updated  : 16.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Unstable|    X   |    X   |
-| Be2 |        |    X   |    X   |
+| Be2 |Operational|    X   |    X   |
 | Fe1 |        |        |        |
 | Fe2 |        |        |        |
 
