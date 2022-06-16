@@ -1,13 +1,13 @@
 package messagedata
 
 import (
+	"bytes"
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	"popstellar/message/answer"
 	"strconv"
-	"strings"
 )
 
 // PostTransaction defines a message data
@@ -130,28 +130,26 @@ func (message PostTransaction) verifyTransactionId() error {
 }
 
 func (message PostTransaction) verifySignature() error {
-	var sigComp []string
+	var sigComp = new(bytes.Buffer)
 
 	for _, inp := range message.Transaction.Inputs {
 		hash := inp.Hash
-		sigComp = append(sigComp, hash)
+		sigComp.WriteString(hash)
 
 		index := strconv.Itoa(inp.Index)
-		sigComp = append(sigComp, index)
+		sigComp.WriteString(index)
 	}
 
 	for _, out := range message.Transaction.Outputs {
 		value := strconv.Itoa(out.Value)
-		sigComp = append(sigComp, value)
+		sigComp.WriteString(value)
 
 		typee := out.Script.Type
-		sigComp = append(sigComp, typee)
+		sigComp.WriteString(typee)
 
 		pubKey := out.Script.PubKeyHash
-		sigComp = append(sigComp, pubKey)
+		sigComp.WriteString(pubKey)
 	}
-
-	dataBytes := []byte(strings.Join(sigComp, ""))
 
 	for _, inp := range message.Transaction.Inputs {
 		signatureBytes, err := base64.URLEncoding.DecodeString(inp.Script.Sig)
@@ -164,7 +162,7 @@ func (message PostTransaction) verifySignature() error {
 			return xerrors.Errorf("failed to decode public key string: %v", err)
 		}
 
-		err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
+		err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, sigComp.Bytes(), signatureBytes)
 		if err != nil {
 			return answer.NewErrorf(-4, "failed to verify signature : %v", err)
 		}
