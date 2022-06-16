@@ -5,10 +5,10 @@ Last updated  :
 ## Create
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |        |        |        |
-| Be2 |        |        |        |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Be1 |Reliable|   X    |   X    |
+| Be2 |Reliable|   X    |   X    |
+| Fe1 |Reliable|   X    |   X    |
+| Fe2 |Reliable|   X    |   X    |
 
 ## Greeting
 |     | Status | Manual | Karate |
