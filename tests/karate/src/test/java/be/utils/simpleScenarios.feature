@@ -91,12 +91,35 @@
 
     @name=election_setup
     Scenario: Sets up a valid election
-      * string electionSetupData = read('classpath:data/election/data/electionSetup/valid_election_setup_data.json')
-      * string electionSetup = converter.publishМessageFromData(electionSetupData, electionSetupId, laoChannel)
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
-      * eval frontend.send(electionSetup)
-      * def election_create_broadcast = frontend_buffer.takeTimeout(timeout)
-      * def election_create = frontend_buffer.takeTimeout(timeout)
+      Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+      And def validElectionSetup =
+      """
+        {
+          "object": "election",
+          "action": "setup",
+          "id": '#(getValidElectionSetupId)',
+          "lao": '#(getLaoValid)',
+          "name": "Election",
+          "version": "OPEN_BALLOT",
+          "created_at": 1633098941,
+          "start_time": 1633098941,
+          "end_time": 1633099812,
+          "questions": [
+            {
+              "id": '#(getIsThisProjectFunQuestionId)',
+              "question": "Is this project fun?",
+              "voting_method": "Plurality",
+              "ballot_options": ["Yes", "No"],
+              "write_in": false
+            }
+          ]
+        }
+      """
+      * karate.log("---------55555555555555555555555555-------------------------")
+      * karate.log(JSON.stringify(validElectionSetup))
+      * karate.log("---------55555555555555555555555555-------------------------")
+      When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
+      And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
       * def subscribe =
             """
           JSON.stringify(

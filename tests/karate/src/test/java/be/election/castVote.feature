@@ -33,7 +33,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -59,7 +59,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -85,7 +85,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -110,7 +110,7 @@ Feature: Cast a vote
             {
               "id": '#(getInvalidVoteId)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -135,7 +135,7 @@ Feature: Cast a vote
             {
               "id": '#(getLaoValid)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -161,7 +161,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
