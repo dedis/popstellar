@@ -45,6 +45,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CLOSE]: 'dataCloseRollCall',
   },
   [ObjectType.ELECTION]: {
+    [ActionType.KEY]: 'dataKeyElection',
     [ActionType.SETUP]: 'dataSetupElection',
     [ActionType.OPEN]: 'dataOpenElection',
     [ActionType.CAST_VOTE]: 'dataCastVote',
@@ -59,6 +60,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.REACTION]: {
     [ActionType.ADD]: 'dataAddReaction',
+  },
+  [ObjectType.COIN]: {
+    [ActionType.POST_TRANSACTION]: 'postTransaction',
   },
 };
 

@@ -7,6 +7,7 @@
     android:id="@+id/fragment_cast_vote"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/container_margin"
     tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -17,10 +18,9 @@
       app:layout_constraintGuide_begin="@dimen/guideline_tab" />
 
     <TextView
-      android:id="@+id/castVoteLaoName"
+      android:id="@+id/cast_vote_lao_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="TextView"
       android:textAlignment="center"
       android:textColor="@color/black"
       android:textSize="@dimen/size_title"
@@ -30,17 +30,16 @@
       app:layout_constraintTop_toBottomOf="@+id/guideline_tab" />
 
     <TextView
-      android:id="@+id/castVoteElectionName"
+      android:id="@+id/cast_vote_election_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="TextView"
       android:textAlignment="center"
       android:textColor="@color/black"
       android:textSize="@dimen/size_body"
       android:textStyle="bold"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/castVoteLaoName" />
+      app:layout_constraintTop_toBottomOf="@+id/cast_vote_lao_name" />
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_title"
@@ -52,25 +51,26 @@
       app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.viewpager2.widget.ViewPager2
-      android:id="@+id/castVotePager"
+      android:id="@+id/cast_vote_pager"
       android:layout_width="match_parent"
       android:layout_height="@dimen/cast_vote_dynamic_height"
       app:layout_constraintBottom_toTopOf="@+id/swipe_indicator"
-      app:layout_constraintTop_toBottomOf="@id/guideline_title"></androidx.viewpager2.widget.ViewPager2>
+      app:layout_constraintTop_toBottomOf="@id/guideline_title"/>
 
     <me.relex.circleindicator.CircleIndicator3
       android:id="@+id/swipe_indicator"
       android:layout_width="match_parent"
       android:layout_height="@dimen/swipe_indicator_height"
       android:background="@color/colorPrimaryDark"
-      app:layout_constraintBottom_toTopOf="@+id/castVoteButton" />
+      android:layout_marginBottom="@dimen/inter_buttons_margin"
+      app:layout_constraintBottom_toTopOf="@+id/cast_vote_button" />
 
     <Button
-      android:id="@+id/castVoteButton"
+      android:id="@+id/cast_vote_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal|center"
-      android:gravity="bottom"
+      android:layout_marginBottom="@dimen/margin_button"
+      android:enabled="false"
       android:text="@string/button_text"
       app:layout_constraintBottom_toBottomOf="@+id/fragment_cast_vote"
       app:layout_constraintEnd_toEndOf="parent"

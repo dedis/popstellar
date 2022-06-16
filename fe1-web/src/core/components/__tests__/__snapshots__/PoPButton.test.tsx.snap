@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PoPButton renders correctly without disabled 1`] = `
+<RNGestureHandlerButton
+  collapsable={false}
+  onGestureEvent={[Function]}
+  onGestureHandlerEvent={[Function]}
+  onGestureHandlerStateChange={[Function]}
+  onHandlerStateChange={[Function]}
+  rippleColor={0}
+  style={
+    Object {
+      "flex": 1,
+      "marginBottom": 16,
+    }
+  }
+>
+  <View
+    accessible={true}
+    collapsable={false}
+    nativeID="animatedComponent"
+    style={
+      Object {
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#3742fa",
+            "borderColor": "#3742fa",
+            "borderRadius": 16,
+            "borderWidth": 1,
+            "padding": 8,
+          },
+        ]
+      }
+    >
+      <Text>
+        I am a wide button
+      </Text>
+    </View>
+  </View>
+</RNGestureHandlerButton>
+`;

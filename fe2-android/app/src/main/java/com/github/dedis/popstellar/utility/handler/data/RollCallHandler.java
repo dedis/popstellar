@@ -90,8 +90,7 @@ public final class RollCallHandler {
     RollCall rollCall = rollCallOptional.get();
     rollCall.setStart(openRollCall.getOpenedAt());
     rollCall.setState(EventState.OPENED);
-    // We might be opening a closed one
-    rollCall.setEnd(0);
+
     rollCall.setId(updateId);
 
     lao.updateRollCall(opens, rollCall);
@@ -130,10 +129,13 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
+
     lao.updateRollCall(closes, rollCall);
+    lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
+    // Subscribe to the digital cash channels
     try {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
       context
@@ -142,6 +144,7 @@ public final class RollCallHandler {
           .subscribe(
               () -> Log.d(TAG, "subscription a success"),
               error -> Log.d(TAG, "subscription error"));
+
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {

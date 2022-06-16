@@ -4,8 +4,8 @@ import { AnyAction, Reducer } from 'redux';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
-import { NotificationState } from '../reducer/NotificationReducer';
+import { NotificationReducerState, NOTIFICATION_REDUCER_PATH, NotificationState } from '../reducer';
+import { NotificationFeature } from './Feature';
 
 export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';
 
@@ -17,9 +17,7 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
     NotificationBadge: () => React.ReactNode;
   };
 
-  navigation: {
-    NotificationNavigation: React.ComponentType<unknown>;
-  };
+  laoScreens: NotificationFeature.LaoScreen[];
 
   actionCreators: {
     addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;
@@ -57,6 +55,14 @@ export interface NotificationCompositionConfiguration {
     Component: React.ComponentType<{
       notification: NotificationState;
       navigateToNotificationScreen: () => void;
+    }>;
+
+    /**
+     * Renders an icon for this notification type
+     */
+    Icon: React.ComponentType<{
+      color: string;
+      size: number;
     }>;
   }[];
 }

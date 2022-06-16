@@ -126,23 +126,34 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   @Override
+  public boolean addManually(String data) {
+    Log.d(TAG, "Lao data added manually with value: " + data);
+    handleConnectionToLao(data);
+    return true;
+  }
+
+  @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    ConnectToLao data;
+    handleConnectionToLao(barcode.rawValue);
+  }
+
+  private void handleConnectionToLao(String data) {
+    ConnectToLao laoData;
     try {
-      data = ConnectToLao.extractFrom(gson, barcode.rawValue);
+      laoData = ConnectToLao.extractFrom(gson, data);
     } catch (JsonParseException e) {
-      Log.e(TAG, "Invalid QRCode data", e);
+      Log.e(TAG, "Invalid QRCode laoData", e);
       Toast.makeText(
-              getApplication().getApplicationContext(), "Invalid QRCode data", Toast.LENGTH_LONG)
+              getApplication().getApplicationContext(), "Invalid QRCode laoData", Toast.LENGTH_LONG)
           .show();
       return;
     }
 
     // Establish connection with new address
-    networkManager.connect(data.server);
+    networkManager.connect(laoData.server);
 
-    openConnecting(data.lao);
+    openConnecting(laoData.lao);
   }
 
   /** onCleared is used to cancel all subscriptions to observables. */

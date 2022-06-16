@@ -26,6 +26,7 @@ case object LaoHandler extends MessageHandler {
 
         // we are using the lao id instead of the message_id at lao creation
         val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        val coinChannel: Channel = Channel(s"$laoChannel${Channel.COIN_CHANNEL_PREFIX}")
         val socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         //we get access to the canonical address of the server
@@ -42,6 +43,7 @@ case object LaoHandler extends MessageHandler {
           }
           // create lao channels
           _ <- dbActor ? DbActor.CreateChannelsFromList(List(
+            (coinChannel, ObjectType.COIN),
             (laoChannel, ObjectType.LAO),
             (socialChannel, ObjectType.CHIRP),
             (reactionChannel, ObjectType.REACTION)

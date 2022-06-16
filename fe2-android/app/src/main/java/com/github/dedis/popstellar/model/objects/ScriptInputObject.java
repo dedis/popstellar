@@ -1,22 +1,25 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
+
 public class ScriptInputObject {
   private final String type;
-  private final String pubKeyRecipient;
-  private final String sig;
+  private final PublicKey pubKeyRecipient;
+  private final Signature sig;
 
   /**
    * @param type The script describing the unlock mechanism
    * @param pubKeyRecipient The recipient’s public key
    * @param sig Signature on all txins and txouts using the recipient's private key
    */
-  public ScriptInputObject(String type, String pubKeyRecipient, String sig) {
+  public ScriptInputObject(String type, PublicKey pubKeyRecipient, Signature sig) {
     this.type = type;
     this.pubKeyRecipient = pubKeyRecipient;
     this.sig = sig;
   }
 
-  public String getSig() {
+  public Signature getSig() {
     return sig;
   }
 
@@ -24,7 +27,7 @@ public class ScriptInputObject {
     return type;
   }
 
-  public String getPubkey() {
+  public PublicKey getPubkey() {
     return pubKeyRecipient;
   }
 }

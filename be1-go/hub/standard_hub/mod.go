@@ -2,14 +2,10 @@ package standard_hub
 
 import (
 	"context"
-	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	be1_go "popstellar"
 	"popstellar/channel"
-	"popstellar/channel/lao"
 	"popstellar/crypto"
-	"popstellar/db/sqlite"
 	"popstellar/hub"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -41,12 +37,6 @@ const (
 	// Strings used to return error messages
 	rootChannelErr = "failed to handle root channel message: %v"
 	getChannelErr  = "failed to get channel: %v"
-
-	// Strings used to return error messages in relation with a database
-	dbPrepareErr  = "failed to prepare query: %v"
-	dbParseRowErr = "failed to parse row: %v"
-	dbRowIterErr  = "error in row iteration: %v"
-	dbQueryRowErr = "failed to query rows: %v"
 
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
@@ -176,17 +166,6 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, l
 		hubInbox:        *inbox.NewInbox(rootChannel),
 		rootInbox:       *inbox.NewInbox(rootChannel),
 		queries:         newQueries(),
-	}
-
-	if sqlite.GetDBPath() != "" {
-		log.Info().Msgf("loading channels from db at %s", sqlite.GetDBPath())
-
-		channels, err := getChannelsFromDB(&hub)
-		if err != nil {
-			log.Err(err).Msg("failed to load channels from db")
-		} else {
-			hub.channelByID = channels
-		}
 	}
 
 	return &hub, nil
@@ -364,14 +343,13 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		socket.SendError(&id, err)
+		socket.SendError(&id, handlerErr)
 		return err
 	}
 
@@ -548,7 +526,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !h.GetPubKeyOwner().Equal(senderPubKey) {
+	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
 		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
 			senderPubKey, h.GetPubKeyOwner())
 	}
@@ -561,10 +539,6 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
 
 	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
-
-	if sqlite.GetDBPath() != "" {
-		saveChannel(laoChannelPath)
-	}
 
 	return nil
 }
@@ -616,91 +590,4 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
-}
-
-// ---
-// DB operations
-// --
-
-// TODO : add database operations for the inbox of the server
-
-func saveChannel(channelPath string) error {
-	log := be1_go.Logger
-
-	log.Info().Msgf("trying to save the channel in db at %s", sqlite.GetDBPath())
-
-	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
-	if err != nil {
-		return xerrors.Errorf("failed to open connection: %v", err)
-	}
-
-	defer db.Close()
-
-	query := `
-	INSERT INTO
-		lao_channel(
-			lao_channel_id) 
-	VALUES(?)`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(channelPath)
-	if err != nil {
-		log.Err(err).Msg("failed to save channel in db")
-		return xerrors.Errorf("failed to insert channel: %v", err)
-	}
-
-	return nil
-}
-
-func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
-	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
-	if err != nil {
-		return nil, xerrors.Errorf("failed to open connection: %v", err)
-	}
-
-	defer db.Close()
-
-	query := `
-		SELECT
-			lao_channel_id
-		FROM
-			lao_channel`
-
-	rows, err := db.Query(query)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to query channels: %v", err)
-	}
-
-	defer rows.Close()
-
-	result := make(map[string]channel.Channel)
-
-	for rows.Next() {
-		var channelPath string
-
-		err = rows.Scan(&channelPath)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		channel, err := lao.CreateChannelFromDB(db, channelPath, h, h.log)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
-		}
-
-		result[channelPath] = channel
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
 }

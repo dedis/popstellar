@@ -8,7 +8,7 @@ import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import util.examples.data.CreateRollCallMessages
+import util.examples.data.{CreateRollCallMessages, OpenRollCallMessages}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -42,7 +42,11 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _)  =>
+          system.log.info(s"Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -62,6 +66,10 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
+          system.log.info(s"Received a message")
+          system.log.info("Responding with a Ack")
+          sender() ! DbActor.DbActorAck()
+        case DbActor.WriteRollCallData(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -95,6 +103,30 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
       rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("OpenRollCall should fail if the roll does not exist in database") {
+    val mockedDB = mockDbRollCallNotCreated
+    val rc = new RollCallHandler(mockedDB)
+    val request = OpenRollCallMessages.openRollCall
+    rc.handleOpenRollCall(request) shouldBe an[Right[PipelineError, _]]
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("OpenRollCall should succeed if the roll is already created") {
+    val mockedDB = mockDbRollCallAlreadyCreated
+    val rc = new RollCallHandler(mockedDB)
+    val request = OpenRollCallMessages.openRollCall
+    rc.handleOpenRollCall(request) should matchPattern { case Left(_) => }
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("OpenRollCall should fail if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new RollCallHandler(mockedDB)
+    val request = OpenRollCallMessages.openRollCall
+    rc.handleOpenRollCall(request) shouldBe an[Right[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 

@@ -41,7 +41,15 @@ func Test_Lao_Create(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func Test_Lao_Create_VerifyBadExample(t *testing.T) {
+func Test_Lao_Create_Interface_Functions(t *testing.T) {
+	var msg messagedata.LaoCreate
+
+	require.Equal(t, messagedata.LAOObject, msg.GetObject())
+	require.Equal(t, messagedata.LAOActionCreate, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}
+
+func Test_Lao_Create_Verify(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
@@ -70,4 +78,6 @@ func Test_Lao_Create_VerifyBadExample(t *testing.T) {
 	t.Run("creation negative", getTestBadExample("bad_lao_create_creation_negative.json"))
 	t.Run("organizer id not base64", getTestBadExample("bad_lao_create_organizer_not_base64.json"))
 	t.Run("witness id not base64", getTestBadExample("bad_lao_create_witness_not_base64.json"))
+	t.Run("witness id not base64", getTestBadExample("bad_lao_create_witness_not_base64.json"))
+	t.Run("id not base64", getTestBadExample("bad_lao_create_id_not_base_64.json"))
 }

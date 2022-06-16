@@ -14,6 +14,6 @@
     android:title="@string/following" />
   <item
     android:id="@+id/social_media_profile_menu"
-    android:icon="@drawable/ic_social_media_profile_foreground"
+    android:icon="@drawable/ic_common_profile_foreground"
     android:title="@string/profile" />
 </menu>

@@ -13,132 +13,165 @@
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_lao_detail"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/tab_properties" />
-
-    <include layout="@layout/tab_witness" />
-
-    <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_tab"
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/lao_detail_qr_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+      android:elevation="@dimen/qr_layout_elevation"
+      android:visibility="gone"
+      android:layout_margin="@dimen/qr_layout_margin">
 
-    <LinearLayout
-      android:id="@+id/lao_detail_linear_layout"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
-
-      <LinearLayout
-        android:id="@+id/properties_linear_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="@{view_model.getShowProperties() ? View.VISIBLE : View.GONE }"
+      <ImageView
+        android:id="@+id/channel_qr_code"
+        android:layout_width="@dimen/channel_qr_code_size"
+        android:layout_height="@dimen/channel_qr_code_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/qr_code_image_description" />
+
+      <ImageView
+        android:id="@+id/qr_icon_close"
+        android:layout_width="@dimen/qr_close_icon_side"
+        android:layout_height="@dimen/qr_close_icon_side"
+        android:src="@drawable/ic_cancel_cross"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/close_qr_description" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="@{view_model.getShowProperties() ? View.GONE : View.VISIBLE }"
+      >
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lao_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+      <TextView
+        android:id="@+id/lao_detail_title"
+        style="@style/title_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{view_model.getCurrentLaoName}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-          android:id="@+id/channel_qr_code"
-          android:layout_width="@dimen/channel_qr_code_size"
-          android:layout_height="@dimen/channel_qr_code_size"
-          android:layout_gravity="center" />
+          android:id="@+id/qr_code_icon"
+          android:layout_width="@dimen/qr_icon_side"
+          android:layout_height="@dimen/qr_icon_side"
+          android:layout_marginStart="@dimen/qr_icon_start_margin"
+          app:tint="@color/colorPrimary"
+          android:src="@drawable/ic_qr_code"
+          app:layout_constraintBottom_toBottomOf="@id/lao_detail_title"
+          app:layout_constraintStart_toEndOf="@id/lao_detail_title"
+          app:layout_constraintTop_toTopOf="@id/lao_detail_title"
+          android:contentDescription="@string/qr_code_description" />
 
-        <ImageButton
-          android:id="@+id/edit_button"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="end"
-          android:contentDescription="@string/edit_lao_name"
-          android:src="@drawable/ic_baseline_edit_24"
-          android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"
-          app:layout_constraintRight_toRightOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-          android:id="@+id/organization_name"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@{view_model.getCurrentLaoName}"
-          android:textSize="@dimen/size_title"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
-
-        <ListView
-          android:id="@+id/witness_list"
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/event_list"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="@dimen/size_body"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/organization_name" />
-
-        <LinearLayout
-          android:id="@+id/edit_properties_linear_layout"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical"
-          android:visibility="gone"
+          android:layout_height="0dp"
+          android:layout_marginTop="@dimen/container_top_margin"
           app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+          app:layout_constraintTop_toBottomOf="@+id/lao_detail_title" />
 
-          <EditText
-            android:id="@+id/edit_organization_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/size_title"
-            android:afterTextChanged="@{(edtitable)->view_model.setCurrentLaoName(edtitable.toString())}"
-            android:autofillHints=""
-            android:hint="@string/text_entry_launch"
-            android:inputType="text"
-            android:text="@{view_model.getCurrentLaoName()}" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
 
-          <ImageButton
-            android:id="@+id/add_witness_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_baseline_add_24"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/organization_name" />
+      <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        android:elevation="@dimen/floating_action_button_elevation"
+        android:visibility="@{view_model.isOrganizer()? View.VISIBLE : View.GONE}"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginEnd="@dimen/fab_margin_end"
+        android:src="@drawable/ic_plus"
+        android:backgroundTint="@color/colorPrimary"
+        android:tintMode="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/add_event_description" />
 
-          <Button
-            android:id="@+id/properties_edit_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_confirm"
-            app:layout_constraintRight_toLeftOf="@id/properties_edit_cancel"
-            app:layout_constraintTop_toBottomOf="@id/witness_list" />
+      <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_election"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_vote"
+        android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
+        android:backgroundTint="@color/white"
+        android:tint="@color/black"
+        app:fabSize="mini"
+        app:borderWidth="@dimen/fab_border_width"
+        app:backgroundTint="@color/black"
+        android:elevation="@dimen/floating_action_button_elevation"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/add_event"
+        app:layout_constraintEnd_toEndOf="@id/add_event"
+        app:layout_constraintBottom_toTopOf="@id/add_event"
+        android:contentDescription="@string/add_election_description" />
 
-          <Button
-            android:id="@+id/properties_edit_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_cancel"
-            app:layout_constraintRight_toRightOf="@id/properties_edit_confirm"
-            app:layout_constraintTop_toBottomOf="@id/witness_list" />
+      <TextView
+        android:id="@+id/add_election_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_election"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="@dimen/add_event_texts_size"
+        android:layout_marginEnd="@dimen/add_button_margin_end"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/add_election"
+        app:layout_constraintBottom_toBottomOf="@id/add_election"
+        app:layout_constraintEnd_toStartOf="@id/add_election" />
 
-        </LinearLayout>
+      <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_roll_call"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_roll_call"
+        android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
+        android:backgroundTint="@color/white"
+        app:borderWidth="@dimen/fab_border_width"
+        app:backgroundTint="@color/black"
+        android:tint="@color/black"
+        app:fabSize="mini"
+        android:elevation="@dimen/floating_action_button_elevation"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/add_event"
+        app:layout_constraintEnd_toEndOf="@id/add_event"
+        app:layout_constraintBottom_toTopOf="@id/add_election"
+        android:contentDescription="@string/add_rc_description" />
 
-      </LinearLayout>
+      <TextView
+        android:id="@+id/add_roll_call_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_roll_call"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="@dimen/add_event_texts_size"
+        android:layout_marginEnd="@dimen/add_button_margin_end"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/add_roll_call"
+        app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
+        app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
 
-      <ExpandableListView
-        android:id="@+id/exp_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layoutDirection="ltr" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

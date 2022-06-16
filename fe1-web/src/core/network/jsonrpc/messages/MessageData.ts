@@ -10,6 +10,7 @@ export enum ObjectType {
   ELECTION = 'election',
   CHIRP = 'chirp',
   REACTION = 'reaction',
+  COIN = 'coin',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -32,7 +33,9 @@ export enum ActionType {
   NOTIFY_ADD = 'notify_add',
   DELETE = 'delete',
   NOTIFY_DELETE = 'notify_delete',
+  POST_TRANSACTION = 'post_transaction',
   GREET = 'greet',
+  KEY = 'key',
 }
 
 /** Enumeration of all possible signatures of a message */

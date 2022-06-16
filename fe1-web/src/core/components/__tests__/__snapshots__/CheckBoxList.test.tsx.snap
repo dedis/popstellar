@@ -15,7 +15,9 @@ exports[`CheckBoxList renders correctly 1`] = `
   <Text
     style={
       Object {
-        "fontSize": 25,
+        "color": "#000",
+        "fontSize": 20,
+        "lineHeight": 26,
         "marginHorizontal": 10,
         "textAlign": "center",
       }
@@ -25,13 +27,18 @@ exports[`CheckBoxList renders correctly 1`] = `
   </Text>
   <View
     style={
-      Object {
-        "alignContent": "center",
-        "alignItems": "center",
-        "flexDirection": "row",
-        "justifyContent": "center",
-        "zIndex": 3,
-      }
+      Array [
+        Object {
+          "alignContent": "center",
+          "alignItems": "center",
+          "flexDirection": "column",
+          "justifyContent": "center",
+          "zIndex": 3,
+        },
+        Object {
+          "flexDirection": "row",
+        },
+      ]
     }
   >
     <View
@@ -224,7 +231,9 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
   <Text
     style={
       Object {
-        "fontSize": 25,
+        "color": "#000",
+        "fontSize": 20,
+        "lineHeight": 26,
         "marginHorizontal": 10,
         "textAlign": "center",
       }
@@ -234,13 +243,18 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
   </Text>
   <View
     style={
-      Object {
-        "alignContent": "center",
-        "alignItems": "center",
-        "flexDirection": "row",
-        "justifyContent": "center",
-        "zIndex": 3,
-      }
+      Array [
+        Object {
+          "alignContent": "center",
+          "alignItems": "center",
+          "flexDirection": "column",
+          "justifyContent": "center",
+          "zIndex": 3,
+        },
+        Object {
+          "flexDirection": "row",
+        },
+      ]
     }
   >
     <View

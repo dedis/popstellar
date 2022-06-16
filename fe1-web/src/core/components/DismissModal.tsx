@@ -5,7 +5,7 @@ import { Modal, Text, View } from 'react-native';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
-import WideButtonView from './WideButtonView';
+import PoPTextButton from './PoPTextButton';
 
 /**
  * A modal used to show an error, that you can close by clicking on a button
@@ -26,7 +26,7 @@ const DismissModal = (props: IPropTypes) => {
         </View>
         <Text style={modalStyles.modalDescription}>{description}</Text>
         <View style={modalStyles.buttonView}>
-          <WideButtonView title={buttonText} onPress={() => setVisibility(!visibility)} />
+          <PoPTextButton onPress={() => setVisibility(!visibility)}>{buttonText}</PoPTextButton>
         </View>
       </View>
     </Modal>

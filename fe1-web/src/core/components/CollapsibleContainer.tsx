@@ -1,33 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ListItem } from 'react-native-elements';
 
-import { Typography } from '../styles';
-import TextBlock from './TextBlock';
-
-const CollapsibleContainerStyles = StyleSheet.create({
-  headerIcon: {
-    position: 'absolute',
-    right: 0,
-  },
-});
+import { List, Typography } from '../styles';
 
 const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) => {
-  const [showChildren, setShowChildren] = useState(isInitiallyOpen);
+  const [showChildren, setShowChildren] = useState<boolean>(!!isInitiallyOpen);
 
   return (
-    <View>
-      <TouchableOpacity onPress={() => setShowChildren(!showChildren)}>
-        <View>
-          <TextBlock bold text={title || ''} />
-          <Text style={[Typography.baseCentered, CollapsibleContainerStyles.headerIcon]}>
-            {showChildren ? 'v' : '<'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
+    <ListItem.Accordion
+      containerStyle={List.accordionItem}
+      style={List.accordionItem}
+      content={
+        <ListItem.Content>
+          <ListItem.Title style={[Typography.base, Typography.important]}>{title}</ListItem.Title>
+        </ListItem.Content>
+      }
+      isExpanded={showChildren}
+      onPress={() => setShowChildren(!showChildren)}>
       {showChildren && children}
-    </View>
+    </ListItem.Accordion>
   );
 };
 

@@ -285,22 +285,22 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, xerrors.Errorf("failed to decode public key string: %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to decode signature string: %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to verify signature : %v", err)
+		return publish.ID, answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q",
+		return publish.ID, answer.NewInvalidMessageFieldError("message_id is wrong: expected %q found %q",
 			expectedMessageID, messageID)
 	}
 
@@ -317,19 +317,19 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
-			return publish.ID, xerrors.Errorf(rootChannelErr, err)
+			return publish.ID, err
 		}
 		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return publish.ID, xerrors.Errorf(getChannelErr, err)
+		return publish.ID, answer.NewInvalidMessageFieldError(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return publish.ID, xerrors.Errorf(publishError, err)
+		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
 	}
 
 	return publish.ID, nil

@@ -8,7 +8,7 @@ import {
   LaoConfigurationInterface,
   LAO_FEATURE_IDENTIFIER,
 } from './interface';
-import * as navigation from './navigation';
+import { LaoNavigationAppScreen } from './navigation';
 import { configureNetwork } from './network';
 import {
   laoReducer,
@@ -36,11 +36,14 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     },
     hooks: {
       useLaoList: hooks.LaoHooks.useLaoList,
+      useLaoIds: hooks.LaoHooks.useLaoIds,
       useIsLaoOrganizer: hooks.LaoHooks.useIsLaoOrganizer,
       useIsLaoWitness: hooks.LaoHooks.useIsLaoWitness,
       useLaoMap: hooks.LaoHooks.useLaoMap,
       useCurrentLao: hooks.LaoHooks.useCurrentLao,
       useCurrentLaoId: hooks.LaoHooks.useCurrentLaoId,
+      useLaoOrganizerBackendPublicKey: hooks.LaoHooks.useLaoOrganizerBackendPublicKey,
+      useNamesByLaoId: hooks.LaoHooks.useNamesByLaoId,
     },
     functions,
     reducers: {
@@ -54,12 +57,13 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
 export const compose = (config: LaoCompositionConfiguration): LaoCompositionInterface => {
   return {
     identifier: LAO_FEATURE_IDENTIFIER,
-    navigation,
+    appScreens: [LaoNavigationAppScreen],
     context: {
       EventList: config.EventList,
+      CreateEventButton: config.CreateEventButton,
       encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
       laoNavigationScreens: config.laoNavigationScreens,
-      organizerNavigationScreens: config.organizerNavigationScreens,
+      eventsNavigationScreens: config.eventsNavigationScreens,
     },
   };
 };

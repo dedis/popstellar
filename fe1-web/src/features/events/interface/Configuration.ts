@@ -3,6 +3,7 @@ import { AnyAction, Reducer } from 'redux';
 
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import STRINGS from 'resources/strings';
 
 import { EventState } from '../objects';
 import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
@@ -22,14 +23,16 @@ export interface EventInterface extends FeatureInterface {
     getEventById: (id: Hash) => EventState | undefined;
 
     /**
-     * Creates a selector for a two-level map from laoIds to eventIds to events
-     * where all returned events have type 'eventType'
+     * Creates a selector for a map from eventIds to events
+     * where all returned events have type 'eventType' and are from the given lao
+     * @param laoId The id of the lao
      * @param eventType The type of the events that should be returned
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
     makeEventByTypeSelector: (
+      laoId: string,
       eventType: string,
-    ) => (state: unknown) => Record<string, Record<string, EventState>>;
+    ) => (state: unknown) => Record<string, EventState>;
 
     /**
      * Creates a selector to return a specific event for given lao and event ids
@@ -44,11 +47,8 @@ export interface EventInterface extends FeatureInterface {
   };
 
   components: {
-    EventList: React.ComponentType<any>;
-  };
-
-  screens: {
-    CreateEvent: React.ComponentType<any>;
+    EventList: React.ComponentType<unknown>;
+    CreateEventButton: React.VFC<unknown>;
   };
 
   actionCreators: {
@@ -94,10 +94,19 @@ export interface EventCompositionConfiguration {
 
 interface EventType {
   eventType: string;
+  eventName: string;
   navigationNames: {
-    createEvent: string;
+    createEvent:
+      | typeof STRINGS.navigation_lao_events_create_meeting
+      | typeof STRINGS.navigation_lao_events_create_roll_call
+      | typeof STRINGS.navigation_lao_events_create_election;
+
+    screenSingle:
+      | typeof STRINGS.navigation_lao_events_view_single_meeting
+      | typeof STRINGS.navigation_lao_events_view_single_roll_call
+      | typeof STRINGS.navigation_lao_events_view_single_election;
   };
-  Component: React.ComponentType<{
+  ListItemComponent: React.ComponentType<{
     eventId: string;
     isOrganizer: boolean | null | undefined;
   }>;

@@ -4,7 +4,7 @@ import { RollCallHooks } from './hooks';
 import { RollCallConfiguration, RollCallInterface, ROLLCALL_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
 import { rollCallReducer } from './reducer';
-import * as screens from './screens';
+import { CreateRollCallScreen, RollCallOpenedScreen, ViewSingleRollCallScreen } from './screens';
 
 /**
  * Configures the roll call feature
@@ -17,10 +17,13 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
   return {
     identifier: ROLLCALL_FEATURE_IDENTIFIER,
     eventTypes: [RollCallEventType],
-    screens,
+    laoEventScreens: [CreateRollCallScreen, RollCallOpenedScreen, ViewSingleRollCallScreen],
     functions,
     hooks: {
+      useRollCallById: RollCallHooks.useRollCallById,
       useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
+      useRollCallTokensByLaoId: RollCallHooks.useRollCallTokensByLaoId,
+      useRollCallTokenByRollCallId: RollCallHooks.useRollCallTokenByRollCallId,
     },
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,

@@ -1,9 +1,11 @@
-import React from 'react';
 import { Reducer } from 'redux';
 
 import { KeyPairRegistry } from 'core/keypair';
+import { AppScreen } from 'core/navigation/AppNavigation';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import { RollCallToken } from 'core/objects/RollCallToken';
 
 import { WalletReducerState, WALLET_REDUCER_PATH } from '../reducer';
 import { WalletFeature } from './Feature';
@@ -32,6 +34,7 @@ export interface WalletInterface extends FeatureInterface {
 export interface WalletCompositionConfiguration {
   // objects
   keyPairRegistry: KeyPairRegistry;
+  messageRegistry: MessageRegistry;
 
   /* LAO related functions */
 
@@ -47,6 +50,11 @@ export interface WalletCompositionConfiguration {
    */
   useCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Returns the list of all known lao ids.
+   */
+  useLaoIds: () => Hash[];
+
   /* Event related functions */
 
   /**
@@ -59,13 +67,28 @@ export interface WalletCompositionConfiguration {
   getEventById: (id: Hash) => WalletFeature.EventState | undefined;
 
   /**
-   * Returns a two-level map from laoIds to rollCallIds to rollCalls
+   * Returns a map from rollCallIds to rollCalls for a given lao id
    */
-  useRollCallsByLaoId: () => {
-    [laoId: string]: { [rollCallId: string]: WalletFeature.RollCall };
+  useRollCallsByLaoId: (laoId: string) => {
+    [rollCallId: string]: WalletFeature.RollCall;
   };
 
+  /**
+   * Returns a map from laoIds to names
+   */
+  useNamesByLaoId: () => { [laoId: string]: string };
+
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
+
+  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
+
+  /**
+   * A list of item generators that given a laoId return a list of items
+   * to be displayed in the wallet for a given lao
+   */
+  walletItemGenerators: WalletFeature.WalletItemGenerator[];
+
+  walletNavigationScreens: WalletFeature.WalletScreen[];
 }
 
 /**
@@ -73,19 +96,26 @@ export interface WalletCompositionConfiguration {
  */
 export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
+  /* parameters */
+  | 'walletItemGenerators'
+  | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
+  | 'useLaoIds'
+  | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
+  | 'useRollCallTokensByLaoId'
 >;
 
 /**
  * The interface the wallet feature exposes
  */
 export interface WalletCompositionInterface extends FeatureInterface {
-  navigation: {
-    WalletNavigation: React.ComponentType<any>;
-  };
+  appScreens: AppScreen[];
+
+  homeScreens: WalletFeature.HomeScreen[];
+  laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;
 

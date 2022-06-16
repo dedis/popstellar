@@ -1,6 +1,7 @@
+import * as functions from './functions';
 import { HomeCompositionConfiguration, HomeInterface, HOME_FEATURE_IDENTIFIER } from './interface';
-import * as navigation from './navigation';
-import * as screens from './screens';
+import { ConnectNavigationScreen } from './navigation/ConnectNavigation';
+import { HomeNavigationScreen } from './navigation/HomeNavigation';
 
 /**
  * Configures the Home feature
@@ -8,15 +9,17 @@ import * as screens from './screens';
 export function compose(config: HomeCompositionConfiguration): HomeInterface {
   return {
     identifier: HOME_FEATURE_IDENTIFIER,
-    navigation,
-    screens,
+    appScreens: [HomeNavigationScreen, ConnectNavigationScreen],
+    functions,
     context: {
       requestCreateLao: config.requestCreateLao,
       addLaoServerAddress: config.addLaoServerAddress,
       connectToTestLao: config.connectToTestLao,
       useLaoList: config.useLaoList,
       LaoList: config.LaoList,
-      mainNavigationScreens: config.mainNavigationScreens,
+      homeNavigationScreens: config.homeNavigationScreens,
+      getLaoChannel: config.getLaoChannel,
+      useCurrentLaoId: config.useCurrentLaoId,
     },
   };
 }

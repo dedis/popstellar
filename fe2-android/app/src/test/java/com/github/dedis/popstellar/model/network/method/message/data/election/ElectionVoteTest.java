@@ -7,48 +7,43 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ElectionVoteTest {
 
   private final String electionId = "my election id";
   private final String questionId = " my question id";
-  private final List<Integer> votes =
-      new ArrayList<>(
-          Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
+  // We vote for ballot option in position 2, the vote is now unique due to new specification
+  private final Integer vote = 2;
   private final String writeIn = "My write in ballot option";
   private final ElectionVote electionVote1 =
-      new ElectionVote(questionId, votes, false, writeIn, electionId);
+          new ElectionVote(questionId, vote, false, writeIn, electionId);
   private final ElectionVote electionVote2 =
-      new ElectionVote(questionId, votes, true, writeIn, electionId);
+          new ElectionVote(questionId, vote, true, writeIn, electionId);
+
+  // Hash values util for testing
+  private final String expectedIdNoWriteIn = Election
+          .generateElectionVoteId(electionId, questionId, electionVote1.getVote(), writeIn, false);
+  private final String wrongFormatId = Hash.hash("Vote", electionId, electionVote2.getQuestionId());
+  private final String expectedIdWithWriteIn = Election
+          .generateElectionVoteId(electionId, questionId, electionVote2.getVote(), writeIn, true);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    String electionVoteFormat =
-            electionVote1.getVotes().toString().toString()
-                    .replace("]", "")
-                    .replace("[", "");
-    String expectedId =
-            Hash.hash(
-                    "Vote", electionId, electionVote1.getQuestionId(), electionVoteFormat);
-    assertThat(electionVote1.getId(), is(expectedId));
-    assertNull(electionVote1.getWriteIn());
+    assertThat(electionVote1.getId(), is(expectedIdNoWriteIn));
   }
 
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectId() {
-    // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    String expectedId =
-        Hash.hash("Vote", electionId, electionVote2.getQuestionId(), electionVote2.getWriteIn());
-    assertThat(electionVote2.getId(), is(expectedId));
-    assertNull(electionVote2.getVotes());
+    // WriteIn enabled so id is Hash('Vote'||election_id||question_id)
+    // Hash code shouldn't change with new protocol specifications
+    assertThat(electionVote2.getId().equals(wrongFormatId), is(false));
+    assertThat(electionVote2.getId().equals(expectedIdWithWriteIn), is(true));
+    assertNull(electionVote2.getVote());
   }
 
   @Test
@@ -58,42 +53,49 @@ public class ElectionVoteTest {
 
   @Test
   public void attributesIsNull() {
-    assertNull(electionVote1.getWriteIn());
-    assertNull(electionVote2.getVotes());
-    assertNotNull(electionVote1.getVotes());
-    assertNotNull(electionVote2.getWriteIn());
-  }
-
-  @Test
-  public void electionVoteGetterReturnsCorrectWriteIn() {
-    assertThat(electionVote2.getWriteIn(), is(writeIn));
+    assertNull(electionVote2.getVote());
+    assertNotNull(electionVote1.getVote());
   }
 
   @Test
   public void electionVoteGetterReturnsCorrectVotes() {
-    assertThat(electionVote1.getVotes(), is(votes));
+    assertThat(electionVote1.getVote(), is(vote));
   }
 
   @Test
   public void isEqual() {
     assertNotEquals(electionVote1, electionVote2);
-    assertEquals(electionVote1, new ElectionVote(questionId, votes, false, writeIn, electionId));
-    assertNotEquals(electionVote1, new ElectionVote("random", votes, false, writeIn, electionId));
+    assertEquals(electionVote1, new ElectionVote(questionId, vote, false, writeIn, electionId));
+    assertNotEquals(electionVote1, new ElectionVote("random", vote, false, writeIn, electionId));
     assertNotEquals(
-        electionVote1,
-        new ElectionVote(
-            questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), false, writeIn, electionId));
-    assertNotEquals(electionVote1, new ElectionVote(questionId, votes, false, writeIn, "random"));
+            electionVote1,
+            new ElectionVote(
+                    questionId, 0, false, writeIn, electionId));
+    assertNotEquals(electionVote1, new ElectionVote(questionId, vote, false, writeIn, "random"));
 
-    // here because writeInEnabled is false it will be computed as null making both elections the
+    // Here because writeInEnabled is false it will be computed as null making both elections the
     // same even though we don't give them the same constructor
-    assertEquals(electionVote1, new ElectionVote(questionId, votes, false, "random", electionId));
+    assertEquals(electionVote1, new ElectionVote(questionId, vote, false, "random", electionId));
 
-    // here because writeInEnabled is true the list of votes should be computed as null making both
+    // Here because writeInEnabled is true the list of votes should be computed as null making both
     // election the same
     assertEquals(
-        electionVote2,
-        new ElectionVote(
-            questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), true, writeIn, electionId));
+            electionVote2,
+            new ElectionVote(
+                    questionId, 2, true, writeIn, electionId));
   }
+
+  @Test
+  public void toStringTest() {
+    String format =
+            String.format("ElectionVote{"
+                            + "id='%s', "
+                            + "questionId='%s', "
+                            + "vote=%s}",
+                    expectedIdNoWriteIn,
+                    questionId,
+                    vote);
+    assertEquals(format, electionVote1.toString());
+  }
+
 }

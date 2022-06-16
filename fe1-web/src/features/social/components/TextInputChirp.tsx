@@ -5,7 +5,7 @@ import { Button, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react
 
 import { ProfileIcon, TextBlock } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray, red } from 'core/styles/colors';
+import { gray, red } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
 const MAX_CHIRP_CHARS = 300;
@@ -29,10 +29,6 @@ const styles = StyleSheet.create({
   rightView: {
     display: 'flex',
     flexDirection: 'column',
-  } as ViewStyle,
-  viewPublishChirp: {
-    marginTop: 50,
-    justifyContent: 'center',
   } as ViewStyle,
   textInput: {
     fontSize: 18,
