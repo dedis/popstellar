@@ -296,8 +296,8 @@ Array [
             rippleColor={0}
             style={
               Object {
+                "flex": 1,
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -739,8 +739,8 @@ Array [
             rippleColor={0}
             style={
               Object {
+                "flex": 1,
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -1207,8 +1207,8 @@ Array [
             rippleColor={0}
             style={
               Object {
+                "flex": 1,
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -1675,8 +1675,8 @@ Array [
             rippleColor={0}
             style={
               Object {
+                "flex": 1,
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -2118,8 +2118,8 @@ Array [
             rippleColor={0}
             style={
               Object {
+                "flex": 1,
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >

@@ -1214,8 +1214,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                   rippleColor={0}
                                                   style={
                                                     Object {
+                                                      "flex": 1,
                                                       "marginBottom": 16,
-                                                      "width": "100%",
                                                     }
                                                   }
                                                 >
@@ -1295,8 +1295,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                   rippleColor={0}
                                                   style={
                                                     Object {
+                                                      "flex": 1,
                                                       "marginBottom": 16,
-                                                      "width": "100%",
                                                     }
                                                   }
                                                 >
