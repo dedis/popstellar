@@ -49,6 +49,12 @@ export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
 export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
 
 /**
+ * Returns the lao organizer's public key
+ * @param laoId the lao id
+ */
+export const getLaoOrganizer = (laoId: string) => getLaoById(laoId)?.organizer;
+
+/**
  * Get a LAOs channel by its id
  * @param laoId The id of the lao whose channel should be returned
  * @returns The channel related to the passed lao id or undefined it the lao id is invalid

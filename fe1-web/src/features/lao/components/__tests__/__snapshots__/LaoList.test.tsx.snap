@@ -318,6 +318,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                         style={
                           Object {
                             "borderRadius": 16,
+                            "marginBottom": 16,
                           }
                         }
                       />
@@ -652,6 +653,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                         style={
                           Object {
                             "borderRadius": 16,
+                            "marginBottom": 16,
                           }
                         }
                       >

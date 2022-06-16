@@ -397,6 +397,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -718,6 +719,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -872,6 +874,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1340,6 +1343,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -1661,6 +1665,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1815,6 +1820,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -10645,6 +10651,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -10966,6 +10973,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -11120,6 +11128,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -19950,6 +19959,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -20271,6 +20281,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -20425,6 +20436,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -20855,6 +20867,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -21176,6 +21189,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -21330,6 +21344,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -21798,6 +21813,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -22078,6 +22094,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -22213,6 +22230,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -22622,6 +22640,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -22943,6 +22962,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -23097,6 +23117,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -23506,6 +23527,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -23827,6 +23849,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -23981,6 +24004,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     }
                                   >
                                     <Text
+                                      numberOfLines={1}
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",

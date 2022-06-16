@@ -5,7 +5,7 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
   style={
     Object {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 8,
       "borderWidth": 0,
       "color": "#000",
       "fontSize": 20,
@@ -52,7 +52,7 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
   style={
     Object {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 8,
       "borderWidth": 0,
       "color": "#000",
       "fontSize": 20,
@@ -99,7 +99,7 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
   style={
     Object {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 8,
       "borderWidth": 0,
       "color": "#000",
       "fontSize": 20,

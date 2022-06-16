@@ -1,6 +1,7 @@
 import { sha256 } from 'js-sha256';
 
 import { Base64UrlData } from './Base64Url';
+import { PublicKey } from './PublicKey';
 
 /** Enumeration of all possible event tags used in hash creation */
 export enum EventTags {
@@ -42,6 +43,26 @@ export class Hash extends Base64UrlData {
 
   public equals(o: Hash): boolean {
     return this.toString() === o.toString();
+  }
+
+  /**
+   * Creates a hash of a public key respecting the digital cash specification
+   * https://github.com/dedis/popstellar/blob/42e18f176a91371f28653da8815d9591c38f2ee6/be2-scala/src/main/scala/ch/epfl/pop/model/objects/PublicKey.scala#L8
+   *
+   * @param publicKey the public key to hash
+   */
+  public static fromPublicKey(publicKey: string | PublicKey): Hash {
+    const hash = sha256.create();
+
+    // We need the raw public key
+    const decodedPK = Base64UrlData.fromBase64(publicKey.valueOf()).toBuffer();
+
+    const intArray = hash.update(decodedPK).array();
+
+    // Taking only the first 20 bytes
+    const buff = Buffer.from(intArray.slice(0, 20));
+
+    return new Hash(Base64UrlData.encode(buff, 'binary').valueOf());
   }
 
   /**

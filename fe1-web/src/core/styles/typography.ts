@@ -5,6 +5,7 @@ import {
   accent as accentColor,
   secondaryAccent as secondaryColor,
   primary as primaryColor,
+  error as errorColor,
 } from './color';
 import { x1 } from './spacing';
 
@@ -22,6 +23,10 @@ export const small: TextStyle = {
 
 export const accent: TextStyle = {
   color: accentColor,
+};
+
+export const error: TextStyle = {
+  color: errorColor,
 };
 
 export const negative: TextStyle = {

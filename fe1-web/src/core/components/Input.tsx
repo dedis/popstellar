@@ -1,11 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Border, Color, Spacing, Typography } from 'core/styles';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
   input: {
+    // this makes the input field shrink down to a width of 50
+    width: 50,
     flex: 1,
     backgroundColor: Color.contrast,
     borderRadius: Border.inputRadius,
@@ -37,14 +43,16 @@ const Input = (props: IPropTypes) => {
   }
 
   return (
-    <TextInput
-      style={inputStyles}
-      editable={enabled || false}
-      value={value}
-      placeholder={placeholder || ''}
-      onChangeText={enabled ? onChange : undefined}
-      testID={testID || undefined}
-    />
+    <View style={styles.container}>
+      <TextInput
+        style={inputStyles}
+        editable={enabled || false}
+        value={value}
+        placeholder={placeholder || ''}
+        onChangeText={enabled ? onChange : undefined}
+        testID={testID || undefined}
+      />
+    </View>
   );
 };
 

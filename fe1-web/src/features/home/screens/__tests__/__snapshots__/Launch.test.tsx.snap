@@ -372,31 +372,41 @@ exports[`Launch renders correctly 1`] = `
                               >
                                 Organization name
                               </Text>
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Organization name"
+                              <View
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderColor": "#fff",
-                                      "borderRadius": 8,
-                                      "borderWidth": 1,
-                                      "flex": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
+                                  Object {
+                                    "flex": 1,
+                                    "flexDirection": "row",
+                                  }
                                 }
-                                value=""
-                              />
+                              >
+                                <TextInput
+                                  editable={true}
+                                  onChangeText={[Function]}
+                                  placeholder="Organization name"
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "marginBottom": 16,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#fff",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "padding": 8,
+                                        "width": 50,
+                                      },
+                                    ]
+                                  }
+                                  value=""
+                                />
+                              </View>
                               <Text
                                 style={
                                   Array [
@@ -415,31 +425,41 @@ exports[`Launch renders correctly 1`] = `
                               >
                                 Address
                               </Text>
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Address"
+                              <View
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderColor": "#fff",
-                                      "borderRadius": 8,
-                                      "borderWidth": 1,
-                                      "flex": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
+                                  Object {
+                                    "flex": 1,
+                                    "flexDirection": "row",
+                                  }
                                 }
-                                value="ws://127.0.0.1:9000/organizer/client"
-                              />
+                              >
+                                <TextInput
+                                  editable={true}
+                                  onChangeText={[Function]}
+                                  placeholder="Address"
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "marginBottom": 16,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#fff",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "padding": 8,
+                                        "width": 50,
+                                      },
+                                    ]
+                                  }
+                                  value="ws://127.0.0.1:9000/organizer/client"
+                                />
+                              </View>
                             </View>
                             <View
                               style={
@@ -457,8 +477,8 @@ exports[`Launch renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -517,8 +537,8 @@ exports[`Launch renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -577,8 +597,8 @@ exports[`Launch renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -637,8 +657,8 @@ exports[`Launch renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >

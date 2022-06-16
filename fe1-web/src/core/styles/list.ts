@@ -51,6 +51,7 @@ export const top: ViewStyle = {
 
 export const container: ViewStyle = {
   borderRadius: radius,
+  marginBottom: x1,
 };
 
 export const icon: ViewStyle = {

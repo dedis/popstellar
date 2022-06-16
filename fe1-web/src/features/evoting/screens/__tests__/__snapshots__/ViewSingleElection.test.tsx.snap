@@ -4423,6 +4423,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -5839,6 +5840,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -7603,6 +7605,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               Array [
                                 Object {
                                   "borderRadius": 16,
+                                  "marginBottom": 16,
                                 },
                                 Object {
                                   "marginBottom": 16,
@@ -8774,8 +8777,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -9199,6 +9202,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -10807,6 +10811,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -12223,6 +12228,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -13924,6 +13930,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               Array [
                                 Object {
                                   "borderRadius": 16,
+                                  "marginBottom": 16,
                                 },
                                 Object {
                                   "marginBottom": 16,
@@ -15011,8 +15018,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -15436,6 +15443,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
