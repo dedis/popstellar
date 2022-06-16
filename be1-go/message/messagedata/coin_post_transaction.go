@@ -54,6 +54,7 @@ type UnlockScript struct {
 
 // Verify verifies that the PostTransaction message is valid
 func (message PostTransaction) Verify() error {
+	
 	for _, out := range message.Transaction.Outputs {
 		if out.Value < 0 {
 			return answer.NewErrorf(-4, "transaction output value is %d, "+
