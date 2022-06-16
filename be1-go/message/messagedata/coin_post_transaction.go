@@ -166,7 +166,7 @@ func (message PostTransaction) verifySignature() error {
 
 		err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 		if err != nil {
-			return xerrors.Errorf("failed to verify signature : %v", err)
+			return answer.NewErrorf(-4, "failed to verify signature : %v", err)
 		}
 	}
 
