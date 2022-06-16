@@ -70,12 +70,12 @@ func (message PostTransaction) Verify() error {
 
 	err = message.verifyTransactionId()
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed too verify the transaction id: %v", err)
 	}
 
 	err = message.verifySignature()
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to verify the signature: %v", err)
 	}
 
 	return nil
