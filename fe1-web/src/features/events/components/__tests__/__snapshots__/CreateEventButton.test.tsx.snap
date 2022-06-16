@@ -327,6 +327,7 @@ exports[`CreateEventButton renders correctly 1`] = `
                         onResponderTerminate={[Function]}
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
+                        testID="create_event_selector"
                       >
                         <RNGestureHandlerButton
                           collapsable={false}

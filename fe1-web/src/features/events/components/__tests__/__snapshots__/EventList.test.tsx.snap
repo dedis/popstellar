@@ -870,6 +870,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={
@@ -1046,6 +1047,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={
@@ -1217,6 +1219,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={
@@ -2330,6 +2333,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={
@@ -2547,6 +2551,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={
@@ -2759,6 +2764,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
+                            testID="previous_event_selector_{idx}"
                           >
                             <View
                               style={

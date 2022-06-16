@@ -364,6 +364,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                                 },
                               ]
                             }
+                            testID="roll_call_name_selector"
                             value=""
                           />
                           <Text
@@ -405,6 +406,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                                 },
                               ]
                             }
+                            testID="roll_call_location_selector"
                             value=""
                           />
                           <Text
@@ -467,6 +469,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                                 "width": "100%",
                               }
                             }
+                            testID="roll_call_confirm_selector"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}

@@ -607,6 +607,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                           onResponderTerminate={[Function]}
                                                           onResponderTerminationRequest={[Function]}
                                                           onStartShouldSetResponder={[Function]}
+                                                          testID="launch_selector"
                                                         >
                                                           <RNGestureHandlerButton
                                                             collapsable={false}
