@@ -210,7 +210,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALL_END_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message should equal(Left((STATE_MEETING_SMALL_END_RPC)))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -219,6 +219,15 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_BIG_START_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  // Wrong Witness Signature
+  test("Creating and invalid meeting state withwrong witness signature"){
+    val dbActorRef = mockDbWorkingSetup
+    println(dbActorRef)
+    val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_WRONGWITNESS_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }

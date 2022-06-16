@@ -327,4 +327,15 @@ final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
     Some(invalidStateMeetingBigStartTime)
   )
 
+  final val invalidWitnessSignatures: List[WitnessSignaturePair] = WitnessSignaturePair.apply(PublicKey(Base64Data("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")), Signature(Base64Data("XXX"))) :: List.empty
+  final val invalidStateMeetingWrongWitnessSignature: StateMeeting = StateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, lastModified, Some("EPFL"),  Timestamp(1633098900), Some(Timestamp(1633102500)), None, modificationId, invalidWitnessSignatures)
+  final val MESSAGE_STATE_MEETING_WRONG_WITNESS_SIGNATURE: Message = new Message(
+    Base64Data.encode(invalidStateMeetingWrongWitnessSignature.toJson.toString()),
+    PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    List.empty,
+    Some(invalidStateMeetingWrongWitnessSignature)
+  )
+
 }
