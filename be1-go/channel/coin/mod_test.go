@@ -574,7 +574,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		" failed to process message:"+
 		" failed to process action 'coin#post_transaction':"+
 		" invalid coin#postTransaction message:"+
-		" failed too verify the transaction id:"+
+		" failed to verify the transaction id:"+
 		" transaction id is not valid:"+
 		" 0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc= !="+
 		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
