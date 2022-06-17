@@ -62,6 +62,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private static final String TYPE = "P2PKH";
   private static final int VERSION = 1;
 
+  public static final int NOTHING_SELECTED = -1;
+  public static final int MIN_LAO_COIN = 0;
+
   /*
    * LiveData objects for capturing events
    */
@@ -401,5 +404,20 @@ public class DigitalCashViewModel extends AndroidViewModel {
     LAOState laoState = laoRepository.getLaoById().get(laoId);
     if (laoState == null) return null;
     return laoState.getLao();
+  }
+
+  public boolean canPerformTransaction(
+      String currentAmount, String currentPublicKeySelected, int radioGroup) {
+    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
+      // create in View Model a function that toast : please enter amount
+      requireToPutAnAmount();
+      return false;
+    } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
+      // create in View Model a function that toast : please enter key
+      requireToPutLAOMember();
+      return false;
+    } else {
+      return true;
+    }
   }
 }

@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -31,33 +33,33 @@ public class DigitalCashSendFragment extends Fragment {
   private DigitalCashSendFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
 
-    public DigitalCashSendFragment() {
-        // not implemented yet
-    }
+  public DigitalCashSendFragment() {
+    // not implemented yet
+  }
 
-    /**
-     * Use this factory method to create a new instance of this fragment using the provided
-     * parameters.
-     *
-     * @return A new instance of fragment DigitalCashSendFragment.
-     */
-    public static DigitalCashSendFragment newInstance() {
-        return new DigitalCashSendFragment();
-    }
+  /**
+   * Use this factory method to create a new instance of this fragment using the provided
+   * parameters.
+   *
+   * @return A new instance of fragment DigitalCashSendFragment.
+   */
+  public static DigitalCashSendFragment newInstance() {
+    return new DigitalCashSendFragment();
+  }
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mViewModel = DigitalCashMain.obtainViewModel(getActivity());
-        mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+  @Override
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
-        // Inflate the layout for this fragment
-        return mBinding.getRoot();
-    }
+    // Inflate the layout for this fragment
+    return mBinding.getRoot();
+  }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
 
     mViewModel
@@ -70,60 +72,51 @@ public class DigitalCashSendFragment extends Fragment {
                 String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                if ((currentAmount.isEmpty()) || (Integer.valueOf(currentAmount) < 0)) {
-                  // create in View Model a function that toast : please enter amount
-                  mViewModel.requireToPutAnAmount();
-                  return;
-                } else if (currentPublicKeySelected.isEmpty()) {
-                  // create in View Model a function that toast : please enter key
-                  mViewModel.requireToPutLAOMember();
-                  return;
-                }
+                if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
+                  try {
+                    Lao lao = mViewModel.getCurrentLao();
+                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                    if (canPostTransaction(
+                        lao, token.getPublicKey(), Integer.parseInt(currentAmount))) {
+                      postTransaction(
+                          Collections.singletonMap(currentPublicKeySelected, currentAmount));
+                      mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
+                      mViewModel.updateReceiptAmountEvent(currentAmount);
+                      mViewModel.openReceipt();
+                    }
 
-                PoPToken token = null;
-                try {
-                  token = mViewModel.getKeyManager().getValidPoPToken(mViewModel.getCurrentLao());
-                  if (mViewModel.getCurrentLao().getTransactionByUser().isEmpty()
-                      || !mViewModel
-                          .getCurrentLao()
-                          .getTransactionByUser()
-                          .containsKey(token.getPublicKey())) {
+                  } catch (KeyException keyException) {
                     Toast.makeText(
                             requireContext(),
-                            "Can't send because you have no money",
+                            R.string.digital_cash_please_enter_a_lao,
                             Toast.LENGTH_SHORT)
                         .show();
-                    return;
                   }
-
-                  long amount =
-                      TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                          mViewModel
-                              .getCurrentLao()
-                              .getTransactionByUser()
-                              .get(token.getPublicKey()),
-                          token.getPublicKey());
-                  if (amount < (Integer.valueOf(currentAmount))) {
-                    Toast.makeText(
-                            requireContext(),
-                            "Can't send more money than you have !",
-                            Toast.LENGTH_SHORT)
-                        .show();
-                    return;
-                  }
-                } catch (KeyException keyException) {
-                  Toast.makeText(requireContext(), "Require to be in the LAO !", Toast.LENGTH_SHORT)
-                      .show();
-                  return;
                 }
-                postTransaction(Collections.singletonMap(currentPublicKeySelected, currentAmount));
-                mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
-                mViewModel.updateReceiptAmountEvent(currentAmount);
-                mViewModel.openReceipt();
               }
             });
 
     setUpTheAdapter();
+  }
+
+  public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
+    Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
+    if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
+      Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
+          .show();
+      return false;
+    }
+    long amount =
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(
+            transactionByUser.get(publicKey), publicKey);
+    if (amount < currentAmount) {
+      Toast.makeText(
+              requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
+          .show();
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /** Funciton that set up the Adapter */

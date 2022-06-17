@@ -42,8 +42,6 @@ public class DigitalCashIssueFragment extends Fragment {
   private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
   private int selectAllLaoWitnesses;
-  private static final int NOTHING_SELECTED = -1;
-  private static final int MIN_LAO_COIN = 0;
 
   public DigitalCashIssueFragment() {
     // not implemented yet
@@ -95,7 +93,8 @@ public class DigitalCashIssueFragment extends Fragment {
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
                 int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                if (canIssueSomething(currentAmount, currentPublicKeySelected, radioGroup)) {
+                if (mViewModel.canPerformTransaction(
+                    currentAmount, currentPublicKeySelected, radioGroup)) {
                   try {
                     Map<String, String> issueMap =
                         computeMapForPostTransaction(
@@ -120,7 +119,7 @@ public class DigitalCashIssueFragment extends Fragment {
   public Map<String, String> computeMapForPostTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup)
       throws NoRollCallException {
-    if (radioGroup == NOTHING_SELECTED) {
+    if (radioGroup == DigitalCashViewModel.NOTHING_SELECTED) {
       return Collections.singletonMap(currentPublicKeySelected, currentAmount);
     } else {
       Set<PublicKey> attendees = attendeesPerRadioGroupButton(radioGroup);
@@ -131,21 +130,6 @@ public class DigitalCashIssueFragment extends Fragment {
         }
       }
       return issueMap;
-    }
-  }
-
-  public boolean canIssueSomething(
-      String currentAmount, String currentPublicKeySelected, int radioGroup) {
-    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
-      // create in View Model a function that toast : please enter amount
-      mViewModel.requireToPutAnAmount();
-      return false;
-    } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
-      // create in View Model a function that toast : please enter key
-      mViewModel.requireToPutLAOMember();
-      return false;
-    } else {
-      return true;
     }
   }
 
