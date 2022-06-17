@@ -68,7 +68,6 @@ public class DigitalCashSendFragment extends Fragment {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
-                // Log.d(this.getClass().toString(), "the current amount is " + currentAmount);
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
                 if ((currentAmount.isEmpty()) || (Integer.valueOf(currentAmount) < 0)) {
