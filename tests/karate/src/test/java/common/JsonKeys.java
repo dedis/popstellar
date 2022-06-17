@@ -35,6 +35,8 @@ public class JsonKeys {
 
   public static final String CREATE = "create";
 
+  public static final String OPEN = "open";
+
   public static final String OBJECT = "object";
 
   public static final String ROLL_CALL = "roll_call";
@@ -42,4 +44,10 @@ public class JsonKeys {
   public static final String CREATION = "creation";
 
   public static final String NAME = "name";
+
+  public static final String OPENS = "opens";
+
+  public static final String OPENED_AT = "opened_at";
+
+  public static final String UPDATE_ID = "update_id";
 }

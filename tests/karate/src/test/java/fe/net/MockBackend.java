@@ -119,11 +119,16 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   public void clearBuffer() {
+    logger.info("Buffer cleared");
     queue.clear();
   }
 
   public boolean receiveNoMoreResponses() {
     return queue.takeTimeout(5000) == null;
+  }
+
+  public int getQueueSize(){
+    return queue.size();
   }
 
   public void setLaoCreateMode() {
@@ -140,7 +145,6 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   public boolean checkRollCallCreateMessage(String message) {
     return RollCallVerification.verifyCreate(message);
   }
-
   public boolean checkRollCallOpenMessage(String message){
     return RollCallVerification.verifyOpen(message);
   }

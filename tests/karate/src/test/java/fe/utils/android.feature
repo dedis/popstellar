@@ -73,6 +73,7 @@ Feature: android page object
     And input(roll_call_title_selector, 'RC name')
 
   #roll call open android procedure
+  @name=open_roll_call
   Scenario: Opens the created roll-call
     * click(event_name_selector)
     * click(roll_call_action_selector)

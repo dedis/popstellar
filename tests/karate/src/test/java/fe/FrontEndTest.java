@@ -9,8 +9,13 @@ public class FrontEndTest {
 //    return Karate.run("classpath:fe/LAO/create_lao.feature");
 //  }
 
+//  @Karate.Test
+//  Karate testCreateRC() {
+//    return Karate.run("classpath:fe/RollCall/rollCallCreation.feature");
+//  }
+
   @Karate.Test
-  Karate testCreateRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallCreation.feature");
+  Karate testOpenRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallOpen.feature");
   }
 }
