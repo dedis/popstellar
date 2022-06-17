@@ -30,7 +30,6 @@ import java.util.Map;
 public class DigitalCashSendFragment extends Fragment {
   private DigitalCashSendFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
-  private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
 
     public DigitalCashSendFragment() {
         // not implemented yet

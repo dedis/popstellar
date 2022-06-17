@@ -62,7 +62,7 @@ public class DigitalCashReceiptFragment extends Fragment {
               String address = stringEvent.getContentIfNotHandled();
               if (address != null) {
                 mBinding.digitalCashReceiptBeneficiary.setText(
-                    String.format("Beneficary : \n %s", address));
+                    String.format("Beneficary : %n %s", address));
               }
             });
   }

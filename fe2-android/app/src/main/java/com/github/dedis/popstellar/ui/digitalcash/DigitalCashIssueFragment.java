@@ -39,9 +39,9 @@ public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
-  private static int selectAllLaoMembers;
-  private static int selectAllRollCallAttendees;
-  private static int selectAllLaoWitnesses;
+  private int selectAllLaoMembers;
+  private int selectAllRollCallAttendees;
+  private int selectAllLaoWitnesses;
   private static final int NOTHING_SELECTED = -1;
   private static final int MIN_LAO_COIN = 0;
 
@@ -90,62 +90,82 @@ public class DigitalCashIssueFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-
                 /*Take the amount entered by the user*/
                 String currentAmount = mBinding.digitalCashIssueAmount.getText().toString();
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
-
                 int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
-                  // create in View Model a function that toast : please enter amount
-                  mViewModel.requireToPutAnAmount();
-                } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
-                  // create in View Model a function that toast : please enter key
-                  mViewModel.requireToPutLAOMember();
-                } else {
-
+                if (canIssueSomething(currentAmount, currentPublicKeySelected, radioGroup)) {
                   try {
-                    if (radioGroup == NOTHING_SELECTED) {
-                      postTransaction(
-                          Collections.singletonMap(currentPublicKeySelected, currentAmount));
+                    Map<String, String> issueMap =
+                        computeMapForPostTransaction(
+                            currentAmount, currentPublicKeySelected, radioGroup);
+                    if (issueMap.isEmpty()) {
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_no_attendees,
+                              Toast.LENGTH_LONG)
+                          .show();
                     } else {
-                      Set<PublicKey> attendees = new HashSet<>();
-                      if (radioGroup == selectAllLaoMembers) {
-                        for (RollCall current :
-                            Objects.requireNonNull(mViewModel.getCurrentLao())
-                                .getRollCalls()
-                                .values()) {
-                          attendees.addAll(current.getAttendees());
-                        }
-                      } else if (radioGroup == selectAllRollCallAttendees) {
-                        attendees = mViewModel.getAttendeesFromTheRollCall();
-                      } else if (radioGroup == selectAllLaoWitnesses) {
-                        attendees =
-                            Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
-                      }
-
-                      if (attendees.isEmpty()) {
-                        Toast.makeText(
-                                requireContext(),
-                                R.string.digital_cash_no_attendees,
-                                Toast.LENGTH_LONG)
-                            .show();
-                        return;
-                      } else {
-                        Map<String, String> issueMap = new HashMap<>();
-                        for (PublicKey publicKey : attendees) {
-                          issueMap.putIfAbsent(publicKey.getEncoded(), currentAmount);
-                        }
-                        postTransaction(issueMap);
-                      }
+                      postTransaction(issueMap);
                     }
-                  } catch (KeyException e) {
-                    Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
+                  } catch (NoRollCallException r) {
+                    Log.e(TAG, getString(R.string.no_rollcall_exception), r);
                   }
                 }
               }
             });
+  }
+
+  public Map<String, String> computeMapForPostTransaction(
+      String currentAmount, String currentPublicKeySelected, int radioGroup)
+      throws NoRollCallException {
+    if (radioGroup == NOTHING_SELECTED) {
+      return Collections.singletonMap(currentPublicKeySelected, currentAmount);
+    } else {
+      Set<PublicKey> attendees = attendeesPerRadioGroupButton(radioGroup);
+      Map<String, String> issueMap = new HashMap<>();
+      if (!attendees.isEmpty()) {
+        for (PublicKey publicKey : attendees) {
+          issueMap.putIfAbsent(publicKey.getEncoded(), currentAmount);
+        }
+      }
+      return issueMap;
+    }
+  }
+
+  public boolean canIssueSomething(
+      String currentAmount, String currentPublicKeySelected, int radioGroup) {
+    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
+      // create in View Model a function that toast : please enter amount
+      mViewModel.requireToPutAnAmount();
+      return false;
+    } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
+      // create in View Model a function that toast : please enter key
+      mViewModel.requireToPutLAOMember();
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * Function that return the give list of attendees Radio Group Button selected (a empty list if
+   * nothing)
+   */
+  private Set<PublicKey> attendeesPerRadioGroupButton(int radioGroup) throws NoRollCallException {
+    Set<PublicKey> attendees = new HashSet<>();
+    if (radioGroup == selectAllLaoMembers) {
+      for (RollCall current :
+          Objects.requireNonNull(mViewModel.getCurrentLao()).getRollCalls().values()) {
+        attendees.addAll(current.getAttendees());
+      }
+    } else if (radioGroup == selectAllRollCallAttendees) {
+      attendees = mViewModel.getAttendeesFromTheRollCall();
+    } else if (radioGroup == selectAllLaoWitnesses) {
+      attendees = Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
+    }
+    return attendees;
   }
 
   /** Function that setup the Button */
