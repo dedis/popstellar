@@ -181,8 +181,8 @@ public class DigitalCashIssueFragment extends Fragment {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
       mViewModel.openHome();
-      Log.d(TAG, "error : no RollCall in the Lao");
-      Toast.makeText(requireContext(), "Please attend to the some RollCall", Toast.LENGTH_SHORT)
+      Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
+      Toast.makeText(requireContext(), getString(R.string.digital_cash_please_enter_roll_call), Toast.LENGTH_SHORT)
           .show();
     }
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
