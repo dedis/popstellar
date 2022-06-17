@@ -33,40 +33,31 @@ public class DigitalCashMain extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.digital_cash_main_activity);
-
     mViewModel = obtainViewModel(this);
+    setupNavigationBar();
+    setTheIntent();
+    // Subscribe to "open home"
+    openHomeEvent();
+    // Subscribe to "open history"
+    openHistoryEvent();
+    // Subscribe to "open send"
+    openSendEvent();
+    // Subscribe to "open receive"
+    openReceiveEvent();
+    // Subscribe to "open issue"
+    openIssueEvent();
+    // Subscribe to "open receipt"
+    openReceiptEvent();
+    mViewModel.openHome();
+  }
+
+  public void setTheIntent() {
     mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
     mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
     mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
+  }
 
-    setupNavigationBar();
-    // Subscribe to "open home"
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash home Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_home);
-              }
-            });
-
-    // Subscribe to "open history"
-    mViewModel
-        .getOpenHistoryEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash history Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_history);
-              }
-            });
-
-    // Subscribe to "open send"
+  public void openSendEvent() {
     mViewModel
         .getOpenSendEvent()
         .observe(
@@ -78,7 +69,9 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_send);
               }
             });
+  }
 
+  public void openReceiveEvent() {
     // Subscribe to "open receive"
     mViewModel
         .getOpenReceiveEvent()
@@ -91,7 +84,24 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_receive);
               }
             });
+  }
 
+  public void openHomeEvent() {
+    // Subscribe to "open home"
+    mViewModel
+        .getOpenHomeEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Log.d(TAG, "Open digital cash home Fragment");
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupFragment(R.id.fragment_digital_cash_home);
+              }
+            });
+  }
+
+  public void openIssueEvent() {
     // Subscribe to "open issue"
     mViewModel
         .getOpenIssueEvent()
@@ -118,12 +128,28 @@ public class DigitalCashMain extends AppCompatActivity {
                   Toast.makeText(this, "You have to be the Lao Organizer", Toast.LENGTH_SHORT)
                       .show();
                 } else {
-
                   setupFragment(R.id.fragment_digital_cash_issue);
                 }
               }
             });
+  }
 
+  public void openHistoryEvent() {
+    // Subscribe to "open history"
+    mViewModel
+        .getOpenHistoryEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Log.d(TAG, "Open digital cash history Fragment");
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupFragment(R.id.fragment_digital_cash_history);
+              }
+            });
+  }
+
+  public void openReceiptEvent() {
     // Subscribe to "open receipt"
     mViewModel
         .getOpenReceiptEvent()
@@ -136,8 +162,6 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_receipt);
               }
             });
-
-    mViewModel.openHome();
   }
 
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
