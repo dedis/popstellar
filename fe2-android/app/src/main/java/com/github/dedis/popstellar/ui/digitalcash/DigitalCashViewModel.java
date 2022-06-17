@@ -250,16 +250,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       List<Output> outputs = new ArrayList<>();
       long amountFromReceiver = 0;
       for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
-        PublicKey pub = null;
         try {
-          pub = getPublicKeyOutString(current.getKey());
+          PublicKey pub = getPublicKeyOutString(current.getKey());
+          long amount = Long.parseLong(current.getValue());
+          amountFromReceiver += amount;
+          Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
+          outputs.add(addOutput);
         } catch (Exception e) {
-          Log.e(TAG, RECEIVER_KEY_ERROR);
+          Log.e(TAG, RECEIVER_KEY_ERROR, e);
         }
-        long amount = Long.valueOf(current.getValue());
-        amountFromReceiver += amount;
-        Output add_output = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
-        outputs.add(add_output);
       }
 
       // Then make the inputs
