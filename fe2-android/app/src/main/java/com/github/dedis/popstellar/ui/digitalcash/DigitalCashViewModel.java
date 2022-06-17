@@ -218,7 +218,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
-  public PublicKey getPublicKeyOutString(String encodedpub) throws Exception {
+  public PublicKey getPublicKeyOutString(String encodedpub) throws NoRollCallException {
     Iterator<PublicKey> ite = getAttendeesFromTheRollCall().iterator();
     while (ite.hasNext()) {
       PublicKey current = ite.next();
@@ -226,7 +226,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
         return current;
       }
     }
-    throw new Exception("Don't find the key");
+    return null;
   }
 
   /**
