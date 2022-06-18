@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    #* configure driver = { type: 'chrome' }
+    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    * configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -30,8 +30,6 @@ Feature: web test
 
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
-    * def opened_text_selector = '{^}The Roll Call is currently open'
-    * def rc_proposed_start_rc = "[data-testid='rc_supposed_start']"
 
 
 
