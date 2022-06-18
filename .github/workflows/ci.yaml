@@ -269,6 +269,34 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE2 }}
         run: sbt sonarScan
 
+  be2-scala-migrate-scala3:
+    name: Be2-Scala Scala 3 Migration
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./be2-scala
+
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+      - name: Setup repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+
+      - name: Test migration
+        run: sbt clean \
+          "migrate-libs be2-scala" \
+          "migrate-scalacOptions be2-scala" \
+          "migrate-syntax be2-scala" \
+          "migrate be2-scala" \
+          test
+
   protocol:
     name: protocol examples test
     runs-on: ubuntu-latest
