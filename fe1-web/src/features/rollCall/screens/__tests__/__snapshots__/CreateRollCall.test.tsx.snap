@@ -343,30 +343,42 @@ exports[`CreateRollCall renders correctly 1`] = `
                           >
                             Name
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="Real Life Captcha"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            testID="roll_call_name_selector"
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Real Life Captcha"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              testID="roll_call_name_selector"
+                              value=""
+                            />
+                          </View>
                           <Text
                             style={
                               Array [
@@ -385,30 +397,42 @@ exports[`CreateRollCall renders correctly 1`] = `
                           >
                             Location
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="BC410"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            testID="roll_call_location_selector"
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="BC410"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              testID="roll_call_location_selector"
+                              value=""
+                            />
+                          </View>
                           <Text
                             style={
                               Array [
@@ -427,29 +451,41 @@ exports[`CreateRollCall renders correctly 1`] = `
                           >
                             Description
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="Are you a robot?"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Are you a robot?"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              value=""
+                            />
+                          </View>
                           <View
                             accessible={true}
                             collapsable={false}
@@ -465,8 +501,8 @@ exports[`CreateRollCall renders correctly 1`] = `
                             onStartShouldSetResponder={[Function]}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                             testID="roll_call_confirm_selector"
@@ -480,8 +516,8 @@ exports[`CreateRollCall renders correctly 1`] = `
                               rippleColor={0}
                               style={
                                 Object {
+                                  "flex": 1,
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                             >
@@ -617,8 +653,8 @@ exports[`CreateRollCall renders correctly 1`] = `
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -631,8 +667,8 @@ exports[`CreateRollCall renders correctly 1`] = `
                                     rippleColor={0}
                                     style={
                                       Object {
+                                        "flex": 1,
                                         "marginBottom": 16,
-                                        "width": "100%",
                                       }
                                     }
                                   >
@@ -725,7 +761,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               style={
                                 Object {
-                                  "backgroundColor": "#fff",
+                                  "backgroundColor": "rgb(242, 242, 242)",
                                   "borderRadius": 16,
                                   "margin": 32,
                                   "padding": 32,
@@ -848,8 +884,8 @@ What do you want to do ?
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                   testID="confirm-modal-confirm"
@@ -863,8 +899,8 @@ What do you want to do ?
                                     rippleColor={0}
                                     style={
                                       Object {
+                                        "flex": 1,
                                         "marginBottom": 16,
-                                        "width": "100%",
                                       }
                                     }
                                   >

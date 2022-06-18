@@ -475,8 +475,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -489,8 +489,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -556,8 +556,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -570,8 +570,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1111,8 +1111,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1125,8 +1125,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1192,8 +1192,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1206,8 +1206,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1747,8 +1747,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1761,8 +1761,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1828,8 +1828,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           onStartShouldSetResponder={[Function]}
                           style={
                             Object {
+                              "flex": 1,
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1842,8 +1842,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             rippleColor={0}
                             style={
                               Object {
+                                "flex": 1,
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >

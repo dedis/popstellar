@@ -2,7 +2,7 @@ import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, PopToken } from 'core/objects';
+import { Hash, PopToken, RollCallToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
@@ -65,14 +65,15 @@ export interface RollCallConfiguration {
   getEventById: (id: Hash) => RollCallFeature.EventState | undefined;
 
   /**
-   * Creates a selector for a two-level map from laoIds to eventIds to events
+   * Creates a selector for a map from eventIds to events
    * where all returned events have type 'eventType'
    * @param eventType The type of the events that should be returned
    * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
+    laoId: string,
     eventType: string,
-  ) => (state: unknown) => Record<string, Record<string, RollCallFeature.EventState>>;
+  ) => (state: unknown) => Record<string, RollCallFeature.EventState>;
 
   /**
    * Deterministically generates a pop token from given lao and rollCall ids
@@ -109,11 +110,13 @@ export interface RollCallInterface extends FeatureInterface {
   };
 
   hooks: {
-    useRollCallsByLaoId: () => {
-      [laoId: string]: {
-        [rollCallId: string]: RollCall;
-      };
+    useRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+    useRollCallsByLaoId: (laoId: string) => {
+      [rollCallId: string]: RollCall;
     };
+
+    useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
+    useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
   };
 
   context: RollCallReactContext;

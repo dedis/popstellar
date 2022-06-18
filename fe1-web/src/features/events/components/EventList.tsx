@@ -75,7 +75,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === futureEvents.length - 1}
-            testID="upcoming_event_selector_{idx}"
+            testID={`upcoming_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>
@@ -98,7 +98,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === currentEvents.length - 1}
-            testID="current_event_selector_{idx}"
+            testID={`current_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>
@@ -121,7 +121,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === pastEvents.length - 1}
-            testID="previous_event_selector_{idx}"
+            testID={`previous_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>

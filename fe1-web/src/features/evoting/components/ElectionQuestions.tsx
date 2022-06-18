@@ -69,7 +69,8 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                   {
                     // create a copy since sort() mutates the original object but the election but be immutable
                     [...questionResult.result]
-                      .sort((a, b) => a.count - b.count)
+                      // sort in descending order
+                      .sort((a, b) => b.count - a.count)
                       .map((ballotOption, idx) => {
                         const listStyles = List.getListItemStyles(
                           idx === 0,

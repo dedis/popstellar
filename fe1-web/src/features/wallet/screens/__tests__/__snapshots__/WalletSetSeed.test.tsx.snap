@@ -392,8 +392,8 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -406,8 +406,8 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -476,8 +476,8 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -490,8 +490,8 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
+                                      "flex": 1,
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
