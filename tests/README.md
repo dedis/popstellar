@@ -1,5 +1,5 @@
 ﻿# Functional Requirements
-Last updated  : 16.6.2022
+Last updated  : 18.6.2022
 
 # Lao
 ## Create
@@ -25,8 +25,8 @@ Last updated  : 16.6.2022
 |-----|--------|--------|--------|
 | Be1 |Unstable|   X    |    X   |
 | Be2 |Reliable|   X    |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|   X    |    X   |
+| Fe2 |Operational|   X    |    X   |
 
 ## Open
 
@@ -53,9 +53,9 @@ Last updated  : 16.6.2022
 
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |        |   X    |        |
-| Be2 |        |   X    |        |
-| Fe1 |        |   X    |        |
+| Be1 |Operational|   X    |        |
+| Be2 |Operational|   X    |        |
+| Fe1 |Operational|   X    |        |
 | Fe2 |Unstable|   X    |        |
 
 
@@ -64,9 +64,9 @@ Last updated  : 16.6.2022
 
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |        |    X   |        |
-| Be2 |        |    X   |        |
-| Fe1 |        |    X   |        |
+| Be1 |Operational|    X   |        |
+| Be2 |Operational|    X   |        |
+| Fe1 |Operational|    X   |        |
 | Fe2 |Unstable|    X   |        |
 
 # Election
@@ -75,47 +75,47 @@ Last updated  : 16.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Reliable|   X    |    X   |
-| Be2 |        |   X    |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Be2 |Unstable|   X    |    X   |
+| Fe1 |Operational|    X   |        |
+| Fe2 |Operational|    X   |        |
 ## Open
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Reliable|   X    |    X   |
 | Be2 |        |        |        |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|   X    |        |
+| Fe2 |Operational|   X    |        |
 
 ## Cast Vote open ballots
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |Reliable|   X    |    X   |
+| Be1 ||Operational|   X    |    X   |
 | Be2 |        |        |        |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|   X    |        |
+| Fe2 |Operational|   X    |        |
 
 ## Cast Vote encrypted
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |Operational|    X   |        |
-| Be2 |Operational|    X   |        |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Be1 |Operational|   X    |        |
+| Be2 |Operational|   X    |        |
+| Fe1 |Operational|   X    |        |
+| Fe2 |Operational|   X    |        |
 
 ## End
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Unstable|    X   |    X   |
 | Be2 |        |    X   |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|    X   |        |
+| Fe2 |Operational|    X   |        |
 ## Result
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Operational|    X   |    X   |
 | Be2 |        |    X   |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|    X   |        |
+| Fe2 |Operational|    X   |        |
 # Digital Cash
 
 ## Issuance
