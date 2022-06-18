@@ -28,6 +28,12 @@ Feature: web test
     * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
     * def event_name_selector = '{}RC name'
 
+    # Roll Call Screen
+    * def roll_call_option_selector = "[data-testid='roll_call_options']"
+    * def opened_text_selector = '{^}The Roll Call is currently open'
+    * def rc_proposed_start_rc = "[data-testid='rc_supposed_start']"
+
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -54,6 +60,13 @@ Feature: web test
               }
             }
           """
+    * def wait =
+            """
+                function(secs) {
+                    java.lang.Thread.sleep(secs*1000)
+                }
+            """
+
     * click(exploring_selector)
     * click(tab_connect_selector)
 
@@ -69,7 +82,15 @@ Feature: web test
     And click(add_event_selector)
 
     # Clicking on Create Roll-Call
-    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
 
     And input(roll_call_title_selector, 'RC name')
     And input(roll_call_location_selector, 'EPFL')
+
+    #roll call open web procedure
+  @name=open_roll_call
+  Scenario: Opens the created roll-call
+    * retry(5,1000).click(event_name_selector)
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+    * wait(2)

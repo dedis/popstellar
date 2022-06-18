@@ -21,7 +21,6 @@ Feature: Open Roll Call
     # Retrieving sent messages
     * json open_rc_json = buffer.takeTimeout(timeout)
     * string open_rc_string = open_rc_json
-    * print open_rc_string
 
     Then match open_rc_json contains deep { method: 'publish'}
     And match backend.checkPublishMessage(open_rc_string) == true
