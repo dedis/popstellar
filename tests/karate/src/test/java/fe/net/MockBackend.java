@@ -127,10 +127,6 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     return queue.takeTimeout(5000) == null;
   }
 
-  public int getQueueSize(){
-    return queue.size();
-  }
-
   public void setLaoCreateMode() {
     replyProducer = ReplyMethods.LAO_CREATE;
   }
@@ -142,9 +138,11 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   public boolean checkPublishMessage(String message) {
     return PublishMessageVerification.verifyPublishMessage(message);
   }
+
   public boolean checkRollCallCreateMessage(String message) {
     return RollCallVerification.verifyCreate(message);
   }
+
   public boolean checkRollCallOpenMessage(String message){
     return RollCallVerification.verifyOpen(message);
   }

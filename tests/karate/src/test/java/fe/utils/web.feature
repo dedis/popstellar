@@ -31,8 +31,6 @@ Feature: web test
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
 
-
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
@@ -91,4 +89,5 @@ Feature: web test
     * retry(5,1000).click(event_name_selector)
     * click(roll_call_option_selector)
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+    # needed to work
     * wait(2)

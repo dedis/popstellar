@@ -36,7 +36,6 @@ Feature: android page object
     # Roll Call Screen
     * def roll_call_action_selector = '#com.github.dedis.popstellar:id/roll_call_management_button'
 
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions

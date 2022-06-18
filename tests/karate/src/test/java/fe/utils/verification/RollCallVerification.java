@@ -40,11 +40,8 @@ public class RollCallVerification {
   public static boolean verifyOpen(String message){
     String laoId = getLaoId(message);
     Json openMessageJson = getMsgDataJson(message);
-    logger.info("message is " + openMessageJson);
     boolean objectFieldCorrectness = ROLL_CALL.equals(openMessageJson.get(OBJECT));
     boolean actionFieldCorrectness = OPEN.equals(openMessageJson.get(ACTION));
-    logger.info("first is " + objectFieldCorrectness + " second is " + actionFieldCorrectness);
-    logger.info("action is " + openMessageJson.get(ACTION));
     return actionFieldCorrectness && objectFieldCorrectness && verifyUpdateId(openMessageJson, laoId);
   }
 
@@ -99,7 +96,7 @@ public class RollCallVerification {
   }
 
   /**
-   * Because of internal type use by karate, doing casting in 2 steps is required
+   * Because of internal type used by karate, doing casting in 2 steps is required
    */
   private static String getStringFromIntegerField(Json json, String key){
     Integer intTemp = json.get(key);

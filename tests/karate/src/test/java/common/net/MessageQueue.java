@@ -125,8 +125,4 @@ public class MessageQueue implements MessageBuffer {
 
     return msg;
   }
-
-  public int size(){
-    return queue.size();
-  }
 }

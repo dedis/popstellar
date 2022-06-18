@@ -1,12 +1,6 @@
 @env=android,web
 Feature: Open Roll Call
 
-#  Background:
-#  * def background = 'classpath:fe/utils/<env>.feature'
-#  * replace background.env = karate.env
-#  * call read (background)
-
-
   Scenario: Creating a Roll Call send right message to backend and displays element
     Given call read('classpath:fe/utils/simpleScenarios.feature@name=create_roll_call')
     * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=open_roll_call'
