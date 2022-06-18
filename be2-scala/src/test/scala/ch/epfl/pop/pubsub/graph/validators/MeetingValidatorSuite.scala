@@ -153,8 +153,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
-  // invalid end time
-  test("Creating an invalid meeting with invalid end time") {
+  // invalid start and end time
+  test("Creating an invalid meeting with start time > end time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_STARTEND_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_STARTEND_RPC)
@@ -163,8 +163,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
-  // invalid start and end time
-  test("Creating an invalid meeting with start time > end time") {
+  // invalid end tim
+  test("Creating an invalid meeting with invalid end time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_END_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_END_RPC)
