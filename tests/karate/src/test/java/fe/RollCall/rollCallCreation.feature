@@ -17,7 +17,7 @@ Feature: Create RollCall
     * json create_rc_json = buffer.takeTimeout(timeout)
     * string create_rc_string = create_rc_json
 
-    Then match create_rc_json contains deep { method: 'publish'}
+    Then match create_rc_json contains deep { method: 'publish' }
     And match backend.checkRollCallCreateMessage(create_rc_string) == true
     And match backend.receiveNoMoreResponses() == true
 
