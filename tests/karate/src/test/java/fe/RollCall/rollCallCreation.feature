@@ -2,7 +2,10 @@
 Feature: Create RollCall
 
   Background:
+    # Call the lao creation util that is front-end agnostic
     * call read('classpath:fe/utils/simpleScenarios.feature@name=create_lao')
+
+    # Call the roll call ccreation util that is front-end dependant
     * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=create_roll_call'
     * replace rc_page_object.env = karate.env
     * call read(rc_page_object)

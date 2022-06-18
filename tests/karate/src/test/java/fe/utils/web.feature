@@ -54,21 +54,19 @@ Feature: web test
               }
             }
           """
+
     * click(exploring_selector)
     * click(tab_connect_selector)
-
-    #refuse camera access
-
     * click(launch_selector)
     * input(launch_address_selector, backendURL)
 
-  #roll call web procedure
+  # Roll call web procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
     Given click(tab_events_selector)
     And click(add_event_selector)
 
-    # Clicking on Create Roll-Call
+    # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     And input(roll_call_title_selector, 'RC name')
