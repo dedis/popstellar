@@ -1,17 +1,20 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -35,6 +38,11 @@ public class DigitalCashMain extends AppCompatActivity {
     setContentView(R.layout.digital_cash_main_activity);
     mViewModel = obtainViewModel(this);
     setupNavigationBar();
+
+    setupBackButton();
+
+    setupHomeActivity();
+
     setTheIntent();
     // Subscribe to "open home"
     openHomeEvent();
@@ -50,6 +58,25 @@ public class DigitalCashMain extends AppCompatActivity {
     openReceiptEvent();
     mViewModel.openHome();
   }
+
+    private void setupHomeActivity() {
+        mViewModel
+                .getOpenReturnLAO()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                openHome();
+                            }
+                        });
+    }
+
+    private void openHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+        finish();
+    }
 
   public void setTheIntent() {
     mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
@@ -207,6 +234,14 @@ public class DigitalCashMain extends AppCompatActivity {
           R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
     }
   }
+
+    private void setupBackButton() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
 
   /**
    * Set the current fragment in the container of the activity

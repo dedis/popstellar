@@ -74,6 +74,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
+
 
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
@@ -174,6 +176,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mOpenHomeEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenReturnLAO() {
+    return mOpenReturnLAO;
+  }
+
   public LiveData<SingleEvent<Boolean>> getOpenHistoryEvent() {
     return mOpenHistoryEvent;
   }
@@ -219,6 +225,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public void openReceipt() {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void returnLAO() {
+    mOpenReturnLAO.postValue(new SingleEvent<>(true));
   }
 
   public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
