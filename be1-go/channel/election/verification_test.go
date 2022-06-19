@@ -102,7 +102,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing.T) {
+func TestVerify_ElectionOpen_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
 	// create the opened election channel with election open time less than
 	// election creation time
 	electChannel, _ := newFakeChannel(t, false)
@@ -120,6 +120,48 @@ func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing
 
 	// send the election open message to the channel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
+	require.Error(t, err)
+}
+
+func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
+	// create the opened election channel with election open time less than
+	// election creation time
+	electChannel, _ := newFakeChannel(t, false)
+
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
+		"election_open.json"))
+	require.NoError(t, err)
+
+	var electionEnd messagedata.ElectionEnd
+
+	err = json.Unmarshal(buf, &electionEnd)
+	require.NoError(t, err)
+
+	electChannel.createdAt = electionEnd.CreatedAt + 100
+
+	// send the election open message to the channel
+	err = electChannel.verifyMessageElectionEnd(electionEnd)
+	require.Error(t, err)
+}
+
+func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
+	// create the opened election channel with election open time less than
+	// election creation time
+	electChannel, _ := newFakeChannel(t, false)
+
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
+		"election_open.json"))
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	electChannel.createdAt = castVote.CreatedAt + 100
+
+	// send the election open message to the channel
+	err = electChannel.verifyMessageCastVote(castVote)
 	require.Error(t, err)
 }
 
