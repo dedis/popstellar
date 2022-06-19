@@ -41,5 +41,16 @@
         android:textSize="@dimen/size_section_title" />
 
     </LinearLayout>
+
+    <Button
+      android:id="@+id/permission_manual_rc"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      style="@style/button_style"
+      android:text="@string/manual_rc"
+      android:layout_marginBottom="@dimen/margin_button"
+      android:layout_marginEnd="@dimen/margin_button"/>
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

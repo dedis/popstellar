@@ -152,6 +152,11 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private void startCamera() throws SecurityException {
+    if (mQRCodeScanningViewModel.isManual()){
+      // For integration tests it currently not possible to grant permissions so for manual
+      // adding mode, we do not start the camera
+      return;
+    }
     // check that the device has play services available.
     int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(requireContext());
     if (code != ConnectionResult.SUCCESS) {

@@ -133,6 +133,11 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   @Override
+  public boolean isManual() {
+    return false;
+  }
+
+  @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     handleConnectionToLao(barcode.rawValue);

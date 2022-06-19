@@ -159,6 +159,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<RollCall> mCurrentRollCall =
       new MutableLiveData<>(); // Represents the current roll-call being opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
+  private final MutableLiveData<Boolean> mManualAdd = new MutableLiveData<>(); // Whether to start the camera
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
@@ -857,6 +858,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mAskCloseRollCallEvent;
   }
 
+  public boolean isManual(){
+    return mManualAdd.getValue();
+  }
+
   public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
     return mCloseRollCallEvent;
   }
@@ -1097,10 +1102,11 @@ public class LaoDetailViewModel extends AndroidViewModel
                 }));
   }
 
-  public void openQrCodeScanningRollCall() {
+  public void openQrCodeScanningRollCall(boolean manual) {
     mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
     mNbAttendeesEvent.postValue(
         new SingleEvent<>(attendees.size())); // this to display the initial number of attendees
+    mManualAdd.setValue(manual);
   }
 
   public void openCameraPermission() {
@@ -1133,7 +1139,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        openQrCodeScanningRollCall();
+        openQrCodeScanningRollCall(false);
       } else if (scanningAction == ScanningAction.ADD_WITNESS) {
         openAddWitness();
       }
@@ -1157,7 +1163,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   @Override
   public void onPermissionGranted() {
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      openQrCodeScanningRollCall();
+      openQrCodeScanningRollCall(true);
     } else if (scanningAction == ScanningAction.ADD_WITNESS) {
       openAddWitness();
     }
@@ -1220,6 +1226,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void openWitnessing() {
-    mOpenWitnessing.postValue(new SingleEvent<>(true));
+    mOpenWitnessing.postValue(new SingleEvent<>(false));
   }
 }

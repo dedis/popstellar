@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -56,7 +58,8 @@ public final class CameraPermissionFragment extends Fragment {
 
     mCameraPermFragBinding = QrcodeCameraPermFragmentBinding.inflate(inflater, container, false);
     mCameraPermFragBinding.setLifecycleOwner(getViewLifecycleOwner());
-
+    mCameraPermFragBinding.permissionManualRc.setOnClickListener(
+        v -> LaoDetailActivity.obtainViewModel(getActivity()).openQrCodeScanningRollCall(true));
     return mCameraPermFragBinding.getRoot();
   }
 
