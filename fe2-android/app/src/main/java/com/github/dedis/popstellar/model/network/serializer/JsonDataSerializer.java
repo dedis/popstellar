@@ -63,4 +63,5 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     return obj;
   }
+
 }

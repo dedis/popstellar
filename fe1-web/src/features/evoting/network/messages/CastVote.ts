@@ -3,8 +3,12 @@ import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
-import { Election, SelectedBallots, Vote } from '../../objects';
+import { Election, ElectionVersion, EncryptedVote, SelectedBallots, Vote } from '../../objects';
+
+// we are using a 2 byte unsigned number to represent the option index
+const MAX_OPTION_INDEX = 2 ** (2 /* #bytes */ * 8); /* bits in a byte */
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {
@@ -18,7 +22,7 @@ export class CastVote implements MessageData {
 
   public readonly created_at: Timestamp;
 
-  public readonly votes: Vote[];
+  public readonly votes: Vote[] | EncryptedVote[];
 
   constructor(msg: MessageDataProperties<CastVote>) {
     if (!msg.election) {
@@ -52,7 +56,7 @@ export class CastVote implements MessageData {
    *
    * @param votes - The array of votes to be checked
    */
-  public static validateVotes(votes: Vote[]) {
+  public static validateVotes(votes: Vote[] | EncryptedVote[]) {
     votes.forEach((vote) => {
       if (!vote.id) {
         throw new ProtocolError("Undefined 'vote id' parameter encountered during 'CastVote'");
@@ -60,7 +64,7 @@ export class CastVote implements MessageData {
       if (!vote.question) {
         throw new ProtocolError("Undefined 'question id' parameter encountered during 'CastVote'");
       }
-      if (!vote.vote) {
+      if (vote.vote === undefined) {
         throw new ProtocolError("Undefined 'vote' parameters encountered during 'CastVote'");
       }
     });
@@ -95,10 +99,13 @@ export class CastVote implements MessageData {
     election: Election,
     selectedBallots: SelectedBallots,
   ): Vote[] {
+    if (election.version !== ElectionVersion.OPEN_BALLOT) {
+      throw new Error('selectedBallotsToVotes() should only be called on open ballot elections');
+    }
     // Convert object to array
-    const ballotArray = Object.entries(selectedBallots).map(([idx, selectionOptions]) => ({
+    const ballotArray = Object.entries(selectedBallots).map(([idx, selectedOptionIndex]) => ({
       index: parseInt(idx, 10),
-      selectionOptions,
+      selectedOptionIndex,
     }));
 
     // sort the answers by index
@@ -107,44 +114,110 @@ export class CastVote implements MessageData {
     return (
       ballotArray
         // and add an id to all votes as well as the matching question id
-        .map<Vote>(({ index, selectionOptions }) => ({
+        .map<Vote>(({ index, selectedOptionIndex }) => ({
           // generate the vote id
-          id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
+          id: CastVote.computeVoteId(election, index, selectedOptionIndex).valueOf(),
           // find matching question id from the election
           question: election.questions[index].id,
           // convert the set to an array and sort votes in ascending order
-          vote: [...selectionOptions].sort((a, b) => a - b),
+          vote: selectedOptionIndex,
         }))
+    );
+  }
+
+  /**
+   * Converts an object of type SelectedBallots to an array of encrypted votes ready to be passed to a CastVote message
+   * @param election The election for which these votes are cast
+   * @param electionKey The public key of the election or undefined if there is none
+   * @param selectedBallots The selected ballot options
+   * @returns An array of encrypted votes that can be passed to a CastVote message
+   */
+  public static selectedBallotsToEncryptedVotes(
+    election: Election,
+    electionKey: ElectionPublicKey,
+    selectedBallots: SelectedBallots,
+  ): EncryptedVote[] {
+    if (election.version !== ElectionVersion.SECRET_BALLOT) {
+      throw new Error(
+        'selectedBallotsToEncryptedVotes() should only be called on secret ballot elections',
+      );
+    }
+
+    // Convert object to array
+    const ballotArray = Object.entries(selectedBallots).map(([idx, selectedOptionIndex]) => ({
+      index: parseInt(idx, 10),
+      selectedOptionIndex,
+    }));
+
+    // sort the answers by index
+    ballotArray.sort((a, b) => a.index - b.index);
+
+    return (
+      ballotArray
+        // and add an id to all votes as well as the matching question id
+        .map<EncryptedVote>(({ index, selectedOptionIndex }) => {
+          if (selectedOptionIndex >= MAX_OPTION_INDEX) {
+            throw new Error(
+              `The selected option index ${selectedOptionIndex} is greater than ${MAX_OPTION_INDEX}. This is not supported`,
+            );
+          }
+
+          // allocUnsafe is fine, we will overwrite all bytes
+          const buffer = Buffer.allocUnsafe(2);
+          // write 2 bytes using big endian
+          buffer.writeIntBE(selectedOptionIndex, 0, 2);
+
+          const encryptedOptionIndex = electionKey.encrypt(buffer).valueOf();
+
+          return {
+            // generate the vote id based on the **encrypted** option indices
+            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndex).valueOf(),
+            // find matching question id from the election
+            question: election.questions[index].id,
+            // use the encrypted votes
+            vote: encryptedOptionIndex,
+          };
+        })
     );
   }
 
   /**
    * Generates a vote id as described in
    * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
-   * HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter
    * @param election The election for which this vote id is generated
    * @param questionIndex The index of the question in the given election, this vote is cast for
-   * @param selectionOptions The selected answers for the given question in the given eeleciton
+   * @param selectionOptionIndex The selected option index
    */
   public static computeVoteId(
     election: Election,
     questionIndex: number,
-    selectionOptions: Set<number>,
+    selectionOptionIndex: number,
   ): Hash {
     return Hash.fromStringArray(
       EventTags.VOTE,
       election.id.toString(),
       election.questions[questionIndex].id,
-      // Important: A standardized order is required, otherwise the hash cannot be verified
-      // Even more important: A standardized delimiter has to be used to disambiguate [1,0] from [10]
-      // See https://github.com/dedis/popstellar/issues/843 for details
-      [...selectionOptions]
-        // sort in ascending order
-        .sort((a, b) => a - b)
-        // convert to strings
-        .map((idx) => idx.toString())
-        // concatenate and add delimiter in between strings
-        .join(','),
+      selectionOptionIndex.toString(),
+    );
+  }
+
+  /**
+   * Generates a vote id for a secret ballot election as described in
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
+   * @param election The election for which this vote id is generated
+   * @param questionIndex The index of the question in the given election, this vote is cast for
+   * @param encryptedOptionIndex The encrypted selected option indices
+   */
+  public static computeSecretVoteId(
+    election: Election,
+    questionIndex: number,
+    encryptedOptionIndex: string,
+  ): Hash {
+    return Hash.fromStringArray(
+      EventTags.VOTE,
+      election.id.toString(),
+      election.questions[questionIndex].id,
+      encryptedOptionIndex,
     );
   }
 }

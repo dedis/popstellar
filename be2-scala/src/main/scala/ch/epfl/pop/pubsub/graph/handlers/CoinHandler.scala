@@ -14,6 +14,7 @@ case object CoinHandler extends MessageHandler {
   def handlePostTransaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
+        dbAskWritePropagate(rpcMessage)
         Left(rpcMessage)
 
       case _ => Right(PipelineError(

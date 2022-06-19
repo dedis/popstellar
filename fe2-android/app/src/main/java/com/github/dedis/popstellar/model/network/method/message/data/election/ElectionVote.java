@@ -3,25 +3,21 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 public class ElectionVote {
 
+  @SerializedName(value = "id")
   private final String id;
-  /**
-   * Id of the object ElectionVote : Hash(“Vote”||election_id|| ||
-   * question_id||(vote_index(es)|write_in))
-   */
+
+  // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
   @SerializedName(value = "question")
   private final String questionId; // id of the question
 
-  private final List<Integer> vote; // list of indexes for the votes
-  private final boolean
-      writeInEnabled; // represents a boolean to know whether write_in is allowed or not
-
-  @SerializedName(value = "write_in")
-  private final String writeIn; // If write in is enabled this represents the writeIn string
+  // represents a boolean to know whether write_in is allowed or not
+  // list of indexes for the votes
+  @SerializedName(value = "vote")
+  private final Integer vote;
 
   /**
    * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
@@ -34,15 +30,13 @@ public class ElectionVote {
    */
   public ElectionVote(
       String questionId,
-      List<Integer> vote,
+      Integer vote,
       boolean writeInEnabled,
       String writeIn,
       String electionId) {
 
     this.questionId = questionId;
-    this.writeInEnabled = writeInEnabled;
     this.vote = writeInEnabled ? null : vote;
-    this.writeIn = writeInEnabled ? writeIn : null;
     this.id =
         Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
   }
@@ -55,11 +49,7 @@ public class ElectionVote {
     return questionId;
   }
 
-  public String getWriteIn() {
-    return writeIn;
-  }
-
-  public List<Integer> getVotes() {
+  public Integer getVote() {
     return vote;
   }
 
@@ -72,33 +62,27 @@ public class ElectionVote {
       return false;
     }
     ElectionVote that = (ElectionVote) o;
-    return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
-        && java.util.Objects.equals(getWriteIn(), that.getWriteIn())
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getVotes(), that.getVotes());
+    return Objects.equals(getQuestionId(), that.getQuestionId())
+            && Objects.equals(getId(), that.getId())
+            && Objects.equals(getVote(), that.getVote());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getId(), getVotes(), getWriteIn(), getQuestionId());
+    return Objects.hash(getId(), getVote(), getQuestionId());
   }
 
   @Override
   public String toString() {
     return "ElectionVote{"
-        + "id='"
-        + id
-        + '\''
-        + ", questionId='"
-        + questionId
-        + '\''
-        + ", vote="
-        + Arrays.toString(vote.toArray())
-        + ", writeInEnabled="
-        + writeInEnabled
-        + ", writeIn='"
-        + writeIn
-        + '\''
-        + '}';
+            + "id='"
+            + id
+            + '\''
+            + ", questionId='"
+            + questionId
+            + '\''
+            + ", vote="
+            + vote
+            + '}';
   }
 }

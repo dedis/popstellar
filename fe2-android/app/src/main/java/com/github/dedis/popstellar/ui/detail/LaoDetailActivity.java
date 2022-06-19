@@ -176,6 +176,9 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   private void openDigitalCash() {
     Intent intent = new Intent(this, DigitalCashMain.class);
+
+    intent.putExtra(DigitalCashMain.LAO_ID, mViewModel.getCurrentLaoValue().getId());
+    intent.putExtra(DigitalCashMain.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
     startActivity(intent);
   }
 

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getEventById } from 'features/events/functions';
 import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from 'features/events/interface';
@@ -35,6 +35,9 @@ import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import EventList from '../EventList';
 
+jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
+jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
+
 const mockStore = createStore(
   combineReducers({
     ...eventReducer,
@@ -57,6 +60,7 @@ const getContextValue = (isOrganizer: boolean) => ({
     addEvent,
     updateEvent,
     getEventById,
+    useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
   } as EvotingReactContext,
   [MEETING_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,

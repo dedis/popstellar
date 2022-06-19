@@ -34,3 +34,11 @@ func Test_Election_End(t *testing.T) {
 	require.Equal(t, int64(1633099883), msg.CreatedAt)
 	require.Equal(t, "tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU=", msg.RegisteredVotes)
 }
+
+func Test_Election_End_Interface_Functions(t *testing.T) {
+	var msg messagedata.ElectionEnd
+
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.ElectionActionEnd, msg.GetAction())
+	require.Empty(t, msg.NewEmpty())
+}

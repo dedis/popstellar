@@ -236,6 +236,13 @@
   <string name="digital_cash_from">From:</string>
   <string name="digital_cash_to">To:</string>
   <string name="digital_cash_transaction_id">Transaction ID:</string>
+  <string name="digital_cash_time">time</string>
+  <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
+  <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
+  <string name="digital_cash_post_transaction">Post transaction !</string>
+  <string name="digital_cash_no_attendees">"There are no attendees !"</string>
+  <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
+  <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -297,6 +304,9 @@
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
+  <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
+  <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
+  <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

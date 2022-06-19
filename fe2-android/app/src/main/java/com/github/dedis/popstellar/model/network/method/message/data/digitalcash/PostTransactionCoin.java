@@ -37,7 +37,7 @@ public final class PostTransactionCoin extends Data {
   public String toString() {
     return "PostTransactionCoin{ transaction_id="
         + transactionId
-        + "transaction="
+        + ", transaction="
         + transaction
         + '}';
   }

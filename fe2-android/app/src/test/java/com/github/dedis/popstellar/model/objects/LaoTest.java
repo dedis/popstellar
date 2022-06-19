@@ -11,8 +11,11 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
@@ -49,9 +52,9 @@ public class LaoTest {
   private static final Map<String, Election> elections =
       new HashMap<String, Election>() {
         {
-          put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
-          put(electionId2, new Election(LAO_1.getId(), 2L, "name 2"));
-          put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
+          put(electionId1, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
+          put(electionId2, new Election(LAO_1.getId(), 2L, "name 2", ElectionVersion.OPEN_BALLOT));
+          put(electionId3, new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
         }
       };
 
@@ -92,9 +95,9 @@ public class LaoTest {
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {
-            put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
-            put(null, new Election(LAO_1.getId(), 2L, "name 1"));
-            put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
+            put(electionId1, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
+            put(null, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
+            put(electionId3, new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
           }
         });
     // now the removal of electionId2 can't be done
@@ -129,7 +132,8 @@ public class LaoTest {
   @Test
   public void updateElections() {
     LAO_1.setElections(new HashMap<>(elections));
-    Election e1 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
+    Election e1 =
+        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     e1.setId("New e1 id");
     LAO_1.updateElection(electionId1, e1);
     assertFalse(LAO_1.getElections().containsKey(electionId1));
@@ -139,7 +143,8 @@ public class LaoTest {
     assertSame(LAO_1.getElections().get("New e1 id"), e1);
 
     // we create a different election that has the same Id as the first one
-    Election e2 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
+    Election e2 =
+        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     e2.setId(e1.getId());
 
     LAO_1.updateElection(e1.getId(), e2);
@@ -190,7 +195,7 @@ public class LaoTest {
   @Test
   public void getRollCall() {
     RollCall r1 = new RollCall(rollCallId1);
-    RollCall r2 = new RollCall(rollCallId1);
+    RollCall r2 = new RollCall(rollCallId2);
     LAO_1.setRollCalls(
         new HashMap<String, RollCall>() {
           {
@@ -199,6 +204,16 @@ public class LaoTest {
           }
         });
     assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
+    r1.setEnd(1);
+    r2.setEnd(2);
+    r1.setState(EventState.CLOSED);
+    // Wait that thread concurrency updates
+    while (EventState.CLOSED.equals(r1.getState().getValue()))
+      try {
+        assertEquals(r2, LAO_1.lastRollCallClosed());
+      } catch (NoRollCallException e) {
+        throw new IllegalArgumentException();
+      }
   }
 
   @Test
@@ -209,8 +224,10 @@ public class LaoTest {
 
   @Test
   public void getElection() {
-    Election e1 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
-    Election e2 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
+    Election e1 =
+        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
+    Election e2 =
+        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {

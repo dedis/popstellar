@@ -115,6 +115,80 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer's")
 }
 
+func Test_Create_LAO_No_Key(t *testing.T) {
+	wrongKeypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
+
+	hub, err := NewHub(nil, "", nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, wrongKeypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	assert.NoError(t, sock.err)
+}
+
 func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -190,7 +264,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("invalid message field: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
 func Test_Create_LAO_Bad_Signature(t *testing.T) {

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoList } from 'features/lao/components';
@@ -15,23 +15,28 @@ import Home from '../Home';
 
 const contextValueEmpyList = {
   [HOME_FEATURE_IDENTIFIER]: {
-    requestCreateLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve(mockChannel),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
     useLaoList: () => [],
     LaoList: () => null,
-    mainNavigationScreens: [],
+    homeNavigationScreens: [],
+    getLaoChannel: () => mockChannel,
+    useCurrentLaoId: LaoHooks.useCurrentLaoId,
   } as HomeReactContext,
 };
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
-    requestCreateLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve(mockChannel),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
-    useLaoList: LaoHooks.useLaoList,
+    useLaoList: () => [],
     LaoList,
-    mainNavigationScreens: [],
+    homeNavigationScreens: [],
+    getLaoChannel: () => mockChannel,
+    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    hasSeed: () => true,
   } as HomeReactContext,
 };
 

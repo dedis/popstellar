@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -30,43 +32,65 @@ public class DigitalCashMain extends AppCompatActivity {
   public static final String TAG = DigitalCashMain.class.getSimpleName();
   private BottomNavigationView bottomNavigationView;
 
+  public static final String LAO_ID = "LAO_ID";
+  public static final String LAO_NAME = "LAO_NAME";
+  public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.digital_cash_main_activity);
-
     mViewModel = obtainViewModel(this);
-
     setupNavigationBar();
     setupBackButton();
 
+
+    setupBackButton();
+
+    setupHomeActivity();
+
+    setTheIntent();
     // Subscribe to "open home"
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash home Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_home);
-              }
-            });
-
+    openHomeEvent();
     // Subscribe to "open history"
-    mViewModel
-        .getOpenHistoryEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash history Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_history);
-              }
-            });
-
+    openHistoryEvent();
     // Subscribe to "open send"
+    openSendEvent();
+    // Subscribe to "open receive"
+    openReceiveEvent();
+    // Subscribe to "open issue"
+    openIssueEvent();
+    // Subscribe to "open receipt"
+    openReceiptEvent();
+    mViewModel.openHome();
+  }
+
+    private void setupHomeActivity() {
+        mViewModel
+                .getOpenReturnLAO()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                openHome();
+                            }
+                        });
+    }
+
+    private void openHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+        finish();
+    }
+
+  public void setTheIntent() {
+    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+    mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+    mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
+  }
+
+  public void openSendEvent() {
     mViewModel
         .getOpenSendEvent()
         .observe(
@@ -78,7 +102,9 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_send);
               }
             });
+  }
 
+  public void openReceiveEvent() {
     // Subscribe to "open receive"
     mViewModel
         .getOpenReceiveEvent()
@@ -91,7 +117,24 @@ public class DigitalCashMain extends AppCompatActivity {
                 setupFragment(R.id.fragment_digital_cash_receive);
               }
             });
+  }
 
+  public void openHomeEvent() {
+    // Subscribe to "open home"
+    mViewModel
+        .getOpenHomeEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Log.d(TAG, "Open digital cash home Fragment");
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupFragment(R.id.fragment_digital_cash_home);
+              }
+            });
+  }
+
+  public void openIssueEvent() {
     // Subscribe to "open issue"
     mViewModel
         .getOpenIssueEvent()
@@ -100,11 +143,46 @@ public class DigitalCashMain extends AppCompatActivity {
             booleanEvent -> {
               Log.d(TAG, "Open digital cash issue Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
+
               if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_issue);
+                Log.d(
+                    TAG,
+                    "the key from organizer is : "
+                        + mViewModel.getCurrentLao().getOrganizer().getEncoded());
+                Log.d(
+                    TAG,
+                    "the key from the person is "
+                        + mViewModel.getKeyManager().getMainPublicKey().getEncoded());
+                if (!mViewModel
+                    .getCurrentLao()
+                    .getOrganizer()
+                    .getEncoded()
+                    .equals(mViewModel.getKeyManager().getMainPublicKey().getEncoded())) {
+                  Toast.makeText(this, "You have to be the Lao Organizer", Toast.LENGTH_SHORT)
+                      .show();
+                } else {
+                  setupFragment(R.id.fragment_digital_cash_issue);
+                }
               }
             });
+  }
 
+  public void openHistoryEvent() {
+    // Subscribe to "open history"
+    mViewModel
+        .getOpenHistoryEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Log.d(TAG, "Open digital cash history Fragment");
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupFragment(R.id.fragment_digital_cash_history);
+              }
+            });
+  }
+
+  public void openReceiptEvent() {
     // Subscribe to "open receipt"
     mViewModel
         .getOpenReceiptEvent()

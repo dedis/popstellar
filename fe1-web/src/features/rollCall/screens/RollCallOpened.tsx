@@ -1,20 +1,22 @@
-import { useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Badge } from 'react-native-elements';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
-import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
-import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { PublicKey } from 'core/objects';
-import { Spacing } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { ConfirmModal, PoPIcon } from 'core/components';
+import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Color, Icon } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
-import { requestCloseRollCall } from '../network';
+import { RollCallFeature } from '../interface';
 import { makeRollCallSelector } from '../reducer';
 
 /**
@@ -23,26 +25,29 @@ import { makeRollCallSelector } from '../reducer';
  */
 
 const styles = StyleSheet.create({
-  viewCenter: {
-    flex: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    margin: Spacing.xs,
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   } as ViewStyle,
+  leftButtons: QrCodeScannerUIElementContainer,
+  rightButtons: QrCodeScannerUIElementContainer,
 });
-
-const qrScannerStyles: ViewStyle = {
-  width: '30%',
-};
 
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
 const RollCallOpened = () => {
-  // FIXME: navigation and route should user proper type
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const { rollCallID } = route.params;
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const route = useRoute<NavigationProps['route']>();
+  const { rollCallId } = route.params;
   const [attendeePopTokens, updateAttendeePopTokens] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -50,8 +55,28 @@ const RollCallOpened = () => {
   const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
-  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallID), [rollCallID]);
+  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
   const rollCall = useSelector(rollCallSelector);
+
+  // this is needed as otherwise the camera may stay turned on
+  const [showScanner, setShowScanner] = useState(false);
+
+  // re-enable scanner on focus events
+  useEffect(() => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
+      // The screen is now focused, set showScanner to true
+      setShowScanner(true);
+    });
+  }, [navigation]);
+  // disable scanner on blur events
+  useEffect(() => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('blur', () => {
+      // The screen is no longer focused, set showScanner to false (i.e. allow scanner to be reused)
+      setShowScanner(false);
+    });
+  }, [navigation]);
 
   if (!laoId) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
@@ -62,7 +87,7 @@ const RollCallOpened = () => {
   }
 
   const handleError = useCallback(
-    (err: any) => {
+    (err: string | Error) => {
       console.error(err.toString());
       toast.show(err.toString(), {
         type: 'danger',
@@ -108,30 +133,6 @@ const RollCallOpened = () => {
     }
   };
 
-  const onCloseRollCall = async () => {
-    // get the public key as strings from the existing rollcall
-    const previousAttendees = (rollCall.attendees || []).map((key) => key.valueOf());
-    // add the create a set of all attendees (takes care of deduplication)
-    const allAttendees = new Set([...previousAttendees, ...attendeePopTokens]);
-    // create PublicKey instances from the set of strings
-    const attendeesList = [...allAttendees].map((key: string) => new PublicKey(key));
-
-    if (!rollCall.idAlias) {
-      throw new Error('Trying to close a roll call that has no idAlias defined');
-    }
-
-    try {
-      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
-      navigation.navigate(STRINGS.organizer_navigation_tab_home);
-    } catch (err) {
-      toast.show(`Could not close roll call, error: ${err}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
-      });
-    }
-  };
-
   // This will run only when the state changes
   useEffect(() => {
     if (!laoId) {
@@ -145,26 +146,43 @@ const RollCallOpened = () => {
   }, [laoId, generateToken, rollCall, addAttendeePopToken, handleError]);
 
   return (
-    <View style={containerStyles.flex}>
-      <View style={styles.viewCenter}>
-        <TextBlock text={STRINGS.roll_call_scan_description} />
-        <QrReader
-          delay={300}
-          onScan={(data) => {
-            if (data) {
-              addAttendeePopTokenAndShowToast(data, STRINGS.roll_call_scan_participant);
-            }
-          }}
-          onError={handleError}
-          style={qrScannerStyles}
-        />
-        <Badge value={attendeePopTokens.size} status="success" />
-        <WideButtonView title={STRINGS.roll_call_scan_close} onPress={() => onCloseRollCall()} />
-        <WideButtonView
-          title={STRINGS.roll_call_add_attendee_manually}
-          onPress={() => setInputModalIsVisible(true)}
-        />
-      </View>
+    <>
+      <QrCodeScanner
+        showCamera={showScanner}
+        handleScan={(data) => {
+          if (data) {
+            addAttendeePopTokenAndShowToast(data, STRINGS.roll_call_scan_participant);
+          }
+        }}>
+        <View style={styles.buttonContainer}>
+          <View>
+            <View style={styles.leftButtons}>
+              <TouchableOpacity
+                testID="roll-call-open-stop-scanning"
+                onPress={() =>
+                  navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
+                    eventId: rollCallId,
+                    /* this screen is only reachable for organizers */
+                    isOrganizer: true,
+                    /* pass the just scanned pop tokens back to the single view screen */
+                    attendeePopTokens: [...attendeePopTokens],
+                  })
+                }>
+                <PoPIcon name="close" color={Color.accent} size={Icon.size} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View>
+            <View style={styles.rightButtons}>
+              <TouchableOpacity
+                onPress={() => setInputModalIsVisible(true)}
+                testID="roll-call-open-add-manually">
+                <PoPIcon name="addPerson" color={Color.accent} size={Icon.size} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </QrCodeScanner>
       <ConfirmModal
         visibility={inputModalIsVisible}
         setVisibility={setInputModalIsVisible}
@@ -175,8 +193,14 @@ const RollCallOpened = () => {
         hasTextInput
         textInputPlaceholder={STRINGS.roll_call_attendee_token_placeholder}
       />
-    </View>
+    </>
   );
 };
 
 export default RollCallOpened;
+
+export const RollCallOpenedScreen: RollCallFeature.LaoEventScreen = {
+  id: STRINGS.navigation_lao_events_open_roll_call,
+  Component: RollCallOpened,
+  headerShown: false,
+};

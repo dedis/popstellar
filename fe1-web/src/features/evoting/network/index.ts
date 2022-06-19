@@ -8,11 +8,13 @@ import { addElection, getElectionById, updateElection } from '../reducer';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
+  handleElectionKeyMessage,
   handleElectionOpenMessage,
   handleElectionResultMessage,
   handleElectionSetupMessage,
 } from './ElectionHandler';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
+import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
 
 /**
@@ -33,7 +35,7 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
         start: electionState.start,
-        end: electionState.start,
+        end: electionState.end,
       }),
     );
   };
@@ -47,11 +49,17 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
         start: electionState.start,
-        end: electionState.start,
+        end: electionState.end,
       }),
     );
   };
 
+  configuration.messageRegistry.add(
+    ObjectType.ELECTION,
+    ActionType.KEY,
+    handleElectionKeyMessage(configuration.getLaoOrganizerBackendPublicKey),
+    ElectionKey.fromJson,
+  );
   configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.SETUP,
@@ -79,7 +87,11 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
   configuration.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(boundGetElectionById, updateElectionEvent),
+    handleElectionResultMessage(
+      boundGetElectionById,
+      updateElectionEvent,
+      configuration.getLaoOrganizerBackendPublicKey,
+    ),
     ElectionResult.fromJson,
   );
 };
