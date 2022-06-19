@@ -36,7 +36,7 @@ function fn() {
       const android = {};
       android["desiredConfig"] = {
         "app" : "../../fe2-android/app/build/outputs/apk/debug/app-debug.apk",
-        "newCommandTimeout" : 300,
+        "newCommandTimeout" : 1000,
         "platformVersion" : "9.0",
         "platformName" : "Android",
         "connectHardwareKeyboard" : true,

@@ -35,6 +35,9 @@ Feature: android page object
 
     # Roll Call Screen
     * def roll_call_action_selector = '#com.github.dedis.popstellar:id/roll_call_management_button'
+    * def roll_call_close_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
+    * def roll_call_manual_selector = '#com.github.dedis.popstellar:id/permission_manual_rc'
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
@@ -76,4 +79,10 @@ Feature: android page object
   Scenario: Opens the created roll-call
     * click(event_name_selector)
     * click(roll_call_action_selector)
+
+  @name=close_roll_call
+  Scenario: Closes a roll call with only the organizer attending
+    * retry(5,200).click(roll_call_manual_selector)
+    * backend.clearBuffer()
+    * retry(5,200).click(roll_call_close_selector)
 
