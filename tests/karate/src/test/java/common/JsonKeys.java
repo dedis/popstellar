@@ -21,6 +21,8 @@ public class JsonKeys {
 
   public static final String COIN = "coin";
 
+  public static final String SOCIAL = "social";
+
   public static final String CHANNEL = "channel";
 
   public static final String DATA = "data";
@@ -37,6 +39,8 @@ public class JsonKeys {
 
   public static final String OPEN = "open";
 
+  public static final String CLOSE = "close";
+
   public static final String OBJECT = "object";
 
   public static final String ROLL_CALL = "roll_call";
@@ -50,4 +54,10 @@ public class JsonKeys {
   public static final String OPENED_AT = "opened_at";
 
   public static final String UPDATE_ID = "update_id";
+
+  public static final String CLOSES = "closes";
+
+  public static final String CLOSED_AT = "closed_at";
+
+  public static final String ATTENDEES = "attendees";
 }

@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    * configure driver = { type: 'chrome' }
+    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    #* configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -30,7 +30,8 @@ Feature: web test
 
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
-
+    * def roll_call_stop_scanning_selector = "[data-testid='roll-call-open-stop-scanning']"
+    * def roll_call_manual_selector = "[data-testid='roll-call-open-add-manually']"
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
@@ -78,9 +79,9 @@ Feature: web test
     And click(add_event_selector)
 
     # Clicking on Create Roll-Call
-    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
-    And input(roll_call_title_selector, 'RC name')
+    And retry(20 ,200).input(roll_call_title_selector, 'RC name')
     And input(roll_call_location_selector, 'EPFL')
 
     #roll call open web procedure
@@ -88,6 +89,18 @@ Feature: web test
   Scenario: Opens the created roll-call
     * retry(5,1000).click(event_name_selector)
     * click(roll_call_option_selector)
-    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    # needed to work
+    * wait(2)
+
+  @name=close_roll_call
+  Scenario: Closes a roll call with only the organizer attending
+    * click(roll_call_option_selector)
+    # We need to start scanning for the organizer token to be added
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Scan Attendees\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(2)
+    * click(roll_call_stop_scanning_selector)
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
     # needed to work
     * wait(2)
