@@ -87,3 +87,9 @@ Feature: android page object
     * retry(5,200).click(roll_call_close_selector)
     * dialog(true)
 
+  #roll call open android procedure
+  @name=reopen_roll_call
+  Scenario: reopens the created roll-call
+    * click(event_name_selector)
+    * click(roll_call_action_selector)
+    * backend.clearBuffer()
