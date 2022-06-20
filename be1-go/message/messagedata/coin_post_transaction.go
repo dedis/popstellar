@@ -1,11 +1,13 @@
 package messagedata
 
 import (
+	"bytes"
 	"encoding/base64"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/xerrors"
+	"popstellar/crypto"
 	"popstellar/message/answer"
 	"strconv"
-
-	"golang.org/x/xerrors"
 )
 
 // PostTransaction defines a message data
@@ -66,6 +68,20 @@ func (message PostTransaction) Verify() error {
 			"encoded", message.TransactionID)
 	}
 
+	err = message.verifyTransactionId()
+	if err != nil {
+		return xerrors.Errorf("failed to verify the transaction id: %v", err)
+	}
+
+	err = message.verifySignature()
+	if err != nil {
+		return xerrors.Errorf("failed to verify the signature: %v", err)
+	}
+
+	return nil
+}
+
+func (message PostTransaction) verifyTransactionId() error {
 	locktime := strconv.Itoa(message.Transaction.Locktime)
 
 	version := strconv.Itoa(message.Transaction.Version)
@@ -108,6 +124,48 @@ func (message PostTransaction) Verify() error {
 
 	if message.TransactionID != expectedID {
 		return xerrors.Errorf("transaction id is not valid: %s != %s", message.TransactionID, expectedID)
+	}
+
+	return nil
+}
+
+func (message PostTransaction) verifySignature() error {
+	var sigComp = new(bytes.Buffer)
+
+	for _, inp := range message.Transaction.Inputs {
+		hash := inp.Hash
+		sigComp.WriteString(hash)
+
+		index := strconv.Itoa(inp.Index)
+		sigComp.WriteString(index)
+	}
+
+	for _, out := range message.Transaction.Outputs {
+		value := strconv.Itoa(out.Value)
+		sigComp.WriteString(value)
+
+		typee := out.Script.Type
+		sigComp.WriteString(typee)
+
+		pubKey := out.Script.PubKeyHash
+		sigComp.WriteString(pubKey)
+	}
+
+	for _, inp := range message.Transaction.Inputs {
+		signatureBytes, err := base64.URLEncoding.DecodeString(inp.Script.Sig)
+		if err != nil {
+			return xerrors.Errorf("failed to decode signature string: %v", err)
+		}
+
+		publicKeySender, err := base64.URLEncoding.DecodeString(inp.Script.PubKey)
+		if err != nil {
+			return xerrors.Errorf("failed to decode public key string: %v", err)
+		}
+
+		err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, sigComp.Bytes(), signatureBytes)
+		if err != nil {
+			return answer.NewErrorf(-4, "failed to verify signature : %v", err)
+		}
 	}
 
 	return nil

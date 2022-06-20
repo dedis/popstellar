@@ -2,8 +2,9 @@ import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
+import STRINGS from 'resources/strings';
 
-import STRINGS from '../resources/strings';
+import * as digitalCash from './digital-cash';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
@@ -23,6 +24,7 @@ export function configureFeatures() {
   // configure features
   const eventConfiguration = events.configure();
   const walletConfiguration = wallet.configure();
+  const digitalCashConfiguration = digitalCash.configure();
 
   const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
@@ -70,11 +72,31 @@ export function configureFeatures() {
 
   const walletComposition = wallet.compose({
     keyPairRegistry,
+    messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useLaoIds: laoConfiguration.hooks.useLaoIds,
+    useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
+    walletItemGenerators: [...digitalCashConfiguration.walletItemGenerators],
+    walletNavigationScreens: [...digitalCashConfiguration.walletScreens],
+  });
+
+  const digitalCashComposition = digitalCash.compose({
+    messageRegistry: messageRegistry,
+    keyPairRegistry: keyPairRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
+    useRollCallById: rollCallConfiguration.hooks.useRollCallById,
+    useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
+    useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
+    useRollCallTokenByRollCallId: rollCallConfiguration.hooks.useRollCallTokenByRollCallId,
   });
 
   const socialConfiguration = social.configure(messageRegistry);
@@ -158,6 +180,7 @@ export function configureFeatures() {
   addReducers({
     ...notificationConfiguration.reducers,
     ...laoConfiguration.reducers,
+    ...digitalCashComposition.reducers,
     ...socialConfiguration.reducers,
     ...eventConfiguration.reducers,
     ...walletComposition.reducers,
@@ -189,6 +212,7 @@ export function configureFeatures() {
       [walletConfiguration.identifier]: walletComposition.context,
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
+      [digitalCashComposition.identifier]: digitalCashComposition.context,
     },
   };
 }

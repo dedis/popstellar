@@ -15,13 +15,39 @@ export namespace WalletHooks {
   };
 
   /**
+   * Gets the list of wallet item generators
+   */
+  export const useWalletItemGenerators = () => useWalletContext().walletItemGenerators;
+
+  /**
    * Gets the current lao id
-   * @returns The current lao id
    */
   export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
 
   /**
-   * Gets a map from laoIds to rollCall ids to rollCall instances
+   * Gets all lao ids
    */
-  export const useRollCallsByLaoId = () => useWalletContext().useRollCallsByLaoId();
+  export const useLaoIds = () => useWalletContext().useLaoIds();
+
+  /**
+   * Gets a map from rollCall ids to rollCall instances for a given lao id
+   */
+  export const useRollCallsByLaoId = (laoId: string) =>
+    useWalletContext().useRollCallsByLaoId(laoId);
+
+  /**
+   * Gets the function for obtain roll call tokens by lao id
+   */
+  export const useRollCallTokensByLaoId = (laoId: string) =>
+    useWalletContext().useRollCallTokensByLaoId(laoId);
+
+  /**
+   * Gets a map from laoIds to names
+   */
+  export const useNamesByLaoId = () => useWalletContext().useNamesByLaoId();
+
+  /**
+   * Gets the list of wallet navigation screens
+   */
+  export const useWalletNavigationScreens = () => useWalletContext().walletNavigationScreens;
 }

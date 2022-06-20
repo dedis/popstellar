@@ -46,3 +46,9 @@ export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
  * Returns whether the user is witness of the current lao
  */
 export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
+
+/**
+ * Returns the lao organizer's public key
+ * @param laoId the lao id
+ */
+export const getLaoOrganizer = (laoId: string) => getLaoById(laoId)?.organizer;

@@ -3,16 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getNetworkManager } from 'core/network';
+import { Hash } from 'core/objects';
 
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
   disconnectFromLao,
+  makeIsLaoOrganizerSelector,
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
   selectCurrentLaoId,
-  selectIsLaoOrganizer,
   selectIsLaoWitness,
+  selectLaoIdsList,
+  selectLaoIdToNameMap,
   selectLaosList,
   selectLaosMap,
 } from '../reducer';
@@ -63,9 +66,19 @@ export namespace LaoHooks {
   export const useLaoList = (): Lao[] => useSelector(selectLaosList);
 
   /**
-   * Indicates whether we are an organizer of the current LAO
+   * Retrieves a list of all the LAO ids known to the system
    */
-  export const useIsLaoOrganizer = (): boolean => useSelector(selectIsLaoOrganizer);
+  export const useLaoIds = (): Hash[] => useSelector(selectLaoIdsList);
+
+  /**
+   * Indicates whether we are an organizer of the the given lao
+   * If no laoId is passed, it is checked for the current lao
+   */
+  export const useIsLaoOrganizer = (laoId?: string): boolean => {
+    const isLaoOrganizerSelector = useMemo(() => makeIsLaoOrganizerSelector(laoId), [laoId]);
+
+    return useSelector(isLaoOrganizerSelector);
+  };
 
   /**
    * Indicates whether we are a witness of the current LAO
@@ -119,4 +132,6 @@ export namespace LaoHooks {
       dispatch(disconnectFromLao());
     }, [dispatch]);
   };
+
+  export const useNamesByLaoId = () => useSelector(selectLaoIdToNameMap);
 }

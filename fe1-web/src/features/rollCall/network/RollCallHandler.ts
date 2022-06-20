@@ -1,6 +1,6 @@
 import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { getReactionChannel, getUserSocialChannel, Hash } from 'core/objects';
+import { getCoinChannel, getReactionChannel, getUserSocialChannel, Hash } from 'core/objects';
 import { AsyncDispatch, dispatch } from 'core/redux';
 
 import { RollCallConfiguration } from '../interface';
@@ -174,6 +174,10 @@ export const handleRollCallCloseMessage =
         // everyone is automatically subscribed to the reaction channel after the roll call
         await subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
           console.error('Could not subscribe to reaction channel, error:', err);
+        });
+        // we also subscribe to the coin channel of this roll call
+        await subscribeToChannel(getCoinChannel(laoId)).catch((err) => {
+          console.error('Could not subscribe to coin channel, error: ', err);
         });
       } catch (err) {
         console.debug(err);

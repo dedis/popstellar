@@ -73,10 +73,20 @@ namespace STRINGS {
   export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
-  export const navigation_wallet_home_tab = 'Wallet Home';
-  export const navigation_wallet_setup_tab = 'Wallet Setup';
+  export const navigation_wallet_home = 'Wallet Home';
+  export const navigation_wallet_home_title = 'Wallet';
+  export const navigation_wallet_setup = 'Wallet Setup';
   export const navigation_wallet_show_seed = 'New Wallet';
-  export const navigation_wallet_synced = 'My Wallet';
+  export const navigation_wallet_single_roll_call = 'Roll Call';
+  export const navigation_wallet_digital_cash_wallet = 'Digital Cash Wallet';
+
+  export const navigation_wallet_digital_cash_send_receive = 'Send & Receive';
+  export const navigation_wallet_digital_cash_send_receive_title = 'Your Account';
+
+  export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
+
+  export const navigation_wallet_digital_cash_transaction_history =
+    'Digital Cash Transaction History';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
@@ -348,9 +358,19 @@ namespace STRINGS {
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
 
   /* --- Wallet Home Screen Strings --- */
-  export const wallet_home_header = 'Your Wallet 🔒';
+  export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
+  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
+
+  export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
+  export const wallet_home_rollcall_no_pop_tokens_description =
+    "You haven't received any PoP token received in this LAO yet.";
+
+  export const wallet_single_roll_call_description =
+    'You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.';
+  export const wallet_single_roll_call_pop_token = 'Your PoP token';
+  export const wallet_single_roll_call_copy_pop_token = 'Copy to Clipboard';
 
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';
@@ -358,6 +378,58 @@ namespace STRINGS {
   /* --- Meeting Feature Strings --- */
   export const meeting_event_name = 'Meeting';
   export const meeting_create_meeting = 'Create meeting';
+
+  /* --- Digital Cash Strings --- */
+  export const digital_cash_account = 'Digital Cash Account';
+  export const digital_cash_account_balance = 'Your account balance';
+  export const digital_cash_wallet_screen_title = 'Digital Cash Wallet';
+  export const digital_cash_wallet_balance = 'Balance';
+  export const digital_cash_wallet_description =
+    'Your balance for this lao is the sum of the balances of each roll call token you own in this lao. ' +
+    'The distribution of your total balance is visible in the list below. ' +
+    'To send cash from one of the accounts, simply tap on it.';
+
+  export const digital_cash_coin_issuance = 'Coin Issuance';
+  export const digital_cash_coin_issuance_description =
+    'You as the organizer can create money out of thin air 🧙‍♂️';
+
+  export const digital_cash_wallet_transaction_description =
+    'You can send cash by entering the public key of the beneficiary below and ' +
+    'choosing the amount of cash you would like to transfer. To receive money you can' +
+    'show your PoP token to the sender. To access the QR code of your PoP token, tab the QR' +
+    'code icon in the top right of this screen.';
+
+  export const digital_cash_wallet_your_account_receive = 'Receive Cash';
+  export const digital_cash_wallet_your_account_receive_description =
+    'Other attendees can send you money by scanning your PoP token';
+  export const digital_cash_wallet_your_account_send = 'Send Cash';
+
+  export const digital_cash_wallet_add_beneficiary = 'Add Beneficiary';
+  export const digital_cash_wallet_send_transaction = 'Send Transaction';
+
+  export const digital_cash_wallet_beneficiary = 'Beneficiary (-ies)';
+  export const digital_cash_wallet_beneficiary_placeholder =
+    'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
+
+  export const digital_cash_wallet_amount = 'Amount';
+  export const digital_cash_wallet_amount_placeholder = '42';
+
+  export const digital_cash_wallet_amount_must_be_number = 'Invalid amount, please enter a number.';
+  export const digital_cash_wallet_amount_too_high =
+    'You cannot send more money than you have. Please enter a value smaller than your balance.';
+  export const digital_cash_wallet_amount_must_be_integer = 'The amount must be an integer.';
+
+  export const digital_cash_wallet_transaction = 'Transaction';
+  export const digital_cash_wallet_transaction_history = 'Transaction History';
+  export const digital_cash_wallet_transaction_inputs = 'Inputs';
+  export const digital_cash_wallet_transaction_outputs = 'Ouputs';
+  export const digital_cash_wallet_this_is_a_coin_issuance = 'This is a coin issuance';
+  export const digital_cash_wallet_issue_single_beneficiary = 'Issue to a single beneficiary';
+  export const digital_cash_wallet_issue_all_attendees = 'All attendees of roll call';
+  export const digital_cash_wallet_issue_to_every_participants =
+    'Issue to every attendee of this roll call';
+
+  export const digital_cash_infinity = '∞';
 
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';

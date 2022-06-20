@@ -5,7 +5,7 @@ import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
 import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
-import { addElectionKey } from '../reducer/ElectionKeyReducer';
+import { addElectionKey } from '../reducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
