@@ -48,7 +48,7 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
     return mBinding.getRoot();
   }

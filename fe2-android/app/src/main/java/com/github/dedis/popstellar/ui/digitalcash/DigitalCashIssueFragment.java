@@ -20,6 +20,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
     selectAllLaoMembers =
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(0));
@@ -160,7 +161,7 @@ public class DigitalCashIssueFragment extends Fragment {
   /** Function that set the Adapter */
   public void setTheAdapterRollCallAttendee() {
     /* Roll Call attendees to which we can send*/
-    List<String> myArray = null;
+    List<String> myArray;
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
@@ -168,6 +169,7 @@ public class DigitalCashIssueFragment extends Fragment {
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(requireContext(), getString(R.string.digital_cash_please_enter_roll_call), Toast.LENGTH_SHORT)
           .show();
+      myArray = new ArrayList<>();
     }
     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
     mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);

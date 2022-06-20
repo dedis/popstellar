@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,7 +13,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -24,9 +22,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the digital cash */
 @AndroidEntryPoint
-public class DigitalCashMain extends AppCompatActivity {
+public class DigitalCashActivity extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
-  public static final String TAG = DigitalCashMain.class.getSimpleName();
+  public static final String TAG = DigitalCashActivity.class.getSimpleName();
 
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
@@ -39,9 +37,6 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
     setupNavigationBar();
 
-    setupBackButton();
-
-    setupHomeActivity();
 
     setTheIntent();
     // Subscribe to "open home"
@@ -59,29 +54,13 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel.openHome();
   }
 
-    private void setupHomeActivity() {
-        mViewModel
-                .getOpenReturnLAO()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                openHome();
-                            }
-                        });
-    }
-
-    private void openHome() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-        finish();
-    }
 
   public void setTheIntent() {
-    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
-    mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
-    mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
+      if(getIntent().getExtras() != null){
+    mViewModel.setLaoId(getIntent().getExtras().getString(LAO_ID, ""));
+    mViewModel.setLaoName(getIntent().getExtras().getString(LAO_NAME, ""));
+    mViewModel.setRollCallId(getIntent().getExtras().getString(ROLL_CALL_ID, ""));
+      }
   }
 
   public void openSendEvent() {

@@ -11,7 +11,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".ui.digitalcash.DigitalCashMain">
+    tools:context=".ui.digitalcash.DigitalCashActivity">
 
     <FrameLayout
       android:id="@+id/digital_cash_content"

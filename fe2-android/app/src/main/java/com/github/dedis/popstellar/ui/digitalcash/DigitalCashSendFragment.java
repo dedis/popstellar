@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     // Inflate the layout for this fragment
@@ -122,7 +123,7 @@ public class DigitalCashSendFragment extends Fragment {
   /** Funciton that set up the Adapter */
   private void setUpTheAdapter() {
     /* Roll Call attendees to which we can send*/
-    List<String> myArray = null;
+    List<String> myArray;
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
@@ -130,6 +131,7 @@ public class DigitalCashSendFragment extends Fragment {
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();
+      myArray = new ArrayList<>();
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
