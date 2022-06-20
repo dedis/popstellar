@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
@@ -25,10 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashActivity extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
-
-  public static final String LAO_ID = "LAO_ID";
-  public static final String LAO_NAME = "LAO_NAME";
-  public static final String ROLL_CALL_ID = "ROLL_CALL_ID";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +54,9 @@ public class DigitalCashActivity extends AppCompatActivity {
 
   public void setTheIntent() {
       if(getIntent().getExtras() != null){
-    mViewModel.setLaoId(getIntent().getExtras().getString(LAO_ID, ""));
-    mViewModel.setLaoName(getIntent().getExtras().getString(LAO_NAME, ""));
-    mViewModel.setRollCallId(getIntent().getExtras().getString(ROLL_CALL_ID, ""));
+    mViewModel.setLaoId(getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, ""));
+    mViewModel.setLaoName(getIntent().getExtras().getString(Constants.LAO_NAME, ""));
+    mViewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
       }
   }
 

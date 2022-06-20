@@ -36,6 +36,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -88,9 +89,6 @@ public class DigitalCashActivityTest {
     @BindValue @Mock
     KeyManager keyManager;
 
-    @BindValue @Mock
-    DigitalCashViewModel model;
-
     @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
     @Rule(order = 0)
@@ -109,18 +107,7 @@ public class DigitalCashActivityTest {
                             .thenReturn(BehaviorSubject.createDefault(LAO));
                     when(repository.getAllLaos())
                             .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
-                    when(model.getCurrentLao())
-                            .thenReturn(LAO);
-                    when(LAO.getOrganizer()).thenReturn(PK);
-/*
-                    when(keyManager.getMainPublicKey()).thenReturn(PK);
-                    when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
-                    when(networkManager.getMessageSender()).thenReturn(messageSender);
-                    when(messageSender.subscribe(any())).then(args -> Completable.complete());
-                    when(messageSender.publish(any(), any())).then(args -> Completable.complete());
-                    when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
-
- */
+                    when(repository.getLaoById()).thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
                 }
             };
 
