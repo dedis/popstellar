@@ -202,7 +202,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify if the timestamp is stale
 	if electionEnd.CreatedAt < c.createdAt {
-		return xerrors.Errorf("cast vote cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
+		return xerrors.Errorf("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
 	}
 
 	// verify order of registered votes
