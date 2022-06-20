@@ -195,7 +195,7 @@ Feature: Constants
     * def createValidRegisteredVotes =
       """
         function(){
-          return "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU="
+          return "fgz7BlGQVRu_yk69ijz3eTnJEmRIMoode_-nI6abK70="
         }
       """
     * def createInvalidRegisteredVotes =
