@@ -12,12 +12,11 @@ Feature: web test
 
     #Home Screen
     * def tab_connect_selector = '{}Connect'
-    * def block_camera_selector = '{}block'
     * def launch_selector = "[data-testid='launch_selector']"
 
     # Launch screen
     * def tab_launch_lao_name_selector = "input[data-testid='launch_organization_name_selector']"
-    * def launch_address_selector = "input[data-testid='launch_address_selector']"
+    * def backend_address_selector = "input[data-testid='launch_address_selector']"
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
     # Lao Event List
@@ -55,10 +54,14 @@ Feature: web test
             }
           """
 
+    # click on the explore button of the intro screen
     * click(exploring_selector)
+    # click on the connect navigation item
     * click(tab_connect_selector)
+    # Click on launch button
     * click(launch_selector)
-    * input(launch_address_selector, backendURL)
+    # Connect to the backend
+    * input(backend_address_selector, backendURL)
 
   # Roll call web procedure
   @name=create_roll_call
@@ -66,7 +69,16 @@ Feature: web test
     Given click(tab_events_selector)
     And click(add_event_selector)
 
-    # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element
+    # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element which does not have an id
+    # If it breaks down, check that the name of the button has not changed, try to add more delay. Otherwise maybe karate
+    # added a way to directly do that after the time of our writing.
+    #
+    # script allows the evaluation of arbitrary javascript code and document.evaluate
+    # (https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) allows the evaluation of an XPath expression.
+    #
+    # Somehow this turned out to work, at least if it was wrapped
+    # in a setTimeout which delays the execution of the script.
+    # The XPath selector is described here: https://stackoverflow.com/a/29289196/2897827
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     And input(roll_call_title_selector, 'RC name')

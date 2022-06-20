@@ -12,8 +12,8 @@ import static common.JsonKeys.*;
 import static common.utils.JsonUtils.getJSON;
 
 /**
- * This class contains useful message replies that can be used when using {@link
- * MockBackend#setReplyProducer(Function)}
+ * This class contains useful message replies that can be used to tailor the response of the mockbackend depending on
+ * what action is mocked {@link MockBackend#setReplyProducer(Function)}
  */
 public class ReplyMethods {
 
@@ -66,6 +66,9 @@ public class ReplyMethods {
         return buildSingleton(replaceId.replace("[]", "[" + laoCreatePublishJson + "]"));
       };
 
+  /**
+   * This returns a valid reply to subscribe messages and replies with the published lao to catchups
+   */
   public static Function<String, List<String>> LAO_CREATE =
       msg -> {
         Json msgJson = Json.of(msg);
@@ -80,6 +83,9 @@ public class ReplyMethods {
         }
       };
 
+  /**
+   * This replies with a broadcast of the publish message and a valid response
+   */
   public static Function<String, List<String>> ROLL_CALL_CREATE_BROADCAST =
       msg -> {
         Json param = getJSON(Json.of(msg), PARAMS);
