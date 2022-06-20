@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -21,8 +20,6 @@ import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceiptPageObject
 import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.sendButtonToReceipt;
-
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -32,7 +29,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -42,15 +38,13 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -63,7 +57,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 
@@ -97,19 +90,22 @@ public class DigitalCashActivityTest {
     @Rule(order = 1)
     public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-    @Rule(order = 2)
-    public final ExternalResource setupRule =
-            new ExternalResource() {
-                @Override
-                protected void before() {
-                    hiltRule.inject();
-                    when(repository.getLaoObservable(anyString()))
-                            .thenReturn(BehaviorSubject.createDefault(LAO));
-                    when(repository.getAllLaos())
-                            .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
-                    when(repository.getLaoById()).thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
-                }
-            };
+  @Rule(order = 2)
+  public final ExternalResource setupRule =
+      new ExternalResource() {
+        @Override
+        protected void before() throws KeyException {
+          hiltRule.inject();
+          when(repository.getLaoObservable(anyString()))
+              .thenReturn(BehaviorSubject.createDefault(LAO));
+          when(repository.getAllLaos())
+              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
+          when(repository.getLaoById())
+              .thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
+          when(keyManager.getValidPoPToken(any())).thenReturn(Base64DataUtils.generatePoPToken());
+          when(keyManager.getMainPublicKey()).thenReturn(PK);
+        }
+      };
 
     @Rule(order = 3)
     public ActivityScenarioRule<DigitalCashActivity> activityScenarioRule =

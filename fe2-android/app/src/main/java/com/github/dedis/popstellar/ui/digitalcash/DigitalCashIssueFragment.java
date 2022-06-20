@@ -61,6 +61,7 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    System.out.println("start of create view");
     this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
     selectAllLaoMembers =
@@ -69,15 +70,18 @@ public class DigitalCashIssueFragment extends Fragment {
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(1));
     selectAllLaoWitnesses =
         mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(2));
+    System.out.println("end of create view");
     return mBinding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    System.out.println("start of created");
     setupSendCoinButton();
     setUpGetPostTransactionEvent();
     setTheAdapterRollCallAttendee();
+    System.out.println("end of created");
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */

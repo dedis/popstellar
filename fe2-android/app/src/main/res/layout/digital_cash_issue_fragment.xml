@@ -3,15 +3,6 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="view_model"
-      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
-  </data>
-
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_digital_cash_issue"
     android:layout_width="match_parent"
@@ -25,7 +16,6 @@
       android:gravity="center"
       style="@style/title_style"
       android:text="@string/digital_cash_issue"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_spinner"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
