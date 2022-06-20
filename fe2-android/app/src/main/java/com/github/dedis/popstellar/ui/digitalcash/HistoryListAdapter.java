@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +30,16 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
       new String[] {"0x5654556456456456456456456465=", "9872554566546516="};
   private final String[] id = new String[] {"0x5465", "0x987456"};
   private Map<String, Boolean> expandMap;
+  private final DigitalCashViewModel viewModel;
 
-  public HistoryListAdapter(List<TransactionObject> transactions) {
+  public HistoryListAdapter(List<TransactionObject> transactions, DigitalCashViewModel viewModel) {
     if (transactions == null) {
       throw new IllegalArgumentException();
     }
     this.transactions = transactions;
     expandMap = new HashMap<>();
     Arrays.stream(id).sequential().forEach(s -> expandMap.put(s, false));
+    this.viewModel = viewModel;
   }
 
   @NonNull
@@ -82,6 +86,16 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     //                accumulator + element.getInputs().size() + element.getOutputs().size(),
     //            Integer::sum); //We compute the sum of each input and output of each transaction
     return 2;
+  }
+
+  public void replaceList(List<TransactionObject> transactions) {
+    setList(transactions);
+  }
+
+  @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
+  private void setList(List<TransactionObject> transactions) {
+    this.transactions = new ArrayList<>(transactions);
+    notifyDataSetChanged();
   }
 
   public static class HistoryViewHolder extends RecyclerView.ViewHolder {

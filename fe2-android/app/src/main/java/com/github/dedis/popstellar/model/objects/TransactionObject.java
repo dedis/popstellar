@@ -101,7 +101,7 @@ public class TransactionObject {
     List<String> receiverHash = new ArrayList<>();
 
     for (OutputObject outObj : getOutputs()) {
-      receiverHash.add(outObj.getScript().getPubkeyHash());
+      receiverHash.add(outObj.getPubKeyHash());
     }
 
     return receiverHash;
@@ -182,7 +182,7 @@ public class TransactionObject {
     String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubkeyHash().equals(hashKey)) {
+      if (outObj.getPubKeyHash().equals(hashKey)) {
         miniLao = miniLao + outObj.getValue();
       }
     }
@@ -222,7 +222,7 @@ public class TransactionObject {
     String computeHash = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubkeyHash().equals(computeHash)) {
+      if (outObj.getPubKeyHash().equals(computeHash)) {
         // return after first occurrence
         return outObj.getValue();
       }
@@ -240,7 +240,7 @@ public class TransactionObject {
     String hashPubkey = publicKey.computeHash();
     int index = 0;
     for (OutputObject outObj : outputs) {
-      if (outObj.getScript().getPubkeyHash().equals(hashPubkey)) {
+      if (outObj.getPubKeyHash().equals(hashPubkey)) {
         return index;
       }
       index = index + 1;
@@ -275,7 +275,7 @@ public class TransactionObject {
     for (OutputObject currentTxout : outputs) {
       // Script
       // PubKeyHash
-      collectTransaction.add(currentTxout.getScript().getPubkeyHash());
+      collectTransaction.add(currentTxout.getPubKeyHash());
       // Type
       collectTransaction.add(currentTxout.getScript().getType());
       // Value

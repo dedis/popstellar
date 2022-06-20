@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -43,7 +42,6 @@ public class DigitalCashMain extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
     setupNavigationBar();
     setupBackButton();
-
 
     setupBackButton();
 
@@ -85,7 +83,9 @@ public class DigitalCashMain extends AppCompatActivity {
     }
 
   public void setTheIntent() {
-    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+    String id = (String) getIntent().getExtras().get(LAO_ID);
+    mViewModel.setLaoId(id);
+    mViewModel.subscribeToLao(id);
     mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
     mViewModel.setRollCallId((String) getIntent().getExtras().get(ROLL_CALL_ID));
   }
@@ -148,13 +148,13 @@ public class DigitalCashMain extends AppCompatActivity {
                 Log.d(
                     TAG,
                     "the key from organizer is : "
-                        + mViewModel.getCurrentLao().getOrganizer().getEncoded());
+                        + mViewModel.getCurrentLaoValue().getOrganizer().getEncoded());
                 Log.d(
                     TAG,
                     "the key from the person is "
                         + mViewModel.getKeyManager().getMainPublicKey().getEncoded());
                 if (!mViewModel
-                    .getCurrentLao()
+                    .getCurrentLaoValue()
                     .getOrganizer()
                     .getEncoded()
                     .equals(mViewModel.getKeyManager().getMainPublicKey().getEncoded())) {

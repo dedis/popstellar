@@ -49,7 +49,7 @@ public class DigitalCashSendFragment extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mViewModel = DigitalCashMain.obtainViewModel(getActivity());
     mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
@@ -74,7 +74,7 @@ public class DigitalCashSendFragment extends Fragment {
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
                 if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    Lao lao = mViewModel.getCurrentLao();
+                    Lao lao = mViewModel.getCurrentLaoValue();
                     PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
                     if (canPostTransaction(
                         lao, token.getPublicKey(), Integer.parseInt(currentAmount))) {
@@ -146,7 +146,6 @@ public class DigitalCashSendFragment extends Fragment {
    *
    * @param publicKeyAmount Map<String, String> containing the Public Keys and the related amount to
    *     issue to
-   * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money

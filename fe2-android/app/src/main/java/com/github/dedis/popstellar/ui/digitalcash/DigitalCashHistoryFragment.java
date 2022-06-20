@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 
-import java.util.ArrayList;
-
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHistoryFragment#newInstance}
  * factory method to create an instance of this fragment.
@@ -39,17 +37,20 @@ public class DigitalCashHistoryFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
-
+    DigitalCashViewModel viewModel = DigitalCashMain.obtainViewModel(getActivity());
     RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
     RecyclerView.ItemDecoration decoration =
         new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-    HistoryListAdapter adapter = new HistoryListAdapter(new ArrayList<>());
+    HistoryListAdapter adapter =
+        new HistoryListAdapter(viewModel.getTransactionHistory().getValue(), viewModel);
 
     transactionList.setLayoutManager(layoutManager);
     transactionList.addItemDecoration(decoration);
     transactionList.setAdapter(adapter);
 
+    // Update dynamically the events in History
+    viewModel.getTransactionHistory().observe(getActivity(), adapter::replaceList);
     return view;
   }
 }

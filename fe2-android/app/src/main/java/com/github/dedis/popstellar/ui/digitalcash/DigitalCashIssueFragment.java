@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.time.Instant;
@@ -141,13 +140,13 @@ public class DigitalCashIssueFragment extends Fragment {
     Set<PublicKey> attendees = new HashSet<>();
     if (radioGroup == selectAllLaoMembers) {
       for (RollCall current :
-          Objects.requireNonNull(mViewModel.getCurrentLao()).getRollCalls().values()) {
+          Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getRollCalls().values()) {
         attendees.addAll(current.getAttendees());
       }
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = mViewModel.getAttendeesFromTheRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
-      attendees = Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
+      attendees = Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getWitnesses();
     }
     return attendees;
   }
@@ -178,7 +177,6 @@ public class DigitalCashIssueFragment extends Fragment {
    *
    * @param publicKeyAmount Map<String, String> containing the Public Keys and the related amount to
    *     issue to
-   * @throws KeyException throw this exception if the key of the issuer is not on the LAO
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
     if (mViewModel.getLaoId().getValue() == null) {

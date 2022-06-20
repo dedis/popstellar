@@ -58,7 +58,7 @@ public class DigitalCashReceiveFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     try {
-      Lao lao = mViewModel.getCurrentLao();
+      Lao lao = mViewModel.getCurrentLaoValue();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
 
       Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();

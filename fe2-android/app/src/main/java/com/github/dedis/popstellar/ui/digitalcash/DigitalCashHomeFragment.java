@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -56,33 +55,40 @@ public class DigitalCashHomeFragment extends Fragment {
   }
 
   public void setHomeInterface() {
-    Lao lao = mViewModel.getCurrentLao();
-    if (lao == null) {
-      Toast.makeText(
-              requireContext(),
-              getString(R.string.digital_cash_please_enter_a_lao),
-              Toast.LENGTH_SHORT)
-          .show();
-    } else {
-      try {
-        PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-        PublicKey publicKey = token.getPublicKey();
-        mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
-        if (lao.getTransactionByUser().containsKey(publicKey)) {
-          List<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
-          long totalAmount =
-              TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
-          mBinding.digitalCashSendAddress.setText(String.format("LAO coin : %s", totalAmount));
-        }
+    mViewModel
+        .getCurrentLao()
+        .observe(
+            getActivity(),
+            lao -> {
+              if (lao == null) {
+                Toast.makeText(
+                        requireContext(),
+                        getString(R.string.digital_cash_please_enter_a_lao),
+                        Toast.LENGTH_SHORT)
+                    .show();
+              } else {
+                try {
+                  PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                  PublicKey publicKey = token.getPublicKey();
+                  mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
+                  if (lao.getTransactionByUser().containsKey(publicKey)) {
+                    List<TransactionObject> transactions =
+                        lao.getTransactionByUser().get(publicKey);
+                    long totalAmount =
+                        TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                            transactions, publicKey);
+                    mBinding.digitalCashSendAddress.setText(
+                        String.format("LAO coin : %s", totalAmount));
+                  }
 
-      } catch (KeyException e) {
-        Toast.makeText(
-                requireContext(),
-                getString(R.string.digital_cash_please_enter_roll_call),
-                Toast.LENGTH_SHORT)
-            .show();
-      }
-    }
+                } catch (KeyException e) {
+                  Toast.makeText(
+                          requireContext(),
+                          getString(R.string.digital_cash_please_enter_roll_call),
+                          Toast.LENGTH_SHORT)
+                      .show();
+                }
+              }
+            });
   }
 }
-

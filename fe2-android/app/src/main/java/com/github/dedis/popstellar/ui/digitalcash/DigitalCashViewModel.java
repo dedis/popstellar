@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
@@ -39,17 +40,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
@@ -76,7 +78,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
 
-
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
@@ -89,6 +90,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
+
+  private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final LiveData<List<TransactionObject>> mTransactionHistory;
 
   /*
    * Dependencies for this class
@@ -112,6 +116,22 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.gson = gson;
     this.keyManager = keyManager;
     disposables = new CompositeDisposable();
+
+    mTransactionHistory =
+        Transformations.map(
+            mCurrentLao,
+            lao -> {
+              try {
+                if (lao == null) return new ArrayList<>();
+                List<TransactionObject> historyList =
+                    lao.getTransactionHistoryByUser()
+                        .get(keyManager.getValidPoPToken(lao).getPublicKey());
+                return new ArrayList<>(historyList);
+              } catch (KeyException e) {
+                e.printStackTrace();
+                return null;
+              }
+            });
   }
 
   @Override
@@ -249,7 +269,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       Map<String, String> receiverandvalue, long locktime, boolean coinBase) {
 
     /* Check if a Lao exist */
-    Lao lao = getCurrentLao();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -280,9 +300,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       List<Input> inputs = new ArrayList<>();
-      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey()) && !coinBase) {
+      if (getCurrentLaoValue().getTransactionByUser().containsKey(token.getPublicKey())
+          && !coinBase) {
         List<TransactionObject> transactions =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey());
+            getCurrentLaoValue().getTransactionByUser().get(token.getPublicKey());
 
         long amountSender =
             TransactionObject.getMiniLaoPerReceiverSetTransaction(
@@ -384,29 +405,20 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   @Nullable
-  public Lao getCurrentLao() {
-    return getLao(getLaoId().getValue());
-  }
-
-  @Nullable
   public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
-    return getCurrentLao().lastRollCallClosed().getAttendees();
+    return getCurrentLaoValue().lastRollCallClosed().getAttendees();
   }
 
   @Nullable
   public PublicKey getOrganizer() {
-    return getCurrentLao().getOrganizer();
+    return getCurrentLaoValue().getOrganizer();
   }
 
   @Nullable
   public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-    List<String> list = new ArrayList<>();
-    Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
-    while (pub.hasNext()) {
-      String current = pub.next().getEncoded();
-      list.add(current);
-    }
-    return list;
+    return getAttendeesFromTheRollCall().stream()
+        .map(Base64URLData::getEncoded)
+        .collect(Collectors.toList());
   }
 
   @Nullable
@@ -414,6 +426,29 @@ public class DigitalCashViewModel extends AndroidViewModel {
     LAOState laoState = laoRepository.getLaoById().get(laoId);
     if (laoState == null) return null;
     return laoState.getLao();
+  }
+
+  public MutableLiveData<Lao> getCurrentLao() {
+    return mCurrentLao;
+  }
+
+  public Lao getCurrentLaoValue() {
+    return mCurrentLao.getValue();
+  }
+
+  public void subscribeToLao(String laoId) {
+    disposables.add(
+        laoRepository
+            .getLaoObservable(laoId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                lao -> {
+                  Log.d(TAG, "got an update for lao: " + lao.getName());
+                  mCurrentLao.postValue(lao);
+                  boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
+                  // mIsOrganizer.setValue(isOrganizer);
+                }));
   }
 
   public boolean canPerformTransaction(
@@ -429,5 +464,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
     } else {
       return true;
     }
+  }
+
+  public LiveData<List<TransactionObject>> getTransactionHistory() {
+    return mTransactionHistory;
   }
 }
