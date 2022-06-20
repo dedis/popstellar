@@ -14,32 +14,35 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
-  private List<TransactionObject> transactions;
+  private List<TransactionHistoryElement> transactions;
   private final String[] types = new String[] {"Sent", "Received"};
   private final String[] amounts = new String[] {"2.7", "2303"};
   private final String[] provenanceType = new String[] {"To", "From"};
   private final String[] provenanceValue =
       new String[] {"0x5654556456456456456456456465=", "9872554566546516="};
   private final String[] id = new String[] {"0x5465", "0x987456"};
-  private Map<String, Boolean> expandMap;
-  private final DigitalCashViewModel viewModel;
+  private final Map<String, Boolean> expandMap;
+  Set<PoPToken> ownTokens = new HashSet<>(); //
 
-  public HistoryListAdapter(List<TransactionObject> transactions, DigitalCashViewModel viewModel) {
+  public HistoryListAdapter(List<TransactionObject> transactionObjects, Set<PoPToken> ownTokens) {
     if (transactions == null) {
       throw new IllegalArgumentException();
     }
-    this.transactions = transactions;
+    this.transactions = buildTransactionList(transactionObjects);
     expandMap = new HashMap<>();
     Arrays.stream(id).sequential().forEach(s -> expandMap.put(s, false));
-    this.viewModel = viewModel;
+    this.ownTokens = new HashSet<>(ownTokens);
   }
 
   @NonNull
@@ -88,14 +91,25 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     return 2;
   }
 
-  public void replaceList(List<TransactionObject> transactions) {
+  public void replaceList(List<TransactionObject> transactions, Set<PoPToken> tokens) {
     setList(transactions);
+    this.ownTokens = new HashSet<>(tokens);
   }
 
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
   private void setList(List<TransactionObject> transactions) {
-    this.transactions = new ArrayList<>(transactions);
+    this.transactions = buildTransactionList(transactions);
     notifyDataSetChanged();
+  }
+
+  private List<TransactionHistoryElement> buildTransactionList(
+      List<TransactionObject> transactionObjects) {
+
+    ArrayList<TransactionHistoryElement> transactionHistoryElements;
+    for (TransactionObject transactionObject : transactionObjects) {
+      transactionObject.getInputs();
+    }
+    return null;
   }
 
   public static class HistoryViewHolder extends RecyclerView.ViewHolder {
@@ -118,6 +132,37 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
       transactionIdValue = itemView.findViewById(R.id.history_transaction_transaction_id_value);
       detailLayout = itemView.findViewById(R.id.history_transaction_detail_layout);
       transactionCardView = itemView.findViewById(R.id.transaction_card_view);
+    }
+  }
+
+  private static class TransactionHistoryElement {
+    private final String senderOrReceiver;
+    private final String value;
+    private final String id;
+    private final boolean isSender;
+
+    public TransactionHistoryElement(
+        String senderOrReceiver, String value, String id, boolean isSender) {
+      this.senderOrReceiver = senderOrReceiver;
+      this.value = value;
+      this.id = id;
+      this.isSender = isSender;
+    }
+
+    public String getSenderOrReceiver() {
+      return senderOrReceiver;
+    }
+
+    public String getValue() {
+      return value;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public boolean isSender() {
+      return isSender;
     }
   }
 }

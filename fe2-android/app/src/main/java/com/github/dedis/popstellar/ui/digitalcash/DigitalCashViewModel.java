@@ -40,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,6 +93,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       new MutableLiveData<>();
 
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<List<TransactionObject>> mTransactionHistory;
 
   /*
@@ -446,8 +448,12 @@ public class DigitalCashViewModel extends AndroidViewModel {
                 lao -> {
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
-                  boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
-                  // mIsOrganizer.setValue(isOrganizer);
+                  try {
+                    PoPToken token = keyManager.getValidPoPToken(lao);
+                    mTokens.getValue().add(token);
+                  } catch (KeyException e) {
+                    Log.d(TAG, "Could not retrieve token");
+                  }
                 }));
   }
 
