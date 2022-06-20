@@ -10,12 +10,6 @@ Feature:
     * backend.clearBuffer()
     And call read(rc_page_object)
 
-#    * backend.setRollCallCreateMode()
-#    # Unused, just needed to clear the buffer when the create message arrives
-#    * json create_msg = buffer.takeTimeout(timeout)
-#    * print create_msg
-#    * backend.clearBuffer()
-
     # Retrieving sent messages
     * json close_rc_json = buffer.takeTimeout(timeout)
     * print close_rc_json

@@ -38,7 +38,6 @@ Feature: android page object
     * def roll_call_close_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
     * def roll_call_manual_selector = '#com.github.dedis.popstellar:id/permission_manual_rc'
 
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
@@ -82,7 +81,9 @@ Feature: android page object
 
   @name=close_roll_call
   Scenario: Closes a roll call with only the organizer attending
+    # opens the roll call in manual mode, we don't use the camera
     * retry(5,200).click(roll_call_manual_selector)
-    * backend.clearBuffer()
+    # click on close button
     * retry(5,200).click(roll_call_close_selector)
+    * dialog(true)
 
