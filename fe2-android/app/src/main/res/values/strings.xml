@@ -308,5 +308,6 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
+  <string name="manual_add">Manual Add</string>
 
 </resources>

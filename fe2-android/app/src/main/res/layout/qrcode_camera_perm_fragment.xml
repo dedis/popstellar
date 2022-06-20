@@ -48,9 +48,10 @@
       android:layout_height="wrap_content"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      style="@style/button_style"
-      android:text="@string/manual_rc"
+      style="@style/Theme.AppCompat"
+      android:theme="@style/button_style"
+      android:text="@string/manual_add"
       android:layout_marginBottom="@dimen/margin_button"
-      android:layout_marginEnd="@dimen/margin_button"/>
+      android:layout_marginEnd="@dimen/margin_button" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

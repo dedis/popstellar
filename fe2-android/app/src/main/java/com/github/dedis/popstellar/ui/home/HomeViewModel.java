@@ -76,6 +76,9 @@ public class HomeViewModel extends AndroidViewModel
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
 
+  private final MutableLiveData<Boolean> mManualAdd =
+      new MutableLiveData<>(); // Whether to start the camera
+
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
 
@@ -112,7 +115,7 @@ public class HomeViewModel extends AndroidViewModel
 
   @Override
   public void onPermissionGranted() {
-    openQrCodeScanning();
+    openQrCodeScanning(false);
   }
 
   @Override
@@ -134,7 +137,7 @@ public class HomeViewModel extends AndroidViewModel
 
   @Override
   public boolean isManual() {
-    return false;
+    return mManualAdd.getValue();
   }
 
   @Override
@@ -307,13 +310,14 @@ public class HomeViewModel extends AndroidViewModel
   public void openConnect() {
     if (checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
-      openQrCodeScanning();
+      openQrCodeScanning(false);
     } else {
       openCameraPermission();
     }
   }
 
-  public void openQrCodeScanning() {
+  public void openQrCodeScanning(boolean manual) {
+    mManualAdd.setValue(true);
     mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.SCAN));
   }
 
