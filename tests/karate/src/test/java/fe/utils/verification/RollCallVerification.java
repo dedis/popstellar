@@ -41,12 +41,13 @@ public class RollCallVerification {
    * @param message the message sent over the network
    * @return true if the aforementioned fields match expectations
    */
-  public static boolean verifyOpen(String message) {
+  public static boolean verifyOpen(String message, boolean reopen) {
     String laoId = getLaoId(message);
     Json openMessageJson = getMsgDataJson(message);
 
     boolean objectFieldCorrectness = ROLL_CALL.equals(openMessageJson.get(OBJECT));
-    boolean actionFieldCorrectness = OPEN.equals(openMessageJson.get(ACTION));
+    String action = reopen ? REOPEN : OPEN;
+    boolean actionFieldCorrectness = action.equals(openMessageJson.get(ACTION));
 
     return actionFieldCorrectness
         && objectFieldCorrectness

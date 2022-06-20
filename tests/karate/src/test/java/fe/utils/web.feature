@@ -21,6 +21,7 @@ Feature: web test
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
     # Lao Event List
+    * def past_header_selector = '{^}Past'
     * def add_event_selector = "[data-testid='create_event_selector']"
     * def tab_events_selector = '{}Events'
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
@@ -104,3 +105,11 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
     # needed to work
     * wait(2)
+
+  @name=reopen_roll_call
+  Scenario: Reopen a closed roll call
+    * click(past_header_selector)
+    * retry(5,1000).click(event_name_selector)
+    * click(roll_call_option_selector)
+
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Re-open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")

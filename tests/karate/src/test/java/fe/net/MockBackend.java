@@ -143,7 +143,11 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   public boolean checkRollCallOpenMessage(String message){
-    return RollCallVerification.verifyOpen(message);
+    return RollCallVerification.verifyOpen(message, false);
+  }
+
+  public boolean checkRollCallReopenMessage(String message){
+    return RollCallVerification.verifyOpen(message, true);
   }
 
   public boolean checkRollCallCloseMessage(String message){

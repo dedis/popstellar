@@ -30,3 +30,10 @@ Feature: Simple Scenarios
   * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=open_roll_call'
   * replace rc_page_object.env = karate.env
   * call read(rc_page_object)
+
+  @name=close_roll_call
+  Scenario: Close a roll-call
+    Given call read('classpath:fe/utils/simpleScenarios.feature@name=open_roll_call')
+    * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=close_roll_call'
+    * replace rc_page_object.env = karate.env
+    * call read(rc_page_object)

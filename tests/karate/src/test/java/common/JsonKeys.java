@@ -39,6 +39,8 @@ public class JsonKeys {
 
   public static final String OPEN = "open";
 
+  public static final String REOPEN = "reopen";
+
   public static final String CLOSE = "close";
 
   public static final String OBJECT = "object";
