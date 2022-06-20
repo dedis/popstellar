@@ -11,6 +11,17 @@ import DigitalCashWalletItems from '../DigitalCashWalletItems';
 
 jest.mock('features/digital-cash/hooks');
 
+jest.mock('@expo/vector-icons', () => {
+  const MockIcon = ({ name, size, color }: { name: string; size: number; color: string }) =>
+    `[name='${name}' size='${size}' color='${color}']`;
+
+  return {
+    Ionicons: MockIcon,
+    MaterialIcons: MockIcon,
+    MaterialCommunityIcons: MockIcon,
+  };
+});
+
 (DigitalCashHooks.useTotalBalance as jest.Mock).mockReturnValue(10);
 
 describe('DigitalCashWalletItems', () => {

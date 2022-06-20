@@ -175,8 +175,9 @@ export const handleRollCallCloseMessage =
         await subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
           console.error('Could not subscribe to reaction channel, error:', err);
         });
+
         // we also subscribe to the coin channel of this roll call
-        await subscribeToChannel(getCoinChannel(laoId)).catch((err) => {
+        await subscribeToChannel(laoId, dispatch, getCoinChannel(laoId)).catch((err) => {
           console.error('Could not subscribe to coin channel, error: ', err);
         });
       } catch (err) {
