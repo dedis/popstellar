@@ -129,7 +129,7 @@ func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.
 	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
-		"election_open.json"))
+		"election_end.json"))
 	require.NoError(t, err)
 
 	var electionEnd messagedata.ElectionEnd
@@ -150,7 +150,7 @@ func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) 
 	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
-		"election_open.json"))
+		"vote_cast_vote.json"))
 	require.NoError(t, err)
 
 	var castVote messagedata.VoteCastVote
