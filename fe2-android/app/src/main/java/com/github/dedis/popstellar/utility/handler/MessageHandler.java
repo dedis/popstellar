@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -17,6 +18,7 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -85,11 +87,14 @@ public final class MessageHandler {
    */
   private void notifyLaoUpdate(LAORepository laoRepository, Data data, Channel channel) {
     if (!(data instanceof WitnessMessageSignature) && channel.isLaoChannel()) {
+      Log.d(TAG, "Notifying repository");
       LAOState laoState = laoRepository.getLaoById().get(channel.extractLaoId());
       laoState.publish(); // Trigger an onNext
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();
       }
+    } else {
+      Log.d(TAG, "data is " + data.toString() + " channel is " + channel.toString());
     }
   }
 }

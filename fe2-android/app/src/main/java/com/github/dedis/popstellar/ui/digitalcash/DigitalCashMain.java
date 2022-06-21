@@ -177,6 +177,7 @@ public class DigitalCashMain extends AppCompatActivity {
               Log.d(TAG, "Open digital cash history Fragment");
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
+
                 setupFragment(R.id.fragment_digital_cash_history);
               }
             });

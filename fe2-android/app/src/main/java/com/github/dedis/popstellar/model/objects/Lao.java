@@ -229,7 +229,7 @@ public final class Lao {
       }
     }
     Log.d(
-        this.getClass().toString(),
+        this.getClass().getSimpleName(),
         "Transaction by history : " + transactionHistoryByUser.toString());
     Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }

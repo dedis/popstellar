@@ -32,6 +32,8 @@ public class TransactionObject {
   // lock_time
   private long lockTime;
 
+  private String transactionId;
+
   public TransactionObject() {
     /* Empty constructor == empty transaction */
   }
@@ -76,6 +78,10 @@ public class TransactionObject {
     this.version = version;
   }
 
+  public void setTransactionId(String id) {
+    transactionId = id;
+  }
+
   /**
    * Function that give the Public Key of the Inputs
    *
@@ -86,7 +92,7 @@ public class TransactionObject {
 
     // Through the inputs look at the sender
     for (InputObject inpObj : getInputs()) {
-      senders.add(inpObj.getScript().getPubkey());
+      senders.add(inpObj.getScript().getPubKey());
     }
 
     return senders;
@@ -258,7 +264,7 @@ public class TransactionObject {
     for (InputObject currentTxin : inputs) {
       // Script
       // PubKey
-      collectTransaction.add(currentTxin.getScript().getPubkey().getEncoded());
+      collectTransaction.add(currentTxin.getScript().getPubKey().getEncoded());
       // Sig
       collectTransaction.add(currentTxin.getScript().getSig().getEncoded());
       // Type
@@ -312,5 +318,9 @@ public class TransactionObject {
     return (getSendersTransaction().size() == 1)
         && getInputs().get(0).getTxOutHash().equals(TX_OUT_HASH_COINBASE)
         && (getInputs().get(0).getTxOutIndex() == 0);
+  }
+
+  public String getTransactionId() {
+    return transactionId;
   }
 }

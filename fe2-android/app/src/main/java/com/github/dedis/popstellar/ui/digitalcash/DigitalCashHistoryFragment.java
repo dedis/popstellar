@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.github.dedis.popstellar.R;
  * factory method to create an instance of this fragment.
  */
 public class DigitalCashHistoryFragment extends Fragment {
+  private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
   public DigitalCashHistoryFragment() {
     // not implemented yet
@@ -43,14 +45,23 @@ public class DigitalCashHistoryFragment extends Fragment {
     RecyclerView.ItemDecoration decoration =
         new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
     HistoryListAdapter adapter =
-        new HistoryListAdapter(viewModel.getTransactionHistory().getValue(), viewModel);
+        new HistoryListAdapter(
+            viewModel.getTransactionHistory().getValue(), viewModel.getTokens().getValue());
 
     transactionList.setLayoutManager(layoutManager);
     transactionList.addItemDecoration(decoration);
     transactionList.setAdapter(adapter);
 
     // Update dynamically the events in History
-    viewModel.getTransactionHistory().observe(getActivity(), adapter::replaceList);
+    viewModel
+        .getTransactionHistory()
+        .observe(
+            getActivity(),
+            transactionObjects -> {
+              transactionObjects.forEach(object -> Log.d(TAG, "Object is " + object.toString()));
+              Log.d(TAG, "Transaction got updated " + transactionObjects.size());
+              adapter.replaceList(transactionObjects, viewModel.getTokens().getValue());
+            });
     return view;
   }
 }

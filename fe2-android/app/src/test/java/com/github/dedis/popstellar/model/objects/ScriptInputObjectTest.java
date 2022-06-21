@@ -37,7 +37,7 @@ public class ScriptInputObjectTest {
 
   @Test
   public void getPubKeyTest() {
-    assertEquals(pubKey, scriptTxIn.getPubkey().getEncoded());
+    assertEquals(pubKey, scriptTxIn.getPubKey().getEncoded());
   }
 
   @Test

@@ -27,7 +27,7 @@ public class ScriptInputObject {
     return type;
   }
 
-  public PublicKey getPubkey() {
+  public PublicKey getPubKey() {
     return pubKeyRecipient;
   }
 }

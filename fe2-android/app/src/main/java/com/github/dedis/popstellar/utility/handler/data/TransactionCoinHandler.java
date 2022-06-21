@@ -39,10 +39,10 @@ public class TransactionCoinHandler {
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
     TransactionObject transactionObject = new TransactionObject();
-
     transactionObject.setChannel(channel);
     transactionObject.setLockTime(postTransactionCoin.getTransaction().getLockTime());
     transactionObject.setVersion(postTransactionCoin.getTransaction().getVersion());
+    transactionObject.setTransactionId(postTransactionCoin.getTransactionId());
 
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();

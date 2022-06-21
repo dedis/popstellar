@@ -83,9 +83,11 @@ public class Channel {
     return new Channel(this, segment);
   }
 
-  /** @return true if this channel is of the form '/root/lao_id' */
+  /**
+   * @return true if this channel is of the form '/root/lao_id' or '/root/lao_id/coin
+   */
   public boolean isLaoChannel() {
-    return segments.size() == 1;
+    return segments.size() >= 1; // || segments.size() ==2;
   }
 
   /**

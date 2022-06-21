@@ -46,7 +46,7 @@ public class InputObjectTest {
 
   @Test
   public void getScriptTest() {
-    assertEquals(input.getScript().getPubkey().getEncoded(), pubKey);
+    assertEquals(input.getScript().getPubKey().getEncoded(), pubKey);
     assertEquals(input.getScript().getSig().getEncoded(), sig);
     assertEquals(input.getScript().getType(), type);
   }

@@ -93,6 +93,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       new MutableLiveData<>();
 
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<List<TransactionObject>> mTransactionHistory;
 
@@ -128,6 +129,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
                 List<TransactionObject> historyList =
                     lao.getTransactionHistoryByUser()
                         .get(keyManager.getValidPoPToken(lao).getPublicKey());
+                if (historyList == null) {
+                  return new ArrayList<>();
+                }
                 return new ArrayList<>(historyList);
               } catch (KeyException e) {
                 e.printStackTrace();
@@ -220,6 +224,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public LiveData<SingleEvent<Boolean>> getOpenReceiptEvent() {
     return mOpenReceiptEvent;
+  }
+
+  public MutableLiveData<Set<PoPToken>> getTokens() {
+    return mTokens;
   }
 
   /*
@@ -446,7 +454,12 @@ public class DigitalCashViewModel extends AndroidViewModel {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 lao -> {
-                  Log.d(TAG, "got an update for lao: " + lao.getName());
+                  Log.d(
+                      TAG,
+                      "got an update for lao: "
+                          + lao.getName()
+                          + " transaction "
+                          + lao.getTransactionHistoryByUser().toString());
                   mCurrentLao.postValue(lao);
                   try {
                     PoPToken token = keyManager.getValidPoPToken(lao);
