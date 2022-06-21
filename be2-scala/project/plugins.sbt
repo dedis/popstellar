@@ -1,4 +1,4 @@
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.0-M4")
 addSbtPlugin("com.sonar-scala" % "sbt-sonar" % "2.3.0")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.1.0")
 addSbtPlugin("com.rallyhealth.sbt" % "sbt-git-versioning" % "1.6.0")

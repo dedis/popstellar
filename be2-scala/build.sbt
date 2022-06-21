@@ -66,11 +66,9 @@ copyProtocolTask := {
 Compile/ run/ mainClass := Some("ch.epfl.pop.Server")
 Compile/ packageBin/ mainClass := Some("ch.epfl.pop.Server")
 
-lazy val scoverageSettings = Seq(
-  Compile/ coverageEnabled := true,
-  Test/ coverageEnabled := true,
-  packageBin/ coverageEnabled := false,
-)
+// https://github.com/ckipp01/dotty/blob/2fc33a36ea19752920d17596b5a6194c815a1873/docs/_docs/usage/coverage.md
+Compile/ compile/ scalacOptions +=
+  s"-coverage-out:target/scala-${scalaVersion.value}/scoverage-data"
 
 // Configure Sonar
 sonarProperties := Map(
