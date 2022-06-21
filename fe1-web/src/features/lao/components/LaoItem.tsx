@@ -45,7 +45,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
     return STRINGS.user_role_attendee;
   }, [isWitness, isOrganizer]);
 
-  const onPress = async () => {
+  const connectToLao = async () => {
     try {
       const connections = lao.server_addresses.map((address) =>
         getNetworkManager().connect(address),
@@ -78,7 +78,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       key={lao.id.valueOf()}
       containerStyle={listStyle}
       style={listStyle}
-      onPress={onPress}
+      onPress={connectToLao}
       bottomDivider>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>

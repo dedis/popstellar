@@ -12,17 +12,19 @@ import { EventState } from '../objects';
 import { makeEventListSelector } from '../reducer';
 import EventListItem from './EventListItem';
 
-const categorizeEventsByTime = (time: number, events: EventState[]) => {
+const categorizeEventsByTime = (time: Timestamp, events: EventState[]) => {
+  const t = time.valueOf();
+
   const pastEvents: EventState[] = [];
   const currentEvents: EventState[] = [];
   const futureEvents: EventState[] = [];
 
   events.forEach((e: EventState) => {
-    if ((e.end && e.end < time) || (!e.end && e.start < time)) {
+    if ((e.end && e.end < t) || (!e.end && e.start < t)) {
       pastEvents.push(e);
       return;
     }
-    if (e.start > time) {
+    if (e.start > t) {
       futureEvents.push(e);
       return;
     }
@@ -52,7 +54,7 @@ const EventList = () => {
     futureEvents: EventState[];
   }>(() => {
     const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
-      Timestamp.EpochNow().valueOf(),
+      Timestamp.EpochNow(),
       events,
     );
 
@@ -70,7 +72,7 @@ const EventList = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
-        Timestamp.EpochNow().valueOf(),
+        Timestamp.EpochNow(),
         events,
       );
 
