@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorAddWitnessMessage
+import ch.epfl.pop.storage.DbActor.DbActorAddWitnessSignatureAck
 
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
@@ -39,7 +39,7 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(_) =>
         val combined = for {
           // add new witness signature to existing ones
-          DbActorAddWitnessMessage(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+          DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
           //overwrites the message containing now the witness signature in the db
           _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
         } yield ()

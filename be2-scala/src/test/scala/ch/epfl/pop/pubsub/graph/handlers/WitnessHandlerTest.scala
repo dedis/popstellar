@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, DbActorNAckException, Hash, Signature, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorAddWitnessMessage
+import ch.epfl.pop.storage.DbActor.DbActorAddWitnessSignatureAck
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.WitnessMessages
 import util.examples.lao.CreateLaoExamples.{SENDER, createLao}
@@ -26,7 +26,6 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     TestKit.shutdownActorSystem(system)
   }
 
-  //arrange
   final val message: Message = Message(
     data = Base64Data("eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9"),
     sender = SENDER,
@@ -67,7 +66,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
         case DbActor.AddWitnessSignature(_, _, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAddWitnessMessage(witnessMessage)
+          sender() ! DbActor.DbActorAddWitnessSignatureAck(witnessMessage)
         case x =>
           system.log.info(s"Received - error $x")
       }

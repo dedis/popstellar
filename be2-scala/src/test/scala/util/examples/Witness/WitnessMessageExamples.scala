@@ -4,15 +4,15 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects._
-import com.google.crypto.tink.subtle.Ed25519Sign
+import util.examples.data.{TestKeyPairs, KeyPairWithHash}
 import spray.json._
 
 
 object WitnessMessageExamples {
 
-  val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-  val privateKey: PrivateKey = PrivateKey(Base64Data.encode(keyPair.getPrivateKey))
-  val SENDER: PublicKey = PublicKey(Base64Data.encode(keyPair.getPublicKey))
+  val keyPair: KeyPairWithHash = TestKeyPairs.keypairs(1)
+  val privateKey: PrivateKey = keyPair.keyPair.privateKey
+  val SENDER: PublicKey = keyPair.keyPair.publicKey
 
   final val MESSAGE_ID: Hash = Hash(Base64Data.encode("messageId"))
   final val WITNESS_SIGNATURE: Signature = privateKey.signData(MESSAGE_ID.base64Data)

@@ -321,7 +321,7 @@ final case class DbActor(
     case AddWitnessSignature(channel, messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(channel, messageId, signature)) match {
-        case Success(witnessMessage) => sender() ! DbActorAddWitnessMessage(witnessMessage)
+        case Success(witnessMessage) => sender() ! DbActorAddWitnessSignatureAck(witnessMessage)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
@@ -520,12 +520,12 @@ object DbActor {
   final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
 
   /**
-   * Response for a [[AddWitnessSignature]] db request Receiving [[DbActorAddWitnessMessage]] works as
+   * Response for a [[AddWitnessSignature]] db request Receiving [[DbActorAddWitnessSignatureAck]] works as
    * an acknowledgement that the request was successful
    *
    * @param witnessMessage requested message witnessed
    */
-  final case class DbActorAddWitnessMessage(witnessMessage: Message) extends DbActorMessage
+  final case class DbActorAddWitnessSignatureAck(witnessMessage: Message) extends DbActorMessage
 
 
   /**

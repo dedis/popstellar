@@ -90,7 +90,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
-  test("Validating a RpcMessage without Params does not work in validateAddChirp") {
+  test("Validating a RpcMessage without Params does not work in validateWitnessMessage") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
