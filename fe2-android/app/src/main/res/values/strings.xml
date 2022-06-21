@@ -234,6 +234,7 @@
   <string name="digital_cash_time">time</string>
   <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
   <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
+  <string name="digital_cash_error_poptoken">There is an error with the POP Token</string>
   <string name="digital_cash_post_transaction">Post transaction !</string>
   <string name="digital_cash_no_attendees">"There are no attendees !"</string>
   <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>

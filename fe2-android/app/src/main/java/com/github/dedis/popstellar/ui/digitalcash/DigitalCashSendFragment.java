@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -108,7 +109,15 @@ public class DigitalCashSendFragment extends Fragment {
               }
             });
 
-    setUpTheAdapter();
+    try {
+      setUpTheAdapter();
+    } catch (KeyException e) {
+      Toast.makeText(
+                      requireContext(),
+                      R.string.digital_cash_error_poptoken,
+                      Toast.LENGTH_SHORT)
+              .show();
+    }
   }
 
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
@@ -142,7 +151,7 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
   /** Funciton that set up the Adapter */
-  private void setUpTheAdapter() {
+  private void setUpTheAdapter() throws KeyException {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
@@ -156,8 +165,11 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    KeyManager km = mViewModel.getKeyManager();
+    mBinding.digitalCashSendSpinner.getEditText().setText(km.getPoPToken(mViewModel.getCurrentLao(), mViewModel.getCurrentLao().lastRollCallClosed()).getPublicKey().getEncoded());
     mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
-    mBinding.digitalCashSendSpinnerTv.setText(myArray.get(0));
+
+    //mBinding.digitalCashSendSpinnerTv.setText(myArray.get(0), false);
   }
 
   /** Function that setup the Button */
