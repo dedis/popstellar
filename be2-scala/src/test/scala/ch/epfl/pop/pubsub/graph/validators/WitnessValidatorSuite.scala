@@ -72,7 +72,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    val standardActorMessage: GraphMessage = new WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
+    val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
     message should equal(Left(WITNESS_MESSAGE_RPC))
     standardActorMessage should equal(Left(WITNESS_MESSAGE_RPC))
     system.stop(dbActorRef.actorRef)
@@ -81,7 +81,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message without valid PoP token fails") {
     val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    val standardActorMessage: GraphMessage = new WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
+    val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
     message shouldBe a[Right[_, PipelineError]]
     standardActorMessage shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
@@ -90,7 +90,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message with wrong signature fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
-    val standardActorMessage: GraphMessage = new WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
+    val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
     message shouldBe a[Right[_, PipelineError]]
     standardActorMessage shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
@@ -99,7 +99,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Validating a RpcMessage without Params does not work in validateWitnessMessage") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(RPC_NO_PARAMS)
-    val standardActorMessage: GraphMessage = new WitnessValidator.validateWitnessMessage(RPC_NO_PARAMS)
+    val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     standardActorMessage shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
