@@ -5,16 +5,15 @@ import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { getLaoChannel } from '../functions';
+import { connectToLao, resubscribeToLao } from '../functions';
 import { Lao } from '../objects';
 import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector } from '../reducer';
 
@@ -33,6 +32,8 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const isWitness = useSelector(isWitnessSelector);
   const isOrganizer = useSelector(isOrganizerSelector);
 
+  const dispatch = useDispatch();
+
   const role = useMemo(() => {
     if (isOrganizer) {
       return STRINGS.user_role_organizer;
@@ -44,19 +45,12 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
     return STRINGS.user_role_attendee;
   }, [isWitness, isOrganizer]);
 
-  const onPress = async () => {
+  const reconnectToLao = async () => {
     try {
-      const connections = lao.server_addresses.map((address) =>
-        getNetworkManager().connect(address),
-      );
-
-      const channel = getLaoChannel(lao.id.valueOf());
-      if (!channel) {
-        throw new Error('The given LAO ID is invalid');
-      }
-
-      // subscribe to the lao channel on the new connections
-      await subscribeToChannel(channel, connections);
+      // connect to toe lao
+      const connections = connectToLao(lao);
+      // and subscribe to all previously subscribed to channels on the new connections
+      resubscribeToLao(lao, dispatch, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,
@@ -78,7 +72,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       key={lao.id.valueOf()}
       containerStyle={listStyle}
       style={listStyle}
-      onPress={onPress}
+      onPress={reconnectToLao}
       bottomDivider>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>

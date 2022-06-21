@@ -3,6 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
@@ -39,11 +40,14 @@ type NavigationProps = CompositeScreenProps<
  */
 const ConnectOpenScan = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const dispatch = useDispatch();
 
   const toast = useToast();
 
   const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
+  const getLaoById = HomeHooks.useGetLaoById();
+  const resubscribeToLao = HomeHooks.useResubscribeToLao();
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -70,8 +74,11 @@ const ConnectOpenScan = () => {
       return;
     }
 
+    console.log('read', data);
+
     try {
       const obj = JSON.parse(data);
+
       const connectToLao = ConnectToLao.fromJson(obj);
 
       // if we are already connected to a LAO, then only allow new connections
@@ -100,8 +107,8 @@ const ConnectOpenScan = () => {
         return;
       }
 
-      const channel = getLaoChannel(connectToLao.lao);
-      if (!channel) {
+      const laoChannel = getLaoChannel(connectToLao.lao);
+      if (!laoChannel) {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'warning',
@@ -111,8 +118,19 @@ const ConnectOpenScan = () => {
         return;
       }
 
-      // subscribe to the lao channel on the new connection
-      subscribeToChannel(channel, connections).then(() => {
+      const lao = getLaoById(connectToLao.lao);
+
+      let promise: Promise<void>;
+
+      if (lao) {
+        // subscribe to all previously subscribed to channels on the new connectionss
+        promise = resubscribeToLao(lao, dispatch, connections);
+      } else {
+        // subscribe to the lao channel on the new connections
+        promise = subscribeToChannel(connectToLao.lao, dispatch, laoChannel, connections);
+      }
+
+      promise.then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_home,
         });

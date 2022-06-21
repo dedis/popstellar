@@ -9,7 +9,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { dispatch } from 'core/redux';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import Identity from '../Identity';
 
@@ -25,7 +25,7 @@ const contextValue = {
 
 // set up mock store
 const mockStore = createStore(combineReducers({ ...laoReducer }));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 // KeyPairStore always accesses the global store, hence the full store is required
 beforeAll(() => {

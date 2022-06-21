@@ -7475,26 +7475,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             }
                           >
                             <View>
-                              <Text
-                                allowFontScaling={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#fff",
-                                      "fontSize": 50,
-                                    },
-                                    undefined,
-                                    Object {
-                                      "fontFamily": "ionicons",
-                                      "fontStyle": "normal",
-                                      "fontWeight": "normal",
-                                    },
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                
-                              </Text>
+                              {"name":"ios-warning","size":50,"color":"#fff"}
                             </View>
                             <View
                               style={
@@ -13819,7 +13800,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             }
                           >
                             <View>
-                              <Text />
+                              {"name":"ios-warning","size":50,"color":"#fff"}
                             </View>
                             <View
                               style={

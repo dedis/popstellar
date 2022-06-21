@@ -61,4 +61,19 @@ export namespace HomeHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useHomeContext().useCurrentLaoId();
+
+  /**
+   * Gets the disconnect from lao function
+   */
+  export const useDisonnectFromLao = () => useHomeContext().useDisconnectFromLao();
+
+  /**
+   * Gets the function to retrieve a lao by its id
+   */
+  export const useGetLaoById = () => useHomeContext().getLaoById;
+
+  /**
+   * Gets the function to resubscribe to a lao
+   */
+  export const useResubscribeToLao = () => useHomeContext().resubscribeToLao;
 }
