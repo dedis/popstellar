@@ -23,14 +23,16 @@ export interface EventInterface extends FeatureInterface {
     getEventById: (id: Hash) => EventState | undefined;
 
     /**
-     * Creates a selector for a two-level map from laoIds to eventIds to events
-     * where all returned events have type 'eventType'
+     * Creates a selector for a map from eventIds to events
+     * where all returned events have type 'eventType' and are from the given lao
+     * @param laoId The id of the lao
      * @param eventType The type of the events that should be returned
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
     makeEventByTypeSelector: (
+      laoId: string,
       eventType: string,
-    ) => (state: unknown) => Record<string, Record<string, EventState>>;
+    ) => (state: unknown) => Record<string, EventState>;
 
     /**
      * Creates a selector to return a specific event for given lao and event ids

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 
+import static com.github.dedis.popstellar.utility.Constants.DISABLED_ALPHA;
+import static com.github.dedis.popstellar.utility.Constants.ENABLED_ALPHA;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 import android.app.AlertDialog;
@@ -140,7 +142,7 @@ public class ElectionFragment extends Fragment {
     TextView statusText = view.findViewById(R.id.election_fragment_status);
     Drawable imgAction = getDrawableFromContext(actionIconMap.getOrDefault(electionState, ID_NULL));
     actionButton.setCompoundDrawablesWithIntrinsicBounds(imgAction, null, null, null);
-    actionButton.setEnabled(actionEnablingMap.getOrDefault(electionState, false));
+    setButtonEnabling(actionButton, actionEnablingMap.getOrDefault(electionState, false));
     actionButton.setText(actionTextMap.getOrDefault(electionState, ID_NULL));
 
     // Fill status content
@@ -285,6 +287,11 @@ public class ElectionFragment extends Fragment {
     map.put(EventState.CLOSED, false);
     map.put(EventState.RESULTS_READY, true);
     return map;
+  }
+
+  private void setButtonEnabling(Button button, boolean enabled) {
+    button.setAlpha(enabled ? ENABLED_ALPHA : DISABLED_ALPHA);
+    button.setEnabled(enabled);
   }
 
   /**

@@ -574,13 +574,14 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		" failed to process message:"+
 		" failed to process action 'coin#post_transaction':"+
 		" invalid coin#postTransaction message:"+
+		" failed to verify the transaction id:"+
 		" transaction id is not valid:"+
 		" 0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc= !="+
 		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
 }
 
 // Tests that the channel works correctly when it receives a transaction
-func Test_SendTransactionMultInpAndOut(t *testing.T) {
+func Test_SendTransactionBadSignature(t *testing.T) {
 	// Create the hub
 
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
@@ -604,7 +605,7 @@ func Test_SendTransactionMultInpAndOut(t *testing.T) {
 		"examples", "messageData")
 
 	// load example
-	file := filepath.Join(relativePath, "coin", "post_transaction_multipleinpandout.json")
+	file := filepath.Join(relativePath, "coin", "post_transaction_bad_signature.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -633,7 +634,8 @@ func Test_SendTransactionMultInpAndOut(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+	err = channel.Publish(message, socket.ClientSocket{})
+	require.Error(t, err)
 }
 
 // Tests that the channel works correctly when it receives a transaction

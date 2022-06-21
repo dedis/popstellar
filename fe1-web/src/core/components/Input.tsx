@@ -1,19 +1,28 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Border, Color, Spacing, Typography } from 'core/styles';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
   input: {
+    // this makes the input field shrink down to a width of 50
+    width: 50,
     flex: 1,
     backgroundColor: Color.contrast,
     borderRadius: Border.inputRadius,
+    borderWidth: Border.width,
+    borderColor: Color.contrast,
     padding: Spacing.x05,
   },
-  border: {
-    borderWidth: 1,
-    borderColor: Color.primary,
+  negative: {
+    ...Typography.negative,
+    ...Border.negativeColor,
+    backgroundColor: Color.accent,
   },
   disabled: {
     color: Color.gray,
@@ -21,42 +30,46 @@ const styles = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, enabled, border, testID } = props;
+  const { value, placeholder, onChange, enabled, negative, testID } = props;
 
   const inputStyles = [Typography.paragraph, styles.input];
+
   if (!enabled) {
     inputStyles.push(styles.disabled);
   }
 
-  if (border) {
-    inputStyles.push(styles.border);
+  if (negative) {
+    inputStyles.push(styles.negative);
   }
+
   return (
-    <TextInput
-      style={inputStyles}
-      editable={enabled || false}
-      value={value}
-      placeholder={placeholder || ''}
-      onChangeText={enabled ? onChange : undefined}
-      testID={testID || undefined}
-    />
+    <View style={styles.container}>
+      <TextInput
+        style={inputStyles}
+        editable={enabled || false}
+        value={value}
+        placeholder={placeholder || ''}
+        onChangeText={enabled ? onChange : undefined}
+        testID={testID || undefined}
+      />
+    </View>
   );
 };
 
 const propTypes = {
-  enabled: PropTypes.bool,
-  border: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
+  enabled: PropTypes.bool,
+  negative: PropTypes.bool,
   testID: PropTypes.string,
 };
 Input.propTypes = propTypes;
 Input.defaultProps = {
   placeholder: '',
-  enabled: true,
-  border: false,
   onChange: undefined,
+  enabled: true,
+  negative: false,
   testID: undefined,
 };
 

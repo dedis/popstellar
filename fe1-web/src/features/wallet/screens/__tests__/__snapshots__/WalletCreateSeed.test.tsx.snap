@@ -477,58 +477,63 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               <View
                                 style={
                                   Object {
-                                    "alignItems": "center",
+                                    "backgroundColor": "#ff4757",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 16,
+                                    "borderWidth": 1,
                                     "flex": 1,
                                     "flexDirection": "row",
-                                    "marginVertical": 16,
+                                    "flexWrap": "wrap",
+                                    "marginBottom": 16,
+                                    "paddingVertical": 8,
                                   }
                                 }
                               >
-                                <TextInput
-                                  editable={false}
-                                  selectTextOnFocus={true}
+                                <Text
                                   style={
-                                    Array [
-                                      Object {
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "color": "#000",
-                                        "flexGrow": 1,
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginRight": 16,
-                                        "padding": 8,
-                                        "textAlign": "center",
-                                        "width": 50,
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                      Object {
-                                        "borderColor": "#fff",
-                                      },
-                                    ]
+                                    Object {
+                                      "color": "#fff",
+                                      "fontFamily": "Courier New",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "paddingHorizontal": 8,
+                                      "paddingVertical": 4,
+                                      "textAlign": "left",
+                                    }
                                   }
-                                  value="one two three"
-                                />
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                 >
-                                  <View>
-                                    <Text />
-                                  </View>
-                                </View>
+                                  one
+                                </Text>
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#fff",
+                                      "fontFamily": "Courier New",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "paddingHorizontal": 8,
+                                      "paddingVertical": 4,
+                                      "textAlign": "left",
+                                    }
+                                  }
+                                >
+                                  two
+                                </Text>
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#fff",
+                                      "fontFamily": "Courier New",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "paddingHorizontal": 8,
+                                      "paddingVertical": 4,
+                                      "textAlign": "left",
+                                    }
+                                  }
+                                >
+                                  three
+                                </Text>
                               </View>
                               <Text
                                 style={
@@ -581,8 +586,8 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -642,8 +647,8 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 rippleColor={0}
                                 style={
                                   Object {
+                                    "flex": 1,
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >

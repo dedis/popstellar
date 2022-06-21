@@ -53,6 +53,10 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
+  digitalCash: {
+    iconName: 'attach-money',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,

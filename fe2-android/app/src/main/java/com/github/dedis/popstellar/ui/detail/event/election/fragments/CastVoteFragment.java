@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
@@ -32,6 +34,7 @@ import me.relex.circleindicator.CircleIndicator3;
  */
 @AndroidEntryPoint
 public class CastVoteFragment extends Fragment {
+  public static final String TAG = CastVoteFragment.class.getSimpleName();
 
   private Button voteButton;
   private LaoDetailViewModel mLaoDetailViewModel;
@@ -87,13 +90,23 @@ public class CastVoteFragment extends Fragment {
 
     // setUp the cast Vote button
     voteButton = mCastVoteFragBinding.castVoteButton;
-    voteButton.setEnabled(false);
+
+    // Getting lao
+    Lao lao = mLaoDetailViewModel.getCurrentLao().getValue();
+    if (lao == null) {
+      Log.e(TAG, "The current LAO of the LaoDetailViewModel is null");
+      return null;
+    }
 
     // Getting election
     Election election = mLaoDetailViewModel.getCurrentElection();
+    if (election == null) {
+      Log.e(TAG, "The current election of the LaoDetailViewModel is null");
+      return null;
+    }
 
     // Setting the Lao Name
-    laoNameView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
+    laoNameView.setText(lao.getName());
 
     // Setting election name
     electionNameView.setText(election.getName());

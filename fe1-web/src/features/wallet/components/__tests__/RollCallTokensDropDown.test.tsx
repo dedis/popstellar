@@ -2,8 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import { mockKeyPair, mockLao } from '__tests__/utils';
-import { Hash, PopToken } from 'core/objects';
-import { RollCallToken } from 'features/wallet/objects/RollCallToken';
+import { Hash, PopToken, RollCallToken } from 'core/objects';
 
 import { RollCallTokensDropDown } from '../index';
 

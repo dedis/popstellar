@@ -43,4 +43,11 @@ class TransactionSuite extends FunSuite with Matchers {
     val signedTransaction = transaction.sign(Seq(keypairs(1).keyPair))
     signedTransaction.checkSignatures() shouldEqual true
   }
+
+  test("signature is performed over the correct data") {
+    val transaction = PostTransactionMessages.postTransaction.getDecodedData.get.asInstanceOf[PostTransaction].transaction
+    val signedTransaction = transaction.sign(Seq(keypairs(1).keyPair))
+    val signaturePayload = "01N1Y8twdu7wpdz5HLnkIeQSeuKpkNcQHeKF7XabLYU=" + "0" + "32" + "P2PKH" + "-_qR4IHwsiq50raa8jURNArds54="
+    Signature(signedTransaction.inputs(0).script.sig).verify(keypairs(1).keyPair.publicKey, Base64Data.encode(signaturePayload))
+  }
 }

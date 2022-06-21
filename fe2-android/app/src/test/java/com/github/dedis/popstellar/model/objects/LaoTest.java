@@ -11,15 +11,21 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+
+import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 
 public class LaoTest {
 
@@ -191,7 +197,7 @@ public class LaoTest {
   @Test
   public void getRollCall() {
     RollCall r1 = new RollCall(rollCallId1);
-    RollCall r2 = new RollCall(rollCallId1);
+    RollCall r2 = new RollCall(rollCallId2);
     LAO_1.setRollCalls(
         new HashMap<String, RollCall>() {
           {
@@ -200,6 +206,16 @@ public class LaoTest {
           }
         });
     assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
+    r1.setEnd(1);
+    r2.setEnd(2);
+    r1.setState(EventState.CLOSED);
+    //Wait that thread concurrency updates
+    while(EventState.CLOSED.equals(r1.getState().getValue()))
+    try {
+      assertEquals(r2, LAO_1.lastRollCallClosed());
+    } catch (NoRollCallException e) {
+      throw new IllegalArgumentException();
+    }
   }
 
   @Test
