@@ -831,7 +831,31 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "paddingLeft": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <RNGestureHandlerButton
+                                        collapsable={false}
+                                        onGestureEvent={[Function]}
+                                        onGestureHandlerEvent={[Function]}
+                                        onGestureHandlerStateChange={[Function]}
+                                        onHandlerStateChange={[Function]}
+                                        rippleColor={0}
+                                      >
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          nativeID="animatedComponent"
+                                          style={
+                                            Object {
+                                              "opacity": 1,
+                                            }
+                                          }
+                                        >
+                                          <View>
+                                            {"name":"ios-close","size":25,"color":"#8E8E8E"}
+                                          </View>
+                                        </View>
+                                      </RNGestureHandlerButton>
+                                    </View>
                                     <View
                                       collapsable={false}
                                       nativeID="animatedComponent"
@@ -840,7 +864,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                         Object {
                                           "justifyContent": "center",
                                           "marginHorizontal": 16,
-                                          "maxWidth": 718,
+                                          "maxWidth": 590,
                                         }
                                       }
                                     >
@@ -886,7 +910,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             }
                                           >
                                             <View>
-                                              <Text />
+                                              {"name":"ios-information-circle-outline","size":25,"color":"#000"}
                                             </View>
                                           </View>
                                         </View>
@@ -1317,7 +1341,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             }
                                           >
                                             <View>
-                                              <Text />
+                                              {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
                                             </View>
                                           </View>
                                         </RNGestureHandlerButton>
@@ -1345,7 +1369,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             }
                                           >
                                             <View>
-                                              <Text />
+                                              {"name":"ios-notifications","size":25,"color":"#8E8E8E"}
                                             </View>
                                           </View>
                                         </RNGestureHandlerButton>
@@ -1604,7 +1628,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   <View
                                     style={Object {}}
                                   >
-                                    <Text />
+                                    {"name":"ios-home","size":25,"color":"#3742fa"}
                                   </View>
                                 </View>
                                 <View
@@ -1626,7 +1650,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   }
                                 >
                                   <View>
-                                    <Text />
+                                    {"name":"ios-home","size":25,"color":"#8E8E8E"}
                                   </View>
                                 </View>
                               </View>
@@ -1860,7 +1884,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   <View
                                     style={Object {}}
                                   >
-                                    <Text />
+                                    {"name":"ios-calendar","size":25,"color":"#3742fa"}
                                   </View>
                                 </View>
                                 <View
@@ -1882,7 +1906,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   }
                                 >
                                   <View>
-                                    <Text />
+                                    {"name":"ios-calendar","size":25,"color":"#8E8E8E"}
                                   </View>
                                 </View>
                               </View>

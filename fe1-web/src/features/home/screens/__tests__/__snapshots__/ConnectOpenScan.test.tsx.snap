@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConnectNavigation renders correctly 1`] = `
+exports[`ConnectOpenScan renders correctly 1`] = `
 <View
   style={
     Object {
@@ -333,9 +333,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               "zIndex": 0,
                             }
                           }
-                        >
-                          <View />
-                        </View>
+                        />
                         <View
                           style={
                             Object {
@@ -374,7 +372,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
@@ -389,7 +389,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-close","size":25,"color":"#3742fa"}
                                     </View>
                                   </View>
                                 </View>
@@ -406,7 +406,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
@@ -422,12 +424,14 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-create","size":25,"color":"#3742fa"}
                                     </View>
                                   </View>
                                   <View
                                     accessible={true}
+                                    collapsable={false}
                                     focusable={true}
+                                    nativeID="animatedComponent"
                                     onClick={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
@@ -442,50 +446,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-code","size":25,"color":"#3742fa"}
                                     </View>
                                   </View>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "alignSelf": "flex-end",
-                                    "marginLeft": "auto",
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View>
-                                  <Text />
                                 </View>
                               </View>
                             </View>

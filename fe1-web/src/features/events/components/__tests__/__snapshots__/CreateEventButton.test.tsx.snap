@@ -333,7 +333,7 @@ exports[`CreateEventButton renders correctly 1`] = `
                           }
                         >
                           <View>
-                            <Text />
+                            {"name":"ios-create","size":25,"color":"#8E8E8E"}
                           </View>
                         </View>
                       </RNGestureHandlerButton>

@@ -358,7 +358,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                             }
                           >
                             <View>
-                              <Text />
+                              [name='attach-money' size='25' color='#000']
                             </View>
                           </View>
                           <View

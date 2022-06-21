@@ -465,7 +465,7 @@ exports[`SendReceive renders correctly 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text />
+                                        {"name":"ios-scan","size":25,"color":"#fff"}
                                       </View>
                                     </View>
                                   </View>
@@ -1068,26 +1068,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#fff",
-                                                "fontSize": 25,
-                                              },
-                                              undefined,
-                                              Object {
-                                                "fontFamily": "ionicons",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        {"name":"ios-scan","size":25,"color":"#fff"}
                                       </View>
                                     </View>
                                   </View>
