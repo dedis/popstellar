@@ -29,6 +29,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -95,6 +97,12 @@ public class DigitalCashActivityTest {
       new ExternalResource() {
         @Override
         protected void before() throws KeyException {
+
+            RollCall rc = new RollCall(RC_TITLE);
+            rc.setAttendees(Collections.singleton(PK));
+            rc.setState(EventState.CLOSED);
+            LAO.setRollCalls(Collections.singletonMap(RC_TITLE, rc));
+
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
@@ -122,30 +130,33 @@ public class DigitalCashActivityTest {
         homeButton().perform(click());
         fragmentContainer().check(matches(withChild(withId(digitalCashFragmentId()))));
     }
-/*
+
     @Test
     public void sendButtonGoesToSendThenToReceipt() {
         sendButton().perform(click());
-        //fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
-        //sendButtonToReceipt().perform(click());
-        //fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
+        /*
+        sendButtonToReceipt().perform(click());
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
+        
+         */
     }
-    
- */
+
+
 
     @Test
     public void historyButtonGoesToHistory() {
         historyButton().perform(click());
         fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashHistoryId()))));
     }
-/*
+
     @Test
     public void issueButtonGoesToIssue() {
         issueButton().perform(click());
-        //fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashIssueId()))));
+        fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashIssueId()))));
     }
 
- */
+
 
     @Test
     public void receiveButtonGoesToReceive() {

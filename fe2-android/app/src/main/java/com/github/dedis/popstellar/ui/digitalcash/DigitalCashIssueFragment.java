@@ -81,6 +81,7 @@ public class DigitalCashIssueFragment extends Fragment {
     setupSendCoinButton();
     setUpGetPostTransactionEvent();
     setTheAdapterRollCallAttendee();
+    System.out.println("ViewID: "+view.getId()+" Name:"+view.getTransitionName()+" isDIplayed: "+view.isShown());
     System.out.println("end of created");
   }
 
@@ -167,8 +168,11 @@ public class DigitalCashIssueFragment extends Fragment {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
+      System.out.println("ping1");
       myArray = mViewModel.getAttendeesFromTheRollCallList();
+      System.out.println("ping 2");
     } catch (NoRollCallException e) {
+      System.out.println("pong");
       mViewModel.openHome();
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(requireContext(), getString(R.string.digital_cash_please_enter_roll_call), Toast.LENGTH_SHORT)
