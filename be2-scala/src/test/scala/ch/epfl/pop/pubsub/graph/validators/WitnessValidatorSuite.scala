@@ -72,9 +72,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
     message should equal(Left(WITNESS_MESSAGE_RPC))
-    standardActorMessage should equal(Left(WITNESS_MESSAGE_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
