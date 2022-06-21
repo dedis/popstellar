@@ -78,6 +78,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 
@@ -85,13 +86,13 @@ import io.reactivex.subjects.BehaviorSubject;
 @RunWith(AndroidJUnit4.class)
 public class DigitalCashActivityTest {
 
+    private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
     private static final String LAO_NAME = "LAO";
-    private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-    private static final PublicKey PK = KEY_PAIR.getPublicKey();
-    private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
+    //private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
+    //private static final PublicKey PK = KEY_PAIR.getPublicKey();
+    private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.getPublicKey(), 10223421);
     private static final String LAO_ID = LAO.getId();
     private static final String RC_TITLE = "Roll-Call Title";
-    private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
 
     @Inject
     Gson gson;
@@ -112,59 +113,63 @@ public class DigitalCashActivityTest {
     @Rule(order = 1)
     public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-  @Rule(order = 2)
-  public final ExternalResource setupRule =
-      new ExternalResource() {
-        @Override
-        protected void before() throws KeyException, GeneralSecurityException {
+    @Rule(order = 2)
+    public final ExternalResource setupRule =
+            new ExternalResource() {
+                @Override
+                protected void before() throws KeyException, GeneralSecurityException {
 
-            RollCall rc = new RollCall(RC_TITLE);
-            rc.setAttendees(Collections.singleton(PK));
-            rc.setState(EventState.CLOSED);
-            LAO.setRollCalls(Collections.singletonMap(RC_TITLE, rc));
-
-
-            TransactionObject to = new TransactionObject();
-            to.setVersion(1);
-            to.setLockTime(0);
-
-            ScriptOutput so = new ScriptOutput("P2PKH", PK.computeHash());
-            ScriptOutputObject soo = new ScriptOutputObject("P2PKH", PK.computeHash());
-
-            OutputObject oo = new OutputObject(10, soo);
-            Output out = new Output(10, so);
-
-            Signature sig =
-                    POP_TOKEN
-                            .getPrivateKey()
-                            .sign(
-                                    new Base64URLData(
-                                            Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                                            Collections.singletonList(out), Collections.singletonMap("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0))
-                                                    .getBytes(StandardCharsets.UTF_8)));
-
-            ScriptInputObject sio = new ScriptInputObject("P2PKH", POP_TOKEN.getPublicKey(), sig);
-
-            InputObject io = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, sio);
-
-            to.setOutputs(Collections.singletonList(oo));
-            to.setInputs(Collections.singletonList(io));
-
-            LAO.updateTransactionMaps(to);
+                    RollCall rc = new RollCall(RC_TITLE);
+                    rc.setAttendees(Collections.singleton(POP_TOKEN.getPublicKey()));
+                    rc.setState(EventState.CLOSED);
+                    LAO.setRollCalls(Collections.singletonMap(RC_TITLE, rc));
 
 
+                    TransactionObject to = new TransactionObject();
+                    to.setVersion(1);
+                    to.setLockTime(0);
 
-          hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
-          when(repository.getLaoById())
-              .thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
-          when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
-          when(keyManager.getMainPublicKey()).thenReturn(PK);
-        }
-      };
+                    ScriptOutput so = new ScriptOutput("P2PKH", POP_TOKEN.getPublicKey().computeHash());
+                    ScriptOutputObject soo = new ScriptOutputObject("P2PKH", POP_TOKEN.getPublicKey().computeHash());
+
+                    OutputObject oo = new OutputObject(10, soo);
+                    Output out = new Output(10, so);
+
+                    Signature sig =
+                            POP_TOKEN
+                                    .getPrivateKey()
+                                    .sign(
+                                            new Base64URLData(
+                                                    Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                                                                    Collections.singletonList(out), Collections.singletonMap("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0))
+                                                            .getBytes(StandardCharsets.UTF_8)));
+
+                    ScriptInputObject sio = new ScriptInputObject("P2PKH", POP_TOKEN.getPublicKey(), sig);
+
+                    InputObject io = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, sio);
+
+                    to.setOutputs(Collections.singletonList(oo));
+                    to.setInputs(Collections.singletonList(io));
+
+                    LAO.updateTransactionMaps(to);
+
+
+
+                    hiltRule.inject();
+                    when(repository.getLaoObservable(anyString()))
+                            .thenReturn(BehaviorSubject.createDefault(LAO));
+                    when(repository.getAllLaos())
+                            .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
+                    when(repository.getLaoById())
+                            .thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
+                    when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
+                    when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
+                    when(networkManager.getMessageSender()).thenReturn(messageSender);
+                    when(messageSender.subscribe(any())).then(args -> Completable.complete());
+                    when(messageSender.publish(any(), any())).then(args -> Completable.complete());
+                    when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
+                }
+            };
 
     @Rule(order = 3)
     public ActivityScenarioRule<DigitalCashActivity> activityScenarioRule =
