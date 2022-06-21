@@ -584,7 +584,7 @@ exports[`CreateElection renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-trash","size":25,"color":"#000"}
                                     </View>
                                   </View>
                                 </RNGestureHandlerButton>

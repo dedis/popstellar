@@ -11,6 +11,7 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import LaoHomeScreen, {
   LaoHomeScreenHeader,
+  LaoHomeScreenHeaderLeft,
   LaoHomeScreenHeaderRight,
 } from '../screens/LaoHomeScreen';
 import EventsNavigation from './EventsNavigation';
@@ -34,6 +35,7 @@ const LaoNavigation: React.FC = () => {
         headerTitle: LaoHomeScreenHeader,
         Component: LaoHomeScreen,
         headerRight: LaoHomeScreenHeaderRight,
+        headerLeft: LaoHomeScreenHeaderLeft,
         tabBarIcon: makeIcon('home'),
         order: -9999999,
       } as LaoFeature.LaoScreen,

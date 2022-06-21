@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { ProfileIcon, PoPTextButton } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -72,8 +73,10 @@ const UserListItem = (props: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
+  const dispatch = useDispatch();
+
   const followUser = () => {
-    subscribeToChannel(getUserSocialChannel(laoId, publicKey)).catch((error) => {
+    subscribeToChannel(laoId, dispatch, getUserSocialChannel(laoId, publicKey)).catch((error) => {
       console.error(
         `Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`,
       );

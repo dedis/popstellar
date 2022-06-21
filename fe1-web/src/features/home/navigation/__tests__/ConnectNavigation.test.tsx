@@ -8,7 +8,7 @@ import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import ConnectNavigation from '../ConnectNavigation';
 
@@ -22,11 +22,14 @@ const contextValue = {
     useLaoList: () => [],
     LaoList: () => null,
     homeNavigationScreens: [],
+    useDisconnectFromLao: () => () => {},
+    getLaoById: () => mockLao,
+    resubscribeToLao: () => Promise.resolve(),
   } as HomeReactContext,
 };
 
 const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {
