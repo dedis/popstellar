@@ -128,7 +128,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       castsVotesElections <- electionChannel.getLastVotes(dbActor)
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+      case DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
     } yield {
       val resultsTable = mutable.HashMap.from(for {
         (question, ballots) <- questionToBallots

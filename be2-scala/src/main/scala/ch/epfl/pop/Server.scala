@@ -55,7 +55,7 @@ object Server {
       val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
 
       bindingFuture.onComplete {
-        case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
+        case Success(_) => println(s"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
         case Failure(_) =>
           logger.error(
             "ch.epfl.pop.Server failed to start. Terminating actor system"

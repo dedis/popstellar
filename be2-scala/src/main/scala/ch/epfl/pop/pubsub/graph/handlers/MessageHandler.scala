@@ -27,16 +27,17 @@ trait MessageHandler extends AskPatternConstants {
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
   def dbAskWrite(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
-    val m: Message = rpcRequest.getParamsMessage.getOrElse(
-      return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
-      }
-    )
-
-    val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
-    askWrite.transformWith {
-      case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+    rpcRequest.getParamsMessage match {
+      case None =>
+        Future {
+          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
+        }
+      case Some(m) =>
+        val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
+        askWrite.transformWith {
+          case Success(_) => Future(Left(rpcRequest))
+          case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+        }
     }
   }
 
@@ -48,16 +49,17 @@ trait MessageHandler extends AskPatternConstants {
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
   def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
-    val m: Message = rpcRequest.getParamsMessage.getOrElse(
-      return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
-      }
-    )
-
-    val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
-    askWritePropagate.transformWith {
-      case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+    rpcRequest.getParamsMessage match {
+      case None =>
+        Future {
+          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
+        }
+      case Some(m) =>
+        val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
+        askWritePropagate.transformWith {
+          case Success(_) => Future(Left(rpcRequest))
+          case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+        }
     }
   }
 
@@ -75,23 +77,24 @@ trait MessageHandler extends AskPatternConstants {
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
   def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): Future[GraphMessage] = {
-    val m: Message = rpcMessage.getParamsMessage.getOrElse(
-      return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
-      }
-    )
+    rpcMessage.getParamsMessage match {
+      case None =>
+        Future {
+          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
+        }
+      case Some(m) =>
+        val combined = for {
+          case DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
+          broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
+          broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
+          broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+          _ <- dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
+        } yield ()
 
-    val combined = for {
-      DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
-      broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
-      broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-      broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
-      _ <- dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
-    } yield ()
-
-    combined.transformWith {
-      case Success(_) => Future(Left(rpcMessage))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+        combined.transformWith {
+          case Success(_) => Future(Left(rpcMessage))
+          case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+        }
     }
   }
 }

@@ -35,7 +35,7 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(_) =>
         val combined = for {
           // add new witness signature to existing ones
-          DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+          case DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
           // overwrites the message containing now the witness signature in the db
           _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
         } yield ()

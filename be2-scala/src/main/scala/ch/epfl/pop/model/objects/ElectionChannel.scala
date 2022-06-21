@@ -23,7 +23,7 @@ object ElectionChannel {
       */
     def extractMessages[T: reflect.ClassTag](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
-        DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
+        case DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
         result <- Future.traverse(messages.flatMap(message =>
           message.decodedData match {
             case Some(t: T) => Some((message, t))

@@ -26,7 +26,9 @@ object Uint53 {
     */
   def safeSum(seq: IterableOnce[Uint53]): Either[ArithmeticOverflowError, Uint53] = {
     var acc = 0L
-    for (v <- seq.iterator) {
+    val it = seq.iterator
+    while (it.hasNext) {
+      val v = it.next
       require(inRange(v), s"value $v out of range for uint53")
       acc += v
       if (acc > MaxValue)

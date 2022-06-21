@@ -30,7 +30,7 @@ case object LaoHandler extends MessageHandler {
         val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         val config = ServerConf(appConf)
-        val address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.path}")
+        val address: Option[String] = Some(s"ws://${config.interface}:${config.port}/${config.path}")
 
         val combined = for {
           // check whether the lao already exists in db
