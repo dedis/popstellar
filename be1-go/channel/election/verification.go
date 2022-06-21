@@ -69,7 +69,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 	}
 
 	if electionOpen.OpenedAt < c.createdAt {
-		return xerrors.Errorf("election open cannot have a creation time prior to election setup")
+		return answer.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
 	}
 
 	return nil
@@ -136,7 +136,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	}
 
 	if castVote.CreatedAt < c.createdAt {
-		return xerrors.Errorf("cast vote cannot have a creation time prior to election setup")
+		return answer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
 	}
 
 	return nil
@@ -202,7 +202,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify if the timestamp is stale
 	if electionEnd.CreatedAt < c.createdAt {
-		return xerrors.Errorf("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
+		return answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
 	}
 
 	// verify order of registered votes
