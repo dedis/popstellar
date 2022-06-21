@@ -83,7 +83,7 @@ const laosSlice = createSlice({
 
     // Connect to a LAO for a given ID
     // Warning: this action is only accepted if we are not already connected to a LAO
-    connectToLao: (state, action: PayloadAction<LaoState>) => {
+    setCurrentLao: (state, action: PayloadAction<LaoState>) => {
       addLaoReducer(state, action);
 
       if (state.currentId === undefined) {
@@ -93,7 +93,7 @@ const laosSlice = createSlice({
     },
 
     // Disconnected from the current LAO (idempotent)
-    disconnectFromLao: (state) => {
+    clearCurrentLao: (state) => {
       state.currentId = undefined;
     },
 
@@ -248,8 +248,8 @@ export const {
   updateLao,
   removeLao,
   clearAllLaos,
-  connectToLao,
-  disconnectFromLao,
+  setCurrentLao,
+  clearCurrentLao,
   setLaoLastRollCall,
   addLaoServerAddress,
   addSubscribedChannel,

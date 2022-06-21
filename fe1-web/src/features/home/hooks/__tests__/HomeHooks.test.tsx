@@ -8,7 +8,7 @@ import { mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import { HomeHooks } from '../index';
 
@@ -18,6 +18,7 @@ const getLaoChannel = jest.fn();
 const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
+const resubscribeToLao = jest.fn();
 const homeNavigationScreens: HomeFeature.HomeScreen[] = [
   { Component: LaoList, id: 'x' as HomeFeature.HomeScreen['id'], title: 'X', order: 2 },
 ];
@@ -35,12 +36,13 @@ const contextValue = {
     hasSeed,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
+    resubscribeToLao,
   } as HomeReactContext,
 };
 
 // setup mock store
 const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 const wrapper = ({ children }: { children: React.ReactChildren }) => (
   <Provider store={mockStore}>
@@ -102,6 +104,13 @@ describe('Home hooks', () => {
     it('should return the function for getting a channel by lao id', () => {
       const { result } = renderHook(() => HomeHooks.useGetLaoChannel(), { wrapper });
       expect(result.current).toEqual(getLaoChannel);
+    });
+  });
+
+  describe('useResubscribeToLao', () => {
+    it('should return the function for resubscribing to a lao', () => {
+      const { result } = renderHook(() => HomeHooks.useResubscribeToLao(), { wrapper });
+      expect(result.current).toEqual(resubscribeToLao);
     });
   });
 });

@@ -1,8 +1,9 @@
 import React from 'react';
-import { AnyAction, Reducer } from 'redux';
+import { AnyAction, Dispatch, Reducer } from 'redux';
 
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -186,6 +187,15 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The channel related to the passed lao id
      */
     getLaoChannel: (laoId: string) => Channel | undefined;
+
+    /**
+     * Resubscribes to a known lao
+     */
+    resubscribeToLao: (
+      lao: Lao,
+      dispatch: Dispatch,
+      connections?: NetworkConnection[],
+    ) => Promise<void>;
   };
 
   /* reducers */

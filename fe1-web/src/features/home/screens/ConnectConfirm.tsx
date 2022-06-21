@@ -42,6 +42,7 @@ const ConnectConfirm = () => {
   const toast = useToast();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
   const getLaoById = HomeHooks.useGetLaoById();
+  const resubscribeToLao = HomeHooks.useResubscribeToLao();
 
   const onButtonConfirm = async () => {
     try {
@@ -53,16 +54,14 @@ const ConnectConfirm = () => {
       }
 
       const lao = getLaoById(laoId);
-      let channels = [laoChannel];
 
       if (lao) {
-        channels = lao.subscribed_channels;
+        // subscribe to all previously subscribed to channels on the new connection
+        await resubscribeToLao(lao, dispatch, [connection]);
+      } else {
+        // subscribe to the lao channel on the new connection
+        await subscribeToChannel(laoId, dispatch, laoChannel, [connection]);
       }
-
-      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
-      await Promise.all(
-        channels.map((channel) => subscribeToChannel(laoId, dispatch, channel, [connection])),
-      );
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,

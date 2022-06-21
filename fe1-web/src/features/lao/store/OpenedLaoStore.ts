@@ -1,7 +1,7 @@
 import { dispatch, getStore } from 'core/redux';
 
 import { Lao } from '../objects';
-import { connectToLao, selectCurrentLao } from '../reducer';
+import { setCurrentLao, selectCurrentLao } from '../reducer';
 
 /**
  * Access to the currently opened LAO from store.
@@ -12,7 +12,7 @@ import { connectToLao, selectCurrentLao } from '../reducer';
 export namespace OpenedLaoStore {
   export function store(lao: Lao): void {
     const laoState = lao.toState();
-    dispatch(connectToLao(laoState));
+    dispatch(setCurrentLao(laoState));
   }
 
   export function get(): Lao {

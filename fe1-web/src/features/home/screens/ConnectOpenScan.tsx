@@ -47,6 +47,7 @@ const ConnectOpenScan = () => {
   const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
   const getLaoById = HomeHooks.useGetLaoById();
+  const resubscribeToLao = HomeHooks.useResubscribeToLao();
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -118,18 +119,18 @@ const ConnectOpenScan = () => {
       }
 
       const lao = getLaoById(connectToLao.lao);
-      let channels = [laoChannel];
+
+      let promise: Promise<void>;
 
       if (lao) {
-        channels = lao.subscribed_channels;
+        // subscribe to all previously subscribed to channels on the new connectionss
+        promise = resubscribeToLao(lao, dispatch, connections);
+      } else {
+        // subscribe to the lao channel on the new connections
+        promise = subscribeToChannel(connectToLao.lao, dispatch, laoChannel, connections);
       }
 
-      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
-      Promise.all(
-        channels.map((channel) =>
-          subscribeToChannel(connectToLao.lao, dispatch, channel, connections),
-        ),
-      ).then(() => {
+      promise.then(() => {
         navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_home,
         });

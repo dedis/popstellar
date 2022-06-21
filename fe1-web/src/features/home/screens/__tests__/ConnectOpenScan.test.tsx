@@ -7,14 +7,21 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockAddress, mockChannel, mockLao, mockLaoId, mockReduxAction } from '__tests__/utils';
+import {
+  mockAddress,
+  mockChannel,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockReduxAction,
+} from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { subscribeToChannel } from 'core/network';
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { ConnectToLao } from 'features/home/objects';
-import { getLaoChannel } from 'features/lao/functions';
+import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
 import { LaoHooks } from 'features/lao/hooks';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import ConnectOpenScan from '../ConnectOpenScan';
 
@@ -70,11 +77,12 @@ const contextValue = {
     useLaoList: () => [],
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
+    resubscribeToLao,
   } as HomeReactContext,
 };
 
 const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 describe('ConnectOpenScan', () => {
   it('renders correctly', () => {
@@ -103,7 +111,7 @@ describe('ConnectOpenScan', () => {
 
     await waitFor(() => {
       expect(subscribeToChannel).toHaveBeenCalledWith(
-        mockLaoId,
+        mockLaoIdHash,
         expect.anything(),
         getLaoChannel(mockLaoId),
         expect.anything(),

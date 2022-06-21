@@ -24,6 +24,7 @@ const contextValue = {
     useCurrentLaoId: () => mockLaoIdHash,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
+    resubscribeToLao: () => Promise.resolve(),
   } as HomeReactContext,
 };
 

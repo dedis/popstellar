@@ -8,7 +8,7 @@ import { Hash } from 'core/objects';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
-  disconnectFromLao,
+  clearCurrentLao,
   makeIsLaoOrganizerSelector,
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
@@ -129,7 +129,7 @@ export namespace LaoHooks {
 
     return useCallback(() => {
       getNetworkManager().disconnectFromAll();
-      dispatch(disconnectFromLao());
+      dispatch(clearCurrentLao());
     }, [dispatch]);
   };
 

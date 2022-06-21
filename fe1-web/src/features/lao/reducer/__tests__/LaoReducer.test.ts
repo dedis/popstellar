@@ -21,8 +21,8 @@ import { Lao, LaoState } from '../../objects';
 import {
   addLao,
   clearAllLaos,
-  connectToLao,
-  disconnectFromLao,
+  setCurrentLao,
+  clearCurrentLao,
   laoReduce,
   selectIsLaoOrganizer,
   makeLao,
@@ -173,11 +173,11 @@ describe('LaoReducer', () => {
   });
 
   it('should connect to lao', () => {
-    expect(laoReduce(emptyState, connectToLao(mockLaoState))).toEqual(connectedState1);
+    expect(laoReduce(emptyState, setCurrentLao(mockLaoState))).toEqual(connectedState1);
   });
 
   it('should disconnect from lao', () => {
-    expect(laoReduce(connectedState1, disconnectFromLao())).toEqual(filledState1);
+    expect(laoReduce(connectedState1, clearCurrentLao())).toEqual(filledState1);
   });
 
   it('set last roll call for a non-stored lao does not do anything', () => {

@@ -1,6 +1,6 @@
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
-import { getLaoChannel } from '../functions/network';
+import { getLaoChannel } from '../functions/channel';
 
 export interface LaoState {
   name: string;

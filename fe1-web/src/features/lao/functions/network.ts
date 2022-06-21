@@ -1,16 +1,32 @@
-import { Channel, channelFromIds, Hash } from 'core/objects';
+import { Dispatch } from 'redux';
+
+import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { NetworkConnection } from 'core/network/NetworkConnection';
+
+import { Lao, LaoState } from '../objects/Lao';
 
 /**
- * Get a LAOs channel by its id
- * @param laoId The id of the lao whose channel should be returned
- * @returns The channel related to the passed lao id or undefined it the lao id is invalid
+ * Connects to a known lao
+ * @param lao The lao to connect to
+ * @returns The list of new network connections
  */
-export function getLaoChannel(laoId: string): Channel | undefined {
-  try {
-    return channelFromIds(new Hash(laoId));
-  } catch (error) {
-    console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, error);
-  }
+export const connectToLao = (lao: Lao): NetworkConnection[] =>
+  lao.server_addresses.map((address) => getNetworkManager().connect(address));
 
-  return undefined;
-}
+/**
+ * Resubscribes to a known lao
+ * @param lao The lao that should be re-subscribed to
+ * @param dispatch A redux store dispatch function
+ * @param connections An optional list of connections on which the subscribe messages should be sent
+ */
+export const resubscribeToLao = async (
+  lao: Lao | LaoState,
+  dispatch: Dispatch,
+  connections?: NetworkConnection[],
+) => {
+  await Promise.all(
+    lao.subscribed_channels.map((channel) =>
+      subscribeToChannel(lao.id, dispatch, channel, connections),
+    ),
+  );
+};

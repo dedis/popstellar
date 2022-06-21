@@ -2,12 +2,12 @@ import {
   addOnChannelSubscriptionHandlers,
   addOnChannelUnsubscriptionHandlers,
   getNetworkManager,
-  subscribeToChannel,
 } from 'core/network';
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 
 import { getLaoById } from '../functions/lao';
+import { resubscribeToLao } from '../functions/network';
 import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
@@ -61,8 +61,6 @@ export function configureNetwork(registry: MessageRegistry) {
       return;
     }
 
-    await Promise.all(
-      lao.subscribed_channels.map((channel) => subscribeToChannel(laoId, store.dispatch, channel)),
-    );
+    await resubscribeToLao(lao, store.dispatch);
   });
 }

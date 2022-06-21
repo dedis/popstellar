@@ -9,11 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { connectToLao, resubscribeToLao } from '../functions';
 import { Lao } from '../objects';
 import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector } from '../reducer';
 
@@ -45,18 +45,12 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
     return STRINGS.user_role_attendee;
   }, [isWitness, isOrganizer]);
 
-  const connectToLao = async () => {
+  const reconnectToLao = async () => {
     try {
-      const connections = lao.server_addresses.map((address) =>
-        getNetworkManager().connect(address),
-      );
-
-      // subscribe to the lao channel (or all previously subscribed to channels) on the new connection
-      await Promise.all(
-        lao.subscribed_channels.map((channel) =>
-          subscribeToChannel(lao.id, dispatch, channel, connections),
-        ),
-      );
+      // connect to toe lao
+      const connections = connectToLao(lao);
+      // and subscribe to all previously subscribed to channels on the new connections
+      resubscribeToLao(lao, dispatch, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,
@@ -78,7 +72,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       key={lao.id.valueOf()}
       containerStyle={listStyle}
       style={listStyle}
-      onPress={connectToLao}
+      onPress={reconnectToLao}
       bottomDivider>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>

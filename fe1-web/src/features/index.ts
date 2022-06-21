@@ -125,6 +125,7 @@ export function configureFeatures() {
     requestCreateLao: laoConfiguration.functions.requestCreateLao,
     getLaoChannel: laoConfiguration.functions.getLaoChannel,
     getLaoById: laoConfiguration.functions.getLaoById,
+    resubscribeToLao: laoConfiguration.functions.resubscribeToLao,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
