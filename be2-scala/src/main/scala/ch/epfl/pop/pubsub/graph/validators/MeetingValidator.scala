@@ -7,8 +7,23 @@ import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, Sta
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import akka.pattern.AskableActorRef
+import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
 
-case object MeetingValidator extends MessageDataContentValidator with EventValidator {
+object MeetingValidator extends MessageDataContentValidator with EventValidator {
+  
+  val meetingValidator = new MeetingValidator(DbActor.getInstance)
+
+  override val EVENT_HASH_PREFIX:String = meetingValidator.EVENT_HASH_PREFIX
+
+  def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = meetingValidator.validateCreateMeeting(rpcMessage)
+
+  def validateStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = meetingValidator.validateStateMeeting(rpcMessage)
+
+}
+
+sealed class  MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "M"
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -30,11 +45,13 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
         } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
+        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
+          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } else if (!validateOwner(sender, channel)) {
+        } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
