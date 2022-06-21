@@ -210,7 +210,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 		err := verifyRegisteredVotes(electionEnd, &c.questions)
 		if err != nil {
 			c.log.Err(err).Msgf("problem with registered votes: %v", err)
-			return nil
+			return err
 		}
 	}
 
