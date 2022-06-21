@@ -165,8 +165,8 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = mViewModel.getKeyManager();
-    mBinding.digitalCashSendSpinner.getEditText().setText(km.getPoPToken(mViewModel.getCurrentLao(), mViewModel.getCurrentLao().lastRollCallClosed()).getPublicKey().getEncoded());
+    KeyManager km = mViewModel.getKeyManager(); //km.getValidPoPToken(mViewModel.getCurrentLao());
+    mBinding.digitalCashSendSpinner.getEditText().setText(km.getValidPoPToken(mViewModel.getCurrentLao()).getPublicKey().getEncoded());
     mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
 
     //mBinding.digitalCashSendSpinnerTv.setText(myArray.get(0), false);
