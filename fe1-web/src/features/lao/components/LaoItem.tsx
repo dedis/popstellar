@@ -50,7 +50,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       // connect to toe lao
       const connections = connectToLao(lao);
       // and subscribe to all previously subscribed to channels on the new connections
-      resubscribeToLao(lao, dispatch, connections);
+      await resubscribeToLao(lao, dispatch, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,
