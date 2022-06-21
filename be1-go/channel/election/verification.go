@@ -224,9 +224,9 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	// get hashed ID of valid votes sorted by msg ID
 	validVotes := make(map[string]string)
 	validVotesSorted := make([]string, 0)
+	msgIDs := make([]string, 0)
 
 	for _, question := range *questions {
-		msgIDs := make([]string, 0)
 
 		question.validVotesMu.Lock()
 		for _, validVote := range question.validVotes {
@@ -234,7 +234,6 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 			// that the validVotes contain one vote for one question by every voter
 			validVotes[validVote.msgID] = validVote.ID
 			msgIDs = append(msgIDs, validVote.msgID)
-			validVotesSorted = append(validVotesSorted, validVote.ID)
 		}
 		question.validVotesMu.Unlock()
 
@@ -243,8 +242,12 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 		}
 	}
 
-	// sort valid votes by vote id
-	sort.Strings(validVotesSorted)
+	// sort message ids
+	sort.Strings(msgIDs)
+
+	for _, k := range msgIDs {
+		validVotesSorted = append(validVotesSorted, validVotes[k])
+	}
 
 	// hash all valid vote ids
 	validVotesHash := messagedata.Hash(validVotesSorted...)
