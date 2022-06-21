@@ -13,6 +13,10 @@ public class SendPageObject {
         return onView(withId(R.id.digital_cash_send_send));
     }
 
+    public static ViewInteraction sendSpinner(){
+        return onView(withId(R.id.digital_cash_send_spinner_tv));
+    }
+
     @IdRes
     public static int fragmentDigitalCashSendId() {
         return R.id.fragment_digital_cash_send;

@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
@@ -20,6 +22,8 @@ import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceiptPageObject
 import static com.github.dedis.popstellar.ui.pages.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.sendButtonToReceipt;
+import static com.github.dedis.popstellar.ui.pages.digitalcash.SendPageObject.sendSpinner;
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -28,11 +32,24 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
+import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -52,6 +69,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 import javax.inject.Inject;
@@ -72,6 +91,7 @@ public class DigitalCashActivityTest {
     private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
     private static final String LAO_ID = LAO.getId();
     private static final String RC_TITLE = "Roll-Call Title";
+    private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
 
     @Inject
     Gson gson;
@@ -96,12 +116,43 @@ public class DigitalCashActivityTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException {
+        protected void before() throws KeyException, GeneralSecurityException {
 
             RollCall rc = new RollCall(RC_TITLE);
             rc.setAttendees(Collections.singleton(PK));
             rc.setState(EventState.CLOSED);
             LAO.setRollCalls(Collections.singletonMap(RC_TITLE, rc));
+
+
+            TransactionObject to = new TransactionObject();
+            to.setVersion(1);
+            to.setLockTime(0);
+
+            ScriptOutput so = new ScriptOutput("P2PKH", PK.computeHash());
+            ScriptOutputObject soo = new ScriptOutputObject("P2PKH", PK.computeHash());
+
+            OutputObject oo = new OutputObject(10, soo);
+            Output out = new Output(10, so);
+
+            Signature sig =
+                    POP_TOKEN
+                            .getPrivateKey()
+                            .sign(
+                                    new Base64URLData(
+                                            Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                                                            Collections.singletonList(out), Collections.singletonMap("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0))
+                                                    .getBytes(StandardCharsets.UTF_8)));
+
+            ScriptInputObject sio = new ScriptInputObject("P2PKH", POP_TOKEN.getPublicKey(), sig);
+
+            InputObject io = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, sio);
+
+            to.setOutputs(Collections.singletonList(oo));
+            to.setInputs(Collections.singletonList(io));
+
+            LAO.updateTransactionMaps(to);
+
+
 
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
@@ -110,7 +161,7 @@ public class DigitalCashActivityTest {
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
           when(repository.getLaoById())
               .thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
-          when(keyManager.getValidPoPToken(any())).thenReturn(Base64DataUtils.generatePoPToken());
+          when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
           when(keyManager.getMainPublicKey()).thenReturn(PK);
         }
       };
@@ -135,11 +186,8 @@ public class DigitalCashActivityTest {
     public void sendButtonGoesToSendThenToReceipt() {
         sendButton().perform(click());
         fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
-        /*
         sendButtonToReceipt().perform(click());
         fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
-        
-         */
     }
 
 
