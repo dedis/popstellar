@@ -31,10 +31,6 @@ public class DigitalCashHomeFragment extends Fragment {
     private DigitalCashHomeFragmentBinding mBinding;
     private DigitalCashViewModel mViewModel;
 
-    public DigitalCashHomeFragment() {
-        // not implemented yet
-    }
-
     /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.

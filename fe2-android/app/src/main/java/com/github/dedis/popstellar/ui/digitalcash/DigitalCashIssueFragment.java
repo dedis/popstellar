@@ -44,10 +44,6 @@ public class DigitalCashIssueFragment extends Fragment {
     private int selectAllRollCallAttendees;
     private int selectAllLaoWitnesses;
 
-    public DigitalCashIssueFragment() {
-
-    }
-
     /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.

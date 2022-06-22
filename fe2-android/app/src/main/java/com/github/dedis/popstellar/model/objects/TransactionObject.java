@@ -32,11 +32,8 @@ public class TransactionObject {
   // lock_time
   private long lockTime;
 
-  /**
-   * Creates an empty TransactionObject
-   */
   public TransactionObject() {
-
+    // Creates an empty TransactionObject
   }
 
   public Channel getChannel() {

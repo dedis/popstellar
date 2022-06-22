@@ -34,10 +34,6 @@ public class DigitalCashSendFragment extends Fragment {
     private DigitalCashSendFragmentBinding mBinding;
     private DigitalCashViewModel mViewModel;
 
-    public DigitalCashSendFragment() {
-        // not implemented yet
-    }
-
     /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
