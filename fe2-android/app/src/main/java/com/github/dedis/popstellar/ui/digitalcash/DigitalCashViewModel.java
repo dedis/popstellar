@@ -55,397 +55,388 @@ import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
-    public static final String TAG = DigitalCashViewModel.class.getSimpleName();
-    private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-    private static final String PUBLISH_MESSAGE = "sending publish message";
-    private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
-    private static final String COIN = "coin";
+  public static final String TAG = DigitalCashViewModel.class.getSimpleName();
+  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
+  private static final String PUBLISH_MESSAGE = "sending publish message";
+  private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
+  private static final String COIN = "coin";
 
-    private static final String TYPE = "P2PKH";
-    private static final int VERSION = 1;
+  private static final String TYPE = "P2PKH";
+  private static final int VERSION = 1;
 
-    public static final int NOTHING_SELECTED = -1;
-    public static final int MIN_LAO_COIN = 0;
+  public static final int NOTHING_SELECTED = -1;
+  public static final int MIN_LAO_COIN = 0;
 
-    /*
-     * LiveData objects for capturing events
-     */
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenHistoryEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
+  /*
+   * LiveData objects for capturing events
+   */
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenHistoryEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
 
+  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
+      new MutableLiveData<>();
+  /* Is used to change the lao Coin amount on the home fragment*/
+  private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
+  /* Update the receipt after sending a transactionn*/
+  private final MutableLiveData<SingleEvent<String>> updateReceiptAddressEvent =
+      new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
+      new MutableLiveData<>();
 
-    private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
-    private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-    private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
-            new MutableLiveData<>();
-    /* Is used to change the lao Coin amount on the home fragment*/
-    private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
-    /* Update the receipt after sending a transactionn*/
-    private final MutableLiveData<SingleEvent<String>> updateReceiptAddressEvent =
-            new MutableLiveData<>();
-    private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
-            new MutableLiveData<>();
+  /*
+   * Dependencies for this class
+   */
+  private final LAORepository laoRepository;
+  private final GlobalNetworkManager networkManager;
+  private final Gson gson;
+  private final KeyManager keyManager;
+  private final CompositeDisposable disposables;
 
-    /*
-     * Dependencies for this class
-     */
-    private final LAORepository laoRepository;
-    private final GlobalNetworkManager networkManager;
-    private final Gson gson;
-    private final KeyManager keyManager;
-    private final CompositeDisposable disposables;
+  @Inject
+  public DigitalCashViewModel(
+      @NonNull Application application,
+      LAORepository laoRepository,
+      GlobalNetworkManager networkManager,
+      Gson gson,
+      KeyManager keyManager) {
+    super(application);
+    this.laoRepository = laoRepository;
+    this.networkManager = networkManager;
+    this.gson = gson;
+    this.keyManager = keyManager;
+    disposables = new CompositeDisposable();
+  }
 
-    @Inject
-    public DigitalCashViewModel(
-            @NonNull Application application,
-            LAORepository laoRepository,
-            GlobalNetworkManager networkManager,
-            Gson gson,
-            KeyManager keyManager) {
-        super(application);
-        this.laoRepository = laoRepository;
-        this.networkManager = networkManager;
-        this.gson = gson;
-        this.keyManager = keyManager;
-        disposables = new CompositeDisposable();
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    disposables.dispose();
+  }
+
+  public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
+    return postTransactionEvent;
+  }
+
+  public void postTransactionEvent() {
+    postTransactionEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public LiveData<SingleEvent<Boolean>> getUpdateLaoCoinEvent() {
+    return updateLaoCoinEvent;
+  }
+
+  public void updateLaoCoinEvent() {
+    updateLaoCoinEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
+    return updateReceiptAddressEvent;
+  }
+
+  public void updateReceiptAddressEvent(String address) {
+    updateReceiptAddressEvent.postValue(new SingleEvent<>(address));
+  }
+
+  public LiveData<SingleEvent<String>> getUpdateReceiptAmountEvent() {
+    return updateReceiptAmountEvent;
+  }
+
+  public void updateReceiptAmountEvent(String amount) {
+    updateReceiptAmountEvent.postValue(new SingleEvent<>(amount));
+  }
+
+  public void requireToPutAnAmount() {
+    Toast.makeText(
+            getApplication().getApplicationContext(),
+            "Please enter a positive amount of LAOcoin",
+            Toast.LENGTH_LONG)
+        .show();
+  }
+
+  public void requireToPutLAOMember() {
+    Toast.makeText(
+            getApplication().getApplicationContext(),
+            "Please select a LAOMember",
+            Toast.LENGTH_LONG)
+        .show();
+  }
+
+  /*
+   * Getters for MutableLiveData instances declared above
+   *
+   */
+  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
+    return mOpenHomeEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenReturnLAO() {
+    return mOpenReturnLAO;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenHistoryEvent() {
+    return mOpenHistoryEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenSendEvent() {
+    return mOpenSendEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenReceiveEvent() {
+    return mOpenReceiveEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenIssueEvent() {
+    return mOpenIssueEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenReceiptEvent() {
+    return mOpenReceiptEvent;
+  }
+
+  /*
+   * Methods that modify the state or post an Event to update the UI.
+   */
+  public void openHome() {
+    mOpenHomeEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void openHistory() {
+    mOpenHistoryEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void openIssue() {
+    mOpenIssueEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void openReceive() {
+    mOpenReceiveEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void openSend() {
+    mOpenSendEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void openReceipt() {
+    mOpenReceiptEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void returnLAO() {
+    mOpenReturnLAO.postValue(new SingleEvent<>(true));
+  }
+
+  public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
+    for (PublicKey current : getAttendeesFromTheRollCall()) {
+      if (current.getEncoded().equals(encodedPub)) {
+        return current;
+      }
+    }
+    return null;
+  }
+
+  private long computeOutputs(Map.Entry<String, String> current, List<Output> outputs) {
+    try {
+      PublicKey pub = getPublicKeyOutString(current.getKey());
+      long amount = Long.parseLong(current.getValue());
+      Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
+      outputs.add(addOutput);
+      return amount;
+    } catch (Exception e) {
+      Log.e(TAG, RECEIVER_KEY_ERROR, e);
+      return 0;
+    }
+  }
+
+  /**
+   * Post a transaction to your channel
+   *
+   * <p>Publish a Message General containing a PostTransaction data
+   */
+  public void postTransaction(
+      Map<String, String> receiverandvalue, long locktime, boolean coinBase) {
+
+    /* Check if a Lao exist */
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        disposables.dispose();
-    }
+    try {
+      PrivateKey privK;
+      PublicKey pubK;
+      PoPToken token = keyManager.getValidPoPToken(lao);
 
-    public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
-        return postTransactionEvent;
-    }
+      if (coinBase) {
+        KeyPair kp = keyManager.getMainKeyPair();
+        privK = kp.getPrivateKey();
+        pubK = kp.getPublicKey();
+      } else {
+        privK = token.getPrivateKey();
+        pubK = token.getPublicKey();
+      }
 
-    public void postTransactionEvent() {
-        postTransactionEvent.postValue(new SingleEvent<>(true));
-    }
+      // first make the output
+      List<Output> outputs = new ArrayList<>();
+      long amountFromReceiver = 0;
+      for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
+        amountFromReceiver += computeOutputs(current, outputs);
+      }
 
-    public LiveData<SingleEvent<Boolean>> getUpdateLaoCoinEvent() {
-        return updateLaoCoinEvent;
-    }
+      // Then make the inputs
+      // First there would be only one Input
 
-    public void updateLaoCoinEvent() {
-        updateLaoCoinEvent.postValue(new SingleEvent<>(true));
-    }
+      // Case no transaction before
+      String transactionHash = TransactionObject.TX_OUT_HASH_COINBASE;
+      int index = 0;
 
-    public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
-        return updateReceiptAddressEvent;
-    }
+      List<Input> inputs = new ArrayList<>();
+      if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
+        List<TransactionObject> transactions = getCurrentLao().getTransactionByUser().get(pubK);
 
-    public void updateReceiptAddressEvent(String address) {
-        updateReceiptAddressEvent.postValue(new SingleEvent<>(address));
-    }
-
-    public LiveData<SingleEvent<String>> getUpdateReceiptAmountEvent() {
-        return updateReceiptAmountEvent;
-    }
-
-    public void updateReceiptAmountEvent(String amount) {
-        updateReceiptAmountEvent.postValue(new SingleEvent<>(amount));
-    }
-
-    public void requireToPutAnAmount() {
-        Toast.makeText(
-                        getApplication().getApplicationContext(),
-                        "Please enter a positive amount of LAOcoin",
-                        Toast.LENGTH_LONG)
-                .show();
-    }
-
-    public void requireToPutLAOMember() {
-        Toast.makeText(
-                        getApplication().getApplicationContext(),
-                        "Please select a LAOMember",
-                        Toast.LENGTH_LONG)
-                .show();
-    }
-
-    /*
-     * Getters for MutableLiveData instances declared above
-     *
-     */
-    public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-        return mOpenHomeEvent;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenReturnLAO() {
-        return mOpenReturnLAO;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenHistoryEvent() {
-        return mOpenHistoryEvent;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenSendEvent() {
-        return mOpenSendEvent;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenReceiveEvent() {
-        return mOpenReceiveEvent;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenIssueEvent() {
-        return mOpenIssueEvent;
-    }
-
-    public LiveData<SingleEvent<Boolean>> getOpenReceiptEvent() {
-        return mOpenReceiptEvent;
-    }
-
-    /*
-     * Methods that modify the state or post an Event to update the UI.
-     */
-    public void openHome() {
-        mOpenHomeEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void openHistory() {
-        mOpenHistoryEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void openIssue() {
-        mOpenIssueEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void openReceive() {
-        mOpenReceiveEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void openSend() {
-        mOpenSendEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void openReceipt() {
-        mOpenReceiptEvent.postValue(new SingleEvent<>(true));
-    }
-
-    public void returnLAO() {
-        mOpenReturnLAO.postValue(new SingleEvent<>(true));
-    }
-
-    public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
-        for (PublicKey current : getAttendeesFromTheRollCall()) {
-            if (current.getEncoded().equals(encodedPub)) {
-                return current;
-            }
+        long amountSender =
+            TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
+                - amountFromReceiver;
+        Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
+        outputs.add(outputSender);
+        for (TransactionObject transactionPrevious : transactions) {
+          transactionHash = transactionPrevious.computeId();
+          index = transactionPrevious.getIndexTransaction(pubK);
+          Signature sig =
+              privK.sign(
+                  new Base64URLData(
+                      Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                              outputs, Collections.singletonMap(transactionHash, index))
+                          .getBytes(StandardCharsets.UTF_8)));
+          inputs.add(new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
         }
-        return null;
+      } else {
+        Signature sig =
+            privK.sign(
+                new Base64URLData(
+                    Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                            outputs, Collections.singletonMap(transactionHash, index))
+                        .getBytes(StandardCharsets.UTF_8)));
+        inputs.add(new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
+      }
+
+      Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
+
+      PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
+
+      Channel channel = lao.getChannel().subChannel(COIN);
+
+      Log.d(TAG, PUBLISH_MESSAGE);
+
+      MessageGeneral msg = new MessageGeneral(token, postTransactionCoin, gson);
+
+      Disposable disposable =
+          networkManager
+              .getMessageSender()
+              .publish(token, channel, postTransactionCoin)
+              .subscribe(
+                  () -> {
+                    Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
+                    Toast.makeText(
+                            getApplication().getApplicationContext(),
+                            R.string.digital_cash_post_transaction,
+                            Toast.LENGTH_LONG)
+                        .show();
+                    Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
+                    Log.d(
+                        TAG,
+                        "The transaction history " + lao.getTransactionHistoryByUser().toString());
+                  },
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_post_transaction));
+
+      disposables.add(disposable);
+    } catch (KeyException | GeneralSecurityException e) {
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
+  }
 
-    private long computeOutputs(Map.Entry<String, String> current, List<Output> outputs) {
-        try {
-            PublicKey pub = getPublicKeyOutString(current.getKey());
-            long amount = Long.parseLong(current.getValue());
-            Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
-            outputs.add(addOutput);
-            return amount;
-        } catch (Exception e) {
-            Log.e(TAG, RECEIVER_KEY_ERROR, e);
-            return 0;
-        }
+  public LiveData<String> getLaoId() {
+    return mLaoId;
+  }
+
+  public LiveData<String> getLaoName() {
+    return mLaoName;
+  }
+
+  public void setLaoId(String laoId) {
+    this.mLaoId.setValue(laoId);
+  }
+
+  public void setRollCallId(String rollCallId) {
+    this.mRollCallId.setValue(rollCallId);
+  }
+
+  public void setLaoName(String laoName) {
+    mLaoName.setValue(laoName);
+  }
+
+  public LAORepository getLaoRepository() {
+    return laoRepository;
+  }
+
+  public KeyManager getKeyManager() {
+    return keyManager;
+  }
+
+  @Nullable
+  public Lao getCurrentLao() {
+    return getLao(getLaoId().getValue());
+  }
+
+  @Nullable
+  public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
+    return getCurrentLao().lastRollCallClosed().getAttendees();
+  }
+
+  @Nullable
+  public PublicKey getOrganizer() {
+    return getCurrentLao().getOrganizer();
+  }
+
+  @Nullable
+  public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
+    List<String> list = new ArrayList<>();
+    Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
+    while (pub.hasNext()) {
+      String current = pub.next().getEncoded();
+      list.add(current);
     }
+    return list;
+  }
 
-    /**
-     * Post a transaction to your channel
-     *
-     * <p>Publish a Message General containing a PostTransaction data
-     */
-    public void postTransaction(
-            Map<String, String> receiverandvalue, long locktime, boolean coinBase) {
+  @Nullable
+  private Lao getLao(String laoId) {
+    LAOState laoState = laoRepository.getLaoById().get(laoId);
+    if (laoState == null) return null;
+    return laoState.getLao();
+  }
 
-        /* Check if a Lao exist */
-        Lao lao = getCurrentLao();
-        if (lao == null) {
-            Log.e(TAG, LAO_FAILURE_MESSAGE);
-            return;
-        }
-
-        try {
-            PrivateKey privK;
-            PublicKey pubK;
-            PoPToken token = keyManager.getValidPoPToken(lao);
-
-            if (coinBase) {
-                KeyPair kp = keyManager.getMainKeyPair();
-                privK = kp.getPrivateKey();
-                pubK = kp.getPublicKey();
-            } else {
-                privK = token.getPrivateKey();
-                pubK = token.getPublicKey();
-            }
-
-
-            // first make the output
-            List<Output> outputs = new ArrayList<>();
-            long amountFromReceiver = 0;
-            for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
-                amountFromReceiver += computeOutputs(current, outputs);
-            }
-
-            // Then make the inputs
-            // First there would be only one Input
-
-            // Case no transaction before
-            String transactionHash = TransactionObject.TX_OUT_HASH_COINBASE;
-            int index = 0;
-
-            List<Input> inputs = new ArrayList<>();
-            if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
-                List<TransactionObject> transactions =
-                        getCurrentLao().getTransactionByUser().get(pubK);
-
-                long amountSender =
-                        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                                transactions, pubK)
-                                - amountFromReceiver;
-                Output outputSender =
-                        new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
-                outputs.add(outputSender);
-                for (TransactionObject transactionPrevious : transactions) {
-                    transactionHash = transactionPrevious.computeId();
-                    index = transactionPrevious.getIndexTransaction(pubK);
-                    Signature sig =
-                            privK
-                                    .sign(
-                                            new Base64URLData(
-                                                    Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                                                    outputs, Collections.singletonMap(transactionHash, index))
-                                                            .getBytes(StandardCharsets.UTF_8)));
-                    inputs.add(
-                            new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
-                }
-            } else {
-                Signature sig =
-                        privK
-                                .sign(
-                                        new Base64URLData(
-                                                Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                                                outputs, Collections.singletonMap(transactionHash, index))
-                                                        .getBytes(StandardCharsets.UTF_8)));
-                inputs.add(
-                        new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
-            }
-
-            Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
-
-            PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
-
-            Channel channel = lao.getChannel().subChannel(COIN);
-
-            Log.d(TAG, PUBLISH_MESSAGE);
-
-            MessageGeneral msg = new MessageGeneral(token, postTransactionCoin, gson);
-
-            Disposable disposable =
-                    networkManager
-                            .getMessageSender()
-                            .publish(token, channel, postTransactionCoin)
-                            .subscribe(
-                                    () -> {
-                                        Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
-                                        Toast.makeText(
-                                                        getApplication().getApplicationContext(),
-                                                        R.string.digital_cash_post_transaction,
-                                                        Toast.LENGTH_LONG)
-                                                .show();
-                                        Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
-                                        Log.d(
-                                                TAG,
-                                                "The transaction history " + lao.getTransactionHistoryByUser().toString());
-                                    },
-                                    error ->
-                                            ErrorUtils.logAndShow(
-                                                    getApplication(), TAG, error, R.string.error_post_transaction));
-
-            disposables.add(disposable);
-        } catch (KeyException | GeneralSecurityException e) {
-            ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
-        }
+  public boolean canPerformTransaction(
+      String currentAmount, String currentPublicKeySelected, int radioGroup) {
+    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
+      // create in View Model a function that toast : please enter amount
+      requireToPutAnAmount();
+      return false;
+    } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
+      // create in View Model a function that toast : please enter key
+      requireToPutLAOMember();
+      return false;
+    } else {
+      return true;
     }
-
-    public LiveData<String> getLaoId() {
-        return mLaoId;
-    }
-
-    public LiveData<String> getLaoName() {
-        return mLaoName;
-    }
-
-    public void setLaoId(String laoId) {
-        this.mLaoId.setValue(laoId);
-    }
-
-    public void setRollCallId(String rollCallId) {
-        this.mRollCallId.setValue(rollCallId);
-    }
-
-    public void setLaoName(String laoName) {
-        mLaoName.setValue(laoName);
-    }
-
-    public LAORepository getLaoRepository() {
-        return laoRepository;
-    }
-
-    public KeyManager getKeyManager() {
-        return keyManager;
-    }
-
-    @Nullable
-    public Lao getCurrentLao() {
-        return getLao(getLaoId().getValue());
-    }
-
-    @Nullable
-    public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
-        return getCurrentLao().lastRollCallClosed().getAttendees();
-    }
-
-    @Nullable
-    public PublicKey getOrganizer() {
-        return getCurrentLao().getOrganizer();
-    }
-
-    @Nullable
-    public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-        List<String> list = new ArrayList<>();
-        Iterator<PublicKey> pub = Objects.requireNonNull(getAttendeesFromTheRollCall()).iterator();
-        while (pub.hasNext()) {
-            String current = pub.next().getEncoded();
-            list.add(current);
-        }
-        return list;
-    }
-
-    @Nullable
-    private Lao getLao(String laoId) {
-        LAOState laoState = laoRepository.getLaoById().get(laoId);
-        if (laoState == null) return null;
-        return laoState.getLao();
-    }
-
-    public boolean canPerformTransaction(
-            String currentAmount, String currentPublicKeySelected, int radioGroup) {
-        if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
-            // create in View Model a function that toast : please enter amount
-            requireToPutAnAmount();
-            return false;
-        } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
-            // create in View Model a function that toast : please enter key
-            requireToPutLAOMember();
-            return false;
-        } else {
-            return true;
-        }
-    }
+  }
 }
