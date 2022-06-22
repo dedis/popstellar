@@ -236,7 +236,8 @@
   <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
   <string name="digital_cash_error_poptoken">There is an error with the POP Token</string>
   <string name="digital_cash_post_transaction">Post transaction !</string>
-  <string name="digital_cash_no_attendees">"There are no attendees !"</string>
+  <string name="digital_cash_no_attendees">"There are no attendee(s) !"</string>
+  <string name="digital_cash_no_witness">"There are no witnesses !"</string>
   <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
 

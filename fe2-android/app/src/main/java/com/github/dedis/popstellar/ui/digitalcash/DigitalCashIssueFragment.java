@@ -40,6 +40,7 @@ public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+  private int selectOneMember;
   private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
   private int selectAllLaoWitnesses;
@@ -63,12 +64,10 @@ public class DigitalCashIssueFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
-    selectAllLaoMembers =
-        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(0));
-    selectAllRollCallAttendees =
-        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(1));
-    selectAllLaoWitnesses =
-        mBinding.digitalCashIssueSelect.indexOfChild(mBinding.digitalCashIssueSelect.getChildAt(2));
+    selectOneMember = mBinding.radioButton.getId();
+    selectAllLaoMembers = mBinding.radioButton1.getId();
+    selectAllRollCallAttendees = mBinding.radioButton2.getId();
+    selectAllLaoWitnesses = mBinding.radioButton3.getId();
     return mBinding.getRoot();
   }
 
@@ -94,6 +93,8 @@ public class DigitalCashIssueFragment extends Fragment {
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
                 int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
+                Log.e("INFO: pkey: ", currentPublicKeySelected);
+                Log.e("INFO: rdbutton: ", String.valueOf(radioGroup));
                 if (mViewModel.canPerformTransaction(
                     currentAmount, currentPublicKeySelected, radioGroup)) {
                   try {
@@ -101,11 +102,19 @@ public class DigitalCashIssueFragment extends Fragment {
                         computeMapForPostTransaction(
                             currentAmount, currentPublicKeySelected, radioGroup);
                     if (issueMap.isEmpty()) {
-                      Toast.makeText(
-                              requireContext(),
-                              R.string.digital_cash_no_attendees,
-                              Toast.LENGTH_LONG)
-                          .show();
+                      if (radioGroup == selectAllLaoWitnesses) {
+                        Toast.makeText(
+                                        requireContext(),
+                                        R.string.digital_cash_no_witness,
+                                        Toast.LENGTH_LONG)
+                                .show();
+                      } else {
+                        Toast.makeText(
+                                        requireContext(),
+                                        R.string.digital_cash_no_attendees,
+                                        Toast.LENGTH_LONG)
+                                .show();
+                      }
                     } else {
                       postTransaction(issueMap);
                     }
@@ -121,9 +130,10 @@ public class DigitalCashIssueFragment extends Fragment {
       String currentAmount, String currentPublicKeySelected, int radioGroup)
       throws NoRollCallException {
     if (radioGroup == DigitalCashViewModel.NOTHING_SELECTED) {
+      // When no radio are selected -> use by default what is inside the selector
       return Collections.singletonMap(currentPublicKeySelected, currentAmount);
     } else {
-      Set<PublicKey> attendees = attendeesPerRadioGroupButton(radioGroup);
+      Set<PublicKey> attendees = attendeesPerRadioGroupButton(radioGroup, currentPublicKeySelected);
       Map<String, String> issueMap = new HashMap<>();
       if (!attendees.isEmpty()) {
         for (PublicKey publicKey : attendees) {
@@ -138,9 +148,11 @@ public class DigitalCashIssueFragment extends Fragment {
    * Function that return the give list of attendees Radio Group Button selected (a empty list if
    * nothing)
    */
-  private Set<PublicKey> attendeesPerRadioGroupButton(int radioGroup) throws NoRollCallException {
+  private Set<PublicKey> attendeesPerRadioGroupButton(int radioGroup, String currentSelected) throws NoRollCallException {
     Set<PublicKey> attendees = new HashSet<>();
-    if (radioGroup == selectAllLaoMembers) {
+    if (radioGroup == selectOneMember && !currentSelected.equals("")) {
+      attendees.add(new PublicKey(currentSelected));
+    } else if (radioGroup == selectAllLaoMembers) {
       for (RollCall current :
           Objects.requireNonNull(mViewModel.getCurrentLao()).getRollCalls().values()) {
         attendees.addAll(current.getAttendees());

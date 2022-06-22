@@ -35,7 +35,8 @@
         android:id="@+id/radioButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_0" />
+        android:text="@string/digital_cash_select_0"
+        android:checked="true"/>
 
       <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
