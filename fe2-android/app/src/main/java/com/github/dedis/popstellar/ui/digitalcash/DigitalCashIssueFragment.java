@@ -19,7 +19,6 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,8 +94,6 @@ public class DigitalCashIssueFragment extends Fragment {
                                 String currentPublicKeySelected =
                                         String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
                                 int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                                Log.e("INFO: pkey: ", currentPublicKeySelected);
-                                Log.e("INFO: rdbutton: ", String.valueOf(radioGroup));
                                 if (mViewModel.canPerformTransaction(
                                         currentAmount, currentPublicKeySelected, radioGroup)) {
                                     try {
@@ -210,7 +207,7 @@ public class DigitalCashIssueFragment extends Fragment {
                             requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
                     .show();
         } else {
-            mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true);
+            mViewModel.postTransaction(publicKeyAmount, 0, true);
             mViewModel.updateLaoCoinEvent();
         }
     }
