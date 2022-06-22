@@ -239,6 +239,7 @@
   <string name="digital_cash_no_witness">"There are no witnesses !"</string>
   <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
+  <string name="digital_cash_send_initial_amount">0</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>

@@ -301,39 +301,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
             List<Input> inputs = new ArrayList<>();
             if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
-                List<TransactionObject> transactions =
-                        getCurrentLao().getTransactionByUser().get(pubK);
-
-                long amountSender =
-                        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                                transactions, pubK)
-                                - amountFromReceiver;
-                Output outputSender =
-                        new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
-                outputs.add(outputSender);
-                for (TransactionObject transactionPrevious : transactions) {
-                    transactionHash = transactionPrevious.computeId();
-                    index = transactionPrevious.getIndexTransaction(pubK);
-                    Signature sig =
-                            privK
-                                    .sign(
-                                            new Base64URLData(
-                                                    Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                                                    outputs, Collections.singletonMap(transactionHash, index))
-                                                            .getBytes(StandardCharsets.UTF_8)));
-                    inputs.add(
-                            new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
-                }
+                processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
             } else {
-                Signature sig =
-                        privK
-                                .sign(
-                                        new Base64URLData(
-                                                Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                                                outputs, Collections.singletonMap(transactionHash, index))
-                                                        .getBytes(StandardCharsets.UTF_8)));
-                inputs.add(
-                        new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
+                inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
             }
 
             Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
@@ -371,6 +341,17 @@ public class DigitalCashViewModel extends AndroidViewModel {
         } catch (KeyException | GeneralSecurityException e) {
             ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
         }
+    }
+
+    private Input processSignInput(PrivateKey privK, PublicKey pubK, List<Output> outputs, String transactionHash, int index) throws GeneralSecurityException {
+        Signature sig =
+                privK
+                        .sign(
+                                new Base64URLData(
+                                        Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                                                        outputs, Collections.singletonMap(transactionHash, index))
+                                                .getBytes(StandardCharsets.UTF_8)));
+        return new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig));
     }
 
     public LiveData<String> getLaoId() {
@@ -446,6 +427,26 @@ public class DigitalCashViewModel extends AndroidViewModel {
             return false;
         } else {
             return true;
+        }
+    }
+
+    private void processNotCoinbaseTransaction(PrivateKey privK, PublicKey pubK, List<Output> outputs, long amountFromReceiver, List<Input> inputs) throws GeneralSecurityException {
+        int index;
+        String transactionHash;
+        List<TransactionObject> transactions =
+                getCurrentLao().getTransactionByUser().get(pubK);
+
+        long amountSender =
+                TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                        transactions, pubK)
+                        - amountFromReceiver;
+        Output outputSender =
+                new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
+        outputs.add(outputSender);
+        for (TransactionObject transactionPrevious : transactions) {
+            transactionHash = transactionPrevious.computeTransactionId();
+            index = transactionPrevious.getIndexTransaction(pubK);
+            inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
         }
     }
 }

@@ -45,7 +45,7 @@ public class DigitalCashIssueFragment extends Fragment {
     private int selectAllLaoWitnesses;
 
     public DigitalCashIssueFragment() {
-        // not implemented yet
+
     }
 
     /**

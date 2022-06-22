@@ -173,7 +173,6 @@ public class DigitalCashActivity extends AppCompatActivity {
         return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
     }
 
-    @SuppressLint("NonConstantResourceId")
     public void setupNavigationBar() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(
@@ -217,7 +216,7 @@ public class DigitalCashActivity extends AppCompatActivity {
     /**
      * Set the current fragment in the container of the activity
      *
-     * @param id               of the fragment
+     * @param id of the fragment
      * @param fragmentSupplier provides the fragment if it is missing
      */
     private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {

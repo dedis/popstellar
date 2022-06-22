@@ -20,7 +20,7 @@ public class DigitalCashReceiptFragment extends Fragment {
     private DigitalCashViewModel mViewModel;
 
     public DigitalCashReceiptFragment() {
-        // not implemented yet
+
     }
 
     /**

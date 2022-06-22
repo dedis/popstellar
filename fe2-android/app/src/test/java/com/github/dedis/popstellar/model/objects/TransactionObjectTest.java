@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
-import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -318,6 +317,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(outObj);
 
     assertEquals(true, transactionObject.isCoinBaseTransaction());
-    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeId());
+    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeTransactionId());
   }
 }

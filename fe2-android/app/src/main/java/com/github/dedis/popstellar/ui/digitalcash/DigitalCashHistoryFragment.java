@@ -16,7 +16,7 @@ import com.github.dedis.popstellar.R;
 public class DigitalCashHistoryFragment extends Fragment {
 
     public DigitalCashHistoryFragment() {
-        // not implemented yet
+
     }
 
     /**
