@@ -33,4 +33,17 @@ public class InputObject {
   public PublicKey getPubKey() {
     return script.getPubKey();
   }
+
+  @Override
+  public String toString() {
+    return "InputObject{"
+        + "txOutHash='"
+        + txOutHash
+        + '\''
+        + ", txOutIndex="
+        + txOutIndex
+        + ", key="
+        + getPubKey()
+        + '}';
+  }
 }

@@ -323,4 +323,23 @@ public class TransactionObject {
   public String getTransactionId() {
     return transactionId;
   }
+
+  @Override
+  public String toString() {
+    return "TransactionObject{"
+        + "channel="
+        + channel
+        + ", version="
+        + version
+        + ", inputs="
+        + inputs.toString()
+        + ", outputs="
+        + outputs.toString()
+        + ", lockTime="
+        + lockTime
+        + ", transactionId='"
+        + transactionId
+        + '\''
+        + '}';
+  }
 }

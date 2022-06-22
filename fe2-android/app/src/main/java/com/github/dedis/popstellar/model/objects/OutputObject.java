@@ -24,4 +24,9 @@ public class OutputObject {
   public String getPubKeyHash() {
     return script.getPubKeyHash();
   }
+
+  @Override
+  public String toString() {
+    return "OutputObject{" + "value=" + value + ", keyHash=" + getPubKeyHash() + '}';
+  }
 }

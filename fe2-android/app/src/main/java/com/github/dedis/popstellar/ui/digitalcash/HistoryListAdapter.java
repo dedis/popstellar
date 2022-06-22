@@ -29,11 +29,6 @@ import java.util.stream.Collectors;
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
   private static final String TAG = HistoryListAdapter.class.getSimpleName();
   private List<TransactionHistoryElement> transactions;
-  private final String[] amounts = new String[] {"2.7", "2303"};
-  private final String[] provenanceType = new String[] {"To", "From"};
-  private final String[] provenanceValue =
-      new String[] {"0x5654556456456456456456456465=", "9872554566546516="};
-  private final String[] id = new String[] {"0x5465", "0x987456"};
   private final Map<String, Boolean> expandMap;
   Set<PublicKey> ownPublicKeys;
   Set<String> ownPublicKeysHash;
@@ -64,9 +59,15 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   @Override
   public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
     TransactionHistoryElement element = transactions.get(position);
+    if (element == null) {
+      Log.d(TAG, "element is null");
+    }
+    Log.d(TAG, "element is " + element);
     String transactionId = element.getId();
-
-    boolean expand = expandMap.get(transactionId);
+    Log.d(TAG, "expand is " + expandMap.toString());
+    Boolean expandObject = expandMap.get(transactionId);
+    Log.d(TAG, "expand object " + expandObject);
+    boolean expand = expandObject != null && expandObject;
 
     holder.detailLayout.setVisibility(expand ? View.VISIBLE : View.GONE);
     holder.expandIcon.setRotation(expand ? 180f : 0f);
@@ -83,6 +84,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     View.OnClickListener listener =
         v -> {
+          Log.d(TAG, "transaction is " + transactionId + " position is " + position);
           boolean expandStatus = expandMap.get(transactionId);
           expandMap.put(transactionId, !expandStatus);
           notifyItemChanged(position);
@@ -103,6 +105,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
   private void setList(List<TransactionObject> transactions, Set<PoPToken> tokens) {
+    Log.d(TAG, "Replacing list with " + transactions.toString());
     if (transactions == null) {
       transactions = new ArrayList<>();
     }
@@ -111,6 +114,8 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
         ownPublicKeys.parallelStream().map(PublicKey::computeHash).collect(Collectors.toSet());
     notifyDataSetChanged();
     this.transactions = buildTransactionList(transactions);
+    transactions.forEach(
+        transaction -> expandMap.putIfAbsent(transaction.getTransactionId(), false));
   }
 
   private List<TransactionHistoryElement> buildTransactionList(
@@ -118,7 +123,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     ArrayList<TransactionHistoryElement> transactionHistoryElements = new ArrayList<>();
     for (TransactionObject transactionObject : transactionObjects) {
-
+      Log.d(TAG, "transaction is " + transactionObject.toString());
       // To know if we are in input or not. We assume that no two different person
       boolean isInput = isInInput(transactionObject.getInputs());
       transactionHistoryElements.addAll(
@@ -131,7 +136,9 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
               .map(
                   outputObject ->
                       new TransactionHistoryElement(
-                          outputObject.getPubKeyHash(),
+                          isInput
+                              ? outputObject.getPubKeyHash()
+                              : transactionObject.getInputs().get(0).getPubKey().getEncoded(),
                           String.valueOf(outputObject.getValue()),
                           transactionObject.getTransactionId(),
                           isInput))
@@ -200,6 +207,23 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     public boolean isSender() {
       return isSender;
+    }
+
+    @Override
+    public String toString() {
+      return "TransactionHistoryElement{"
+          + "senderOrReceiver='"
+          + senderOrReceiver
+          + '\''
+          + ", value='"
+          + value
+          + '\''
+          + ", id='"
+          + id
+          + '\''
+          + ", isSender="
+          + isSender
+          + '}';
     }
   }
 }
