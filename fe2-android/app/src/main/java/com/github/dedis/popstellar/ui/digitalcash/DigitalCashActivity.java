@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
