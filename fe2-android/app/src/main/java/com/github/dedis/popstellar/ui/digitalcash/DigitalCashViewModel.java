@@ -23,7 +23,9 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -269,7 +271,21 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
 
     try {
+      PrivateKey privK;
+      PublicKey pubK;
       PoPToken token = keyManager.getValidPoPToken(lao);
+
+      if (coinBase) {
+        KeyPair kp = keyManager.getMainKeyPair();
+        privK = kp.getPrivateKey();
+        pubK = kp.getPublicKey();
+      } else {
+        privK = token.getPrivateKey();
+        pubK = token.getPublicKey();
+      }
+
+
+
       // first make the output
       List<Output> outputs = new ArrayList<>();
       long amountFromReceiver = 0;
@@ -285,42 +301,40 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       List<Input> inputs = new ArrayList<>();
-      if (getCurrentLao().getTransactionByUser().containsKey(token.getPublicKey()) && !coinBase) {
+      if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
         List<TransactionObject> transactions =
-            getCurrentLao().getTransactionByUser().get(token.getPublicKey());
+            getCurrentLao().getTransactionByUser().get(pubK);
 
         long amountSender =
             TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                    transactions, token.getPublicKey())
+                    transactions, pubK)
                 - amountFromReceiver;
         Output outputSender =
-            new Output(amountSender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
+            new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
         outputs.add(outputSender);
         for (TransactionObject transactionPrevious : transactions) {
           transactionHash = transactionPrevious.computeId();
-          index = transactionPrevious.getIndexTransaction(token.getPublicKey());
+          index = transactionPrevious.getIndexTransaction(pubK);
           Signature sig =
-              token
-                  .getPrivateKey()
+              privK
                   .sign(
                       new Base64URLData(
                           Transaction.computeSigOutputsPairTxOutHashAndIndex(
                                   outputs, Collections.singletonMap(transactionHash, index))
                               .getBytes(StandardCharsets.UTF_8)));
           inputs.add(
-              new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
+              new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
         }
       } else {
         Signature sig =
-            token
-                .getPrivateKey()
+            privK
                 .sign(
                     new Base64URLData(
                         Transaction.computeSigOutputsPairTxOutHashAndIndex(
                                 outputs, Collections.singletonMap(transactionHash, index))
                             .getBytes(StandardCharsets.UTF_8)));
         inputs.add(
-            new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
+            new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig)));
       }
 
       Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
