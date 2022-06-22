@@ -25,64 +25,65 @@ import java.util.List;
  * method to create an instance of this fragment.
  */
 public class DigitalCashHomeFragment extends Fragment {
-  private DigitalCashHomeFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+    private DigitalCashHomeFragmentBinding mBinding;
+    private DigitalCashViewModel mViewModel;
 
-  public DigitalCashHomeFragment() {
-    // not implemented yet
-  }
-  /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
-   *
-   * @return A new instance of fragment DigitalCashHomeFragment.
-   */
-  public static DigitalCashHomeFragment newInstance() {
-    return new DigitalCashHomeFragment();
-  }
-
-  @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
-    return mBinding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    setHomeInterface();
-  }
-
-  public void setHomeInterface() {
-    Lao lao = mViewModel.getCurrentLao();
-    if (lao == null) {
-      Toast.makeText(
-              requireContext(),
-              getString(R.string.digital_cash_please_enter_a_lao),
-              Toast.LENGTH_SHORT)
-          .show();
-    } else {
-      try {
-        PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-        PublicKey publicKey = token.getPublicKey();
-        mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
-        if (lao.getTransactionByUser().containsKey(publicKey)) {
-          List<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
-          long totalAmount =
-              TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
-          mBinding.digitalCashSendAddress.setText(String.format("LAO coin : %s", totalAmount));
-        }
-
-      } catch (KeyException e) {
-        Toast.makeText(
-                requireContext(),
-                getString(R.string.digital_cash_please_enter_roll_call),
-                Toast.LENGTH_SHORT)
-            .show();
-      }
+    public DigitalCashHomeFragment() {
+        // not implemented yet
     }
-  }
+
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment DigitalCashHomeFragment.
+     */
+    public static DigitalCashHomeFragment newInstance() {
+        return new DigitalCashHomeFragment();
+    }
+
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
+        mBinding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setHomeInterface();
+    }
+
+    public void setHomeInterface() {
+        Lao lao = mViewModel.getCurrentLao();
+        if (lao == null) {
+            Toast.makeText(
+                            requireContext(),
+                            getString(R.string.digital_cash_please_enter_a_lao),
+                            Toast.LENGTH_SHORT)
+                    .show();
+        } else {
+            try {
+                PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                PublicKey publicKey = token.getPublicKey();
+                mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
+                if (lao.getTransactionByUser().containsKey(publicKey)) {
+                    List<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
+                    long totalAmount =
+                            TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
+                    mBinding.digitalCashSendAddress.setText(String.format("LAO coin : %s", totalAmount));
+                }
+
+            } catch (KeyException e) {
+                Toast.makeText(
+                                requireContext(),
+                                getString(R.string.digital_cash_please_enter_roll_call),
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
 }
 

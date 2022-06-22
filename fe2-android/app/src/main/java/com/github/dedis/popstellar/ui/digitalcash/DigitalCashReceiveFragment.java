@@ -28,62 +28,62 @@ import java.util.Objects;
  * factory method to create an instance of this fragment.
  */
 public class DigitalCashReceiveFragment extends Fragment {
-  private DigitalCashReceiveFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+    private DigitalCashReceiveFragmentBinding mBinding;
+    private DigitalCashViewModel mViewModel;
 
-  public DigitalCashReceiveFragment() {
-    // not implemented yet
-  }
-
-  /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
-   *
-   * @return A new instance of fragment DigitalCashReceiveFragment.
-   */
-  public static DigitalCashReceiveFragment newInstance() {
-    return new DigitalCashReceiveFragment();
-  }
-
-  @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
-    return mBinding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    try {
-      Lao lao = mViewModel.getCurrentLao();
-      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-
-      Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
-      mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
-
-      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject transaction =
-            TransactionObject.lastLockedTransactionObject(
-                Objects.requireNonNull(lao.getTransactionByUser().get(token.getPublicKey())));
-        String sender = transaction.getSendersTransaction().get(0).getEncoded();
-
-        mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
-        mBinding.digitalCashReceiveTime.setText(
-            String.format(
-                "%s seconds ago", Instant.now().getEpochSecond() - transaction.getLockTime()));
-        mBinding.digitalCashReceiveAmount.setText(
-            String.format(
-                "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
-      }
-    } catch (KeyException e) {
-      Toast.makeText(
-              requireContext(),
-              getString(R.string.digital_cash_please_enter_roll_call),
-              Toast.LENGTH_SHORT)
-          .show();
+    public DigitalCashReceiveFragment() {
+        // not implemented yet
     }
-  }
+
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment DigitalCashReceiveFragment.
+     */
+    public static DigitalCashReceiveFragment newInstance() {
+        return new DigitalCashReceiveFragment();
+    }
+
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
+        mBinding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        try {
+            Lao lao = mViewModel.getCurrentLao();
+            PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+
+            Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
+            mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
+
+            if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+                TransactionObject transaction =
+                        TransactionObject.lastLockedTransactionObject(
+                                Objects.requireNonNull(lao.getTransactionByUser().get(token.getPublicKey())));
+                String sender = transaction.getSendersTransaction().get(0).getEncoded();
+
+                mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
+                mBinding.digitalCashReceiveTime.setText(
+                        String.format(
+                                "%s seconds ago", Instant.now().getEpochSecond() - transaction.getLockTime()));
+                mBinding.digitalCashReceiveAmount.setText(
+                        String.format(
+                                "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
+            }
+        } catch (KeyException e) {
+            Toast.makeText(
+                            requireContext(),
+                            getString(R.string.digital_cash_please_enter_roll_call),
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
 }
