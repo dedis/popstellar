@@ -36,30 +36,22 @@ public class DigitalCashReceiptFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-      System.out.println("ploup -4");
     this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-      System.out.println("ploup -3");
     mBinding = DigitalCashReceiptFragmentBinding.inflate(inflater, container, false);
-      System.out.println("ploup -2");
     return mBinding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-      System.out.println("ploup -1");
     mViewModel
         .getUpdateReceiptAmountEvent()
         .observe(
             getViewLifecycleOwner(),
             stringEvent -> {
-                System.out.println("ploup");
               String amount = stringEvent.getContentIfNotHandled();
-                System.out.println("ploup 2");
               if (amount != null) {
-                  System.out.println("ploup 3");
                 mBinding.digitalCashReceiptAmount.setText(amount);
-                  System.out.println("ploup 4");
               }
             });
     mViewModel
@@ -67,11 +59,8 @@ public class DigitalCashReceiptFragment extends Fragment {
         .observe(
             getViewLifecycleOwner(),
             stringEvent -> {
-                System.out.println("ploup 5");
               String address = stringEvent.getContentIfNotHandled();
-                System.out.println("ploup 6");
               if (address != null) {
-                  System.out.println("ploup 7");
                 mBinding.digitalCashReceiptBeneficiary.setText(
                     String.format("Beneficary : %n %s", address));
               }

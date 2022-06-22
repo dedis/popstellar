@@ -128,11 +128,9 @@ public class DigitalCashActivity extends AppCompatActivity {
                     .getOrganizer()
                     .getEncoded()
                     .equals(mViewModel.getKeyManager().getMainPublicKey().getEncoded())) {
-                  System.out.println("Not organizer");
                   Toast.makeText(this, "You have to be the Lao Organizer", Toast.LENGTH_SHORT)
                       .show();
                 } else {
-                  System.out.println("organizer");
 
                   setupFragment(R.id.fragment_digital_cash_issue);
                 }

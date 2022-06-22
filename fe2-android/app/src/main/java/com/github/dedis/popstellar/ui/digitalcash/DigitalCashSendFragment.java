@@ -72,31 +72,21 @@ public class DigitalCashSendFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                System.out.println("ping 1");
                 String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
                 String currentPublicKeySelected =
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                System.out.println("ping 2");
                 if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    System.out.println("ping 3");
                     Lao lao = mViewModel.getCurrentLao();
-                    System.out.println("ping 4");
                     PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-                    System.out.println("ping 5");
                     if (canPostTransaction(
                         lao, token.getPublicKey(), Integer.parseInt(currentAmount))) {
-                      System.out.println("ping 6");
                       postTransaction(
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
-                      System.out.println("ping 7");
                       mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
-                      System.out.println("ping 8");
                       mViewModel.updateReceiptAmountEvent(currentAmount);
-                      System.out.println("ping 9");
                       mViewModel.openReceipt();
                     }
-                    System.out.println("ping 10");
 
                   } catch (KeyException keyException) {
                     Toast.makeText(
@@ -122,30 +112,22 @@ public class DigitalCashSendFragment extends Fragment {
 
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
-    System.out.println("plopo 1");
     for (PublicKey pk: transactionByUser.keySet()){
-      System.out.println(pk.getEncoded());
-      System.out.println(publicKey.getEncoded());
     }
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
-      System.out.println("plopo 2");
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
           .show();
       return false;
     }
-    System.out.println("plopo 3");
     long amount =
         TransactionObject.getMiniLaoPerReceiverSetTransaction(
             transactionByUser.get(publicKey), publicKey);
-    System.out.println("plopo 4");
     if (amount < currentAmount) {
-      System.out.println("plopo 5");
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
           .show();
       return false;
     } else {
-      System.out.println("plopo 6");
       return true;
     }
   }
@@ -174,12 +156,9 @@ public class DigitalCashSendFragment extends Fragment {
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    System.out.println("SendCoin Setup");
     mBinding.digitalCashSendSend.setOnClickListener(v -> {
-      System.out.println("Called send");
       mViewModel.postTransactionEvent();
     });
-    System.out.println("SendCoin Ended");
   }
 
   /**
