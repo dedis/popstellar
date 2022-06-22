@@ -240,6 +240,19 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return null;
   }
 
+  private long  computeOutputs(Map.Entry<String, String> current, List<Output> outputs) {
+    try {
+      PublicKey pub = getPublicKeyOutString(current.getKey());
+      long amount = Long.parseLong(current.getValue());
+      Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
+      outputs.add(addOutput);
+      return amount;
+    } catch (Exception e) {
+      Log.e(TAG, RECEIVER_KEY_ERROR, e);
+      return 0;
+    }
+  }
+
   /**
    * Post a transaction to your channel
    *
@@ -261,15 +274,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       List<Output> outputs = new ArrayList<>();
       long amountFromReceiver = 0;
       for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
-        try {
-          PublicKey pub = getPublicKeyOutString(current.getKey());
-          long amount = Long.parseLong(current.getValue());
-          amountFromReceiver += amount;
-          Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
-          outputs.add(addOutput);
-        } catch (Exception e) {
-          Log.e(TAG, RECEIVER_KEY_ERROR, e);
-        }
+        amountFromReceiver += computeOutputs(current, outputs);
       }
 
       // Then make the inputs

@@ -6,7 +6,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -211,7 +210,7 @@ public class DigitalCashActivity extends AppCompatActivity {
           R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
     }
   }
-  
+
 
   /**
    * Set the current fragment in the container of the activity
