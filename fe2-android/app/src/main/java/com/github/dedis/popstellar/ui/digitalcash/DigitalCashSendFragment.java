@@ -109,6 +109,9 @@ public class DigitalCashSendFragment extends Fragment {
         }
     }
 
+    /**
+     * Function that check whether the user has money in his/her account. Check also if has enough money to pay.
+     */
     public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
         Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
         if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
@@ -130,7 +133,7 @@ public class DigitalCashSendFragment extends Fragment {
     }
 
     /**
-     * Funciton that set up the Adapter
+     * Function that set up the Adapter for the dropdown selector menu (with the public key list)
      */
     private void setUpTheAdapter() throws KeyException {
         /* Roll Call attendees to which we can send*/

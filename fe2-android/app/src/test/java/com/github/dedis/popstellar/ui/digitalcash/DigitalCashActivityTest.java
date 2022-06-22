@@ -88,8 +88,6 @@ public class DigitalCashActivityTest {
 
     private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
     private static final String LAO_NAME = "LAO";
-    //private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-    //private static final PublicKey PK = KEY_PAIR.getPublicKey();
     private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.getPublicKey(), 10223421);
     private static final String LAO_ID = LAO.getId();
     private static final String RC_TITLE = "Roll-Call Title";

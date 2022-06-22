@@ -127,18 +127,6 @@ public class TransactionObjectTest {
   // mapHashKey)
   @Test
   public void getReceiversTransactionTestNull() {
-    /*public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey) {
-      Iterator<String> receiverHashIte = getReceiversHashTransaction().iterator();
-      List<PublicKey> receivers = new ArrayList<>();
-      while (receiverHashIte.hasNext()){
-        PublicKey pub = mapHashKey.getOrDefault(receiverHashIte.next(),null);
-        if (pub == null) {
-          throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
-        }
-        receivers.add(pub);
-      }
-      return receivers;
-    }*/
     KeyPair senderKey1 = generateKeyPair();
     PublicKey sender1 = senderKey1.getPublicKey();
     PublicKey sender2 = null;
@@ -229,14 +217,6 @@ public class TransactionObjectTest {
     transactionObject.setInputs(listInput);
     assertEquals(true, transactionObject.isSender(sender));
   }
-
-
-  // test String compute_sig_outputs_inputs(KeyPair keyPair)
-  // @Test
-  // public void computeSigOutputsInputs()
-
-  // test int get_miniLao_per_receiver(PublicKey receiver)
-  // send to your self still work
 
   // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
   @Test

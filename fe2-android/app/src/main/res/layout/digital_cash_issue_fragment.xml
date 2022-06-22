@@ -35,7 +35,7 @@
         android:id="@+id/radioButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_0"
+        android:text="@string/digital_cash_select_single_member"
         android:checked="true"/>
 
       <com.google.android.material.textfield.TextInputLayout
@@ -58,19 +58,19 @@
         android:id="@+id/radioButton1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_1" />
+        android:text="@string/digital_cash_select_all_members" />
 
       <RadioButton
         android:id="@+id/radioButton2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_2" />
+        android:text="@string/digital_cash_select_all_attendees" />
 
       <RadioButton
         android:id="@+id/radioButton3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_3" />
+        android:text="@string/digital_cash_select_all_witnesses" />
     </RadioGroup>
 
     <EditText

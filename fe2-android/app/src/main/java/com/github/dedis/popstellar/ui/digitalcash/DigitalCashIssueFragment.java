@@ -133,7 +133,7 @@ public class DigitalCashIssueFragment extends Fragment {
             String currentAmount, String currentPublicKeySelected, int radioGroup)
             throws NoRollCallException {
         if (radioGroup == DigitalCashViewModel.NOTHING_SELECTED) {
-            // When no radio are selected -> use by default what is inside the selector
+            // In unlikely event that no radiobutton are selected, it do as if the first one was selected
             return Collections.singletonMap(currentPublicKeySelected, currentAmount);
         } else {
             Set<PublicKey> attendees = attendeesPerRadioGroupButton(radioGroup, currentPublicKeySelected);
