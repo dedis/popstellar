@@ -22,22 +22,17 @@ const styles = StyleSheet.create({
     backgroundColor: Color.accent,
   } as ViewStyle,
   words: {
-    flex: 1,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
     borderColor: Color.contrast,
     borderWidth: Border.width,
     borderRadius: Border.radius,
     backgroundColor: Color.secondaryAccent,
     marginBottom: Spacing.x1,
-    paddingVertical: Spacing.x05,
+    padding: Spacing.x1,
   } as ViewStyle,
-  word: {
+  seed: {
     ...Typography.base,
     ...Typography.code,
     color: Color.contrast,
-    paddingHorizontal: Spacing.x05,
-    paddingVertical: Spacing.x025,
   } as TextStyle,
 });
 
@@ -127,11 +122,7 @@ const WalletCreateSeed = () => {
             </Text>
           </Text>
           <View style={styles.words}>
-            {seed.split(' ').map((word, idx) => (
-              <Text key={idx.toString()} style={styles.word}>
-                {word}
-              </Text>
-            ))}
+            <Text style={styles.seed}>{seed}</Text>
           </View>
           <Text style={Typography.paragraph}>
             <Text style={Typography.negative}>

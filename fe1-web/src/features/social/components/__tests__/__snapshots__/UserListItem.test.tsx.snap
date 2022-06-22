@@ -63,7 +63,6 @@ exports[`UserListItem renders correctly 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -131,7 +130,6 @@ exports[`UserListItem renders correctly 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -255,7 +253,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -325,7 +322,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }

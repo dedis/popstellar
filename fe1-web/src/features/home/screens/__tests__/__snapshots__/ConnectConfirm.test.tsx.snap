@@ -448,7 +448,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               rippleColor={0}
                               style={
                                 Object {
-                                  "flex": 1,
                                   "marginBottom": 16,
                                 }
                               }
