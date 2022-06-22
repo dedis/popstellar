@@ -211,14 +211,7 @@ public class DigitalCashActivity extends AppCompatActivity {
           R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
     }
   }
-
-    private void setupBackButton() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
+  
 
   /**
    * Set the current fragment in the container of the activity

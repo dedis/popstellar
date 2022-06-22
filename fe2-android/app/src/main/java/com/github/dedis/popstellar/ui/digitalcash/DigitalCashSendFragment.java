@@ -112,8 +112,6 @@ public class DigitalCashSendFragment extends Fragment {
 
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
-    for (PublicKey pk: transactionByUser.keySet()){
-    }
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
           .show();
@@ -147,18 +145,14 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = mViewModel.getKeyManager(); //km.getValidPoPToken(mViewModel.getCurrentLao());
+    KeyManager km = mViewModel.getKeyManager();
     mBinding.digitalCashSendSpinner.getEditText().setText(km.getValidPoPToken(mViewModel.getCurrentLao()).getPublicKey().getEncoded());
     mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
-
-    //mBinding.digitalCashSendSpinnerTv.setText(myArray.get(0), false);
   }
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    mBinding.digitalCashSendSend.setOnClickListener(v -> {
-      mViewModel.postTransactionEvent();
-    });
+    mBinding.digitalCashSendSend.setOnClickListener(v -> mViewModel.postTransactionEvent());
   }
 
   /**
