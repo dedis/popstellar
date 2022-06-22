@@ -224,6 +224,7 @@
   <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
   <string name="digital_cash_my_address">My Address: address</string>
   <string name="digital_cash_issue_button">Issue</string>
+  <string name="digital_cash_select_0">Individual from the Selector</string>
   <string name="digital_cash_select_1">All LAO members</string>
   <string name="digital_cash_select_2">All LAO attendees</string>
   <string name="digital_cash_select_3">All LAO witnesses</string>
