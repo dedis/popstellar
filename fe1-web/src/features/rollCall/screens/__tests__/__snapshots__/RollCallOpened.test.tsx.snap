@@ -600,7 +600,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                               rippleColor={0}
                               style={
                                 Object {
-                                  "flex": 1,
                                   "marginBottom": 16,
                                 }
                               }
@@ -1266,7 +1265,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                               rippleColor={0}
                               style={
                                 Object {
-                                  "flex": 1,
                                   "marginBottom": 16,
                                 }
                               }

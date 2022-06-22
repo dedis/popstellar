@@ -600,7 +600,6 @@ exports[`CreateElection renders correctly 1`] = `
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
@@ -660,7 +659,6 @@ exports[`CreateElection renders correctly 1`] = `
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
@@ -790,7 +788,6 @@ exports[`CreateElection renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }
@@ -979,7 +976,6 @@ What do you want to do ?
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }

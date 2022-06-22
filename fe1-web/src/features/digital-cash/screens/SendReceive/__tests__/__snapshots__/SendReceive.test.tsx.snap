@@ -436,7 +436,6 @@ exports[`SendReceive renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }
@@ -535,7 +534,6 @@ exports[`SendReceive renders correctly 1`] = `
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
@@ -1041,7 +1039,6 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }
@@ -1138,7 +1135,6 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }

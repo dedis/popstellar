@@ -8758,7 +8758,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
@@ -14999,7 +14998,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             rippleColor={0}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
