@@ -63,33 +63,33 @@
 
       <TextView
         android:id="@+id/history_transaction_provenance_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         style="@style/history_element_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="0x5654556456456456456456456465="
-        app:layout_constraintTop_toTopOf="@id/history_transaction_provenance_title"
-        app:layout_constraintBottom_toBottomOf="@id/history_transaction_provenance_title"
-        app:layout_constraintStart_toEndOf="@id/history_transaction_provenance_title" />
+        app:layout_constraintStart_toStartOf="@+id/history_transaction_provenance_title"
+        app:layout_constraintTop_toBottomOf="@+id/history_transaction_provenance_title" />
 
       <TextView
         android:id="@+id/history_transaction_transaction_id_title"
+        style="@style/history_element_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_top"
-        style="@style/history_element_title"
+        android:layout_marginTop="10dp"
         android:text="@string/digital_cash_transaction_id"
-        app:layout_constraintTop_toBottomOf="@id/history_transaction_provenance_title"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/history_transaction_provenance_value" />
 
       <TextView
         android:id="@+id/history_transaction_transaction_id_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         style="@style/history_element_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="2"
         android:text="0x012345"
-        app:layout_constraintTop_toTopOf="@id/history_transaction_transaction_id_title"
-        app:layout_constraintBottom_toBottomOf="@id/history_transaction_transaction_id_title"
-        app:layout_constraintStart_toEndOf="@id/history_transaction_transaction_id_title" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/history_transaction_transaction_id_title"
+        app:layout_constraintTop_toBottomOf="@+id/history_transaction_transaction_id_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

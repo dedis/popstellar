@@ -125,23 +125,26 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     for (TransactionObject transactionObject : transactionObjects) {
       Log.d(TAG, "transaction is " + transactionObject.toString());
       // To know if we are in input or not. We assume that no two different person
-      boolean isInput = isInInput(transactionObject.getInputs());
+      boolean isSender = isSender(transactionObject);
+      boolean isIssuance = isIssuance(transactionObject);
       transactionHistoryElements.addAll(
           transactionObject.getOutputs().parallelStream()
               // If we are in input, we want all output except us. If we are not in input,
               // we want all output we are in: so we filter isInInput XOR isInOutput
               .filter(
-                  outputObject ->
-                      isInput ^ ownPublicKeysHash.contains(outputObject.getPubKeyHash()))
+                  outputObject -> {
+                    boolean isOwn = ownPublicKeysHash.contains(outputObject.getPubKeyHash());
+                    return isIssuance && isOwn || !isIssuance && (isSender ^ isOwn);
+                  })
               .map(
                   outputObject ->
                       new TransactionHistoryElement(
-                          isInput
+                          isSender
                               ? outputObject.getPubKeyHash()
                               : transactionObject.getInputs().get(0).getPubKey().getEncoded(),
                           String.valueOf(outputObject.getValue()),
                           transactionObject.getTransactionId(),
-                          isInput))
+                          !isIssuance && isSender))
               .collect(Collectors.toList()));
     }
     return transactionHistoryElements;
@@ -151,9 +154,21 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     return tokens.parallelStream().map(PoPToken::getPublicKey).collect(Collectors.toSet());
   }
 
-  private boolean isInInput(List<InputObject> inputs) {
-    return inputs.parallelStream()
-        .anyMatch(inputObject -> ownPublicKeys.contains(inputObject.getPubKey()));
+  private boolean isSender(TransactionObject transactionObject) {
+    for (PublicKey pk : ownPublicKeys) {
+      if (transactionObject.isSender(pk)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isIssuance(TransactionObject transactionObject) {
+    List<InputObject> inputs = transactionObject.getInputs();
+    if (inputs == null || inputs.isEmpty()) {
+      throw new IllegalArgumentException("Inputs should not be null or empty");
+    }
+    return inputs.get(0).getTxOutHash().equals(TransactionObject.TX_OUT_HASH_COINBASE);
   }
 
   public static class HistoryViewHolder extends RecyclerView.ViewHolder {
