@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        node-version: [14.x, 16.x]
+        node-version: [16.x]
 
     defaults:
       run:
@@ -62,7 +62,7 @@ jobs:
         continue-on-error: true
 
       - name: Run lint
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
         run: npm run eslint
 
       - name: Validate dependencies
@@ -78,7 +78,7 @@ jobs:
         run: npm run test
 
       - name: Run code analysis
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
         run: |
