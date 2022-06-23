@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
-import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -122,7 +121,8 @@ public class TransactionObjectTest {
         Collections.singletonList(pubKeyHash), transactionObject.getReceiversHashTransaction());
   }
 
-
+  // test thrown null List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey)
+  // mapHashKey)
   @Test
   public void getReceiversTransactionTestNull() {
     KeyPair senderKey1 = generateKeyPair();
@@ -139,9 +139,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertThrows(
         IllegalArgumentException.class, () -> transactionObject.getReceiversTransaction(mapHash));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> transactionObject.getReceiversTransactionMap(mapHash));
   }
 
   // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
@@ -159,23 +156,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertEquals(
         Collections.singletonList(sender), transactionObject.getReceiversTransaction(mapHash));
-  }
-
-  // test Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey)
-  @Test
-  public void getReceiversTransactionMapTest() {
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
-    String type = "P2PKH";
-    String pubkeyhash = sender.computeHash();
-    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubkeyhash);
-    long value = 32;
-    OutputObject output = new OutputObject(value, scriptTxOut);
-    List<OutputObject> listOutput = Collections.singletonList(output);
-    Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash, sender);
-    Map<PublicKey, Long> mapValue = Collections.singletonMap(sender, value);
-    transactionObject.setOutputs(listOutput);
-    assertEquals(mapValue, transactionObject.getReceiversTransactionMap(mapHash));
   }
 
   // test boolean isReceiver(PublicKey publicKey)
@@ -214,7 +194,6 @@ public class TransactionObjectTest {
     transactionObject.setInputs(listInput);
     assertEquals(true, transactionObject.isSender(sender));
   }
-
 
   // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
   @Test
@@ -293,34 +272,29 @@ public class TransactionObjectTest {
 
     List<InputObject> inpObj = new ArrayList<>();
     List<OutputObject> outObj = new ArrayList<>();
-
-    for (Input i: transactionModel.getInputs()) {
+    for (Input i : transactionModel.getInputs()) {
       ScriptInput scriptInput = i.getScript();
-      inpObj.add(new InputObject(i.getTxOutHash(), i.getTxOutIndex(), new ScriptInputObject(scriptInput.getType(), scriptInput.getPubkey(), scriptInput.getSig())));
+      inpObj.add(
+          new InputObject(
+              i.getTxOutHash(),
+              i.getTxOutIndex(),
+              new ScriptInputObject(
+                  scriptInput.getType(), scriptInput.getPubkey(), scriptInput.getSig())));
     }
 
-    for (Output o: transactionModel.getOutputs()) {
+    for (Output o : transactionModel.getOutputs()) {
       ScriptOutput scriptOutput = o.getScript();
-      outObj.add(new OutputObject(o.getValue(), new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
+      outObj.add(
+          new OutputObject(
+              o.getValue(),
+              new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
+
     }
 
     transactionObject.setInputs(inpObj);
     transactionObject.setOutputs(outObj);
 
     assertEquals(true, transactionObject.isCoinBaseTransaction());
-    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeId());
-  }
-
-  // test lastLockeTransactionObject
-  @Test
-  public void lastLockedTransactionObjectTest() {
-    TransactionObject transactionObject1 = new TransactionObject();
-    TransactionObject transactionObject2 = new TransactionObject();
-    transactionObject1.setLockTime(0);
-    transactionObject2.setLockTime(1);
-    List<TransactionObject> list = new ArrayList<>();
-    list.add(transactionObject1);
-    list.add(transactionObject2);
-    assertEquals(transactionObject2, TransactionObject.lastLockedTransactionObject(list));
+    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeTransactionId());
   }
 }
