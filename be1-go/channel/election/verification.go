@@ -254,7 +254,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
-		return xerrors.Errorf("registered votes is %s, should be sorted and equal to %s",
+		return answer.NewInvalidMessageFieldError("registered votes is %s, should be sorted and equal to %s",
 			electionEnd.RegisteredVotes,
 			validVotesHash)
 	}
