@@ -20,19 +20,15 @@ import com.github.dedis.popstellar.R;
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
-  public DigitalCashHistoryFragment() {
-    // not implemented yet
-  }
-
-  /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
-   *
-   * @return A new instance of fragment DigitalCashHistoryFragment.
-   */
-  public static DigitalCashHistoryFragment newInstance() {
-    return new DigitalCashHistoryFragment();
-  }
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment DigitalCashHistoryFragment.
+     */
+    public static DigitalCashHistoryFragment newInstance() {
+        return new DigitalCashHistoryFragment();
+    }
 
   @Override
   public View onCreateView(

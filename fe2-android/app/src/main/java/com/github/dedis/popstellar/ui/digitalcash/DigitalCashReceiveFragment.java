@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
 
-import java.time.Instant;
 import java.util.Objects;
 
 /**

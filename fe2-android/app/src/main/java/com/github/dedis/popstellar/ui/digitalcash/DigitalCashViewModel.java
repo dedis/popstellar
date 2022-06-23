@@ -24,7 +24,9 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -56,6 +58,7 @@ import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
+
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
@@ -78,6 +81,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
+
 
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
@@ -270,6 +274,19 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return null;
   }
 
+  private long computeOutputs(Map.Entry<String, String> current, List<Output> outputs) {
+    try {
+      PublicKey pub = getPublicKeyOutString(current.getKey());
+      long amount = Long.parseLong(current.getValue());
+      Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
+      outputs.add(addOutput);
+      return amount;
+    } catch (Exception e) {
+      Log.e(TAG, RECEIVER_KEY_ERROR, e);
+      return 0;
+    }
+  }
+
   /**
    * Post a transaction to your channel
    *
@@ -286,20 +303,24 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
 
     try {
+      PrivateKey privK;
+      PublicKey pubK;
       PoPToken token = keyManager.getValidPoPToken(lao);
+
+      if (coinBase) {
+        KeyPair kp = keyManager.getMainKeyPair();
+        privK = kp.getPrivateKey();
+        pubK = kp.getPublicKey();
+      } else {
+        privK = token.getPrivateKey();
+        pubK = token.getPublicKey();
+      }
+
       // first make the output
       List<Output> outputs = new ArrayList<>();
       long amountFromReceiver = 0;
       for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
-        try {
-          PublicKey pub = getPublicKeyOutString(current.getKey());
-          long amount = Long.parseLong(current.getValue());
-          amountFromReceiver += amount;
-          Output addOutput = new Output(amount, new ScriptOutput(TYPE, pub.computeHash()));
-          outputs.add(addOutput);
-        } catch (Exception e) {
-          Log.e(TAG, RECEIVER_KEY_ERROR, e);
-        }
+        amountFromReceiver += computeOutputs(current, outputs);
       }
 
       // Then make the inputs
@@ -310,43 +331,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       List<Input> inputs = new ArrayList<>();
-      if (getCurrentLaoValue().getTransactionByUser().containsKey(token.getPublicKey())
-          && !coinBase) {
-        List<TransactionObject> transactions =
-            getCurrentLaoValue().getTransactionByUser().get(token.getPublicKey());
-
-        long amountSender =
-            TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                    transactions, token.getPublicKey())
-                - amountFromReceiver;
-        Output outputSender =
-            new Output(amountSender, new ScriptOutput(TYPE, token.getPublicKey().computeHash()));
-        outputs.add(outputSender);
-        for (TransactionObject transactionPrevious : transactions) {
-          transactionHash = transactionPrevious.computeId();
-          index = transactionPrevious.getIndexTransaction(token.getPublicKey());
-          Signature sig =
-              token
-                  .getPrivateKey()
-                  .sign(
-                      new Base64URLData(
-                          Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                  outputs, Collections.singletonMap(transactionHash, index))
-                              .getBytes(StandardCharsets.UTF_8)));
-          inputs.add(
-              new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
-        }
+      if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
+        processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
       } else {
-        Signature sig =
-            token
-                .getPrivateKey()
-                .sign(
-                    new Base64URLData(
-                        Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                                outputs, Collections.singletonMap(transactionHash, index))
-                            .getBytes(StandardCharsets.UTF_8)));
-        inputs.add(
-            new Input(transactionHash, index, new ScriptInput(TYPE, token.getPublicKey(), sig)));
+        inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
       }
 
       Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
@@ -384,6 +372,18 @@ public class DigitalCashViewModel extends AndroidViewModel {
     } catch (KeyException | GeneralSecurityException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
+  }
+
+  private Input processSignInput(
+      PrivateKey privK, PublicKey pubK, List<Output> outputs, String transactionHash, int index)
+      throws GeneralSecurityException {
+    Signature sig =
+        privK.sign(
+            new Base64URLData(
+                Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                        outputs, Collections.singletonMap(transactionHash, index))
+                    .getBytes(StandardCharsets.UTF_8)));
+    return new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig));
   }
 
   public LiveData<String> getLaoId() {
@@ -482,6 +482,29 @@ public class DigitalCashViewModel extends AndroidViewModel {
       return false;
     } else {
       return true;
+    }
+  }
+
+  private void processNotCoinbaseTransaction(
+      PrivateKey privK,
+      PublicKey pubK,
+      List<Output> outputs,
+      long amountFromReceiver,
+      List<Input> inputs)
+      throws GeneralSecurityException {
+    int index;
+    String transactionHash;
+    List<TransactionObject> transactions = getCurrentLao().getTransactionByUser().get(pubK);
+
+    long amountSender =
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
+            - amountFromReceiver;
+    Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
+    outputs.add(outputSender);
+    for (TransactionObject transactionPrevious : transactions) {
+      transactionHash = transactionPrevious.computeTransactionId();
+      index = transactionPrevious.getIndexTransaction(pubK);
+      inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
     }
   }
 

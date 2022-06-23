@@ -35,7 +35,7 @@ public class TransactionObject {
   private String transactionId;
 
   public TransactionObject() {
-    /* Empty constructor == empty transaction */
+    // Creates an empty TransactionObject
   }
 
   public Channel getChannel() {
@@ -99,9 +99,9 @@ public class TransactionObject {
   }
 
   /**
-   * Function that give the Public Key Hash of the Outputs
+   * Function that gives the Public Key Hashes of the Outputs
    *
-   * @return List<String> outputs public keys hash
+   * @return List<String> outputs Public Key Hashes
    */
   public List<String> getReceiversHashTransaction() {
     List<String> receiverHash = new ArrayList<>();
@@ -114,7 +114,7 @@ public class TransactionObject {
   }
 
   /**
-   * Function that give the Public Key of the Outputs
+   * Function that gives the Public Keys of the Outputs
    *
    * @param mapHashKey Map<String,PublicKey> dictionary public key by public key hash
    * @return List<PublicKey> outputs public keys
@@ -255,7 +255,14 @@ public class TransactionObject {
         "this public key is not contained in the output of this transaction");
   }
 
-  public String computeId() {
+  /**
+   * This function compute the TransactionId that is expected for the TransactionObject at a given
+   * moment
+   *
+   * @return String the expected Transaction Id given the Inputs and Outputs list in the
+   *     TransactionObject
+   */
+  public String computeTransactionId() {
     // Make a list all the string in the transaction
     List<String> collectTransaction = new ArrayList<>();
     // Add them in lexicographic order

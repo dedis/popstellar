@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
 import com.github.dedis.popstellar.model.objects.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.List;
@@ -81,14 +84,11 @@ public class DigitalCashHomeFragment extends Fragment {
                         String.format("LAO coin : %s", totalAmount));
                   }
 
-                } catch (KeyException e) {
-                  Toast.makeText(
-                          requireContext(),
-                          getString(R.string.digital_cash_please_enter_roll_call),
-                          Toast.LENGTH_SHORT)
-                      .show();
-                }
-              }
-            });
-  }
+            } catch (KeyException e) {
+        ErrorUtils.logAndShow(
+            requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
+            }
+        }
+    }
 }
+

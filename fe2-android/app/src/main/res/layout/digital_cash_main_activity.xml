@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/digital_cash_activity_layout"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
@@ -12,7 +10,6 @@
     android:layout_height="0dp"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".ui.digitalcash.DigitalCashMain"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar" />
 
@@ -20,11 +17,10 @@
     android:id="@+id/digital_cash_nav_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
     android:background="@color/white"
+    app:layout_constraintBottom_toBottomOf="parent"
     app:labelVisibilityMode="labeled"
-    app:menu="@menu/digital_cash_menu"
-    app:layout_constraintBottom_toBottomOf="parent" />
+    app:menu="@menu/digital_cash_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

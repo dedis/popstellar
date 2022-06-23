@@ -34,7 +34,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -175,10 +175,10 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void openDigitalCash() {
-    Intent intent = new Intent(this, DigitalCashMain.class);
+    Intent intent = new Intent(this, DigitalCashActivity.class);
 
-    intent.putExtra(DigitalCashMain.LAO_ID, mViewModel.getCurrentLaoValue().getId());
-    intent.putExtra(DigitalCashMain.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
+    intent.putExtra(Constants.LAO_ID_EXTRA, mViewModel.getCurrentLaoValue().getId());
+    intent.putExtra(Constants.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
     startActivity(intent);
   }
 
