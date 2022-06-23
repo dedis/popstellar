@@ -34,10 +34,6 @@ public class DigitalCashSendFragment extends Fragment {
     private DigitalCashSendFragmentBinding mBinding;
     private DigitalCashViewModel mViewModel;
 
-    public DigitalCashSendFragment() {
-        // not implemented yet
-    }
-
     /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
@@ -62,7 +58,6 @@ public class DigitalCashSendFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupSendCoinButton();
-        mBinding.digitalCashSendAmount.setText("0");
 
         mViewModel
                 .getPostTransactionEvent()

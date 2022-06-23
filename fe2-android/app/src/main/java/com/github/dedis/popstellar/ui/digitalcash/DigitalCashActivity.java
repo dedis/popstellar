@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -173,7 +172,6 @@ public class DigitalCashActivity extends AppCompatActivity {
         return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
     }
 
-    @SuppressLint("NonConstantResourceId")
     public void setupNavigationBar() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(
@@ -213,14 +211,13 @@ public class DigitalCashActivity extends AppCompatActivity {
         }
     }
 
-
-    /**
-     * Set the current fragment in the container of the activity
-     *
-     * @param id               of the fragment
-     * @param fragmentSupplier provides the fragment if it is missing
-     */
-    private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
+  /**
+   * Set the current fragment in the container of the activity
+   *
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(id);
         // If the fragment was not created yet, create it now
         if (fragment == null) fragment = fragmentSupplier.get();

@@ -15,10 +15,6 @@ import com.github.dedis.popstellar.R;
  */
 public class DigitalCashHistoryFragment extends Fragment {
 
-    public DigitalCashHistoryFragment() {
-        // not implemented yet
-    }
-
     /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
