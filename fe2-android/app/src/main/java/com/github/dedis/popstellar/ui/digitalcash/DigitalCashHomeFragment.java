@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -46,7 +46,7 @@ public class DigitalCashHomeFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
     return mBinding.getRoot();
   }
@@ -84,11 +84,11 @@ public class DigitalCashHomeFragment extends Fragment {
                         String.format("LAO coin : %s", totalAmount));
                   }
 
-            } catch (KeyException e) {
-        ErrorUtils.logAndShow(
-            requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
-            }
-        }
-    }
+                } catch (KeyException e) {
+                  ErrorUtils.logAndShow(
+                      requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
+                }
+              }
+            });
+  }
 }
-

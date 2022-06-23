@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
+
 public class OutputObject {
   private final long value;
   private final ScriptOutputObject script;

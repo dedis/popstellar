@@ -14,13 +14,14 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,7 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     // Inflate the layout for this fragment
@@ -146,7 +147,10 @@ public class DigitalCashSendFragment extends Fragment {
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
         KeyManager km = mViewModel.getKeyManager();
-        mBinding.digitalCashSendSpinner.getEditText().setText(km.getValidPoPToken(mViewModel.getCurrentLao()).getPublicKey().getEncoded());
+    mBinding
+        .digitalCashSendSpinner
+        .getEditText()
+        .setText(km.getValidPoPToken(mViewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
         mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
     }
 

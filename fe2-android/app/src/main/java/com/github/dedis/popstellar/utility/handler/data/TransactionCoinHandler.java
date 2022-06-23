@@ -9,9 +9,9 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.OutputObject;
-import com.github.dedis.popstellar.model.objects.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.ScriptOutputObject;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObjectBuilder;
 import com.github.dedis.popstellar.repository.LAORepository;
 
 import java.util.ArrayList;
@@ -32,17 +32,17 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public static void handlePostTransactionCoin(
-          HandlerContext context, PostTransactionCoin postTransactionCoin) {
+      HandlerContext context, PostTransactionCoin postTransactionCoin) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
-    TransactionObject transactionObject = new TransactionObject();
-    transactionObject.setChannel(channel);
-    transactionObject.setLockTime(postTransactionCoin.getTransaction().getLockTime());
-    transactionObject.setVersion(postTransactionCoin.getTransaction().getVersion());
-    transactionObject.setTransactionId(postTransactionCoin.getTransactionId());
+    TransactionObjectBuilder builder = new TransactionObjectBuilder();
+    builder.setChannel(channel);
+    builder.setLockTime(postTransactionCoin.getTransaction().getLockTime());
+    builder.setVersion(postTransactionCoin.getTransaction().getVersion());
+    builder.setTransactionId(postTransactionCoin.getTransactionId());
 
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();
@@ -50,7 +50,7 @@ public class TransactionCoinHandler {
 
     // Should always be at least one input and one output
     if (postTransactionCoin.getTransaction().getInputs().isEmpty()
-            || postTransactionCoin.getTransaction().getOutputs().isEmpty()) {
+        || postTransactionCoin.getTransaction().getOutputs().isEmpty()) {
       throw new IllegalArgumentException();
     }
 
@@ -65,13 +65,13 @@ public class TransactionCoinHandler {
         throw new IllegalArgumentException();
       }
       ScriptInputObject scriptInputObject =
-              new ScriptInputObject(
-                      current.getScript().getType(),
-                      current.getScript().getPubkey(),
-                      current.getScript().getSig());
+          new ScriptInputObject(
+              current.getScript().getType(),
+              current.getScript().getPubkey(),
+              current.getScript().getSig());
 
       inputs.add(
-              new InputObject(current.getTxOutHash(), current.getTxOutIndex(), scriptInputObject));
+          new InputObject(current.getTxOutHash(), current.getTxOutIndex(), scriptInputObject));
     }
 
     while (iteratorOutput.hasNext()) {
@@ -81,14 +81,14 @@ public class TransactionCoinHandler {
         throw new IllegalArgumentException();
       }
       ScriptOutputObject script =
-              new ScriptOutputObject(
-                      current.getScript().getType(), current.getScript().getPubkeyHash());
+          new ScriptOutputObject(
+              current.getScript().getType(), current.getScript().getPubkeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
 
-    transactionObject.setInputs(inputs);
-    transactionObject.setOutputs(outputs);
+    builder.setInputs(inputs);
+    builder.setOutputs(outputs);
     // lao update the history / lao update the last transaction per public key
-    lao.updateTransactionMaps(transactionObject);
+    lao.updateTransactionMaps(builder.build());
   }
 }

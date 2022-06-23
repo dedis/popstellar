@@ -12,11 +12,16 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObjectBuilder;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
@@ -27,18 +32,12 @@ import java.util.Map;
 
 public class TransactionObjectTest {
 
+  private static final Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
   private static TransactionObject transactionObject = new TransactionObject();
+  private inp
 
-  @Test
-  public void setAndGetChannelTest() {
-    Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
-    transactionObject.setChannel(channel);
-    assertEquals(channel, transactionObject.getChannel());
-  }
-
-  // test get Inputs
-  @Test
-  public void setAndGetInputsTest() throws GeneralSecurityException {
+  @Before
+  public void setup() throws GeneralSecurityException {
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
@@ -53,6 +52,19 @@ public class TransactionObjectTest {
     InputObject input = new InputObject(txOutHash, txOutIndex, scriptTxIn);
     List<InputObject> listInput = Collections.singletonList(input);
     transactionObject.setInputs(listInput);
+  }
+
+  @Test
+  public void setAndGetChannelTest() {
+    Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
+    transactionObject.setChannel(channel);
+    assertEquals(channel, transactionObject.getChannel());
+  }
+
+  // test get Inputs
+  @Test
+  public void setAndGetInputsTest()  {
+
     assertEquals(listInput, transactionObject.getInputs());
   }
 
@@ -288,9 +300,9 @@ public class TransactionObjectTest {
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
 
-    TransactionObject transactionObject = new TransactionObject();
-    transactionObject.setLockTime(transactionModel.getLockTime());
-    transactionObject.setVersion(transactionModel.getVersion());
+    TransactionObjectBuilder builder = new TransactionObjectBuilder();
+    builder.setLockTime(transactionModel.getLockTime());
+    builder.setVersion(transactionModel.getVersion());
 
     List<InputObject> inpObj = new ArrayList<>();
     List<OutputObject> outObj = new ArrayList<>();
@@ -313,10 +325,11 @@ public class TransactionObjectTest {
 
     }
 
-    transactionObject.setInputs(inpObj);
-    transactionObject.setOutputs(outObj);
+    builder.setInputs(inpObj);
+    builder.setOutputs(outObj);
 
-    assertEquals(true, transactionObject.isCoinBaseTransaction());
-    assertEquals(postTransactionModel.getTransactionId(), transactionObject.computeTransactionId());
+    TransactionObject to = builder.build();
+    assertEquals(true, to.isCoinBaseTransaction());
+    assertEquals(postTransactionModel.getTransactionId(), to.getTransactionId());
   }
 }

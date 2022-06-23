@@ -1,11 +1,13 @@
-package com.github.dedis.popstellar.model.objects;
+package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.InputObject;
+import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,8 +36,20 @@ public class TransactionObject {
 
   private String transactionId;
 
-  public TransactionObject() {
-    // Creates an empty TransactionObject
+  public TransactionObject(
+      Channel channel,
+      int version,
+      List<InputObject> inputs,
+      List<OutputObject> outputs,
+      long lockTime,
+      String transactionId) {
+
+    this.channel = channel;
+    this.version = version;
+    this.inputs = inputs;
+    this.outputs = outputs;
+    this.lockTime = lockTime;
+    this.transactionId = transactionId;
   }
 
   public Channel getChannel() {
@@ -253,52 +267,6 @@ public class TransactionObject {
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
-  }
-
-  /**
-   * This function compute the TransactionId that is expected for the TransactionObject at a given
-   * moment
-   *
-   * @return String the expected Transaction Id given the Inputs and Outputs list in the
-   *     TransactionObject
-   */
-  public String computeTransactionId() {
-    // Make a list all the string in the transaction
-    List<String> collectTransaction = new ArrayList<>();
-    // Add them in lexicographic order
-
-    // Inputs
-    for (InputObject currentTxin : inputs) {
-      // Script
-      // PubKey
-      collectTransaction.add(currentTxin.getScript().getPubKey().getEncoded());
-      // Sig
-      collectTransaction.add(currentTxin.getScript().getSig().getEncoded());
-      // Type
-      collectTransaction.add(currentTxin.getScript().getType());
-      // TxOutHash
-      collectTransaction.add(currentTxin.getTxOutHash());
-      // TxOutIndex
-      collectTransaction.add(String.valueOf(currentTxin.getTxOutIndex()));
-    }
-
-    // lock_time
-    collectTransaction.add(String.valueOf(lockTime));
-    // Outputs
-    for (OutputObject currentTxout : outputs) {
-      // Script
-      // PubKeyHash
-      collectTransaction.add(currentTxout.getPubKeyHash());
-      // Type
-      collectTransaction.add(currentTxout.getScript().getType());
-      // Value
-      collectTransaction.add(String.valueOf(currentTxout.getValue()));
-    }
-    // Version
-    collectTransaction.add(String.valueOf(version));
-
-    // Use already implemented hash function
-    return Hash.hash(collectTransaction.toArray(new String[0]));
   }
 
   /**

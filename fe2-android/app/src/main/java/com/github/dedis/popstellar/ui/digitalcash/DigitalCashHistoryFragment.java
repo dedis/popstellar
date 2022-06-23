@@ -35,7 +35,7 @@ public class DigitalCashHistoryFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
-    DigitalCashViewModel viewModel = DigitalCashMain.obtainViewModel(getActivity());
+    DigitalCashViewModel viewModel = DigitalCashActivity.obtainViewModel(getActivity());
     RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
     RecyclerView.ItemDecoration decoration =

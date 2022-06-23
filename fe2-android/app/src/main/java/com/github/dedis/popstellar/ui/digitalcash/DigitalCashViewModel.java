@@ -22,7 +22,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.digitalcash
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -331,7 +331,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       int index = 0;
 
       List<Input> inputs = new ArrayList<>();
-      if (getCurrentLao().getTransactionByUser().containsKey(pubK) && !coinBase) {
+      if (getCurrentLaoValue().getTransactionByUser().containsKey(pubK) && !coinBase) {
         processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
       } else {
         inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
@@ -494,7 +494,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions = getCurrentLao().getTransactionByUser().get(pubK);
+    List<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
 
     long amountSender =
         TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
@@ -502,7 +502,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
     outputs.add(outputSender);
     for (TransactionObject transactionPrevious : transactions) {
-      transactionHash = transactionPrevious.computeTransactionId();
+      transactionHash = transactionPrevious.getTransactionId();
       index = transactionPrevious.getIndexTransaction(pubK);
       inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
     }

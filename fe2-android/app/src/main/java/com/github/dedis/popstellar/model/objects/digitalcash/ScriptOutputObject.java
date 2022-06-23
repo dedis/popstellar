@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects;
+package com.github.dedis.popstellar.model.objects.digitalcash;
 
 public class ScriptOutputObject {
 

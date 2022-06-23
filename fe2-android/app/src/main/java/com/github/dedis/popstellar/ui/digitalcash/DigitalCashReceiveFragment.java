@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
@@ -47,7 +47,7 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashMain.obtainViewModel(getActivity());
+    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
     mBinding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
     return mBinding.getRoot();
   }
@@ -70,9 +70,7 @@ public class DigitalCashReceiveFragment extends Fragment {
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
-        mBinding.digitalCashReceiveTime.setText(
-            String.format(
-                "%s seconds ago", Instant.now().getEpochSecond() - transaction.getLockTime()));
+
         mBinding.digitalCashReceiveAmount.setText(
             String.format(
                 "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));

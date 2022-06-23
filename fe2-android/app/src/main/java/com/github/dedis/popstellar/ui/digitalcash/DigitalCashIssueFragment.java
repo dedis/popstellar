@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -151,14 +152,14 @@ public class DigitalCashIssueFragment extends Fragment {
         if (radioGroup == selectOneMember && !currentSelected.equals("")) {
             attendees.add(new PublicKey(currentSelected));
         } else if (radioGroup == selectAllLaoMembers) {
-            for (RollCall current :
-                    Objects.requireNonNull(mViewModel.getCurrentLao()).getRollCalls().values()) {
+      for (RollCall current :
+          Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getRollCalls().values()) {
                 attendees.addAll(current.getAttendees());
             }
         } else if (radioGroup == selectAllRollCallAttendees) {
             attendees = mViewModel.getAttendeesFromTheRollCall();
         } else if (radioGroup == selectAllLaoWitnesses) {
-            attendees = Objects.requireNonNull(mViewModel.getCurrentLao()).getWitnesses();
+      attendees = Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getWitnesses();
         }
         return attendees;
     }

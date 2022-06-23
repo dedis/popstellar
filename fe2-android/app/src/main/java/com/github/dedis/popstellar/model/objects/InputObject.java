@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 public class InputObject {
