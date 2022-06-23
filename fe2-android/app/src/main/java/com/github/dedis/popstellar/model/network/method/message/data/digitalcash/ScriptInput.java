@@ -4,12 +4,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Objects;
 
 // The script describing the unlock mechanism
 
 public final class ScriptInput {
+
   @SerializedName("type")
   private final String type; // The script describing the unlock mechanism
 
@@ -21,9 +21,9 @@ public final class ScriptInput {
   // Transaction //with all txin txout
 
   /**
-   * @param type The script describing the unlock mechanism
+   * @param type            The script describing the unlock mechanism
    * @param pubKeyRecipient The recipient’s public key
-   * @param sig Signature on all txins and txouts using the recipient's private key
+   * @param sig             Signature on all txins and txouts using the recipient's private key
    */
   public ScriptInput(String type, PublicKey pubKeyRecipient, Signature sig) {
     this.type = type;
@@ -49,8 +49,12 @@ public final class ScriptInput {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ScriptInput that = (ScriptInput) o;
     return Objects.equals(type, that.type)
         && Objects.equals(pubKeyRecipient, that.pubKeyRecipient)

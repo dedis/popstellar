@@ -122,7 +122,6 @@ public class TransactionObjectTest {
   }
 
   // test thrown null List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey)
-  // test thrown null Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey>
   // mapHashKey)
   @Test
   public void getReceiversTransactionTestNull() {
@@ -140,9 +139,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertThrows(
         IllegalArgumentException.class, () -> transactionObject.getReceiversTransaction(mapHash));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> transactionObject.getReceiversTransactionMap(mapHash));
   }
 
   // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
@@ -160,24 +156,6 @@ public class TransactionObjectTest {
     transactionObject.setOutputs(listOutput);
     assertEquals(
         Collections.singletonList(sender), transactionObject.getReceiversTransaction(mapHash));
-  }
-
-  // test Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey)
-  @Test
-  public void getReceiversTransactionMapTest() {
-
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
-    String type = "P2PKH";
-    String pubkeyhash = sender.computeHash();
-    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubkeyhash);
-    long value = 32;
-    OutputObject output = new OutputObject(value, scriptTxOut);
-    List<OutputObject> listOutput = Collections.singletonList(output);
-    Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash, sender);
-    Map<PublicKey, Long> mapValue = Collections.singletonMap(sender, value);
-    transactionObject.setOutputs(listOutput);
-    assertEquals(mapValue, transactionObject.getReceiversTransactionMap(mapHash));
   }
 
   // test boolean isReceiver(PublicKey publicKey)
