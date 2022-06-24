@@ -28,7 +28,6 @@
       style="@style/history_element_field"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="2000"
       app:layout_constraintBottom_toBottomOf="@id/history_transaction_type_title"
       app:layout_constraintStart_toEndOf="@id/history_transaction_type_title"
       app:layout_constraintTop_toTopOf="@id/history_transaction_type_title" />
@@ -66,7 +65,6 @@
         style="@style/history_element_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0x5654556456456456456456456465="
         app:layout_constraintStart_toStartOf="@+id/history_transaction_provenance_title"
         app:layout_constraintTop_toBottomOf="@+id/history_transaction_provenance_title" />
 
@@ -86,7 +84,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:lines="2"
-        android:text="0x012345"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/history_transaction_transaction_id_title"
         app:layout_constraintTop_toBottomOf="@+id/history_transaction_transaction_id_title" />

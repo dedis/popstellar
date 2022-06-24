@@ -8,8 +8,6 @@ import java.util.List;
 
 public class TransactionObjectBuilder {
 
-  public TransactionObjectBuilder() {}
-
   private Channel channel;
 
   // version

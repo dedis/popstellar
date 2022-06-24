@@ -236,7 +236,6 @@
   <string name="digital_cash_from">From:</string>
   <string name="digital_cash_to">To:</string>
   <string name="digital_cash_transaction_id">Transaction ID:</string>
-  <string name="digital_cash_time">time</string>
   <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
   <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
   <string name="digital_cash_error_poptoken">There is an error with the POP Token</string>
