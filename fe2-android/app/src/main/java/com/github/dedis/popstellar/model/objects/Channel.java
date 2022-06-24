@@ -84,10 +84,10 @@ public class Channel {
   }
 
   /**
-   * @return true if this channel is of the form '/root/lao_id' or '/root/lao_id/coin
+   * @return true if this channel is of the form '/root/lao_id'
    */
   public boolean isLaoChannel() {
-    return segments.size() >= 1; // || segments.size() ==2;
+    return segments.size() == 1; // || segments.size() ==2;
   }
 
   /**

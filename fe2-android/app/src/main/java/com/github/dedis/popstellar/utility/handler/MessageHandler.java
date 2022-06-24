@@ -86,7 +86,8 @@ public final class MessageHandler {
    * @param channel the channel of the message received
    */
   private void notifyLaoUpdate(LAORepository laoRepository, Data data, Channel channel) {
-    if (!(data instanceof WitnessMessageSignature) && channel.isLaoChannel()) {
+    if (!(data instanceof WitnessMessageSignature)
+        && (channel.isLaoChannel() || channel.isElectionChannel())) {
       Log.d(TAG, "Notifying repository");
       LAOState laoState = laoRepository.getLaoById().get(channel.extractLaoId());
       laoState.publish(); // Trigger an onNext
