@@ -210,7 +210,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 		err := verifyRegisteredVotes(electionEnd, &c.questions)
 		if err != nil {
 			c.log.Err(err).Msgf("problem with registered votes: %v", err)
-			return err
+			return xerrors.Errorf("failed to compute registered votes : %v", err)
 		}
 	}
 
@@ -254,7 +254,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
-		return answer.NewInvalidMessageFieldError("registered votes is %s, should be sorted and equal to %s",
+		return xerrors.Errorf("registered votes is %s, should be sorted and equal to %s",
 			electionEnd.RegisteredVotes,
 			validVotesHash)
 	}
