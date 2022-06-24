@@ -61,12 +61,10 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     TransactionHistoryElement element = transactions.get(position);
     if (element == null) {
       Log.d(TAG, "element is null");
+      return;
     }
-    Log.d(TAG, "element is " + element);
     String transactionId = element.getId();
-    Log.d(TAG, "expand is " + expandMap.toString());
     Boolean expandObject = expandMap.get(transactionId);
-    Log.d(TAG, "expand object " + expandObject);
     boolean expand = expandObject != null && expandObject;
 
     holder.detailLayout.setVisibility(expand ? View.VISIBLE : View.GONE);
@@ -105,7 +103,6 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
   private void setList(List<TransactionObject> transactions, Set<PoPToken> tokens) {
-    Log.d(TAG, "Replacing list with " + transactions.toString());
     if (transactions == null) {
       transactions = new ArrayList<>();
     }
@@ -224,6 +221,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
       return isSender;
     }
 
+    @NonNull
     @Override
     public String toString() {
       return "TransactionHistoryElement{"
