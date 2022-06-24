@@ -33,7 +33,12 @@ import java.util.Map;
 public class TransactionObjectTest {
 
   private static final Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
-  private static TransactionObject transactionObject = new TransactionObject();
+  private static TransactionObject transactionObject;
+  private static final KeyPair senderKey = generateKeyPair();
+  private static final PublicKey sender = senderKey.getPublicKey();
+
+  String type = "P2PKH";
+  String pubKey = sender.getEncoded();
   private inp
 
   @Before
@@ -41,11 +46,7 @@ public class TransactionObjectTest {
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
 
-    String type = "P2PKH";
-    String pubKey = sender.getEncoded();
     ScriptInputObject scriptTxIn;
     String sig = senderKey.sign(sender).getEncoded();
     scriptTxIn = new ScriptInputObject(type, new PublicKey(pubKey), new Signature(sig));
