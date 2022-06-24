@@ -22,6 +22,8 @@ Feature: Create RollCall
 
     Then match create_rc_json contains deep { method: 'publish' }
     And match backend.checkRollCallCreateMessage(create_rc_string) == true
+    And match rollCallVerification.checkMsgId(create_rc_string) == true
+
     And match backend.receiveNoMoreResponses() == true
 
     # check display
