@@ -55,6 +55,7 @@
   <dimen name="clock_icon_margin_start">8dp</dimen>
   <dimen name="clock_icon_margin_top">30dp</dimen>
   <dimen name="status_margin_top">16dp</dimen>
+  <dimen name="event_header_between_texts_margin">5dp</dimen>
 
   <!--  Event layout-->
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>
