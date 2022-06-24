@@ -1,14 +1,10 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
-import android.content.res.Resources;
-
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.OutputObject;
-import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -160,7 +156,7 @@ public class TransactionObject {
     String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubkeyHash().equals(hashKey)) {
+      if (outObj.getScript().getPubKeyHash().equals(hashKey)) {
         miniLao += outObj.getValue();
       }
     }

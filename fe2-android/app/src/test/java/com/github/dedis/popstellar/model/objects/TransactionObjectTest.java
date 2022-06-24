@@ -33,7 +33,7 @@ import java.util.Map;
 public class TransactionObjectTest {
 
   @Test
-  public void setAndGetChannelTest() throws GeneralSecurityException {
+  public void getChannelTest() throws GeneralSecurityException {
     Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     builder.setChannel(channel);
@@ -42,7 +42,7 @@ public class TransactionObjectTest {
 
   // test get Inputs
   @Test
-  public void setAndGetInputsTest() throws GeneralSecurityException {
+  public void getInputsTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
@@ -62,7 +62,7 @@ public class TransactionObjectTest {
 
   // test get Outputs
   @Test
-  public void setAndGetOutputsTest() throws GeneralSecurityException {
+  public void getOutputsTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
@@ -76,18 +76,16 @@ public class TransactionObjectTest {
     assertEquals(listOutput, builder.build().getOutputs());
   }
 
-  // test get Locktime
   @Test
-  public void setGetLockTimeTest() throws GeneralSecurityException {
+  public void getLockTimeTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     long locktime = 0;
     builder.setLockTime(locktime);
     assertEquals(locktime, builder.build().getLockTime());
   }
 
-  // test get version
   @Test
-  public void setGetVersionTest() throws GeneralSecurityException {
+  public void getVersionTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     int version = 0;
     builder.setVersion(version);
@@ -151,12 +149,8 @@ public class TransactionObjectTest {
     TransactionObject transactionObject = builder.build();
     assertThrows(
         IllegalArgumentException.class, () -> transactionObject.getReceiversTransaction(mapHash));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> transactionObject.getReceiversTransactionMap(mapHash));
   }
 
-  // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
   @Test
   public void getReceiversTransactionTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
@@ -174,25 +168,6 @@ public class TransactionObjectTest {
         Collections.singletonList(sender), builder.build().getReceiversTransaction(mapHash));
   }
 
-  // test Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey)
-  @Test
-  public void getReceiversTransactionMapTest() throws GeneralSecurityException {
-    TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
-    String type = "P2PKH";
-    String pubkeyhash = sender.computeHash();
-    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubkeyhash);
-    long value = 32;
-    OutputObject output = new OutputObject(value, scriptTxOut);
-    List<OutputObject> listOutput = Collections.singletonList(output);
-    Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash, sender);
-    Map<PublicKey, Long> mapValue = Collections.singletonMap(sender, value);
-    builder.setOutputs(listOutput);
-    assertEquals(mapValue, builder.build().getReceiversTransactionMap(mapHash));
-  }
-
-  // test boolean isReceiver(PublicKey publicKey)
   @Test
   public void getIsReceiverTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
