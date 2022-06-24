@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
+  public static final String TAG = Lao.class.getSimpleName();
+
   private final Channel channel;
   private String id;
   private String name;
@@ -229,9 +231,7 @@ public final class Lao {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
-    Log.d(
-        this.getClass().getSimpleName(),
-        "Transaction by history : " + transactionHistoryByUser.toString());
+    Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
     Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
@@ -458,6 +458,7 @@ public final class Lao {
     return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "Lao{"

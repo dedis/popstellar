@@ -39,10 +39,6 @@ public class TransactionCoinHandler {
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
-    builder.setChannel(channel);
-    builder.setLockTime(postTransactionCoin.getTransaction().getLockTime());
-    builder.setVersion(postTransactionCoin.getTransaction().getVersion());
-    builder.setTransactionId(postTransactionCoin.getTransactionId());
 
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();
@@ -85,9 +81,13 @@ public class TransactionCoinHandler {
               current.getScript().getType(), current.getScript().getPubkeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
-
-    builder.setInputs(inputs);
-    builder.setOutputs(outputs);
+    builder
+        .setChannel(channel)
+        .setLockTime(postTransactionCoin.getTransaction().getLockTime())
+        .setVersion(postTransactionCoin.getTransaction().getVersion())
+        .setTransactionId(postTransactionCoin.getTransactionId())
+        .setInputs(inputs)
+        .setOutputs(outputs);
     // lao update the history / lao update the last transaction per public key
     lao.updateTransactionMaps(builder.build());
   }

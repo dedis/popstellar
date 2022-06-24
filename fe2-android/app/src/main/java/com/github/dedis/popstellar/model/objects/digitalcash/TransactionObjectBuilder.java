@@ -55,8 +55,17 @@ public class TransactionObjectBuilder {
   }
 
   public TransactionObject build() {
-    if (channel == null || inputs == null || outputs == null || transactionId == null) {
-      throw new IllegalStateException("One of the field is null");
+    if (channel == null) {
+      throw new IllegalStateException("channel is null");
+    }
+    if (inputs == null) {
+      throw new IllegalStateException("inputs is null");
+    }
+    if (outputs == null) {
+      throw new IllegalStateException("outputs is null");
+    }
+    if (transactionId == null) {
+      throw new IllegalStateException("transactionId is null");
     }
     return new TransactionObject(channel, version, inputs, outputs, lockTime, transactionId);
   }
