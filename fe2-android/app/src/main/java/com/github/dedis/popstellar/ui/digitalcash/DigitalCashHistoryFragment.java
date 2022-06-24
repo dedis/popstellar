@@ -20,15 +20,15 @@ import com.github.dedis.popstellar.R;
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
-    /**
-     * Use this factory method to create a new instance of this fragment using the provided
-     * parameters.
-     *
-     * @return A new instance of fragment DigitalCashHistoryFragment.
-     */
-    public static DigitalCashHistoryFragment newInstance() {
-        return new DigitalCashHistoryFragment();
-    }
+  /**
+   * Use this factory method to create a new instance of this fragment using the provided
+   * parameters.
+   *
+   * @return A new instance of fragment DigitalCashHistoryFragment.
+   */
+  public static DigitalCashHistoryFragment newInstance() {
+    return new DigitalCashHistoryFragment();
+  }
 
   @Override
   public View onCreateView(
@@ -54,9 +54,11 @@ public class DigitalCashHistoryFragment extends Fragment {
         .observe(
             getActivity(),
             transactionObjects -> {
-              transactionObjects.forEach(object -> Log.d(TAG, "Object is " + object.toString()));
-              Log.d(TAG, "Transaction got updated " + transactionObjects.size());
-              adapter.replaceList(transactionObjects, viewModel.getTokens().getValue());
+              if (transactionObjects != null) {
+                transactionObjects.forEach(object -> Log.d(TAG, "Object is " + object.toString()));
+                Log.d(TAG, "Transaction got updated " + transactionObjects.size());
+                adapter.replaceList(transactionObjects, viewModel.getTokens().getValue());
+              }
             });
     return view;
   }
