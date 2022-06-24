@@ -608,6 +608,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                 }
                               >
                                 <Text
+                                  numberOfLines={1}
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
@@ -807,6 +808,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                 }
                               >
                                 <Text
+                                  numberOfLines={1}
                                   style={
                                     Object {
                                       "backgroundColor": "transparent",
