@@ -17,6 +17,17 @@
     android:textStyle="bold"
     android:textSize="@dimen/header_title_text_size" />
 
+  <TextView
+    android:id="@+id/event_header_number"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="@id/event_header_title"
+    app:layout_constraintStart_toEndOf="@id/event_header_title"
+    android:textColor="@color/black"
+    android:textStyle="bold"
+    android:textSize="@dimen/header_title_text_size"
+    android:layout_marginStart="5dp" />
+
   <ImageView
     android:id="@+id/expand_icon"
     android:layout_width="@dimen/header_layout_arrow_side"
