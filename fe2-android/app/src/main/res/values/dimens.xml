@@ -153,5 +153,8 @@
   <dimen name="history_recycler_view_top_margin">40dp</dimen>
   <dimen name="layout_horizontal_margin">8dp</dimen>
   <dimen name="history_card_view_height">40dp</dimen>
+  <dimen name="history_expanded_bottom_margin">10dp</dimen>
+  <dimen name="provenance_title_top_margin">12dp</dimen>
+  <dimen name="transaction_title_top_margin">10dp</dimen>
 
 </resources>

@@ -10,7 +10,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="@dimen/history_expanded_bottom_margin">
 
     <TextView
       android:id="@+id/history_transaction_type_title"
@@ -55,7 +55,7 @@
         style="@style/history_element_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/provenance_title_top_margin"
         android:text="@string/digital_cash_from"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +73,7 @@
         style="@style/history_element_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/transaction_title_top_margin"
         android:text="@string/digital_cash_transaction_id"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/history_transaction_provenance_value" />

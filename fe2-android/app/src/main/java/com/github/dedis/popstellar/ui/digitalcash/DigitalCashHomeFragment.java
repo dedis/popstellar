@@ -31,11 +31,10 @@ public class DigitalCashHomeFragment extends Fragment {
   private DigitalCashViewModel mViewModel;
 
   public DigitalCashHomeFragment() {
-    // not implemented yet
+    // Required empty constructor
   }
   /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
+   * Use this factory method to create a new instance of this fragment
    *
    * @return A new instance of fragment DigitalCashHomeFragment.
    */

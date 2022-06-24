@@ -36,12 +36,11 @@ public class DigitalCashSendFragment extends Fragment {
   private DigitalCashViewModel mViewModel;
 
   public DigitalCashSendFragment() {
-    // not implemented yet
+    // Required empty constructor
   }
 
   /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
+   * Use this factory method to create a new instance of this fragment
    *
    * @return A new instance of fragment DigitalCashSendFragment.
    */

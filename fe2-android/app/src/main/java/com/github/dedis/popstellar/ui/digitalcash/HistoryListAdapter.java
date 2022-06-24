@@ -14,7 +14,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -93,7 +92,6 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
   @Override
   public int getItemCount() {
-    Log.d(TAG, "count is " + transactions.size());
     return transactions.size();
   }
 
@@ -120,14 +118,14 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     ArrayList<TransactionHistoryElement> transactionHistoryElements = new ArrayList<>();
     for (TransactionObject transactionObject : transactionObjects) {
-      Log.d(TAG, "transaction is " + transactionObject.toString());
       // To know if we are in input or not. We assume that no two different person
       boolean isSender = isSender(transactionObject);
-      boolean isIssuance = isIssuance(transactionObject);
+      boolean isIssuance = transactionObject.isCoinBaseTransaction();
       transactionHistoryElements.addAll(
           transactionObject.getOutputs().parallelStream()
               // If we are in input, we want all output except us. If we are not in input,
               // we want all output we are in: so we filter isInInput XOR isInOutput
+              // if it is an issuance, we want all outputs where we are
               .filter(
                   outputObject -> {
                     boolean isOwn = ownPublicKeysHash.contains(outputObject.getPubKeyHash());
@@ -158,14 +156,6 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
       }
     }
     return false;
-  }
-
-  private boolean isIssuance(TransactionObject transactionObject) {
-    List<InputObject> inputs = transactionObject.getInputs();
-    if (inputs == null || inputs.isEmpty()) {
-      throw new IllegalArgumentException("Inputs should not be null or empty");
-    }
-    return inputs.get(0).getTxOutHash().equals(TransactionObject.TX_OUT_HASH_COINBASE);
   }
 
   public static class HistoryViewHolder extends RecyclerView.ViewHolder {

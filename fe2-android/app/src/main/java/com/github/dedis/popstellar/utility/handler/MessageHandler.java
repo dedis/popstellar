@@ -94,8 +94,6 @@ public final class MessageHandler {
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();
       }
-    } else {
-      Log.d(TAG, "data is " + data.toString() + " channel is " + channel.toString());
     }
   }
 }
