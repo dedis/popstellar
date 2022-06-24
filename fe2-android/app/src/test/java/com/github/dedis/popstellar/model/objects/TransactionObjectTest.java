@@ -4,6 +4,7 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyP
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
@@ -21,7 +22,6 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
@@ -32,46 +32,38 @@ import java.util.Map;
 
 public class TransactionObjectTest {
 
-  private static final Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
-  private static TransactionObject transactionObject;
-  private static final KeyPair senderKey = generateKeyPair();
-  private static final PublicKey sender = senderKey.getPublicKey();
-
-  String type = "P2PKH";
-  String pubKey = sender.getEncoded();
-  private inp
-
-  @Before
-  public void setup() throws GeneralSecurityException {
-    int txOutIndex = 0;
-    String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
-
-
-    ScriptInputObject scriptTxIn;
-    String sig = senderKey.sign(sender).getEncoded();
-    scriptTxIn = new ScriptInputObject(type, new PublicKey(pubKey), new Signature(sig));
-    InputObject input = new InputObject(txOutHash, txOutIndex, scriptTxIn);
-    List<InputObject> listInput = Collections.singletonList(input);
-    transactionObject.setInputs(listInput);
-  }
-
   @Test
-  public void setAndGetChannelTest() {
+  public void setAndGetChannelTest() throws GeneralSecurityException {
     Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
-    transactionObject.setChannel(channel);
-    assertEquals(channel, transactionObject.getChannel());
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
+    builder.setChannel(channel);
+    assertEquals(channel, builder.build().getChannel());
   }
 
   // test get Inputs
   @Test
-  public void setAndGetInputsTest()  {
+  public void setAndGetInputsTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
+    int txOutIndex = 0;
+    String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
+    KeyPair senderKey = generateKeyPair();
+    PublicKey sender = senderKey.getPublicKey();
+    String type = "P2PKH";
 
-    assertEquals(listInput, transactionObject.getInputs());
+    ScriptInputObject scriptTxIn;
+    String sig = senderKey.sign(sender).getEncoded();
+    scriptTxIn = new ScriptInputObject(type, sender, new Signature(sig));
+    InputObject input = new InputObject(txOutHash, txOutIndex, scriptTxIn);
+    List<InputObject> listInput = Collections.singletonList(input);
+    builder.setInputs(listInput);
+
+    assertEquals(listInput, builder.build().getInputs());
   }
 
   // test get Outputs
   @Test
-  public void setAndGetOutputsTest() {
+  public void setAndGetOutputsTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -80,28 +72,31 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
-    assertEquals(listOutput, transactionObject.getOutputs());
+    builder.setOutputs(listOutput);
+    assertEquals(listOutput, builder.build().getOutputs());
   }
 
   // test get Locktime
   @Test
-  public void setGetLockTimeTest() {
+  public void setGetLockTimeTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     long locktime = 0;
-    transactionObject.setLockTime(locktime);
-    assertEquals(locktime, transactionObject.getLockTime());
+    builder.setLockTime(locktime);
+    assertEquals(locktime, builder.build().getLockTime());
   }
 
   // test get version
   @Test
-  public void setGetVersionTest() {
+  public void setGetVersionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     int version = 0;
-    transactionObject.setVersion(version);
-    assertEquals(version, transactionObject.getVersion());
+    builder.setVersion(version);
+    assertEquals(version, builder.build().getVersion());
   }
 
   @Test
-  public void getSendersTransactionTest() {
+  public void getSendersTransactionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
@@ -115,12 +110,13 @@ public class TransactionObjectTest {
     scriptTxIn = new ScriptInputObject(type, new PublicKey(pubKey), new Signature(sig));
     InputObject input = new InputObject(txOutHash, txOutIndex, scriptTxIn);
     List<InputObject> listInput = Collections.singletonList(input);
-    transactionObject.setInputs(listInput);
-    assertEquals(Collections.singletonList(sender), transactionObject.getSendersTransaction());
+    builder.setInputs(listInput);
+    assertEquals(Collections.singletonList(sender), builder.build().getSendersTransaction());
   }
 
   @Test
-  public void getReceiversHashTransactionTest() {
+  public void getReceiversHashTransactionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -129,16 +125,17 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
+    builder.setOutputs(listOutput);
     assertEquals(
-        Collections.singletonList(pubKeyHash), transactionObject.getReceiversHashTransaction());
+        Collections.singletonList(pubKeyHash), builder.build().getReceiversHashTransaction());
   }
 
   // test thrown null List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey)
   // test thrown null Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey>
   // mapHashKey)
   @Test
-  public void getReceiversTransactionTestNull() {
+  public void getReceiversTransactionTestNull() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey1 = generateKeyPair();
     PublicKey sender1 = senderKey1.getPublicKey();
     PublicKey sender2 = null;
@@ -150,7 +147,8 @@ public class TransactionObjectTest {
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
     Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash2, sender2);
-    transactionObject.setOutputs(listOutput);
+    builder.setOutputs(listOutput);
+    TransactionObject transactionObject = builder.build();
     assertThrows(
         IllegalArgumentException.class, () -> transactionObject.getReceiversTransaction(mapHash));
     assertThrows(
@@ -160,7 +158,8 @@ public class TransactionObjectTest {
 
   // test List<PublicKey> get_receivers_transaction(Map<String, PublicKey> map_hash_key)
   @Test
-  public void getReceiversTransactionTest() {
+  public void getReceiversTransactionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -170,15 +169,15 @@ public class TransactionObjectTest {
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
     Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash, sender);
-    transactionObject.setOutputs(listOutput);
+    builder.setOutputs(listOutput);
     assertEquals(
-        Collections.singletonList(sender), transactionObject.getReceiversTransaction(mapHash));
+        Collections.singletonList(sender), builder.build().getReceiversTransaction(mapHash));
   }
 
   // test Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey)
   @Test
-  public void getReceiversTransactionMapTest() {
-
+  public void getReceiversTransactionMapTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -189,13 +188,14 @@ public class TransactionObjectTest {
     List<OutputObject> listOutput = Collections.singletonList(output);
     Map<String, PublicKey> mapHash = Collections.singletonMap(pubkeyhash, sender);
     Map<PublicKey, Long> mapValue = Collections.singletonMap(sender, value);
-    transactionObject.setOutputs(listOutput);
-    assertEquals(mapValue, transactionObject.getReceiversTransactionMap(mapHash));
+    builder.setOutputs(listOutput);
+    assertEquals(mapValue, builder.build().getReceiversTransactionMap(mapHash));
   }
 
   // test boolean isReceiver(PublicKey publicKey)
   @Test
-  public void getIsReceiverTest() {
+  public void getIsReceiverTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     // SENDER
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
@@ -205,8 +205,8 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
-
+    builder.setOutputs(listOutput);
+    TransactionObject transactionObject = builder.build();
     assertEquals(
         Collections.singletonList(pubKeyHash), transactionObject.getReceiversHashTransaction());
     // DUMMY SENDER
@@ -219,20 +219,22 @@ public class TransactionObjectTest {
 
   // test boolean is Sender(PublicKey publicKey)
   @Test
-  public void getIsSenderTest() {
+  public void getIsSenderTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
     ScriptInputObject scriptTxInput = new ScriptInputObject(type, sender, new Signature("qqchose"));
     InputObject input = new InputObject(Hash.hash("none"), 0, scriptTxInput);
     List<InputObject> listInput = Collections.singletonList(input);
-    transactionObject.setInputs(listInput);
-    assertEquals(true, transactionObject.isSender(sender));
+    builder.setInputs(listInput);
+    assertEquals(true, builder.build().isSender(sender));
   }
 
   // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
   @Test
-  public void getMiniLaoPerReceiverTest() {
+  public void getMiniLaoPerReceiverTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
 
@@ -243,7 +245,8 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
+    builder.setOutputs(listOutput);
+    TransactionObject transactionObject = builder.build();
     assertEquals(value, transactionObject.getMiniLaoPerReceiver(sender));
     KeyPair senderKey1 = generateKeyPair();
     PublicKey sender1 = senderKey1.getPublicKey();
@@ -257,7 +260,8 @@ public class TransactionObjectTest {
 
   // test getMiniLaoPerReceiverSetTransaction
   @Test
-  public void getMiniLaoPerReceiverSetTransactionTest() {
+  public void getMiniLaoPerReceiverSetTransactionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
@@ -266,7 +270,8 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
+    builder.setOutputs(listOutput);
+    TransactionObject transactionObject = builder.build();
     assertEquals(
         32,
         TransactionObject.getMiniLaoPerReceiverSetTransaction(
@@ -279,7 +284,8 @@ public class TransactionObjectTest {
 
   // test int get_index_transaction(PublicKey publicKey)
   @Test
-  public void getIndexTransactionTest() {
+  public void getIndexTransactionTest() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey = generateKeyPair();
     PublicKey sender = senderKey.getPublicKey();
 
@@ -290,18 +296,18 @@ public class TransactionObjectTest {
     int value = 32;
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
-    transactionObject.setOutputs(listOutput);
-    assertEquals(0, transactionObject.getIndexTransaction(sender));
+    builder.setOutputs(listOutput);
+    assertEquals(0, builder.build().getIndexTransaction(sender));
   }
 
   @Test
-  public void computeIdTest() {
+  public void computeIdTest() throws GeneralSecurityException {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
 
-    TransactionObjectBuilder builder = new TransactionObjectBuilder();
+    TransactionObjectBuilder builder = getValidTransactionBuilder();
     builder.setLockTime(transactionModel.getLockTime());
     builder.setVersion(transactionModel.getVersion());
 
@@ -329,8 +335,40 @@ public class TransactionObjectTest {
     builder.setInputs(inpObj);
     builder.setOutputs(outObj);
 
-    TransactionObject to = builder.build();
-    assertEquals(true, to.isCoinBaseTransaction());
-    assertEquals(postTransactionModel.getTransactionId(), to.getTransactionId());
+    TransactionObject transactionObject = builder.build();
+    assertTrue(transactionObject.isCoinBaseTransaction());
+  }
+
+  private TransactionObjectBuilder getValidTransactionBuilder() throws GeneralSecurityException {
+    TransactionObjectBuilder builder = new TransactionObjectBuilder();
+
+    KeyPair senderKey = generateKeyPair();
+    PublicKey sender = senderKey.getPublicKey();
+
+    String type = "P2PKH";
+    int txOutIndex = 0;
+    String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
+
+    ScriptInputObject scriptTxIn;
+    String sig = senderKey.sign(sender).getEncoded();
+    scriptTxIn = new ScriptInputObject(type, sender, new Signature(sig));
+    InputObject input = new InputObject(txOutHash, txOutIndex, scriptTxIn);
+    List<InputObject> listInput = Collections.singletonList(input);
+    builder.setInputs(listInput);
+
+    Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
+    builder.setChannel(channel);
+
+    String pubKeyHash = sender.computeHash();
+    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
+    int value = 32;
+    OutputObject output = new OutputObject(value, scriptTxOut);
+    List<OutputObject> listOutput = Collections.singletonList(output);
+    builder.setOutputs(listOutput);
+
+    builder.setLockTime(0);
+    builder.setVersion(0);
+    builder.setTransactionId("a");
+    return builder;
   }
 }

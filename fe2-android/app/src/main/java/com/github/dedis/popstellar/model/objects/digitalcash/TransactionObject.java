@@ -2,8 +2,6 @@ package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import android.content.res.Resources;
 
-import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.OutputObject;
@@ -20,21 +18,21 @@ public class TransactionObject {
 
   public static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
-  private Channel channel;
+  private final Channel channel;
 
   // version
-  private int version;
+  private final int version;
 
   // inputs
-  private List<InputObject> inputs;
+  private final List<InputObject> inputs;
 
   // outputs
-  private List<OutputObject> outputs;
+  private final List<OutputObject> outputs;
 
   // lock_time
-  private long lockTime;
+  private final long lockTime;
 
-  private String transactionId;
+  private final String transactionId;
 
   public TransactionObject(
       Channel channel,
@@ -56,44 +54,21 @@ public class TransactionObject {
     return channel;
   }
 
-  public void setChannel(@NonNull Channel channel) {
-    this.channel = channel;
-  }
-
   public List<InputObject> getInputs() {
     return inputs;
-  }
-
-  public void setInputs(List<InputObject> inputs) {
-    this.inputs = inputs;
   }
 
   public List<OutputObject> getOutputs() {
     return outputs;
   }
 
-  public void setOutputs(List<OutputObject> outputs) {
-    this.outputs = outputs;
-  }
-
   public long getLockTime() {
     return lockTime;
   }
 
-  public void setLockTime(long lockTime) {
-    this.lockTime = lockTime;
-  }
 
   public int getVersion() {
     return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  public void setTransactionId(String id) {
-    transactionId = id;
   }
 
   /**

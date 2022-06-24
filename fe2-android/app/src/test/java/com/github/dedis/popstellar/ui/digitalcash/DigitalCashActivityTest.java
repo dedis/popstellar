@@ -31,6 +31,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.OutputObject;
@@ -117,6 +118,7 @@ public class DigitalCashActivityTest {
           TransactionObjectBuilder builder = new TransactionObjectBuilder();
           builder.setVersion(1);
           builder.setLockTime(0);
+          builder.setChannel(Channel.fromString("/root/laoId/coin/myChannel"));
 
           ScriptOutput so = new ScriptOutput("P2PKH", POP_TOKEN.getPublicKey().computeHash());
           ScriptOutputObject soo =
@@ -142,6 +144,7 @@ public class DigitalCashActivityTest {
 
           builder.setOutputs(Collections.singletonList(oo));
           builder.setInputs(Collections.singletonList(io));
+          builder.setTransactionId("some id");
 
           LAO.updateTransactionMaps(builder.build());
 

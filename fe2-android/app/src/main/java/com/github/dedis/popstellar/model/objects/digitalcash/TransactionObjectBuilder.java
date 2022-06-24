@@ -26,28 +26,34 @@ public class TransactionObjectBuilder {
 
   private String transactionId;
 
-  public void setChannel(Channel channel) {
+  public TransactionObjectBuilder setChannel(Channel channel) {
     this.channel = channel;
+    return this;
   }
 
-  public void setVersion(int version) {
+  public TransactionObjectBuilder setVersion(int version) {
     this.version = version;
+    return this;
   }
 
-  public void setInputs(List<InputObject> inputs) {
+  public TransactionObjectBuilder setInputs(List<InputObject> inputs) {
     this.inputs = inputs;
+    return this;
   }
 
-  public void setOutputs(List<OutputObject> outputs) {
+  public TransactionObjectBuilder setOutputs(List<OutputObject> outputs) {
     this.outputs = outputs;
+    return this;
   }
 
-  public void setLockTime(long lockTime) {
+  public TransactionObjectBuilder setLockTime(long lockTime) {
     this.lockTime = lockTime;
+    return this;
   }
 
-  public void setTransactionId(String transactionId) {
+  public TransactionObjectBuilder setTransactionId(String transactionId) {
     this.transactionId = transactionId;
+    return this;
   }
 
   public TransactionObject build() {
