@@ -45,7 +45,7 @@ type NavigationProps = CompositeScreenProps<
 const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
-  const laoId = MeetingHooks.useCurrentLaoId();
+  const laoId = MeetingHooks.useAssertCurrentLaoId();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());

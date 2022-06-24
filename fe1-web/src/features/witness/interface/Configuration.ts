@@ -26,10 +26,10 @@ export interface WitnessConfiguration {
   getCurrentLao: () => WitnessFeature.Lao;
 
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
+   * Returns the currently active lao id or throws an error if there is none.
+   * Should be used inside react components
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash;
 
   /**
    * Returns the currently active lao id. Should be used outside react components
@@ -67,7 +67,7 @@ export interface WitnessConfiguration {
 export type WitnessReactContext = Pick<
   WitnessConfiguration,
   | 'enabled'
-  | 'useCurrentLaoId'
+  | 'useAssertCurrentLaoId'
   | 'addNotification'
   | 'markNotificationAsRead'
   | 'discardNotifications'

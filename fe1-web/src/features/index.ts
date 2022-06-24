@@ -37,7 +37,7 @@ export function configureFeatures() {
     useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     /* EVENTS FEATURE */
     /* events: action creators */
     addEvent: eventConfiguration.actionCreators.addEvent,
@@ -54,7 +54,7 @@ export function configureFeatures() {
     updateEvent: eventConfiguration.actionCreators.updateEvent,
     getEventById: eventConfiguration.functions.getEventById,
     getLaoById: laoConfiguration.functions.getLaoById,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
   });
 
   const rollCallConfiguration = rollCall.configure({
@@ -65,7 +65,7 @@ export function configureFeatures() {
     makeEventByTypeSelector: eventConfiguration.functions.makeEventByTypeSelector,
     getLaoById: laoConfiguration.functions.getLaoById,
     setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     generateToken: walletConfiguration.functions.generateToken,
     hasSeed: walletConfiguration.functions.hasSeed,
   });
@@ -103,7 +103,7 @@ export function configureFeatures() {
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
@@ -145,7 +145,7 @@ export function configureFeatures() {
       ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
   });
 
   const laoComposition = lao.compose({

@@ -39,11 +39,7 @@ const categorizeEventsByTime = (time: Timestamp, events: EventState[]) => {
  * to 'past', 'present' and 'future' events.
  */
 const EventList = () => {
-  const laoId = EventHooks.useCurrentLaoId();
-
-  if (!laoId) {
-    throw new Error('Cannot show an event list if you are not connected to a lao!');
-  }
+  const laoId = EventHooks.useAssertCurrentLaoId();
 
   const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
   const events = useSelector(eventListSelector);

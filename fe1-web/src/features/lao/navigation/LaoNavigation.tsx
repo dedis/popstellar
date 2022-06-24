@@ -7,6 +7,7 @@ import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import LaoHomeScreen, {
@@ -51,49 +52,51 @@ const LaoNavigation: React.FC = () => {
   }, [passedScreens]);
 
   return (
-    <OrganizationTopTabNavigator.Navigator
-      initialRouteName={STRINGS.navigation_lao_home}
-      screenOptions={{
-        tabBarActiveTintColor: Color.accent,
-        tabBarInactiveTintColor: Color.inactive,
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      }}>
-      {screens.map(
-        ({
-          id,
-          title,
-          headerTitle,
-          Component,
-          headerShown,
-          headerLeft,
-          headerRight,
-          tabBarIcon,
-        }) => (
-          <OrganizationTopTabNavigator.Screen
-            key={id}
-            name={id}
-            component={Component}
-            options={{
-              title: title || id,
-              headerTitle: headerTitle || title || id,
-              headerLeft,
-              headerRight,
-              tabBarIcon: tabBarIcon || undefined,
-              // hide the item if tabBarIcon is set to null
-              tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
-              headerShown,
-            }}
-          />
-        ),
-      )}
-    </OrganizationTopTabNavigator.Navigator>
+    <NoCurrentLaoErrorBoundary>
+      <OrganizationTopTabNavigator.Navigator
+        initialRouteName={STRINGS.navigation_lao_home}
+        screenOptions={{
+          tabBarActiveTintColor: Color.accent,
+          tabBarInactiveTintColor: Color.inactive,
+          headerLeftContainerStyle: {
+            paddingLeft: Spacing.contentSpacing,
+          },
+          headerRightContainerStyle: {
+            paddingRight: Spacing.contentSpacing,
+          },
+          headerTitleStyle: Typography.topNavigationHeading,
+          headerTitleAlign: 'center',
+        }}>
+        {screens.map(
+          ({
+            id,
+            title,
+            headerTitle,
+            Component,
+            headerShown,
+            headerLeft,
+            headerRight,
+            tabBarIcon,
+          }) => (
+            <OrganizationTopTabNavigator.Screen
+              key={id}
+              name={id}
+              component={Component}
+              options={{
+                title: title || id,
+                headerTitle: headerTitle || title || id,
+                headerLeft,
+                headerRight,
+                tabBarIcon: tabBarIcon || undefined,
+                // hide the item if tabBarIcon is set to null
+                tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+                headerShown,
+              }}
+            />
+          ),
+        )}
+      </OrganizationTopTabNavigator.Navigator>
+    </NoCurrentLaoErrorBoundary>
   );
 };
 

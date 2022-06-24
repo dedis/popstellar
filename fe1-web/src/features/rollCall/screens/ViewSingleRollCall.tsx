@@ -49,7 +49,7 @@ const ViewSingleRollCall = () => {
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  const laoId = RollCallHooks.useCurrentLaoId();
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
   const hasSeed = RollCallHooks.useHasSeed();
 
@@ -246,7 +246,7 @@ export const ViewSinglRollCallScreenRightHeader = () => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
-  const laoId = RollCallHooks.useCurrentLaoId();
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
   if (!laoId) {
     throw new Error('no LAO is currently active');
   }

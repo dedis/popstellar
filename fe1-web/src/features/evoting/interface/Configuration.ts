@@ -35,10 +35,11 @@ export interface EvotingConfiguration {
   useCurrentLao: () => EvotingFeature.Lao;
 
   /**
-   * Returns the currently active lao id. Should be used inside react components
+   * Returns the currently active lao id or throws an error if there is none.
+   * Should be used inside react components
    * @returns The current lao id
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash;
 
   /**
    * Given a lao id, this function returns the public key of the backend
@@ -88,7 +89,7 @@ export type EvotingReactContext = Pick<
   EvotingConfiguration,
   /* lao */
   | 'useCurrentLao'
-  | 'useCurrentLaoId'
+  | 'useAssertCurrentLaoId'
   | 'useLaoOrganizerBackendPublicKey'
   /* events */
   | 'getEventById'
