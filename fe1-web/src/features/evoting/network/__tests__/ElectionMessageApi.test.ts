@@ -25,9 +25,10 @@ import { CastVote, EndElection, SetupElection } from '../messages';
 import { OpenElection } from '../messages/OpenElection';
 
 jest.mock('core/objects', () => {
+  const actual = jest.requireActual('core/objects');
   return {
-    ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn(() => mockChannel),
+    ...actual,
+    channelFromIds: jest.fn(actual.channelFromIds),
   };
 });
 
@@ -52,7 +53,11 @@ jest.mock('core/network', () => {
   };
 });
 
-afterEach(() => {
+beforeAll(() => {
+  (channelFromIds as jest.Mock).mockImplementation(() => mockChannel);
+});
+
+beforeEach(() => {
   jest.clearAllMocks();
 });
 

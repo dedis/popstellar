@@ -1,5 +1,7 @@
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
+import { getLaoChannel } from '../functions/channel';
+
 export interface LaoState {
   name: string;
   id: string;
@@ -8,10 +10,16 @@ export interface LaoState {
   organizer: string;
   witnesses: string[];
 
-  // the following properties are not related to the PoP protocol:
+  // the following properties are not directly related to the PoP protocol:
   last_roll_call_id?: string;
   last_tokenized_roll_call_id?: string;
+
+  // the addresses of all known servers hosting this lao
   server_addresses: string[];
+
+  // the name of all channels we are subscribed to
+  // workaround for https://github.com/dedis/popstellar/issues/1078
+  subscribed_channels: string[];
 }
 
 export class Lao {
@@ -35,6 +43,9 @@ export class Lao {
 
   // Addresses of all servers of the LAO
   public server_addresses: string[];
+
+  // Names of all channels we are subscribed to
+  public subscribed_channels: string[];
 
   constructor(obj: Partial<Lao>) {
     if (obj === undefined || obj === null) {
@@ -69,6 +80,13 @@ export class Lao {
     this.last_roll_call_id = obj.last_roll_call_id;
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
+
+    const laoChannel = getLaoChannel(obj.id.valueOf());
+    if (!laoChannel) {
+      throw new Error(`Obtained invalid lao channel from valid lao id '${obj.id.valueOf()}'???`);
+    }
+
+    this.subscribed_channels = obj.subscribed_channels || [laoChannel];
   }
 
   public static fromState(lao: LaoState): Lao {
@@ -84,6 +102,7 @@ export class Lao {
         ? new Hash(lao.last_tokenized_roll_call_id)
         : undefined,
       server_addresses: lao.server_addresses,
+      subscribed_channels: lao.subscribed_channels,
     });
   }
 

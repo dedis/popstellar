@@ -1,4 +1,3 @@
-import { Channel, channelFromIds, Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
 import {
@@ -49,16 +48,7 @@ export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
 export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
 
 /**
- * Get a LAOs channel by its id
- * @param laoId The id of the lao whose channel should be returned
- * @returns The channel related to the passed lao id or undefined it the lao id is invalid
+ * Returns the lao organizer's public key
+ * @param laoId the lao id
  */
-export function getLaoChannel(laoId: string): Channel | undefined {
-  try {
-    return channelFromIds(new Hash(laoId));
-  } catch (error) {
-    console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, error);
-  }
-
-  return undefined;
-}
+export const getLaoOrganizer = (laoId: string) => getLaoById(laoId)?.organizer;

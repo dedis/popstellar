@@ -192,7 +192,9 @@ const ViewSingleRollCall = () => {
                     <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>
                   <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>{token.valueOf()}</ListItem.Title>
+                    <ListItem.Title style={Typography.base} numberOfLines={1}>
+                      {token.valueOf()}
+                    </ListItem.Title>
                   </ListItem.Content>
                 </ListItem>
               );
@@ -290,7 +292,10 @@ export const ViewSinglRollCallScreenRightHeader = () => {
         screen: STRINGS.navigation_lao_events,
         params: {
           screen: STRINGS.navigation_lao_events_open_roll_call,
-          params: { rollCallId: rollCall.id.toString() },
+          params: {
+            rollCallId: rollCall.id.toString(),
+            initialAttendeePopTokens: attendeePopTokens || [],
+          },
         },
       });
     } else {

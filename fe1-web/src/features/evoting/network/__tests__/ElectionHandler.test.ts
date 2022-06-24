@@ -3,6 +3,7 @@ import '__tests__/utils/matchers';
 
 import {
   configureTestFeatures,
+  mockChannel,
   mockKeyPair,
   mockLaoId,
   mockLaoIdHash,
@@ -62,13 +63,11 @@ const mockMessageData = {
 const mockGetEventById = jest.fn();
 const mockUpdateEvent = jest.fn();
 
-// mock channelFromIds and subscribeToChannel (spyOn does not work)
-const mockChannelId = 'someChannelId';
-
 jest.mock('core/objects', () => {
+  const actual = jest.requireActual('core/objects');
   return {
-    ...jest.requireActual('core/objects'),
-    channelFromIds: jest.fn(() => mockChannelId),
+    ...actual,
+    channelFromIds: jest.fn(actual.channelFromIds),
   };
 });
 
@@ -88,6 +87,8 @@ jest.mock('core/redux', () => {
 });
 
 beforeAll(() => {
+  (channelFromIds as jest.Mock).mockImplementation(() => mockChannel);
+
   configureTestFeatures();
 });
 
@@ -284,7 +285,11 @@ describe('ElectionHandler', () => {
       );
 
       expect(subscribeToChannel).toHaveBeenCalledTimes(1);
-      expect(subscribeToChannel).toHaveBeenCalledWith(mockChannelId);
+      expect(subscribeToChannel).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        mockChannel,
+      );
 
       // check whether addEvent has been called correctly
       expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted);

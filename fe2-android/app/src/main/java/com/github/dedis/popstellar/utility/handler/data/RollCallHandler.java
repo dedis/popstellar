@@ -90,8 +90,7 @@ public final class RollCallHandler {
     RollCall rollCall = rollCallOptional.get();
     rollCall.setStart(openRollCall.getOpenedAt());
     rollCall.setState(EventState.OPENED);
-    // We might be opening a closed one
-    rollCall.setEnd(0);
+
     rollCall.setId(updateId);
 
     lao.updateRollCall(opens, rollCall);

@@ -7,7 +7,6 @@ import { Border, Color, Spacing } from '../styles';
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     marginBottom: Spacing.x1,
   } as ViewStyle,
   button: {

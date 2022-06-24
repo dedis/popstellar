@@ -6,7 +6,7 @@ import { Hash, Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { connectToLao } from '../reducer';
+import { setCurrentLao } from '../reducer';
 
 export const openLaoTestConnection = () => {
   const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
@@ -25,6 +25,6 @@ export const openLaoTestConnection = () => {
     witnesses: [],
   });
 
-  dispatch(connectToLao(sampleLao.toState()));
+  dispatch(setCurrentLao(sampleLao.toState()));
   console.info('Stored test lao in storage : ', sampleLao);
 };

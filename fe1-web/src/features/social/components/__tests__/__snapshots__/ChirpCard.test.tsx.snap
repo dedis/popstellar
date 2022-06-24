@@ -159,7 +159,7 @@ Array [
       onGestureHandlerStateChange={[Function]}
       style={
         Object {
-          "backgroundColor": "#fff",
+          "backgroundColor": "rgb(242, 242, 242)",
           "borderRadius": 16,
           "margin": 32,
           "padding": 32,
@@ -255,7 +255,6 @@ Array [
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
           testID="confirm-modal-confirm"
@@ -560,7 +559,7 @@ Array [
       onGestureHandlerStateChange={[Function]}
       style={
         Object {
-          "backgroundColor": "#fff",
+          "backgroundColor": "rgb(242, 242, 242)",
           "borderRadius": 16,
           "margin": 32,
           "padding": 32,
@@ -656,7 +655,6 @@ Array [
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
           testID="confirm-modal-confirm"
@@ -986,7 +984,7 @@ Array [
       onGestureHandlerStateChange={[Function]}
       style={
         Object {
-          "backgroundColor": "#fff",
+          "backgroundColor": "rgb(242, 242, 242)",
           "borderRadius": 16,
           "margin": 32,
           "padding": 32,
@@ -1082,7 +1080,6 @@ Array [
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
           testID="confirm-modal-confirm"
@@ -1412,7 +1409,7 @@ Array [
       onGestureHandlerStateChange={[Function]}
       style={
         Object {
-          "backgroundColor": "#fff",
+          "backgroundColor": "rgb(242, 242, 242)",
           "borderRadius": 16,
           "margin": 32,
           "padding": 32,
@@ -1508,7 +1505,6 @@ Array [
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
           testID="confirm-modal-confirm"
@@ -1813,7 +1809,7 @@ Array [
       onGestureHandlerStateChange={[Function]}
       style={
         Object {
-          "backgroundColor": "#fff",
+          "backgroundColor": "rgb(242, 242, 242)",
           "borderRadius": 16,
           "margin": 32,
           "padding": 32,
@@ -1909,7 +1905,6 @@ Array [
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
           testID="confirm-modal-confirm"

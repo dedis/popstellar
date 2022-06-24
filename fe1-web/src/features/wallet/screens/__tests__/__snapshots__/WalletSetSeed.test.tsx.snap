@@ -387,7 +387,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -450,7 +449,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >

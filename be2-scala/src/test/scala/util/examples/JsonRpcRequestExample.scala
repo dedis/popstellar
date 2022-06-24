@@ -10,6 +10,7 @@ import util.examples.Election.EndElectionExamples._
 import util.examples.Election.KeyElectionExamples._
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
+import util.examples.Witness.WitnessMessageExamples._
 import util.examples.RollCall.CloseRollCallExamples._
 import util.examples.RollCall.CreateRollCallExamples._
 import util.examples.RollCall.OpenRollCallExamples._
@@ -216,6 +217,50 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
 
+  //for WitnessMessage testing
+  private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)
+  private final val paramsWithWitnessMessageWrongSignature: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_SIGNATURE)
+  private final val paramsWithWitnessMessageWrongOwner: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_OWNER)
+  final val WITNESS_MESSAGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessage, id)
+  final val WITNESS_MESSAGE_WRONG_SIGNATURE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessageWrongSignature, id)
+  final val WITNESS_MESSAGE_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWitnessMessageWrongOwner, id)
+
+  // For Meeting testing
+  private final val laoChannelMeeting: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
+  private final val laoChannelMeetingWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "wrongMeetingChannel/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")
+  private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING)
+  private final val paramsWithCreateMeetingWrongChannel: ParamsWithMessage = new ParamsWithMessage(laoChannelMeetingWrong, MESSAGE_CREATE_MEETING_WRONG_CHANNEL)
+  private final val paramsWithWrongDataCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_WRONG_DATA)
+  private final val paramsWithCreateMeetingInvalidCreation: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_CREATION) 
+  private final val paramsWithCreateMeetingInvalidStart: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_START) 
+  private final val paramsWithCreateMeetingInvalidStartEnd: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_START_BIGGER_THAN_END)
+  private final val paramsWithCreateMeetingInvalidEnd: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_END)
+  private final val paramsWithStateMeetingValid: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_STATE_MEETING)
+  private final val paramsWithStateMeetingInvalidData: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_INVALID_DATA)
+  private final val paramsWithStateMeetingInvalidCreation: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_INVALID_CREATION)
+  private final val paramsWithStateMeetingInvalidStart: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_INVALID_START)
+  private final val paramsWithStateMeetingSmallStart: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_SMALL_START)
+  private final val paramsWithStateMeetingSmallEnd: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_SMALL_END)
+  private final val paramsWithStateMeetingBigStart: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_BIG_START)
+  private final val paramsWithStateMeetingWrongWitness: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_WRONG_WITNESS_SIGNATURE)
+  private final val paramsWithStateMeetingSmallModificationTime: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_STATE_MEETING_SMALL_MODIFICATION_TIME)
+  final val CREATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeeting, id)
+  final val CREATE_MEETING_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingWrongChannel, id)
+  final val CREATE_MEETING_INVALID_DATA_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongDataCreateMeeting, id)
+  final val CREATE_MEETING_INVALID_CREATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidCreation, id)
+  final val CREATE_MEETING_INVALID_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidStart, id)
+  final val CREATE_MEETING_INVALID_STARTEND_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidStartEnd, id)
+  final val CREATE_MEETING_INVALID_END_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidEnd, id)
+  final val STATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingValid, id) 
+  final val STATE_MEETING_INVALID_DATA_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidData, id)
+  final val STATE_MEETING_INVALID_CREATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidCreation, id)
+  final val STATE_MEETING_INVALID_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidStart, id)
+  final val STATE_MEETING_SMALL_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallStart, id)
+  final val STATE_MEETING_SMALL_END_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallEnd, id)
+  final val STATE_MEETING_BIG_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingBigStart, id)
+  final val STATE_MEETING_WRONGWITNESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingWrongWitness, id)
+  final val STATE_MEETING_SMALLMODIFICATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallModificationTime, id)
+  
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
 }

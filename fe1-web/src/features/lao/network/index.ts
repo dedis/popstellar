@@ -1,9 +1,14 @@
-import { catchup, getNetworkManager, subscribeToChannel } from 'core/network';
+import {
+  addOnChannelSubscriptionHandlers,
+  addOnChannelUnsubscriptionHandlers,
+  getNetworkManager,
+} from 'core/network';
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 
-import { getLaoChannel } from '../functions/lao';
-import { selectCurrentLaoId } from '../reducer';
+import { getLaoById } from '../functions/lao';
+import { resubscribeToLao } from '../functions/network';
+import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
   handleLaoCreateMessage,
@@ -37,23 +42,25 @@ export function configureNetwork(registry: MessageRegistry) {
   const store = getStore();
   store.subscribe(makeLaoGreetStoreWatcher(store, storeBackendAndConnectToPeers));
 
+  // Workaround for https://github.com/dedis/popstellar/issues/1078
+  addOnChannelSubscriptionHandlers((laoId, dispatch, channel) =>
+    dispatch(addSubscribedChannel(laoId, channel)),
+  );
+
+  addOnChannelUnsubscriptionHandlers((laoId, dispatch, channel) =>
+    dispatch(removeSubscribedChannel(laoId, channel)),
+  );
+
   // in case of a reconnection, subscribe to and catchup on the LAO channel
   getNetworkManager().addReconnectionHandler(async () => {
     // after reconnecting, check whether we have already been connected to a LAO
 
     const laoId = selectCurrentLaoId(getStore().getState());
-    if (!laoId) {
+    const lao = getLaoById(laoId?.valueOf() || '');
+    if (!laoId || !lao) {
       return;
     }
 
-    // if yes - then subscribe to the LAO channel and send a catchup
-    const channel = getLaoChannel(laoId.valueOf());
-
-    if (!channel) {
-      throw new Error('The current LAO ID is invalid');
-    }
-
-    await subscribeToChannel(channel);
-    await catchup(channel);
+    await resubscribeToLao(lao, store.dispatch);
   });
 }

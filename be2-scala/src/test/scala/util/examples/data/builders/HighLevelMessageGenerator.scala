@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, Cast
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.coin._
+import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
@@ -167,6 +168,12 @@ object HighLevelMessageGenerator {
 
         case (ObjectType.ELECTION, ActionType.END) =>
           messageData = EndElection.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        //Witness
+        case (ObjectType.MESSAGE, ActionType.WITNESS) =>
+          messageData = WitnessMessage.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 

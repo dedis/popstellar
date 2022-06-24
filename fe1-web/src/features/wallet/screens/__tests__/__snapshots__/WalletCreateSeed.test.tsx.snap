@@ -477,58 +477,28 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               <View
                                 style={
                                   Object {
-                                    "alignItems": "center",
-                                    "flex": 1,
-                                    "flexDirection": "row",
-                                    "marginVertical": 16,
+                                    "backgroundColor": "#ff4757",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 16,
+                                    "borderWidth": 1,
+                                    "marginBottom": 16,
+                                    "padding": 16,
                                   }
                                 }
                               >
-                                <TextInput
-                                  editable={false}
-                                  selectTextOnFocus={true}
+                                <Text
                                   style={
-                                    Array [
-                                      Object {
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "color": "#000",
-                                        "flexGrow": 1,
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginRight": 16,
-                                        "padding": 8,
-                                        "textAlign": "center",
-                                        "width": 50,
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                      Object {
-                                        "borderColor": "#fff",
-                                      },
-                                    ]
+                                    Object {
+                                      "color": "#fff",
+                                      "fontFamily": "Courier New",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    }
                                   }
-                                  value="one two three"
-                                />
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                 >
-                                  <View>
-                                    <Text />
-                                  </View>
-                                </View>
+                                  one two three
+                                </Text>
                               </View>
                               <Text
                                 style={
@@ -582,7 +552,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -643,7 +612,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >

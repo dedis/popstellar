@@ -390,7 +390,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text />
+                                        {"name":"ios-close","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
@@ -424,51 +424,10 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text />
+                                        {"name":"ios-person-add","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "alignSelf": "flex-end",
-                                    "marginLeft": "auto",
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View>
-                                  <Text />
                                 </View>
                               </View>
                             </View>
@@ -512,7 +471,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                           onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "backgroundColor": "#fff",
+                              "backgroundColor": "rgb(242, 242, 242)",
                               "borderRadius": 16,
                               "margin": 32,
                               "padding": 32,
@@ -596,34 +555,42 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                             >
                               Enter token:
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Attendee token"
+                            <View
                               style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
-                                  },
-                                ]
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                              testID="confirm-modal-input"
-                              value=""
-                            />
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Attendee token"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                testID="confirm-modal-input"
+                                value=""
+                              />
+                            </View>
                             <RNGestureHandlerButton
                               collapsable={false}
                               onGestureEvent={[Function]}
@@ -634,7 +601,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                               style={
                                 Object {
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                               testID="confirm-modal-confirm"
@@ -1089,26 +1055,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#3742fa",
-                                                "fontSize": 25,
-                                              },
-                                              undefined,
-                                              Object {
-                                                "fontFamily": "ionicons",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        {"name":"ios-close","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
@@ -1142,89 +1089,10 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#3742fa",
-                                                "fontSize": 25,
-                                              },
-                                              undefined,
-                                              Object {
-                                                "fontFamily": "ionicons",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        {"name":"ios-person-add","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "alignSelf": "flex-end",
-                                    "marginLeft": "auto",
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#3742fa",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "ionicons",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
                                 </View>
                               </View>
                             </View>
@@ -1268,7 +1136,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                           onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "backgroundColor": "#fff",
+                              "backgroundColor": "rgb(242, 242, 242)",
                               "borderRadius": 16,
                               "margin": 32,
                               "padding": 32,
@@ -1352,34 +1220,42 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                             >
                               Enter token:
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Attendee token"
+                            <View
                               style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                  Object {
-                                    "borderColor": "#000",
-                                    "borderWidth": 1,
-                                  },
-                                ]
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                              testID="confirm-modal-input"
-                              value=""
-                            />
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Attendee token"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                testID="confirm-modal-input"
+                                value=""
+                              />
+                            </View>
                             <RNGestureHandlerButton
                               collapsable={false}
                               onGestureEvent={[Function]}
@@ -1390,7 +1266,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                               style={
                                 Object {
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                               testID="confirm-modal-confirm"

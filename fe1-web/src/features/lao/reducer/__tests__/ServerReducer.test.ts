@@ -12,7 +12,7 @@ import {
 import { ServerState } from 'features/lao/objects/LaoServer';
 
 import { laoReducer, serverReducer } from '../index';
-import { connectToLao } from '../LaoReducer';
+import { setCurrentLao } from '../LaoReducer';
 import {
   addServer,
   clearAllServers,
@@ -191,7 +191,7 @@ describe('ServerReducer', () => {
   describe('makeLaoOrganizerBackendPublicKeySelector', () => {
     it('should return the correct value if a lao and server entry exist', () => {
       const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
-      mockStore.dispatch(connectToLao(mockLaoState));
+      mockStore.dispatch(setCurrentLao(mockLaoState));
 
       mockStore.dispatch(
         addServer({
@@ -226,7 +226,7 @@ describe('ServerReducer', () => {
 
     it('should return undefined if there is no server entry for the organizer public key', () => {
       const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
-      mockStore.dispatch(connectToLao(mockLaoState));
+      mockStore.dispatch(setCurrentLao(mockLaoState));
       // add the organizers public key but for a *different* lao
       mockStore.dispatch(
         addServer({

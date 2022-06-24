@@ -5,11 +5,12 @@ import android.content.res.Resources;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.OutputObject;
+import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -122,24 +123,6 @@ public class TransactionObject {
   }
 
   /**
-   * Function that give the Public Key receiver and the amount on the Output of transaction
-   *
-   * @param mapHashKey Map<String,PublicKey> dictionary public key by public key hash
-   * @return List<PublicKey, Long> outputs public keys
-   */
-  public Map<PublicKey, Long> getReceiversTransactionMap(Map<String, PublicKey> mapHashKey) {
-    Map<PublicKey, Long> receivers = new HashMap<>();
-    for (String transactionHash : getReceiversHashTransaction()) {
-      PublicKey pub = mapHashKey.getOrDefault(transactionHash, null);
-      if (pub == null) {
-        throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
-      }
-      receivers.putIfAbsent(pub, this.getMiniLaoPerReceiver(pub));
-    }
-    return receivers;
-  }
-
-  /**
    * Check if a public key is in the recipient
    *
    * @param publicKey PublicKey of someone
@@ -177,8 +160,8 @@ public class TransactionObject {
     String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getPubKeyHash().equals(hashKey)) {
-        miniLao = miniLao + outObj.getValue();
+      if (outObj.getScript().getPubkeyHash().equals(hashKey)) {
+        miniLao += outObj.getValue();
       }
     }
 
@@ -194,7 +177,9 @@ public class TransactionObject {
    */
   public static long getMiniLaoPerReceiverSetTransaction(
       List<TransactionObject> transaction, PublicKey receiver) {
-    return transaction.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
+    return transaction.stream()
+        .mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver))
+        .sum();
   }
 
   /**
@@ -211,8 +196,6 @@ public class TransactionObject {
       throw new IllegalArgumentException(
           "The public Key is not contained in the receiver public key");
     }
-    // Set the return value to nothing
-    long miniLao = 0;
     // Compute the hash of the public key
     String computeHash = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
@@ -222,7 +205,7 @@ public class TransactionObject {
         return outObj.getValue();
       }
     }
-    return miniLao;
+    return 0;
   }
 
   /**
@@ -238,7 +221,7 @@ public class TransactionObject {
       if (outObj.getPubKeyHash().equals(hashPubkey)) {
         return index;
       }
-      index = index + 1;
+      ++index;
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
@@ -254,7 +237,7 @@ public class TransactionObject {
     Optional<TransactionObject> transactionObject =
         listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime));
     if (!transactionObject.isPresent()) {
-      throw new Resources.NotFoundException();
+      throw new IllegalStateException();
     }
     return transactionObject.get();
   }

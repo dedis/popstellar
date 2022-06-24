@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import java.util.Objects;
  * The transaction object
  */
 public final class Transaction {
+
   @SerializedName(value = "version")
   private final int version; // The version of the transaction inputs
 
@@ -28,9 +28,10 @@ public final class Transaction {
 
   /**
    * Transaction constructor
-   * @param version The version of the transaction inputs
-   * @param inputs [Array[Objects]] array of output transactions to use as inputs
-   * @param outputs [Array[Objects]] array of outputs from this transactions
+   *
+   * @param version  The version of the transaction inputs
+   * @param inputs   [Array[Objects]] array of output transactions to use as inputs
+   * @param outputs  [Array[Objects]] array of outputs from this transactions
    * @param lockTime TimeStamp
    */
   public Transaction(int version, List<Input> inputs, List<Output> outputs, long lockTime) {
@@ -99,8 +100,12 @@ public final class Transaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Transaction that = (Transaction) o;
     return version == that.version
         && lockTime == that.lockTime

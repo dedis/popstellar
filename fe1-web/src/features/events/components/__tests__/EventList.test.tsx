@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLao, mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getEventById } from 'features/events/functions';
 import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from 'features/events/interface';
@@ -37,6 +37,19 @@ import EventList from '../EventList';
 
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
+
+// Icons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons', () => {
+  const MockIcon = ({ name, size, color }: { name: string; size: number; color: string }) =>
+    `[name='${name}' size='${size}' color='${color}']`;
+
+  return {
+    Ionicons: MockIcon,
+    MaterialIcons: MockIcon,
+    MaterialCommunityIcons: MockIcon,
+  };
+});
 
 const mockStore = createStore(
   combineReducers({
@@ -73,7 +86,12 @@ const getContextValue = (isOrganizer: boolean) => ({
   } as RollCallReactContext,
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
-    useRollCallsByLaoId: () => {},
+    useRollCallsByLaoId: () => ({}),
+    useLaoIds: () => [mockLaoIdHash],
+    useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
+    walletItemGenerators: [],
+    walletNavigationScreens: [],
+    useRollCallTokensByLaoId: () => [],
   } as WalletReactContext,
 });
 

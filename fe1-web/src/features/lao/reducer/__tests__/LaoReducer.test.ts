@@ -12,15 +12,17 @@ import {
   mockLaoName,
   mockLaoState,
   org,
+  mockAddress,
+  mockChannel,
 } from '__tests__/utils/TestUtils';
-import { Hash, Timestamp } from 'core/objects';
+import { channelFromIds, Hash, Timestamp } from 'core/objects';
 
 import { Lao, LaoState } from '../../objects';
 import {
   addLao,
   clearAllLaos,
-  connectToLao,
-  disconnectFromLao,
+  setCurrentLao,
+  clearCurrentLao,
   laoReduce,
   selectIsLaoOrganizer,
   makeLao,
@@ -34,6 +36,9 @@ import {
   LAO_REDUCER_PATH,
   getLaoById,
   LaoReducerState,
+  addLaoServerAddress,
+  addSubscribedChannel,
+  removeSubscribedChannel,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -73,6 +78,8 @@ const initializeData = () => {
     witnesses: [],
     last_roll_call_id: rollCallId,
     last_tokenized_roll_call_id: rollCallId,
+    server_addresses: [],
+    subscribed_channels: [channelFromIds(mockLaoIdHash)],
   }).toState();
 
   filledStateAfterRollCall = {
@@ -166,11 +173,11 @@ describe('LaoReducer', () => {
   });
 
   it('should connect to lao', () => {
-    expect(laoReduce(emptyState, connectToLao(mockLaoState))).toEqual(connectedState1);
+    expect(laoReduce(emptyState, setCurrentLao(mockLaoState))).toEqual(connectedState1);
   });
 
   it('should disconnect from lao', () => {
-    expect(laoReduce(connectedState1, disconnectFromLao())).toEqual(filledState1);
+    expect(laoReduce(connectedState1, clearCurrentLao())).toEqual(filledState1);
   });
 
   it('set last roll call for a non-stored lao does not do anything', () => {
@@ -194,6 +201,63 @@ describe('LaoReducer', () => {
       } as RehydrateAction),
     ).toEqual({ ...connectedState1, currentId: undefined });
   });
+
+  it('should add server addresses', () => {
+    expect(
+      laoReduce(
+        {
+          allIds: [mockLaoId],
+          byId: {
+            [mockLaoId]: { ...mockLaoState, server_addresses: [] },
+          },
+        } as LaoReducerState,
+        addLaoServerAddress(mockLaoId, mockAddress),
+      ),
+    ).toEqual({
+      allIds: [mockLaoId],
+      byId: {
+        [mockLaoId]: { ...mockLaoState, server_addresses: [mockAddress] },
+      },
+    } as LaoReducerState);
+  });
+});
+
+it('should add subscribed channels', () => {
+  expect(
+    laoReduce(
+      {
+        allIds: [mockLaoId],
+        byId: {
+          [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
+        },
+      } as LaoReducerState,
+      addSubscribedChannel(mockLaoId, mockChannel),
+    ),
+  ).toEqual({
+    allIds: [mockLaoId],
+    byId: {
+      [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
+    },
+  } as LaoReducerState);
+});
+
+it('should remove subscribed channels', () => {
+  expect(
+    laoReduce(
+      {
+        allIds: [mockLaoId],
+        byId: {
+          [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
+        },
+      } as LaoReducerState,
+      removeSubscribedChannel(mockLaoId, mockChannel),
+    ),
+  ).toEqual({
+    allIds: [mockLaoId],
+    byId: {
+      [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
+    },
+  } as LaoReducerState);
 });
 
 describe('Lao selector', () => {

@@ -1,11 +1,10 @@
 import { beforeAll } from '@jest/globals';
 
 import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
-import { ROOT_CHANNEL } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { OpenedLaoStore } from 'features/lao/store';
 
-import { getCurrentLao, getCurrentLaoId, getLaoChannel } from '../lao';
+import { getCurrentLao, getCurrentLaoId } from '../lao';
 
 // many functions access the global store, hence it has to be set up first
 beforeAll(() => {
@@ -36,12 +35,5 @@ describe('getCurrentLaoId', () => {
 
   it('should return undefined if there is no current lao', () => {
     expect(getCurrentLaoId()).toBeUndefined();
-  });
-});
-
-describe('getLaoChannel', () => {
-  it('should return the channel, given a valid lao id', () => {
-    const channel = getLaoChannel(mockLaoId);
-    expect(channel).toEqual(`${ROOT_CHANNEL}/${mockLaoId}`);
   });
 });
