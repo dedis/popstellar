@@ -138,7 +138,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                 }
                 return new ArrayList<>(historyList);
               } catch (KeyException e) {
-                e.printStackTrace();
+                Log.d(TAG, "error retrieving token: " + e);
                 return null;
               }
             });
