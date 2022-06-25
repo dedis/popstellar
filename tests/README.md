@@ -1,5 +1,5 @@
 ﻿# Functional Requirements
-Last updated  : 18.6.2022
+Last updated  : 25.6.2022
 
 # Lao
 ## Create
@@ -35,8 +35,8 @@ Last updated  : 18.6.2022
 |-----|--------|--------|--------|
 | Be1 |Unstable|   X    |    X   |
 | Be2 |Reliable|   X    |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|     X  |    X   |
+| Fe2 |Operational|     X  |    X   |
 
 ## Close
 
@@ -45,8 +45,8 @@ Last updated  : 18.6.2022
 |-----|--------|--------|--------|
 | Be1 |Unstable|    X   |    X   |
 | Be2 |Operational|    X   |    X   |
-| Fe1 |        |        |        |
-| Fe2 |        |        |        |
+| Fe1 |Operational|     X  |    X   |
+| Fe2 |Operational|     X  |    X   |
 
 ## ReOpen
 
@@ -56,7 +56,7 @@ Last updated  : 18.6.2022
 | Be1 |Operational|   X    |        |
 | Be2 |Operational|   X    |        |
 | Fe1 |Operational|   X    |        |
-| Fe2 |Unstable|   X    |        |
+| Fe2 |Operational|   X    |        |
 
 
 ## ReClose
@@ -67,7 +67,7 @@ Last updated  : 18.6.2022
 | Be1 |Operational|    X   |        |
 | Be2 |Operational|    X   |        |
 | Fe1 |Operational|    X   |        |
-| Fe2 |Unstable|    X   |        |
+| Fe2 |Operational|    X   |        |
 
 # Election
 
@@ -82,15 +82,15 @@ Last updated  : 18.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Reliable|   X    |    X   |
-| Be2 |        |        |        |
+| Be2 |Operational|        |        |
 | Fe1 |Operational|   X    |        |
 | Fe2 |Operational|   X    |        |
 
 ## Cast Vote open ballots
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 ||Operational|   X    |    X   |
-| Be2 |        |        |        |
+| Be1 |Operational|   X    |    X   |
+| Be2 |Operational|    X   |     X  |
 | Fe1 |Operational|   X    |        |
 | Fe2 |Operational|   X    |        |
 
@@ -106,14 +106,14 @@ Last updated  : 18.6.2022
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Unstable|    X   |    X   |
-| Be2 |        |    X   |    X   |
+| Be2 |Operational|    X   |    X   |
 | Fe1 |Operational|    X   |        |
 | Fe2 |Operational|    X   |        |
 ## Result
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
 | Be1 |Operational|    X   |    X   |
-| Be2 |        |    X   |    X   |
+| Be2 |Operational|    X   |    X   |
 | Fe1 |Operational|    X   |        |
 | Fe2 |Operational|    X   |        |
 # Digital Cash
