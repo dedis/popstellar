@@ -121,8 +121,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
 
-      String numberOfEventsInCategory =
-          "(".concat(String.valueOf(eventsMap.get(eventCategory).size())).concat(")");
+      String numberOfEventsInCategory = "(" + eventsMap.get(eventCategory).size() + ")";
       ((HeaderViewHolder) holder).headerNumber.setText(numberOfEventsInCategory);
 
       // Expansion/Collapse part
