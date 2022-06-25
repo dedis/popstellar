@@ -27,7 +27,7 @@ Feature: Mock Backend
             return new RollCallVerification()
           }
         """
-    * def rollCallVerificator = call getRollCallVerification
+    * def rollCallVerification = call getRollCallVerification
 
     * karate.log('Backend started at ', backend.getPort())
     * def buffer = backend.getBuffer()
