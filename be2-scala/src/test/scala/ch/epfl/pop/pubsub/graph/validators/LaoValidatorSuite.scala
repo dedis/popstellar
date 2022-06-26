@@ -108,7 +108,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO greeting fails with wrong channel") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_CHANNEL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+     message should equal(Left(GREET_LAO_RPC))
   }
 
   test("LAO greeting fails without ParamsWithMessage") {
