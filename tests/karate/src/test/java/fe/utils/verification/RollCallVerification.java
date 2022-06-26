@@ -4,7 +4,7 @@ import com.intuit.karate.Json;
 
 import static common.JsonKeys.PARAMS;
 import static common.utils.JsonUtils.getJSON;
-import static fe.utils.verification.VerifierUtils.verifyMessageField;
+import static fe.utils.verification.MessageVerification.verifyMessageField;
 
 /**
  * This class contains functions used to test fields specific to Roll-Call

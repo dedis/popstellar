@@ -5,6 +5,7 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
+import common.utils.JsonUtils;
 
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -15,8 +16,8 @@ import static common.utils.Base64Utils.convertB64URLToByteArray;
 /**
  * This class contains functions useful to test message fields for several kind of high level messages
  */
-public class VerifierUtils {
-  private final static Logger logger = new Logger(VerifierUtils.class.getSimpleName());
+public class MessageVerification {
+  private final static Logger logger = new Logger(MessageVerification.class.getSimpleName());
 
   /**
    * Verify the "message" field of a network message json
@@ -34,10 +35,11 @@ public class VerifierUtils {
 
   /**
    * Verify the message_id of a network message
-   * @param messageFieldJson the "message" field of the network message
+   * @param message the network message
    * @return true if the computed message_id matches the one provided in Json
    */
-  private static boolean verifyMessageIdField(Json messageFieldJson) {
+  public static boolean verifyMessageIdField(Json message) {
+    Json messageFieldJson = JsonUtils.getJSON(message, PARAMS).get(MESSAGE);
     String data = messageFieldJson.get(DATA);
     String signature = messageFieldJson.get(SIGNATURE);
     String msgId = messageFieldJson.get(MESSAGE_ID);
