@@ -27,7 +27,7 @@ object GreetLaoExamples {
     List.empty,
     Some(greetLao))
 
-  final val greetLaoWrongFrontend: GreetLao = GreetLao(LAO, wrongSender, ADDRESS, PEERS)
+  final val greetLaoWrongFrontend: GreetLao = GreetLao(LAO, SENDER, ADDRESS, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_FRONTEND: Message = new Message(
     Base64Data.encode(GreetLaoFormat.write(greetLaoWrongFrontend).toString),
     SENDER,
