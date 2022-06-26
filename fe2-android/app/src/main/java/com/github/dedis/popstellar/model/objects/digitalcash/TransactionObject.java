@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.InputObject;
 import com.github.dedis.popstellar.model.objects.OutputObject;
@@ -211,10 +213,10 @@ public class TransactionObject {
    * @return int index in the transaction outputs
    */
   public int getIndexTransaction(PublicKey publicKey) {
-    String hashPubkey = publicKey.computeHash();
+    String hashPubKey = publicKey.computeHash();
     int index = 0;
     for (OutputObject outObj : outputs) {
-      if (outObj.getPubKeyHash().equals(hashPubkey)) {
+      if (outObj.getPubKeyHash().equals(hashPubKey)) {
         return index;
       }
       ++index;
@@ -253,6 +255,7 @@ public class TransactionObject {
     return transactionId;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "TransactionObject{"

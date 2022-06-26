@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -32,6 +33,7 @@ import java.util.Map;
  * method to create an instance of this fragment.
  */
 public class DigitalCashSendFragment extends Fragment {
+  private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
   private DigitalCashSendFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
 
@@ -87,26 +89,22 @@ public class DigitalCashSendFragment extends Fragment {
                     }
 
                   } catch (KeyException keyException) {
-                    Toast.makeText(
-                            requireContext(),
-                            R.string.digital_cash_please_enter_a_lao,
-                            Toast.LENGTH_SHORT)
-                        .show();
+                    ErrorUtils.logAndShow(
+                        requireContext(),
+                        TAG,
+                        keyException,
+                        R.string.digital_cash_please_enter_a_lao);
                   }
                 }
               }
             });
 
-        try {
-            setUpTheAdapter();
-        } catch (KeyException e) {
-            Toast.makeText(
-                            requireContext(),
-                            R.string.digital_cash_error_poptoken,
-                            Toast.LENGTH_SHORT)
-                    .show();
-        }
+    try {
+      setUpTheAdapter();
+    } catch (KeyException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_error_poptoken);
     }
+  }
 
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
@@ -128,30 +126,28 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
-    /**
-     * Function that set up the Adapter for the dropdown selector menu (with the public key list)
-     */
-    private void setUpTheAdapter() throws KeyException {
-        /* Roll Call attendees to which we can send*/
-        List<String> myArray;
-        try {
-            myArray = mViewModel.getAttendeesFromTheRollCallList();
-        } catch (NoRollCallException e) {
-            mViewModel.openHome();
-            Toast.makeText(
-                            requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
-                    .show();
-            myArray = new ArrayList<>();
-        }
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-        KeyManager km = mViewModel.getKeyManager();
+  /** Function that set up the Adapter for the dropdown selector menu (with the public key list) */
+  private void setUpTheAdapter() throws KeyException {
+    /* Roll Call attendees to which we can send*/
+    List<String> myArray;
+    try {
+      myArray = mViewModel.getAttendeesFromTheRollCallList();
+    } catch (NoRollCallException e) {
+      mViewModel.openHome();
+      Toast.makeText(
+              requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
+          .show();
+      myArray = new ArrayList<>();
+    }
+    ArrayAdapter<String> adapter =
+        new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    KeyManager km = mViewModel.getKeyManager();
     mBinding
         .digitalCashSendSpinner
         .getEditText()
         .setText(km.getValidPoPToken(mViewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
-        mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
-    }
+    mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
+  }
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {

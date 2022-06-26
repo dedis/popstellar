@@ -13,18 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 
-/**
- * Use the {@link DigitalCashHistoryFragment#newInstance} factory method to create an instance of
- * this fragment.
- */
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
-  /**
-   * Use this factory method to create a new instance of this fragment
-   *
-   * @return A new instance of fragment DigitalCashHistoryFragment.
-   */
   public static DigitalCashHistoryFragment newInstance() {
     return new DigitalCashHistoryFragment();
   }

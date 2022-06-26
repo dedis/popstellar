@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +15,7 @@ import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
@@ -27,6 +27,7 @@ import java.util.Objects;
  * factory method to create an instance of this fragment.
  */
 public class DigitalCashReceiveFragment extends Fragment {
+  public static final String TAG = DigitalCashReceiveFragment.class.getSimpleName();
   private DigitalCashReceiveFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
 
@@ -76,11 +77,7 @@ public class DigitalCashReceiveFragment extends Fragment {
                 "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
       }
     } catch (KeyException e) {
-      Toast.makeText(
-              requireContext(),
-              getString(R.string.digital_cash_please_enter_roll_call),
-              Toast.LENGTH_SHORT)
-          .show();
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
     }
   }
 }

@@ -52,7 +52,7 @@ public class DigitalCashActivity extends AppCompatActivity {
     if (getIntent().getExtras() != null) {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
       mViewModel.subscribeToLao(id);
-      mViewModel.setLaoId(getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, ""));
+      mViewModel.setLaoId(id);
       mViewModel.setLaoName(getIntent().getExtras().getString(Constants.LAO_NAME, ""));
       mViewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
     }
