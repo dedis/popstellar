@@ -82,7 +82,7 @@ case object LaoValidator extends MessageDataContentValidator {
         val expectedLaoId: Hash = rpcMessage.extractLaoId
 
         if (expectedLaoId != data.lao) {
-          Right(validationError("unexpected id"))
+          Right(validationError("unexpected id "+ expectedLaoId+ "1111111"+data.lao))
         } else if (data.frontend != message.sender) {
           Right(validationError("unexpected frontend"))
         } else if (!data.address.startsWith("ws://")) {

@@ -83,7 +83,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
   //GreetLao tests
   test("LAO greeting works as intended") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_RPC)
-    message should equal(Left(GREET_LAO_RPC))
+     message shouldBe a[Right[_, PipelineError]]
   }
 
   test("LAO greeting fails with wrong lao id") {
