@@ -121,11 +121,11 @@ object MessageExample {
   private final val createLaoWrongSender: CreateLao = CreateLao(idWrongSender, name, creationWorking, wrongSender, workingWitnessList)
   final val MESSAGE_CREATELAO_WRONG_SENDER: Message = new Message(
     Base64Data.encode(createLaoWrongSender.toJson.toString),
-    PublicKey(Base64Data.encode("wrong")),
+    wrongSender,
     Signature(Base64Data("")),
     Hash(Base64Data("")),
     workingWSPairList,
-    Some(createLaoWrongId)
+    Some(createLaoWrongSender)
   )
 
   private final val emptyNameId: Hash = Hash.fromStrings(organizer.base64Data.toString, creationWorking.toString, "")
