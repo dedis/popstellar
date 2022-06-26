@@ -502,20 +502,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
             - amountFromReceiver;
     Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
     outputs.add(outputSender);
-    Log.e("INFO:::out ", outputs.toString());
-    Log.e("INFO:::inp ", inputs.toString());
     Map<String, Integer> transactionInpMap = new HashMap<>();
     for (TransactionObject transactionPrevious : transactions) {
       transactionHash = transactionPrevious.getTransactionId();
       index = transactionPrevious.getIndexTransaction(pubK);
       transactionInpMap.put(transactionHash, index);
-      Log.e("INFO:::usedForSign ", transactionHash + " - " + index);
     }
-    
+
     for (String currentHash: transactionInpMap.keySet()) {
       inputs.add(processSignInput(privK, pubK, outputs, transactionInpMap, currentHash));
     }
-    Log.e("INFO:::inp ", inputs.toString());
   }
 
   public LiveData<List<TransactionObject>> getTransactionHistory() {
