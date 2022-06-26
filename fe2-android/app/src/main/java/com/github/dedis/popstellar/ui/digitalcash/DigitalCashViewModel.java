@@ -82,7 +82,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReturnLAO = new MutableLiveData<>();
 
-
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
