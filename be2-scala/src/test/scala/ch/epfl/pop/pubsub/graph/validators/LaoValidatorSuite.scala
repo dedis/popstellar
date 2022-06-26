@@ -67,12 +67,12 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO creation fails with wrong sender") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_SENDER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message should equal(Left(CREATE_LAO_RPC))
   }
 
   test("LAO creation fails with empty name") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_EMPTY_NAME_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message should equal(Left(CREATE_LAO_RPC))
   }
 
   test("LAO creation fails without ParamsWithMessage") {
