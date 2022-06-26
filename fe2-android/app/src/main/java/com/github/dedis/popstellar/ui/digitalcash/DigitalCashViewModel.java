@@ -42,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -334,7 +335,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       if (getCurrentLaoValue().getTransactionByUser().containsKey(pubK) && !coinBase) {
         processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
       } else {
-        inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
+        inputs.add(processSignInput(privK, pubK, outputs, Collections.singletonMap(transactionHash, index), transactionHash));
       }
 
       Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
@@ -375,15 +376,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   private Input processSignInput(
-      PrivateKey privK, PublicKey pubK, List<Output> outputs, String transactionHash, int index)
+      PrivateKey privK, PublicKey pubK, List<Output> outputs, Map<String, Integer> transactionInpMap, String currentHash)
       throws GeneralSecurityException {
     Signature sig =
         privK.sign(
             new Base64URLData(
                 Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                        outputs, Collections.singletonMap(transactionHash, index))
+                        outputs, transactionInpMap)
                     .getBytes(StandardCharsets.UTF_8)));
-    return new Input(transactionHash, index, new ScriptInput(TYPE, pubK, sig));
+    return new Input(currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
   }
 
   public LiveData<String> getLaoId() {
@@ -501,11 +502,20 @@ public class DigitalCashViewModel extends AndroidViewModel {
             - amountFromReceiver;
     Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
     outputs.add(outputSender);
+    Log.e("INFO:::out ", outputs.toString());
+    Log.e("INFO:::inp ", inputs.toString());
+    Map<String, Integer> transactionInpMap = new HashMap<>();
     for (TransactionObject transactionPrevious : transactions) {
       transactionHash = transactionPrevious.getTransactionId();
       index = transactionPrevious.getIndexTransaction(pubK);
-      inputs.add(processSignInput(privK, pubK, outputs, transactionHash, index));
+      transactionInpMap.put(transactionHash, index);
+      Log.e("INFO:::usedForSign ", transactionHash + " - " + index);
     }
+    
+    for (String currentHash: transactionInpMap.keySet()) {
+      inputs.add(processSignInput(privK, pubK, outputs, transactionInpMap, currentHash));
+    }
+    Log.e("INFO:::inp ", inputs.toString());
   }
 
   public LiveData<List<TransactionObject>> getTransactionHistory() {
