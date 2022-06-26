@@ -67,7 +67,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO creation fails with wrong sender") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_SENDER_RPC)
-    message should equal(Left(CREATE_LAO_RPC))
+    message shouldBe a[Right[_, PipelineError]]
   }
 
   test("LAO creation fails with empty name") {
@@ -83,7 +83,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
   //GreetLao tests
   test("LAO greeting works as intended") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_RPC)
-     message shouldBe a[Right[_, PipelineError]]
+    message should equal(Left(GREET_LAO_RPC))
   }
 
   test("LAO greeting fails with wrong lao id") {
