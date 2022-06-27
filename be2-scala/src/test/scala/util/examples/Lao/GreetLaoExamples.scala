@@ -35,6 +35,16 @@ object GreetLaoExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(greetLaoWrongFrontend))
+  
+  final val wronLaoGreet: Hash = Hash(Base64Data.encode("laoId/election")) 
+  final val greetLaoWrongChannel: GreetLao = GreetLao(wronLaoGreet, SENDER, ADDRESS, PEERS)
+  final val MESSAGE_GREET_LAO_WRONG_CHANNEL: Message = new Message(
+    Base64Data.encode(GreetLaoFormat.write(greetLaoWrongChannel).toString),
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(greetLaoWrongChannel))  
 
   final val greetLaoWrongLao: GreetLao = GreetLao(wrongLao, SENDER, ADDRESS, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_LAO: Message = new Message(
