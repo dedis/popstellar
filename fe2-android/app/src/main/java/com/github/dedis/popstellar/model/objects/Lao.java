@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
+
+  public static final String TAG = Lao.class.getSimpleName();
 
   private final Channel channel;
   private String id;
@@ -228,9 +231,7 @@ public final class Lao {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
     }
-    Log.d(
-        this.getClass().toString(),
-        "Transaction by history : " + transactionHistoryByUser.toString());
+    Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
     Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
@@ -457,6 +458,7 @@ public final class Lao {
     return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "Lao{"

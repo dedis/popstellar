@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects;
+package com.github.dedis.popstellar.model.objects.digitalcash;
 
 public class ScriptOutputObject {
 
@@ -20,7 +20,7 @@ public class ScriptOutputObject {
     return type;
   }
 
-  public String getPubkeyHash() {
+  public String getPubKeyHash() {
     return pubKeyHash;
   }
 

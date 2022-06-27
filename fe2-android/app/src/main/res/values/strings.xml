@@ -212,7 +212,7 @@
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>
   <string name="digital_cash_issue">ISSUE</string>
-  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_history">History</string>
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
   <string name="digital_cash_receipt">RECEIPT</string>
@@ -231,6 +231,11 @@
   <string name="digital_cash_content_description_qr_receipt">Receipt qr code transaction</string>
   <string name="digital_cash_content_description_qr_receive">Receive qr code transaction</string>
   <string name="digital_cash_select_lao_member">Select LAO Member</string>
+  <string name="digital_cash_received">Received:</string>
+  <string name="digital_cash_sent">Sent:</string>
+  <string name="digital_cash_from">From:</string>
+  <string name="digital_cash_to">To:</string>
+  <string name="digital_cash_transaction_id">Transaction ID:</string>
   <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
   <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
   <string name="digital_cash_error_poptoken">There is an error with the POP Token</string>

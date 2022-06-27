@@ -19,15 +19,24 @@
     tools:context=".ui.digitalcash.DigitalCashHistoryFragment">
 
     <TextView
-      android:id="@+id/textView_digital_cash_history"
+      android:id="@+id/digital_cash_history_title"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:gravity="center"
       android:text="@string/digital_cash_history"
-      app:layout_constraintBottom_toBottomOf="parent"
+      style="@style/title_style"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/transaction_history_list"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_marginTop="@dimen/history_recycler_view_top_margin"
+      android:layout_marginHorizontal="@dimen/layout_horizontal_margin"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_history_title"
+      app:layout_constraintBottom_toBottomOf="parent" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
