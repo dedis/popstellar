@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.objects;
+package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
@@ -27,7 +27,7 @@ public class ScriptInputObject {
     return type;
   }
 
-  public PublicKey getPubkey() {
+  public PublicKey getPubKey() {
     return pubKeyRecipient;
   }
 }

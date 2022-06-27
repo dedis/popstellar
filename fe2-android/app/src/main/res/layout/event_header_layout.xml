@@ -29,7 +29,7 @@
     android:layout_marginStart="@dimen/event_header_between_texts_margin" />
 
   <ImageView
-    android:id="@+id/expand_icon"
+    android:id="@+id/header_expand_icon"
     android:layout_width="@dimen/header_layout_arrow_side"
     android:layout_height="@dimen/header_layout_arrow_side"
     app:layout_constraintEnd_toEndOf="parent"
