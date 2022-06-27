@@ -4,6 +4,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,6 +97,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     throw new IllegalStateException("Illegal view type");
   }
 
+  @SuppressLint("NotifyDataSetChanged") // Warranted by our current implementation
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
     // We handle the individual view of the recycler differently if it is a header or an event
@@ -118,6 +120,9 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
           break;
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
+
+      String numberOfEventsInCategory = "(" + eventsMap.get(eventCategory).size() + ")";
+      ((HeaderViewHolder) holder).headerNumber.setText(numberOfEventsInCategory);
 
       // Expansion/Collapse part
       headerLayout.setOnClickListener(
@@ -274,6 +279,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     setList(events);
   }
 
+  @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
   private void setList(List<Event> events) {
     for (EventCategory category : EventCategory.values()) {
       for (Event event : eventsMap.get(category)) {
@@ -302,12 +308,14 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   public static class HeaderViewHolder extends RecyclerView.ViewHolder {
     private final TextView headerTitle;
+    private final TextView headerNumber;
     private final ImageView expandIcon;
     private final ConstraintLayout headerLayout;
 
     public HeaderViewHolder(@NonNull View itemView) {
       super(itemView);
       headerTitle = itemView.findViewById(R.id.event_header_title);
+      headerNumber = itemView.findViewById(R.id.event_header_number);
       expandIcon = itemView.findViewById(R.id.header_expand_icon);
       headerLayout = itemView.findViewById(R.id.header_layout);
     }
