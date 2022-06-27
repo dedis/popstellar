@@ -316,7 +316,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       super(itemView);
       headerTitle = itemView.findViewById(R.id.event_header_title);
       headerNumber = itemView.findViewById(R.id.event_header_number);
-      expandIcon = itemView.findViewById(R.id.expand_icon);
+      expandIcon = itemView.findViewById(R.id.header_expand_icon);
       headerLayout = itemView.findViewById(R.id.header_layout);
     }
   }
