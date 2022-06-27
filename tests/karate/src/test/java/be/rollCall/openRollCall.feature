@@ -40,6 +40,25 @@ Feature: Roll Call Open
     And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
+
+  Scenario: Opening a roll call with non-organizer as sender should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+    And def validOpenRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "open",
+          "update_id": '#(getRollCallOpenValidUpdateId)',
+          "opens": '#(getRollCallOpenValidId)',
+          "opened_at": '#(getRollCallOpenValidCreationTime)'
+        }
+      """
+    * frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
   # First creates a valid lao followed by subscribe and catchup but we don't send a roll call
   # create message but send a valid roll call open message. Since the roll call create message
   # was never sent opening a roll call is illegal and we expect an error message from the backend.
