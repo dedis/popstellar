@@ -25,7 +25,7 @@ Feature: web test
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
     * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
     * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
-    * def event_name_selector = '{}RC name'
+    * def event_name_selector = "[data-testid='current_event_selector_0']"
 
 
   @name=basic_setup
@@ -81,5 +81,5 @@ Feature: web test
     # The XPath selector is described here: https://stackoverflow.com/a/29289196/2897827
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
-    And input(roll_call_title_selector, 'RC name')
+    And input(roll_call_title_selector, rc_name)
     And input(roll_call_location_selector, 'EPFL')

@@ -66,5 +66,5 @@ Feature: android page object
   Scenario: Create a roll call for an already created LAO
     When click(add_event_selector)
     And click(add_roll_call_selector)
-    And input(roll_call_title_selector, 'RC name')
+    And input(roll_call_title_selector, rc_name)
 

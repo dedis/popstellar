@@ -12,8 +12,8 @@ import static common.JsonKeys.*;
 import static common.utils.JsonUtils.getJSON;
 
 /**
- * This class contains useful message replies that can be used to tailor the response of the mockbackend depending on
- * what action is mocked {@link MockBackend#setReplyProducer(Function)}
+ * This class contains useful message replies that can be used to tailor the response of the
+ * mockbackend depending on what action is mocked {@link MockBackend#setReplyProducer(Function)}
  */
 public class ReplyMethods {
 
@@ -32,7 +32,7 @@ public class ReplyMethods {
   }
 
   /** Always reply with a valid response */
-  public static Function<String, List<String>> ALWAYS_VALID_CONSENSUS =
+  public static Function<String, List<String>> ALWAYS_VALID =
       msg -> {
         Json msgJson = Json.of(msg);
         int id = msgJson.get(ID);
@@ -43,18 +43,10 @@ public class ReplyMethods {
         return buildSingleton(template.replace("%ID%", Integer.toString(id)));
       };
 
-  /** Always reply with a valid response */
-  public static Function<String, List<String>> ALWAYS_VALID =
-      msg -> {
-        Json msgJson = Json.of(msg);
-        int id = msgJson.get(ID);
-        return buildSingleton(VALID_REPLY_TEMPLATE.replace("%ID%", Integer.toString(id)));
-      };
-
   public static Function<String, List<String>> LAO_CREATE_CATCHUP =
       msg -> {
         if (msg.contains(CONSENSUS) || msg.contains(COIN)) {
-          return ALWAYS_VALID_CONSENSUS.apply(msg);
+          return ALWAYS_VALID.apply(msg);
         }
         Json msgJson = Json.of(msg);
         String replaceId =
@@ -67,9 +59,10 @@ public class ReplyMethods {
       };
 
   /**
-   * This returns a valid reply to subscribe messages and replies with the published lao to catchups
+   * This returns a valid reply to subscribe messages and replies with the published lao to catch-ups
+   * It is specific to the LAO creation process
    */
-  public static Function<String, List<String>> LAO_CREATE =
+  public static Function<String, List<String>> CATCHUP_VALID_RESPONSE =
       msg -> {
         Json msgJson = Json.of(msg);
         String method = msgJson.get(METHOD);
@@ -83,22 +76,27 @@ public class ReplyMethods {
         }
       };
 
-  /**
-   * This replies with a broadcast of the publish message and a valid response
-   */
-  public static Function<String, List<String>> ROLL_CALL_CREATE_BROADCAST =
+  /** This replies with a broadcast of the publish message and a valid response */
+  public static Function<String, List<String>> BROADCAST_VALID_RESPONSE =
       msg -> {
-        Json param = getJSON(Json.of(msg), PARAMS);
-        String channel = param.get(CHANNEL);
+        Json msgJson = Json.of(msg);
+        String method = msgJson.get(METHOD);
 
-        Map<String, String> msgMap = param.get(MESSAGE);
-        Json send = Json.object();
-        send.set(CHANNEL, channel);
-        send.set(MESSAGE, msgMap);
+        if (PUBLISH.equals(method)) {
+          Json param = getJSON(Json.of(msg), PARAMS);
+          String channel = param.get(CHANNEL);
 
-        String broadCast = RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
-        String result = ALWAYS_VALID.apply(msg).get(0);
+          Map<String, String> msgMap = param.get(MESSAGE);
+          Json send = Json.object();
+          send.set(CHANNEL, channel);
+          send.set(MESSAGE, msgMap);
 
-        return Arrays.asList(broadCast, result);
+          String broadCast = RC_CREATE_BROADCAST_TEMPLATE.replace("%PARAM%", send.toString());
+          String result = ALWAYS_VALID.apply(msg).get(0);
+
+          return Arrays.asList(broadCast, result);
+        } else {
+          return ALWAYS_VALID.apply(msg);
+        }
       };
 }

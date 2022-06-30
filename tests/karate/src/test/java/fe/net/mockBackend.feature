@@ -29,6 +29,16 @@ Feature: Mock Backend
         """
     * def rollCallVerification = call getRollCallVerification
 
+    * def getMessageVerification =
+      """
+        function (){
+          var MessageVerification = Java.type("fe.utils.verification.MessageVerification")
+          return new MessageVerification()
+        }
+      """
+
+    * def messageVerification = call getMessageVerification
+
     * karate.log('Backend started at ', backend.getPort())
     * def buffer = backend.getBuffer()
 

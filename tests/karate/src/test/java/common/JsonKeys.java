@@ -30,4 +30,16 @@ public class JsonKeys {
   public static final String MESSAGE_ID = "message_id";
 
   public static final String SENDER = "sender";
+
+  public static final String ACTION = "action";
+
+  public static final String ROLL_CALL = "roll_call";
+
+  public static final String CREATE = "create";
+
+  public static final String OBJECT = "object";
+
+  public static final String NAME = "name";
+
+  public static final String CREATION = "creation";
 }

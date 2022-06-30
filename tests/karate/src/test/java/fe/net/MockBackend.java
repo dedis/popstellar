@@ -5,7 +5,6 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
-import fe.utils.verification.RollCallVerification;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
@@ -135,17 +134,13 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
    * Set the backend in Lao create mode. It responds with valid reply to subscribe and with a catchup containing the lao
    */
   public void setLaoCreateMode() {
-    replyProducer = ReplyMethods.LAO_CREATE;
+    replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
   }
 
   /**
    * Set the backend in roll call mode. This means it will respond to publish message with a broadcast and a valid reply
    */
-  public void setRollCallMode() {
-    replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
-  }
-
-  public boolean checkRollCallCreateMessage(String message) {
-    return RollCallVerification.rollCallCreateVerification(message);
+  public void setValidBroadcastMode() {
+    replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;
   }
 }
