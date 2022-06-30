@@ -52,42 +52,72 @@
     @name=valid_roll_call
     Scenario: Creates a valid Roll Call
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-      * string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_2_data.json')
-      * string rollCallCreate = converter.publishМessageFromData(rollCallData, rollCallCreateId, laoChannel)
-      * frontend_buffer.takeTimeout(timeout)
-      * eval frontend.send(rollCallCreate)
-      * def roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
-      * def roll_call = frontend_buffer.takeTimeout(timeout)
-      * karate.log("roll call create : " + roll_call_broadcast)
+      * def validCreateRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "create",
+          "id": "VSsRrcHoOTQJ-nU_VT_FakiMkezZA86z2UHNZKCxbN8=",
+          "name": "Roll Call 2",
+          "creation": 1633098863,
+          "proposed_start": 1633099126,
+          "proposed_end": 1633099141,
+          "location": "EPFL cafeteria",
+          "description": "Food is welcome anytime!"
+        }
+      """
+      * frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
 
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
-      * string rollCallCreateReq  = read('classpath:data/rollCall/valid_roll_call_create_3.json')
-      * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open_3.json')
-
-      * string rollCallCreateData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_3_data.json')
-      * string rollCallCreate = converter.publishМessageFromData(rollCallCreateData, rollCallCreateId, laoChannel)
-      * string rollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/valid_roll_call_open_3_data.json')
-      * string rollCallOpen = converter.publishМessageFromData(rollCallOpenData, openRollCallId, laoChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
-      * eval frontend.send(rollCallCreate)
-      * json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
-      * json create_roll_result = frontend_buffer.takeTimeout(timeout)
-      * eval frontend.send(rollCallOpen)
-      * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
-      * json open_roll_result = frontend_buffer.takeTimeout(timeout)
-      * karate.log("Received in simple scenarios open roll call :")
-      * karate.log(open_roll_result)
+      * def validCreateRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "create",
+          "id": "pKbXASZI6NYbzhFKoGd4HUpIBLF-CMSGAbfdYkd09PM=",
+          "name": "Roll Call 3",
+          "creation": 1633098864,
+          "proposed_start": 1633099127,
+          "proposed_end": 1633099148,
+          "location": "Lausanne",
+          "description": "Nice city!"
+        }
+      """
+      * def validOpenRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "open",
+          "update_id": "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU=",
+          "opens": "pKbXASZI6NYbzhFKoGd4HUpIBLF-CMSGAbfdYkd09PM=",
+          "opened_at": 1633099127
+        }
+      """
+      * frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+      * frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
+      * json answer2 = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
 
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
-      * string rollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/valid_roll_call_close_data.json')
-      * string rollCallClose = converter.publishМessageFromData(rollCallCloseData, closeRollCallId, laoChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
-      * eval frontend.send(rollCallClose)
-      * def close_roll_broadcast = frontend_buffer.takeTimeout(timeout)
-      * def close_roll_result = frontend_buffer.takeTimeout(timeout)
+      * def validRollCallClose =
+      """
+        {
+          "object": "roll_call",
+          "action": "close",
+          "update_id": "IGLB3pipK0p0G5E_wFxedEk4IpyM3L7XIQoFummhj0Y=",
+          "closes": "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU=",
+          "closed_at": 1633099135,
+          "attendees": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="]
+        }
+      """
+      * frontend.publish(JSON.stringify(validRollCallClose), laoChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validRollCallClose))
 
     @name=election_setup
     Scenario: Sets up a valid election
@@ -166,9 +196,25 @@
       * string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
       * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
-      * eval frontend.send(castVote)
-      * def cast_vote_broadcast = frontend_buffer.takeTimeout(timeout)
-      * def cast_vote = frontend_buffer.takeTimeout(timeout)
+      * def validCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+          "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+          "created_at": 1633098941,
+          "votes": [
+            {
+              "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
+              "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
+              "vote": [0]
+            }
+          ]
+        }
+      """
+      * frontend.publish(JSON.stringify(validCastVote), electionChannel)
+      * json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
 
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
