@@ -131,14 +131,16 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   /**
-   * Set the backend in Lao create mode. It responds with valid reply to subscribe and with a catchup containing the lao
+   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a valid message
+   * It also replies with valid to subscribe and with the Lao creation message to the catch-up
    */
   public void setLaoCreateMode() {
     replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
   }
 
   /**
-   * Set the backend in roll call mode. This means it will respond to publish message with a broadcast and a valid reply
+   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It replies
+   * with valid to subscribes and empty (valid) message to catch-ups
    */
   public void setValidBroadcastMode() {
     replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;

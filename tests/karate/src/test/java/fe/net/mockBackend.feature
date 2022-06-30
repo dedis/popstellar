@@ -17,7 +17,6 @@ Feature: Mock Backend
               }
             """
 
-
     * def backend = call getBackend
 
     * def getRollCallVerification =

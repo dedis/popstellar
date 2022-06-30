@@ -63,7 +63,7 @@ public class RollCallVerification {
 
   //////////////////////////////////////////////////// Utils ///////////////////////////////////////////////////////////
 
-  private static String getLaoId(String message){
+  private String getLaoId(String message){
     Json paramsFieldJson = getJSON(Json.of(message), PARAMS);
     String channel = paramsFieldJson.get(CHANNEL);
 
@@ -71,7 +71,7 @@ public class RollCallVerification {
     return channel.replace("/root/", "").replace("\\", "");
   }
 
-  private static boolean verifyRollCallId(Json createMessageJson, String laoId){
+  private boolean verifyRollCallId(Json createMessageJson, String laoId){
     String rcId = createMessageJson.get(ID);
     String creation = getStringFromIntegerField(createMessageJson, CREATION);
     String rcName = createMessageJson.get(NAME);
@@ -87,7 +87,7 @@ public class RollCallVerification {
   /**
    * Because of internal type used by karate, doing casting in 2 steps is required
    */
-  private static String getStringFromIntegerField(Json json, String key){
+  private String getStringFromIntegerField(Json json, String key){
     Integer intTemp = json.get(key);
     return String.valueOf(intTemp);
   }
