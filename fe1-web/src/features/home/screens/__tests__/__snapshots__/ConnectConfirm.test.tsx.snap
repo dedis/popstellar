@@ -454,10 +454,10 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "flex": 1,
                                   "marginBottom": 16,
                                 }
                               }
+                              testID="connect-button"
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}

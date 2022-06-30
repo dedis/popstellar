@@ -349,7 +349,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             }
                           >
                             <View>
-                              <Text />
+                              {"name":"ios-qr-code","size":25,"color":"#000"}
                             </View>
                           </View>
                           <View
@@ -824,26 +824,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             }
                           >
                             <View>
-                              <Text
-                                allowFontScaling={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 25,
-                                    },
-                                    undefined,
-                                    Object {
-                                      "fontFamily": "ionicons",
-                                      "fontStyle": "normal",
-                                      "fontWeight": "normal",
-                                    },
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                
-                              </Text>
+                              {"name":"ios-qr-code","size":25,"color":"#000"}
                             </View>
                           </View>
                           <View

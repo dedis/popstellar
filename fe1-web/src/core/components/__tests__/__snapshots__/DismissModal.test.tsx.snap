@@ -82,7 +82,6 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
-            "flex": 1,
             "marginBottom": 16,
           }
         }
@@ -235,7 +234,6 @@ exports[`DismissModal renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
-            "flex": 1,
             "marginBottom": 16,
           }
         }

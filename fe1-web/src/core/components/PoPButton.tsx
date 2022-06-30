@@ -7,7 +7,6 @@ import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     marginBottom: Spacing.x1,
   } as ViewStyle,
   button: {

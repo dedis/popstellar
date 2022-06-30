@@ -10,7 +10,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import LaoNavigation from '../LaoNavigation';
 
@@ -47,7 +47,7 @@ const contextValue = {
 // set up mock store
 const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
 mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 describe('LaoNavigation', () => {
   it('renders correctly', () => {

@@ -481,11 +481,8 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                     "borderColor": "#fff",
                                     "borderRadius": 16,
                                     "borderWidth": 1,
-                                    "flex": 1,
-                                    "flexDirection": "row",
-                                    "flexWrap": "wrap",
                                     "marginBottom": 16,
-                                    "paddingVertical": 8,
+                                    "padding": 16,
                                   }
                                 }
                               >
@@ -496,43 +493,11 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                       "fontFamily": "Courier New",
                                       "fontSize": 20,
                                       "lineHeight": 26,
-                                      "paddingHorizontal": 8,
-                                      "paddingVertical": 4,
                                       "textAlign": "left",
                                     }
                                   }
                                 >
-                                  one
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                      "fontFamily": "Courier New",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "paddingHorizontal": 8,
-                                      "paddingVertical": 4,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                >
-                                  two
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                      "fontFamily": "Courier New",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "paddingHorizontal": 8,
-                                      "paddingVertical": 4,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                >
-                                  three
+                                  one two three
                                 </Text>
                               </View>
                               <Text
@@ -592,7 +557,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
-                                    "flex": 1,
                                     "marginBottom": 16,
                                   }
                                 }
@@ -675,7 +639,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
-                                    "flex": 1,
                                     "marginBottom": 16,
                                   }
                                 }

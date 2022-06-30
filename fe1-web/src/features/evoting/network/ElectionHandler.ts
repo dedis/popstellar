@@ -121,7 +121,7 @@ export const handleElectionSetupMessage =
 
     // Subscribing to the election channel corresponding to that election
     const electionChannel = channelFromIds(election.lao, election.id);
-    subscribeToChannel(electionChannel).catch((err) => {
+    subscribeToChannel(election.lao, dispatch, electionChannel).catch((err) => {
       console.error('Could not subscribe to Election channel, error:', err);
     });
 

@@ -488,7 +488,34 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(message2)
   }
 
+  test("addWitnessSignature should not fail if the messageId is valid") {
+    //arrange
+    val storage: InMemoryStorage = InMemoryStorage()
+    val message: Message = MESSAGE
+    val messageId: Hash = message.message_id
+    val signature: Signature = Signature(Base64Data.encode("witnessSign")) //not valid signature, just to test storage
+
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    storage.size should equal (0)
+
+    //act
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.LAO); sleep()
+    // writing to the previously created channel
+    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE); sleep()
+    dbActor ! DbActor.AddWitnessSignature(Channel(CHANNEL_NAME), messageId, signature)
+
+    message.addWitnessSignature(WitnessSignaturePair(message.sender, signature))
+
+    //assert
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (2)
+    storage.elements(CHANNEL_NAME) should equal (ChannelData(ObjectType.LAO, MESSAGE.message_id :: Nil).toJsonString)
+    storage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}") should equal (message.toJsonString)
+  }
+
   test("catchup should not fail on a channel with ChannelData containing missing message_ids (and only return valid messages)") {
+
     // arrange
     val channelName1: Channel = Channel(CHANNEL_NAME)
     val initialStorage: InMemoryStorage = InMemoryStorage()

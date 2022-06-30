@@ -40,7 +40,9 @@ namespace STRINGS {
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
   export const navigation_connect_launch = 'Launch';
+  export const navigation_connect_launch_title = 'Launch a new LAO';
   export const navigation_connect_confirm = 'Confirm';
+  export const navigation_connect_confirm_title = 'Manually Connect to a LAO';
 
   /* --- Notification Navigation Strings --- */
   export const navigation_notification_notifications = 'NotificationNavigation Notifications';
@@ -276,7 +278,8 @@ namespace STRINGS {
   export const roll_call_scan_attendees = 'Scan Attendees';
   export const roll_call_scan_description =
     'Please scan each participant’s Roll-call QR code once.';
-  export const roll_call_scan_participant = 'participant scanned';
+  export const roll_call_scan_participant = 'Participant scanned';
+  export const roll_call_scan_participant_twice = 'Participant already scanned';
   export const roll_call_scan_close = 'Close Roll-Call';
   export const roll_call_scan_close_confirmation = 'Do you confirm to close the roll-call ?';
 

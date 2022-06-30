@@ -501,7 +501,6 @@ exports[`CreateRollCall renders correctly 1`] = `
                             onStartShouldSetResponder={[Function]}
                             style={
                               Object {
-                                "flex": 1,
                                 "marginBottom": 16,
                               }
                             }
@@ -653,7 +652,6 @@ exports[`CreateRollCall renders correctly 1`] = `
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }
@@ -884,7 +882,6 @@ What do you want to do ?
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }

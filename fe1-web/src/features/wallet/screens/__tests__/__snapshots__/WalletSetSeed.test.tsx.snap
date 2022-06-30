@@ -392,7 +392,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
-                                    "flex": 1,
                                     "marginBottom": 16,
                                   }
                                 }
@@ -476,7 +475,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
-                                    "flex": 1,
                                     "marginBottom": 16,
                                   }
                                 }

@@ -314,45 +314,29 @@ exports[`CreateEventButton renders correctly 1`] = `
                         }
                       }
                     >
-                      <View
-                        accessible={true}
+                      <RNGestureHandlerButton
                         collapsable={false}
-                        focusable={true}
-                        onBlur={[Function]}
-                        onClick={[Function]}
-                        onFocus={[Function]}
-                        onResponderGrant={[Function]}
-                        onResponderMove={[Function]}
-                        onResponderRelease={[Function]}
-                        onResponderTerminate={[Function]}
-                        onResponderTerminationRequest={[Function]}
-                        onStartShouldSetResponder={[Function]}
-                        testID="create_event_selector"
+                        onGestureEvent={[Function]}
+                        onGestureHandlerEvent={[Function]}
+                        onGestureHandlerStateChange={[Function]}
+                        onHandlerStateChange={[Function]}
+                        rippleColor={0}
                       >
-                        <RNGestureHandlerButton
+                        <View
+                          accessible={true}
                           collapsable={false}
-                          onGestureEvent={[Function]}
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
-                          onHandlerStateChange={[Function]}
-                          rippleColor={0}
-                        >
-                          <View
-                            accessible={true}
-                            collapsable={false}
-                            nativeID="animatedComponent"
-                            style={
-                              Object {
-                                "opacity": 1,
-                              }
+                          nativeID="animatedComponent"
+                          style={
+                            Object {
+                              "opacity": 1,
                             }
-                          >
-                            <View>
-                              <Text />
-                            </View>
+                          }
+                        >
+                          <View>
+                            {"name":"ios-create","size":25,"color":"#8E8E8E"}
                           </View>
-                        </RNGestureHandlerButton>
-                      </View>
+                        </View>
+                      </RNGestureHandlerButton>
                     </View>
                   </View>
                 </View>

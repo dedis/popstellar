@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.ui.pages.home;
 
-import androidx.annotation.IdRes;
-import androidx.test.espresso.ViewInteraction;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import android.view.View;
+import androidx.annotation.IdRes;
+import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
 
@@ -79,10 +77,6 @@ public class WalletPageObject {
 
   public static ViewInteraction walletContentText2(){
     return onView(withId(R.id.wallet_content_text_2));
-  }
-
-  public static ViewInteraction walletSeedCopyButton(){
-    return onView(withId(R.id.seed_wallet_copy));
   }
 
   public static ViewInteraction logOutButton(){

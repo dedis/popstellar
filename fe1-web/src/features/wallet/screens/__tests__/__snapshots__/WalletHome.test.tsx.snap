@@ -548,7 +548,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-qr-code","size":25,"color":"#000"}
                                     </View>
                                   </View>
                                   <View
@@ -1246,7 +1246,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-qr-code","size":25,"color":"#000"}
                                     </View>
                                   </View>
                                   <View

@@ -10,12 +10,18 @@ import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { getNetworkManager } from 'core/network';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
 import Identity from '../components/Identity';
 import { LaoHooks } from '../hooks';
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+>;
 
 const LaoHomeScreen = () => {
   return (
@@ -85,11 +91,34 @@ export const LaoHomeScreenHeader = () => {
   );
 };
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
+/**
+ * Component rendered in the top left of the navigation bar
+ * Shows a disconnect icon for disconnecting from the lao
+ */
+export const LaoHomeScreenHeaderLeft = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
+  return (
+    <>
+      <TouchableOpacity
+        onPress={() => {
+          getNetworkManager().disconnectFromAll();
+
+          navigation.navigate(STRINGS.navigation_app_home, {
+            screen: STRINGS.navigation_home_home,
+          });
+        }}>
+        <PoPIcon name="close" color={Color.inactive} size={Icon.size} />
+      </TouchableOpacity>
+    </>
+  );
+};
+
+/**
+ * Component rendered in the top right of the navigation bar
+ * Shows a qr code icon for showing the lao connection qr code
+ * and a bell icon for accessing the notifications menu
+ */
 export const LaoHomeScreenHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 

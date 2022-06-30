@@ -1094,7 +1094,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                   mCurrentLao.postValue(lao);
                   boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
                   mIsOrganizer.setValue(isOrganizer);
-                }));
+                },
+                error -> Log.d(TAG, "error updating LAO")));
   }
 
   public void openQrCodeScanningRollCall() {

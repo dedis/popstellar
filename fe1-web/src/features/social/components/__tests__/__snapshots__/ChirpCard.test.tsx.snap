@@ -281,7 +281,6 @@ Array [
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -724,7 +723,6 @@ Array [
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -1192,7 +1190,6 @@ Array [
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -1660,7 +1657,6 @@ Array [
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -2103,7 +2099,6 @@ Array [
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }

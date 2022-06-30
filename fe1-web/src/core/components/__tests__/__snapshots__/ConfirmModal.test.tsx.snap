@@ -162,7 +162,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
-            "flex": 1,
             "marginBottom": 16,
           }
         }
@@ -396,7 +395,6 @@ exports[`ConfirmModal renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
-            "flex": 1,
             "marginBottom": 16,
           }
         }
@@ -666,7 +664,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
-            "flex": 1,
             "marginBottom": 16,
           }
         }

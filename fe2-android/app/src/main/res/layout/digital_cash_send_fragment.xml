@@ -55,6 +55,7 @@
       android:layout_height="wrap_content"
       android:ems="10"
       android:hint="@string/digital_cash_amount"
+      android:text="@string/digital_cash_send_initial_amount"
       android:inputType="numberDecimal"
       android:autofillHints="false"
       app:layout_constraintBottom_toTopOf="@id/digital_cash_send_send"

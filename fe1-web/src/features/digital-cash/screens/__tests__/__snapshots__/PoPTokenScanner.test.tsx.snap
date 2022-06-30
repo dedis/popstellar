@@ -389,106 +389,11 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#3742fa",
-                                                "fontSize": 25,
-                                              },
-                                              undefined,
-                                              Object {
-                                                "fontFamily": "ionicons",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        {"name":"ios-close","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                >
-                                  <View
-                                    accessible={true}
-                                    style={
-                                      Object {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <Text
-                                        allowFontScaling={false}
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#3742fa",
-                                              "fontSize": 25,
-                                            },
-                                            undefined,
-                                            Object {
-                                              "fontFamily": "ionicons",
-                                              "fontStyle": "normal",
-                                              "fontWeight": "normal",
-                                            },
-                                            Object {},
-                                          ]
-                                        }
-                                      >
-                                        
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>
@@ -896,68 +801,11 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       }
                                     >
                                       <View>
-                                        <Text />
+                                        {"name":"ios-close","size":25,"color":"#3742fa"}
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                >
-                                  <View
-                                    accessible={true}
-                                    style={
-                                      Object {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>

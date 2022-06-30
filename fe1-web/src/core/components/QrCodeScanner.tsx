@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
+import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
+
+import PoPIcon from './PoPIcon';
 
 // FIXME: Remove CSS imports in order to support native apps
 // At the time of writing expo-camera nor expo-barcode-scanner work in web builds
@@ -56,6 +61,23 @@ const styles = StyleSheet.create({
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const toast = useToast();
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+
+  useEffect(() => {
+    try {
+      getNavigator()
+        .mediaDevices.enumerateDevices()
+        .then((devices) => {
+          console.log(devices.filter((device) => device.kind === 'videoinput'));
+          if (devices.filter((device) => device.kind === 'videoinput').length > 1) {
+            setHasMultipleCameras(true);
+          }
+        })
+        .catch(console.error);
+    } catch (e) {
+      // the browser might not support this api
+    }
+  }, []);
 
   const handleError = (err: string | Error) => {
     console.error(err);
@@ -81,17 +103,19 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
       </View>
       <View style={styles.uiContainer}>
         <View style={styles.children}>{children}</View>
-        <View style={styles.buttonContainer}>
-          <View style={styles.flipButtonContainer}>
-            <PoPTouchableOpacity
-              style={styles.flipButton}
-              onPress={() => {
-                setFacingMode(facingMode === 'user' ? 'environment' : 'user');
-              }}>
-              <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
-            </PoPTouchableOpacity>
+        {hasMultipleCameras && (
+          <View style={styles.buttonContainer}>
+            <View style={styles.flipButtonContainer}>
+              <TouchableOpacity
+                style={styles.flipButton}
+                onPress={() => {
+                  setFacingMode(facingMode === 'user' ? 'environment' : 'user');
+                }}>
+                <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </View>
   );

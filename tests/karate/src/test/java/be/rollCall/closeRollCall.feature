@@ -37,6 +37,25 @@ Feature: Close a Roll Call
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
+  Scenario: Non-organizer closing a roll call should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
+    And def validCloseRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "close",
+          "update_id": '#(getRollCallCloseValidUpdateId)',
+          "closes": '#(getRollCallCloseValidId)',
+          "closed_at": '#(getRollCallCloseValidCreationTime)',
+          "attendees": ['#(getAttendee)']
+        }
+      """
+    * frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
   # After the usual setup open a valid roll call and then send an invalid request for roll call close, here
   # we provide an invalid update_id field in the message. We expect an error message in return
   Scenario: Close a valid roll call with wrong update_id should return an error message

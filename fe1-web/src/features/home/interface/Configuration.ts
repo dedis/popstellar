@@ -1,7 +1,8 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction, Dispatch } from 'redux';
 
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -20,14 +21,35 @@ export interface HomeCompositionConfiguration {
   getLaoChannel(laoId: string): Channel | undefined;
 
   /**
+   * Gets a lao from the store by its id
+   * @param laoId The id of the lao
+   * @returns A lao or undefined if none was found
+   */
+  getLaoById(laoId: string): HomeFeature.Lao | undefined;
+
+  /**
    * A hook returning the current lao id
    * @returns The current lao id
    */
   useCurrentLaoId: () => Hash | undefined;
 
   /* functions */
+
+  /**
+   * Sends a request to create a new lao
+   */
   requestCreateLao: (laoName: string) => Promise<Channel>;
+
   connectToTestLao: () => void;
+
+  /**
+   * Resubscribes to a known lao
+   */
+  resubscribeToLao: (
+    lao: HomeFeature.Lao,
+    dispatch: Dispatch,
+    connections?: NetworkConnection[],
+  ) => Promise<void>;
 
   /* action creators */
   /**
@@ -45,6 +67,11 @@ export interface HomeCompositionConfiguration {
    * @returns The current lao list
    */
   useLaoList: () => HomeFeature.Lao[];
+
+  /**
+   * Gets the function to disconnect from the current lao
+   */
+  useDisconnectFromLao: () => () => void;
 
   /* components */
 
@@ -74,7 +101,10 @@ export type HomeReactContext = Pick<
   | 'LaoList'
   | 'homeNavigationScreens'
   | 'getLaoChannel'
+  | 'resubscribeToLao'
   | 'useCurrentLaoId'
+  | 'useDisconnectFromLao'
+  | 'getLaoById'
 >;
 
 /**

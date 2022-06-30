@@ -31,7 +31,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.google.gson.Gson;
 
@@ -125,7 +125,7 @@ public class LaoDetailActivityTest {
   public void digitalCashNavOpensActivity() {
     Intents.init();
     digitalCashButton().perform(click());
-    intended(hasComponent(DigitalCashMain.class.getName()));
+    intended(hasComponent(DigitalCashActivity.class.getName()));
     Intents.release();
   }
 }

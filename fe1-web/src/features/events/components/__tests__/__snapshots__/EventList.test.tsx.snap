@@ -902,7 +902,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='how-to-vote' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -1077,7 +1077,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='ios-calendar' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -1251,7 +1251,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='ios-hand-left' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -2372,26 +2372,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "material",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='how-to-vote' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -2588,26 +2569,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "ionicons",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='ios-calendar' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -2803,26 +2765,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "ionicons",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='ios-hand-left' size='25' color='#000']
                                 </View>
                               </View>
                               <View

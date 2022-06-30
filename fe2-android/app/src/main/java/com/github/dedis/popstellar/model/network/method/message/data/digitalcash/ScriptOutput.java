@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Objects;
 
 // The script describing the TxOut unlock mechanism
 public final class ScriptOutput {
+
   @SerializedName("type")
   private final String type; // Type of script
 
@@ -13,7 +13,7 @@ public final class ScriptOutput {
   private final String pubKeyHash; // Hash of the recipient’s public key
 
   /**
-   * @param type Type of script
+   * @param type       Type of script
    * @param pubKeyHash Hash of the recipient’s public key
    */
   public ScriptOutput(String type, String pubKeyHash) {
@@ -31,8 +31,12 @@ public final class ScriptOutput {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ScriptOutput that = (ScriptOutput) o;
     return Objects.equals(type, that.type) && Objects.equals(pubKeyHash, that.pubKeyHash);
   }

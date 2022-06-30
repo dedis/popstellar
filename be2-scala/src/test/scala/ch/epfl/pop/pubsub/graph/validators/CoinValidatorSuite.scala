@@ -62,12 +62,18 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
   test("Posting a transaction with an incorrect ID does not work") {
     val postTransaction = postTransactionWrongTransactionId
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
-    message should matchPattern { case Right(_) => }
+    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: incorrect transaction id",Some(1)))
   }
 
   test("Posting a transaction with an incorrect signature does not work") {
     val postTransaction = postTransactionBadSignature
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
-    message should matchPattern { case Right(_) => }
+    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: bad signature",Some(1)))
+  }
+
+  test("Posting a transaction with an arithmetic overflow does not work") {
+    val postTransaction = postTransactionOverflowSum
+    val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
+    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: uint53 addition overflow",Some(1)))
   }
 }

@@ -16,7 +16,6 @@ exports[`PoPButton renders correctly without disabled 1`] = `
   onStartShouldSetResponder={[Function]}
   style={
     Object {
-      "flex": 1,
       "marginBottom": 16,
     }
   }
