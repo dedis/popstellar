@@ -37,34 +37,37 @@ Feature: android page object
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
 
-      # Create and import mock backend
+    # Create and import mock backend
     * call read('classpath:fe/net/mockBackend.feature')
     * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
-      # Import message filters
+    # Import message filters
     * call read('classpath:common/net/filters.feature')
 
-      # As the settings tab does not have an id, this is how we click on it.
-      # If this breaks, use this code to log the page hierarchy :
-      # karate.log(driver.getHttp().path("source").get().value)
-
+    # As the settings tab does not have an id, this is how we click on it.
+    # If this breaks, use this code to log the page hierarchy :
+    # karate.log(driver.getHttp().path("source").get().value)
     And click('//*[@content-desc="More options"]')
     * click('#com.github.dedis.popstellar:id/title')
 
-      # Input the mock backend url and connect to it
+    # Input the mock backend url and connect to it
     * input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
     * click('#com.github.dedis.popstellar:id/button_apply')
     * match backend.waitForConnection(5000) == true
 
+    # Initialize wallet
     * click(tab_wallet_selector)
     * click(tab_wallet_new_wallet_selector)
     * click(tab_wallet_confirm_selector)
     * dialog(true)
+
     * click(launch_selector)
 
-  #roll call android procedure
+  # Roll call android procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
     When click(add_event_selector)
     And click(add_roll_call_selector)
+
+    # Provide roll call information
     And input(roll_call_title_selector, rc_name)
 

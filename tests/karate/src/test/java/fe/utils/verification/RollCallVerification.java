@@ -16,18 +16,28 @@ import static fe.utils.verification.VerificationUtils.getMsgDataJson;
 public class RollCallVerification {
   private final static Logger logger = new Logger(RollCallVerification.class.getSimpleName());
 
+  /**
+   * Verifies that the object of the roll call creation message is "roll_call"
+   * @param message the network message
+   * @return true if the object of the roll call creation message is "roll_call"
+   */
  public boolean verifyObject(String message){
    Json data = getMsgDataJson(message);
    return ROLL_CALL.equals(data.get(OBJECT));
  }
 
+  /**
+   * Verifies that the action of the roll call creation message is "creation"
+   * @param message the network message
+   * @return true if the action of the roll call creation message is "creation"
+   */
  public boolean verifyCreateAction(String message){
    Json data = getMsgDataJson(message);
    return CREATE.equals(data.get(ACTION));
  }
 
   /**
-   * Verifies that the roll call id is coherently computed
+   * Verifies that the roll call id is computed as expected
    * @param message the message sent over the network
    * @return true if the roll call id field matches expectations
    */
@@ -38,6 +48,12 @@ public class RollCallVerification {
    return verifyRollCallId(createMessageJson, laoId);
  }
 
+  /**
+   * Verifies if the name specified in the network message matches the one provided
+   * @param message the message sent over the network
+   * @param name the name to be compared to
+   * @return true if the name contained in message matches the one in argument
+   */
  public boolean verifyRollCallName(String message, String name){
    Json createMessageJson = getMsgDataJson(message);
    logger.info("name in arguement is " + name);

@@ -54,9 +54,9 @@ Feature: web test
             }
           """
 
-    # click on the explore button of the intro screen
+    # Click on the explore button of the intro screen
     * click(exploring_selector)
-    # click on the connect navigation item
+    # Click on the connect navigation item
     * click(tab_connect_selector)
     # Click on launch button
     * click(launch_selector)
@@ -81,5 +81,6 @@ Feature: web test
     # The XPath selector is described here: https://stackoverflow.com/a/29289196/2897827
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
+    # Provide roll call required information
     And input(roll_call_title_selector, rc_name)
     And input(roll_call_location_selector, 'EPFL')
