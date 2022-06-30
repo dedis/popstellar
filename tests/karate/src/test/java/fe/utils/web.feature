@@ -66,7 +66,7 @@ Feature: web test
   # Roll call web procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
-    Given click(tab_events_selector)
+    Given retry(10, 200).click(tab_events_selector)
     And click(add_event_selector)
 
     # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element which does not have an id
