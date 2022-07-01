@@ -16,26 +16,6 @@ import static fe.utils.verification.VerificationUtils.getMsgDataJson;
 public class RollCallVerification {
   private final static Logger logger = new Logger(RollCallVerification.class.getSimpleName());
 
-//  /**
-//   * Verifies that the object of the roll call creation message is "roll_call"
-//   * @param message the network message
-//   * @return true if the object of the roll call creation message is "roll_call"
-//   */
-// public boolean verifyObject(String message){
-//   Json data = getMsgDataJson(message);
-//   return ROLL_CALL.equals(data.get(OBJECT));
-// }
-//
-//  /**
-//   * Verifies that the action of the roll call creation message is "creation"
-//   * @param message the network message
-//   * @return true if the action of the roll call creation message is "creation"
-//   */
-// public boolean verifyCreateAction(String message){
-//   Json data = getMsgDataJson(message);
-//   return CREATE.equals(data.get(ACTION));
-// }
-
   /**
    * Verifies that the roll call id is computed as expected
    * @param message the message sent over the network
