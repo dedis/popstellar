@@ -4,11 +4,11 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon, QRCode } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -348,11 +348,11 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   };
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       onPress={() => showActionSheet(getActionOptions(rollCall.status))}
       testID="roll-call-options">
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

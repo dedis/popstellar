@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { dispatch } from 'core/redux';
@@ -96,13 +96,13 @@ export const NotificationScreenRightHeader = () => {
   };
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       onPress={() =>
         showActionSheet([
           { displayName: STRINGS.notification_clear_all, action: onClearNotifications },
         ])
       }>
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };

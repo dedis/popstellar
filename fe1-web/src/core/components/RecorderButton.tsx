@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Color } from '../styles';
 import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 /**
  * Recorder button that executes an onPress action given in props
@@ -32,7 +33,7 @@ function RecorderButton({ action }: IPropTypes) {
   const [isRecording, setIsRecording] = useState(false);
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       style={[circularButtonStyles.button, { backgroundColor: Color.red }]}
       onPress={() => {
         action();
@@ -45,7 +46,7 @@ function RecorderButton({ action }: IPropTypes) {
             : [styles.center, styles.iconNotRecording]
         }
       />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 }
 

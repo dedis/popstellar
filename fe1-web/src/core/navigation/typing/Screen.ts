@@ -59,6 +59,11 @@ export interface NavigationTabScreen extends NavigationScreen {
    * e.g. -9999999999, -1000, -10, 0, 100, ... etc.
    */
   order: number;
+
+  /**
+   * The test id that is set for the navigation bar element
+   */
+  testID?: string;
 }
 
 type HeaderComponent =

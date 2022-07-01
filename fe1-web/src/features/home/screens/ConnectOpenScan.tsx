@@ -1,11 +1,12 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
@@ -149,22 +150,23 @@ const ConnectOpenScan = () => {
       <View style={styles.buttonContainer}>
         <View>
           <View style={styles.leftButtons}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <PoPTouchableOpacity onPress={() => navigation.goBack()}>
               <PoPIcon name="close" color={Color.accent} size={Icon.size} />
-            </TouchableOpacity>
+            </PoPTouchableOpacity>
           </View>
         </View>
         <View>
           <View style={styles.rightButtons}>
-            <TouchableOpacity
+            <PoPTouchableOpacity
               style={styles.buttonMargin}
-              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}
+              testID="launch_selector">
               <PoPIcon name="create" color={Color.accent} size={Icon.size} />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </PoPTouchableOpacity>
+            <PoPTouchableOpacity
               onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
               <PoPIcon name="code" color={Color.accent} size={Icon.size} />
-            </TouchableOpacity>
+            </PoPTouchableOpacity>
           </View>
         </View>
       </View>

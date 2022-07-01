@@ -970,13 +970,19 @@ exports[`TransactionHistory renders correctly 1`] = `
                               >
                                 Transaction
                               </Text>
-                              <RNGestureHandlerButton
+                              <View
+                                accessible={true}
                                 collapsable={false}
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
                                 style={
                                   Object {
                                     "position": "absolute",
@@ -985,31 +991,46 @@ exports[`TransactionHistory renders correctly 1`] = `
                                 }
                                 testID="modal-header-close"
                               >
-                                <View
-                                  accessible={true}
+                                <RNGestureHandlerButton
                                   collapsable={false}
-                                  nativeID="animatedComponent"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
                                   style={
                                     Object {
-                                      "opacity": 1,
+                                      "position": "absolute",
+                                      "right": 0,
                                     }
                                   }
                                 >
-                                  <Text
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    nativeID="animatedComponent"
                                     style={
                                       Object {
-                                        "color": "#3742fa",
-                                        "fontSize": 20,
-                                        "fontWeight": "500",
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
+                                        "opacity": 1,
                                       }
                                     }
                                   >
-                                    Done
-                                  </Text>
-                                </View>
-                              </RNGestureHandlerButton>
+                                    <Text
+                                      style={
+                                        Object {
+                                          "color": "#3742fa",
+                                          "fontSize": 20,
+                                          "fontWeight": "500",
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        }
+                                      }
+                                    >
+                                      Done
+                                    </Text>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
                             </View>
                             <View
                               style={

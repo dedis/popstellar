@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
+
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
   header: {
@@ -29,9 +30,12 @@ const ModalHeader = (props: IPropTypes) => {
   return (
     <View style={styles.header}>
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity containerStyle={styles.done} onPress={onClose} testID="modal-header-close">
+      <PoPTouchableOpacity
+        containerStyle={styles.done}
+        onPress={onClose}
+        testID="modal-header-close">
         <Text style={Typography.pressable}>{STRINGS.general_done}</Text>
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
     </View>
   );
 };
