@@ -91,14 +91,15 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, rc_name)
+    And input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
 
   # Roll call open web procedure
   @name=open_roll_call
   Scenario: Opens the created roll-call
     * retry(5,1000).click(event_name_selector)
-    * click(roll_call_option_selector)
+    * retry(5,1000).click(roll_call_option_selector)
+    * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
     # needed to work
     * wait(2)

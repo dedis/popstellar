@@ -350,7 +350,7 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   return (
     <PoPTouchableOpacity
       onPress={() => showActionSheet(getActionOptions(rollCall.status))}
-      testID="roll-call-options">
+      testID="roll_call_options">
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </PoPTouchableOpacity>
   );

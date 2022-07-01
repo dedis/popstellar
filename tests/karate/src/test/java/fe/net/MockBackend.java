@@ -5,8 +5,6 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
-import fe.utils.verification.PublishMessageVerification;
-import fe.utils.verification.RollCallVerification;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
@@ -118,9 +116,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     return queue;
   }
 
-  /**
-   * Empties the buffer
-   */
+  /** Empties the buffer */
   public void clearBuffer() {
     logger.info("Buffer cleared");
     queue.clear();
@@ -134,29 +130,19 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   /**
-   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a valid message
-   * It also replies with valid to subscribe and with the Lao creation message to the catch-up
+   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a
+   * valid message It also replies with valid to subscribe and with the Lao creation message to the
+   * catch-up
    */
   public void setLaoCreateMode() {
     replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
   }
 
   /**
-   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It replies
-   * with valid to subscribes and empty (valid) message to catch-ups
+   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It
+   * replies with valid to subscribes and empty (valid) message to catch-ups
    */
   public void setValidBroadcastMode() {
     replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;
-
-  public boolean checkPublishMessage(String message) {
-    return PublishMessageVerification.verifyPublishMessage(message);
-  }
-
-  public boolean checkRollCallCreateMessage(String message) {
-    return RollCallVerification.verifyCreate(message);
-  }
-
-  public boolean checkRollCallOpenMessage(String message){
-    return RollCallVerification.verifyOpen(message);
   }
 }

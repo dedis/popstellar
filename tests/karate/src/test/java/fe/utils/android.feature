@@ -72,11 +72,12 @@ Feature: android page object
     And click(add_roll_call_selector)
 
     # Provide roll call information
-    And input(roll_call_title_selector, rc_name)
+    And input(roll_call_title_selector, constants.RC_NAME)
 
-  #roll call open android procedure
+  # Roll call open android procedure
   @name=open_roll_call
   Scenario: Opens the created roll-call
     * click(event_name_selector)
+    * backend.clearBuffer()
     * click(roll_call_action_selector)
 

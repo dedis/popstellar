@@ -21,5 +21,5 @@ Feature: Simple Scenarios
     * replace rc_page_object.env = karate.env
     * call read(rc_page_object)
     * backend.clearBuffer()
-    * backend.setRollCallCreateMode()
+    * backend.setValidBroadcastMode()
     And click(roll_call_confirm_selector)
