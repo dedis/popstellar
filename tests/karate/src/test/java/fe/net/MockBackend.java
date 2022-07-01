@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import static common.JsonKeys.COIN;
-import static common.JsonKeys.CONSENSUS;
+import static common.utils.Constants.COIN;
+import static common.utils.Constants.CONSENSUS;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -118,22 +118,35 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     return queue;
   }
 
+  /**
+   * Empties the buffer
+   */
   public void clearBuffer() {
     logger.info("Buffer cleared");
     queue.clear();
   }
 
+  /**
+   * @return true if the message buffer is empty
+   */
   public boolean receiveNoMoreResponses() {
     return queue.takeTimeout(5000) == null;
   }
 
+  /**
+   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a valid message
+   * It also replies with valid to subscribe and with the Lao creation message to the catch-up
+   */
   public void setLaoCreateMode() {
-    replyProducer = ReplyMethods.LAO_CREATE;
+    replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
   }
 
-  public void setRollCallCreateMode() {
-    replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
-  }
+  /**
+   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It replies
+   * with valid to subscribes and empty (valid) message to catch-ups
+   */
+  public void setValidBroadcastMode() {
+    replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;
 
   public boolean checkPublishMessage(String message) {
     return PublishMessageVerification.verifyPublishMessage(message);

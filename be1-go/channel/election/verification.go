@@ -69,7 +69,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 	}
 
 	if electionOpen.OpenedAt < c.createdAt {
-		return xerrors.Errorf("election open cannot have a creation time prior to election setup")
+		return answer.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
 	}
 
 	return nil
@@ -135,6 +135,10 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		}
 	}
 
+	if castVote.CreatedAt < c.createdAt {
+		return answer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
+	}
+
 	return nil
 }
 
@@ -196,12 +200,17 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 			electionEnd.RegisteredVotes)
 	}
 
+	// verify if the timestamp is stale
+	if electionEnd.CreatedAt < c.createdAt {
+		return answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
+	}
+
 	// verify order of registered votes
 	if len(electionEnd.RegisteredVotes) != 0 {
 		err := verifyRegisteredVotes(electionEnd, &c.questions)
 		if err != nil {
 			c.log.Err(err).Msgf("problem with registered votes: %v", err)
-			return nil
+			return xerrors.Errorf("failed to compute registered votes : %v", err)
 		}
 	}
 
@@ -215,9 +224,9 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	// get hashed ID of valid votes sorted by msg ID
 	validVotes := make(map[string]string)
 	validVotesSorted := make([]string, 0)
+	msgIDs := make([]string, 0)
 
 	for _, question := range *questions {
-		msgIDs := make([]string, 0)
 
 		question.validVotesMu.Lock()
 		for _, validVote := range question.validVotes {
@@ -225,7 +234,6 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 			// that the validVotes contain one vote for one question by every voter
 			validVotes[validVote.msgID] = validVote.ID
 			msgIDs = append(msgIDs, validVote.msgID)
-			validVotesSorted = append(validVotesSorted, validVote.ID)
 		}
 		question.validVotesMu.Unlock()
 
@@ -234,8 +242,12 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 		}
 	}
 
-	// sort valid votes by vote id
-	sort.Strings(validVotesSorted)
+	// sort message ids
+	sort.Strings(msgIDs)
+
+	for _, k := range msgIDs {
+		validVotesSorted = append(validVotesSorted, validVotes[k])
+	}
 
 	// hash all valid vote ids
 	validVotesHash := messagedata.Hash(validVotesSorted...)

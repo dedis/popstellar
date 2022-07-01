@@ -83,7 +83,6 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         style={
           Object {
             "marginBottom": 16,
-            "width": "100%",
           }
         }
       >
@@ -97,7 +96,6 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -236,7 +234,6 @@ exports[`DismissModal renders correctly 1`] = `
         style={
           Object {
             "marginBottom": 16,
-            "width": "100%",
           }
         }
       >
@@ -250,7 +247,6 @@ exports[`DismissModal renders correctly 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >

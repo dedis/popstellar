@@ -16,6 +16,7 @@ import { configureKeyPair } from 'core/keypair';
 import AppNavigation from 'core/navigation/AppNavigation';
 import { configureNetwork } from 'core/network';
 import { persist, store } from 'core/redux';
+import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
 const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
@@ -47,7 +48,11 @@ function App() {
                 {Platform.OS === 'ios' && (
                   <StatusBar barStyle="dark-content" backgroundColor="white" />
                 )}
-                <ToastProvider>
+                <ToastProvider
+                  normalColor={Color.primary}
+                  successColor={Color.success}
+                  warningColor={Color.warning}
+                  dangerColor={Color.error}>
                   <AppNavigation screens={navigationOpts.screens} />
                 </ToastProvider>
               </SafeAreaProvider>

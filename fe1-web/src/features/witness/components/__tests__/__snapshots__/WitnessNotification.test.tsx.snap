@@ -22,7 +22,6 @@ exports[`WitnessNotification renders correctly 1`] = `
     style={
       Object {
         "marginBottom": 16,
-        "width": "100%",
       }
     }
   >
@@ -36,7 +35,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       style={
         Object {
           "marginBottom": 16,
-          "width": "100%",
         }
       }
     >
@@ -103,7 +101,6 @@ exports[`WitnessNotification renders correctly 1`] = `
     style={
       Object {
         "marginBottom": 16,
-        "width": "100%",
       }
     }
   >
@@ -117,7 +114,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       style={
         Object {
           "marginBottom": 16,
-          "width": "100%",
         }
       }
     >

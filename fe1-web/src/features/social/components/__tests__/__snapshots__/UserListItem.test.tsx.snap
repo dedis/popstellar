@@ -70,7 +70,6 @@ exports[`UserListItem renders correctly 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -84,7 +83,6 @@ exports[`UserListItem renders correctly 1`] = `
             style={
               Object {
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -159,7 +157,6 @@ exports[`UserListItem renders correctly 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -173,7 +170,6 @@ exports[`UserListItem renders correctly 1`] = `
             style={
               Object {
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -304,7 +300,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -318,7 +313,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             style={
               Object {
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >
@@ -395,7 +389,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -409,7 +402,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             style={
               Object {
                 "marginBottom": 16,
-                "width": "100%",
               }
             }
           >

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     padding: Spacing.x05,
     backgroundColor: Color.contrast,
     borderWidth: 0,
-    borderRadius: Border.radius,
+    borderRadius: Border.inputRadius,
   } as TextStyle,
 });
 

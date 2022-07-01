@@ -3,7 +3,16 @@ import testKeyPair from 'test_data/keypair.json';
 import { KeyPairRegistry } from 'core/keypair';
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, Hash, KeyPair, PopToken, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
+import {
+  Channel,
+  channelFromIds,
+  Hash,
+  KeyPair,
+  PopToken,
+  PublicKey,
+  ROOT_CHANNEL,
+  Timestamp,
+} from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
@@ -42,6 +51,7 @@ export const mockLaoState: LaoState = {
   organizer: org.valueOf(),
   witnesses: [],
   server_addresses: [],
+  subscribed_channels: [channelFromIds(mockLaoIdHash)],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 

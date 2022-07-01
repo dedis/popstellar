@@ -686,7 +686,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                   <View
                                     style={Object {}}
                                   >
-                                    <Text />
+                                    {"name":"ios-list","size":25,"color":"#3742fa"}
                                   </View>
                                 </View>
                                 <View
@@ -708,7 +708,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                   }
                                 >
                                   <View>
-                                    <Text />
+                                    {"name":"ios-list","size":25,"color":"#8E8E8E"}
                                   </View>
                                 </View>
                               </View>
@@ -802,7 +802,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                   <View
                                     style={Object {}}
                                   >
-                                    <Text />
+                                    {"name":"ios-scan","size":25,"color":"#3742fa"}
                                   </View>
                                 </View>
                                 <View
@@ -824,7 +824,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                   }
                                 >
                                   <View>
-                                    <Text />
+                                    {"name":"ios-scan","size":25,"color":"#8E8E8E"}
                                   </View>
                                 </View>
                               </View>

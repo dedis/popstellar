@@ -318,6 +318,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                         style={
                           Object {
                             "borderRadius": 16,
+                            "marginBottom": 16,
                           }
                         }
                       >
@@ -335,6 +336,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -347,6 +349,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -511,6 +514,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -523,6 +527,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -687,6 +692,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -699,6 +705,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -870,7 +877,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_0"
                           >
                             <View
                               style={
@@ -895,7 +902,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='how-to-vote' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -1047,7 +1054,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_1"
                           >
                             <View
                               style={
@@ -1070,7 +1077,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='ios-calendar' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -1219,7 +1226,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_2"
                           >
                             <View
                               style={
@@ -1244,7 +1251,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text />
+                                  [name='ios-hand-left' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -1715,6 +1722,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                         style={
                           Object {
                             "borderRadius": 16,
+                            "marginBottom": 16,
                           }
                         }
                       >
@@ -1732,6 +1740,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -1744,6 +1753,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -1930,6 +1940,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -1942,6 +1953,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -2128,6 +2140,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                             Object {
                               "backgroundColor": "rgb(242, 242, 242)",
                               "paddingLeft": 0,
+                              "paddingRight": 0,
                             }
                           }
                         >
@@ -2140,6 +2153,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 "flexDirection": "row",
                                 "padding": 14,
                                 "paddingLeft": 0,
+                                "paddingRight": 0,
                               }
                             }
                             testID="padView"
@@ -2333,7 +2347,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_0"
                           >
                             <View
                               style={
@@ -2358,26 +2372,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "material",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='how-to-vote' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -2551,7 +2546,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_1"
                           >
                             <View
                               style={
@@ -2574,26 +2569,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "ionicons",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='ios-calendar' size='25' color='#000']
                                 </View>
                               </View>
                               <View
@@ -2764,7 +2740,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 },
                               ]
                             }
-                            testID="previous_event_selector_{idx}"
+                            testID="previous_event_selector_2"
                           >
                             <View
                               style={
@@ -2789,26 +2765,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  <Text
-                                    allowFontScaling={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 25,
-                                        },
-                                        undefined,
-                                        Object {
-                                          "fontFamily": "ionicons",
-                                          "fontStyle": "normal",
-                                          "fontWeight": "normal",
-                                        },
-                                        Object {},
-                                      ]
-                                    }
-                                  >
-                                    
-                                  </Text>
+                                  [name='ios-hand-left' size='25' color='#000']
                                 </View>
                               </View>
                               <View

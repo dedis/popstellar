@@ -42,7 +42,7 @@ final case class Transaction(
 
   private def signaturePayload =
     Base64Data.encode(inputs.map { txin => f"${txin.txOutHash}${txin.txOutIndex}" }.reduce(_+_) +
-      outputs.map { txout => f"${txout.value}${txout.script.`type`}${txout.script.pubkeyHash}" }.reduce(_+_))
+      outputs.map { txout => f"${txout.value}${txout.script.`type`}${txout.script.pubkeyHash.base64Data}" }.reduce(_+_))
 
   /**
    * This ensures the validity of the signatures, not that the funds are unspent.
@@ -51,6 +51,9 @@ final case class Transaction(
     inputs.forall { txin =>
       Signature(txin.script.sig).verify(txin.script.pubkey, signaturePayload)
     }
+
+  def sumOutputs(): Either[Error, Uint53] =
+    Uint53.safeSum(outputs.map(_.value))
 
   def sign(keypairs: Seq[KeyPair]): Transaction = {
     val privateKeyIndex = Map.from(keypairs.map(p => p.publicKey -> p.privateKey))
@@ -73,7 +76,7 @@ object Transaction extends Parsable {
   )
 
   final case class Output(
-    value: Long,
+    value: Uint53,
     script: LockScript,
   )
 }

@@ -1,0 +1,32 @@
+{
+    "object": "coin",
+    "action": "post_transaction",
+    "transaction_id": "Mfb8JwEb0rn6lZe9m6TJBRtleGMxnaF5HUfy6QJt7ac=",
+    "transaction": {
+	    "version": 1,
+	    "inputs": [{
+		    "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+		    "tx_out_index": 0,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+			    "sig": "4SbbszRmoI4-Rlhs1q7-2Dge1o1pSNW5SPMcnZPPRNUfGZ3Dy60sHIfTcw3SC2T2v-Gp4oGiIeZvrvEFEKbjDA=="
+		    }
+	    }],
+	    "outputs": [{
+		    "value": 9007199254740991,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+		    }
+	    },
+	    {
+		    "value": 1,
+		    "script": {
+			    "type": "P2PKH",
+			    "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+		    }
+	    }],
+	    "lock_time": 0
+    }
+}

@@ -12,12 +12,11 @@ Feature: web test
 
     #Home Screen
     * def tab_connect_selector = '{}Connect'
-    * def block_camera_selector = '{}block'
     * def launch_selector = "[data-testid='launch_selector']"
 
     # Launch screen
     * def tab_launch_lao_name_selector = "input[data-testid='launch_organization_name_selector']"
-    * def launch_address_selector = "input[data-testid='launch_address_selector']"
+    * def backend_address_selector = "input[data-testid='launch_address_selector']"
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
     # Lao Event List
@@ -26,7 +25,7 @@ Feature: web test
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
     * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
     * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
-    * def event_name_selector = '{}RC name'
+    * def event_name_selector = "[data-testid='current_event_selector_0']"
 
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
@@ -56,6 +55,8 @@ Feature: web test
               }
             }
           """
+
+    # Click on the explore button of the intro screen
     * def wait =
             """
                 function(secs) {
@@ -64,26 +65,36 @@ Feature: web test
             """
 
     * click(exploring_selector)
+    # Click on the connect navigation item
     * click(tab_connect_selector)
-
-    #refuse camera access
-
+    # Click on launch button
     * click(launch_selector)
-    * input(launch_address_selector, backendURL)
+    # Connect to the backend
+    * input(backend_address_selector, backendURL)
 
-  #roll call web procedure
+  # Roll call create web procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
-    Given click(tab_events_selector)
+    Given retry(10, 200).click(tab_events_selector)
     And click(add_event_selector)
 
-    # Clicking on Create Roll-Call
-    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+    # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element which does not have an id
+    # If it breaks down, check that the name of the button has not changed, try to add more delay. Otherwise maybe karate
+    # added a way to directly do that after the time of our writing.
+    #
+    # script allows the evaluation of arbitrary javascript code and document.evaluate
+    # (https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) allows the evaluation of an XPath expression.
+    #
+    # Somehow this turned out to work, at least if it was wrapped
+    # in a setTimeout which delays the execution of the script.
+    # The XPath selector is described here: https://stackoverflow.com/a/29289196/2897827
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
-    And input(roll_call_title_selector, 'RC name')
+    # Provide roll call required information
+    And input(roll_call_title_selector, rc_name)
     And input(roll_call_location_selector, 'EPFL')
 
-    #roll call open web procedure
+  # Roll call open web procedure
   @name=open_roll_call
   Scenario: Opens the created roll-call
     * retry(5,1000).click(event_name_selector)

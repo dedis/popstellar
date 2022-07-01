@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.objects;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -27,6 +28,6 @@ public class OutputObjectTest {
   @Test
   public void getScriptTest() {
     assertEquals(TYPE, OUTPUT.getScript().getType());
-    assertEquals(PUBKEYHASH, OUTPUT.getScript().getPubkeyHash());
+    assertEquals(PUBKEYHASH, OUTPUT.getPubKeyHash());
   }
 }

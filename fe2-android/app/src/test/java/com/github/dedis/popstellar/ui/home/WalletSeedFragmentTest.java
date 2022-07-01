@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
@@ -16,13 +15,11 @@ import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.seedWalletText;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedCopyButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedWarningText;
 import static org.hamcrest.Matchers.allOf;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 
@@ -72,14 +69,6 @@ public class WalletSeedFragmentTest {
   @Test
   public void seedWalletTextIsDisplayed() {
     seedWalletText().check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void seedWalletTextDisplaysToastOnClick() {
-    seedWalletText().perform(click());
-    assertToastIsDisplayedWithText(R.string.copied_to_clipboard);
-    walletSeedCopyButton().perform(click());
-    assertToastIsDisplayedWithText(R.string.copied_to_clipboard);
   }
 
   @Test

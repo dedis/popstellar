@@ -36,6 +36,15 @@ export function getUserSocialChannel(laoIdHash: Hash, userPublicKey: PublicKey):
 }
 
 /**
+ * Returns the coin channel
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ */
+export function getCoinChannel(laoIdHash: Hash): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/coin`;
+}
+
+/**
  * Returns the general channel of chirps.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO

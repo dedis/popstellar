@@ -43,7 +43,7 @@ const WalletSetSeed = () => {
       navigation.navigate(STRINGS.navigation_app_home, {
         screen: STRINGS.navigation_home_wallet,
         params: {
-          screen: STRINGS.navigation_wallet_home_tab,
+          screen: STRINGS.navigation_wallet_home,
         },
       });
     } catch (e) {

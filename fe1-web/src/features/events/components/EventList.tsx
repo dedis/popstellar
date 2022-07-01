@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
@@ -12,17 +12,19 @@ import { EventState } from '../objects';
 import { makeEventListSelector } from '../reducer';
 import EventListItem from './EventListItem';
 
-const categorizeEventsByTime = (time: number, events: EventState[]) => {
+const categorizeEventsByTime = (time: Timestamp, events: EventState[]) => {
+  const t = time.valueOf();
+
   const pastEvents: EventState[] = [];
   const currentEvents: EventState[] = [];
   const futureEvents: EventState[] = [];
 
   events.forEach((e: EventState) => {
-    if ((e.end && e.end < time) || (!e.end && e.start < time)) {
+    if ((e.end && e.end < t) || (!e.end && e.start < t)) {
       pastEvents.push(e);
       return;
     }
-    if (e.start > time) {
+    if (e.start > t) {
       futureEvents.push(e);
       return;
     }
@@ -43,16 +45,47 @@ const EventList = () => {
     throw new Error('Cannot show an event list if you are not connected to a lao!');
   }
 
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const events = useSelector(eventListSelector);
+
+  const [{ pastEvents, currentEvents, futureEvents }, setEvents] = useState<{
+    pastEvents: EventState[];
+    currentEvents: EventState[];
+    futureEvents: EventState[];
+  }>(() => {
+    const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
+      Timestamp.EpochNow(),
+      events,
+    );
+
+    return {
+      pastEvents: newPastEvents,
+      currentEvents: newCurrentEvents,
+      futureEvents: newFutureEvents,
+    };
+  });
+
   const [showUpcoming, setShowUpcoming] = useState(true);
   const [showCurrent, setShowCurrent] = useState(true);
   const [showPast, setShowPast] = useState(false);
 
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
-  const events = useSelector(eventListSelector);
-  const [pastEvents, currentEvents, futureEvents] = categorizeEventsByTime(
-    Timestamp.EpochNow().valueOf(),
-    events,
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const [newPastEvents, newCurrentEvents, newFutureEvents] = categorizeEventsByTime(
+        Timestamp.EpochNow(),
+        events,
+      );
+
+      setEvents({
+        pastEvents: newPastEvents,
+        currentEvents: newCurrentEvents,
+        futureEvents: newFutureEvents,
+      });
+    }, 1000);
+
+    // clear the interval when unmouting the component
+    return () => clearInterval(interval);
+  }, [events]);
 
   return (
     <View style={List.container}>
@@ -75,7 +108,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === futureEvents.length - 1}
-            testID="upcoming_event_selector_{idx}"
+            testID={`upcoming_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>
@@ -98,7 +131,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === currentEvents.length - 1}
-            testID="current_event_selector_{idx}"
+            testID={`current_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>
@@ -121,7 +154,7 @@ const EventList = () => {
             eventType={event.eventType}
             isFirstItem={idx === 0}
             isLastItem={idx === pastEvents.length - 1}
-            testID="previous_event_selector_{idx}"
+            testID={`previous_event_selector_${idx}`}
           />
         ))}
       </ListItem.Accordion>
