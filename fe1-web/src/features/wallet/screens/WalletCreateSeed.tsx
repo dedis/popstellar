@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { CopiableTextInput, PoPTextButton } from 'core/components';
+import { PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { Color, Typography } from 'core/styles';
+import { Border, Color, Spacing, Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -21,6 +21,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.accent,
   } as ViewStyle,
+  words: {
+    borderColor: Color.contrast,
+    borderWidth: Border.width,
+    borderRadius: Border.radius,
+    backgroundColor: Color.secondaryAccent,
+    marginBottom: Spacing.x1,
+    padding: Spacing.x1,
+  } as ViewStyle,
+  seed: {
+    ...Typography.base,
+    ...Typography.code,
+    color: Color.contrast,
+  } as TextStyle,
 });
 
 type NavigationProps = StackScreenProps<
@@ -108,7 +121,9 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_4}
             </Text>
           </Text>
-          <CopiableTextInput text={seed} negative />
+          <View style={styles.words}>
+            <Text style={styles.seed}>{seed}</Text>
+          </View>
           <Text style={Typography.paragraph}>
             <Text style={Typography.negative}>
               {STRINGS.wallet_welcome_text_wallet_explanation_5}
@@ -121,7 +136,7 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_6}
             </Text>
           </Text>
-          <PoPTextButton onPress={() => connectWithSeed()} negative>
+          <PoPTextButton onPress={() => connectWithSeed()} negative testID="exploring_selector">
             {STRINGS.wallet_welcome_start_exploring}
           </PoPTextButton>
           <PoPTextButton

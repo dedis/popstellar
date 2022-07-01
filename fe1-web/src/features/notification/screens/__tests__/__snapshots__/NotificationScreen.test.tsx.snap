@@ -329,6 +329,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -352,6 +353,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -549,7 +551,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-eye","size":25,"color":"#000"}
                                     </View>
                                   </View>
                                   <View
@@ -661,7 +663,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         dateTime="1970-01-01T00:00:01.000Z"
                                         title="1970-01-01 00:00"
                                       >
-                                        52 years ago
+                                        53 years ago
                                       </time>
                                     </Text>
                                   </View>
@@ -688,6 +690,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -885,7 +888,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     }
                                   >
                                     <View>
-                                      <Text />
+                                      {"name":"ios-eye","size":25,"color":"#000"}
                                     </View>
                                   </View>
                                   <View
@@ -1327,48 +1330,44 @@ exports[`NotificationScreenRightHeader renders correctly 1`] = `
                         }
                       }
                     >
-                      <RNGestureHandlerButton
+                      <View
+                        accessible={true}
                         collapsable={false}
-                        onGestureEvent={[Function]}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
-                        onHandlerStateChange={[Function]}
-                        rippleColor={0}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                       >
-                        <View
-                          accessible={true}
+                        <RNGestureHandlerButton
                           collapsable={false}
-                          nativeID="animatedComponent"
-                          style={
-                            Object {
-                              "opacity": 1,
-                            }
-                          }
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
                         >
-                          <View>
-                            <Text
-                              allowFontScaling={false}
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#8E8E8E",
-                                    "fontSize": 25,
-                                  },
-                                  undefined,
-                                  Object {
-                                    "fontFamily": "ionicons",
-                                    "fontStyle": "normal",
-                                    "fontWeight": "normal",
-                                  },
-                                  Object {},
-                                ]
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            nativeID="animatedComponent"
+                            style={
+                              Object {
+                                "opacity": 1,
                               }
-                            >
-                              
-                            </Text>
+                            }
+                          >
+                            <View>
+                              {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                            </View>
                           </View>
-                        </View>
-                      </RNGestureHandlerButton>
+                        </RNGestureHandlerButton>
+                      </View>
                     </View>
                   </View>
                 </View>

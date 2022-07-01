@@ -343,29 +343,41 @@ exports[`CreateElection renders correctly 1`] = `
                           >
                             Name
                           </Text>
-                          <TextInput
-                            editable={true}
-                            onChangeText={[Function]}
-                            placeholder="Election Q1 2022"
+                          <View
                             style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "flex": 1,
-                                  "padding": 8,
-                                },
-                              ]
+                              Object {
+                                "flex": 1,
+                                "flexDirection": "row",
+                              }
                             }
-                            value=""
-                          />
+                          >
+                            <TextInput
+                              editable={true}
+                              onChangeText={[Function]}
+                              placeholder="Election Q1 2022"
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "backgroundColor": "#fff",
+                                    "borderColor": "#fff",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "flex": 1,
+                                    "padding": 8,
+                                    "width": 50,
+                                  },
+                                ]
+                              }
+                              value=""
+                            />
+                          </View>
                           <Text
                             style={
                               Array [
@@ -388,7 +400,7 @@ exports[`CreateElection renders correctly 1`] = `
                             style={
                               Object {
                                 "backgroundColor": "#fff",
-                                "borderRadius": 16,
+                                "borderRadius": 8,
                                 "borderWidth": 0,
                                 "color": "#000",
                                 "fontSize": 20,
@@ -449,29 +461,41 @@ exports[`CreateElection renders correctly 1`] = `
                                
                               1
                             </Text>
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="What is your favorite color?"
+                            <View
                               style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderRadius": 8,
-                                    "flex": 1,
-                                    "padding": 8,
-                                  },
-                                ]
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                              value=""
-                            />
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="What is your favorite color?"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
                             <Text
                               style={
                                 Array [
@@ -500,36 +524,54 @@ exports[`CreateElection renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="Blue"
+                                <View
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "backgroundColor": "#fff",
-                                        "borderRadius": 8,
-                                        "flex": 1,
-                                        "padding": 8,
-                                      },
-                                    ]
+                                    Object {
+                                      "flex": 1,
+                                      "flexDirection": "row",
+                                    }
                                   }
-                                  value=""
-                                />
-                                <RNGestureHandlerButton
+                                >
+                                  <TextInput
+                                    editable={true}
+                                    onChangeText={[Function]}
+                                    placeholder="Blue"
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "marginBottom": 16,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "backgroundColor": "#fff",
+                                          "borderColor": "#fff",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "flex": 1,
+                                          "padding": 8,
+                                          "width": 50,
+                                        },
+                                      ]
+                                    }
+                                    value=""
+                                  />
+                                </View>
+                                <View
+                                  accessible={true}
                                   collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
                                       "marginBottom": 16,
@@ -537,148 +579,201 @@ exports[`CreateElection renders correctly 1`] = `
                                     }
                                   }
                                 >
-                                  <View
-                                    accessible={true}
+                                  <RNGestureHandlerButton
                                     collapsable={false}
-                                    nativeID="animatedComponent"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
                                     style={
                                       Object {
-                                        "opacity": 1,
+                                        "marginBottom": 16,
+                                        "marginLeft": 16,
                                       }
                                     }
                                   >
-                                    <View>
-                                      <Text />
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      nativeID="animatedComponent"
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        {"name":"ios-trash","size":25,"color":"#000"}
+                                      </View>
                                     </View>
-                                  </View>
-                                </RNGestureHandlerButton>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </View>
                           </View>
-                          <RNGestureHandlerButton
+                          <View
+                            accessible={true}
                             collapsable={false}
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
-                            <View
-                              accessible={true}
+                            <RNGestureHandlerButton
                               collapsable={false}
-                              nativeID="animatedComponent"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "marginBottom": 16,
                                 }
                               }
                             >
                               <View
+                                accessible={true}
+                                collapsable={false}
+                                nativeID="animatedComponent"
                                 style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
+                                  Object {
+                                    "opacity": 1,
+                                  }
                                 }
                               >
-                                <Text
+                                <View
                                   style={
                                     Array [
                                       Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 16,
+                                        "borderWidth": 1,
+                                        "padding": 8,
                                       },
                                     ]
                                   }
                                 >
-                                  Add Question
-                                </Text>
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Add Question
+                                  </Text>
+                                </View>
                               </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                          <RNGestureHandlerButton
+                            </RNGestureHandlerButton>
+                          </View>
+                          <View
+                            accessible={true}
                             collapsable={false}
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
-                            <View
-                              accessible={true}
+                            <RNGestureHandlerButton
                               collapsable={false}
-                              nativeID="animatedComponent"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
                               style={
                                 Object {
-                                  "opacity": 1,
+                                  "marginBottom": 16,
                                 }
                               }
                             >
                               <View
+                                accessible={true}
+                                collapsable={false}
+                                nativeID="animatedComponent"
                                 style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                    Object {
-                                      "backgroundColor": "#8E8E8E",
-                                      "borderColor": "#8E8E8E",
-                                    },
-                                  ]
+                                  Object {
+                                    "opacity": 1,
+                                  }
                                 }
                               >
-                                <Text
+                                <View
                                   style={
                                     Array [
                                       Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 16,
+                                        "borderWidth": 1,
+                                        "padding": 8,
                                       },
                                       Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
+                                        "backgroundColor": "#8E8E8E",
+                                        "borderColor": "#8E8E8E",
                                       },
                                     ]
                                   }
                                 >
-                                  Confirm
-                                </Text>
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Confirm
+                                  </Text>
+                                </View>
                               </View>
-                            </View>
-                          </RNGestureHandlerButton>
+                            </RNGestureHandlerButton>
+                          </View>
                           <Modal
                             hardwareAccelerated={false}
                             transparent={true}
@@ -745,66 +840,85 @@ exports[`CreateElection renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <RNGestureHandlerButton
+                                <View
+                                  accessible={true}
                                   collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
-                                  <View
-                                    accessible={true}
+                                  <RNGestureHandlerButton
                                     collapsable={false}
-                                    nativeID="animatedComponent"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
                                     style={
                                       Object {
-                                        "opacity": 1,
+                                        "marginBottom": 16,
                                       }
                                     }
                                   >
                                     <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      nativeID="animatedComponent"
                                       style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "opacity": 1,
+                                        }
                                       }
                                     >
-                                      <Text
+                                      <View
                                         style={
                                           Array [
                                             Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
+                                              "backgroundColor": "#3742fa",
+                                              "borderColor": "#3742fa",
+                                              "borderRadius": 16,
+                                              "borderWidth": 1,
+                                              "padding": 8,
                                             },
                                           ]
                                         }
                                       >
-                                        Ok
-                                      </Text>
+                                        <Text
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          Ok
+                                        </Text>
+                                      </View>
                                     </View>
-                                  </View>
-                                </RNGestureHandlerButton>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </View>
                           </Modal>
@@ -847,7 +961,7 @@ exports[`CreateElection renders correctly 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               style={
                                 Object {
-                                  "backgroundColor": "#fff",
+                                  "backgroundColor": "rgb(242, 242, 242)",
                                   "borderRadius": 16,
                                   "margin": 32,
                                   "padding": 32,
@@ -879,13 +993,19 @@ exports[`CreateElection renders correctly 1`] = `
                                   >
                                     Event creation failed
                                   </Text>
-                                  <RNGestureHandlerButton
+                                  <View
+                                    accessible={true}
                                     collapsable={false}
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
                                     style={
                                       Object {
                                         "position": "absolute",
@@ -894,31 +1014,46 @@ exports[`CreateElection renders correctly 1`] = `
                                     }
                                     testID="modal-header-close"
                                   >
-                                    <View
-                                      accessible={true}
+                                    <RNGestureHandlerButton
                                       collapsable={false}
-                                      nativeID="animatedComponent"
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
                                       style={
                                         Object {
-                                          "opacity": 1,
+                                          "position": "absolute",
+                                          "right": 0,
                                         }
                                       }
                                     >
-                                      <Text
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
                                         style={
                                           Object {
-                                            "color": "#3742fa",
-                                            "fontSize": 20,
-                                            "fontWeight": "500",
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
+                                            "opacity": 1,
                                           }
                                         }
                                       >
-                                        Done
-                                      </Text>
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                        <Text
+                                          style={
+                                            Object {
+                                              "color": "#3742fa",
+                                              "fontSize": 20,
+                                              "fontWeight": "500",
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            }
+                                          }
+                                        >
+                                          Done
+                                        </Text>
+                                      </View>
+                                    </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -934,67 +1069,86 @@ exports[`CreateElection renders correctly 1`] = `
                                   The event's start time is in the past.
 What do you want to do ?
                                 </Text>
-                                <RNGestureHandlerButton
+                                <View
+                                  accessible={true}
                                   collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                   testID="confirm-modal-confirm"
                                 >
-                                  <View
-                                    accessible={true}
+                                  <RNGestureHandlerButton
                                     collapsable={false}
-                                    nativeID="animatedComponent"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
                                     style={
                                       Object {
-                                        "opacity": 1,
+                                        "marginBottom": 16,
                                       }
                                     }
                                   >
                                     <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      nativeID="animatedComponent"
                                       style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "opacity": 1,
+                                        }
                                       }
                                     >
-                                      <Text
+                                      <View
                                         style={
                                           Array [
                                             Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
+                                              "backgroundColor": "#3742fa",
+                                              "borderColor": "#3742fa",
+                                              "borderRadius": 16,
+                                              "borderWidth": 1,
+                                              "padding": 8,
                                             },
                                           ]
                                         }
                                       >
-                                        Start it now
-                                      </Text>
+                                        <Text
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          Start it now
+                                        </Text>
+                                      </View>
                                     </View>
-                                  </View>
-                                </RNGestureHandlerButton>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </RCTScrollView>
                           </Modal>

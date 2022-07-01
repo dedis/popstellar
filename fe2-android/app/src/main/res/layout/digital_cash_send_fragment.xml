@@ -25,24 +25,29 @@
       android:gravity="center"
       style="@style/title_style"
       android:text="@string/digital_cash_send"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_address"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_send_spinner"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-      android:id="@+id/digital_cash_send_address"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:ems="10"
-      android:inputType="textPersonName"
-      android:hint="@string/digital_cash_address"
-      android:autofillHints="false"
+    <com.google.android.material.textfield.TextInputLayout
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+      android:id="@+id/digital_cash_send_spinner"
+      android:layout_width="@dimen/spinner_width_digital_cash"
+      android:layout_height="@dimen/spinner_height_digital_cash"
+      android:hint="@string/digital_cash_select_lao_member"
       app:layout_constraintBottom_toTopOf="@id/digital_cash_send_amount"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_title" />
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_title">
 
+      <AutoCompleteTextView
+        android:id="@+id/digital_cash_send_spinner_tv"
+        android:hint="@string/digital_cash_select_lao_member"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <EditText
       android:id="@+id/digital_cash_send_amount"
@@ -50,12 +55,13 @@
       android:layout_height="wrap_content"
       android:ems="10"
       android:hint="@string/digital_cash_amount"
+      android:text="@string/digital_cash_send_initial_amount"
       android:inputType="numberDecimal"
       android:autofillHints="false"
       app:layout_constraintBottom_toTopOf="@id/digital_cash_send_send"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_address" />
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_spinner" />
 
     <Button
       android:id="@+id/digital_cash_send_send"

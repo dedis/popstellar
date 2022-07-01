@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 
 import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Color, Icon, Typography } from 'core/styles';
@@ -81,12 +81,12 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
   }
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       onPress={() =>
         showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
       }>
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

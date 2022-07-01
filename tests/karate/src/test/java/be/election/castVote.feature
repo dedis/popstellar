@@ -33,7 +33,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -59,7 +59,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -85,7 +85,7 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -110,7 +110,7 @@ Feature: Cast a vote
             {
               "id": '#(getInvalidVoteId)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -135,7 +135,7 @@ Feature: Cast a vote
             {
               "id": '#(getLaoValid)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
@@ -161,12 +161,37 @@ Feature: Cast a vote
             {
               "id": '#(getIsThisProjectFunVoteIdVoteYes)',
               "question": '#(getIsThisProjectFunQuestionId)',
-              "vote": [0]
+              "vote": 0
             }
           ]
         }
       """
     And frontend.changeSenderToBeNonAttendee()
+    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
+  # Testing if casting a valid vote at a time after election creation should fail
+  Scenario: Casting a valid vote before time should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    And def invalidCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098900,
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": 0
+            }
+          ]
+        }
+      """
     When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
     Then match answer contains INVALID_MESSAGE_FIELD

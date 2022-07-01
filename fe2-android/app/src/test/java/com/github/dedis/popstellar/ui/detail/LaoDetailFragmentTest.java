@@ -92,7 +92,6 @@ public class LaoDetailFragmentTest {
   private static final String LAO_ID = LAO.getId();
   private static final String RC_TITLE = "Roll-Call Title";
 
-  // @Inject GlobalNetworkManager networkManager;
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager networkManager;

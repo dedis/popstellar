@@ -212,7 +212,7 @@
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>
   <string name="digital_cash_issue">ISSUE</string>
-  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_history">History</string>
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
   <string name="digital_cash_receipt">RECEIPT</string>
@@ -224,13 +224,27 @@
   <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
   <string name="digital_cash_my_address">My Address: address</string>
   <string name="digital_cash_issue_button">Issue</string>
-  <string name="digital_cash_select_1">All LAO members</string>
-  <string name="digital_cash_select_2">All LAO attendees</string>
-  <string name="digital_cash_select_3">All LAO witnesses</string>
-  <string name="digital_cash_or">OR</string>
+  <string name="digital_cash_select_single_member">Individual from the Selector</string>
+  <string name="digital_cash_select_all_members">All LAO members</string>
+  <string name="digital_cash_select_all_attendees">All LAO attendees</string>
+  <string name="digital_cash_select_all_witnesses">All LAO witnesses</string>
   <string name="digital_cash_content_description_qr_receipt">Receipt qr code transaction</string>
   <string name="digital_cash_content_description_qr_receive">Receive qr code transaction</string>
   <string name="digital_cash_select_lao_member">Select LAO Member</string>
+  <string name="digital_cash_received">Received:</string>
+  <string name="digital_cash_sent">Sent:</string>
+  <string name="digital_cash_from">From:</string>
+  <string name="digital_cash_to">To:</string>
+  <string name="digital_cash_transaction_id">Transaction ID:</string>
+  <string name="digital_cash_please_enter_roll_call">Please enter a RollCall</string>
+  <string name="digital_cash_please_enter_a_lao">Please enter a LAO</string>
+  <string name="digital_cash_error_poptoken">There is an error with the POP Token</string>
+  <string name="digital_cash_post_transaction">Post transaction !</string>
+  <string name="digital_cash_no_attendees">"There are no attendee(s) !"</string>
+  <string name="digital_cash_no_witness">"There are no witnesses !"</string>
+  <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
+  <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
+  <string name="digital_cash_send_initial_amount">0</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -292,6 +306,9 @@
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
+  <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
+  <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
+  <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

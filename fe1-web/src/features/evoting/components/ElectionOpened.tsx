@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon, PoPTextButton } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Border, Color, Icon, List, Spacing, Typography } from 'core/styles';
@@ -69,14 +69,22 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
   const onCastVote = () => {
     console.log('Casting Vote');
-    castVote(election, electionKey || undefined, selectedBallots).catch((err) => {
-      console.error('Could not cast Vote, error:', err);
-      toast.show(`Could not cast Vote, error: ${err}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
+    castVote(election, electionKey || undefined, selectedBallots)
+      .then(() => {
+        toast.show(STRINGS.cast_vote_success, {
+          type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      })
+      .catch((err) => {
+        console.error('Could not cast Vote, error:', err);
+        toast.show(`Could not cast Vote, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
-    });
   };
 
   if (!canCastVote) {
@@ -219,12 +227,12 @@ export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
   }
 
   return (
-    <TouchableOpacity
+    <PoPTouchableOpacity
       onPress={() =>
         showActionSheet([{ displayName: STRINGS.election_end, action: onTerminateElection }])
       }>
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
+    </PoPTouchableOpacity>
   );
 };
 

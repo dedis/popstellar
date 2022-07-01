@@ -18,7 +18,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.TransactionObject;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
@@ -139,7 +139,7 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransactionHistoryByUser().size());
     TransactionObject transaction_object =
-        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
+        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey()).get(0);
     assertEquals(transaction_object.getChannel(), coinChannel);
     assertEquals(1, lao.getPubKeyByHash().size());
   }

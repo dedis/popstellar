@@ -10,7 +10,7 @@ Feature: Create LAO
     * call read(page_object)
 
   Scenario: Create a LAO send the right messages to the backend
-    When click(tab_launch_selector)
+    When backend.setLaoCreateMode()
     And input(tab_launch_lao_name_selector, 'Lao Name')
     And click(tab_launch_create_lao_selector)
 

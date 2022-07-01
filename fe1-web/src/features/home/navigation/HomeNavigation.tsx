@@ -84,6 +84,7 @@ const HomeNavigation = () => {
           tabPress,
           headerLeft,
           headerRight,
+          testID,
         }) => (
           <HomeNavigator.Screen
             key={id}
@@ -99,6 +100,7 @@ const HomeNavigation = () => {
               // hide the item if tabBarIcon is set to null
               tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
               headerShown,
+              tabBarTestID: testID,
             }}
           />
         ),

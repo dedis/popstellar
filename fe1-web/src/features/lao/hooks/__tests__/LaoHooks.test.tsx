@@ -9,7 +9,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import { LaoHooks } from '../LaoHooks';
 
@@ -31,7 +31,7 @@ const contextValue = {
 
 // setup mock store
 const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 // setup mock store
 const emptyMockStore = createStore(combineReducers(laoReducer));
@@ -157,6 +157,16 @@ describe('LaoHooks', () => {
 
       // .toBe() checks whether the operands are the same object (at the same memory address)
       expect(result.current).toBe(organizerNavigationScreens);
+    });
+  });
+
+  describe('useDisconnectFromLao', () => {
+    it('should return the function to disconnect from a lao', () => {
+      const { result } = renderHook(() => LaoHooks.useDisconnectFromLao(), {
+        wrapper: wrapper(mockStore),
+      });
+
+      expect(result.current).toBeFunction();
     });
   });
 });

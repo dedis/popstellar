@@ -70,6 +70,7 @@ const LaoProperties = () => {
       <PoPTextButton
         onPress={() => {
           getNetworkManager().disconnectFromAll();
+
           navigation.navigate(STRINGS.navigation_app_home, {
             screen: STRINGS.navigation_home_home,
           });

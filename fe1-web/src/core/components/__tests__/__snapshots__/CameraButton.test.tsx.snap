@@ -6,36 +6,52 @@ exports[`CameraButton renders correctly 1`] = `
     accessible={true}
     collapsable={false}
     focusable={true}
-    nativeID="animatedComponent"
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "alignContent": "center",
-        "alignItems": "center",
-        "backgroundColor": "#2196F3",
-        "borderRadius": 80,
-        "height": 80,
-        "justifyContent": "center",
-        "opacity": 1,
-        "width": 80,
-      }
-    }
   >
-    <Image
-      source={1}
-      style={
-        Object {
-          "height": 64,
-          "width": 64,
+    <RNGestureHandlerButton
+      collapsable={false}
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
+    >
+      <View
+        accessible={true}
+        collapsable={false}
+        nativeID="animatedComponent"
+        style={
+          Object {
+            "alignContent": "center",
+            "alignItems": "center",
+            "backgroundColor": "#2196F3",
+            "borderRadius": 80,
+            "height": 80,
+            "justifyContent": "center",
+            "opacity": 1,
+            "width": 80,
+          }
         }
-      }
-    />
+      >
+        <Image
+          source={1}
+          style={
+            Object {
+              "height": 64,
+              "width": 64,
+            }
+          }
+        />
+      </View>
+    </RNGestureHandlerButton>
   </View>
 </View>
 `;

@@ -11,7 +11,7 @@ import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
 import { LaoState } from 'features/lao/objects';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 
 import LaoProperties from '../LaoProperties';
 
@@ -33,7 +33,7 @@ const LaoPropertiesScreen = () => <LaoProperties />;
 describe('LaoProperties', () => {
   it('renders correctly as organizer', () => {
     const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
-    mockStore.dispatch(connectToLao(mockLao.toState()));
+    mockStore.dispatch(setCurrentLao(mockLao.toState()));
     mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
     const component = render(
@@ -49,7 +49,7 @@ describe('LaoProperties', () => {
   it('renders correctly as witness', () => {
     const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
     mockStore.dispatch(
-      connectToLao({
+      setCurrentLao({
         ...mockLao.toState(),
         witnesses: [mockPopToken.publicKey.valueOf()],
       } as LaoState),
@@ -68,7 +68,7 @@ describe('LaoProperties', () => {
 
   it('renders correctly as attendee', () => {
     const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
-    mockStore.dispatch(connectToLao(mockLao.toState()));
+    mockStore.dispatch(setCurrentLao(mockLao.toState()));
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
     const component = render(

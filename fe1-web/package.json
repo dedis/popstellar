@@ -66,7 +66,7 @@
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^12.1.1",
     "react-native-tab-view": "^3.1.1",
-    "react-native-toast-notifications": "^3.2.3",
+    "react-native-toast-notifications": "^3.3.0",
     "react-native-web": "^0.17.1",
     "react-navigation": "^4.4.1",
     "react-qr-code": "^2.0.3",

@@ -29,25 +29,14 @@
 
     <TextView
       android:id="@+id/seed_wallet_text"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
       android:textSize="@dimen/size_body"
       android:minLines="@integer/min_number_lines_seed_text"
       android:textStyle="italic"
-      app:layout_constraintEnd_toStartOf="@+id/seed_wallet_copy"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/wallet_seed_warning_text" />
-
-    <ImageView
-      android:id="@+id/seed_wallet_copy"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:src="@drawable/ic_copy_content"
-      app:layout_constraintBottom_toBottomOf="@+id/seed_wallet_text"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/wallet_seed_warning_text"
-      android:contentDescription="@string/copy_button_descriptor" />
 
     <LinearLayout
       android:id="@+id/linearLayout2"

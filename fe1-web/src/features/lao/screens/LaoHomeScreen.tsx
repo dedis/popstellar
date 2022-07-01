@@ -2,23 +2,26 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import {
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import { PoPIcon, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { getNetworkManager } from 'core/network';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
 import Identity from '../components/Identity';
 import { LaoHooks } from '../hooks';
+
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+>;
 
 const LaoHomeScreen = () => {
   return (
@@ -60,12 +63,12 @@ export const LaoHomeScreenHeader = () => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
+      <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
         <Text style={Typography.topNavigationHeading}>{lao.name}</Text>
         <View style={styles.infoIcon}>
           <PoPIcon name="info" color={Color.primary} size={Icon.size} />
         </View>
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
 
       <Modal
         transparent
@@ -88,11 +91,34 @@ export const LaoHomeScreenHeader = () => {
   );
 };
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
+/**
+ * Component rendered in the top left of the navigation bar
+ * Shows a disconnect icon for disconnecting from the lao
+ */
+export const LaoHomeScreenHeaderLeft = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
 
+  return (
+    <>
+      <PoPTouchableOpacity
+        onPress={() => {
+          getNetworkManager().disconnectFromAll();
+
+          navigation.navigate(STRINGS.navigation_app_home, {
+            screen: STRINGS.navigation_home_home,
+          });
+        }}>
+        <PoPIcon name="close" color={Color.inactive} size={Icon.size} />
+      </PoPTouchableOpacity>
+    </>
+  );
+};
+
+/**
+ * Component rendered in the top right of the navigation bar
+ * Shows a qr code icon for showing the lao connection qr code
+ * and a bell icon for accessing the notifications menu
+ */
 export const LaoHomeScreenHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
@@ -104,10 +130,10 @@ export const LaoHomeScreenHeaderRight = () => {
   return (
     <>
       <View style={styles.buttons}>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
           <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </PoPTouchableOpacity>
+        <PoPTouchableOpacity
           containerStyle={styles.notificationButton}
           onPress={() =>
             navigation.push(STRINGS.navigation_app_lao, {
@@ -118,7 +144,7 @@ export const LaoHomeScreenHeaderRight = () => {
             })
           }>
           <PoPIcon name="notification" color={Color.inactive} size={Icon.size} />
-        </TouchableOpacity>
+        </PoPTouchableOpacity>
 
         <Modal
           transparent
