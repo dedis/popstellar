@@ -103,7 +103,7 @@ namespace STRINGS {
   export const lao_properties_current_connections = 'You are currently connected to';
   export const lao_properties_add_additional_connection = 'Add connection';
   export const lao_properties_disconnect = 'Disconnect';
-  export const lao_no_current = 'You are currently no connected to any LAO';
+  export const lao_no_current = 'You are currently not connected to any LAO';
 
   /* --- Home Strings --- */
 
