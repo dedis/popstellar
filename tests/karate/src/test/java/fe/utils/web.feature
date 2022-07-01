@@ -93,4 +93,3 @@ Feature: web test
     * retry(5,1000).click(roll_call_option_selector)
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
-    # needed to work
