@@ -1,8 +1,12 @@
-package com.github.dedis.popstellar.model.objects;
+package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.InputObject;
+import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -13,62 +17,57 @@ public class TransactionObject {
 
   public static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
-  private Channel channel;
+  private final Channel channel;
 
   // version
-  private int version;
+  private final int version;
 
   // inputs
-  private List<InputObject> inputs;
+  private final List<InputObject> inputs;
 
   // outputs
-  private List<OutputObject> outputs;
+  private final List<OutputObject> outputs;
 
   // lock_time
-  private long lockTime;
+  private final long lockTime;
 
-  public TransactionObject() {
-    // Creates an empty TransactionObject
+  private final String transactionId;
+
+  public TransactionObject(
+      Channel channel,
+      int version,
+      List<InputObject> inputs,
+      List<OutputObject> outputs,
+      long lockTime,
+      String transactionId) {
+
+    this.channel = channel;
+    this.version = version;
+    this.inputs = inputs;
+    this.outputs = outputs;
+    this.lockTime = lockTime;
+    this.transactionId = transactionId;
   }
 
   public Channel getChannel() {
     return channel;
   }
 
-  public void setChannel(@NonNull Channel channel) {
-    this.channel = channel;
-  }
-
   public List<InputObject> getInputs() {
     return inputs;
-  }
-
-  public void setInputs(List<InputObject> inputs) {
-    this.inputs = inputs;
   }
 
   public List<OutputObject> getOutputs() {
     return outputs;
   }
 
-  public void setOutputs(List<OutputObject> outputs) {
-    this.outputs = outputs;
-  }
-
   public long getLockTime() {
     return lockTime;
   }
 
-  public void setLockTime(long lockTime) {
-    this.lockTime = lockTime;
-  }
 
   public int getVersion() {
     return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   /**
@@ -81,7 +80,7 @@ public class TransactionObject {
 
     // Through the inputs look at the sender
     for (InputObject inpObj : getInputs()) {
-      senders.add(inpObj.getScript().getPubkey());
+      senders.add(inpObj.getScript().getPubKey());
     }
 
     return senders;
@@ -96,7 +95,7 @@ public class TransactionObject {
     List<String> receiverHash = new ArrayList<>();
 
     for (OutputObject outObj : getOutputs()) {
-      receiverHash.add(outObj.getScript().getPubkeyHash());
+      receiverHash.add(outObj.getPubKeyHash());
     }
 
     return receiverHash;
@@ -159,7 +158,7 @@ public class TransactionObject {
     String hashKey = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubkeyHash().equals(hashKey)) {
+      if (outObj.getScript().getPubKeyHash().equals(hashKey)) {
         miniLao += outObj.getValue();
       }
     }
@@ -171,7 +170,7 @@ public class TransactionObject {
    * Total MiniLao per public key of a List of Transaction
    *
    * @param transaction List<TransactionObject>
-   * @param receiver    Public Key
+   * @param receiver Public Key
    * @return long amount per user
    */
   public static long getMiniLaoPerReceiverSetTransaction(
@@ -199,7 +198,7 @@ public class TransactionObject {
     String computeHash = receiver.computeHash();
     // iterate through the output and sum if it's for the argument public key
     for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubkeyHash().equals(computeHash)) {
+      if (outObj.getPubKeyHash().equals(computeHash)) {
         // return after first occurrence
         return outObj.getValue();
       }
@@ -214,62 +213,16 @@ public class TransactionObject {
    * @return int index in the transaction outputs
    */
   public int getIndexTransaction(PublicKey publicKey) {
-    String hashPubkey = publicKey.computeHash();
+    String hashPubKey = publicKey.computeHash();
     int index = 0;
     for (OutputObject outObj : outputs) {
-      if (outObj.getScript().getPubkeyHash().equals(hashPubkey)) {
+      if (outObj.getPubKeyHash().equals(hashPubKey)) {
         return index;
       }
       ++index;
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
-  }
-
-  /**
-   * This function compute the TransactionId that is expected for the TransactionObject at a given
-   * moment
-   *
-   * @return String the expected Transaction Id given the Inputs and Outputs list in the
-   * TransactionObject
-   */
-  public String computeTransactionId() {
-    // Make a list all the string in the transaction
-    List<String> collectTransaction = new ArrayList<>();
-    // Add them in lexicographic order
-
-    // Inputs
-    for (InputObject currentTxin : inputs) {
-      // Script
-      // PubKey
-      collectTransaction.add(currentTxin.getScript().getPubkey().getEncoded());
-      // Sig
-      collectTransaction.add(currentTxin.getScript().getSig().getEncoded());
-      // Type
-      collectTransaction.add(currentTxin.getScript().getType());
-      // TxOutHash
-      collectTransaction.add(currentTxin.getTxOutHash());
-      // TxOutIndex
-      collectTransaction.add(String.valueOf(currentTxin.getTxOutIndex()));
-    }
-
-    // lock_time
-    collectTransaction.add(String.valueOf(lockTime));
-    // Outputs
-    for (OutputObject currentTxout : outputs) {
-      // Script
-      // PubKeyHash
-      collectTransaction.add(currentTxout.getScript().getPubkeyHash());
-      // Type
-      collectTransaction.add(currentTxout.getScript().getType());
-      // Value
-      collectTransaction.add(String.valueOf(currentTxout.getValue()));
-    }
-    // Version
-    collectTransaction.add(String.valueOf(version));
-
-    // Use already implemented hash function
-    return Hash.hash(collectTransaction.toArray(new String[0]));
   }
 
   /**
@@ -296,5 +249,29 @@ public class TransactionObject {
     return (getSendersTransaction().size() == 1)
         && getInputs().get(0).getTxOutHash().equals(TX_OUT_HASH_COINBASE)
         && (getInputs().get(0).getTxOutIndex() == 0);
+  }
+
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return "TransactionObject{"
+        + "channel="
+        + channel
+        + ", version="
+        + version
+        + ", inputs="
+        + inputs.toString()
+        + ", outputs="
+        + outputs.toString()
+        + ", lockTime="
+        + lockTime
+        + ", transactionId='"
+        + transactionId
+        + '\''
+        + '}';
   }
 }

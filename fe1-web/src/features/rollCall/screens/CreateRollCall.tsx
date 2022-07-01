@@ -120,6 +120,7 @@ const CreateRollCall = () => {
         value={rollCallName}
         onChange={setRollCallName}
         placeholder={STRINGS.roll_call_create_name_placeholder}
+        testID="roll_call_name_selector"
       />
 
       <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.roll_call_location}</Text>
@@ -127,6 +128,7 @@ const CreateRollCall = () => {
         value={rollCallLocation}
         onChange={setRollCallLocation}
         placeholder={STRINGS.roll_call_create_location_placeholder}
+        testID="roll_call_location_selector"
       />
 
       <Text style={[Typography.paragraph, Typography.important]}>
@@ -151,7 +153,8 @@ const CreateRollCall = () => {
             setModalEndIsVisible,
           )
         }
-        disabled={!buttonsVisibility}>
+        disabled={!buttonsVisibility}
+        testID="roll_call_confirm_selector">
         {STRINGS.general_button_confirm}
       </PoPTextButton>
 

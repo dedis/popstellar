@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Color, Icon, Spacing } from '../styles';
 import Input from './Input';
 import PoPIcon from './PoPIcon';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 /**
  * TextInput component which is removable by clicking the trashcan
@@ -35,9 +35,9 @@ const RemovableTextInput = (props: IPropTypes) => {
         key={id}
         value={value || ''}
       />
-      <TouchableOpacity containerStyle={styles.icon} onPress={() => onRemove(id)}>
+      <PoPTouchableOpacity containerStyle={styles.icon} onPress={() => onRemove(id)}>
         <PoPIcon name="delete" color={Color.primary} size={Icon.size} />
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
     </View>
   );
 };

@@ -107,7 +107,9 @@ public class LAONetworkManager implements MessageSender {
             .filter(Broadcast.class::isInstance) // Filter the Broadcast
             .map(Broadcast.class::cast)
             .subscribeOn(schedulerProvider.newThread())
-            .subscribe(this::handleBroadcast));
+            .subscribe(
+                this::handleBroadcast,
+                error -> Log.d(TAG, "Error on processing message: " + error)));
   }
 
   @Override

@@ -37,6 +37,7 @@ Feature: Terminate an election
     And json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))
     Then match answer contains ELECTION_RESULTS
     And match frontend.receiveNoMoreResponses() == true
+
    # After having a successful election setup and vote casts, sending an election end
    # message that has an invalid election id should return an error form the backend
   Scenario: Sending an election end with invalid election id should return an error
@@ -88,6 +89,26 @@ Feature: Terminate an election
           "election": '#(getValidElectionSetupId)',
           "created_at": 1633099883,
           "registered_votes": '#(getValidElectionSetupId)'
+        }
+      """
+    When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
+    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
+  # Testing if sending an election end message with timestamp that is before the election setup
+  # creation time should result in an error from the back-end
+  Scenario: Sending a valid election end too early should fail
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
+    And def invalidElectionEnd =
+      """
+        {
+          "object": "election",
+          "action": "end",
+          "lao": '#(getLaoValid)',
+          "election": '#(getValidElectionSetupId)',
+          "created_at": 1633098900,
+          "registered_votes": '#(getValidRegisteredVotes)'
         }
       """
     When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)

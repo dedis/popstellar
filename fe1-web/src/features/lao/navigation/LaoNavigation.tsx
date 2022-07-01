@@ -77,6 +77,7 @@ const LaoNavigation: React.FC = () => {
             headerLeft,
             headerRight,
             tabBarIcon,
+            testID,
           }) => (
             <OrganizationTopTabNavigator.Screen
               key={id}
@@ -91,6 +92,7 @@ const LaoNavigation: React.FC = () => {
                 // hide the item if tabBarIcon is set to null
                 tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
                 headerShown,
+                tabBarTestID: testID,
               }}
             />
           ),

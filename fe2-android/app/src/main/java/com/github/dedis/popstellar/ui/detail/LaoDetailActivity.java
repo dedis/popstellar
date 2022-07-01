@@ -246,7 +246,7 @@ public class LaoDetailActivity extends AppCompatActivity {
             eventEvent -> {
               EventType eventType = eventEvent.getContentIfNotHandled();
               if (eventType != null) {
-                Log.d(TAG, "event type: " + eventType.toString());
+                Log.d(TAG, "event type: " + eventType);
                 switch (eventType) {
                   case ROLL_CALL:
                     setupCreateRollCallFragment();
@@ -255,7 +255,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     setupCreateElectionSetupFragment();
                     break;
                   default:
-                    Log.d(TAG, "unknown event type: " + eventType.toString());
+                    Log.d(TAG, "unknown event type: " + eventType);
                 }
               }
             });
@@ -304,6 +304,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void openHome() {
     Intent intent = new Intent(this, HomeActivity.class);
     setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+    startActivity(intent);
     finish();
   }
 

@@ -36,13 +36,21 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import io.reactivex.Completable;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.util.collections.Sets;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -51,12 +59,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.internal.util.collections.Sets;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
@@ -288,7 +292,10 @@ public class ConsensusHandlerTest {
   public void handleConsensusDoNothingOnBackendMessageTest() throws DataHandlingException {
     LAORepository mockLAORepository = mock(LAORepository.class);
     Map<MessageID, MessageGeneral> messageById = new HashMap<>();
+    Map<String, LAOState> laoStateMap = new HashMap<>();
+    laoStateMap.put(lao.getId(), new LAOState(lao));
     when(mockLAORepository.getMessageById()).thenReturn(messageById);
+    when(mockLAORepository.getLaoById()).thenReturn(laoStateMap);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
     ConsensusPromise promise =

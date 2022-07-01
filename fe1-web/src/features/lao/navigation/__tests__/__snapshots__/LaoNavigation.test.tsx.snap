@@ -832,29 +832,44 @@ exports[`LaoNavigation renders correctly 1`] = `
                                         }
                                       }
                                     >
-                                      <RNGestureHandlerButton
+                                      <View
+                                        accessible={true}
                                         collapsable={false}
-                                        onGestureEvent={[Function]}
-                                        onGestureHandlerEvent={[Function]}
-                                        onGestureHandlerStateChange={[Function]}
-                                        onHandlerStateChange={[Function]}
-                                        rippleColor={0}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
                                       >
-                                        <View
-                                          accessible={true}
+                                        <RNGestureHandlerButton
                                           collapsable={false}
-                                          nativeID="animatedComponent"
-                                          style={
-                                            Object {
-                                              "opacity": 1,
-                                            }
-                                          }
+                                          onGestureEvent={[Function]}
+                                          onGestureHandlerEvent={[Function]}
+                                          onGestureHandlerStateChange={[Function]}
+                                          onHandlerStateChange={[Function]}
+                                          rippleColor={0}
                                         >
-                                          <View>
-                                            {"name":"ios-close","size":25,"color":"#8E8E8E"}
+                                          <View
+                                            accessible={true}
+                                            collapsable={false}
+                                            nativeID="animatedComponent"
+                                            style={
+                                              Object {
+                                                "opacity": 1,
+                                              }
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"ios-close","size":25,"color":"#8E8E8E"}
+                                            </View>
                                           </View>
-                                        </View>
-                                      </RNGestureHandlerButton>
+                                        </RNGestureHandlerButton>
+                                      </View>
                                     </View>
                                     <View
                                       collapsable={false}
@@ -868,53 +883,68 @@ exports[`LaoNavigation renders correctly 1`] = `
                                         }
                                       }
                                     >
-                                      <RNGestureHandlerButton
+                                      <View
+                                        accessible={true}
                                         collapsable={false}
-                                        onGestureEvent={[Function]}
-                                        onGestureHandlerEvent={[Function]}
-                                        onGestureHandlerStateChange={[Function]}
-                                        onHandlerStateChange={[Function]}
-                                        rippleColor={0}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
                                       >
-                                        <View
-                                          accessible={true}
+                                        <RNGestureHandlerButton
                                           collapsable={false}
-                                          nativeID="animatedComponent"
-                                          style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flex": 1,
-                                              "flexDirection": "row",
-                                              "opacity": 1,
-                                            }
-                                          }
+                                          onGestureEvent={[Function]}
+                                          onGestureHandlerEvent={[Function]}
+                                          onGestureHandlerStateChange={[Function]}
+                                          onHandlerStateChange={[Function]}
+                                          rippleColor={0}
                                         >
-                                          <Text
-                                            style={
-                                              Object {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "fontWeight": "500",
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
-                                              }
-                                            }
-                                          >
-                                            MyLao
-                                          </Text>
                                           <View
+                                            accessible={true}
+                                            collapsable={false}
+                                            nativeID="animatedComponent"
                                             style={
                                               Object {
-                                                "marginLeft": 4,
+                                                "alignItems": "center",
+                                                "flex": 1,
+                                                "flexDirection": "row",
+                                                "opacity": 1,
                                               }
                                             }
                                           >
-                                            <View>
-                                              {"name":"ios-information-circle-outline","size":25,"color":"#000"}
+                                            <Text
+                                              style={
+                                                Object {
+                                                  "color": "#000",
+                                                  "fontSize": 20,
+                                                  "fontWeight": "500",
+                                                  "lineHeight": 26,
+                                                  "textAlign": "left",
+                                                }
+                                              }
+                                            >
+                                              MyLao
+                                            </Text>
+                                            <View
+                                              style={
+                                                Object {
+                                                  "marginLeft": 4,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-information-circle-outline","size":25,"color":"#000"}
+                                              </View>
                                             </View>
                                           </View>
-                                        </View>
-                                      </RNGestureHandlerButton>
+                                        </RNGestureHandlerButton>
+                                      </View>
                                       <Modal
                                         hardwareAccelerated={false}
                                         onRequestClose={[Function]}
@@ -986,13 +1016,19 @@ exports[`LaoNavigation renders correctly 1`] = `
                                               >
                                                 MyLao
                                               </Text>
-                                              <RNGestureHandlerButton
+                                              <View
+                                                accessible={true}
                                                 collapsable={false}
-                                                onGestureEvent={[Function]}
-                                                onGestureHandlerEvent={[Function]}
-                                                onGestureHandlerStateChange={[Function]}
-                                                onHandlerStateChange={[Function]}
-                                                rippleColor={0}
+                                                focusable={true}
+                                                onBlur={[Function]}
+                                                onClick={[Function]}
+                                                onFocus={[Function]}
+                                                onResponderGrant={[Function]}
+                                                onResponderMove={[Function]}
+                                                onResponderRelease={[Function]}
+                                                onResponderTerminate={[Function]}
+                                                onResponderTerminationRequest={[Function]}
+                                                onStartShouldSetResponder={[Function]}
                                                 style={
                                                   Object {
                                                     "position": "absolute",
@@ -1001,31 +1037,46 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 }
                                                 testID="modal-header-close"
                                               >
-                                                <View
-                                                  accessible={true}
+                                                <RNGestureHandlerButton
                                                   collapsable={false}
-                                                  nativeID="animatedComponent"
+                                                  onGestureEvent={[Function]}
+                                                  onGestureHandlerEvent={[Function]}
+                                                  onGestureHandlerStateChange={[Function]}
+                                                  onHandlerStateChange={[Function]}
+                                                  rippleColor={0}
                                                   style={
                                                     Object {
-                                                      "opacity": 1,
+                                                      "position": "absolute",
+                                                      "right": 0,
                                                     }
                                                   }
                                                 >
-                                                  <Text
+                                                  <View
+                                                    accessible={true}
+                                                    collapsable={false}
+                                                    nativeID="animatedComponent"
                                                     style={
                                                       Object {
-                                                        "color": "#3742fa",
-                                                        "fontSize": 20,
-                                                        "fontWeight": "500",
-                                                        "lineHeight": 26,
-                                                        "textAlign": "left",
+                                                        "opacity": 1,
                                                       }
                                                     }
                                                   >
-                                                    Done
-                                                  </Text>
-                                                </View>
-                                              </RNGestureHandlerButton>
+                                                    <Text
+                                                      style={
+                                                        Object {
+                                                          "color": "#3742fa",
+                                                          "fontSize": 20,
+                                                          "fontWeight": "500",
+                                                          "lineHeight": 26,
+                                                          "textAlign": "left",
+                                                        }
+                                                      }
+                                                    >
+                                                      Done
+                                                    </Text>
+                                                  </View>
+                                                </RNGestureHandlerButton>
+                                              </View>
                                             </View>
                                             <View>
                                               <Text
@@ -1173,124 +1224,164 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                   
                                                 </Text>
                                               </Text>
-                                              <RNGestureHandlerButton
+                                              <View
+                                                accessible={true}
                                                 collapsable={false}
-                                                onGestureEvent={[Function]}
-                                                onGestureHandlerEvent={[Function]}
-                                                onGestureHandlerStateChange={[Function]}
-                                                onHandlerStateChange={[Function]}
-                                                rippleColor={0}
+                                                focusable={true}
+                                                onBlur={[Function]}
+                                                onClick={[Function]}
+                                                onFocus={[Function]}
+                                                onResponderGrant={[Function]}
+                                                onResponderMove={[Function]}
+                                                onResponderRelease={[Function]}
+                                                onResponderTerminate={[Function]}
+                                                onResponderTerminationRequest={[Function]}
+                                                onStartShouldSetResponder={[Function]}
                                                 style={
                                                   Object {
                                                     "marginBottom": 16,
                                                   }
                                                 }
                                               >
-                                                <View
-                                                  accessible={true}
+                                                <RNGestureHandlerButton
                                                   collapsable={false}
-                                                  nativeID="animatedComponent"
+                                                  onGestureEvent={[Function]}
+                                                  onGestureHandlerEvent={[Function]}
+                                                  onGestureHandlerStateChange={[Function]}
+                                                  onHandlerStateChange={[Function]}
+                                                  rippleColor={0}
                                                   style={
                                                     Object {
-                                                      "opacity": 1,
+                                                      "marginBottom": 16,
                                                     }
                                                   }
                                                 >
                                                   <View
+                                                    accessible={true}
+                                                    collapsable={false}
+                                                    nativeID="animatedComponent"
                                                     style={
-                                                      Array [
-                                                        Object {
-                                                          "backgroundColor": "#3742fa",
-                                                          "borderColor": "#3742fa",
-                                                          "borderRadius": 16,
-                                                          "borderWidth": 1,
-                                                          "padding": 8,
-                                                        },
-                                                      ]
+                                                      Object {
+                                                        "opacity": 1,
+                                                      }
                                                     }
                                                   >
-                                                    <Text
+                                                    <View
                                                       style={
                                                         Array [
                                                           Object {
-                                                            "color": "#000",
-                                                            "fontSize": 20,
-                                                            "lineHeight": 26,
-                                                            "textAlign": "left",
-                                                          },
-                                                          Object {
-                                                            "textAlign": "center",
-                                                          },
-                                                          Object {
-                                                            "color": "#fff",
+                                                            "backgroundColor": "#3742fa",
+                                                            "borderColor": "#3742fa",
+                                                            "borderRadius": 16,
+                                                            "borderWidth": 1,
+                                                            "padding": 8,
                                                           },
                                                         ]
                                                       }
                                                     >
-                                                      Add connection
-                                                    </Text>
+                                                      <Text
+                                                        style={
+                                                          Array [
+                                                            Object {
+                                                              "color": "#000",
+                                                              "fontSize": 20,
+                                                              "lineHeight": 26,
+                                                              "textAlign": "left",
+                                                            },
+                                                            Object {
+                                                              "textAlign": "center",
+                                                            },
+                                                            Object {
+                                                              "color": "#fff",
+                                                            },
+                                                          ]
+                                                        }
+                                                      >
+                                                        Add connection
+                                                      </Text>
+                                                    </View>
                                                   </View>
-                                                </View>
-                                              </RNGestureHandlerButton>
-                                              <RNGestureHandlerButton
+                                                </RNGestureHandlerButton>
+                                              </View>
+                                              <View
+                                                accessible={true}
                                                 collapsable={false}
-                                                onGestureEvent={[Function]}
-                                                onGestureHandlerEvent={[Function]}
-                                                onGestureHandlerStateChange={[Function]}
-                                                onHandlerStateChange={[Function]}
-                                                rippleColor={0}
+                                                focusable={true}
+                                                onBlur={[Function]}
+                                                onClick={[Function]}
+                                                onFocus={[Function]}
+                                                onResponderGrant={[Function]}
+                                                onResponderMove={[Function]}
+                                                onResponderRelease={[Function]}
+                                                onResponderTerminate={[Function]}
+                                                onResponderTerminationRequest={[Function]}
+                                                onStartShouldSetResponder={[Function]}
                                                 style={
                                                   Object {
                                                     "marginBottom": 16,
                                                   }
                                                 }
                                               >
-                                                <View
-                                                  accessible={true}
+                                                <RNGestureHandlerButton
                                                   collapsable={false}
-                                                  nativeID="animatedComponent"
+                                                  onGestureEvent={[Function]}
+                                                  onGestureHandlerEvent={[Function]}
+                                                  onGestureHandlerStateChange={[Function]}
+                                                  onHandlerStateChange={[Function]}
+                                                  rippleColor={0}
                                                   style={
                                                     Object {
-                                                      "opacity": 1,
+                                                      "marginBottom": 16,
                                                     }
                                                   }
                                                 >
                                                   <View
+                                                    accessible={true}
+                                                    collapsable={false}
+                                                    nativeID="animatedComponent"
                                                     style={
-                                                      Array [
-                                                        Object {
-                                                          "backgroundColor": "#3742fa",
-                                                          "borderColor": "#3742fa",
-                                                          "borderRadius": 16,
-                                                          "borderWidth": 1,
-                                                          "padding": 8,
-                                                        },
-                                                      ]
+                                                      Object {
+                                                        "opacity": 1,
+                                                      }
                                                     }
                                                   >
-                                                    <Text
+                                                    <View
                                                       style={
                                                         Array [
                                                           Object {
-                                                            "color": "#000",
-                                                            "fontSize": 20,
-                                                            "lineHeight": 26,
-                                                            "textAlign": "left",
-                                                          },
-                                                          Object {
-                                                            "textAlign": "center",
-                                                          },
-                                                          Object {
-                                                            "color": "#fff",
+                                                            "backgroundColor": "#3742fa",
+                                                            "borderColor": "#3742fa",
+                                                            "borderRadius": 16,
+                                                            "borderWidth": 1,
+                                                            "padding": 8,
                                                           },
                                                         ]
                                                       }
                                                     >
-                                                      Disconnect
-                                                    </Text>
+                                                      <Text
+                                                        style={
+                                                          Array [
+                                                            Object {
+                                                              "color": "#000",
+                                                              "fontSize": 20,
+                                                              "lineHeight": 26,
+                                                              "textAlign": "left",
+                                                            },
+                                                            Object {
+                                                              "textAlign": "center",
+                                                            },
+                                                            Object {
+                                                              "color": "#fff",
+                                                            },
+                                                          ]
+                                                        }
+                                                      >
+                                                        Disconnect
+                                                      </Text>
+                                                    </View>
                                                   </View>
-                                                </View>
-                                              </RNGestureHandlerButton>
+                                                </RNGestureHandlerButton>
+                                              </View>
                                             </View>
                                           </View>
                                         </RCTScrollView>
@@ -1320,57 +1411,92 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           }
                                         }
                                       >
-                                        <RNGestureHandlerButton
+                                        <View
+                                          accessible={true}
                                           collapsable={false}
-                                          onGestureEvent={[Function]}
-                                          onGestureHandlerEvent={[Function]}
-                                          onGestureHandlerStateChange={[Function]}
-                                          onHandlerStateChange={[Function]}
-                                          rippleColor={0}
+                                          focusable={true}
+                                          onBlur={[Function]}
+                                          onClick={[Function]}
+                                          onFocus={[Function]}
+                                          onResponderGrant={[Function]}
+                                          onResponderMove={[Function]}
+                                          onResponderRelease={[Function]}
+                                          onResponderTerminate={[Function]}
+                                          onResponderTerminationRequest={[Function]}
+                                          onStartShouldSetResponder={[Function]}
                                         >
-                                          <View
-                                            accessible={true}
+                                          <RNGestureHandlerButton
                                             collapsable={false}
-                                            nativeID="animatedComponent"
-                                            style={
-                                              Object {
-                                                "opacity": 1,
-                                              }
-                                            }
+                                            onGestureEvent={[Function]}
+                                            onGestureHandlerEvent={[Function]}
+                                            onGestureHandlerStateChange={[Function]}
+                                            onHandlerStateChange={[Function]}
+                                            rippleColor={0}
                                           >
-                                            <View>
-                                              {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
+                                            <View
+                                              accessible={true}
+                                              collapsable={false}
+                                              nativeID="animatedComponent"
+                                              style={
+                                                Object {
+                                                  "opacity": 1,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
+                                              </View>
                                             </View>
-                                          </View>
-                                        </RNGestureHandlerButton>
-                                        <RNGestureHandlerButton
+                                          </RNGestureHandlerButton>
+                                        </View>
+                                        <View
+                                          accessible={true}
                                           collapsable={false}
-                                          onGestureEvent={[Function]}
-                                          onGestureHandlerEvent={[Function]}
-                                          onGestureHandlerStateChange={[Function]}
-                                          onHandlerStateChange={[Function]}
-                                          rippleColor={0}
+                                          focusable={true}
+                                          onBlur={[Function]}
+                                          onClick={[Function]}
+                                          onFocus={[Function]}
+                                          onResponderGrant={[Function]}
+                                          onResponderMove={[Function]}
+                                          onResponderRelease={[Function]}
+                                          onResponderTerminate={[Function]}
+                                          onResponderTerminationRequest={[Function]}
+                                          onStartShouldSetResponder={[Function]}
                                           style={
                                             Object {
                                               "marginLeft": 16,
                                             }
                                           }
                                         >
-                                          <View
-                                            accessible={true}
+                                          <RNGestureHandlerButton
                                             collapsable={false}
-                                            nativeID="animatedComponent"
+                                            onGestureEvent={[Function]}
+                                            onGestureHandlerEvent={[Function]}
+                                            onGestureHandlerStateChange={[Function]}
+                                            onHandlerStateChange={[Function]}
+                                            rippleColor={0}
                                             style={
                                               Object {
-                                                "opacity": 1,
+                                                "marginLeft": 16,
                                               }
                                             }
                                           >
-                                            <View>
-                                              {"name":"ios-notifications","size":25,"color":"#8E8E8E"}
+                                            <View
+                                              accessible={true}
+                                              collapsable={false}
+                                              nativeID="animatedComponent"
+                                              style={
+                                                Object {
+                                                  "opacity": 1,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-notifications","size":25,"color":"#8E8E8E"}
+                                              </View>
                                             </View>
-                                          </View>
-                                        </RNGestureHandlerButton>
+                                          </RNGestureHandlerButton>
+                                        </View>
                                         <Modal
                                           hardwareAccelerated={false}
                                           onRequestClose={[Function]}
@@ -1442,13 +1568,19 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 >
                                                   Connection QR Code
                                                 </Text>
-                                                <RNGestureHandlerButton
+                                                <View
+                                                  accessible={true}
                                                   collapsable={false}
-                                                  onGestureEvent={[Function]}
-                                                  onGestureHandlerEvent={[Function]}
-                                                  onGestureHandlerStateChange={[Function]}
-                                                  onHandlerStateChange={[Function]}
-                                                  rippleColor={0}
+                                                  focusable={true}
+                                                  onBlur={[Function]}
+                                                  onClick={[Function]}
+                                                  onFocus={[Function]}
+                                                  onResponderGrant={[Function]}
+                                                  onResponderMove={[Function]}
+                                                  onResponderRelease={[Function]}
+                                                  onResponderTerminate={[Function]}
+                                                  onResponderTerminationRequest={[Function]}
+                                                  onStartShouldSetResponder={[Function]}
                                                   style={
                                                     Object {
                                                       "position": "absolute",
@@ -1457,31 +1589,46 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                   }
                                                   testID="modal-header-close"
                                                 >
-                                                  <View
-                                                    accessible={true}
+                                                  <RNGestureHandlerButton
                                                     collapsable={false}
-                                                    nativeID="animatedComponent"
+                                                    onGestureEvent={[Function]}
+                                                    onGestureHandlerEvent={[Function]}
+                                                    onGestureHandlerStateChange={[Function]}
+                                                    onHandlerStateChange={[Function]}
+                                                    rippleColor={0}
                                                     style={
                                                       Object {
-                                                        "opacity": 1,
+                                                        "position": "absolute",
+                                                        "right": 0,
                                                       }
                                                     }
                                                   >
-                                                    <Text
+                                                    <View
+                                                      accessible={true}
+                                                      collapsable={false}
+                                                      nativeID="animatedComponent"
                                                       style={
                                                         Object {
-                                                          "color": "#3742fa",
-                                                          "fontSize": 20,
-                                                          "fontWeight": "500",
-                                                          "lineHeight": 26,
-                                                          "textAlign": "left",
+                                                          "opacity": 1,
                                                         }
                                                       }
                                                     >
-                                                      Done
-                                                    </Text>
-                                                  </View>
-                                                </RNGestureHandlerButton>
+                                                      <Text
+                                                        style={
+                                                          Object {
+                                                            "color": "#3742fa",
+                                                            "fontSize": 20,
+                                                            "fontWeight": "500",
+                                                            "lineHeight": 26,
+                                                            "textAlign": "left",
+                                                          }
+                                                        }
+                                                      >
+                                                        Done
+                                                      </Text>
+                                                    </View>
+                                                  </RNGestureHandlerButton>
+                                                </View>
                                               </View>
                                               <View>
                                                 <View

@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 public class InputObject {
   private final String txOutHash;
   private final int txOutIndex;
@@ -26,5 +29,22 @@ public class InputObject {
 
   public ScriptInputObject getScript() {
     return script;
+  }
+
+  public PublicKey getPubKey() {
+    return script.getPubKey();
+  }
+
+  @Override
+  public String toString() {
+    return "InputObject{"
+        + "txOutHash='"
+        + txOutHash
+        + '\''
+        + ", txOutIndex="
+        + txOutIndex
+        + ", key="
+        + getPubKey()
+        + '}';
   }
 }

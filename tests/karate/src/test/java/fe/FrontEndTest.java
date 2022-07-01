@@ -8,4 +8,9 @@ public class FrontEndTest {
   Karate testCreateLAO() {
     return Karate.run("classpath:fe/LAO/create_lao.feature");
   }
+
+  @Karate.Test
+  Karate testCreateRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallCreation.feature");
+  }
 }
