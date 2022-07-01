@@ -56,14 +56,6 @@ Feature: web test
             }
           """
 
-    # Click on the explore button of the intro screen
-    * def wait =
-            """
-                function(secs) {
-                    java.lang.Thread.sleep(secs*1000)
-                }
-            """
-
     * click(exploring_selector)
     # Click on the connect navigation item
     * click(tab_connect_selector)
@@ -102,4 +94,3 @@ Feature: web test
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
     # needed to work
-    * wait(2)

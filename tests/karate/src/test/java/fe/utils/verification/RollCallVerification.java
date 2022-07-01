@@ -41,7 +41,6 @@ public class RollCallVerification {
    return name.equals(createMessageJson.get(NAME));
  }
 
-
 /**
  * Verifies that the roll call open update_id field is valid
  * @param message the message sent over the network
