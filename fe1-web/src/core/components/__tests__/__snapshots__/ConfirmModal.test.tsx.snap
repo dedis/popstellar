@@ -176,7 +176,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -409,7 +408,6 @@ exports[`ConfirmModal renders correctly 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -678,7 +676,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }

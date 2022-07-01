@@ -25390,30 +25390,45 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers closed r
                         }
                       }
                     >
-                      <RNGestureHandlerButton
+                      <View
+                        accessible={true}
                         collapsable={false}
-                        onGestureEvent={[Function]}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
-                        onHandlerStateChange={[Function]}
-                        rippleColor={0}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         testID="roll-call-options"
                       >
-                        <View
-                          accessible={true}
+                        <RNGestureHandlerButton
                           collapsable={false}
-                          nativeID="animatedComponent"
-                          style={
-                            Object {
-                              "opacity": 1,
-                            }
-                          }
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
                         >
-                          <View>
-                            {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            nativeID="animatedComponent"
+                            style={
+                              Object {
+                                "opacity": 1,
+                              }
+                            }
+                          >
+                            <View>
+                              {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                            </View>
                           </View>
-                        </View>
-                      </RNGestureHandlerButton>
+                        </RNGestureHandlerButton>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -25741,30 +25756,45 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers created 
                         }
                       }
                     >
-                      <RNGestureHandlerButton
+                      <View
+                        accessible={true}
                         collapsable={false}
-                        onGestureEvent={[Function]}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
-                        onHandlerStateChange={[Function]}
-                        rippleColor={0}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         testID="roll-call-options"
                       >
-                        <View
-                          accessible={true}
+                        <RNGestureHandlerButton
                           collapsable={false}
-                          nativeID="animatedComponent"
-                          style={
-                            Object {
-                              "opacity": 1,
-                            }
-                          }
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
                         >
-                          <View>
-                            {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            nativeID="animatedComponent"
+                            style={
+                              Object {
+                                "opacity": 1,
+                              }
+                            }
+                          >
+                            <View>
+                              {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                            </View>
                           </View>
-                        </View>
-                      </RNGestureHandlerButton>
+                        </RNGestureHandlerButton>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -26092,30 +26122,45 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers opened r
                         }
                       }
                     >
-                      <RNGestureHandlerButton
+                      <View
+                        accessible={true}
                         collapsable={false}
-                        onGestureEvent={[Function]}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
-                        onHandlerStateChange={[Function]}
-                        rippleColor={0}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         testID="roll-call-options"
                       >
-                        <View
-                          accessible={true}
+                        <RNGestureHandlerButton
                           collapsable={false}
-                          nativeID="animatedComponent"
-                          style={
-                            Object {
-                              "opacity": 1,
-                            }
-                          }
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
                         >
-                          <View>
-                            {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            nativeID="animatedComponent"
+                            style={
+                              Object {
+                                "opacity": 1,
+                              }
+                            }
+                          >
+                            <View>
+                              {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                            </View>
                           </View>
-                        </View>
-                      </RNGestureHandlerButton>
+                        </RNGestureHandlerButton>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -26443,30 +26488,45 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers re-opene
                         }
                       }
                     >
-                      <RNGestureHandlerButton
+                      <View
+                        accessible={true}
                         collapsable={false}
-                        onGestureEvent={[Function]}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
-                        onHandlerStateChange={[Function]}
-                        rippleColor={0}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         testID="roll-call-options"
                       >
-                        <View
-                          accessible={true}
+                        <RNGestureHandlerButton
                           collapsable={false}
-                          nativeID="animatedComponent"
-                          style={
-                            Object {
-                              "opacity": 1,
-                            }
-                          }
+                          onGestureEvent={[Function]}
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onHandlerStateChange={[Function]}
+                          rippleColor={0}
                         >
-                          <View>
-                            {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            nativeID="animatedComponent"
+                            style={
+                              Object {
+                                "opacity": 1,
+                              }
+                            }
+                          >
+                            <View>
+                              {"name":"ios-ellipsis-horizontal","size":25,"color":"#8E8E8E"}
+                            </View>
                           </View>
-                        </View>
-                      </RNGestureHandlerButton>
+                        </RNGestureHandlerButton>
+                      </View>
                     </View>
                   </View>
                 </View>

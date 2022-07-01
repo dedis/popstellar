@@ -571,7 +571,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }
@@ -652,7 +651,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   rippleColor={0}
                                   style={
                                     Object {
-                                      "flex": 1,
                                       "marginBottom": 16,
                                     }
                                   }

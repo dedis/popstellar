@@ -95,7 +95,6 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }
@@ -247,7 +246,6 @@ exports[`DismissModal renders correctly 1`] = `
           rippleColor={0}
           style={
             Object {
-              "flex": 1,
               "marginBottom": 16,
             }
           }

@@ -374,23 +374,39 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    nativeID="animatedComponent"
+                                    onBlur={[Function]}
                                     onClick={[Function]}
+                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
                                   >
-                                    <View>
-                                      {"name":"ios-close","size":25,"color":"#3742fa"}
-                                    </View>
+                                    <RNGestureHandlerButton
+                                      collapsable={false}
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"ios-close","size":25,"color":"#3742fa"}
+                                        </View>
+                                      </View>
+                                    </RNGestureHandlerButton>
                                   </View>
                                 </View>
                               </View>
@@ -408,46 +424,79 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    nativeID="animatedComponent"
+                                    onBlur={[Function]}
                                     onClick={[Function]}
+                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "marginBottom": 8,
-                                        "opacity": 1,
-                                      }
-                                    }
+                                    testID="launch_selector"
                                   >
-                                    <View>
-                                      {"name":"ios-create","size":25,"color":"#3742fa"}
-                                    </View>
+                                    <RNGestureHandlerButton
+                                      collapsable={false}
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
+                                        style={
+                                          Object {
+                                            "marginBottom": 8,
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"ios-create","size":25,"color":"#3742fa"}
+                                        </View>
+                                      </View>
+                                    </RNGestureHandlerButton>
                                   </View>
                                   <View
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    nativeID="animatedComponent"
+                                    onBlur={[Function]}
                                     onClick={[Function]}
+                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
                                   >
-                                    <View>
-                                      {"name":"ios-code","size":25,"color":"#3742fa"}
-                                    </View>
+                                    <RNGestureHandlerButton
+                                      collapsable={false}
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"ios-code","size":25,"color":"#3742fa"}
+                                        </View>
+                                      </View>
+                                    </RNGestureHandlerButton>
                                   </View>
                                 </View>
                               </View>

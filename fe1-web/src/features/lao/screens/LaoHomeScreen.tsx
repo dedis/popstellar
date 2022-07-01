@@ -100,7 +100,7 @@ export const LaoHomeScreenHeaderLeft = () => {
 
   return (
     <>
-      <TouchableOpacity
+      <PoPTouchableOpacity
         onPress={() => {
           getNetworkManager().disconnectFromAll();
 
@@ -109,7 +109,7 @@ export const LaoHomeScreenHeaderLeft = () => {
           });
         }}>
         <PoPIcon name="close" color={Color.inactive} size={Icon.size} />
-      </TouchableOpacity>
+      </PoPTouchableOpacity>
     </>
   );
 };
