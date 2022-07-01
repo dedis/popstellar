@@ -13,6 +13,13 @@ interface State {
   hasError: boolean;
 }
 
+/**
+ * Class Component implementing a react error boundary
+ * (https://reactjs.org/docs/error-boundaries.html) The component renders its
+ * children unless an error of type NoCurrentLaoError is thrown in which case,
+ * the component then displays an error string. This component was created to
+ * fix issue #1132 (https://github.com/dedis/popstellar/issues/1132)
+ */
 class NoCurrentLaoErrorBoundary extends React.Component<IProps, State> {
   constructor(props: IProps) {
     super(props);
