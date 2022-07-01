@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static common.JsonKeys.*;
+import static common.utils.Constants.*;
 import static common.utils.JsonUtils.getJSON;
 
 /**

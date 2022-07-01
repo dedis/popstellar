@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import static common.JsonKeys.COIN;
-import static common.JsonKeys.CONSENSUS;
+import static common.utils.Constants.COIN;
+import static common.utils.Constants.CONSENSUS;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {

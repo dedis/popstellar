@@ -38,6 +38,26 @@ Feature: Mock Backend
 
     * def messageVerification = call getMessageVerification
 
+    * def getVerificationUtils =
+      """
+        function(){
+          var VerificationUtils = Java.type("fe.utils.verification.VerificationUtils")
+          return new VerificationUtils();
+        }
+      """
+
+    * def verificationUtils = call getVerificationUtils
+
+    * def  getConstants =
+      """
+        function(){
+          var Consants = Java.type("common.utils.Constants")
+          return new Consants()
+        }
+      """
+
+    * def constants = call getConstants
+
     * karate.log('Backend started at ', backend.getPort())
     * def buffer = backend.getBuffer()
 

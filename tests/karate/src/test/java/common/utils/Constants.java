@@ -1,9 +1,9 @@
-package common;
+package common.utils;
 
-/**
- * This files contains keys used in Json messages
- */
-public class JsonKeys {
+/** This files contains keys used in Json messages */
+public class Constants {
+
+  /////////////////////////  Static for Java files calls ///////////////////////////////
 
   public static final String CATCHUP = "catchup";
 
@@ -33,13 +33,15 @@ public class JsonKeys {
 
   public static final String ACTION = "action";
 
-  public static final String ROLL_CALL = "roll_call";
-
-  public static final String CREATE = "create";
-
   public static final String OBJECT = "object";
 
   public static final String NAME = "name";
 
   public static final String CREATION = "creation";
+
+  ///////////////////////// Non Static for Karate files calls ///////////////////////////////
+
+  public final String ROLL_CALL = "roll_call";
+
+  public final String CREATE = "create";
 }

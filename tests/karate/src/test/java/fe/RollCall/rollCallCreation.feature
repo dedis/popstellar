@@ -20,7 +20,6 @@ Feature: Create RollCall
     # Retrieving sent messages
     * json create_rc_json = buffer.takeTimeout(timeout)
     * string create_rc_string = create_rc_json
-    * print create_rc_string
 
     # General message verification
     Then match create_rc_json contains deep { method: 'publish' }
@@ -28,10 +27,10 @@ Feature: Create RollCall
     And match messageVerification.verifyMessageSignature(create_rc_string) == true
 
     # Roll Call specific verification
-    And match rollCallVerification.verifyCreateAction(create_rc_string) == true
-    * match rollCallVerification.verifyObject(create_rc_string) == true
-    And match (rollCallVerification.verifyRollCallName(create_rc_string, rc_name)) == true
-    * match rollCallVerification.verifyRollCallId(create_rc_string) == true
+    And match verificationUtils.getObject(create_rc_string) == constants.ROLL_CALL
+    * match verificationUtils.getAction(create_rc_string) == constants.CREATE
+    * match (rollCallVerification.verifyRollCallName(create_rc_string, rc_name)) == true
+    And match rollCallVerification.verifyRollCallId(create_rc_string) == true
 
     And match backend.receiveNoMoreResponses() == true
 

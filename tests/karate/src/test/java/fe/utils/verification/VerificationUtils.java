@@ -4,7 +4,7 @@ import com.intuit.karate.Json;
 import common.utils.Base64Utils;
 import common.utils.JsonUtils;
 
-import static common.JsonKeys.*;
+import static common.utils.Constants.*;
 
 /**
  * This class contains useful utils functions for the verification process
@@ -41,5 +41,15 @@ public class VerificationUtils {
     String b64Data = getDataFieldFromMessage(message);
     String data = new String(Base64Utils.convertB64URLToByteArray(b64Data));
     return Json.of(data);
+  }
+
+  public String getObject(String message){
+    Json data = getMsgDataJson(message);
+    return data.get(OBJECT);
+  }
+
+  public String getAction(String message){
+    Json data = getMsgDataJson(message);
+    return data.get(ACTION);
   }
 }

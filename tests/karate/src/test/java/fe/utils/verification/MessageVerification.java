@@ -9,7 +9,7 @@ import com.intuit.karate.Logger;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
-import static common.JsonKeys.*;
+import static common.utils.Constants.*;
 import static common.utils.Base64Utils.convertB64URLToByteArray;
 
 /**
