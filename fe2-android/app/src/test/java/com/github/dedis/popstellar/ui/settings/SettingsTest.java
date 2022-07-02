@@ -29,12 +29,12 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @RunWith(AndroidJUnit4.class)
 public class SettingsTest {
 
-  private final FragmentScenarioRule<SettingsFragment> fragmentRule =
+  @Rule(order = 0)
+  public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+  
+  @Rule(order = 1)
+  public final FragmentScenarioRule<SettingsFragment> fragmentRule =
       FragmentScenarioRule.launch(SettingsFragment.class);
-
-  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
-  @Rule public final RuleChain chain = RuleChain.outerRule(hiltRule).around(fragmentRule);
 
   @Test
   public void uiElementsAreDisplayed() {
