@@ -372,30 +372,42 @@ exports[`Launch renders correctly 1`] = `
                               >
                                 Organization name
                               </Text>
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Organization name"
+                              <View
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderRadius": 8,
-                                      "flex": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
+                                  Object {
+                                    "flex": 1,
+                                    "flexDirection": "row",
+                                  }
                                 }
-                                testID="launch_organization_name_selector"
-                                value=""
-                              />
+                              >
+                                <TextInput
+                                  editable={true}
+                                  onChangeText={[Function]}
+                                  placeholder="Organization name"
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "marginBottom": 16,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#fff",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "padding": 8,
+                                        "width": 50,
+                                      },
+                                    ]
+                                  }
+                                  testID="launch_organization_name_selector"
+                                  value=""
+                                />
+                              </View>
                               <Text
                                 style={
                                   Array [
@@ -414,30 +426,42 @@ exports[`Launch renders correctly 1`] = `
                               >
                                 Address
                               </Text>
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Address"
+                              <View
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "backgroundColor": "#fff",
-                                      "borderRadius": 8,
-                                      "flex": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
+                                  Object {
+                                    "flex": 1,
+                                    "flexDirection": "row",
+                                  }
                                 }
-                                testID="launch_address_selector"
-                                value="ws://127.0.0.1:9000/organizer/client"
-                              />
+                              >
+                                <TextInput
+                                  editable={true}
+                                  onChangeText={[Function]}
+                                  placeholder="Address"
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "marginBottom": 16,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#fff",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "padding": 8,
+                                        "width": 50,
+                                      },
+                                    ]
+                                  }
+                                  testID="launch_address_selector"
+                                  value="ws://127.0.0.1:9000/organizer/client"
+                                />
+                              </View>
                             </View>
                             <View
                               style={
@@ -462,7 +486,6 @@ exports[`Launch renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                                 testID="launch_launch_selector"
@@ -477,7 +500,6 @@ exports[`Launch renders correctly 1`] = `
                                   style={
                                     Object {
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -544,7 +566,6 @@ exports[`Launch renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -558,7 +579,6 @@ exports[`Launch renders correctly 1`] = `
                                   style={
                                     Object {
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -625,7 +645,6 @@ exports[`Launch renders correctly 1`] = `
                                 style={
                                   Object {
                                     "marginBottom": 16,
-                                    "width": "100%",
                                   }
                                 }
                               >
@@ -639,7 +658,6 @@ exports[`Launch renders correctly 1`] = `
                                   style={
                                     Object {
                                       "marginBottom": 16,
-                                      "width": "100%",
                                     }
                                   }
                                 >
@@ -685,87 +703,6 @@ exports[`Launch renders correctly 1`] = `
                                         }
                                       >
                                         [TEST] Clear (persistent) storage
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                    "width": "100%",
-                                  }
-                                }
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                      "width": "100%",
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Cancel
                                       </Text>
                                     </View>
                                   </View>

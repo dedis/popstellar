@@ -182,12 +182,16 @@ final case class DbActor(
     }
   }
 
-  @throws[DbActorNAckException]
-  private def addWitnessSignature(messageId: Hash, signature: Signature): Unit = {
-    throw DbActorNAckException(
-      ErrorCodes.SERVER_ERROR.id,
-      s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
-    )
+  @throws [DbActorNAckException]
+  private def addWitnessSignature(channel: Channel, messageId: Hash, signature: Signature): Message = {
+    Try(read(channel, messageId)) match {
+      case Success(Some(msg)) =>
+        msg.addWitnessSignature(WitnessSignaturePair(msg.sender, signature))
+      case Success(None) =>
+        log.error(s"Actor $self (db) encountered a problem while reading the message having as id '$messageId'")
+        throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not read message of message id $messageId")
+      case Failure(ex) => throw ex
+    }
   }
 
   @throws[DbActorNAckException]
@@ -314,10 +318,10 @@ final case class DbActor(
         sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
       }
 
-    case AddWitnessSignature(messageId, signature) =>
+    case AddWitnessSignature(channel, messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
-      Try(addWitnessSignature(messageId, signature)) match {
-        case Success(_) => sender() ! DbActorAck()
+      Try(addWitnessSignature(channel, messageId, signature)) match {
+        case Success(witnessMessage) => sender() ! DbActorAddWitnessSignatureAck(witnessMessage)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
@@ -448,10 +452,11 @@ object DbActor {
    * Request to append witness <signature> to a stored message with message_id
    * <messageId>
    *
+   * @param channel channel in which the messages are being sent
    * @param messageId message_id of the targeted message
    * @param signature signature to append to the witness signature list of the message
    */
-  final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
+  final case class AddWitnessSignature(channel: Channel, messageId: Hash, signature: Signature) extends Event
 
   /**
    * Request to read the rollcallData of the LAO, with key laoId
@@ -513,6 +518,15 @@ object DbActor {
    * @param laoData requested lao data
    */
   final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
+
+  /**
+   * Response for a [[AddWitnessSignature]] db request Receiving [[DbActorAddWitnessSignatureAck]] works as
+   * an acknowledgement that the request was successful
+   *
+   * @param witnessMessage requested message witnessed
+   */
+  final case class DbActorAddWitnessSignatureAck(witnessMessage: Message) extends DbActorMessage
+
 
   /**
    * Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]

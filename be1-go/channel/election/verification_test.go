@@ -1,10 +1,12 @@
 package election
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"os"
 	"path/filepath"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method/message"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -102,7 +104,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing.T) {
+func TestVerify_ElectionOpen_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
 	// create the opened election channel with election open time less than
 	// election creation time
 	electChannel, _ := newFakeChannel(t, false)
@@ -121,6 +123,52 @@ func TestVerify_ElectionOpen_created_time_less_than_create_time_setup(t *testing
 	// send the election open message to the channel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
+}
+
+func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
+	// create the opened election channel with election open time less than
+	// election creation time
+	electChannel, _ := newFakeChannel(t, false)
+	electChannel.started = true
+
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
+		"election_end.json"))
+	require.NoError(t, err)
+
+	var electionEnd messagedata.ElectionEnd
+
+	err = json.Unmarshal(buf, &electionEnd)
+	require.NoError(t, err)
+
+	electChannel.createdAt = electionEnd.CreatedAt + 100
+
+	// send the election open message to the channel
+	err = electChannel.verifyMessageElectionEnd(electionEnd)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "election end cannot have a creation time prior to election setup ")
+}
+
+func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
+	// create the opened election channel with election open time less than
+	// election creation time
+	electChannel, _ := newFakeChannel(t, false)
+	electChannel.started = true
+
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
+		"vote_cast_vote.json"))
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	electChannel.createdAt = castVote.CreatedAt + 100
+
+	// send the election open message to the channel
+	err = electChannel.verifyMessageCastVote(castVote)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cast vote cannot have a creation time prior to election setup")
 }
 
 func TestVerify_CastVote_Open_Ballot(t *testing.T) {
@@ -273,11 +321,34 @@ func TestVerify_CastVote_already_closed(t *testing.T) {
 
 func TestVerify_ElectionEnd(t *testing.T) {
 	// create the election channel
-	electChannel, _ := newFakeChannel(t, false)
+	electChannel, pkOrganizer := newFakeChannel(t, false)
 	electChannel.started = true
 
+	// Cast a vote for the election
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the cast vote in a message
+	m := message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = electChannel.processCastVote(m, &castVote, &fakeSocket{})
+	require.NoError(t, err)
+
 	// read the valid example file
-	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
+	buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
 		"election_end.json"))
 	require.NoError(t, err)
 

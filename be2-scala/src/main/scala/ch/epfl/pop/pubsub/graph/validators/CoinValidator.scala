@@ -24,7 +24,10 @@ case object CoinValidator extends MessageDataContentValidator {
         } else if (!data.transaction.checkSignatures()) {
           Right(validationError("bad signature"))
         } else {
-          Left(rpcMessage)
+          data.transaction.sumOutputs() match {
+            case Left(err) => Right(validationError(err.getMessage()))
+            case Right(_) => Left(rpcMessage)
+          }
         }
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))

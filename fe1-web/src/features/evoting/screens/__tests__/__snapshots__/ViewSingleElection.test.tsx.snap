@@ -4423,6 +4423,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -4446,6 +4447,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -4745,7 +4747,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -4759,7 +4761,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      2
+                                      4
                                     </Text>
                                   </View>
                                 </View>
@@ -4894,7 +4896,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -4908,7 +4910,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      4
+                                      2
                                     </Text>
                                   </View>
                                 </View>
@@ -4934,6 +4936,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -5233,7 +5236,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -5247,7 +5250,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      1
+                                      10
                                     </Text>
                                   </View>
                                 </View>
@@ -5382,7 +5385,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -5396,7 +5399,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                       testID="listItemTitle"
                                     >
-                                      10
+                                      1
                                     </Text>
                                   </View>
                                 </View>
@@ -5837,6 +5840,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -5854,6 +5858,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -5866,6 +5871,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -6312,6 +6318,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -6324,6 +6331,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -7467,26 +7475,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             }
                           >
                             <View>
-                              <Text
-                                allowFontScaling={false}
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#fff",
-                                      "fontSize": 50,
-                                    },
-                                    undefined,
-                                    Object {
-                                      "fontFamily": "ionicons",
-                                      "fontStyle": "normal",
-                                      "fontWeight": "normal",
-                                    },
-                                    Object {},
-                                  ]
-                                }
-                              >
-                                
-                              </Text>
+                              {"name":"ios-warning","size":50,"color":"#fff"}
                             </View>
                             <View
                               style={
@@ -7597,6 +7586,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               Array [
                                 Object {
                                   "borderRadius": 16,
+                                  "marginBottom": 16,
                                 },
                                 Object {
                                   "marginBottom": 16,
@@ -7624,6 +7614,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -8200,6 +8191,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -8773,7 +8765,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -8787,7 +8778,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               style={
                                 Object {
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                             >
@@ -9212,6 +9202,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -9229,6 +9220,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -9241,6 +9233,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -9687,6 +9680,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -9699,6 +9693,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -10816,6 +10811,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -10839,6 +10835,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -11138,7 +11135,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -11152,7 +11149,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      2
+                                      4
                                     </Text>
                                   </View>
                                 </View>
@@ -11287,7 +11284,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -11301,7 +11298,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      4
+                                      2
                                     </Text>
                                   </View>
                                 </View>
@@ -11327,6 +11324,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -11626,7 +11624,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 1
+                                      Ballot Option 2
                                     </Text>
                                     <Text
                                       style={
@@ -11640,7 +11638,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      1
+                                      10
                                     </Text>
                                   </View>
                                 </View>
@@ -11775,7 +11773,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      Ballot Option 2
+                                      Ballot Option 1
                                     </Text>
                                     <Text
                                       style={
@@ -11789,7 +11787,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                       testID="listItemTitle"
                                     >
-                                      10
+                                      1
                                     </Text>
                                   </View>
                                 </View>
@@ -12230,6 +12228,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -12247,6 +12246,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -12259,6 +12259,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -12683,6 +12684,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -12695,6 +12697,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -13816,7 +13819,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             }
                           >
                             <View>
-                              <Text />
+                              {"name":"ios-warning","size":50,"color":"#fff"}
                             </View>
                             <View
                               style={
@@ -13927,6 +13930,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               Array [
                                 Object {
                                   "borderRadius": 16,
+                                  "marginBottom": 16,
                                 },
                                 Object {
                                   "marginBottom": 16,
@@ -13954,6 +13958,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -14488,6 +14493,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -15019,7 +15025,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -15033,7 +15038,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               style={
                                 Object {
                                   "marginBottom": 16,
-                                  "width": "100%",
                                 }
                               }
                             >
@@ -15458,6 +15462,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             style={
                               Object {
                                 "borderRadius": 16,
+                                "marginBottom": 16,
                               }
                             }
                           >
@@ -15475,6 +15480,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -15487,6 +15493,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"
@@ -15933,6 +15940,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 Object {
                                   "backgroundColor": "rgb(242, 242, 242)",
                                   "paddingLeft": 0,
+                                  "paddingRight": 0,
                                 }
                               }
                             >
@@ -15945,6 +15953,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     "flexDirection": "row",
                                     "padding": 14,
                                     "paddingLeft": 0,
+                                    "paddingRight": 0,
                                   }
                                 }
                                 testID="padView"

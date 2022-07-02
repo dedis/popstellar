@@ -40,7 +40,7 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -163,7 +163,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         style={
           Object {
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
@@ -178,7 +177,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -274,7 +272,7 @@ exports[`ConfirmModal renders correctly 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -397,7 +395,6 @@ exports[`ConfirmModal renders correctly 1`] = `
         style={
           Object {
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
@@ -412,7 +409,6 @@ exports[`ConfirmModal renders correctly 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >
@@ -508,7 +504,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
     onGestureHandlerStateChange={[Function]}
     style={
       Object {
-        "backgroundColor": "#fff",
+        "backgroundColor": "rgb(242, 242, 242)",
         "borderRadius": 16,
         "margin": 32,
         "padding": 32,
@@ -615,34 +611,42 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
       >
         Description
       </Text>
-      <TextInput
-        editable={true}
-        onChangeText={[Function]}
-        placeholder=""
+      <View
         style={
-          Array [
-            Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginBottom": 16,
-              "textAlign": "left",
-            },
-            Object {
-              "backgroundColor": "#fff",
-              "borderRadius": 8,
-              "flex": 1,
-              "padding": 8,
-            },
-            Object {
-              "borderColor": "#000",
-              "borderWidth": 1,
-            },
-          ]
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+          }
         }
-        testID="confirm-modal-input"
-        value=""
-      />
+      >
+        <TextInput
+          editable={true}
+          onChangeText={[Function]}
+          placeholder=""
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "marginBottom": 16,
+                "textAlign": "left",
+              },
+              Object {
+                "backgroundColor": "#fff",
+                "borderColor": "#fff",
+                "borderRadius": 8,
+                "borderWidth": 1,
+                "flex": 1,
+                "padding": 8,
+                "width": 50,
+              },
+            ]
+          }
+          testID="confirm-modal-input"
+          value=""
+        />
+      </View>
       <View
         accessible={true}
         collapsable={false}
@@ -659,7 +663,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         style={
           Object {
             "marginBottom": 16,
-            "width": "100%",
           }
         }
         testID="confirm-modal-confirm"
@@ -674,7 +677,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           style={
             Object {
               "marginBottom": 16,
-              "width": "100%",
             }
           }
         >

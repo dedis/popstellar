@@ -25,8 +25,9 @@
 - [High-level (message data) communication](messageData.md)
 
 **Note**: do not edit JSON messages directly. Those are automatically embedded
-from `../protocol`. Use [embedme](https://github.com/zakhenry/embedme) to make
-an update. 
+from `../protocol`. Use 
+[embedme](https://github.com/dedis/popstellar/blob/master/docs/embedme.sh) to 
+make an update. 
 
 # Introduction
 

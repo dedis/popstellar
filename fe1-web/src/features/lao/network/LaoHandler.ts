@@ -2,7 +2,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { addUnhandledGreetLaoMessage, connectToLao } from '../reducer';
+import { addUnhandledGreetLaoMessage, setCurrentLao } from '../reducer';
 import { storeBackendAndConnectToPeers } from './LaoGreetWatcher';
 import { CreateLao } from './messages';
 import { GreetLao } from './messages/GreetLao';
@@ -24,7 +24,7 @@ export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
     server_addresses: [msg.receivedFrom],
   });
 
-  dispatch(connectToLao(lao.toState()));
+  dispatch(setCurrentLao(lao.toState()));
   return true;
 }
 

@@ -34,7 +34,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -175,7 +175,10 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void openDigitalCash() {
-    Intent intent = new Intent(this, DigitalCashMain.class);
+    Intent intent = new Intent(this, DigitalCashActivity.class);
+
+    intent.putExtra(Constants.LAO_ID_EXTRA, mViewModel.getCurrentLaoValue().getId());
+    intent.putExtra(Constants.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
     startActivity(intent);
   }
 
@@ -243,7 +246,7 @@ public class LaoDetailActivity extends AppCompatActivity {
             eventEvent -> {
               EventType eventType = eventEvent.getContentIfNotHandled();
               if (eventType != null) {
-                Log.d(TAG, "event type: " + eventType.toString());
+                Log.d(TAG, "event type: " + eventType);
                 switch (eventType) {
                   case ROLL_CALL:
                     setupCreateRollCallFragment();
@@ -252,7 +255,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     setupCreateElectionSetupFragment();
                     break;
                   default:
-                    Log.d(TAG, "unknown event type: " + eventType.toString());
+                    Log.d(TAG, "unknown event type: " + eventType);
                 }
               }
             });
@@ -301,6 +304,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void openHome() {
     Intent intent = new Intent(this, HomeActivity.class);
     setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+    startActivity(intent);
     finish();
   }
 

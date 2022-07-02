@@ -3,6 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { Input, PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -31,6 +32,7 @@ type NavigationProps = CompositeScreenProps<
 const ConnectConfirm = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+  const dispatch = useDispatch();
 
   const laoIdIn = route.params?.laoId || '';
   const url = route.params?.serverUrl || 'ws://localhost:9000/organizer/client';
@@ -39,18 +41,27 @@ const ConnectConfirm = () => {
 
   const toast = useToast();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
+  const getLaoById = HomeHooks.useGetLaoById();
+  const resubscribeToLao = HomeHooks.useResubscribeToLao();
 
   const onButtonConfirm = async () => {
     try {
       const connection = getNetworkManager().connect(serverUrl);
 
-      const channel = getLaoChannel(laoId);
-      if (!channel) {
+      const laoChannel = getLaoChannel(laoId);
+      if (!laoChannel) {
         throw new Error('The given LAO ID is invalid');
       }
 
-      // subscribe to the lao channel on the new connection
-      await subscribeToChannel(channel, [connection]);
+      const lao = getLaoById(laoId);
+
+      if (lao) {
+        // subscribe to all previously subscribed to channels on the new connection
+        await resubscribeToLao(lao, dispatch, [connection]);
+      } else {
+        // subscribe to the lao channel on the new connection
+        await subscribeToChannel(laoId, dispatch, laoChannel, [connection]);
+      }
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_home,
@@ -76,7 +87,9 @@ const ConnectConfirm = () => {
         <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
         <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
 
-        <PoPTextButton onPress={onButtonConfirm}>{STRINGS.connect_connect}</PoPTextButton>
+        <PoPTextButton onPress={onButtonConfirm} testID="connect-button">
+          {STRINGS.connect_connect}
+        </PoPTextButton>
       </View>
     </ScreenWrapper>
   );

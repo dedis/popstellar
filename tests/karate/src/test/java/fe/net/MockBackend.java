@@ -5,8 +5,6 @@ import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
-import fe.utils.verification.PublishMessageVerification;
-import fe.utils.verification.RollCallVerification;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
@@ -19,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import static common.JsonKeys.*;
+import static common.utils.Constants.COIN;
+import static common.utils.Constants.CONSENSUS;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -117,40 +116,33 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     return queue;
   }
 
+  /** Empties the buffer */
   public void clearBuffer() {
     logger.info("Buffer cleared");
     queue.clear();
   }
 
+  /**
+   * @return true if the message buffer is empty
+   */
   public boolean receiveNoMoreResponses() {
     return queue.takeTimeout(5000) == null;
   }
 
+  /**
+   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a
+   * valid message It also replies with valid to subscribe and with the Lao creation message to the
+   * catch-up
+   */
   public void setLaoCreateMode() {
-    replyProducer = ReplyMethods.LAO_CREATE;
+    replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
   }
 
-  public void setRollCallCreateMode() {
-    replyProducer = ReplyMethods.ROLL_CALL_CREATE_BROADCAST;
-  }
-
-  public boolean checkPublishMessage(String message) {
-    return PublishMessageVerification.verifyPublishMessage(message);
-  }
-
-  public boolean checkRollCallCreateMessage(String message) {
-    return RollCallVerification.verifyCreate(message);
-  }
-
-  public boolean checkRollCallOpenMessage(String message){
-    return RollCallVerification.verifyOpen(message, false);
-  }
-
-  public boolean checkRollCallReopenMessage(String message){
-    return RollCallVerification.verifyOpen(message, true);
-  }
-
-  public boolean checkRollCallCloseMessage(String message){
-    return RollCallVerification.verifyCloses(message);
+  /**
+   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It
+   * replies with valid to subscribes and empty (valid) message to catch-ups
+   */
+  public void setValidBroadcastMode() {
+    replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;
   }
 }

@@ -476,7 +476,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -490,7 +489,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -557,7 +555,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -571,7 +568,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1112,7 +1108,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1126,7 +1121,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1193,7 +1187,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1207,7 +1200,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1748,7 +1740,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1762,7 +1753,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >
@@ -1829,7 +1819,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           style={
                             Object {
                               "marginBottom": 16,
-                              "width": "100%",
                             }
                           }
                         >
@@ -1843,7 +1832,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             style={
                               Object {
                                 "marginBottom": 16,
-                                "width": "100%",
                               }
                             }
                           >

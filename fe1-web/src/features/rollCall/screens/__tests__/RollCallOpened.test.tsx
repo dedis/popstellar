@@ -12,7 +12,7 @@ import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils'
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
 import { eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
-import { connectToLao, laoReducer } from 'features/lao/reducer';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 import {
   mockRollCallWithAlias,
   mockRollCallWithAliasState,
@@ -65,7 +65,7 @@ const rollCallId = mockRollCallWithAlias.id.valueOf();
 const mockStore = createStore(
   combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
 );
-mockStore.dispatch(connectToLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao.toState()));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
 const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));

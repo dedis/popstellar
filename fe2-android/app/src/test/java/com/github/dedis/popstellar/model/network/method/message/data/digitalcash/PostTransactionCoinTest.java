@@ -96,7 +96,7 @@ public class PostTransactionCoinTest {
   public void testToString() {
     Transaction trans = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
     PostTransactionCoin postTransaction = new PostTransactionCoin(trans);
-    assertEquals("PostTransactionCoin{ transaction_id=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=transaction=Transaction{version=1, inputs=[input{tx_out_hash='47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=', tx_out_index=0, script=script{type='P2PKH', pubkey='PublicKey(AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)', sig='Signature(CAFEBABE)'}}], outputs=[output{value=32, script=script{type='P2PKH', pubkey_hash='2jmj7l5rSw0yVb-vlWAYkK-YBwk='}}], lock_time=0}}", postTransaction.toString());
+    assertEquals("PostTransactionCoin{ transaction_id=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=, transaction=Transaction{version=1, inputs=[input{tx_out_hash='47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=', tx_out_index=0, script=script{type='P2PKH', pubkey='PublicKey(AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)', sig='Signature(CAFEBABE)'}}], outputs=[output{value=32, script=script{type='P2PKH', pubkey_hash='2jmj7l5rSw0yVb-vlWAYkK-YBwk='}}], lock_time=0}}", postTransaction.toString());
   }
 
 }

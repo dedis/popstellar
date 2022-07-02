@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConnectNavigation renders correctly 1`] = `
+exports[`ConnectOpenScan renders correctly 1`] = `
 <View
   style={
     Object {
@@ -333,9 +333,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               "zIndex": 0,
                             }
                           }
-                        >
-                          <View />
-                        </View>
+                        />
                         <View
                           style={
                             Object {
@@ -396,6 +394,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     >
                                       <View
                                         accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
                                         style={
                                           Object {
                                             "opacity": 1,
@@ -403,7 +403,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                         }
                                       >
                                         <View>
-                                          <Text />
+                                          {"name":"ios-close","size":25,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
@@ -445,6 +445,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     >
                                       <View
                                         accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
                                         style={
                                           Object {
                                             "marginBottom": 8,
@@ -453,7 +455,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                         }
                                       >
                                         <View>
-                                          <Text />
+                                          {"name":"ios-create","size":25,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
@@ -482,6 +484,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     >
                                       <View
                                         accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
                                         style={
                                           Object {
                                             "opacity": 1,
@@ -489,69 +493,12 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                         }
                                       >
                                         <View>
-                                          <Text />
+                                          {"name":"ios-code","size":25,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
                                   </View>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 16,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                >
-                                  <View
-                                    accessible={true}
-                                    style={
-                                      Object {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>

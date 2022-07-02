@@ -1,5 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -53,6 +52,10 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
+  digitalCash: {
+    iconName: 'attach-money',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,

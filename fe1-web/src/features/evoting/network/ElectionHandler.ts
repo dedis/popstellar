@@ -5,7 +5,7 @@ import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
 import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
-import { addElectionKey } from '../reducer/ElectionKeyReducer';
+import { addElectionKey } from '../reducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
 import { OpenElection } from './messages/OpenElection';
@@ -121,7 +121,7 @@ export const handleElectionSetupMessage =
 
     // Subscribing to the election channel corresponding to that election
     const electionChannel = channelFromIds(election.lao, election.id);
-    subscribeToChannel(electionChannel).catch((err) => {
+    subscribeToChannel(election.lao, dispatch, electionChannel).catch((err) => {
       console.error('Could not subscribe to Election channel, error:', err);
     });
 

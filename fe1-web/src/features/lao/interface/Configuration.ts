@@ -1,8 +1,9 @@
 import React from 'react';
-import { AnyAction, Reducer } from 'redux';
+import { AnyAction, Dispatch, Reducer } from 'redux';
 
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Channel, Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
@@ -74,15 +75,20 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* hooks */
   hooks: {
     /**
-     * Gets the list of LAOs
-     * @returns The list of LAOs
+     * Gets the list of laos
      */
     useLaoList: () => Lao[];
 
     /**
-     * Checks whether the current user is an organizer of the current lao
+     * Gets the list of lao ids
      */
-    useIsLaoOrganizer: () => boolean;
+    useLaoIds: () => Hash[];
+
+    /**
+     * Checks whether the current user is an organizer of the given lao
+     * If no laoId is passed, it is checked for the current lao
+     */
+    useIsLaoOrganizer: (laoId?: string) => boolean;
 
     /**
      * Checks whether the current user is a witness of the current lao
@@ -114,6 +120,16 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The public key or undefined if there is none
      */
     useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+
+    /**
+     * Returns the function to disconnect from the current lao
+     */
+    useDisconnectFromLao: () => () => void;
+
+    /**
+     * Returns a map from lao id to the respective name
+     */
+    useNamesByLaoId: () => { [laoId: string]: string };
   };
 
   /* functions */
@@ -161,11 +177,25 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     isLaoWitness: () => boolean;
 
     /**
+     * Returns the lao organizer's public key
+     */
+    getLaoOrganizer: (laoId: string) => PublicKey | undefined;
+
+    /**
      * Get a LAOs channel by its id
      * @param laoId The id of the lao whose channel should be returned
      * @returns The channel related to the passed lao id
      */
     getLaoChannel: (laoId: string) => Channel | undefined;
+
+    /**
+     * Resubscribes to a known lao
+     */
+    resubscribeToLao: (
+      lao: Lao,
+      dispatch: Dispatch,
+      connections?: NetworkConnection[],
+    ) => Promise<void>;
   };
 
   /* reducers */

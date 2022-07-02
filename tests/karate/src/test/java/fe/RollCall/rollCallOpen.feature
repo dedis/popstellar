@@ -7,16 +7,21 @@ Feature: Open Roll Call
     * replace rc_page_object.env = karate.env
 
 
-    * backend.setRollCallCreateMode()
-    # Unused, just needed to clear the buffer when the create message arrives
-    * json create_msg = buffer.takeTimeout(timeout)
+    * backend.setValidBroadcastMode()
     And call read(rc_page_object)
 
     # Retrieving sent messages
     * json open_rc_json = buffer.takeTimeout(timeout)
     * string open_rc_string = open_rc_json
 
-    Then match open_rc_json contains deep { method: 'publish'}
-    And match backend.checkPublishMessage(open_rc_string) == true
-    And match backend.checkRollCallOpenMessage(open_rc_string) == true
+     # General message verification
+    Then match open_rc_json contains deep { method: 'publish' }
+    * match messageVerification.verifyMessageIdField(open_rc_string) == true
+    And match messageVerification.verifyMessageSignature(open_rc_string) == true
+
+    # Roll Call specific verification
+    And match verificationUtils.getObject(open_rc_string) == constants.ROLL_CALL
+    * match verificationUtils.getAction(open_rc_string) == constants.OPEN
+    And match rollCallVerification.verifyRollCallUpdateId(open_rc_string) == true
+
     And match backend.receiveNoMoreResponses() == true

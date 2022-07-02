@@ -2,17 +2,18 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * The transaction object
  */
 public final class Transaction {
+
   @SerializedName(value = "version")
   private final int version; // The version of the transaction inputs
 
@@ -27,9 +28,10 @@ public final class Transaction {
 
   /**
    * Transaction constructor
-   * @param version The version of the transaction inputs
-   * @param inputs [Array[Objects]] array of output transactions to use as inputs
-   * @param outputs [Array[Objects]] array of outputs from this transactions
+   *
+   * @param version  The version of the transaction inputs
+   * @param inputs   [Array[Objects]] array of output transactions to use as inputs
+   * @param outputs  [Array[Objects]] array of outputs from this transactions
    * @param lockTime TimeStamp
    */
   public Transaction(int version, List<Input> inputs, List<Output> outputs, long lockTime) {
@@ -98,8 +100,12 @@ public final class Transaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Transaction that = (Transaction) o;
     return version == that.version
         && lockTime == that.lockTime
@@ -125,4 +131,33 @@ public final class Transaction {
         + lockTime
         + '}';
   }
+
+  /**
+   * Function that given a key pair change the sig of an input considering all the outputs
+   *
+   * @return sig other all the outputs and inputs with the public key
+   */
+  public static String computeSigOutputsPairTxOutHashAndIndex(
+      List<Output> outputs, Map<String, Integer> inputsPairs) {
+    // input #1: tx_out_hash Value //input #1: tx_out_index Value
+    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
+    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
+    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
+    // Value...
+    List<String> sig = new ArrayList<>();
+
+    for (Map.Entry<String, Integer> current : inputsPairs.entrySet()) {
+      sig.add(current.getKey());
+      sig.add(String.valueOf(current.getValue()));
+    }
+
+    for (Output current : outputs) {
+      sig.add(String.valueOf(current.getValue()));
+      sig.add(current.getScript().getType());
+      sig.add(current.getScript().getPubkeyHash());
+    }
+
+    return String.join("", sig.toArray(new String[0]));
+  }
+
 }

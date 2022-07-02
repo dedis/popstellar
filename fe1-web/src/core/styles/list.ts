@@ -11,6 +11,7 @@ export const item: ViewStyle = {
 export const accordionItem: ViewStyle = {
   backgroundColor: background,
   paddingLeft: 0,
+  paddingRight: 0,
 };
 
 export const firstItem: ViewStyle = {
@@ -50,6 +51,7 @@ export const top: ViewStyle = {
 
 export const container: ViewStyle = {
   borderRadius: radius,
+  marginBottom: x1,
 };
 
 export const icon: ViewStyle = {

@@ -7,14 +7,11 @@ import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.google.common.reflect.TypeToken;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.google.gson.Gson;
 
 import org.junit.Test;
 
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +23,7 @@ public class CastVoteTest {
   private final String laoId = "myLao";
   private final String electionId = " myElection";
   private final boolean writeInEnabled = false;
+  private final long timestamp = 10;
   private final String write_in = "My write in ballot option";
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
@@ -45,6 +43,8 @@ public class CastVoteTest {
 
   // Create the cast votes messages
   private final CastVote<ElectionVote> castOpenVote = new CastVote(electionVotes,  electionId, laoId);
+  private final CastVote<ElectionVote> castVoteWithTimestamp =
+      new CastVote<>(electionVotes, electionId, laoId, timestamp);
   private final CastVote<ElectionEncryptedVote> castEncryptedVote = new CastVote(electionEncryptedVotes, electionId, laoId);
 
   @Test
@@ -76,6 +76,7 @@ public class CastVoteTest {
             castOpenVote, new CastVote(Collections.singletonList(electionVote1),"random", laoId));
     assertNotEquals(
              castOpenVote, new CastVote(Collections.singletonList(electionVote1),electionId, "random"));
+    assertEquals(castVoteWithTimestamp, new CastVote(electionVotes, electionId, laoId, timestamp));
 
     // Test a SECRET_BALLOT cast vote
     assertEquals(castEncryptedVote, new CastVote(electionEncryptedVotes, electionId, laoId));
@@ -88,32 +89,13 @@ public class CastVoteTest {
             castEncryptedVote, new CastVote(Collections.singletonList(electionEncryptedVote1), electionId, "random"));
   }
 
-  /**
-   * Deserialization needs a specific generic type to match correctly the class
-   */
+  /** Deserialization needs a specific generic type to match correctly the class */
   @Test
-  public void jsonValidationTestOpenBallot() {
+  public void jsonValidationTest() {
     // Schema should be valid with both vote lists
-    // For testing now, create a custom JSON Test parser
-    String json = GSON.toJson(castOpenVote, Data.class);
-    JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, json);
-    Type token = new TypeToken<CastVote<ElectionVote>>() {
-    }.getType();
-    assertEquals(castOpenVote, GSON.fromJson(json, token));
-  }
-
-  /**
-   * Deserialization needs a specific generic type to match correctly the class
-   */
-  @Test
-  public void jsonValidationTestSecretBallot() {
-    // Schema should be valid with both vote lists
-    // For testing now, create a custom JSON Test parser
-    String json = GSON.toJson(castEncryptedVote, Data.class);
-    JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, json);
-    Type token = new TypeToken<CastVote<ElectionEncryptedVote>>() {
-    }.getType();
-    assertEquals(castEncryptedVote, GSON.fromJson(json, token));
+    // Should use the custom deserializer
+    JsonTestUtils.testData(castEncryptedVote);
+    JsonTestUtils.testData(castOpenVote);
   }
 
 }

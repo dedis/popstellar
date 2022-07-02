@@ -23,7 +23,7 @@ import { LaoServer } from 'features/lao/objects/LaoServer';
 import {
   addServer,
   addUnhandledGreetLaoMessage,
-  connectToLao,
+  setCurrentLao,
   greetLaoReducer,
   handleGreetLaoMessage,
   laoReducer,
@@ -210,7 +210,7 @@ describe('makeLaoGreetStoreWatcher', () => {
       signature: witnessMessage.signature,
     });
 
-    mockStore.dispatch(connectToLao(mockLaoState));
+    mockStore.dispatch(setCurrentLao(mockLaoState));
     mockStore.dispatch(addMessages([greetLaoMessage.toState(), extendedWitnessMessage.toState()]));
     mockStore.dispatch(
       addUnhandledGreetLaoMessage({
