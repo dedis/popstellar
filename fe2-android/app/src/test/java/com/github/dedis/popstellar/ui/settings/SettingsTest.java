@@ -19,7 +19,6 @@ import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -29,12 +28,12 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @RunWith(AndroidJUnit4.class)
 public class SettingsTest {
 
-  private final FragmentScenarioRule<SettingsFragment> fragmentRule =
+  @Rule(order = 0)
+  public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+  @Rule(order = 1)
+  public final FragmentScenarioRule<SettingsFragment> fragmentRule =
       FragmentScenarioRule.launch(SettingsFragment.class);
-
-  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
-  @Rule public final RuleChain chain = RuleChain.outerRule(hiltRule).around(fragmentRule);
 
   @Test
   public void uiElementsAreDisplayed() {
