@@ -1008,7 +1008,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
                                   >
-                                    1 year ago
+                                    2 years ago
                                   </time>
                                 </Text>
                               </View>
@@ -2475,7 +2475,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
                                   >
-                                    1 year ago
+                                    2 years ago
                                   </time>
                                 </Text>
                               </View>
