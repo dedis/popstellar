@@ -192,6 +192,8 @@ Feature: Constants
           return "sa3fa23saPso4mas5493fn290sasGl8asm3qalDFGsn42="
         }
       """
+    # TODO: add a computation of registered votes so it can be checked properly
+    # Right now it uses the registered votes that the Go backend computes
     * def createValidRegisteredVotes =
       """
         function(){

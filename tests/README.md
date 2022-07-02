@@ -1,5 +1,5 @@
 ﻿# Functional Requirements
-Last updated  : 25.6.2022
+Last updated  : 2.7.2022
 
 # Lao
 ## Create
@@ -23,7 +23,7 @@ Last updated  : 25.6.2022
 ## Create
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |Unstable|   X    |    X   |
+| Be1 |Operational|   X    |    X   |
 | Be2 |Reliable|   X    |    X   |
 | Fe1 |Operational|   X    |    X   |
 | Fe2 |Operational|   X    |    X   |
@@ -33,7 +33,7 @@ Last updated  : 25.6.2022
 
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |Unstable|   X    |    X   |
+| Be1 |Operational|   X    |    X   |
 | Be2 |Reliable|   X    |    X   |
 | Fe1 |Operational|     X  |    X   |
 | Fe2 |Operational|     X  |    X   |
@@ -43,7 +43,7 @@ Last updated  : 25.6.2022
 
 |     | Status | Manual | Karate |
 |-----|--------|--------|--------|
-| Be1 |Unstable|    X   |    X   |
+| Be1 |Operational|    X   |    X   |
 | Be2 |Operational|    X   |    X   |
 | Fe1 |Operational|     X  |    X   |
 | Fe2 |Operational|     X  |    X   |

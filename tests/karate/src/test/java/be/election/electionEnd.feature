@@ -34,7 +34,7 @@ Feature: Terminate an election
         }
       """
     When frontend.publish(JSON.stringify(validElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionEnd))
+    And json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))
     Then match answer contains ELECTION_RESULTS
     And match frontend.receiveNoMoreResponses() == true
 
