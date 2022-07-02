@@ -11,63 +11,65 @@ import static common.utils.Constants.*;
 import static common.utils.JsonUtils.getJSON;
 import static fe.utils.verification.VerificationUtils.getMsgDataJson;
 
-/**
- * This class contains functions used to test fields specific to Roll-Call
- */
+/** This class contains functions used to test fields specific to Roll-Call */
 public class RollCallVerification {
-  private final static Logger logger = new Logger(RollCallVerification.class.getSimpleName());
+  private static final Logger logger = new Logger(RollCallVerification.class.getSimpleName());
 
   /**
    * Verifies that the roll call id is computed as expected
+   *
    * @param message the message sent over the network
    * @return true if the roll call id field matches expectations
    */
- public boolean verifyRollCallId(String message){
-   String laoId = getLaoId(message);
-   Json createMessageJson = getMsgDataJson(message);
+  public boolean verifyRollCallId(String message) {
+    String laoId = getLaoId(message);
+    Json createMessageJson = getMsgDataJson(message);
 
-   return verifyRollCallId(createMessageJson, laoId);
- }
+    return verifyRollCallId(createMessageJson, laoId);
+  }
 
   /**
    * Verifies if the name specified in the network message matches the one provided
+   *
    * @param message the message sent over the network
    * @param name the name to be compared to
    * @return true if the name contained in message matches the one in argument
    */
- public boolean verifyRollCallName(String message, String name){
-   Json createMessageJson = getMsgDataJson(message);
-   logger.info("name in arguement is " + name);
-   logger.info("name in json is " +createMessageJson.get(NAME));
-   return name.equals(createMessageJson.get(NAME));
- }
+  public boolean verifyRollCallName(String message, String name) {
+    Json createMessageJson = getMsgDataJson(message);
+    logger.info("name in arguement is " + name);
+    logger.info("name in json is " + createMessageJson.get(NAME));
+    return name.equals(createMessageJson.get(NAME));
+  }
 
-/**
- * Verifies that the roll call open update_id field is valid
- * @param message the message sent over the network
- * @return true if the update_id field match expectations
- */
- public boolean verifyRollCallUpdateId (String message){
-   String laoId = getLaoId(message);
-   Json openMessageJson = getMsgDataJson(message);
-   return verifyUpdateId(openMessageJson, laoId);
- }
-
-  public static boolean verifyCloses(String message) {
+  /**
+   * Verifies that the roll call open update_id field is valid
+   *
+   * @param message the message sent over the network
+   * @return true if the update_id field match expectations
+   */
+  public boolean verifyRollCallUpdateId(String message, String action) {
     String laoId = getLaoId(message);
-    Json closeMessageJson = getMsgDataJson(message);
-    List<String> attendees = closeMessageJson.get(ATTENDEES);
-    logger.info("attendees are " + attendees.toString());
-    boolean objectFieldCorrectness = ROLL_CALL.equals(closeMessageJson.get(OBJECT));
-    boolean actionFieldCorrectness = CLOSE.equals(closeMessageJson.get(ACTION));
-    boolean updateIdCorrectness = verifyUpdateId(closeMessageJson, laoId, CLOSES, CLOSED_AT);
-    logger.info("object " + objectFieldCorrectness + " action " + actionFieldCorrectness + " update " + updateIdCorrectness);
-    return objectFieldCorrectness && actionFieldCorrectness && updateIdCorrectness && attendees.size()==1;
+    Json msgDataJson = getMsgDataJson(message);
+    return verifyUpdateId(msgDataJson, laoId, action);
+  }
+
+  public boolean verifyAttendeesPresence(String message, String... attendees) {
+    Json msgDataJson = getMsgDataJson(message);
+    List<String> msgAttendees = msgDataJson.get(ATTENDEES);
+    logger.info("Nbr attendees " + attendees.length + " message " + msgAttendees.toString());
+    for (String attendee : attendees) {
+      if (!msgAttendees.contains(attendee)) {
+        return false;
+      }
+    }
+    // The attendee list should be the organizer and all added attendees
+    return attendees.length + 1 == msgAttendees.size();
   }
 
   ////////////////////// Utils //////////////////////
 
-  private boolean verifyRollCallId(Json createMessageJson, String laoId){
+  private boolean verifyRollCallId(Json createMessageJson, String laoId) {
     String rcId = createMessageJson.get(ID);
     String creation = getStringFromIntegerField(createMessageJson, CREATION);
     String rcName = createMessageJson.get(NAME);
@@ -82,15 +84,13 @@ public class RollCallVerification {
     }
   }
 
-  /**
-   * Because of internal type used by karate, doing casting in 2 steps is required
-   */
-  private String getStringFromIntegerField(Json json, String key){
+  /** Because of internal type used by karate, doing casting in 2 steps is required */
+  private String getStringFromIntegerField(Json json, String key) {
     Integer intTemp = json.get(key);
     return String.valueOf(intTemp);
   }
 
-  private static String getLaoId(String message){
+  private static String getLaoId(String message) {
     Json paramsFieldJson = getJSON(Json.of(message), PARAMS);
     String channel = paramsFieldJson.get(CHANNEL);
 
@@ -98,22 +98,17 @@ public class RollCallVerification {
     return channel.replace("/root/", "").replace("\\", "");
   }
 
-  private  boolean verifyUpdateId(Json createMessageJson, String laoId){
-    String updateId = createMessageJson.get(UPDATE_ID);
-    String opens = createMessageJson.get(OPENS);
-    String openedAt = getStringFromIntegerField(createMessageJson, OPENED_AT);
   /**
    * Verifies the update_id of a roll-call message
    *
    * @param rollCallMessageJson the message_data of the roll-call message
    * @param laoId the laoId of the LAO in which the roll-call is taking place
-   * @param referenceKey is either closes or opens depending on the action
-   * @param timeKey is either opened_at or closed_at depending on the action
+   * @param action the roll call action (e.g. open)
    * @return true if the computed id matches the one provided in the message_data
    */
-  private static boolean verifyUpdateId(
-      Json rollCallMessageJson, String laoId, String referenceKey, String timeKey) {
-
+  private boolean verifyUpdateId(Json rollCallMessageJson, String laoId, String action) {
+    String referenceKey = action.equals(CLOSE_STATIC) ? CLOSES : OPENS;
+    String timeKey = action.equals(CLOSE_STATIC) ? CLOSED_AT : OPENED_AT;
     String updateId = rollCallMessageJson.get(UPDATE_ID);
     String reference = rollCallMessageJson.get(referenceKey);
     String time = getStringFromIntegerField(rollCallMessageJson, timeKey);

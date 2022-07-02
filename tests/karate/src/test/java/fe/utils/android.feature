@@ -87,7 +87,8 @@ Feature: android page object
   Scenario: Closes a roll call with only the organizer attending
     # opens the roll call in manual mode, we don't use the camera
     * retry(5,200).click(roll_call_manual_selector)
-    # click on close button
+    * backend.clearBuffer()
+      # click on close button
     * retry(5,200).click(roll_call_close_selector)
     * dialog(true)
 

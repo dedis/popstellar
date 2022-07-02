@@ -19,13 +19,13 @@ public class FrontEndTest {
 //    return Karate.run("classpath:fe/RollCall/rollCallOpen.feature");
 //  }
 
-//  @Karate.Test
-//  Karate testCloseRC() {
-//    return Karate.run("classpath:fe/RollCall/rollCallClose.feature");
-//  }
-
   @Karate.Test
-  Karate testReopenRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallReopen.feature");
+  Karate testCloseRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallClose.feature");
   }
+
+//  @Karate.Test
+//  Karate testReopenRC() {
+//    return Karate.run("classpath:fe/RollCall/rollCallReopen.feature");
+//  }
 }

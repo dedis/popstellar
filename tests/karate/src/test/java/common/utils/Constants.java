@@ -35,13 +35,6 @@ public class Constants {
 
   public static final String ACTION = "action";
 
-  public static final String CREATE = "create";
-
-  public static final String OPEN = "open";
-
-  public static final String REOPEN = "reopen";
-
-  public static final String CLOSE = "close";
 
   public static final String OBJECT = "object";
 
@@ -57,6 +50,8 @@ public class Constants {
 
   public static final String CLOSES = "closes";
 
+  public static final String CLOSE_STATIC = "close";
+
   public static final String CLOSED_AT = "closed_at";
 
   public static final String ATTENDEES = "attendees";
@@ -70,4 +65,10 @@ public class Constants {
   public final String OPEN = "open";
 
   public final String RC_NAME = "Roll-Call";
+
+  public final String REOPEN = "reopen";
+
+  public final String CLOSE = "close";
+
+
 }
