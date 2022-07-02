@@ -41,15 +41,18 @@ public class RollCallVerification {
    return name.equals(createMessageJson.get(NAME));
  }
 
+/**
+ * Verifies that the roll call open update_id field is valid
+ * @param message the message sent over the network
+ * @return true if the update_id field match expectations
+ */
+ public boolean verifyRollCallUpdateId (String message){
+   String laoId = getLaoId(message);
+   Json openMessageJson = getMsgDataJson(message);
+   return verifyUpdateId(openMessageJson, laoId);
+ }
+
   //////////////////////////////////////////////////// Utils ///////////////////////////////////////////////////////////
-
-  private String getLaoId(String message){
-    Json paramsFieldJson = getJSON(Json.of(message), PARAMS);
-    String channel = paramsFieldJson.get(CHANNEL);
-
-    // The laoId is the channel without leading /root/ and end \ characters
-    return channel.replace("/root/", "").replace("\\", "");
-  }
 
   private boolean verifyRollCallId(Json createMessageJson, String laoId){
     String rcId = createMessageJson.get(ID);
@@ -70,5 +73,26 @@ public class RollCallVerification {
   private String getStringFromIntegerField(Json json, String key){
     Integer intTemp = json.get(key);
     return String.valueOf(intTemp);
+  }
+
+  private static String getLaoId(String message){
+    Json paramsFieldJson = getJSON(Json.of(message), PARAMS);
+    String channel = paramsFieldJson.get(CHANNEL);
+
+    // The laoId is the channel without leading /root/ and end \ characters
+    return channel.replace("/root/", "").replace("\\", "");
+  }
+
+  private  boolean verifyUpdateId(Json createMessageJson, String laoId){
+    String updateId = createMessageJson.get(UPDATE_ID);
+    String opens = createMessageJson.get(OPENS);
+    String openedAt = getStringFromIntegerField(createMessageJson, OPENED_AT);
+
+    try {
+      return updateId.equals(JsonConverter.hash("R".getBytes(), laoId.getBytes(), opens.getBytes(), openedAt.getBytes()));
+    } catch (NoSuchAlgorithmException e) {
+      logger.info("verification failed with error: " + e);
+      return false;
+    }
   }
 }

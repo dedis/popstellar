@@ -13,4 +13,9 @@ public class FrontEndTest {
   Karate testCreateRC() {
     return Karate.run("classpath:fe/RollCall/rollCallCreation.feature");
   }
+
+  @Karate.Test
+  Karate testOpenRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallOpen.feature");
+  }
 }

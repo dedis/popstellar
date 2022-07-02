@@ -25403,7 +25403,7 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers closed r
                         onResponderTerminate={[Function]}
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
-                        testID="roll-call-options"
+                        testID="roll_call_options"
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
@@ -25769,7 +25769,7 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers created 
                         onResponderTerminate={[Function]}
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
-                        testID="roll-call-options"
+                        testID="roll_call_options"
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
@@ -26135,7 +26135,7 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers opened r
                         onResponderTerminate={[Function]}
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
-                        testID="roll-call-options"
+                        testID="roll_call_options"
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
@@ -26501,7 +26501,7 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers re-opene
                         onResponderTerminate={[Function]}
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
-                        testID="roll-call-options"
+                        testID="roll_call_options"
                       >
                         <RNGestureHandlerButton
                           collapsable={false}

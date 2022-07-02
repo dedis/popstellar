@@ -7,7 +7,6 @@ Feature: Create RollCall
     * call read('classpath:fe/utils/simpleScenarios.feature@name=create_lao')
 
     # Call the roll call creation util that is front-end dependant
-    * string rc_name = "Roll-Call"
     * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=create_roll_call'
     * replace rc_page_object.env = karate.env
 
@@ -29,13 +28,13 @@ Feature: Create RollCall
     # Roll Call specific verification
     And match verificationUtils.getObject(create_rc_string) == constants.ROLL_CALL
     * match verificationUtils.getAction(create_rc_string) == constants.CREATE
-    * match (rollCallVerification.verifyRollCallName(create_rc_string, rc_name)) == true
+    * match (rollCallVerification.verifyRollCallName(create_rc_string, constants.RC_NAME)) == true
     And match rollCallVerification.verifyRollCallId(create_rc_string) == true
 
     And match backend.receiveNoMoreResponses() == true
 
     # check display
-    And match text(event_name_selector) contains rc_name
+    And match text(event_name_selector) contains constants.RC_NAME
 
 
 

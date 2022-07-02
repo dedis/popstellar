@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    #* configure driver = { type: 'chrome' }
+    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    * configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -27,6 +27,8 @@ Feature: web test
     * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
     * def event_name_selector = "[data-testid='current_event_selector_0']"
 
+    # Roll Call Screen
+    * def roll_call_option_selector = "[data-testid='roll_call_options']"
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -54,7 +56,6 @@ Feature: web test
             }
           """
 
-    # Click on the explore button of the intro screen
     * click(exploring_selector)
     # Click on the connect navigation item
     * click(tab_connect_selector)
@@ -63,7 +64,7 @@ Feature: web test
     # Connect to the backend
     * input(backend_address_selector, backendURL)
 
-  # Roll call web procedure
+  # Roll call create web procedure
   @name=create_roll_call
   Scenario: Create a roll call for an already created LAO
     Given retry(10, 200).click(tab_events_selector)
@@ -82,5 +83,13 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, rc_name)
+    And input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
+
+  # Roll call open web procedure
+  @name=open_roll_call
+  Scenario: Opens the created roll-call
+    * retry(5,1000).click(event_name_selector)
+    * retry(5,1000).click(roll_call_option_selector)
+    * backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")

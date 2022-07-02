@@ -39,9 +39,19 @@ public class Constants {
 
   public static final String CREATION = "creation";
 
+  public static final String OPENS = "opens";
+
+  public static final String OPENED_AT = "opened_at";
+
+  public static final String UPDATE_ID = "update_id";
+
   ///////////////////////// Non Static for Karate files calls ///////////////////////////////
 
   public final String ROLL_CALL = "roll_call";
 
   public final String CREATE = "create";
+
+  public final String OPEN = "open";
+
+  public final String RC_NAME = "Roll-Call";
 }
