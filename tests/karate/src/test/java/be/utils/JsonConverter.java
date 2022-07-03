@@ -124,7 +124,7 @@ public class JsonConverter {
   }
 
   /** Hashes an arbitrary number of arguments */
-  public static String hash(byte[]... allData) throws NoSuchAlgorithmException {
+  public String hash(byte[]... allData) throws NoSuchAlgorithmException {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       for (byte[] data : allData) {
         String dataLength = Integer.toString(data.length);

@@ -17,7 +17,6 @@ public class RollCallVerification {
 
   /**
    * Verifies that the roll call id is computed as expected
-   *
    * @param message the message sent over the network
    * @return true if the roll call id field matches expectations
    */
@@ -83,9 +82,8 @@ public class RollCallVerification {
     String rcName = createMessageJson.get(NAME);
 
     try {
-      return rcId.equals(
-          JsonConverter.hash(
-              "R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
+      JsonConverter jsonConverter = new JsonConverter();
+      return rcId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
@@ -122,9 +120,8 @@ public class RollCallVerification {
     String time = getStringFromIntegerField(rollCallMessageJson, timeKey);
 
     try {
-      return updateId.equals(
-          JsonConverter.hash(
-              "R".getBytes(), laoId.getBytes(), reference.getBytes(), time.getBytes()));
+      JsonConverter jsonConverter = new JsonConverter();
+      return updateId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), reference.getBytes(), time.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
