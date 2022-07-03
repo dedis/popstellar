@@ -7,16 +7,28 @@ Feature: web test
 
     # ================= Page Object Start ====================
 
-    # Tab buttons
-    * def tab_home_selector = '{}Home'
-    * def tab_connect_selector = '{}Connect'
-    * def tab_launch_selector = '{}Launch'
-    * def tab_wallet_selector = '{}Wallet'
+    # Introduction screen
+    * def exploring_selector = "[data-testid='exploring_selector']"
 
-    # Launch tab
-    * def tab_launch_lao_name_selector = "input[placeholder='Organization name']"
-    * def tab_launch_address_selector = "input[placeholder='Address']"
-    * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
+    #Home Screen
+    * def tab_connect_selector = '{}Connect'
+    * def launch_selector = "[data-testid='launch_selector']"
+
+    # Launch screen
+    * def tab_launch_lao_name_selector = "input[data-testid='launch_organization_name_selector']"
+    * def backend_address_selector = "input[data-testid='launch_address_selector']"
+    * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
+
+    # Lao Event List
+    * def add_event_selector = "[data-testid='create_event_selector']"
+    * def tab_events_selector = '{}Events'
+    * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
+    * def roll_call_location_selector = "input[data-testid='roll_call_location_selector']"
+    * def roll_call_confirm_selector = "[data-testid='roll_call_confirm_selector']"
+    * def event_name_selector = "[data-testid='current_event_selector_0']"
+
+    # Roll Call Screen
+    * def roll_call_option_selector = "[data-testid='roll_call_options']"
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -44,6 +56,40 @@ Feature: web test
             }
           """
 
-    And click(tab_launch_selector)
-    And input(tab_launch_address_selector, backendURL)
-    And click(tab_home_selector)
+    * click(exploring_selector)
+    # Click on the connect navigation item
+    * click(tab_connect_selector)
+    # Click on launch button
+    * click(launch_selector)
+    # Connect to the backend
+    * input(backend_address_selector, backendURL)
+
+  # Roll call create web procedure
+  @name=create_roll_call
+  Scenario: Create a roll call for an already created LAO
+    Given retry(10, 200).click(tab_events_selector)
+    And click(add_event_selector)
+
+    # Clicking on Create Roll-Call. This is because it is (as of now) an actionSheet element which does not have an id
+    # If it breaks down, check that the name of the button has not changed, try to add more delay. Otherwise maybe karate
+    # added a way to directly do that after the time of our writing.
+    #
+    # script allows the evaluation of arbitrary javascript code and document.evaluate
+    # (https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) allows the evaluation of an XPath expression.
+    #
+    # Somehow this turned out to work, at least if it was wrapped
+    # in a setTimeout which delays the execution of the script.
+    # The XPath selector is described here: https://stackoverflow.com/a/29289196/2897827
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+
+    # Provide roll call required information
+    And input(roll_call_title_selector, constants.RC_NAME)
+    And input(roll_call_location_selector, 'EPFL')
+
+  # Roll call open web procedure
+  @name=open_roll_call
+  Scenario: Opens the created roll-call
+    * retry(5,1000).click(event_name_selector)
+    * retry(5,1000).click(roll_call_option_selector)
+    * backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")

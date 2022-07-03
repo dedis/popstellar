@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
@@ -8,13 +8,13 @@ import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 
-import PoPIcon from './PoPIcon';
-
 // FIXME: Remove CSS imports in order to support native apps
 // At the time of writing expo-camera nor expo-barcode-scanner work in web builds
 // because they load an external dependency (jsQR) that somehow does not properly load
 // outside the examples expo provides
 import '../platform/web-styles/qr-code-scanner.css';
+import PoPIcon from './PoPIcon';
+import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 export const QrCodeScannerUIElementContainer: ViewStyle = {
   backgroundColor: Color.contrast,
@@ -102,13 +102,13 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
         {hasMultipleCameras && (
           <View style={styles.buttonContainer}>
             <View style={styles.flipButtonContainer}>
-              <TouchableOpacity
+              <PoPTouchableOpacity
                 style={styles.flipButton}
                 onPress={() => {
                   setFacingMode(facingMode === 'user' ? 'environment' : 'user');
                 }}>
                 <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
-              </TouchableOpacity>
+              </PoPTouchableOpacity>
             </View>
           </View>
         )}

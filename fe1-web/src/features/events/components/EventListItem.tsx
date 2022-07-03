@@ -21,7 +21,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 const EventListItem = (props: IPropTypes) => {
-  const { eventId, eventType, isFirstItem, isLastItem } = props;
+  const { eventId, eventType, isFirstItem, isLastItem, testID } = props;
 
   const navigation = useNavigation<NavigationProps['navigation']>();
 
@@ -39,6 +39,7 @@ const EventListItem = (props: IPropTypes) => {
       containerStyle={listStyle}
       style={listStyle}
       bottomDivider
+      testID={testID || undefined}
       onPress={() =>
         navigation.push(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_events,
@@ -68,8 +69,13 @@ const propTypes = {
   eventType: PropTypes.string.isRequired,
   isFirstItem: PropTypes.bool.isRequired,
   isLastItem: PropTypes.bool.isRequired,
+  testID: PropTypes.string,
 };
 EventListItem.propTypes = propTypes;
+
+EventListItem.defaultProps = {
+  testID: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

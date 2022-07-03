@@ -63,7 +63,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     setShowModal(true);
                   }}>
                   <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>
+                    <ListItem.Title style={Typography.base} numberOfLines={1}>
                       {transaction.transactionId.valueOf()}
                     </ListItem.Title>
                     <ListItem.Subtitle style={Typography.small}>
@@ -174,7 +174,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       style={listStyle}
                       bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title style={Typography.base}>
+                        <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {output.script.publicKeyHash.valueOf()}
                         </ListItem.Title>
                       </ListItem.Content>

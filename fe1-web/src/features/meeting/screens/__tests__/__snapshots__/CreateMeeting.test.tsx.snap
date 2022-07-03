@@ -439,69 +439,89 @@ exports[`CreateMeeting renders correctly 1`] = `
                               }
                             }
                           >
-                            <RNGestureHandlerButton
+                            <View
+                              accessible={true}
                               collapsable={false}
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
                                   "marginBottom": 16,
                                 }
                               }
                             >
-                              <View
-                                accessible={true}
+                              <RNGestureHandlerButton
                                 collapsable={false}
-                                nativeID="animatedComponent"
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
                                 style={
                                   Object {
-                                    "opacity": 1,
+                                    "marginBottom": 16,
                                   }
                                 }
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  nativeID="animatedComponent"
                                   style={
-                                    Array [
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      Object {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
+                                    Object {
+                                      "opacity": 1,
+                                    }
                                   }
                                 >
-                                  <Text
+                                  <View
                                     style={
                                       Array [
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
                                         },
                                         Object {
-                                          "textAlign": "center",
-                                        },
-                                        Object {
-                                          "color": "#fff",
+                                          "backgroundColor": "#8E8E8E",
+                                          "borderColor": "#8E8E8E",
                                         },
                                       ]
                                     }
                                   >
-                                    Create meeting
-                                  </Text>
+                                    <Text
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "textAlign": "center",
+                                          },
+                                          Object {
+                                            "color": "#fff",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      Create meeting
+                                    </Text>
+                                  </View>
                                 </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                              </RNGestureHandlerButton>
+                            </View>
                           </View>
                           <Modal
                             hardwareAccelerated={false}
@@ -569,65 +589,85 @@ exports[`CreateMeeting renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <RNGestureHandlerButton
+                                <View
+                                  accessible={true}
                                   collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
                                       "marginBottom": 16,
                                     }
                                   }
                                 >
-                                  <View
-                                    accessible={true}
+                                  <RNGestureHandlerButton
                                     collapsable={false}
-                                    nativeID="animatedComponent"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
                                     style={
                                       Object {
-                                        "opacity": 1,
+                                        "marginBottom": 16,
                                       }
                                     }
                                   >
                                     <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      nativeID="animatedComponent"
                                       style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "opacity": 1,
+                                        }
                                       }
                                     >
-                                      <Text
+                                      <View
                                         style={
                                           Array [
                                             Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
+                                              "backgroundColor": "#3742fa",
+                                              "borderColor": "#3742fa",
+                                              "borderRadius": 16,
+                                              "borderWidth": 1,
+                                              "padding": 8,
                                             },
                                           ]
                                         }
                                       >
-                                        Ok
-                                      </Text>
+                                        <Text
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          Ok
+                                        </Text>
+                                      </View>
                                     </View>
-                                  </View>
-                                </RNGestureHandlerButton>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </View>
                           </Modal>
@@ -702,13 +742,19 @@ exports[`CreateMeeting renders correctly 1`] = `
                                   >
                                     Event creation failed
                                   </Text>
-                                  <RNGestureHandlerButton
+                                  <View
+                                    accessible={true}
                                     collapsable={false}
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
                                     style={
                                       Object {
                                         "position": "absolute",
@@ -717,31 +763,46 @@ exports[`CreateMeeting renders correctly 1`] = `
                                     }
                                     testID="modal-header-close"
                                   >
-                                    <View
-                                      accessible={true}
+                                    <RNGestureHandlerButton
                                       collapsable={false}
-                                      nativeID="animatedComponent"
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
                                       style={
                                         Object {
-                                          "opacity": 1,
+                                          "position": "absolute",
+                                          "right": 0,
                                         }
                                       }
                                     >
-                                      <Text
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        nativeID="animatedComponent"
                                         style={
                                           Object {
-                                            "color": "#3742fa",
-                                            "fontSize": 20,
-                                            "fontWeight": "500",
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
+                                            "opacity": 1,
                                           }
                                         }
                                       >
-                                        Done
-                                      </Text>
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                        <Text
+                                          style={
+                                            Object {
+                                              "color": "#3742fa",
+                                              "fontSize": 20,
+                                              "fontWeight": "500",
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            }
+                                          }
+                                        >
+                                          Done
+                                        </Text>
+                                      </View>
+                                    </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -757,13 +818,19 @@ exports[`CreateMeeting renders correctly 1`] = `
                                   The event's start time is in the past.
 What do you want to do ?
                                 </Text>
-                                <RNGestureHandlerButton
+                                <View
+                                  accessible={true}
                                   collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Object {
                                       "marginBottom": 16,
@@ -771,52 +838,66 @@ What do you want to do ?
                                   }
                                   testID="confirm-modal-confirm"
                                 >
-                                  <View
-                                    accessible={true}
+                                  <RNGestureHandlerButton
                                     collapsable={false}
-                                    nativeID="animatedComponent"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
                                     style={
                                       Object {
-                                        "opacity": 1,
+                                        "marginBottom": 16,
                                       }
                                     }
                                   >
                                     <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      nativeID="animatedComponent"
                                       style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
+                                        Object {
+                                          "opacity": 1,
+                                        }
                                       }
                                     >
-                                      <Text
+                                      <View
                                         style={
                                           Array [
                                             Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
+                                              "backgroundColor": "#3742fa",
+                                              "borderColor": "#3742fa",
+                                              "borderRadius": 16,
+                                              "borderWidth": 1,
+                                              "padding": 8,
                                             },
                                           ]
                                         }
                                       >
-                                        Start it now
-                                      </Text>
+                                        <Text
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          Start it now
+                                        </Text>
+                                      </View>
                                     </View>
-                                  </View>
-                                </RNGestureHandlerButton>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                             </RCTScrollView>
                           </Modal>

@@ -1,8 +1,8 @@
 package fe.net;
 
+import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
-
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
 import karate.io.netty.channel.Channel;
@@ -10,8 +10,15 @@ import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
+
+import static common.utils.Constants.COIN;
+import static common.utils.Constants.CONSENSUS;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -25,8 +32,11 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   // Defines the rule to apply on incoming messages to produce its reply.
   // Can be null if no reply should be sent back.
-  private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
+  private Function<String, List<String>> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
+  private Json laoCreationMessageData;
+
+  private String laoID;
 
   public MockBackend(MessageQueue queue, int port) {
     this.queue = queue;
@@ -41,7 +51,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
    *
    * @param replyProducer to set
    */
-  public void setReplyProducer(Function<String, String> replyProducer) {
+  public void setReplyProducer(Function<String, List<String>> replyProducer) {
     this.replyProducer = replyProducer;
   }
 
@@ -59,11 +69,13 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   @Override
   protected void channelRead0(
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
-    logger.info("message received : {}", frame.text());
-    queue.onNewMsg(frame.text());
-
-    // Send back the reply
-    if (replyProducer != null) send(replyProducer.apply(frame.text()));
+    String frameText = frame.text();
+    logger.info("message received : {}", frameText);
+    if (!frameText.toLowerCase().contains(CONSENSUS) && !frameText.toLowerCase().contains(COIN)) {
+      // We don't want consensus or coin messages to interfere since we do not test them yet
+      queue.onNewMsg(frameText);
+    }
+    if (replyProducer != null) replyProducer.apply(frameText).forEach(this::send);
   }
 
   public int getPort() {
@@ -102,5 +114,35 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   public MessageBuffer getBuffer() {
     return queue;
+  }
+
+  /** Empties the buffer */
+  public void clearBuffer() {
+    logger.info("Buffer cleared");
+    queue.clear();
+  }
+
+  /**
+   * @return true if the message buffer is empty
+   */
+  public boolean receiveNoMoreResponses() {
+    return queue.takeTimeout(5000) == null;
+  }
+
+  /**
+   * Backend behaviour is specific to Lao Creation. It stores publish message and replies with a
+   * valid message It also replies with valid to subscribe and with the Lao creation message to the
+   * catch-up
+   */
+  public void setLaoCreateMode() {
+    replyProducer = ReplyMethods.CATCHUP_VALID_RESPONSE;
+  }
+
+  /**
+   * Backend behaviour is to respond to publish message with both broadcast and a valid response. It
+   * replies with valid to subscribes and empty (valid) message to catch-ups
+   */
+  public void setValidBroadcastMode() {
+    replyProducer = ReplyMethods.BROADCAST_VALID_RESPONSE;
   }
 }
