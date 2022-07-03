@@ -30,9 +30,9 @@ public class MessageVerification {
     String signature = messageFieldJson.get(SIGNATURE);
     String msgId = messageFieldJson.get(MESSAGE_ID);
     try {
-      return true;
-    //  return msgId.equals(JsonConverter.hash(data.getBytes(), signature.getBytes()));
-    } catch (Exception e) {
+      JsonConverter jsonConverter = new JsonConverter();
+      return msgId.equals(jsonConverter.hash(data.getBytes(), signature.getBytes()));
+    } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
     }

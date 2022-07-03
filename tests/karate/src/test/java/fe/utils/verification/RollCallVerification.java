@@ -62,7 +62,7 @@ public class RollCallVerification {
     try {
       JsonConverter jsonConverter = new JsonConverter();
       return rcId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
-    } catch (Exception e) {
+    } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
     }
