@@ -61,7 +61,7 @@ public class RollCallVerification {
 
     try {
       JsonConverter jsonConverter = new JsonConverter();
-      return rcId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
+      return rcId.equals(JsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
@@ -91,7 +91,7 @@ public class RollCallVerification {
 
     try {
       JsonConverter jsonConverter = new JsonConverter();
-      return updateId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), opens.getBytes(), openedAt.getBytes()));
+      return updateId.equals(JsonConverter.hash("R".getBytes(), laoId.getBytes(), opens.getBytes(), openedAt.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;

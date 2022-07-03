@@ -68,7 +68,7 @@ Feature: Constants
             var jsonConverter = new JsonConverter()
             var organizer = getOrganizer
             var timeString = String.format("%d",time)
-            return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
+            return JsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
 
@@ -83,7 +83,7 @@ Feature: Constants
           var jsonConverter = new JsonConverter()
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d",time)
-          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
+          return JsonConverter.hash("R".getBytes(), laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
         }
       """
     * def createValidRollCallOpenId =
@@ -99,7 +99,7 @@ Feature: Constants
           var jsonConverter = new JsonConverter()
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d", creationTime)
-          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), update.getBytes(), timeString.getBytes())
+          return JsonConverter.hash("R".getBytes(), laoId.getBytes(), update.getBytes(), timeString.getBytes())
         }
       """
     * def createInvalidRollCallOpenUpdateId =
@@ -129,7 +129,7 @@ Feature: Constants
           var lao = getLaoValid
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d",time)
-          return jsonConverter.hash(electionConstant.getBytes(), lao.getBytes(),
+          return JsonConverter.hash(electionConstant.getBytes(), lao.getBytes(),
                                     timeString.getBytes(), name.getBytes())
         }
       """
@@ -149,7 +149,7 @@ Feature: Constants
           var questionConstant = "Question"
           var electionId = getValidElectionSetupId
           var question = "Is this project fun?"
-          return jsonConverter.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
+          return JsonConverter.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
         }
       """
     * def createInvalidQuestionId =
@@ -168,7 +168,7 @@ Feature: Constants
           var voteConstant = "Vote"
           var electionId = getValidElectionSetupId
           var questionId = getIsThisProjectFunQuestionId
-          return jsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
+          return JsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
                                      questionId.getBytes(), vote.getBytes())
         }
       """

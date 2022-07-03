@@ -93,7 +93,7 @@ public class JsonConverterTest {
 
     // Testing if the hash function works
     String message_id_check =
-        jsonConverter.hash(dataBase64_sent.getBytes(), signature_sent.getBytes());
+        JsonConverter.hash(dataBase64_sent.getBytes(), signature_sent.getBytes());
 
     assert message_id_sent.equals(message_id_check);
   }

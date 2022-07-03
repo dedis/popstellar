@@ -31,7 +31,7 @@ public class MessageVerification {
     String msgId = messageFieldJson.get(MESSAGE_ID);
     try {
       JsonConverter jsonConverter = new JsonConverter();
-      return msgId.equals(jsonConverter.hash(data.getBytes(), signature.getBytes()));
+      return msgId.equals(JsonConverter.hash(data.getBytes(), signature.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
