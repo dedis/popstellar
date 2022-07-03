@@ -5,6 +5,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
@@ -114,6 +115,7 @@ public class LaunchFragmentTest {
   public void confirmButtonGoesToLaoDetail() {
     Intents.init();
     laoNameEntry().perform(ViewActions.replaceText(LAO_NAME));
+    confirmButtonLaunch().check(matches(isEnabled()));
     confirmButtonLaunch().perform(click());
     intended(hasComponent(LaoDetailActivity.class.getName()));
     Intents.release();
