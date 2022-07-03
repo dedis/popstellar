@@ -159,7 +159,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<RollCall> mCurrentRollCall =
       new MutableLiveData<>(); // Represents the current roll-call being opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> mManualAdd = new MutableLiveData<>(); // Whether to start the camera
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
