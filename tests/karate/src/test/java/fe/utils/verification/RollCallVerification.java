@@ -54,6 +54,14 @@ public class RollCallVerification {
     return verifyUpdateId(msgDataJson, laoId, action);
   }
 
+  /**
+   * Verifies the presence of the attendees in the network message and that the number of attendees implies the presence
+   * of the organizer
+   * @param message the network message
+   * @param attendees the attendees added
+   * @return true if every specified attendees is in the message and if the number of attendees in the message =
+   * number of specified attendees + 1 (for the organizer)
+   */
   public boolean verifyAttendeesPresence(String message, String... attendees) {
     Json msgDataJson = getMsgDataJson(message);
     List<String> msgAttendees = msgDataJson.get(ATTENDEES);

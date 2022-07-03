@@ -11,7 +11,6 @@ Feature:
 
     # Retrieving sent messages
     * json reopen_rc_json = buffer.takeTimeout(timeout)
-    * print reopen_rc_json
     * string reopen_rc_string = reopen_rc_json
 
      # General message verification
