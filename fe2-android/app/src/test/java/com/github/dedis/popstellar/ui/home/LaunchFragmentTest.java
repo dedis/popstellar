@@ -93,10 +93,6 @@ public class LaunchFragmentTest {
         }
       };
 
-  //    @Rule(order = 3)
-  //    public final FragmentScenarioRule<LaunchFragment> fragmentRule =
-  //            FragmentScenarioRule.launch(LaunchFragment.class, LaunchFragment::newInstance);
-
   @Rule(order = 3)
   public ActivityFragmentScenarioRule<HomeActivity, LaunchFragment> activityScenarioRule =
       ActivityFragmentScenarioRule.launchIn(
