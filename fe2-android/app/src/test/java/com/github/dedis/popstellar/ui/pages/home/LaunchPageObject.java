@@ -1,0 +1,37 @@
+package com.github.dedis.popstellar.ui.pages.home;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import androidx.annotation.IdRes;
+import androidx.test.espresso.ViewInteraction;
+
+import com.github.dedis.popstellar.R;
+
+public class LaunchPageObject {
+
+  @IdRes
+  public static int launchFragmentId() {
+    return R.id.fragment_launch;
+  }
+
+  public static ViewInteraction bodyText() {
+    return onView(withId(R.id.launch_body_text));
+  }
+
+  public static ViewInteraction titleText() {
+    return onView(withId(R.id.launch_title_text));
+  }
+
+  public static ViewInteraction laoNameEntry() {
+    return onView(withId(R.id.entry_box_launch));
+  }
+
+  public static ViewInteraction cancelButtonLaunch() {
+    return onView(withId(R.id.button_cancel_launch));
+  }
+
+  public static ViewInteraction confirmButtonLaunch() {
+    return onView(withId(R.id.button_launch));
+  }
+}
