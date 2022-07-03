@@ -60,7 +60,8 @@ public class RollCallVerification {
     String rcName = createMessageJson.get(NAME);
 
     try {
-      return rcId.equals(JsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
+      JsonConverter jsonConverter = new JsonConverter();
+      return rcId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
@@ -89,7 +90,8 @@ public class RollCallVerification {
     String openedAt = getStringFromIntegerField(createMessageJson, OPENED_AT);
 
     try {
-      return updateId.equals(JsonConverter.hash("R".getBytes(), laoId.getBytes(), opens.getBytes(), openedAt.getBytes()));
+      JsonConverter jsonConverter = new JsonConverter();
+      return updateId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), opens.getBytes(), openedAt.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
