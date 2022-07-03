@@ -35,7 +35,6 @@ public class Constants {
 
   public static final String ACTION = "action";
 
-
   public static final String OBJECT = "object";
 
   public static final String NAME = "name";
@@ -69,6 +68,4 @@ public class Constants {
   public final String REOPEN = "reopen";
 
   public final String CLOSE = "close";
-
-
 }

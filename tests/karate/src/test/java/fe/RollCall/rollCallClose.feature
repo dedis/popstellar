@@ -11,7 +11,6 @@ Feature:
 
     # Retrieving sent messages
     * json close_rc_json = buffer.takeTimeout(timeout)
-    * print close_rc_json
     * string close_rc_string = close_rc_json
 
     # General message verification
@@ -26,7 +25,6 @@ Feature:
     * match rollCallVerification.verifyAttendeesPresence(close_rc_string) == true
 
     And match backend.receiveNoMoreResponses() == true
-
 
   Scenario: RC close several attendees
     * def token1 = 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM='

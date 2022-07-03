@@ -41,9 +41,6 @@ Feature: android page object
     * def manual_add_text_selector = '#com.github.dedis.popstellar:id/manual_add_edit_text'
     * def manual_add_confirm_selector = '#com.github.dedis.popstellar:id/manual_add_confirm'
 
-
-
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
