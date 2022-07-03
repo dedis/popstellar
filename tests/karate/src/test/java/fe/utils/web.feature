@@ -135,4 +135,6 @@ Feature: web test
     * click(past_header_selector)
     * retry(5,1000).click(event_name_selector)
     * click(roll_call_option_selector)
+    * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Re-open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(2)

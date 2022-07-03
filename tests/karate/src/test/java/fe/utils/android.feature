@@ -116,4 +116,5 @@ Feature: android page object
   @name=reopen_roll_call
   Scenario: reopens the created roll-call
     * click(event_name_selector)
+    * backend.clearBuffer()
     * click(roll_call_action_selector)
