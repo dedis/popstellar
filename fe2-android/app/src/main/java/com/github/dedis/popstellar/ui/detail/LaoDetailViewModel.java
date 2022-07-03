@@ -858,10 +858,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mAskCloseRollCallEvent;
   }
 
-  public boolean isManual(){
-    return mManualAdd.getValue();
-  }
-
   public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
     return mCloseRollCallEvent;
   }
@@ -1103,11 +1099,10 @@ public class LaoDetailViewModel extends AndroidViewModel
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void openQrCodeScanningRollCall(boolean manual) {
+  public void openQrCodeScanningRollCall() {
     mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
     mNbAttendeesEvent.postValue(
         new SingleEvent<>(attendees.size())); // this to display the initial number of attendees
-    mManualAdd.setValue(manual);
   }
 
   public void openCameraPermission() {
@@ -1140,7 +1135,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        openQrCodeScanningRollCall(false);
+        openQrCodeScanningRollCall();
       } else if (scanningAction == ScanningAction.ADD_WITNESS) {
         openAddWitness();
       }
@@ -1164,7 +1159,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   @Override
   public void onPermissionGranted() {
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      openQrCodeScanningRollCall(true);
+      openQrCodeScanningRollCall();
     } else if (scanningAction == ScanningAction.ADD_WITNESS) {
       openAddWitness();
     }
@@ -1227,6 +1222,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void openWitnessing() {
-    mOpenWitnessing.postValue(new SingleEvent<>(false));
+    mOpenWitnessing.postValue(new SingleEvent<>(true));
   }
 }
