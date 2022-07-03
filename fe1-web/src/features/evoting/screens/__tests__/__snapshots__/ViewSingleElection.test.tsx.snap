@@ -7559,7 +7559,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 dateTime="2021-01-01T23:00:00.000Z"
                                 title="2021-01-01 23:00"
                               >
-                                1 year ago
+                                2 years ago
                               </time>
                             </Text>
                           </Text>
@@ -13903,7 +13903,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 dateTime="2021-01-01T23:00:00.000Z"
                                 title="2021-01-01 23:00"
                               >
-                                1 year ago
+                                2 years ago
                               </time>
                             </Text>
                           </Text>
