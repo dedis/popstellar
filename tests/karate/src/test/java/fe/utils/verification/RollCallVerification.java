@@ -17,6 +17,7 @@ public class RollCallVerification {
 
   /**
    * Verifies that the roll call id is computed as expected
+   *
    * @param message the message sent over the network
    * @return true if the roll call id field matches expectations
    */
@@ -54,12 +55,13 @@ public class RollCallVerification {
   }
 
   /**
-   * Verifies the presence of the attendees in the network message and that the number of attendees implies the presence
-   * of the organizer
+   * Verifies the presence of the attendees in the network message and that the number of attendees
+   * implies the presence of the organizer
+   *
    * @param message the network message
    * @param attendees the attendees added
-   * @return true if every specified attendees is in the message and if the number of attendees in the message =
-   * number of specified attendees + 1 (for the organizer)
+   * @return true if every specified attendees is in the message and if the number of attendees in
+   *     the message = number of specified attendees + 1 (for the organizer)
    */
   public boolean verifyAttendeesPresence(String message, String... attendees) {
     Json msgDataJson = getMsgDataJson(message);
@@ -83,7 +85,9 @@ public class RollCallVerification {
 
     try {
       JsonConverter jsonConverter = new JsonConverter();
-      return rcId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
+      return rcId.equals(
+          jsonConverter.hash(
+              "R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
@@ -121,7 +125,9 @@ public class RollCallVerification {
 
     try {
       JsonConverter jsonConverter = new JsonConverter();
-      return updateId.equals(jsonConverter.hash("R".getBytes(), laoId.getBytes(), reference.getBytes(), time.getBytes()));
+      return updateId.equals(
+          jsonConverter.hash(
+              "R".getBytes(), laoId.getBytes(), reference.getBytes(), time.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;
