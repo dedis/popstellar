@@ -37,6 +37,12 @@ Feature: android page object
     * def roll_call_action_selector = '#com.github.dedis.popstellar:id/roll_call_management_button'
     * def roll_call_close_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
     * def roll_call_manual_selector = '#com.github.dedis.popstellar:id/permission_manual_rc'
+    * def allow_camera_selector = '#com.github.dedis.popstellar:id/allow_camera_button'
+    * def manual_add_text_selector = '#com.github.dedis.popstellar:id/manual_add_edit_text'
+    * def manual_add_confirm_selector = '#com.github.dedis.popstellar:id/manual_add_confirm'
+
+
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
@@ -85,11 +91,25 @@ Feature: android page object
 
   @name=close_roll_call
   Scenario: Closes a roll call with only the organizer attending
-    # opens the roll call in manual mode, we don't use the camera
-    * retry(5,200).click(roll_call_manual_selector)
-    * backend.clearBuffer()
-      # click on close button
+    # Close roll call
     * retry(5,200).click(roll_call_close_selector)
+    * backend.clearBuffer()
+    * dialog(true)
+
+
+  @name=close_roll_call_w_attendees
+  Scenario: Closes a roll call with 2 attendees and the organizer
+    # Add attendees
+    * input(manual_add_text_selector, token1)
+    * click(manual_add_confirm_selector)
+    * input(manual_add_text_selector, token2)
+    * click(manual_add_confirm_selector)
+    * backend.clearBuffer()
+
+    # wait for popup
+    * wait(3)
+    # Close roll call
+    * click(roll_call_close_selector)
     * dialog(true)
 
   #roll call open android procedure
@@ -97,4 +117,3 @@ Feature: android page object
   Scenario: reopens the created roll-call
     * click(event_name_selector)
     * click(roll_call_action_selector)
-    * backend.clearBuffer()

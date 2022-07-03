@@ -42,7 +42,8 @@ function fn() {
         "connectHardwareKeyboard" : true,
         "deviceName" : "emulator-5554",
         "avd" : "Pixel_4_API_30",
-        "automationName" : "UiAutomator2"
+        "automationName" : "UiAutomator2",
+        "autoGrantPermissions" : true
       }
       config["android"] = android
     }
