@@ -15,7 +15,7 @@ Feature:
     * string election_string = election_json
 
     # General message verification
-    Then match reopen_rc_json contains deep { method: 'publish' }
+    Then match election_json contains deep { method: 'publish' }
     * match messageVerification.verifyMessageIdField(election_string) == true
     And match messageVerification.verifyMessageSignature(election_string) == true
 

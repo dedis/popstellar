@@ -83,7 +83,7 @@ public class Constants {
 
   public final String QUESTION_CONTENT = "some question";
 
-  public final String BALLOT_1 = "ballot 1";
+  public final String BALLOT_1 = "choice 1";
 
-  public final String BALLOT_2 = "ballot 2";
+  public final String BALLOT_2 = "choice 2";
 }

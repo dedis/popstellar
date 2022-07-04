@@ -48,7 +48,8 @@ Feature: android page object
     * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
     * def election_ballot_container = '#com.github.dedis.popstellar:id/election_setup_ballot_options_ll'
     * def election_ballot_selector = '#com.github.dedis.popstellar:id/new_ballot_option_text'
-    * def election_ballot_selector_2 = '(//*[@resource-id="com.github.dedis.popstellar:id/election_setup_ballot_options_ll"])[1]'
+    # This relies on the fact that the ballot 1 has an input which makes the second one the only one with the hint text
+    * def election_ballot_selector_2 = '//*[@text="ballot option"]'
 
 
   @name=basic_setup
@@ -129,13 +130,12 @@ Feature: android page object
   # Election setup android procedure
   @name=setup_election
   Scenario: create election
-    * retry(5, 200).click(add_event_selector)
+    * retry(5, 1000).click(add_event_selector)
     * click(add_election_selector)
     * input(election_name_selector, constants.ELECTION_NAME)
-    * karate.log(driver.getHttp().path("source").get().value)
     * input(election_question_selector, constants.QUESTION_CONTENT)
     * input(election_ballot_selector, constants.BALLOT_1)
-    * below(election_ballot_selector).input("stuff")
+    * input(election_ballot_selector_2, constants.BALLOT_2)
     * backend.clearBuffer()
     * click(election_confirm_selector)
 
