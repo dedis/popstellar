@@ -40,16 +40,7 @@ jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
 
 // Icons and snapshot tests do not work nice together
 // See https://github.com/expo/expo/issues/3566
-jest.mock('@expo/vector-icons', () => {
-  const MockIcon = ({ name, size, color }: { name: string; size: number; color: string }) =>
-    `[name='${name}' size='${size}' color='${color}']`;
-
-  return {
-    Ionicons: MockIcon,
-    MaterialIcons: MockIcon,
-    MaterialCommunityIcons: MockIcon,
-  };
-});
+jest.mock('@expo/vector-icons');
 
 const mockStore = createStore(
   combineReducers({

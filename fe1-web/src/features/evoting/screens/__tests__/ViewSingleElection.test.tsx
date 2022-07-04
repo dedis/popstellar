@@ -12,6 +12,7 @@ import {
   mockLaoId,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Timestamp } from 'core/objects';
 import { addEvent } from 'features/events/reducer';
 import {
   mockElectionNotStarted,
@@ -33,6 +34,13 @@ import ViewSingleElection, { ViewSingleElectionScreenHeader } from '../ViewSingl
 
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(new Date(Timestamp.EpochNow().valueOf() * 1000)); // 5 May 2021
+
+// Icons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons');
 
 const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),

@@ -4578,29 +4578,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -5067,29 +5045,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -6002,29 +5958,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -6462,29 +6396,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -7745,29 +7657,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -7855,28 +7745,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#bfbfbf",
-                                                "fontSize": 25,
-                                              },
-                                              Object {
-                                                "minWidth": 25,
-                                              },
-                                              Object {
-                                                "fontFamily": "FontAwesome",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -8048,28 +7917,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#bfbfbf",
-                                                "fontSize": 25,
-                                              },
-                                              Object {
-                                                "minWidth": 25,
-                                              },
-                                              Object {
-                                                "fontFamily": "FontAwesome",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -8322,29 +8170,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -8432,28 +8258,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#bfbfbf",
-                                                "fontSize": 25,
-                                              },
-                                              Object {
-                                                "minWidth": 25,
-                                              },
-                                              Object {
-                                                "fontFamily": "FontAwesome",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -8625,28 +8430,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#bfbfbf",
-                                                "fontSize": 25,
-                                              },
-                                              Object {
-                                                "minWidth": 25,
-                                              },
-                                              Object {
-                                                "fontFamily": "FontAwesome",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                        >
-                                          
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -9364,29 +9148,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -9824,29 +9586,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -10966,29 +10706,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -11455,29 +11173,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -14089,29 +13785,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -14624,29 +14298,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -15624,29 +15276,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -16084,29 +15714,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           }
                                         }
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>

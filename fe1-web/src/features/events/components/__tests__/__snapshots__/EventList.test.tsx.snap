@@ -902,7 +902,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='how-to-vote' size='25' color='#000']
+                                  {"name":"how-to-vote","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -1077,7 +1077,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-calendar' size='25' color='#000']
+                                  {"name":"ios-calendar","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -1251,7 +1251,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-hand-left' size='25' color='#000']
+                                  {"name":"ios-hand-left","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -2372,7 +2372,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='how-to-vote' size='25' color='#000']
+                                  {"name":"how-to-vote","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -2569,7 +2569,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-calendar' size='25' color='#000']
+                                  {"name":"ios-calendar","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -2765,7 +2765,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-hand-left' size='25' color='#000']
+                                  {"name":"ios-hand-left","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View

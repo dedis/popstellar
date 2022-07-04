@@ -11,16 +11,9 @@ import DigitalCashWalletItems from '../DigitalCashWalletItems';
 
 jest.mock('features/digital-cash/hooks');
 
-jest.mock('@expo/vector-icons', () => {
-  const MockIcon = ({ name, size, color }: { name: string; size: number; color: string }) =>
-    `[name='${name}' size='${size}' color='${color}']`;
-
-  return {
-    Ionicons: MockIcon,
-    MaterialIcons: MockIcon,
-    MaterialCommunityIcons: MockIcon,
-  };
-});
+// Icons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons');
 
 (DigitalCashHooks.useTotalBalance as jest.Mock).mockReturnValue(10);
 
