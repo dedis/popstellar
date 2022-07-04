@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
-import { mockLao } from '__tests__/utils/TestUtils';
+import { FIXED_SYSTEM_TIME, mockLao } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
@@ -52,6 +52,9 @@ jest.mock('react-redux', () => ({
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
 
 // endregion
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {

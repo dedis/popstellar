@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { FIXED_SYSTEM_TIME, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import EventReducer, { addEvent } from 'features/events/reducer/EventReducer';
 import { mockMeeting } from 'features/meeting/__tests__/utils';
@@ -13,6 +13,9 @@ import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 
 import { Meeting } from '../../objects';
 import ViewSingleMeeting, { ViewSingleMeetingScreenHeader } from '../ViewSingleMeeting';
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 const mockStore = createStore(combineReducers({ ...EventReducer, ...meetingReducer }));
 mockStore.dispatch(

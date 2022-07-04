@@ -26,11 +26,6 @@ jest.mock('@expo/vector-icons');
 // qr codes are svgs and thus generate huge snapshot files
 jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 
-// set a fixed system time to avoid issues with relative time computations
-const FIXED_SYSTEM_TIME = new Date(1620255600 * 1000); // 5 May 2021
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
-
 // make functions return a value independent of the CI locale
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');

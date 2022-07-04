@@ -1,6 +1,10 @@
 import 'jest-extended';
+import { FIXED_SYSTEM_TIME } from '__tests__/utils';
 
 import { Timestamp } from '../Timestamp';
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 const NOW = 1620255600;
 const TIMESTAMP = 1620455700;

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { FIXED_SYSTEM_TIME, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   NotificationReactContext,
@@ -19,6 +19,9 @@ import { WitnessNotificationType } from 'features/witness/components';
 import { WitnessFeature } from 'features/witness/interface';
 
 import NotificationScreen, { NotificationScreenRightHeader } from '../NotificationScreen';
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {

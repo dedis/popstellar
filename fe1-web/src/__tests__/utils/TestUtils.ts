@@ -85,3 +85,5 @@ export const mockJsonRequest: Partial<JsonRpcRequest> = {
 };
 
 export const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };
+
+export const FIXED_SYSTEM_TIME = new Date(1620255600 * 1000); // 5 May 2021
