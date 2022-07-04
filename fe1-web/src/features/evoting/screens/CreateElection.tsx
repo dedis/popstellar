@@ -192,6 +192,7 @@ const CreateElection = () => {
         value={electionName}
         onChange={setElectionName}
         placeholder={STRINGS.election_create_name_placeholder}
+        testID="election_name_selector"
       />
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.election_create_version}
@@ -223,6 +224,7 @@ const CreateElection = () => {
           </Text>
           <Input
             value={questions[idx].question}
+            testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
@@ -260,6 +262,7 @@ const CreateElection = () => {
             setModalEndIsVisible,
           )
         }
+        testID="election_confirm_selector"
         disabled={!buttonsVisibility}>
         {STRINGS.general_button_confirm}
       </PoPTextButton>
