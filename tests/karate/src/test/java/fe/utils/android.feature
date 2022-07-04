@@ -46,9 +46,10 @@ Feature: android page object
     * def election_name_selector = '#com.github.dedis.popstellar:id/election_setup_name'
     * def election_question_selector = '#com.github.dedis.popstellar:id/election_question'
     * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
-    * def election_ballot_container = '#com.github.dedis.popstellar:id/election_setup_ballot_options_ll'
-    * def election_ballot_selector = '#com.github.dedis.popstellar:id/new_ballot_option_text'
-    # This relies on the fact that the ballot 1 has an input which makes the second one the only one with the hint text
+    * def election_ballot_selector_1 = '#com.github.dedis.popstellar:id/new_ballot_option_text'
+
+    # This relies on the fact that the ballot 1 has already been modified with an input,
+    # which makes the second one the only one with the hint text
     * def election_ballot_selector_2 = '//*[@text="ballot option"]'
 
 
@@ -134,7 +135,7 @@ Feature: android page object
     * click(add_election_selector)
     * input(election_name_selector, constants.ELECTION_NAME)
     * input(election_question_selector, constants.QUESTION_CONTENT)
-    * input(election_ballot_selector, constants.BALLOT_1)
+    * input(election_ballot_selector_1, constants.BALLOT_1)
     * input(election_ballot_selector_2, constants.BALLOT_2)
     * backend.clearBuffer()
     * click(election_confirm_selector)

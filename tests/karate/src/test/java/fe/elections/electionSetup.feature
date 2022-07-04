@@ -10,12 +10,19 @@ Feature:
     * replace election_page_object.env = karate.env
     And call read(election_page_object)
 
-        # Retrieving sent messages
+    # Retrieving sent messages
     * json election_json = buffer.takeTimeout(timeout)
+    * print election_json
     * string election_string = election_json
+    * json subscribe = buffer.takeTimeout(withMethod('subscribe'), timeout)
+    * print subscribe
+    * json catchup = buffer.takeTimeout(withMethod('catchup'), timeout)
+    * print catchup
 
     # General message verification
     Then match election_json contains deep { method: 'publish' }
+    Then match subscribe contains deep { method: 'subscribe' }
+    Then match catchup contains deep { method: 'catchup' }
     * match messageVerification.verifyMessageIdField(election_string) == true
     And match messageVerification.verifyMessageSignature(election_string) == true
 
@@ -26,4 +33,4 @@ Feature:
     * match verificationUtils.getName(election_string) == constants.ELECTION_NAME
     And match electionVerification.verifyElectionId(election_string) == true
 
-    And match backend.receiveNoMoreResponses == true
+    And match backend.receiveNoMoreResponses() == true

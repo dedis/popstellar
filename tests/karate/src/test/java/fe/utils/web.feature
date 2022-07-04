@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    * configure driver = { type: 'chrome' }
+    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    #* configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -35,6 +35,13 @@ Feature: web test
     * def manual_add_description_selector = '{^}Enter token:'
     * def manual_add_confirm_selector = '{}Add'
     * def manual_add_done_selector = '{}Done'
+
+    # Election
+    * def election_name_selector = "[data-testid='election_name_selector']"
+    * def election_question_selector = "[data-testid='question_selector_0']"
+    * def election_ballot_selector_1 = "[data-testid='question_0_ballots_option_0_input']"
+    * def election_ballot_selector_2 = "[data-testid='question_0_ballots_option_1_input']"
+    * def election_confirm_selector = "[data-testid='election_confirm_selector']"
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -89,7 +96,7 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, constants.RC_NAME)
+    And retry(5, 1000).input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
 
   # Roll call open web procedure
@@ -149,5 +156,12 @@ Feature: web test
   # Election setup web procedure
   @name=setup_election
   Scenario: create election
-    * retry(5,1000).click(roll_call_option_selector)
+    And click(add_event_selector)
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(1)
+    * retry(5, 1000).input(election_name_selector, constants.ELECTION_NAME)
+    * input(election_question_selector, constants.QUESTION_CONTENT)
+    * input(election_ballot_selector_1, constants.BALLOT_1)
+    * input(election_ballot_selector_2, constants.BALLOT_2)
+    * backend.clearBuffer()
+    * click(election_confirm_selector)
