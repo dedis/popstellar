@@ -43,7 +43,7 @@ Feature:
     * string close_rc_string = close_rc_json
 
     # General message verification
-    Then match close_rc_json contains deep { method: 'publish'}
+    Then match close_rc_json contains deep { method: 'publish' }
     * match messageVerification.verifyMessageIdField(close_rc_string) == true
     And match messageVerification.verifyMessageSignature(close_rc_string) == true
 
