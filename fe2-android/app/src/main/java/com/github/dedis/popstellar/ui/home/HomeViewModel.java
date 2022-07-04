@@ -280,7 +280,7 @@ public class HomeViewModel extends AndroidViewModel
    */
 
   public void openLAO(String laoId) {
-    mOpenLaoEvent.setValue(new SingleEvent<>(laoId));
+    mOpenLaoEvent.postValue(new SingleEvent<>(laoId));
   }
 
   public void openHome() {

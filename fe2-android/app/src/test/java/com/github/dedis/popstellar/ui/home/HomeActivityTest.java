@@ -5,6 +5,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeButton;
@@ -13,6 +14,9 @@ import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.launchBut
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.socialMediaButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.walletButton;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.launchFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.newWalletButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -36,7 +40,7 @@ public class HomeActivityTest {
 
   // Activity scenario rule that starts the activity.
   public ActivityScenarioRule<HomeActivity> activityScenarioRule =
-      new ActivityScenarioRule<HomeActivity>(HomeActivity.class);
+      new ActivityScenarioRule<>(HomeActivity.class);
 
   @Rule
   public final RuleChain rule =
@@ -82,5 +86,19 @@ public class HomeActivityTest {
   @Test
   public void navBarIsDisplayed() {
     navBar().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void launchButtonBringsToLaunchScreenWithInitializedWallet() {
+    initializeWallet();
+    launchButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(launchFragmentId()))));
+  }
+
+  private void initializeWallet() {
+    walletButton().perform(click());
+    newWalletButton().perform(click());
+    confirmButton().perform(click());
+    dialogPositiveButton().performClick();
   }
 }
