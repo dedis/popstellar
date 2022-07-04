@@ -59,6 +59,8 @@ public class Constants {
 
   public static final String VERSION = "version";
 
+  public static final String LAO = "lao";
+
   ///////////////////////// Non Static for Karate files calls ///////////////////////////////
 
   public final String ROLL_CALL = "roll_call";

@@ -62,4 +62,10 @@ public class VerificationUtils {
     Json data = getMsgDataJson(message);
     return data.get(NAME);
   }
+
+  /** Because of internal type used by karate, doing casting in 2 steps is required */
+  public static String getStringFromIntegerField(Json json, String key) {
+    Integer intTemp = json.get(key);
+    return String.valueOf(intTemp);
+  }
 }

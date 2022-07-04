@@ -19,6 +19,11 @@ Feature:
     * match messageVerification.verifyMessageIdField(election_string) == true
     And match messageVerification.verifyMessageSignature(election_string) == true
 
-    # Roll Call specific verification
+    # Election specific verification
     And match verificationUtils.getObject(election_string) == constants.ELECTION
     * match verificationUtils.getAction(election_string) == constants.SETUP
+    And match verificationUtils.getVersion(election_string) == constants.OPEN_BALLOT
+    * match verificationUtils.getName(election_string) == constants.ELECTION_NAME
+    And match electionVerification.verifyElectionId(election_string) == true
+
+    And match backend.receiveNoMoreResponses == true
