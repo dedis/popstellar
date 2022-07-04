@@ -244,6 +244,7 @@ const CreateElection = () => {
                 ),
               )
             }
+            testID={`question_${idx}_ballots`}
           />
         </View>
       ))}

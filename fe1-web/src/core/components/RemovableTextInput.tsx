@@ -25,17 +25,21 @@ const styles = StyleSheet.create({
 });
 
 const RemovableTextInput = (props: IPropTypes) => {
-  const { onRemove, onChange, id, value, placeholder } = props;
+  const { onRemove, onChange, id, value, placeholder, testID } = props;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID || undefined}>
       <Input
         placeholder={placeholder || ''}
         onChange={(text: string) => onChange(id, text)}
         key={id}
         value={value || ''}
+        testID={testID ? `${testID}_input` : undefined}
       />
-      <PoPTouchableOpacity containerStyle={styles.icon} onPress={() => onRemove(id)}>
+      <PoPTouchableOpacity
+        containerStyle={styles.icon}
+        onPress={() => onRemove(id)}
+        testID={testID ? `${testID}_remove` : undefined}>
         <PoPIcon name="delete" color={Color.primary} size={Icon.size} />
       </PoPTouchableOpacity>
     </View>
@@ -48,6 +52,7 @@ const propTypes = {
   id: PropTypes.number.isRequired,
   value: PropTypes.string,
   placeholder: PropTypes.string,
+  testID: PropTypes.string,
 };
 
 RemovableTextInput.propTypes = propTypes;
@@ -55,6 +60,7 @@ RemovableTextInput.propTypes = propTypes;
 RemovableTextInput.defaultProps = {
   value: '',
   placeholder: '',
+  testID: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
