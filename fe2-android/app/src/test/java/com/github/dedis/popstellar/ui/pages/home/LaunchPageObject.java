@@ -8,6 +8,11 @@ import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
 
+/**
+ * Page object of {@link com.github.dedis.popstellar.ui.home.LaunchFragment}
+ *
+ * <p>Creation : 04.07.2022
+ */
 public class LaunchPageObject {
 
   @IdRes
