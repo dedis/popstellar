@@ -41,6 +41,8 @@ public class Constants {
 
   public static final String CREATION = "creation";
 
+  public static final String CREATED_AT = "created_at";
+
   public static final String OPENS = "opens";
 
   public static final String OPENED_AT = "opened_at";
@@ -55,6 +57,8 @@ public class Constants {
 
   public static final String ATTENDEES = "attendees";
 
+  public static final String VERSION = "version";
+
   ///////////////////////// Non Static for Karate files calls ///////////////////////////////
 
   public final String ROLL_CALL = "roll_call";
@@ -68,4 +72,18 @@ public class Constants {
   public final String REOPEN = "reopen";
 
   public final String CLOSE = "close";
+
+  public final String OPEN_BALLOT = "OPEN_BALLOT";
+
+  public final String SETUP = "setup";
+
+  public final String ELECTION = "election";
+
+  public final String ELECTION_NAME = "Election";
+
+  public final String QUESTION_CONTENT = "some question";
+
+  public final String BALLOT_1 = "ballot 1";
+
+  public final String BALLOT_2 = "ballot 2";
 }

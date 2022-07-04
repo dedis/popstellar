@@ -145,3 +145,9 @@ Feature: web test
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Re-open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
     * wait(2)
+
+  # Election setup web procedure
+  @name=setup_election
+  Scenario: create election
+    * retry(5,1000).click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")

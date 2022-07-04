@@ -52,4 +52,14 @@ public class VerificationUtils {
     Json data = getMsgDataJson(message);
     return data.get(ACTION);
   }
+
+  public String getVersion(String message){
+    Json data = getMsgDataJson(message);
+    return data.get(VERSION);
+  }
+
+  public String getName(String message){
+    Json data = getMsgDataJson(message);
+    return data.get(NAME);
+  }
 }

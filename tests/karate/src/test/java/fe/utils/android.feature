@@ -41,6 +41,13 @@ Feature: android page object
     * def manual_add_text_selector = '#com.github.dedis.popstellar:id/manual_add_edit_text'
     * def manual_add_confirm_selector = '#com.github.dedis.popstellar:id/manual_add_confirm'
 
+    # Election Screen
+    * def add_election_selector = '#com.github.dedis.popstellar:id/add_election'
+    * def election_name_selector = '#com.github.dedis.popstellar:id/election_setup_name'
+    * def election_question_selector = '#com.github.dedis.popstellar:id/election_question'
+    * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
+    * def election_ballot_selector = '#com.github.dedis.popstellar:id/new_ballot_option_text'
+
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
@@ -109,9 +116,22 @@ Feature: android page object
     * click(roll_call_close_selector)
     * dialog(true)
 
-  #roll call open android procedure
+  # Roll call open android procedure
   @name=reopen_roll_call
   Scenario: reopens the created roll-call
     * click(event_name_selector)
     * backend.clearBuffer()
     * click(roll_call_action_selector)
+
+  # Election setup android procedure
+  @name=setup_election
+  Scenario: create election
+    * click(add_event_selector)
+    * click(add_election_selector)
+    * input(election_name_selector, constants.ELECTION_NAME)
+    * input(election_question_selector, constants.QUESTION_CONTENT)
+    * input(election_ballot_selector, constants.BALLOT_1)
+    * input(election_ballot_selector, constants.BALLOT_2)
+    * backend.clearBuffer()
+    * click(election_confirm_selector)
+
