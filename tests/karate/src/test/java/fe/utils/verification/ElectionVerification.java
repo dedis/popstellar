@@ -10,9 +10,15 @@ import static common.utils.Constants.*;
 import static fe.utils.verification.VerificationUtils.getMsgDataJson;
 import static fe.utils.verification.VerificationUtils.getStringFromIntegerField;
 
+/** This class contains functions used to test fields specific to Roll-Call */
 public class ElectionVerification {
   private static final Logger logger = new Logger(ElectionVerification.class.getSimpleName());
 
+  /**
+   * Verfies that the election id is coherently computed
+   * @param message the network message
+   * @return true if the computed election id matches what is expected
+   */
   public boolean verifyElectionId(String message) {
     Json setupMessageJson = getMsgDataJson(message);
 

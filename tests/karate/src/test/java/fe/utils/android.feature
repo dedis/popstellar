@@ -139,4 +139,3 @@ Feature: android page object
     * input(election_ballot_selector_2, constants.BALLOT_2)
     * backend.clearBuffer()
     * click(election_confirm_selector)
-
