@@ -37,3 +37,10 @@ Feature: Simple Scenarios
     * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=close_roll_call'
     * replace rc_page_object.env = karate.env
     * call read(rc_page_object)
+
+  @name=setup_election
+  Scenario: Setup an election
+    Given call read('classpath:fe/utils/simpleScenarios.feature@name=close_roll_call')
+    * def election_page_object = 'classpath:fe/utils/<env>.feature@name=setup_election'
+    * replace election_page_object.env = karate.env
+    * call read(election_page_object)

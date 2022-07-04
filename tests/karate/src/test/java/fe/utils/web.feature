@@ -42,6 +42,10 @@ Feature: web test
     * def election_ballot_selector_1 = "[data-testid='question_0_ballots_option_0_input']"
     * def election_ballot_selector_2 = "[data-testid='question_0_ballots_option_1_input']"
     * def election_confirm_selector = "[data-testid='election_confirm_selector']"
+    * def election_event_selector = '{^}Election'
+    * def election_option_selector = "[data-testid='election_option_selector']"
+
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -165,3 +169,12 @@ Feature: web test
     * input(election_ballot_selector_2, constants.BALLOT_2)
     * backend.clearBuffer()
     * click(election_confirm_selector)
+    * wait(2)
+
+  # Election open web procedure
+  @name=setup_election
+  Scenario: open election
+    retry(5,1000).click('{^}Election')
+    * retry(5,1000).click(election_option_selector)
+    backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
