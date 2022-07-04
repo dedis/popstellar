@@ -37,8 +37,9 @@ public class RollCallVerification {
    */
   public boolean verifyRollCallName(String message, String name) {
     Json createMessageJson = getMsgDataJson(message);
-    logger.info("name in arguement is " + name);
-    logger.info("name in json is " + createMessageJson.get(NAME));
+    logger.debug("Verifying roll-call id :")
+    logger.debug("name in arguement is " + name);
+    logger.debug("name in json is " + createMessageJson.get(NAME));
     return name.equals(createMessageJson.get(NAME));
   }
 
