@@ -46,7 +46,10 @@ Feature: android page object
     * def election_name_selector = '#com.github.dedis.popstellar:id/election_setup_name'
     * def election_question_selector = '#com.github.dedis.popstellar:id/election_question'
     * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
+    * def election_ballot_container = '#com.github.dedis.popstellar:id/election_setup_ballot_options_ll'
     * def election_ballot_selector = '#com.github.dedis.popstellar:id/new_ballot_option_text'
+    * def election_ballot_selector_2 = '(//*[@resource-id="com.github.dedis.popstellar:id/election_setup_ballot_options_ll"])[1]'
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
@@ -126,12 +129,13 @@ Feature: android page object
   # Election setup android procedure
   @name=setup_election
   Scenario: create election
-    * click(add_event_selector)
+    * retry(5, 200).click(add_event_selector)
     * click(add_election_selector)
     * input(election_name_selector, constants.ELECTION_NAME)
+    * karate.log(driver.getHttp().path("source").get().value)
     * input(election_question_selector, constants.QUESTION_CONTENT)
     * input(election_ballot_selector, constants.BALLOT_1)
-    * input(election_ballot_selector, constants.BALLOT_2)
+    * below(election_ballot_selector).input("stuff")
     * backend.clearBuffer()
     * click(election_confirm_selector)
 
