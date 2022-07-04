@@ -1887,29 +1887,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": undefined,
-                                            "fontSize": 24,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "material-community",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      󰅀
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>
@@ -2087,29 +2065,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": undefined,
-                                            "fontSize": 24,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "material-community",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      󰅀
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>
@@ -2287,29 +2243,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": undefined,
-                                            "fontSize": 24,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "material-community",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      󰅀
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>
@@ -2501,29 +2435,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#D1D1D6",
-                                            "fontSize": 16,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>
@@ -2691,29 +2603,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#D1D1D6",
-                                            "fontSize": 16,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>
@@ -2897,29 +2787,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#D1D1D6",
-                                            "fontSize": 16,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      
-                                    </Text>
+                                    <Text />
                                   </View>
                                 </View>
                               </View>

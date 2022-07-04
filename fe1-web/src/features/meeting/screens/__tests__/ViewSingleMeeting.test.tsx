@@ -14,11 +14,6 @@ import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 import { Meeting } from '../../objects';
 import ViewSingleMeeting, { ViewSingleMeetingScreenHeader } from '../ViewSingleMeeting';
 
-beforeAll(() => {
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
-});
-
 const mockStore = createStore(combineReducers({ ...EventReducer, ...meetingReducer }));
 mockStore.dispatch(
   addEvent(mockLaoId, {

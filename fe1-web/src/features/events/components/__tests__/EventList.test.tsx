@@ -35,13 +35,6 @@ import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import EventList from '../EventList';
 
-jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
-jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
-
-// Icons and snapshot tests do not work nice together
-// See https://github.com/expo/expo/issues/3566
-jest.mock('@expo/vector-icons');
-
 const mockStore = createStore(
   combineReducers({
     ...eventReducer,

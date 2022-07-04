@@ -72,9 +72,6 @@ const contextValue = {
   } as RollCallReactContext,
 };
 
-jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
-jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
-
 beforeEach(() => {
   jest.clearAllMocks();
 });

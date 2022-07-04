@@ -5,11 +5,6 @@ import { Timestamp } from '../Timestamp';
 const NOW = 1620255600;
 const TIMESTAMP = 1620455700;
 
-beforeAll(() => {
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(new Date(NOW * 1000)); // 5 May 2021
-});
-
 describe('Timestamp object', () => {
   it('EpochNow function works', () => {
     expect(Timestamp.EpochNow().valueOf()).toStrictEqual(NOW);
