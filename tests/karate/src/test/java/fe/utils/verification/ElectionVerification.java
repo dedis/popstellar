@@ -42,6 +42,11 @@ public class ElectionVerification {
     }
   }
 
+  /**
+   * Verfies that the question id is coherently computed
+   * @param message the network message
+   * @return true if the computed question id matches what is expected
+   */
   public boolean verifyQuestionId(String message){
     Json setupMessageJson = getMsgDataJson(message);
     Json questionJson = getElectionQuestion(message);
@@ -84,5 +89,4 @@ public class ElectionVerification {
     List<String> questionArray = setupMessageJson.get(QUESTIONS);
     return Json.of(questionArray.get(0));
   }
-
 }
