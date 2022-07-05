@@ -416,7 +416,6 @@ public class LaoDetailViewModel extends AndroidViewModel
       List<List<String>> ballotOptions,
       List<String> question) {
     Log.d(TAG, "creating a new election with name " + name);
-    System.out.println("creating a new election with name " + name);
 
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -445,8 +444,6 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(keyManager.getMainKeyPair(), channel, electionSetup)
             .subscribe(
                 () -> {
-                  System.out.println("setup an election");
-
                   Log.d(TAG, "setup an election");
                   mElectionCreatedEvent.postValue(new SingleEvent<>(true));
                 },
