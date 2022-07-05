@@ -82,6 +82,7 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
 
   return (
     <PoPTouchableOpacity
+      testID="election_option_selector"
       onPress={() =>
         showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
       }>
