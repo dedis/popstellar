@@ -45,6 +45,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -92,6 +93,7 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
+@LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class LaoDetailFragmentTest {
@@ -151,12 +153,6 @@ public class LaoDetailFragmentTest {
                     }
                     return Completable.complete();
                   });
-          //          when(messageSender.publish(any(), any(), any())).then(args ->
-          //          {
-          //            System.out.println("this mock2 was triggered");
-          //
-          //            return Completable.complete();
-          //          });
         }
       };
 
@@ -230,13 +226,7 @@ public class LaoDetailFragmentTest {
 
   @Test
   public void submitElectionOpensEventList() {
-    addEventButton().perform(click());
-    addElectionButton().perform(click());
-    electionName().perform(typeText(ELECTION_NAME));
-    questionText().perform(typeText(QUESTION));
-    ballotOptionAtPosition(0).perform(typeText(BALLOT_1));
-    ballotOptionAtPosition(1).perform(typeText(BALLOT_2));
-    submit().perform(click());
+    createElection();
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
 
