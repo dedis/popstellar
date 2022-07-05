@@ -46,12 +46,15 @@ const styles = StyleSheet.create({
 });
 
 const TextInputChirp = (props: IPropTypes) => {
-  const { placeholder } = props;
-  const { numberOfLines } = props;
-  const { onPress } = props;
-  const { onChangeText } = props;
-  const { publishIsDisabledCond } = props;
-  const { currentUserPublicKey } = props;
+  const {
+    value,
+    placeholder,
+    numberOfLines,
+    onPress,
+    onChangeText,
+    publishIsDisabledCond,
+    currentUserPublicKey,
+  } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
@@ -71,6 +74,7 @@ const TextInputChirp = (props: IPropTypes) => {
       </View>
       <View style={styles.rightView}>
         <TextInput
+          value={value}
           placeholder={placeholder}
           multiline
           selectTextOnFocus
@@ -95,6 +99,7 @@ const TextInputChirp = (props: IPropTypes) => {
 };
 
 const propTypes = {
+  value: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   numberOfLines: PropTypes.number,
   onPress: PropTypes.func.isRequired,
@@ -112,6 +117,7 @@ TextInputChirp.defaultProps = {
 };
 
 type IPropTypes = {
+  value: string;
   placeholder: string;
   numberOfLines: number;
   onPress: Function;
