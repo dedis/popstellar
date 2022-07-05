@@ -75,7 +75,7 @@ Feature: web test
 
     * click(exploring_selector)
     # Click on the connect navigation item
-    * click(tab_connect_selector)
+    * retry(5,1000).click(tab_connect_selector)
     # Click on launch button
     * click(launch_selector)
     # Connect to the backend
@@ -172,9 +172,9 @@ Feature: web test
     * wait(2)
 
   # Election open web procedure
-  @name=setup_election
+  @name=open_election
   Scenario: open election
     retry(5,1000).click('{^}Election')
     * retry(5,1000).click(election_option_selector)
-    backend.clearBuffer()
+    * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")

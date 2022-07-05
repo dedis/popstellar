@@ -5,6 +5,7 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static common.utils.Constants.*;
 import static fe.utils.verification.VerificationUtils.getMsgDataJson;
@@ -39,6 +40,49 @@ public class ElectionVerification {
       logger.info("verification failed with error: " + e);
       return false;
     }
+  }
+
+  public boolean verifyQuestionId(String message){
+    Json setupMessageJson = getMsgDataJson(message);
+    Json questionJson = getElectionQuestion(message);
+
+    String electionId = setupMessageJson.get(ID);
+    String questionId = questionJson.get(ID);
+    String question = questionJson.get(QUESTION);
+
+    try {
+      JsonConverter jsonConverter = new JsonConverter();
+      return questionId.equals(
+          jsonConverter.hash(
+              "Question".getBytes(),
+              electionId.getBytes(),
+              question.getBytes()));
+    } catch (NoSuchAlgorithmException e) {
+      logger.info("verification failed with error: " + e);
+      return false;
+    }
+  }
+
+  public String getQuestionContent(String message){
+    Json questionJson = getElectionQuestion(message);
+    return questionJson.get(QUESTION);
+  }
+
+  public String getVotingMethod(String message){
+    Json questionJson = getElectionQuestion(message);
+    return questionJson.get(VOTING_METHOD);
+  }
+
+  public String getBallotOption(String message, int index){
+    Json questionJson = getElectionQuestion(message);
+    List<String> ballots = questionJson.get(BALLOT_OPTIONS);
+    return ballots.get(index);
+  }
+
+  private Json getElectionQuestion(String message){
+    Json setupMessageJson = getMsgDataJson(message);
+    List<String> questionArray = setupMessageJson.get(QUESTIONS);
+    return Json.of(questionArray.get(0));
   }
 
 }

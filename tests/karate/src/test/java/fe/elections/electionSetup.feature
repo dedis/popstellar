@@ -2,10 +2,10 @@ Feature:
 
   Scenario: Creating an election sends the correct message to the backend
     # Do all the steps up until (and including) closing a roll call
-    * call read('classpath:fe/utils/simpleScenarios.feature@name=close_roll_call')
+    Given call read('classpath:fe/utils/simpleScenarios.feature@name=close_roll_call')
 
     # Setup an election
-    * def election_page_object = 'classpath:fe/utils/<env>.feature@name=setup_election'
+    When def election_page_object = 'classpath:fe/utils/<env>.feature@name=setup_election'
     * replace election_page_object.env = karate.env
     And call read(election_page_object)
 
@@ -28,5 +28,10 @@ Feature:
     And match verificationUtils.getVersion(election_string) == constants.OPEN_BALLOT
     * match verificationUtils.getName(election_string) == constants.ELECTION_NAME
     And match electionVerification.verifyElectionId(election_string) == true
+    * match electionVerification.verifyQuestionId(election_string) == true
+    And match electionVerification.getQuestionContent(election_string) == constants.QUESTION_CONTENT
+    * match (electionVerification.getBallotOption(election_string, 0)) == constants.BALLOT_1
+    And match (electionVerification.getBallotOption(election_string, 1)) == constants.BALLOT_2
+    * match electionVerification.getVotingMethod(election_string) == constants.PLURALITY
 
     And match backend.receiveNoMoreResponses() == true

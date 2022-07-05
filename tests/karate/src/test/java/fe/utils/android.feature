@@ -141,6 +141,7 @@ Feature: android page object
     * click(election_confirm_selector)
 
   # Election open android procedure
+  @name=open_election
   Scenario: open election
     * click(event_name_selector)
     * backend.clearBuffer()
