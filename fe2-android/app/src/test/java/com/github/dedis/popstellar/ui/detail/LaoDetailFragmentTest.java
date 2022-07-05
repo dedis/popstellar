@@ -7,6 +7,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.cameraPermissionId;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailFragmentId;
@@ -24,6 +25,7 @@ import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageO
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.titleTextView;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateConfirmButton;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateTitle;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCreateOpenButton;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,8 +42,12 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -50,6 +56,7 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 import com.google.zxing.BinaryBitmap;
@@ -87,6 +94,7 @@ public class LaoDetailFragmentTest {
 
   private static final String LAO_NAME = "LAO";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
+  private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
   private static final String LAO_ID = LAO.getId();
@@ -111,7 +119,7 @@ public class LaoDetailFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws KeyException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
@@ -120,10 +128,27 @@ public class LaoDetailFragmentTest {
 
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
+          when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
+          when(messageSender.publish(any(), any(), any()))
+              .then(
+                  args -> {
+                    System.out.println("this mock was triggered");
+                    Object obj = args.getArgument(2);
+                    if (obj instanceof CreateRollCall) {
+                      CreateRollCall createRollCall = (CreateRollCall) obj;
+                      LAO.updateRollCall(createRollCall.getId(), buildRcFromCreate(createRollCall));
+                    }
+                    return Completable.complete();
+                  });
+          //          when(messageSender.publish(any(), any(), any())).then(args ->
+          //          {
+          //            System.out.println("this mock2 was triggered");
+          //
+          //            return Completable.complete();
+          //          });
         }
       };
 
@@ -187,6 +212,14 @@ public class LaoDetailFragmentTest {
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
 
+  @Test
+  public void openRollCallOpensPermission() {
+    setupViewModel();
+    goToRollCallCreationAndEnterTitle();
+    rollCreateOpenButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(cameraPermissionId()))));
+  }
+
   private void goToRollCallCreationAndEnterTitle() {
     addEventButton().perform(click());
     addRollCallButton().perform(click());
@@ -243,5 +276,31 @@ public class LaoDetailFragmentTest {
         return new BinaryBitmap(new HybridBinarizer(source));
       }
     };
+  }
+
+  private void setupViewModel() {
+    activityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
+              laoDetailViewModel.setCurrentLao(LAO);
+            });
+    // Recreate the fragment because the viewModel needed to be modified before start
+    activityScenarioRule.getScenario().recreate();
+  }
+
+  private RollCall buildRcFromCreate(CreateRollCall createRollCall) {
+    RollCall rollCall = new RollCall(createRollCall.getId());
+    rollCall.setCreation(createRollCall.getCreation());
+    rollCall.setState(EventState.CREATED);
+    rollCall.setStart(createRollCall.getProposedStart());
+    rollCall.setEnd(createRollCall.getProposedEnd());
+    rollCall.setName(createRollCall.getName());
+    rollCall.setLocation(createRollCall.getLocation());
+
+    rollCall.setLocation(createRollCall.getLocation());
+    rollCall.setDescription(createRollCall.getDescription().orElse(""));
+    return rollCall;
   }
 }
