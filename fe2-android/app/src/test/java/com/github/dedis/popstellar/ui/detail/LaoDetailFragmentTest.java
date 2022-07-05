@@ -145,7 +145,6 @@ public class LaoDetailFragmentTest {
           when(messageSender.publish(any(), any(), any()))
               .then(
                   args -> {
-                    System.out.println("this mock was triggered");
                     Object obj = args.getArgument(2);
                     if (obj instanceof CreateRollCall) {
                       CreateRollCall createRollCall = (CreateRollCall) obj;
