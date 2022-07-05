@@ -14,14 +14,9 @@ Feature:
     # Retrieving sent messages
     * json election_json = buffer.takeTimeout(timeout)
     * string election_string = election_json
-    * print election_string
-#    * json subscribe = buffer.takeTimeout(withMethod('subscribe'), timeout)
-#    * json catchup = buffer.takeTimeout(withMethod('catchup'), timeout)
 
     # General message verification
     Then match election_json contains deep { method: 'publish' }
-#    Then match subscribe contains deep { method: 'subscribe' }
-#    Then match catchup contains deep { method: 'catchup' }
     * match messageVerification.verifyMessageIdField(election_string) == true
     And match messageVerification.verifyMessageSignature(election_string) == true
 

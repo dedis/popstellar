@@ -48,9 +48,9 @@ Feature: android page object
     * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
     * def election_ballot_selector_1 = '#com.github.dedis.popstellar:id/new_ballot_option_text'
     # This relies on the fact that the ballot 1 has already been modified with an input,
-    # which makes the second one the only one with the hint text
+    # which leaves the second ballot option the only one with the hint text
     * def election_ballot_selector_2 = '//*[@text="ballot option"]'
-    * def election_management_button = '#com.github.dedis.popstellar:id/election_management_button'
+    * def election_management_selector = '#com.github.dedis.popstellar:id/election_management_button'
 
 
   @name=basic_setup
@@ -145,6 +145,6 @@ Feature: android page object
   Scenario: open election
     * click(event_name_selector)
     * backend.clearBuffer()
-    * print "election open"
     * click(election_management_selector)
     * dialog(true)
+    * wait(1)
