@@ -68,7 +68,7 @@ Feature: android page object
     * click(tab_wallet_confirm_selector)
     * dialog(true)
 
-    * click(launch_selector)
+    * retry(5,1000).click(launch_selector)
 
   # Roll call create android procedure
   @name=create_roll_call

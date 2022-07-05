@@ -27,16 +27,13 @@ Feature:
     And match backend.receiveNoMoreResponses() == true
 
   Scenario: RC close several attendees
-    * def token1 = 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM='
-    * def token2 = 'oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms='
-
     # Do all the steps until (and included) opening a roll call
     * call read('classpath:fe/utils/simpleScenarios.feature@name=open_roll_call')
 
     # Close the opened roll-call
     * def rc_page_object = 'classpath:fe/utils/<env>.feature@name=close_roll_call_w_attendees'
     * replace rc_page_object.env = karate.env
-    And call read(rc_page_object)
+    And call read(rc_page_object) {token1 : 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=', token2: 'oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms='}
 
     # Retrieving sent messages
     * json close_rc_json = buffer.takeTimeout(timeout)

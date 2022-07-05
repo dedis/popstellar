@@ -89,7 +89,7 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, constants.RC_NAME)
+    And retry(5,1000).input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
 
   # Roll call open web procedure
