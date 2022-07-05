@@ -44,7 +44,6 @@ public class LaoDetailFragmentPageObject {
   public static ViewInteraction addRollCallText() {
     return onView(withId(R.id.add_roll_call_text));
   }
-
   public static ViewInteraction eventList() {
     return onView(withId(R.id.event_list));
   }

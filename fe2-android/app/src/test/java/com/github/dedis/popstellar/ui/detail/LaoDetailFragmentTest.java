@@ -23,6 +23,10 @@ import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageO
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.qrCodeIcon;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.qrCodeLayout;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.titleTextView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.ballotOptionAtPosition;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.electionName;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.questionText;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.submit;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateConfirmButton;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateTitle;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCreateOpenButton;
@@ -98,7 +102,11 @@ public class LaoDetailFragmentTest {
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
   private static final String LAO_ID = LAO.getId();
-  private static final String RC_TITLE = "Roll-Call Title";
+  private static final String RC_NAME = "Roll-Call Title";
+  private static final String ELECTION_NAME = "an election name";
+  private static final String QUESTION = "question";
+  private static final String BALLOT_1 = "ballot 1";
+  private static final String BALLOT_2 = "ballot 2";
 
   @Inject Gson gson;
 
@@ -220,10 +228,32 @@ public class LaoDetailFragmentTest {
     fragmentContainer().check(matches(withChild(withId(cameraPermissionId()))));
   }
 
+  @Test
+  public void submitElectionOpensEventList() {
+    addEventButton().perform(click());
+    addElectionButton().perform(click());
+    electionName().perform(typeText(ELECTION_NAME));
+    questionText().perform(typeText(QUESTION));
+    ballotOptionAtPosition(0).perform(typeText(BALLOT_1));
+    ballotOptionAtPosition(1).perform(typeText(BALLOT_2));
+    submit().perform(click());
+    fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
+  }
+
   private void goToRollCallCreationAndEnterTitle() {
     addEventButton().perform(click());
     addRollCallButton().perform(click());
-    rollCallCreateTitle().perform(typeText(RC_TITLE));
+    rollCallCreateTitle().perform(typeText(RC_NAME));
+  }
+
+  private void createElection() {
+    addEventButton().perform(click());
+    addElectionButton().perform(click());
+    electionName().perform(typeText(ELECTION_NAME));
+    questionText().perform(typeText(QUESTION));
+    ballotOptionAtPosition(0).perform(typeText(BALLOT_1));
+    ballotOptionAtPosition(1).perform(typeText(BALLOT_2));
+    submit().perform(click());
   }
 
   // Matches an ImageView containing a QRCode with expected content
