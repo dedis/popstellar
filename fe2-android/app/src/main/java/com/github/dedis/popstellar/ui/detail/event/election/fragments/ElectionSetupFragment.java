@@ -209,7 +209,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private void setupElectionSubmitButton() {
     submitButton.setOnClickListener(
         v -> {
-          System.out.println("Listener triggered");
           // We "deactivate" the button on click, to prevent the user from creating multiple
           // elections at once
           submitButton.setEnabled(false);
@@ -251,25 +250,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           }
 
           String electionName = electionNameText.getText().toString();
-          System.out.println(
-              "Creating election with version "
-                  + electionVersion
-                  + ", name "
-                  + electionName
-                  + ", creation time "
-                  + creationTimeInSeconds
-                  + ", start time "
-                  + startTimeInSeconds
-                  + ", end time "
-                  + endTimeInSeconds
-                  + ", voting methods "
-                  + votingMethodFiltered
-                  + ", writesIn "
-                  + writeIns
-                  + ", questions "
-                  + questionsFiltered
-                  + ", ballotsOptions "
-                  + ballotsOptionsFiltered);
+  
           Log.d(
               TAG,
               "Creating election with version "
