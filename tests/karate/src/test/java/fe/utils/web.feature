@@ -46,7 +46,6 @@ Feature: web test
 
     * def election_option_selector = "[data-testid='election_option_selector']"
 
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
