@@ -12,7 +12,6 @@ import util.examples.data.{CreateRollCallMessages, OpenRollCallMessages}
 
 import scala.concurrent.duration.FiniteDuration
 
-
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
@@ -27,7 +26,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m@(DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _)) =>
+        case m @ (DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _)) =>
           system.log.info(s"Received - message $m")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
@@ -42,7 +41,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _)  =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.CreateChannel(_, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -102,7 +101,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-      rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 

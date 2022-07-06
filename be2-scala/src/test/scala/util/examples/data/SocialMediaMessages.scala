@@ -6,11 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.data.traits.{SocialMediaChirpMessagesTrait, SocialMediaReactionMessagesTrait}
 
-/**
- * Generates high level RollCall Messages from protocol folder
- * For content validation: all the params are required
- * For handling: id, message with decoded data, channel are required
- */
+/** Generates high level RollCall Messages from protocol folder For content validation: all the params are required For handling: id, message with decoded data, channel are required
+  */
 object AddReactionMessages extends SocialMediaReactionMessagesTrait {
 
   override val action: ActionType = ActionType.ADD
@@ -18,9 +15,8 @@ object AddReactionMessages extends SocialMediaReactionMessagesTrait {
 
   final val addReaction: JsonRpcRequest = getJsonRPCRequestFromFile("reaction_add/reaction_add.json")()
 
-  //TODO: Generate other messages
+  // TODO: Generate other messages
 }
-
 
 object DeleteReactionMessages extends SocialMediaReactionMessagesTrait {
 
@@ -29,9 +25,8 @@ object DeleteReactionMessages extends SocialMediaReactionMessagesTrait {
 
   final val deleteReaction: JsonRpcRequest = getJsonRPCRequestFromFile("reaction_delete/reaction_delete.json")()
 
-  //TODO: Generate other messages
+  // TODO: Generate other messages
 }
-
 
 object AddChirpMessages extends SocialMediaChirpMessagesTrait {
 
@@ -41,7 +36,7 @@ object AddChirpMessages extends SocialMediaChirpMessagesTrait {
 
   final val addChirp: JsonRpcRequest = getJsonRPCRequestFromFile("chirp_add_publish/chirp_add_publish.json")()
 
-  //TODO: Generate other messages
+  // TODO: Generate other messages
 }
 
 object DeleteChirpMessages extends SocialMediaChirpMessagesTrait {
@@ -52,6 +47,5 @@ object DeleteChirpMessages extends SocialMediaChirpMessagesTrait {
 
   final val deleteChirp: JsonRpcRequest = getJsonRPCRequestFromFile("chirp_delete_publish/chirp_delete_publish.json")()
 
-  //TODO: Generate other messages
+  // TODO: Generate other messages
 }
-

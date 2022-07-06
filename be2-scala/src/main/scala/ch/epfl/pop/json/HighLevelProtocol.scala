@@ -16,12 +16,11 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object methodTypeFormat extends RootJsonFormat[MethodType] {
     override def read(json: JsValue): MethodType = json match {
       case JsString(method) => MethodType.unapply(method).getOrElse(MethodType.INVALID)
-      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
+      case _                => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
     }
 
     override def write(obj: MethodType): JsValue = JsString(obj.toString)
   }
-
 
   // ----------------------------------- HIGH-LEVEL FORMAT ----------------------------------- //
   implicit object messageFormat extends RootJsonFormat[Message] {
@@ -33,7 +32,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
     override def read(json: JsValue): Message =
       json.asJsObject.getFields(PARAM_DATA, PARAM_SENDER, PARAM_SIGNATURE, PARAM_MESSAGE_ID, PARAM_WITNESS_SIG) match {
-        case Seq(data@JsString(_), sender@JsString(_), signature@JsString(_), messageId@JsString(_), JsArray(witnessSig)) =>
+        case Seq(data @ JsString(_), sender @ JsString(_), signature @ JsString(_), messageId @ JsString(_), JsArray(witnessSig)) =>
           Message(
             data.convertTo[Base64Data],
             sender.convertTo[PublicKey],
@@ -58,11 +57,11 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val OPTIONAL_PARAM_MESSAGE: String = "message"
 
     override def read(json: JsValue): Params = json.asJsObject.getFields(PARAM_CHANNEL) match {
-      case Seq(channel@JsString(_)) => json.asJsObject.getFields(OPTIONAL_PARAM_MESSAGE) match {
-        case Seq(message@JsObject(_)) => new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
-        case Seq(_) => throw new IllegalArgumentException(s"Unrecognizable '$OPTIONAL_PARAM_MESSAGE' value in $json")
-        case _ => new Params(channel.convertTo[Channel])
-      }
+      case Seq(channel @ JsString(_)) => json.asJsObject.getFields(OPTIONAL_PARAM_MESSAGE) match {
+          case Seq(message @ JsObject(_)) => new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
+          case Seq(_)                     => throw new IllegalArgumentException(s"Unrecognizable '$OPTIONAL_PARAM_MESSAGE' value in $json")
+          case _                          => new Params(channel.convertTo[Channel])
+        }
       case _ => throw new IllegalArgumentException(s"Unrecognizable '$PARAM_CHANNEL' value in $json")
     }
 
@@ -71,7 +70,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
       obj match {
         case params: ParamsWithMessage => jsObjectContent += (OPTIONAL_PARAM_MESSAGE -> params.message.toJson)
-        case _ =>
+        case _                         =>
       }
 
       JsObject(jsObjectContent)
@@ -114,14 +113,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
   }
 
-
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
     override def read(json: JsValue): ResultObject = json match {
-      case JsNumber(resultInt) => new ResultObject(resultInt.toInt)
+      case JsNumber(resultInt)  => new ResultObject(resultInt.toInt)
       case JsArray(resultArray) => new ResultObject(resultArray.map(_.convertTo[Message]).toList)
-      case _ => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
+      case _                    => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
     }
 
     override def write(obj: ResultObject): JsValue = {
@@ -140,31 +138,30 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_ID: String = "id"
 
     override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
-      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_), optId) =>
-
+      case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_), optId) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params: Params = method match {
-          case MethodType.PUBLISH => paramsJsObject.convertTo[Publish]
-          case MethodType.SUBSCRIBE => paramsJsObject.convertTo[Subscribe]
+          case MethodType.PUBLISH     => paramsJsObject.convertTo[Publish]
+          case MethodType.SUBSCRIBE   => paramsJsObject.convertTo[Subscribe]
           case MethodType.UNSUBSCRIBE => paramsJsObject.convertTo[Unsubscribe]
-          case MethodType.CATCHUP => paramsJsObject.convertTo[Catchup]
-          case _ => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.CATCHUP     => paramsJsObject.convertTo[Catchup]
+          case _                      => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
         val id: Option[Int] = optId match {
           case JsNumber(id) => Some(id.toInt)
-          case JsNull => None
-          case _ => throw new IllegalArgumentException(s"Can't parse json value $optId to an id (number or null)")
+          case JsNull       => None
+          case _            => throw new IllegalArgumentException(s"Can't parse json value $optId to an id (number or null)")
         }
 
         JsonRpcRequest(version, method, params, id)
 
       // Broadcast does not have an Id and should be treated separately
-      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_)) =>
+      case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params: Params = method match {
           case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
-          case _ => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case _                    => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
@@ -196,17 +193,17 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), id) =>
         val idOpt: Option[Int] = id match {
           case JsNumber(idx) => Some(idx.toInt)
-          case JsNull => None
-          case _ => throw new IllegalArgumentException(s"Unable to parse json value $id to an id (number or null)")
+          case JsNull        => None
+          case _             => throw new IllegalArgumentException(s"Unable to parse json value $id to an id (number or null)")
         }
 
         val resultOpt: Option[ResultObject] = json.asJsObject.getFields(PARAM_RESULT) match {
           case Seq(result) => Some(result.convertTo[ResultObject])
-          case _ => None
+          case _           => None
         }
         val errorOpt: Option[ErrorObject] = json.asJsObject.getFields(PARAM_ERROR) match {
           case Seq(error) => Some(error.convertTo[ErrorObject])
-          case _ => None
+          case _          => None
         }
 
         if (resultOpt.isEmpty && errorOpt.isEmpty) {
@@ -218,8 +215,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         }
 
       case _ => throw new IllegalArgumentException(
-        s"Unable to parse json answer $json to a JsonRpcResponse object: 'jsonrpc' or 'id' field missing or wrongly formatted"
-      )
+          s"Unable to parse json answer $json to a JsonRpcResponse object: 'jsonrpc' or 'id' field missing or wrongly formatted"
+        )
     }
 
     override def write(obj: JsonRpcResponse): JsValue = {
@@ -227,7 +224,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
       obj.id match {
         case Some(idx) => jsObjectContent += (PARAM_ID -> idx.toJson)
-        case _ => jsObjectContent += (PARAM_ID -> JsNull)
+        case _         => jsObjectContent += (PARAM_ID -> JsNull)
       }
 
       // Adding either the result value of the error value depending on which is defined

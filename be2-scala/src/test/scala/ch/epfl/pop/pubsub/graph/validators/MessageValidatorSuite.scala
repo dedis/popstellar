@@ -36,7 +36,6 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
-
   private def mockDbNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {

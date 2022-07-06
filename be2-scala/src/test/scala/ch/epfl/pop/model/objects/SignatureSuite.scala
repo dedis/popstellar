@@ -6,23 +6,19 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
 
-
 /*Helper object for testing*/
 case class TestObj(ed_signer: Ed25519Sign, keyPair: Ed25519Sign.KeyPair)
 
 class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
-  //Fixture test
+  // Fixture test
   final val tester = {
     val kpair = Ed25519Sign.KeyPair.newKeyPair()
     val privateKey = kpair.getPrivateKey
     val ed_signer = new Ed25519Sign(privateKey)
     TestObj(ed_signer, kpair)
   }
-  //Data used for testing signature
-  final val dataTest = Seq("PoP-scala", "HelloWorld", "Not true is false",
-    "😀", "OMEGA \u03A9", "\u03A8",
-    "Non empty can be fully non empty",
-    "Not false is true")
+  // Data used for testing signature
+  final val dataTest = Seq("PoP-scala", "HelloWorld", "Not true is false", "😀", "OMEGA \u03A9", "\u03A8", "Non empty can be fully non empty", "Not false is true")
 
   final val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
 
@@ -42,19 +38,20 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
 
   test("Basic true signature") {
     forEvery(dataTest) {
-      (msg: String) => {
-        val signature = getTrueSignatureTest(msg)
-        //Assertion
-        val msg_encoded = Base64Data.encode(msg)
-        signature.verify(verify_pk, msg_encoded) should be(true)
-      }
+      (msg: String) =>
+        {
+          val signature = getTrueSignatureTest(msg)
+          // Assertion
+          val msg_encoded = Base64Data.encode(msg)
+          signature.verify(verify_pk, msg_encoded) should be(true)
+        }
     }
   }
   test("Basic true empty message signature (1)") {
-    //Empty msg
+    // Empty msg
     val msg = ""
     val signature = getTrueSignatureTest(msg)
-    //Assertion
+    // Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(true)
   }
@@ -63,37 +60,39 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     /*Single letter*/
     val msg = "A"
     val signature = getTrueSignatureTest(msg)
-    //Assertion
+    // Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(true)
   }
 
   test("Basic false signature") {
-    /** Fake signature **/
+
+    /** Fake signature * */
     forEvery(dataTest) {
-      (msg: String) => {
-        val signature = getFalseSignatureTest(msg)
-        //Assertion
-        val msg_encoded = Base64Data.encode(msg)
-        signature.verify(verify_pk, msg_encoded) should be(false)
-      }
+      (msg: String) =>
+        {
+          val signature = getFalseSignatureTest(msg)
+          // Assertion
+          val msg_encoded = Base64Data.encode(msg)
+          signature.verify(verify_pk, msg_encoded) should be(false)
+        }
     }
   }
 
   test("Basic false empty message signature") {
-    //Empty msg
+    // Empty msg
     val msg = ""
     val signature = getFalseSignatureTest(msg)
-    //Assertion
+    // Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(false)
   }
 
   test("Basic false one letter message signature") {
-    //Single letter
+    // Single letter
     val msg = "A"
     val signature = getFalseSignatureTest(msg)
-    //Assertion
+    // Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(false)
   }

@@ -7,14 +7,13 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scala.reflect.io.Directory
 import scala.sys.SystemProperties
 
-/** RuntimeConfiguration object provider This object provides application config
- * for setting up akka http/actor environment
- *
- * @see
- * [[config/application.conf]]
- * @see
- * [[ServerConf]]
- */
+/** RuntimeConfiguration object provider This object provides application config for setting up akka http/actor environment
+  *
+  * @see
+  *   [[config/application.conf]]
+  * @see
+  *   [[ServerConf]]
+  */
 object RuntimeEnvironment {
 
   private lazy val sp = new SystemProperties()

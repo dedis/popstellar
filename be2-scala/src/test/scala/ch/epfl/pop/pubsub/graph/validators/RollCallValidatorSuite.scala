@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
 class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseRollCallTest"
 
@@ -141,7 +141,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     system.actorOf(dbActorMock)
   }
 
-  //Create RollCall
+  // Create RollCall
   test("Create Roll Call works as intended") {
     val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCreateRollCall(CREATE_ROLL_CALL_RPC)
@@ -184,7 +184,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //Close RollCall
+  // Close RollCall
   test("Close Roll Call works as intended") {
     val dbActorRef = mockDbWorkingOpen
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateCloseRollCall(CLOSE_ROLL_CALL_RPC)
@@ -248,7 +248,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //Open RollCall
+  // Open RollCall
   test("Open Roll Call works as intended") {
     val dbActorRef = mockDbWorkingCreate
     val message: GraphMessage = new RollCallValidator(dbActorRef).validateOpenRollCall(OPEN_ROLL_CALL_RPC)

@@ -10,7 +10,7 @@ import util.examples.lao.CreateLaoExamples
 
 class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
-  /** Decodes data before passing it to the test **/
+  /** Decodes data before passing it to the test * */
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any): Unit = {
     // Raw encoded data data
     val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
@@ -18,7 +18,7 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     val decoded = MessageDecoder.parseData(message, MessageRegistry.apply())
     decoded match {
       case Left(r: JsonRpcRequest) =>
-        r.getDecodedDataHeader should equal ((ObjectType.LAO, ActionType.CREATE))
+        r.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
         testCode(decoded)
       case Left(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
       case Right(_) =>
@@ -39,8 +39,8 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
             case Left(msg) =>
               Then("the validation succeeds")
               msg shouldBe a[JsonRpcRequest]
-            case _@Right(_) => fail("fails to validate CreateLao data content")
-            case _ => fail(s"validated message <$validationResult> is of unexpected type")
+            case _ @Right(_) => fail("fails to validate CreateLao data content")
+            case _           => fail(s"validated message <$validationResult> is of unexpected type")
           }
           And("the message has the same content after validation")
           validationResult should equal(message)
@@ -48,5 +48,5 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
       }
     }
   }
-  //TODO: add tests for bad create lao data content
+  // TODO: add tests for bad create lao data content
 }

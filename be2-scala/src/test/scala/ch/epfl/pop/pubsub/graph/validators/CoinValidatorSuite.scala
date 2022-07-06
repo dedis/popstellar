@@ -18,9 +18,9 @@ import util.examples.data.PostTransactionMessages._
 import scala.reflect.io.Directory
 
 class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseCoinTest"
 
@@ -62,18 +62,18 @@ class CoinValidatorSuite extends TestKit(ActorSystem("coinValidatorTestActorSyst
   test("Posting a transaction with an incorrect ID does not work") {
     val postTransaction = postTransactionWrongTransactionId
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
-    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: incorrect transaction id",Some(1)))
+    message shouldEqual Right(PipelineError(-4, "PostTransaction content validation failed: incorrect transaction id", Some(1)))
   }
 
   test("Posting a transaction with an incorrect signature does not work") {
     val postTransaction = postTransactionBadSignature
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
-    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: bad signature",Some(1)))
+    message shouldEqual Right(PipelineError(-4, "PostTransaction content validation failed: bad signature", Some(1)))
   }
 
   test("Posting a transaction with an arithmetic overflow does not work") {
     val postTransaction = postTransactionOverflowSum
     val message: GraphMessage = CoinValidator.validatePostTransaction(postTransaction)
-    message shouldEqual Right(PipelineError(-4,"PostTransaction content validation failed: uint53 addition overflow",Some(1)))
+    message shouldEqual Right(PipelineError(-4, "PostTransaction content validation failed: uint53 addition overflow", Some(1)))
   }
 }

@@ -8,13 +8,12 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, PublicKey}
 import spray.json._
 
-
 final case class GreetLao(
-                           lao: Hash,
-                           frontend: PublicKey,
-                           address: String,
-                           peers: List[String],
-                         ) extends MessageData {
+    lao: Hash,
+    frontend: PublicKey,
+    address: String,
+    peers: List[String]
+) extends MessageData {
   override val _object: ObjectType = ObjectType.LAO
   override val action: ActionType = ActionType.GREET
 }
@@ -26,6 +25,3 @@ object GreetLao extends Parsable {
 
   override def buildFromJson(payload: String): GreetLao = payload.parseJson.asJsObject.convertTo[GreetLao]
 }
-
-
-

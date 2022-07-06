@@ -28,15 +28,13 @@ object SocialMediaHandler extends MessageHandler {
 
 class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
-  /**
-   * Overrides default DbActor with provided parameter
-   */
+  /** Overrides default DbActor with provided parameter
+    */
   override final val dbActor: AskableActorRef = dbRef
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
   private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
-
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     writeAndPropagate(rpcMessage) match {
@@ -57,8 +55,8 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
             }
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
-      case error@Right(_) => error
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+      case error @ Right(_) => error
+      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 
@@ -80,8 +78,8 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
             }
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
-      case error@Right(_) => error
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+      case error @ Right(_) => error
+      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 
@@ -108,4 +106,3 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
 }
-
