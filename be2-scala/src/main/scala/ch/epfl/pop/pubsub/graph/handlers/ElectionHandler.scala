@@ -45,8 +45,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // FIXME: add election info to election channel/electionData
-    val message: Message = rpcMessage.getParamsMessage.get
-    val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
+    val Some(message: Message) = rpcMessage.getParamsMessage
+    val Some(data: SetupElection) = message.decodedData
     val electionId: Hash = data.id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
     val keyPair = KeyPair()

@@ -47,7 +47,8 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
               case Some(params) =>
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
-                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
+                val Some(data: AddChirp) = params.decodedData
+                val timestamp: Timestamp = data.timestamp
                 val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
                 Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
@@ -70,7 +71,8 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
             rpcMessage.getParamsMessage match {
               case Some(params) =>
                 val chirp_id: Hash = params.message_id
-                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
+                val Some(data: DeleteChirp) = params.decodedData
+                val timestamp: Timestamp = data.timestamp
                 val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
                 Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)

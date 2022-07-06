@@ -18,7 +18,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
+        val Some(data: CreateLao) = message.decodedData
         val expectedHash: Hash = Hash.fromStrings(data.organizer.base64Data.toString, data.creation.toString, data.name)
 
         val channel: Channel = rpcMessage.getParamsChannel
@@ -47,7 +47,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: StateLao = message.decodedData.get.asInstanceOf[StateLao]
+        val Some(data: StateLao) = message.decodedData
 
         val expectedHash: Hash = Hash.fromStrings(data.organizer.toString, data.creation.toString, data.name)
 
@@ -74,7 +74,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: GreetLao = message.decodedData.get.asInstanceOf[GreetLao]
+        val Some(data: GreetLao) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
 
@@ -100,7 +100,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: UpdateLao = message.decodedData.get.asInstanceOf[UpdateLao]
+        val Some(data: UpdateLao) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
 
@@ -111,7 +111,7 @@ case object LaoValidator extends MessageDataContentValidator {
           case Some(Success(DbActor.DbActorReadAck(None))) =>
             Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
           case Some(Success(DbActor.DbActorReadAck(Some(retrievedMessage)))) =>
-            val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
+            val Some(laoCreationMessage: CreateLao) = retrievedMessage.decodedData
             // Calculate expected hash
             val expectedHash: Hash = Hash.fromStrings(
               retrievedMessage.sender.toString,

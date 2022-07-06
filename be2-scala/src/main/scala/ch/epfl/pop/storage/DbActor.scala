@@ -53,7 +53,7 @@ final case class DbActor(
         val data: JsonString = msg.data.decodeToString()
         MessageDataProtocol.parseHeader(data) match {
           case Success((_object, action)) =>
-            val builder = registry.getBuilder(_object, action).get
+            val Some(builder) = registry.getBuilder(_object, action)
             Some(msg.copy(decodedData = Some(builder(data))))
           case Failure(ex) =>
             log.error(s"Unable to decode message data: $ex")

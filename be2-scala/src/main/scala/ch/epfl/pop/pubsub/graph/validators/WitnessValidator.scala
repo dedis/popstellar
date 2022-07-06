@@ -16,14 +16,14 @@ object WitnessValidator {
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = witnessValidator.validateWitnessMessage(rpcMessage)
 }
 
-sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
+final class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: WitnessMessage = message.decodedData.get.asInstanceOf[WitnessMessage]
+        val Some(data: WitnessMessage) = message.decodedData
         val signature: Signature = data.signature
         val messageId: Hash = data.message_id
         val sender: PublicKey = message.sender

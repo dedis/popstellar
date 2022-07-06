@@ -30,7 +30,7 @@ object SocialMediaValidator extends MessageDataContentValidator with EventValida
   def validateNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = socialMediaValidator.validateNotifyDeleteChirp(rpcMessage)
 }
 
-sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+final class SocialMediaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
 
@@ -43,7 +43,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
       // TODO need more checks
       case Some(message) =>
-        val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
+        val Some(data: AddChirp) = message.decodedData
 
         val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
@@ -79,7 +79,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
       // TODO need more checks
       case Some(message) =>
-        val data: DeleteChirp = message.decodedData.get.asInstanceOf[DeleteChirp]
+        val Some(data: DeleteChirp) = message.decodedData
 
         val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
@@ -110,7 +110,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     rpcMessage.getParamsMessage match {
 
       case Some(message) =>
-        val data: AddReaction = message.decodedData.get.asInstanceOf[AddReaction]
+        val Some(data: AddReaction) = message.decodedData
         val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 
@@ -133,7 +133,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     rpcMessage.getParamsMessage match {
 
       case Some(message) =>
-        val data: DeleteReaction = message.decodedData.get.asInstanceOf[DeleteReaction]
+        val Some(data: DeleteReaction) = message.decodedData
         val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 

@@ -31,7 +31,7 @@ object RollCallValidator extends MessageDataContentValidator with EventValidator
 
 }
 
-sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+final class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = "R"
 
@@ -54,7 +54,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        val Some(data: CreateRollCall) = message.decodedData
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
@@ -93,7 +93,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: IOpenRollCall = message.decodedData.get.asInstanceOf[IOpenRollCall]
+        val Some(data: IOpenRollCall) = message.decodedData
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX,
@@ -147,7 +147,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
+        val Some(data: CloseRollCall) = message.decodedData
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(
@@ -162,7 +162,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         if (!validateTimestampStaleness(data.closed_at)) {
           Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
-        } else if (data.attendees.size != data.attendees.toSet.size) {
+        } else if (data.attendees.sizeIs != data.attendees.toSet.size) {
           Right(validationError("duplicate attendees keys"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
           Right(validationError("unexpected attendees keys"))

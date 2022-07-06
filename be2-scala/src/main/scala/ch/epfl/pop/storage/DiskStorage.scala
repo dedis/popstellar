@@ -10,6 +10,7 @@ import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) extends Storage {
 
@@ -31,6 +32,7 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
 
   def close(): Unit = db.close()
 
+  @SuppressWarnings(Array("NullParameter"))
   @throws[DbActorNAckException]
   def read(key: String): Option[String] = {
     Try(db.get(key.getBytes(StandardCharsets.UTF_8))) match {
@@ -56,7 +58,7 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
       db.write(batch)
 
     } catch {
-      case ex: Throwable => throw DbActorNAckException(
+      case NonFatal(ex) => throw DbActorNAckException(
           ErrorCodes.SERVER_ERROR.id,
           s"could not write ${keyValues.size} elements to DiskStorage : ${ex.getMessage}"
         )

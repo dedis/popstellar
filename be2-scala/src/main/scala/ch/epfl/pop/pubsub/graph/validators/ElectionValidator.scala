@@ -34,7 +34,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
   def validateKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateKeyElection(rpcMessage)
 }
 
-sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+final class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = "Election"
 
@@ -45,7 +45,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
+        val Some(data: SetupElection) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
         val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
@@ -85,7 +85,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: KeyElection = message.decodedData.get.asInstanceOf[KeyElection]
+        val Some(data: KeyElection) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
         val electionId: Hash = channel.extractChildChannel
@@ -110,7 +110,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
+        val Some(data: OpenElection) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
 
@@ -142,7 +142,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
+        val Some(data: CastVoteElection) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
         val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
@@ -212,7 +212,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: EndElection = message.decodedData.get.asInstanceOf[EndElection]
+        val Some(data: EndElection) = message.decodedData
 
         val channel: Channel = rpcMessage.getParamsChannel
 

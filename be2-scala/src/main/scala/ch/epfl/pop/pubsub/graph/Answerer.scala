@@ -64,7 +64,6 @@ object Answerer {
         {
           case akka.actor.Status.Success(s: CompletionStrategy) => s
           case akka.actor.Status.Success(_)                     => CompletionStrategy.draining
-          case akka.actor.Status.Success                        => CompletionStrategy.draining
         },
         {
           case akka.actor.Status.Failure(cause) => cause

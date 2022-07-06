@@ -11,6 +11,7 @@ import spray.json._
 
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 object SchemaVerifier {
   private final val objectMapper: ObjectMapper = new ObjectMapper()
@@ -49,7 +50,7 @@ object SchemaVerifier {
         case _                   => Failure(new ProtocolException(errors.mkString("; "))) // concatenate all schema validation errors into one
       }
     } catch {
-      case e: Exception => Failure(new ProtocolException("Invalid object detected, JSON object expected."))
+      case NonFatal(e) => Failure(new ProtocolException("Invalid object detected, JSON object expected."))
     }
   }
 

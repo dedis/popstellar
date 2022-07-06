@@ -5,7 +5,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 object ParamsValidator extends MethodContentValidator {
 
-  final def validationError(reason: String, rpcId: Option[Int]): PipelineError = super.validationError(reason, "MethodValidator", rpcId)
+  def validationError(reason: String, rpcId: Option[Int]): PipelineError = super.validationError(reason, "MethodValidator", rpcId)
 
   private def validateGeneralParams(rpcMessage: JsonRpcRequest): GraphMessage = {
     if (!validateChannel(rpcMessage.getParamsChannel)) {

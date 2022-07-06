@@ -16,7 +16,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
 
   def validateMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
 
-    val message: Message = rpcMessage.getParamsMessage.get
+    val Some(message: Message) = rpcMessage.getParamsMessage
     val expectedId: Hash = Hash.fromStrings(message.data.toString, message.signature.toString)
 
     if (message.message_id != expectedId) {

@@ -23,7 +23,7 @@ object MeetingValidator extends MessageDataContentValidator with EventValidator 
 
 }
 
-sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+final class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "M"
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -31,7 +31,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateMeeting = message.decodedData.get.asInstanceOf[CreateMeeting]
+        val Some(data: CreateMeeting) = message.decodedData
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
@@ -43,9 +43,9 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateTimestampStaleness(data.start)) {
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
+        } else if (data.end.forall(!validateTimestampOrder(data.creation, _))) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
+        } else if (data.end.forall(!validateTimestampOrder(data.start, _))) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
@@ -65,7 +65,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
+        val Some(data: StateMeeting) = message.decodedData
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
@@ -76,9 +76,9 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
           Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (!validateTimestampStaleness(data.start)) {
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
+        } else if (data.end.forall(!validateTimestampOrder(data.creation, _))) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
+        } else if (data.end.forall(!validateTimestampOrder(data.start, _))) {
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
         } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {
           Right(validationError("witness key-signature pairs are not valid for the given modification_id"))

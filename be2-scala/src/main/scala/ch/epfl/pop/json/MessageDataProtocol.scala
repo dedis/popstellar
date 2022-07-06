@@ -160,7 +160,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: GreetLao): JsValue = {
-      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+      val jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
         PARAM_LAO -> obj.lao.toJson,
@@ -313,7 +313,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: KeyElection): JsValue = {
-      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+      val jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
         PARAM_ELECTION_ID -> obj.election.toJson,

@@ -41,7 +41,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     rpcRequest.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        val Some(data: CreateRollCall) = message.decodedData
         // we are using the rollcall id instead of the message_id at rollcall creation
         val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val laoId: Hash = rpcRequest.extractLaoId
@@ -130,7 +130,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Left(_) =>
         rpcRequest.getParamsMessage match {
           case Some(message: Message) =>
-            val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
+            val Some(data: CloseRollCall) = message.decodedData
 
             // creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
             def createAttendeeChannels(attendees: List[PublicKey]): GraphMessage = {

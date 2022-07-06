@@ -14,6 +14,7 @@ import scala.sys.SystemProperties
   * @see
   *   [[ServerConf]]
   */
+@SuppressWarnings(Array("NullParameter"))
 object RuntimeEnvironment {
 
   private lazy val sp = new SystemProperties()

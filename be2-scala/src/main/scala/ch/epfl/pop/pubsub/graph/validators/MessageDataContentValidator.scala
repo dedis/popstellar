@@ -42,7 +42,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @return
     *   true iff the public keys are all distinct
     */
-  final def validateWitnesses(witnesses: List[PublicKey]): Boolean = witnesses.size == witnesses.toSet.size
+  final def validateWitnesses(witnesses: List[PublicKey]): Boolean = witnesses.sizeIs == witnesses.toSet.size
 
   /** Check whether a list of <witnessesKeyPairs> are valid modification_id <data>
     *

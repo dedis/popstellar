@@ -26,7 +26,7 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
   override final val dbActor: AskableActorRef = dbRef
 
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
+    val Some(decodedData: WitnessMessage) = rpcMessage.getDecodedData
     val messageId: Hash = decodedData.message_id
     val signature: Signature = decodedData.signature
     val channel: Channel = rpcMessage.getParamsChannel

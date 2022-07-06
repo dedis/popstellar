@@ -21,7 +21,7 @@ case object LaoHandler extends MessageHandler {
     val params: Option[Message] = rpcMessage.getParamsMessage
     params match {
       case Some(message: Message) =>
-        val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
+        val Some(data: CreateLao) = message.decodedData
 
         // we are using the lao id instead of the message_id at lao creation
         val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
