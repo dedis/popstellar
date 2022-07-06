@@ -21,6 +21,8 @@ public class Constants {
 
   public static final String COIN = "coin";
 
+  public static final String SOCIAL = "social";
+
   public static final String CHANNEL = "channel";
 
   public static final String DATA = "data";
@@ -45,6 +47,14 @@ public class Constants {
 
   public static final String UPDATE_ID = "update_id";
 
+  public static final String CLOSES = "closes";
+
+  public static final String CLOSE_STATIC = "close";
+
+  public static final String CLOSED_AT = "closed_at";
+
+  public static final String ATTENDEES = "attendees";
+
   ///////////////////////// Non Static for Karate files calls ///////////////////////////////
 
   public final String ROLL_CALL = "roll_call";
@@ -54,4 +64,8 @@ public class Constants {
   public final String OPEN = "open";
 
   public final String RC_NAME = "Roll-Call";
+
+  public final String REOPEN = "reopen";
+
+  public final String CLOSE = "close";
 }

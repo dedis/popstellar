@@ -20,6 +20,7 @@ Feature: web test
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
     # Lao Event List
+    * def past_header_selector = '{^}Past'
     * def add_event_selector = "[data-testid='create_event_selector']"
     * def tab_events_selector = '{}Events'
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
@@ -29,6 +30,11 @@ Feature: web test
 
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
+    * def roll_call_stop_scanning_selector = "[data-testid='roll_call_open_stop_scanning']"
+    * def roll_call_manual_selector = "[data-testid='roll_call_open_add_manually']"
+    * def manual_add_description_selector = '{^}Enter token:'
+    * def manual_add_confirm_selector = '{}Add'
+    * def manual_add_done_selector = '{}Done'
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -83,7 +89,7 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, constants.RC_NAME)
+    And retry(5,1000).input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
 
   # Roll call open web procedure
@@ -93,3 +99,49 @@ Feature: web test
     * retry(5,1000).click(roll_call_option_selector)
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+
+  @name=close_roll_call
+  Scenario: Closes a roll call with only the organizer attending
+    * wait(1)
+    * retry(5,1000).click(roll_call_option_selector)
+    # We need to start scanning for the organizer token to be added
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Scan Attendees\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * retry(5,1000).click(roll_call_stop_scanning_selector)
+    * backend.clearBuffer()
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 900)")
+    # needed to work
+    * wait(1)
+
+  @name=close_roll_call_w_attendees
+  Scenario: Closes a roll call with 2 attendees and the organizer
+    * wait(1)
+    * retry(5,1000).click(roll_call_option_selector)
+    # We need to start scanning for the organizer token to be added
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Scan Attendees\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * retry(5,1000).click(roll_call_manual_selector)
+
+    # Add attendees
+    * below(manual_add_description_selector).input(token1)
+    * click(manual_add_confirm_selector)
+    * below(manual_add_description_selector).clear()
+    * below(manual_add_description_selector).input(token2)
+    * click(manual_add_confirm_selector)
+    * click(manual_add_done_selector)
+
+    * retry(5,1000).click(roll_call_stop_scanning_selector)
+    * backend.clearBuffer()
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    # needed to work
+    * wait(2)
+
+  @name=reopen_roll_call
+  Scenario: Reopen a closed roll call
+    * click(past_header_selector)
+    * retry(5,1000).click(event_name_selector)
+    * wait(1)
+    * click(roll_call_option_selector)
+    * backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Re-open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(2)

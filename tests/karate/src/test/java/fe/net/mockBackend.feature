@@ -55,6 +55,12 @@ Feature: Mock Backend
           return new Consants()
         }
       """
+    * def wait =
+            """
+                function(secs) {
+                    java.lang.Thread.sleep(secs*1000)
+                }
+            """
 
     * def constants = call getConstants
 

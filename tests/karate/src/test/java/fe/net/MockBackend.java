@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import static common.utils.Constants.COIN;
-import static common.utils.Constants.CONSENSUS;
+import static common.utils.Constants.*;
 
 /** Defines a mock backend server that is fully customisable. */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -71,7 +70,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
     String frameText = frame.text();
     logger.info("message received : {}", frameText);
-    if (!frameText.toLowerCase().contains(CONSENSUS) && !frameText.toLowerCase().contains(COIN)) {
+    if (!frameText.toLowerCase().contains(CONSENSUS) && !frameText.toLowerCase().contains(COIN) && !frameText.contains(SOCIAL)) {
       // We don't want consensus or coin messages to interfere since we do not test them yet
       queue.onNewMsg(frameText);
     }

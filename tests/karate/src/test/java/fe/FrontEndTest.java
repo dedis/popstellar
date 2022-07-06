@@ -18,4 +18,14 @@ public class FrontEndTest {
   Karate testOpenRC() {
     return Karate.run("classpath:fe/RollCall/rollCallOpen.feature");
   }
+
+  @Karate.Test
+  Karate testCloseRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallClose.feature");
+  }
+
+  @Karate.Test
+  Karate testReopenRC() {
+    return Karate.run("classpath:fe/RollCall/rollCallReopen.feature");
+  }
 }
