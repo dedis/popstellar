@@ -345,9 +345,9 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     Log.d(
-            TAG,
-            "sending a new vote in election : "
-                    + election
+        TAG,
+        "sending a new vote in election : "
+            + election
             + " with election start time"
             + election.getStartTimestamp());
     Lao lao = getCurrentLaoValue();
@@ -365,8 +365,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       } else {
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
         vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
-        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
-                .show();
+        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
       }
       Channel electionChannel = election.getChannel();
       Log.d(TAG, PUBLISH_MESSAGE);
@@ -391,11 +390,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-
   /**
    * Creates new Election event.
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
+   *
    * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
@@ -426,9 +425,17 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Channel channel = lao.getChannel();
     ElectionSetup electionSetup =
-            new ElectionSetup(
-                    writeIn, name, creation, start, end, votingMethod, lao.getId(), ballotOptions, question, electionVersion
-            );
+        new ElectionSetup(
+            writeIn,
+            name,
+            creation,
+            start,
+            end,
+            votingMethod,
+            lao.getId(),
+            ballotOptions,
+            question,
+            electionVersion);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =

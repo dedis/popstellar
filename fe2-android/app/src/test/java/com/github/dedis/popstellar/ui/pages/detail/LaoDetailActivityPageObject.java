@@ -57,6 +57,11 @@ public class LaoDetailActivityPageObject {
     return R.id.fragment_witnessing;
   }
 
+  @IdRes
+  public static int cameraPermissionId() {
+    return R.id.fragment_camera_perm;
+  }
+
   public static int containerId() {
     return R.id.fragment_container_lao_detail;
   }

@@ -14,9 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
+
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -24,9 +26,11 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
-import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
 @AndroidEntryPoint
@@ -163,11 +167,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position == 0) {
-                electionVersion = ElectionVersion.OPEN_BALLOT;
+              electionVersion = ElectionVersion.OPEN_BALLOT;
             } else if (position == 1) {
               electionVersion = ElectionVersion.SECRET_BALLOT;
             }
           }
+
           @Override
           public void onNothingSelected(AdapterView<?> parent) {
             electionVersion = ElectionVersion.OPEN_BALLOT;
@@ -245,7 +250,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           }
 
           String electionName = electionNameText.getText().toString();
-
+  
           Log.d(
               TAG,
               "Creating election with version "
@@ -297,17 +302,19 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   /**
-   *  Sets up the dropdown menu for election versions: open-ballot and secret-ballot
+   * Sets up the dropdown menu for election versions: open-ballot and secret-ballot
+   *
    * @param spinner the spinner to modify
    * @param listener listener to spinner event
    */
-  private void setUpElectionVersionSpinner(Spinner spinner, AdapterView.OnItemSelectedListener listener) {
+  private void setUpElectionVersionSpinner(
+      Spinner spinner, AdapterView.OnItemSelectedListener listener) {
 
     List<ElectionVersion> versionsList = ElectionVersion.getAllElectionVersion();
     List<String> items = new ArrayList<>();
 
     // Add items to version list
-    for (ElectionVersion v : versionsList){
+    for (ElectionVersion v : versionsList) {
       items.add(v.getStringBallotVersion());
     }
 

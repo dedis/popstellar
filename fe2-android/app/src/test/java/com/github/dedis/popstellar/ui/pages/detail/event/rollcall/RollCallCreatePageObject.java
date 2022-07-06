@@ -16,4 +16,8 @@ public class RollCallCreatePageObject {
   public static ViewInteraction rollCallCreateConfirmButton() {
     return onView(withId(R.id.roll_call_confirm));
   }
+
+  public static ViewInteraction rollCreateOpenButton() {
+    return onView(withId(R.id.roll_call_open));
+  }
 }
