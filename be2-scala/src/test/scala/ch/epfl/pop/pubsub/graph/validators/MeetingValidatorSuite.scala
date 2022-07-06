@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
 class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseMeetingTest"
 
@@ -56,7 +56,6 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
 
   private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
   private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -114,8 +113,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     system.stop(dbActorRef.actorRef)
   }
 
-   // invalid sender
-   test("Creating an invalid meeting with invalid sender") {
+  // invalid sender
+  test("Creating an invalid meeting with invalid sender") {
     val dbActorRef = mockDbInvalidSetupWrongOwner
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_RPC)
@@ -184,7 +183,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   // Invalid meeting states
 
   // Invalid data hash
-  test("Creating and invalid meeting state with invalid data"){
+  test("Creating and invalid meeting state with invalid data") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_DATA_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_DATA_RPC)
@@ -194,7 +193,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Stale creation time
-   test("Creating and invalid meeting state with stale creation time"){
+  test("Creating and invalid meeting state with stale creation time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_CREATION_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_CREATION_RPC)
@@ -204,7 +203,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Stale start time
-   test("Creating and invalid meeting state with stale start time"){
+  test("Creating and invalid meeting state with stale start time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_START_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_START_RPC)
@@ -214,7 +213,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Creation time > End Time
-   test("Creating and invalid meeting state with end time < creation time"){
+  test("Creating and invalid meeting state with end time < creation time") {
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALL_END_RPC)
@@ -225,7 +224,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Start time > End Time
-   test("Creating and invalid meeting state with start time > end time"){
+  test("Creating and invalid meeting state with start time > end time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_BIG_START_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_BIG_START_RPC)
@@ -235,7 +234,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Wrong Witness Signature
-  test("Creating and invalid meeting state with wrong witness signature"){
+  test("Creating and invalid meeting state with wrong witness signature") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_WRONGWITNESS_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_WRONGWITNESS_RPC)
@@ -245,7 +244,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   }
 
   // Last modified time > creation time
-  test("Creating and invalid meeting state with small modification time"){
+  test("Creating and invalid meeting state with small modification time") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALLMODIFICATION_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_SMALLMODIFICATION_RPC)

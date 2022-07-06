@@ -45,7 +45,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
       case Some(message) =>
         val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
 
-        val sender: PublicKey = message.sender //sender's PK
+        val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
@@ -67,7 +67,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     }
   }
 
-  //no need for validation for now, as the server is not supposed to receive the broadcasts
+  // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     Left(rpcMessage)
   }
@@ -81,7 +81,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
       case Some(message) =>
         val data: DeleteChirp = message.decodedData.get.asInstanceOf[DeleteChirp]
 
-        val sender: PublicKey = message.sender //sender's PK
+        val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
@@ -99,7 +99,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     }
   }
 
-  //no need for validation for now, as the server is not supposed to receive the broadcasts
+  // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     Left(rpcMessage)
   }
@@ -111,7 +111,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
       case Some(message) =>
         val data: AddReaction = message.decodedData.get.asInstanceOf[AddReaction]
-        val sender: PublicKey = message.sender //sender's PK
+        val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
@@ -134,7 +134,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
       case Some(message) =>
         val data: DeleteReaction = message.decodedData.get.asInstanceOf[DeleteReaction]
-        val sender: PublicKey = message.sender //sender's PK
+        val sender: PublicKey = message.sender // sender's PK
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {

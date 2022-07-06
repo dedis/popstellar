@@ -26,55 +26,55 @@ final case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging
 
   override def receive: Receive = LoggingReceive {
     case message: ClientActor.Event => message match {
-      case ConnectWsHandle(wsClient: ActorRef) =>
-        log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
-        wsHandle = Some(wsClient)
+        case ConnectWsHandle(wsClient: ActorRef) =>
+          log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
+          wsHandle = Some(wsClient)
 
-      case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
+        case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
 
-      case ClientActor.SubscribeTo(channel) =>
-        val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
-          case m: PubSubMediatorMessage => m
-        }
-        sender() ! Await.result(ask, duration)
+        case ClientActor.SubscribeTo(channel) =>
+          val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
+            case m: PubSubMediatorMessage => m
+          }
+          sender() ! Await.result(ask, duration)
 
-      case ClientActor.UnsubscribeFrom(channel) =>
-        val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.UnsubscribeFrom(channel, this.self)).map {
-          case m: PubSubMediatorMessage => m
-        }
-        sender() ! Await.result(ask, duration)
-    }
+        case ClientActor.UnsubscribeFrom(channel) =>
+          val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.UnsubscribeFrom(channel, this.self)).map {
+            case m: PubSubMediatorMessage => m
+          }
+          sender() ! Await.result(ask, duration)
+      }
     case message: PubSubMediatorMessage => message match {
-      case SubscribeToAck(channel) =>
-        log.info(s"Actor $self received ACK mediator $mediator for the subscribe to channel '$channel' request")
-        subscribedChannels += channel
-      case UnsubscribeFromAck(channel) =>
-        log.info(s"Actor $self received ACK mediator $mediator for the unsubscribe from channel '$channel' request")
-        subscribedChannels -= channel
-      case SubscribeToNAck(channel, reason) =>
-        log.info(s"Actor $self received NACK mediator $mediator for the subscribe to channel '$channel' request for reason: $reason")
-      case UnsubscribeFromNAck(channel, reason) =>
-        log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
-    }
-    case clientAnswer@ClientAnswer(_) =>
+        case SubscribeToAck(channel) =>
+          log.info(s"Actor $self received ACK mediator $mediator for the subscribe to channel '$channel' request")
+          subscribedChannels += channel
+        case UnsubscribeFromAck(channel) =>
+          log.info(s"Actor $self received ACK mediator $mediator for the unsubscribe from channel '$channel' request")
+          subscribedChannels -= channel
+        case SubscribeToNAck(channel, reason) =>
+          log.info(s"Actor $self received NACK mediator $mediator for the subscribe to channel '$channel' request for reason: $reason")
+        case UnsubscribeFromNAck(channel, reason) =>
+          log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
+      }
+    case clientAnswer @ ClientAnswer(_) =>
       log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
 
-    case m@_ => m match {
-      case Failure(exception: Exception) =>
-        log.error(">>> Standard Exception : " + m + exception.getMessage)
-        exception.printStackTrace()
-      case akka.actor.Status.Failure(exception: Exception) =>
-        log.error(">>> Actor Exception : " + m + exception.getMessage)
-        exception.printStackTrace()
-      case Failure(error: Error) =>
-        log.error(">>> Error : " + m + error.getMessage)
-        error.printStackTrace()
-      case akka.actor.Status.Failure(error: Error) =>
-        log.error(">>> Actor Error : " + m + error.getMessage)
-        error.printStackTrace()
-      case _ => log.error("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
-    }
+    case m @ _ => m match {
+        case Failure(exception: Exception) =>
+          log.error(">>> Standard Exception : " + m + exception.getMessage)
+          exception.printStackTrace()
+        case akka.actor.Status.Failure(exception: Exception) =>
+          log.error(">>> Actor Exception : " + m + exception.getMessage)
+          exception.printStackTrace()
+        case Failure(error: Error) =>
+          log.error(">>> Error : " + m + error.getMessage)
+          error.printStackTrace()
+        case akka.actor.Status.Failure(error: Error) =>
+          log.error(">>> Actor Error : " + m + error.getMessage)
+          error.printStackTrace()
+        case _ => log.error("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
+      }
   }
 }
 
@@ -85,7 +85,6 @@ object ClientActor {
 
   // answer to be sent to the client represented by the client actor
   final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage
-
 
   sealed trait Event
 
@@ -102,4 +101,3 @@ object ClientActor {
   final case class UnsubscribeFrom(channel: Channel) extends Event
 
 }
-

@@ -26,7 +26,7 @@ class MessageRegistrySuite extends FunSuite with Matchers {
   val register: Map[(ObjectType, ActionType), RegisterEntry] = Map(
     (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler),
     (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, CreateRollCall.buildFromJson, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler), // combination does not exist
+    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler) // combination does not exist
   )
   val registry: MessageRegistry = new MessageRegistry(register)
 
@@ -36,7 +36,7 @@ class MessageRegistrySuite extends FunSuite with Matchers {
     val res = MessageDecoder.parseData(gm, registry)
 
     res shouldBe a[GraphMessage]
-    res.isLeft should be (true)
+    res.isLeft should be(true)
 
     res match {
       case Left(rpcMessage) =>
@@ -44,11 +44,11 @@ class MessageRegistrySuite extends FunSuite with Matchers {
 
         // takes the "left" of the either
         val rpc = rpcMessage.asInstanceOf[JsonRpcRequest]
-        rpc.getDecodedData.isDefined should be (true)
+        rpc.getDecodedData.isDefined should be(true)
 
         val messageData = rpc.getDecodedData.get
-        messageData._object should equal (MessageDataInstance()._object)
-        messageData.action should equal (MessageDataInstance().action)
+        messageData._object should equal(MessageDataInstance()._object)
+        messageData.action should equal(MessageDataInstance().action)
       case _ => fail("resulting graph message is not 'Left'")
     }
   }

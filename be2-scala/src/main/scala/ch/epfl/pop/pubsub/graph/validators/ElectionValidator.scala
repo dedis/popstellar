@@ -53,7 +53,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val sender: PublicKey = message.sender
 
-        //checks if the question ids are valid wrt protocol
+        // checks if the question ids are valid wrt protocol
         def validateQuestionId(questions: List[ElectionQuestion], election_id: Hash): Boolean =
           questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
 
@@ -69,7 +69,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           Right(validationError("unexpected question ids"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
           Right(validationError(s"invalid sender $sender"))
-        } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
+        } // note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
           Right(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
         } else {
@@ -172,35 +172,37 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  //checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
+  // checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
   private def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
     val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
     val questionsId: List[Hash] = questions.map(_.id)
 
-    votes.forall( vote => vote.vote match {
-      case Some(Left(index)) =>
-        questionsId.contains(vote.question) &&
-          index < q2Ballots(vote.question).size &&
-          vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
-      case Some(Right(encryptedVote)) =>
-        questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
-      case _ => false
-    })
+    votes.forall(vote =>
+      vote.vote match {
+        case Some(Left(index)) =>
+          questionsId.contains(vote.question) &&
+            index < q2Ballots(vote.question).size &&
+            vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
+        case Some(Right(encryptedVote)) =>
+          questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
+        case _ => false
+      }
+    )
   }
 
   private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =
     Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
-      case _ => None
+      case _      => None
     }
 
   private def getEndMessage(electionChannel: Channel): Option[EndElection] =
     Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
       case h :: _ => Some(h._2)
-      case _ => None
+      case _      => None
     }
 
-  //not implemented since the back end does not receive a ResultElection message coming from the front end
+  // not implemented since the back end does not receive a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
   }
@@ -237,12 +239,13 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  /**
-   *
-   * @param castVotes List of pairs of messages and castVote data
-   * @param checkHash The hash of the concatenated votes (i.e. registered_votes)
-   * @return True if the hashes are the same, false otherwise
-   */
+  /** @param castVotes
+    *   List of pairs of messages and castVote data
+    * @param checkHash
+    *   The hash of the concatenated votes (i.e. registered_votes)
+    * @return
+    *   True if the hashes are the same, false otherwise
+    */
   private def compareResults(castVotes: List[CastVoteElection], checkHash: Hash): Boolean = {
     val votes: List[VoteElection] = castVotes.flatMap(_.votes)
     val sortedVotes: List[VoteElection] = votes.sortBy(_.id.toString)

@@ -5,7 +5,6 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.{FunSuite, Matchers}
 import util.examples.MessageExample
 
-
 class LaoDataSuite extends FunSuite with Matchers {
   final val KEYPAIR: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
   final val PUBLICKEY: PublicKey = PublicKey(Base64Data.encode(KEYPAIR.getPublicKey))
@@ -34,7 +33,7 @@ class LaoDataSuite extends FunSuite with Matchers {
 
     val laoData2: LaoData = LaoData.buildFromJson(laoData.toJsonString)
 
-    //the checks are done separately, as otherwise equals seems to compare the toString equalities, which is not the case for Arrays
+    // the checks are done separately, as otherwise equals seems to compare the toString equalities, which is not the case for Arrays
     laoData2.owner should equal(laoData.owner)
     laoData2.attendees should equal(laoData.attendees)
     laoData2.privateKey should equal(laoData.privateKey)

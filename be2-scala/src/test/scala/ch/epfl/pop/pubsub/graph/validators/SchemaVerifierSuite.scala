@@ -101,14 +101,13 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
-
   /* ----------------------------- Low-level (data) tests ----------------------------- */
   test("Correct CreateLao data") {
     val examplePath = "../protocol/examples/messageData/lao_create/lao_create.json"
     val exampleJson = getJsonStringFromFile(examplePath)
     val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.LAO, ActionType.CREATE).get
 
-    validator(exampleJson) should be (Success((): Unit))
+    validator(exampleJson) should be(Success((): Unit))
   }
 
   test("Incorrect CreateLao data: negative timestamp") {
@@ -124,7 +123,7 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     val exampleJson = getJsonStringFromFile(examplePath)
     val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.COIN, ActionType.POST_TRANSACTION).get
 
-    validator(exampleJson) should be (Success((): Unit))
+    validator(exampleJson) should be(Success((): Unit))
   }
 
   test("Incorrect CashTransaction data: overflow amount") {

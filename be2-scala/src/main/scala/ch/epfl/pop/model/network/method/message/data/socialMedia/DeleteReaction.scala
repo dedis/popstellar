@@ -9,18 +9,18 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 final case class DeleteReaction(
-                                 reaction_id: Hash,
-                                 timestamp: Timestamp
-                               ) extends MessageData {
+    reaction_id: Hash,
+    timestamp: Timestamp
+) extends MessageData {
   override val _object: ObjectType = ObjectType.REACTION
   override val action: ActionType = ActionType.DELETE
 }
 
 object DeleteReaction extends Parsable {
   def apply(
-             reaction_id: Hash,
-             timestamp: Timestamp
-           ): DeleteReaction = new DeleteReaction(reaction_id, timestamp)
+      reaction_id: Hash,
+      timestamp: Timestamp
+  ): DeleteReaction = new DeleteReaction(reaction_id, timestamp)
 
   override def buildFromJson(payload: String): DeleteReaction = payload.parseJson.asJsObject.convertTo[DeleteReaction]
 }

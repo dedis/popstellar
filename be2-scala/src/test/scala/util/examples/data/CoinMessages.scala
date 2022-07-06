@@ -6,11 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.CoinMessagesTrait
 
-/**
- * Generates high level RollCall Messages from protocol folder
- * For content validation: all the params are required
- * For handling: id, message with decoded data, channel are required
- */
+/** Generates high level RollCall Messages from protocol folder For content validation: all the params are required For handling: id, message with decoded data, channel are required
+  */
 object PostTransactionMessages extends CoinMessagesTrait {
 
   override val action: ActionType = ActionType.POST_TRANSACTION

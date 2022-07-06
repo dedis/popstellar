@@ -2,13 +2,13 @@ package ch.epfl.pop.config
 
 import com.typesafe.config.Config
 
-/**
- * Simple server configuration interface
- *
- * @see [[config/application.config]]
- * @see [[RuntimeEnvironment]]
- *
- */
+/** Simple server configuration interface
+  *
+  * @see
+  *   [[config/application.config]]
+  * @see
+  *   [[RuntimeEnvironment]]
+  */
 object ServerConf {
 
   def apply(appConf: Config): ServerConf = {

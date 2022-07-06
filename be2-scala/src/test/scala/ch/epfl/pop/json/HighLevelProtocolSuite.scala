@@ -15,7 +15,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
       PublicKey(Base64Data(sender)),
       Signature(Base64Data(signature)),
       Hash(Base64Data(id)),
-      Nil //Witnesses will be added in each test that needs them
+      Nil // Witnesses will be added in each test that needs them
     )
   }
 
@@ -30,10 +30,10 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
          |    }""".stripMargin
 
     f match {
-      case MESSAGE_ID => String.format(format, sp, "", "", "", "[]")
-      case SENDER => String.format(format, "", sp, "", "", "[]")
-      case SIGNATURE => String.format(format, "", "", sp, "", "[]")
-      case DATA => String.format(format, "", "", "", sp, "[]")
+      case MESSAGE_ID         => String.format(format, sp, "", "", "", "[]")
+      case SENDER             => String.format(format, "", sp, "", "", "[]")
+      case SIGNATURE          => String.format(format, "", "", sp, "", "[]")
+      case DATA               => String.format(format, "", "", "", sp, "[]")
       case WITNESS_SIGNATURES => String.format(format, "", "", "", "", sp)
     }
   }
@@ -105,20 +105,20 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     an[spray.json.JsonParser.ParsingException] should be thrownBy (Message.buildFromJson(source))
   }
 
-  /**
-   * This tests against all not allowed key types/formats
-   */
+  /** This tests against all not allowed key types/formats
+    */
   test("Invalid json keys format test") {
-    //Forms pairs/combinations of different MsgField values (except Witness) and forbidden key types
-    //for formating
-    val set = for {p <- (MsgField.values - WITNESS_SIGNATURES)
-                   t <- Set("[]", "{}", "null", "1")
-                   } yield (t, p)
+    // Forms pairs/combinations of different MsgField values (except Witness) and forbidden key types
+    // for formating
+    val set = for {
+      p <- (MsgField.values - WITNESS_SIGNATURES)
+      t <- Set("[]", "{}", "null", "1")
+    } yield (t, p)
 
-    //Form left pairs/combinations of witness signatures and its forbidden key types for formatting
+    // Form left pairs/combinations of witness signatures and its forbidden key types for formatting
     val setWitness = Set("", "1", "{}", "null").map((_, WITNESS_SIGNATURES))
 
-    //Test against all the (incorrect) combinations
+    // Test against all the (incorrect) combinations
     forEvery(set union setWitness) {
       case (t: String, p: MsgField) =>
         val source: String = getFormattedString(p, t)

@@ -12,10 +12,10 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
 
 object MeetingValidator extends MessageDataContentValidator with EventValidator {
-  
+
   val meetingValidator = new MeetingValidator(DbActor.getInstance)
 
-  override val EVENT_HASH_PREFIX:String = meetingValidator.EVENT_HASH_PREFIX
+  override val EVENT_HASH_PREFIX: String = meetingValidator.EVENT_HASH_PREFIX
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = meetingValidator.validateCreateMeeting(rpcMessage)
 
@@ -23,7 +23,7 @@ object MeetingValidator extends MessageDataContentValidator with EventValidator 
 
 }
 
-sealed class  MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
+sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
   override val EVENT_HASH_PREFIX: String = "M"
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {

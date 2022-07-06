@@ -10,11 +10,9 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 import scala.concurrent._
 
-
 case object CoinValidator extends MessageDataContentValidator {
   def validatePostTransaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "PostTransaction", rpcMessage.id)
-
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -26,7 +24,7 @@ case object CoinValidator extends MessageDataContentValidator {
         } else {
           data.transaction.sumOutputs() match {
             case Left(err) => Right(validationError(err.getMessage()))
-            case Right(_) => Left(rpcMessage)
+            case Right(_)  => Left(rpcMessage)
           }
         }
 

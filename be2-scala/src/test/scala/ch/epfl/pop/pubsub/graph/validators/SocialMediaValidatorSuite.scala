@@ -19,9 +19,9 @@ import util.examples.socialMedia.AddChirpExamples
 import scala.reflect.io.Directory
 
 class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseSocialMediaTest"
 
@@ -109,7 +109,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     system.actorOf(dbActorMock)
   }
 
-  //AddChirp
+  // AddChirp
   test("Adding a chirp works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_RPC)
@@ -159,7 +159,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     system.stop(dbActorRef.actorRef)
   }
 
-  //DeleteChirp
+  // DeleteChirp
   test("Deleting a chirp works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_RPC)
@@ -202,7 +202,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     system.stop(dbActorRef.actorRef)
   }
 
-  //AddReaction
+  // AddReaction
   test("Adding a reaction works as intended") {
     val dbActorRef = mockDbWorkingReaction
     val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(ADD_REACTION_RPC)
@@ -238,7 +238,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     system.stop(dbActorRef.actorRef)
   }
 
-  //DeleteReaction
+  // DeleteReaction
   test("Deleting a reaction works as intended") {
     val dbActorRef = mockDbWorkingReaction
     val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(DELETE_REACTION_RPC)

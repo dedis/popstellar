@@ -67,7 +67,7 @@ object Server {
       val shutdownListener = new Thread() {
         override def run(): Unit = {
           try {
-            bindingFuture.flatMap(_.unbind()).onComplete(_ => { //trigger unbinding from the port
+            bindingFuture.flatMap(_.unbind()).onComplete(_ => { // trigger unbinding from the port
               logger.info("Server terminated !")
               system.terminate()
               typedSystem.terminate()
@@ -80,7 +80,7 @@ object Server {
       Runtime.getRuntime.addShutdownHook(shutdownListener)
       Behaviors.empty
     }
-    //Deploys system actor with root behavior
+    // Deploys system actor with root behavior
     ActorSystem[Nothing](root, "pop-be2-actor-system")
 
   }

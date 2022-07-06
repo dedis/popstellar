@@ -25,7 +25,8 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLao))
+    Some(greetLao)
+  )
 
   final val greetLaoWrongFrontend: GreetLao = GreetLao(LAO, wrongSender, ADDRESS, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_FRONTEND: Message = new Message(
@@ -34,9 +35,10 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLaoWrongFrontend))
-  
-  final val wronLaoGreet: Hash = Hash(Base64Data.encode("laoId/election")) 
+    Some(greetLaoWrongFrontend)
+  )
+
+  final val wronLaoGreet: Hash = Hash(Base64Data.encode("laoId/election"))
   final val greetLaoWrongChannel: GreetLao = GreetLao(wronLaoGreet, SENDER, ADDRESS, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_CHANNEL: Message = new Message(
     Base64Data.encode(GreetLaoFormat.write(greetLaoWrongChannel).toString),
@@ -44,7 +46,8 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLaoWrongChannel))  
+    Some(greetLaoWrongChannel)
+  )
 
   final val greetLaoWrongLao: GreetLao = GreetLao(wrongLao, SENDER, ADDRESS, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_LAO: Message = new Message(
@@ -53,7 +56,8 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLaoWrongLao))
+    Some(greetLaoWrongLao)
+  )
 
   final val greetLaoWrongAddress: GreetLao = GreetLao(LAO, SENDER, wrongAddress, PEERS)
   final val MESSAGE_GREET_LAO_WRONG_ADDRESS: Message = new Message(
@@ -62,7 +66,8 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLaoWrongAddress))
+    Some(greetLaoWrongAddress)
+  )
 
   final val MESSAGE_GREET_LAO_WRONG_OWNER: Message = new Message(
     Base64Data.encode(greetLaoWrongAddress.toJson.toString),
@@ -70,5 +75,6 @@ object GreetLaoExamples {
     SIGNATURE,
     Hash(Base64Data("")),
     List.empty,
-    Some(greetLaoWrongAddress))
+    Some(greetLaoWrongAddress)
+  )
 }

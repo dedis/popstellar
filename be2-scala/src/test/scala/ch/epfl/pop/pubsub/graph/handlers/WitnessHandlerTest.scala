@@ -15,7 +15,6 @@ import util.examples.lao.CreateLaoExamples.{SENDER, createLao}
 
 import scala.concurrent.duration.FiniteDuration
 
-
 class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")

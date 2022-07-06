@@ -6,7 +6,6 @@ import ch.epfl.pop.model.network.method.message.data.election.OpenElection
 import ch.epfl.pop.model.objects._
 import spray.json._
 
-
 object OpenElectionExamples {
 
   final val SENDER_ELECTION: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION

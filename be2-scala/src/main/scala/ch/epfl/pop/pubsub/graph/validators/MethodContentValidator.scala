@@ -10,8 +10,8 @@ trait MethodContentValidator extends ContentValidator {
     case _ if channel.isRootChannel => true
     case _ if !channel.isSubChannel => false
     case _ => Try(channel.decodeChannelLaoId) match {
-      case Success(_) => true
-      case _ => false
-    }
+        case Success(_) => true
+        case _          => false
+      }
   }
 }

@@ -9,20 +9,20 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 final case class AddReaction(
-                              reaction_codepoint: String,
-                              chirp_id: Hash,
-                              timestamp: Timestamp
-                            ) extends MessageData {
+    reaction_codepoint: String,
+    chirp_id: Hash,
+    timestamp: Timestamp
+) extends MessageData {
   override val _object: ObjectType = ObjectType.REACTION
   override val action: ActionType = ActionType.ADD
 }
 
 object AddReaction extends Parsable {
   def apply(
-             reaction_codepoint: String,
-             chirp_id: Hash,
-             timestamp: Timestamp
-           ): AddReaction = new AddReaction(reaction_codepoint, chirp_id, timestamp)
+      reaction_codepoint: String,
+      chirp_id: Hash,
+      timestamp: Timestamp
+  ): AddReaction = new AddReaction(reaction_codepoint, chirp_id, timestamp)
 
   override def buildFromJson(payload: String): AddReaction = payload.parseJson.asJsObject.convertTo[AddReaction]
 }

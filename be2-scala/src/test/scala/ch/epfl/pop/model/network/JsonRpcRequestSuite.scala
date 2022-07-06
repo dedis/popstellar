@@ -8,7 +8,6 @@ import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
 import util.examples.{JsonRpcRequestExample, MessageExample}
 
-
 class JsonRpcRequestSuite extends FunSuite with Matchers {
   final val messageEx: Message = MessageExample.MESSAGE
   final val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED

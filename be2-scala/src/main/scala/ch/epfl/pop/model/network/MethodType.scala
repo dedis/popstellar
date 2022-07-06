@@ -16,4 +16,3 @@ object MethodType extends Enumeration {
 
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
 }
-

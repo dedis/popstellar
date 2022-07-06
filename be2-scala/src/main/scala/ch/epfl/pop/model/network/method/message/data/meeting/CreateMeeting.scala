@@ -9,28 +9,28 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 final case class CreateMeeting(
-                                id: Hash,
-                                name: String,
-                                creation: Timestamp,
-                                location: Option[String],
-                                start: Timestamp,
-                                end: Option[Timestamp],
-                                extra: Option[Any]
-                              ) extends MessageData {
+    id: Hash,
+    name: String,
+    creation: Timestamp,
+    location: Option[String],
+    start: Timestamp,
+    end: Option[Timestamp],
+    extra: Option[Any]
+) extends MessageData {
   override val _object: ObjectType = ObjectType.MEETING
   override val action: ActionType = ActionType.CREATE
 }
 
 object CreateMeeting extends Parsable {
   def apply(
-             id: Hash,
-             name: String,
-             creation: Timestamp,
-             location: Option[String],
-             start: Timestamp,
-             end: Option[Timestamp],
-             extra: Option[Any]
-           ): CreateMeeting = {
+      id: Hash,
+      name: String,
+      creation: Timestamp,
+      location: Option[String],
+      start: Timestamp,
+      end: Option[Timestamp],
+      extra: Option[Any]
+  ): CreateMeeting = {
     new CreateMeeting(id, name, creation, location, start, end, extra)
   }
 
