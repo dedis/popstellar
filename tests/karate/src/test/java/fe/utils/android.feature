@@ -55,7 +55,7 @@ Feature: android page object
 
     # Cast vote screen
     * def cast_vote_ballot_selector_2 = '//*[@text="choice 2"]'
-
+    * def cast_vote_button_selector = '#com.github.dedis.popstellar:id/cast_vote_button'
 
 
 
@@ -152,13 +152,14 @@ Feature: android page object
     * click(event_name_selector)
     * backend.clearBuffer()
     * click(election_management_selector)
-    * dialog(true)
+    * retry(5,1000).dialog(true)
     * wait(1)
 
   # Election cast vote android procedure
   @name=cast_vote
   Scenario: Cast a vote
-    * click(election_action_button)
-    * karate.log(driver.getHttp().path("source").get().value)
+    * click(election_action_selector)
     * click(cast_vote_ballot_selector_2)
     * backend.clearBuffer()
+    * click(cast_vote_button_selector)
+    * wait(5)
