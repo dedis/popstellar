@@ -51,6 +51,12 @@ Feature: android page object
     # which leaves the second ballot option the only one with the hint text
     * def election_ballot_selector_2 = '//*[@text="ballot option"]'
     * def election_management_selector = '#com.github.dedis.popstellar:id/election_management_button'
+    * def election_action_selector = '#com.github.dedis.popstellar:id/election_action_button'
+
+    # Cast vote screen
+    * def cast_vote_ballot_selector_2 = '//*[@text="choice 2"]'
+
+
 
 
   @name=basic_setup
@@ -148,3 +154,11 @@ Feature: android page object
     * click(election_management_selector)
     * dialog(true)
     * wait(1)
+
+  # Election cast vote android procedure
+  @name=cast_vote
+  Scenario: Cast a vote
+    * click(election_action_button)
+    * karate.log(driver.getHttp().path("source").get().value)
+    * click(cast_vote_ballot_selector_2)
+    * backend.clearBuffer()
