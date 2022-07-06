@@ -183,7 +183,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
         ))}
       </View>
 
-      <PoPTextButton onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
+      <PoPTextButton testID="election_vote_selector" onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
     </ScreenWrapper>
   );
 };

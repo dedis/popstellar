@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    * configure driver = { type: 'chrome' }
+    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    #* configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -42,9 +42,14 @@ Feature: web test
     * def election_ballot_selector_1 = "[data-testid='question_0_ballots_option_0_input']"
     * def election_ballot_selector_2 = "[data-testid='question_0_ballots_option_1_input']"
     * def election_confirm_selector = "[data-testid='election_confirm_selector']"
-    * def election_event_selector =   "[data-testid='current_event_selector_1']"
+    * def election_event_selector =   "[data-testid='current_event_selector_0']"
 
     * def election_option_selector = "[data-testid='election_option_selector']"
+
+    # Cast vote screen
+    * def cast_vote_button_selector = "[data-testid='election_vote_selector']"
+    * def cast_vote_ballot_selector_2 = '{^}choice 2'
+
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -121,7 +126,7 @@ Feature: web test
     * click(roll_call_option_selector)
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 900)")
     # needed to work
-    * wait(1)
+    * wait(2)
 
   @name=close_roll_call_w_attendees
   Scenario: Closes a roll call with 2 attendees and the organizer
@@ -138,7 +143,6 @@ Feature: web test
     * below(manual_add_description_selector).input(token2)
     * click(manual_add_confirm_selector)
     * click(manual_add_done_selector)
-
     * retry(5,1000).click(roll_call_stop_scanning_selector)
     * backend.clearBuffer()
     * click(roll_call_option_selector)
@@ -177,3 +181,13 @@ Feature: web test
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
     * wait(2)
+
+  # Election cast vote web procedure
+  @name=cast_vote
+  Scenario: Cast a vote
+  * wait(1)
+  * leftOf(cast_vote_ballot_selector_2).click()
+  * wait(1)
+  * backend.clearBuffer()
+  * click(cast_vote_button_selector)
+  * wait(5)
