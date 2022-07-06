@@ -10,7 +10,9 @@ import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 
 //import util.examples.MessageExample._
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample._
 
 import scala.concurrent.duration.FiniteDuration

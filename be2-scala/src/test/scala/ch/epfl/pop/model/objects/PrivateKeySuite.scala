@@ -1,7 +1,8 @@
 package ch.epfl.pop.model.objects
 
 import com.google.crypto.tink.subtle.Ed25519Sign
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class PrivateKeySuite extends FunSuite with Matchers {
   test("Constructor/apply works as intended") {

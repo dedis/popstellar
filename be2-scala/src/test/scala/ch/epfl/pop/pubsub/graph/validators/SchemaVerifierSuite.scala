@@ -4,7 +4,8 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.pubsub.graph.SchemaVerifier._
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
 import scala.util.{Failure, Success}

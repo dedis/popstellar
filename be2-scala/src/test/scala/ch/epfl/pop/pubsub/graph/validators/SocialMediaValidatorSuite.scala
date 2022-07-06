@@ -12,7 +12,9 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample._
 import util.examples.socialMedia.AddChirpExamples
 
