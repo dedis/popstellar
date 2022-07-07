@@ -48,7 +48,7 @@ Feature: web test
 
     # Cast vote screen
     * def cast_vote_button_selector = "[data-testid='election_vote_selector']"
-    * def cast_vote_ballot_selector_2 = '{^}choice 2'
+    * def cast_vote_ballot_selector_2 = "[data-testid='questions_0_ballots_option_1_checkbox']"
 
 
   @name=basic_setup
@@ -186,8 +186,8 @@ Feature: web test
   @name=cast_vote
   Scenario: Cast a vote
   * wait(1)
-  * leftOf(cast_vote_ballot_selector_2).click()
+  # Click on second ballot checkbox
+  * click(cast_vote_ballot_selector_2)
   * wait(1)
   * backend.clearBuffer()
   * click(cast_vote_button_selector)
-  * wait(5)
