@@ -267,9 +267,9 @@ public class ElectionTest {
 
   @Test
   public void putSenderByMessageIdWithNullPkThrowsException() {
+    MessageID messageID = new MessageID("foo");
     assertThrows(
-        IllegalArgumentException.class,
-        () -> election.putSenderByMessageId(null, new MessageID("foo")));
+        IllegalArgumentException.class, () -> election.putSenderByMessageId(null, messageID));
   }
 
   @Test

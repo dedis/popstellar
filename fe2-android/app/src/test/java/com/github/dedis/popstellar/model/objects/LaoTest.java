@@ -316,24 +316,20 @@ public class LaoTest {
     List<InputObject> inputs = new ArrayList<>();
     List<OutputObject> outputs = new ArrayList<>();
     Lao lao = new Lao("id");
-    assertThrows(
-        IllegalStateException.class,
-        () ->
-            lao.updateTransactionMaps(
-                new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id")));
+    TransactionObject transactionObject =
+        new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id");
+    assertThrows(IllegalStateException.class, () -> lao.updateTransactionMaps(transactionObject));
   }
 
   @Test
   public void noPubKeyHashWhenTransactionUpdateThrowsException() {
     List<InputObject> inputs = new ArrayList<>();
     List<OutputObject> outputs = new ArrayList<>();
+    TransactionObject transactionObject =
+        new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id");
     Lao lao = new Lao("id");
     lao.setRollCalls(rollCalls);
-    assertThrows(
-        IllegalStateException.class,
-        () ->
-            lao.updateTransactionMaps(
-                new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id")));
+    assertThrows(IllegalStateException.class, () -> lao.updateTransactionMaps(transactionObject));
   }
 
   @Test

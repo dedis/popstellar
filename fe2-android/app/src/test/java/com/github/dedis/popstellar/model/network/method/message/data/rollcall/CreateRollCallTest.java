@@ -81,7 +81,7 @@ public class CreateRollCallTest {
 
     CreateRollCall createRollCall = new CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, null);
 
-    assertEquals(createRollCall, CREATE_ROLL_CALL);
+    assertEquals(CREATE_ROLL_CALL, createRollCall);
   }
 
   @Test
