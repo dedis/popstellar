@@ -213,6 +213,7 @@ public class LaoTest {
             put(rollCallId2, r2);
           }
         });
+    assertTrue(LAO_1.getRollCall(rollCallId1).isPresent());
     assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
     r1.setEnd(1);
     r2.setEnd(2);
@@ -247,6 +248,7 @@ public class LaoTest {
             put(electionId2, e2);
           }
         });
+    assertTrue(LAO_1.getElection(electionId1).isPresent());
     assertThat(LAO_1.getElection(electionId1).get(), is(e1));
   }
 
