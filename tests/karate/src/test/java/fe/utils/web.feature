@@ -190,12 +190,15 @@ Feature: web test
   * wait(1)
   * backend.clearBuffer()
   * click(cast_vote_button_selector)
+  * wait(1)
 
 
   # Election end web procedure
-  @name=cast_vote
+  @name=end_election
   Scenario: End an election
+  * wait(1)
   * retry(5,1000).click(election_opened_option_selector)
   * script("setTimeout(() => document.evaluate('//div[text()=\\'End Election and Tally Votes\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
   * backend.clearBuffer()
   * wait(2)
+
