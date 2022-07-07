@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -21,7 +22,10 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,9 +99,13 @@ public class LaoTest {
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {
-            put(electionId1, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
+            put(
+                electionId1,
+                new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
             put(null, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
-            put(electionId3, new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
+            put(
+                electionId3,
+                new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
           }
         });
     // now the removal of electionId2 can't be done
@@ -133,7 +141,8 @@ public class LaoTest {
   public void updateElections() {
     LAO_1.setElections(new HashMap<>(elections));
     Election e1 =
-        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
+        new Election(
+            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     e1.setId("New e1 id");
     LAO_1.updateElection(electionId1, e1);
     assertFalse(LAO_1.getElections().containsKey(electionId1));
@@ -144,7 +153,8 @@ public class LaoTest {
 
     // we create a different election that has the same Id as the first one
     Election e2 =
-        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
+        new Election(
+            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     e2.setId(e1.getId());
 
     LAO_1.updateElection(e1.getId(), e2);
@@ -225,9 +235,11 @@ public class LaoTest {
   @Test
   public void getElection() {
     Election e1 =
-        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
+        new Election(
+            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     Election e2 =
-        new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
+        new Election(
+            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {
@@ -284,5 +296,86 @@ public class LaoTest {
   public void setAndGetId() {
     LAO_1.setId("New_Id");
     assertThat(LAO_1.getId(), is("New_Id"));
+  }
+
+  @Test
+  public void nullChirpUpdateThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> LAO_1.updateAllChirps(new MessageID("foo"), null));
+  }
+
+  @Test
+  public void nullTransactionObjectUpdateThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateTransactionMaps(null));
+  }
+
+  @Test
+  public void noRollCallWhenTransactionUpdateThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            LAO_1.updateTransactionMaps(
+                new TransactionObject(
+                    Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
+  }
+
+  @Test
+  public void noPubKeyHashWhenTransactionUpdateThrowsException() {
+    LAO_1.setRollCalls(rollCalls);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            LAO_1.updateTransactionMaps(
+                new TransactionObject(
+                    Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
+  }
+
+  @Test
+  public void setEmptyIdThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.setId(""));
+  }
+
+  @Test
+  public void setNullIdThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.setId(null));
+  }
+
+  @Test
+  public void setPendingUpdatesTest() {
+    PendingUpdate update = new PendingUpdate(1L, new MessageID("foo"));
+    LAO_1.setPendingUpdates(Collections.singleton(update));
+    assertTrue(LAO_1.getPendingUpdates().contains(update));
+  }
+
+  @Test
+  public void witnessMapTest() {
+    MessageID messageID = new MessageID("foo");
+    WitnessMessage witnessMessage = new WitnessMessage(messageID);
+    LAO_1.updateWitnessMessage(messageID, witnessMessage);
+    assertEquals(LAO_1.getWitnessMessages().get(messageID), witnessMessage);
+  }
+
+  @Test
+  public void getChirpsInOrderTest() {
+    MessageID id1 = new MessageID("foo");
+    Chirp chirp1 = new Chirp(id1);
+    chirp1.setTimestamp(1L);
+    chirp1.setText("text");
+    chirp1.setChannel(Channel.ROOT);
+    chirp1.setSender(ORGANIZER);
+    chirp1.setParentId(new MessageID("foobar"));
+    MessageID id2 = new MessageID("bar");
+    Chirp chirp2 = new Chirp(id2);
+    chirp2.setText("text");
+    chirp2.setChannel(Channel.ROOT);
+    chirp2.setSender(ORGANIZER);
+    chirp2.setParentId(new MessageID("foobar"));
+    chirp2.setTimestamp(2L);
+    LAO_1.updateAllChirps(id1, chirp1);
+    LAO_1.updateAllChirps(id2, chirp2);
+
+    List<Chirp> orderedList = LAO_1.getChirpsInOrder();
+    assertEquals(chirp2, orderedList.get(0));
+    assertEquals(chirp1, orderedList.get(1));
   }
 }
