@@ -1,5 +1,6 @@
 import { getStore } from 'core/redux';
 
+import { NoCurrentLaoError } from '../errors/NoCurrentLaoError';
 import {
   makeLaoOrganizerBackendPublicKeySelector,
   selectCurrentLao,
@@ -16,7 +17,9 @@ export const getCurrentLao = () => {
   const currentLao = selectCurrentLao(getStore().getState());
 
   if (!currentLao) {
-    throw new Error('Error encountered while accessing storage : no currently opened LAO');
+    throw new NoCurrentLaoError(
+      'Error encountered while accessing storage : no currently opened LAO',
+    );
   }
 
   return currentLao;

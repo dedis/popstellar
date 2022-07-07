@@ -26,7 +26,7 @@ export interface MeetingConfiguration {
    * Returns the currently active lao id. Should be used inside react components
    * @returns The current lao id
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash;
 
   /* Event related functions */
 
@@ -59,7 +59,7 @@ export interface MeetingConfiguration {
 /**
  * The type of the context that is provided to react meeting components
  */
-export type MeetingReactContext = Pick<MeetingConfiguration, 'useCurrentLaoId'>;
+export type MeetingReactContext = Pick<MeetingConfiguration, 'useAssertCurrentLaoId'>;
 
 /**
  * The interface the meeting feature exposes

@@ -13,7 +13,7 @@ import { CreateElectionScreen, ViewSingleElectionScreen } from './screens';
 export const configure = (config: EvotingConfiguration): EvotingInterface => {
   const {
     useCurrentLao,
-    useCurrentLaoId,
+    useAssertCurrentLaoId,
     useLaoOrganizerBackendPublicKey,
     getEventById,
     addEvent,
@@ -30,7 +30,7 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
     context: {
       /* lao */
       useCurrentLao,
-      useCurrentLaoId,
+      useAssertCurrentLaoId,
       useLaoOrganizerBackendPublicKey,
       /* event */
       getEventById,

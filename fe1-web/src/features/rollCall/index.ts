@@ -26,7 +26,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
       useRollCallTokenByRollCallId: RollCallHooks.useRollCallTokenByRollCallId,
     },
     context: {
-      useCurrentLaoId: configuration.useCurrentLaoId,
+      useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
       makeEventByTypeSelector: configuration.makeEventByTypeSelector,
       generateToken: configuration.generateToken,
       hasSeed: configuration.hasSeed,

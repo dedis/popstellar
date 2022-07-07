@@ -21,18 +21,9 @@ export namespace RollCallHooks {
   };
 
   /**
-   * Gets the current lao id
-   * @returns The current lao id
+   * Gets the current lao id or throws an exception if there is none
    */
-  export const useCurrentLaoId = () => {
-    const laoId = useRollCallContext().useCurrentLaoId();
-
-    if (!laoId) {
-      throw new Error('Error encountered while obtaining current lao id: no active LAO');
-    }
-
-    return laoId;
-  };
+  export const useAssertCurrentLaoId = () => useRollCallContext().useAssertCurrentLaoId();
 
   export const useRollCallById = (rollCallId: Hash | string) => {
     const rollCallSelector = useMemo(

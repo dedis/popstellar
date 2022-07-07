@@ -70,7 +70,7 @@ mockStore.dispatch(addNotification(mockNotification));
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
     discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),
     markNotificationAsRead: (args) => mockStore.dispatch(markNotificationAsRead(args)),

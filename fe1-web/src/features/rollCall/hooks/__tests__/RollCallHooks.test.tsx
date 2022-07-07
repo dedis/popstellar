@@ -56,7 +56,7 @@ const mockHasSeed = jest.fn();
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: mockHasSeed,
@@ -96,9 +96,9 @@ const wrapper = ({ children }: { children: React.ReactChildren }) => (
 );
 
 describe('RollCallHooks', () => {
-  describe('useCurrentLaoId', () => {
+  describe('useAssertCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => RollCallHooks.useCurrentLaoId(), { wrapper });
+      const { result } = renderHook(() => RollCallHooks.useAssertCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });

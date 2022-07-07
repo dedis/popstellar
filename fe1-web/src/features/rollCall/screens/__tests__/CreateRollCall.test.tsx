@@ -11,7 +11,7 @@ import CreateRollCall from '../CreateRollCall';
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     makeEventByTypeSelector,
     generateToken: jest.fn(),
     hasSeed: jest.fn(),

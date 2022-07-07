@@ -24,10 +24,11 @@ export interface RollCallConfiguration {
   getLaoById: (id: string) => RollCallFeature.Lao | undefined;
 
   /**
-   * Returns the currently active lao id. Should be used inside react components
+   * Returns the currently active lao id or throws an error if there is none.
+   * Should be used inside react components
    * @returns The current lao id
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash;
 
   /**
    * An action cretor that sets the last roll call for a given lao
@@ -94,7 +95,7 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  'useCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
+  'useAssertCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
 >;
 
 /**

@@ -32,7 +32,7 @@ export function compose(config: EventCompositionConfiguration): EventComposition
   return {
     identifier: EVENT_FEATURE_IDENTIFIER,
     context: {
-      useCurrentLaoId: config.useCurrentLaoId,
+      useAssertCurrentLaoId: config.useAssertCurrentLaoId,
       useIsLaoOrganizer: config.useIsLaoOrganizer,
       eventTypes: config.eventTypes,
     },

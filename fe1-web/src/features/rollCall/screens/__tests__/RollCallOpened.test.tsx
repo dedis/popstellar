@@ -72,7 +72,7 @@ const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,

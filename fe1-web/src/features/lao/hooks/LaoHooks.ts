@@ -5,6 +5,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { getNetworkManager } from 'core/network';
 import { Hash } from 'core/objects';
 
+import { NoCurrentLaoError } from '../errors/NoCurrentLaoError';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
@@ -98,7 +99,9 @@ export namespace LaoHooks {
     const currentLao = useSelector(selectCurrentLao);
 
     if (!currentLao) {
-      throw new Error('Error encountered while accessing storage : no currently opened LAO');
+      throw new NoCurrentLaoError(
+        'Error encountered while accessing storage : no currently opened LAO',
+      );
     }
 
     return currentLao;
@@ -109,6 +112,20 @@ export namespace LaoHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
+
+  /**
+   * Returns the current lao id or throws an NoCurrentLaoError if there is none
+   * @returns The current lao id
+   */
+  export const useAssertCurrentLaoId = () => {
+    const laoId = useCurrentLaoId();
+
+    if (!laoId) {
+      throw new NoCurrentLaoError('Violation of the assertion of the existence of a current lao');
+    }
+
+    return laoId;
+  };
 
   /**
    * Returns the public key of the organizer's backend for a given lao id

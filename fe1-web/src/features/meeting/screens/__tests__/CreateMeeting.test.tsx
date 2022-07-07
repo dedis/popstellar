@@ -10,7 +10,7 @@ import CreateMeeting from '../CreateMeeting';
 
 const contextValue = {
   [MEETING_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
   } as MeetingReactContext,
 };
 
