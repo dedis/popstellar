@@ -104,4 +104,6 @@ public class Constants {
   public final String PLURALITY = "Plurality";
 
   public final String CAST_VOTE = "cast_vote";
+
+  public final String END = "end";
 }

@@ -136,7 +136,7 @@ Feature: android page object
 
   # Election setup android procedure
   @name=setup_election
-  Scenario: create election
+  Scenario: create election with 1 question and 2 ballots
     * retry(5, 1000).click(add_event_selector)
     * click(add_election_selector)
     * input(election_name_selector, constants.ELECTION_NAME)
@@ -157,9 +157,17 @@ Feature: android page object
 
   # Election cast vote android procedure
   @name=cast_vote
-  Scenario: Cast a vote
+  Scenario: Cast a vote for the second ballot
     * click(election_action_selector)
     * click(cast_vote_ballot_selector_2)
     * backend.clearBuffer()
     * click(cast_vote_button_selector)
     * wait(5)
+
+  @name=end_election
+  Scenario: End an election
+    * click(event_name_selector)
+    * click(election_management_selector)
+    * backend.clearBuffer()
+    * retry(5,1000).dialog(true)
+    * wait(1)
