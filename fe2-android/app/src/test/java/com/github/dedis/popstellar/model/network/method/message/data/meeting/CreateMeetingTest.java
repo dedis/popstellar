@@ -71,7 +71,7 @@ public class CreateMeetingTest {
     assertNotEquals(null, CREATE_MEETING);
 
     CreateMeeting createMeeting1 = new CreateMeeting(LAO_ID, NAME, CREATION, LOCATION, START, END);
-    assertEquals(createMeeting1, CREATE_MEETING);
+    assertEquals(CREATE_MEETING, createMeeting1);
   }
 
   @Test

@@ -247,16 +247,16 @@ public class ElectionTest {
 
   @Test
   public void putOpenBallotWithNullPkThrowsException() {
+    List<ElectionVote> list = new ArrayList<>();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> election.putOpenBallotVotesBySender(null, new ArrayList<>()));
+        IllegalArgumentException.class, () -> election.putOpenBallotVotesBySender(null, list));
   }
 
   @Test
   public void putOpenBallotWithEmptyVotesThrowsException() {
+    List<ElectionVote> list = new ArrayList<>();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> election.putOpenBallotVotesBySender(SENDER_1, new ArrayList<>()));
+        IllegalArgumentException.class, () -> election.putOpenBallotVotesBySender(SENDER_1, list));
   }
 
   @Test
@@ -280,16 +280,16 @@ public class ElectionTest {
 
   @Test
   public void putEncryptedBallotWithNullPkThrowsException() {
+    List<ElectionEncryptedVote> list = new ArrayList<>();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> election.putEncryptedVotesBySender(null, new ArrayList<>()));
+        IllegalArgumentException.class, () -> election.putEncryptedVotesBySender(null, list));
   }
 
   @Test
   public void putEncryptedBallotWithEmptyVotesThrowsException() {
+    List<ElectionEncryptedVote> list = new ArrayList<>();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> election.putEncryptedVotesBySender(SENDER_1, new ArrayList<>()));
+        IllegalArgumentException.class, () -> election.putEncryptedVotesBySender(SENDER_1, list));
   }
 
   @Test

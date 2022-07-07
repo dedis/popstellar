@@ -45,7 +45,7 @@ public class BroadcastTest {
     assertNotEquals(broadcast2, BROADCAST);
 
     Broadcast broadcast3 = new Broadcast(CHANNEL, MESSAGE_GENERAL);
-    assertEquals(broadcast3, BROADCAST);
+    assertEquals(BROADCAST, broadcast3);
   }
 
   @Test

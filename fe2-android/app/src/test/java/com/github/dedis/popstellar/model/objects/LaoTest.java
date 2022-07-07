@@ -302,8 +302,8 @@ public class LaoTest {
 
   @Test
   public void nullChirpUpdateThrowsException() {
-    assertThrows(
-        IllegalArgumentException.class, () -> LAO_1.updateAllChirps(new MessageID("foo"), null));
+    MessageID messageID = new MessageID("FOO");
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateAllChirps(messageID, null));
   }
 
   @Test
@@ -313,25 +313,27 @@ public class LaoTest {
 
   @Test
   public void noRollCallWhenTransactionUpdateThrowsException() {
+    List<InputObject> inputs = new ArrayList<>();
+    List<OutputObject> outputs = new ArrayList<>();
     Lao lao = new Lao("id");
     assertThrows(
         IllegalStateException.class,
         () ->
             lao.updateTransactionMaps(
-                new TransactionObject(
-                    Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
+                new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id")));
   }
 
   @Test
   public void noPubKeyHashWhenTransactionUpdateThrowsException() {
+    List<InputObject> inputs = new ArrayList<>();
+    List<OutputObject> outputs = new ArrayList<>();
     Lao lao = new Lao("id");
     lao.setRollCalls(rollCalls);
     assertThrows(
         IllegalStateException.class,
         () ->
             lao.updateTransactionMaps(
-                new TransactionObject(
-                    Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
+                new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id")));
   }
 
   @Test

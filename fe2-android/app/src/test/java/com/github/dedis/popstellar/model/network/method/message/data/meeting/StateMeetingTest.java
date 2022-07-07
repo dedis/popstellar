@@ -115,7 +115,7 @@ public class StateMeetingTest {
             END,
             MODIFICATION_ID,
             MODIFICATION_SIGNATURES);
-    assertEquals(stateMeeting, STATE_MEETING);
+    assertEquals(STATE_MEETING, stateMeeting);
   }
 
   @Test

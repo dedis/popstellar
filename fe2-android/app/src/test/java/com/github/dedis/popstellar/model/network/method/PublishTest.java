@@ -39,7 +39,7 @@ public class PublishTest {
     assertNotEquals(PUBLISH, publish2);
 
     Publish publish3 = new Publish(CHANNEL, ID, MESSAGE_GENERAL);
-    assertEquals(publish3, PUBLISH);
+    assertEquals(PUBLISH, publish3);
   }
 
   @Test
