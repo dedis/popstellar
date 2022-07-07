@@ -313,21 +313,23 @@ public class LaoTest {
 
   @Test
   public void noRollCallWhenTransactionUpdateThrowsException() {
+    Lao lao = new Lao("id");
     assertThrows(
         IllegalStateException.class,
         () ->
-            LAO_1.updateTransactionMaps(
+            lao.updateTransactionMaps(
                 new TransactionObject(
                     Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
   }
 
   @Test
   public void noPubKeyHashWhenTransactionUpdateThrowsException() {
-    LAO_1.setRollCalls(rollCalls);
+    Lao lao = new Lao("id");
+    lao.setRollCalls(rollCalls);
     assertThrows(
         IllegalStateException.class,
         () ->
-            LAO_1.updateTransactionMaps(
+            lao.updateTransactionMaps(
                 new TransactionObject(
                     Channel.ROOT, 1, new ArrayList<>(), new ArrayList<>(), 1L, "id")));
   }
