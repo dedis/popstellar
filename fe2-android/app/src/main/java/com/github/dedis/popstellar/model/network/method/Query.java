@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public abstract class Query extends Message {
 
-  private final transient int id;
+  private final int id;
 
   /**
    * Constructor for a Query
