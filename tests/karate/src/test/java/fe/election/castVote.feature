@@ -4,7 +4,7 @@ Feature:
     # Do all the steps up until (and including) opening an election
     Given call read('classpath:fe/utils/simpleScenarios.feature@name=open_election')
 
-    # Setup an election
+    # Casting a vote
     When def election_page_object = 'classpath:fe/utils/<env>.feature@name=cast_vote'
     * replace election_page_object.env = karate.env
     And call read(election_page_object)

@@ -57,8 +57,6 @@ Feature: android page object
     * def cast_vote_ballot_selector_2 = '//*[@text="choice 2"]'
     * def cast_vote_button_selector = '#com.github.dedis.popstellar:id/cast_vote_button'
 
-
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
@@ -90,7 +88,7 @@ Feature: android page object
 
   # Roll call create android procedure
   @name=create_roll_call
-  Scenario: Create a roll call for an already created LAO
+  Scenario: Creates a roll call for an already created LAO
     When click(add_event_selector)
     And click(add_roll_call_selector)
 
@@ -136,7 +134,7 @@ Feature: android page object
 
   # Election setup android procedure
   @name=setup_election
-  Scenario: create election with 1 question and 2 ballots
+  Scenario: Create election with 1 question and 2 ballots
     * retry(5, 1000).click(add_event_selector)
     * click(add_election_selector)
     * input(election_name_selector, constants.ELECTION_NAME)
@@ -148,7 +146,7 @@ Feature: android page object
 
   # Election open android procedure
   @name=open_election
-  Scenario: open election
+  Scenario: Open election
     * click(event_name_selector)
     * backend.clearBuffer()
     * click(election_management_selector)

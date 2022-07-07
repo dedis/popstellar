@@ -16,6 +16,7 @@ import static fe.utils.verification.VerificationUtils.getStringFromIntegerField;
 public class ElectionVerification {
   private static final Logger logger = new Logger(ElectionVerification.class.getSimpleName());
   private Constants constants = new Constants();
+
   /**
    * Verfies that the election id is coherently computed
    * @param message the network message
@@ -69,6 +70,12 @@ public class ElectionVerification {
     }
   }
 
+  /**
+   * Verfies that the vote id is coherently computed
+   * @param message the network message
+   * @param index the index of the ballot that was selected
+   * @return true if the computed question id matches what is expected
+   */
   public boolean verifyVoteId(String message, int index){
     Json voteMessageJson = getMsgDataJson(message);
     Json voteJson = getVotes(message);
@@ -108,6 +115,11 @@ public class ElectionVerification {
     return ballots.get(index);
   }
 
+  /**
+   * Gets the vote field
+   * @param message an element of the "votes" field array of a cast vote message
+   * @return the "vote" field of the message in argument
+   */
   public String getVote(String message){
     Json votes = getVotes(message);
     return getStringFromIntegerField(votes, VOTE);
@@ -119,10 +131,14 @@ public class ElectionVerification {
     return Json.of(questionArray.get(0));
   }
 
+  /**
+   * gets the first element of the "votes" field of a cast vote network message
+   * @param message the network message
+   * @return the first element of the "votes" field of a cast vote network message
+   */
   private Json getVotes(String message){
     Json msgJson = getMsgDataJson(message);
     List<String> questionArray = msgJson.get(VOTES);
-    logger.info("question array is " + questionArray);
     return Json.of(questionArray.get(0));
   }
 }
