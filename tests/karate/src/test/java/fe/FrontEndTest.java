@@ -31,11 +31,21 @@ public class FrontEndTest {
 
   @Karate.Test
   Karate testElectionSetup() {
-    return Karate.run("classpath:fe/elections/electionSetup.feature");
+    return Karate.run("classpath:fe/election/electionSetup.feature");
   }
 
   @Karate.Test
   Karate testElectionOpen() {
-    return Karate.run("classpath:fe/elections/electionOpen.feature");
+    return Karate.run("classpath:fe/election/electionOpen.feature");
+  }
+
+  @Karate.Test
+  Karate testCastVote() {
+    return Karate.run("classpath:fe/election/castVote.feature");
+  }
+
+  @Karate.Test
+  Karate testElectionEnd() {
+    return Karate.run("classpath:fe/election/electionEnd.feature");
   }
 }

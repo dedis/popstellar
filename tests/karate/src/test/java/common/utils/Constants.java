@@ -69,6 +69,10 @@ public class Constants {
 
   public static final String BALLOT_OPTIONS = "ballot_options";
 
+  public static final String VOTES = "votes";
+
+  public static final String VOTE = "vote";
+
   ///////////////////////// Non Static for Karate files calls ///////////////////////////////
 
   public final String ROLL_CALL = "roll_call";
@@ -98,4 +102,8 @@ public class Constants {
   public final String BALLOT_2 = "choice 2";
 
   public final String PLURALITY = "Plurality";
+
+  public final String CAST_VOTE = "cast_vote";
+
+  public final String END = "end";
 }
