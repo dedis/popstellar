@@ -163,6 +163,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
                 <ListItem key={ballotOption} containerStyle={listStyle} style={listStyle}>
                   <View style={List.icon}>
                     <ListItem.CheckBox
+                      testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}
                       size={Icon.size}
                       checked={selectedBallots[questionIndex] === ballotOptionIndex}
                       onPress={() =>
@@ -183,7 +184,9 @@ const ElectionOpened = ({ election }: IPropTypes) => {
         ))}
       </View>
 
-      <PoPTextButton testID="election_vote_selector" onPress={onCastVote}>{STRINGS.cast_vote}</PoPTextButton>
+      <PoPTextButton testID="election_vote_selector" onPress={onCastVote}>
+        {STRINGS.cast_vote}
+      </PoPTextButton>
     </ScreenWrapper>
   );
 };
