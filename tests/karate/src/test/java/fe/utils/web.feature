@@ -43,8 +43,10 @@ Feature: web test
     * def election_ballot_selector_2 = "[data-testid='question_0_ballots_option_1_input']"
     * def election_confirm_selector = "[data-testid='election_confirm_selector']"
     * def election_event_selector =   "[data-testid='current_event_selector_0']"
-
     * def election_option_selector = "[data-testid='election_option_selector']"
+    * def election_opened_option_selector = "[data-testid='election_opened_option_selector']"
+
+
 
     # Cast vote screen
     * def cast_vote_button_selector = "[data-testid='election_vote_selector']"
@@ -191,3 +193,12 @@ Feature: web test
   * wait(1)
   * backend.clearBuffer()
   * click(cast_vote_button_selector)
+
+
+  # Election end web procedure
+  @name=cast_vote
+  Scenario: End an election
+  * retry(5,1000).click(election_opened_option_selector)
+  * script("setTimeout(() => document.evaluate('//div[text()=\\'End Election and Tally Votes\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+  * backend.clearBuffer()
+  * wait(2)
