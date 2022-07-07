@@ -131,7 +131,7 @@ val AkkaHttpVersion = "10.2.9"
 
 libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,   // Akka streams (Graph)
-    "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,       // Akka http (WebSockets)
+    ("com.typesafe.akka" %% "akka-http" % AkkaHttpVersion).cross(CrossVersion.for3Use2_13), // Akka http (WebSockets)
     "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion,  // Akka distributed publish/subscribe cluster
 
     "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime,   // Akka logging library
