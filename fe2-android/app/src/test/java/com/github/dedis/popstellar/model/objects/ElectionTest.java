@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
+import static com.github.dedis.popstellar.model.objects.event.EventType.ELECTION;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -52,24 +53,23 @@ public class ElectionTest {
           "my question",
           "Plurality",
           false,
-              Arrays.asList("candidate1", "candidate2"),
-              "my election id");
+          Arrays.asList("candidate1", "candidate2"),
+          "my election id");
   private final String name = "my election name";
   private final String id = "my election id";
   private final long startTime = 0;
   private final long endTime = 1;
   private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election =
-          new Election("lao id", Instant.now().getEpochSecond(), name, OPEN_BALLOT);
+      new Election("lao id", Instant.now().getEpochSecond(), name, OPEN_BALLOT);
 
   // Add some vote for decryption/encryption testing purposes
   private final String questionId1 = " myQuestion1";
   private final String laoId = "lao";
 
   // Set up a open ballot election
-  private final ElectionVote electionVote1 =
-          new ElectionVote(questionId1, 1, false, null, id);
-  private final List<ElectionVote> electionVotes = Arrays.asList(electionVote1);
+  private final ElectionVote electionVote1 = new ElectionVote(questionId1, 1, false, null, id);
+  private final List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
 
   // Generate public key and populate the election key field
   ElectionKeyPair encryptionKeys = ElectionKeyPair.generateKeyPair();
@@ -148,13 +148,13 @@ public class ElectionTest {
   @Test
   public void settingSameRegisteredVotesAndComparingReturnsTrue() {
     List<ElectionVote> votes1 =
-            Arrays.asList(
-                    new ElectionVote("b", 1, false, "", "my election id"),
-                    new ElectionVote("a", 2, false, "", "my election id"));
-      List<ElectionVote> votes2 =
-              Arrays.asList(
-                      new ElectionVote("c", 3, false, "", "my election id"),
-                      new ElectionVote("d", 4, false, "", "my election id"));
+        Arrays.asList(
+            new ElectionVote("b", 1, false, "", "my election id"),
+            new ElectionVote("a", 2, false, "", "my election id"));
+    List<ElectionVote> votes2 =
+        Arrays.asList(
+            new ElectionVote("c", 3, false, "", "my election id"),
+            new ElectionVote("d", 4, false, "", "my election id"));
     election.putOpenBallotVotesBySender(SENDER_2, votes2);
     election.putSenderByMessageId(SENDER_1, MESSAGE_ID_1);
     election.putSenderByMessageId(SENDER_2, MESSAGE_ID_2);
@@ -229,4 +229,82 @@ public class ElectionTest {
     }
   }
 
+  @Test
+  public void getCreationInMillisTest() {
+    assertEquals(election.getCreation() * 1000, election.getCreationInMillis());
+  }
+
+  @Test
+  public void setCreationWithNegativeValueThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> election.setCreation(-1L));
+  }
+
+  @Test
+  public void setCreationTest() {
+    election.setCreation(1L);
+    assertEquals(1L, election.getCreation());
+  }
+
+  @Test
+  public void putOpenBallotWithNullPkThrowsException() {
+    List<ElectionVote> list = new ArrayList<>();
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putOpenBallotVotesBySender(null, list));
+  }
+
+  @Test
+  public void putOpenBallotWithEmptyVotesThrowsException() {
+    List<ElectionVote> list = new ArrayList<>();
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putOpenBallotVotesBySender(SENDER_1, list));
+  }
+
+  @Test
+  public void putOpenBallotWithNullVotesThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putOpenBallotVotesBySender(SENDER_1, null));
+  }
+
+  @Test
+  public void putSenderByMessageIdWithNullPkThrowsException() {
+    MessageID messageID = new MessageID("foo");
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putSenderByMessageId(null, messageID));
+  }
+
+  @Test
+  public void putSenderByMessageIdWithNullMsgIdThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putSenderByMessageId(SENDER_1, null));
+  }
+
+  @Test
+  public void putEncryptedBallotWithNullPkThrowsException() {
+    List<ElectionEncryptedVote> list = new ArrayList<>();
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putEncryptedVotesBySender(null, list));
+  }
+
+  @Test
+  public void putEncryptedBallotWithEmptyVotesThrowsException() {
+    List<ElectionEncryptedVote> list = new ArrayList<>();
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putEncryptedVotesBySender(SENDER_1, list));
+  }
+
+  @Test
+  public void putEncryptedBallotWithNullVotesThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> election.putEncryptedVotesBySender(SENDER_1, null));
+  }
+
+  @Test
+  public void setResultsWithNullResultsThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> election.setResults(null));
+  }
+
+  @Test
+  public void getTypeTest() {
+    assertEquals(ELECTION, election.getType());
+  }
 }

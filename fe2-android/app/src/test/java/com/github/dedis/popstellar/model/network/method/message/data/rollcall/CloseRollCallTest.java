@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
@@ -17,16 +19,16 @@ import java.util.ArrayList;
 
 public class CloseRollCallTest {
 
-  private final String laoId = Hash.hash("laoId");
-  private final String name = "name";
-  private final long time = Instant.now().getEpochSecond();
-  private final String location = "Location";
-  private final CreateRollCall createRollCall =
-      new CreateRollCall(name, time, time, time, location, null, laoId);
-  private final OpenRollCall openRollCall =
-      new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CREATED);
-  private final CloseRollCall closeRollCall =
-      new CloseRollCall(laoId, openRollCall.getUpdateId(), time, new ArrayList<>());
+  private static final String LAO_ID = Hash.hash("LAO_ID");
+  private static final String NAME = "NAME";
+  private static final long TIME = Instant.now().getEpochSecond();
+  private static final String LOCATION = "Location";
+  private static final CreateRollCall CREATE_ROLL_CALL =
+      new CreateRollCall(NAME, TIME, TIME, TIME, LOCATION, null, LAO_ID);
+  private static final OpenRollCall OPEN_ROLL_CALL =
+      new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.getId(), TIME, EventState.CREATED);
+  private static final CloseRollCall CLOSE_ROLL_CALL =
+      new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>());
 
   @Test
   public void generateCloseRollCallIdTest() {
@@ -34,39 +36,61 @@ public class CloseRollCallTest {
     String expectedId =
         Hash.hash(
             EventType.ROLL_CALL.getSuffix(),
-            laoId,
-            closeRollCall.getCloses(),
-            Long.toString(closeRollCall.getClosedAt()));
-    assertThat(closeRollCall.getUpdateId(), is(expectedId));
+            LAO_ID,
+            CLOSE_ROLL_CALL.getCloses(),
+            Long.toString(CLOSE_ROLL_CALL.getClosedAt()));
+    assertThat(CLOSE_ROLL_CALL.getUpdateId(), is(expectedId));
   }
 
   @Test
   public void getObjectTest() {
-    assertThat(closeRollCall.getObject(), is(Objects.ROLL_CALL.getObject()));
+    assertThat(CLOSE_ROLL_CALL.getObject(), is(Objects.ROLL_CALL.getObject()));
   }
 
   @Test
   public void getActionTest() {
-    assertThat(closeRollCall.getAction(), is(Action.CLOSE.getAction()));
+    assertThat(CLOSE_ROLL_CALL.getAction(), is(Action.CLOSE.getAction()));
   }
 
   @Test
   public void getAttendeesListTest() {
-    assertThat(closeRollCall.getAttendees(), is(new ArrayList<>()));
+    assertThat(CLOSE_ROLL_CALL.getAttendees(), is(new ArrayList<>()));
   }
 
   @Test
   public void getClosedAtTest() {
-    assertThat(closeRollCall.getClosedAt(), is(time));
+    assertThat(CLOSE_ROLL_CALL.getClosedAt(), is(TIME));
   }
 
   @Test
   public void getClosesTest() {
-    assertThat(closeRollCall.getCloses(), is(openRollCall.getUpdateId()));
+    assertThat(CLOSE_ROLL_CALL.getCloses(), is(OPEN_ROLL_CALL.getUpdateId()));
   }
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(closeRollCall);
+    JsonTestUtils.testData(CLOSE_ROLL_CALL);
+  }
+
+  @Test
+  public void equalsTest() {
+    assertEquals(CLOSE_ROLL_CALL, CLOSE_ROLL_CALL);
+    assertNotEquals(null, CLOSE_ROLL_CALL);
+    CloseRollCall closeRollCall =
+        new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>());
+    assertEquals(CLOSE_ROLL_CALL, closeRollCall);
+  }
+
+  @Test
+  public void hashCodeTest() {
+    String updateId =
+        Hash.hash(
+            EventType.ROLL_CALL.getSuffix(),
+            LAO_ID,
+            OPEN_ROLL_CALL.getUpdateId(),
+            Long.toString(TIME));
+    assertEquals(
+        java.util.Objects.hash(updateId, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>()),
+        CLOSE_ROLL_CALL.hashCode());
   }
 }

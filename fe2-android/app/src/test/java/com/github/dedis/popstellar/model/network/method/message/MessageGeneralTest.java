@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -30,7 +31,8 @@ public class MessageGeneralTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private static final PublicKey ORGANIZER = new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
+  private static final PublicKey ORGANIZER =
+      new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
   private static final long LAO_CREATION = 1623825071;
   private static final String LAO_NAME = "LAO";
 
@@ -124,5 +126,19 @@ public class MessageGeneralTest {
             WITNESS_SIGNATURES);
 
     assertThat(msg.verify(), is(false));
+  }
+
+  @Test
+  public void toStringTest() {
+    MessageGeneral msg =
+        new MessageGeneral(
+            KEY_PAIR.getPublicKey(), DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+    System.out.println(msg);
+    String expected =
+        String.format(
+            "MessageGeneral{sender='%s', data='%s', signature='%s', messageId='%s', "
+                + "witnessSignatures='%s'}",
+            KEY_PAIR.getPublicKey().toString(), DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+    assertEquals(expected, msg.toString());
   }
 }

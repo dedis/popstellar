@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.network.method.message;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
@@ -25,7 +27,7 @@ import java.util.List;
  */
 public final class MessageGeneral {
 
-  private final String TAG = MessageGeneral.class.getSimpleName();
+  private static final String TAG = MessageGeneral.class.getSimpleName();
 
   private final PublicKey sender;
   private final Base64URLData dataBuf;
@@ -114,22 +116,23 @@ public final class MessageGeneral {
     }
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "MessageGeneral{"
-        + "sender="
+        + "sender='"
         + getSender()
         + '\''
-        + ", data="
+        + ", data='"
         + getData()
-        + ", signature='"
+        + "', signature='"
         + getSignature()
         + '\''
         + ", messageId='"
         + getMessageId()
         + '\''
-        + ", witnessSignatures="
+        + ", witnessSignatures='"
         + Arrays.toString(witnessSignatures.toArray())
-        + '}';
+        + "'}";
   }
 }

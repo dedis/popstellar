@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
@@ -16,16 +18,19 @@ import java.time.Instant;
 
 public class OpenRollCallTest {
 
-  private final String laoId = Hash.hash("laoId");
-  private final String name = "name";
-  private final long time = Instant.now().getEpochSecond();
-  private final String location = "Location";
-  private final CreateRollCall createRollCall =
-      new CreateRollCall(name, time, time, time, location, null, laoId);
-  private final OpenRollCall openRollCall =
-      new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CREATED);
-  private final OpenRollCall reopenRollCall =
-      new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CLOSED);
+  private static final String LAO_ID = Hash.hash("LAO_ID");
+  private static final String NAME = "NAME";
+  private static final long TIME = Instant.now().getEpochSecond();
+  private static final String LOCATION = "Location";
+  private static final CreateRollCall CREATE_ROLL_CALL =
+      new CreateRollCall(NAME, TIME, TIME, TIME, LOCATION, null, LAO_ID);
+  private static final OpenRollCall OPEN_ROLL_CALL =
+      new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.getId(), TIME, EventState.CREATED);
+  private static final OpenRollCall REOPEN_ROLL_CALL =
+      new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.getId(), TIME, EventState.CLOSED);
+  private static final String ID =
+      Hash.hash(
+          EventType.ROLL_CALL.getSuffix(), LAO_ID, CREATE_ROLL_CALL.getId(), Long.toString(TIME));
 
   @Test
   public void generateOpenRollCallIdTest() {
@@ -33,35 +38,52 @@ public class OpenRollCallTest {
     String expectedId =
         Hash.hash(
             EventType.ROLL_CALL.getSuffix(),
-            laoId,
-            reopenRollCall.getOpens(),
-            Long.toString(reopenRollCall.getOpenedAt()));
-    assertThat(reopenRollCall.getUpdateId(), is(expectedId));
+            LAO_ID,
+            REOPEN_ROLL_CALL.getOpens(),
+            Long.toString(REOPEN_ROLL_CALL.getOpenedAt()));
+    assertThat(REOPEN_ROLL_CALL.getUpdateId(), is(expectedId));
   }
 
   @Test
   public void getObjectTest() {
-    assertThat(reopenRollCall.getObject(), is(Objects.ROLL_CALL.getObject()));
+    assertThat(REOPEN_ROLL_CALL.getObject(), is(Objects.ROLL_CALL.getObject()));
   }
 
   @Test
   public void getActionTest() {
-    assertThat(openRollCall.getAction(), is(Action.OPEN.getAction()));
-    assertThat(reopenRollCall.getAction(), is(Action.REOPEN.getAction()));
+    assertThat(OPEN_ROLL_CALL.getAction(), is(Action.OPEN.getAction()));
+    assertThat(REOPEN_ROLL_CALL.getAction(), is(Action.REOPEN.getAction()));
   }
 
   @Test
   public void getOpenedAtTest() {
-    assertThat(reopenRollCall.getOpenedAt(), is(time));
+    assertThat(REOPEN_ROLL_CALL.getOpenedAt(), is(TIME));
   }
 
   @Test
   public void getOpensTest() {
-    assertThat(reopenRollCall.getOpens(), is(createRollCall.getId()));
+    assertThat(REOPEN_ROLL_CALL.getOpens(), is(CREATE_ROLL_CALL.getId()));
   }
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(reopenRollCall);
+    JsonTestUtils.testData(REOPEN_ROLL_CALL);
+  }
+
+  @Test
+  public void equalsTest() {
+    assertEquals(OPEN_ROLL_CALL, OPEN_ROLL_CALL);
+    assertNotEquals(null, OPEN_ROLL_CALL);
+
+    OpenRollCall openRollCall =
+        new OpenRollCall(ID, CREATE_ROLL_CALL.getId(), TIME, Action.OPEN.getAction());
+    assertEquals(OPEN_ROLL_CALL, openRollCall);
+  }
+
+  @Test
+  public void hashCodeTest() {
+    assertEquals(
+        java.util.Objects.hash(ID, CREATE_ROLL_CALL.getId(), TIME, Action.OPEN.getAction()),
+        OPEN_ROLL_CALL.hashCode());
   }
 }
