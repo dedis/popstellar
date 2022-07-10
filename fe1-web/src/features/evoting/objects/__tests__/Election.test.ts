@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { FIXED_SYSTEM_TIME, mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
+import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 import STRINGS from 'resources/strings';
 
@@ -74,9 +74,6 @@ const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
-
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 beforeEach(() => {
   initializeData();

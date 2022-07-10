@@ -542,7 +542,29 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -1428,7 +1450,29 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -2259,7 +2303,29 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -3090,7 +3156,29 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -3938,7 +4026,29 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -5651,7 +5761,29 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -6478,7 +6610,29 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           }
                                         }
                                       >
-                                        <Text />
+                                        <Text
+                                          allowFontScaling={false}
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": undefined,
+                                                "fontSize": 24,
+                                              },
+                                              Object {
+                                                "backgroundColor": "transparent",
+                                              },
+                                              Object {
+                                                "fontFamily": "material-community",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
+                                          }
+                                          testID="iconIcon"
+                                        >
+                                          󰅀
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>

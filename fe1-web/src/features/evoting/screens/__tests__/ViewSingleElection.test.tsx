@@ -10,7 +10,6 @@ import {
   messageRegistryInstance,
   mockReduxAction,
   mockLaoId,
-  FIXED_SYSTEM_TIME,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { addEvent } from 'features/events/reducer';
@@ -31,9 +30,6 @@ import {
 } from 'features/evoting/reducer';
 
 import ViewSingleElection, { ViewSingleElectionScreenHeader } from '../ViewSingleElection';
-
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),

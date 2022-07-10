@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoIdHash, mockLao, mockLaoId, FIXED_SYSTEM_TIME } from '__tests__/utils';
+import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
@@ -71,9 +71,6 @@ const contextValue = {
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,
 };
-
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 beforeEach(() => {
   jest.clearAllMocks();

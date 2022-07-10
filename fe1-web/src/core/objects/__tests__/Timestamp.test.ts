@@ -1,13 +1,15 @@
 import 'jest-extended';
-import { FIXED_SYSTEM_TIME } from '__tests__/utils';
 
 import { Timestamp } from '../Timestamp';
 
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
-
 const NOW = 1620255600;
 const TIMESTAMP = 1620455700;
+
+export const FIXED_SYSTEM_TIME = new Date(NOW * 1000); // 5 May 2021
+
+// disable the passage of time for this unit test
+jest.useFakeTimers('modern');
+jest.setSystemTime(FIXED_SYSTEM_TIME);
 
 describe('Timestamp object', () => {
   it('EpochNow function works', () => {
