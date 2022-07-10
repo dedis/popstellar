@@ -66,6 +66,7 @@ const SocialHome = (props: IPropTypes) => {
       </View>
       <View style={styles.userFeed}>
         <TextInputChirp
+          testID="new_chirp"
           value={inputChirp}
           onChangeText={setInputChirp}
           onPress={publishChirp}

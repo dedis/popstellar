@@ -54,6 +54,7 @@ const TextInputChirp = (props: IPropTypes) => {
     onChangeText,
     publishIsDisabledCond,
     currentUserPublicKey,
+    testID,
   } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
@@ -84,6 +85,7 @@ const TextInputChirp = (props: IPropTypes) => {
             onChangeText(input);
             setCharsLeft(MAX_CHIRP_CHARS - input.length);
           }}
+          testID={testID ? `${testID}_input` : undefined}
         />
         <View style={styles.buttonView}>
           <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
@@ -91,6 +93,7 @@ const TextInputChirp = (props: IPropTypes) => {
             title={STRINGS.button_publish}
             onPress={() => onPress()}
             disabled={publishIsDisabled}
+            testID={testID ? `${testID}_publish` : undefined}
           />
         </View>
       </View>
@@ -106,6 +109,7 @@ const propTypes = {
   onChangeText: PropTypes.func.isRequired,
   publishIsDisabledCond: PropTypes.bool,
   currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  testID: PropTypes.string,
 };
 
 TextInputChirp.propTypes = propTypes;
@@ -114,6 +118,7 @@ TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
   publishIsDisabledCond: false,
+  testID: undefined,
 };
 
 type IPropTypes = {
@@ -124,6 +129,7 @@ type IPropTypes = {
   onChangeText: Function;
   publishIsDisabledCond: boolean;
   currentUserPublicKey: PublicKey;
+  testID?: string;
 };
 
 export default TextInputChirp;
