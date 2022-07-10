@@ -1,7 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { act } from 'react-test-renderer';
 import { combineReducers, createStore } from 'redux';
 
 import { mockKeyPair, mockLaoState } from '__tests__/utils';
