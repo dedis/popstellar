@@ -170,13 +170,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
                       .subscribe(
                           () -> {
                             Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                            String laoId = lao.getId();
-                            Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
-                            Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-                            intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-                            intent.putExtra(
-                                Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-                            getApplication().startActivity(intent);
+                            openLao(lao.getId());
                           },
                           error ->
                               ErrorUtils.logAndShow(
