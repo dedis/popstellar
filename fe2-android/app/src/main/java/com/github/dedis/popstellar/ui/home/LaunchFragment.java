@@ -46,47 +46,17 @@ public final class LaunchFragment extends Fragment {
 
     setupLaunchButton();
     setupCancelButton();
-
-    // Subscribe to "launch LAO" event
-    mHomeViewModel
-        .getLaunchNewLaoEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                launchLao();
-              }
-            });
-
-    // Subscribe to "cancel launch" event
-    mHomeViewModel
-        .getCancelNewLaoEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                cancelLaoLaunch();
-              }
-            });
   }
 
   private void setupLaunchButton() {
-    mLaunchFragBinding.buttonLaunch.setOnClickListener(v -> mHomeViewModel.launchNewLao());
+    mLaunchFragBinding.buttonLaunch.setOnClickListener(v -> mHomeViewModel.launchLao());
   }
 
   private void setupCancelButton() {
-    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(v -> mHomeViewModel.cancelNewLao());
-  }
-
-  private void launchLao() {
-    mHomeViewModel.launchLao();
-    // mHomeViewModel.openHome();
-  }
-
-  private void cancelLaoLaunch() {
-    mLaunchFragBinding.entryBoxLaunch.getText().clear();
-    mHomeViewModel.openHome();
+    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(
+        v -> {
+          mLaunchFragBinding.entryBoxLaunch.getText().clear();
+          mHomeViewModel.openHome(getParentFragmentManager());
+        });
   }
 }

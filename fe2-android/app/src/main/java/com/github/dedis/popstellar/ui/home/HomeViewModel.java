@@ -1,23 +1,31 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
 import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
+import com.github.dedis.popstellar.ui.wallet.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -27,6 +35,7 @@ import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -34,11 +43,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
 
 @HiltViewModel
-public class HomeViewModel extends AndroidViewModel
-    implements CameraPermissionViewModel, QRCodeScanningViewModel {
+public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -48,23 +56,6 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
-
-  /** LiveData objects for capturing events like button clicks */
-  private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<SingleEvent<String>> mOpenConnectingEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
-      new MutableLiveData<>();
 
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
@@ -104,11 +95,6 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   @Override
-  public void onPermissionGranted() {
-    openQrCodeScanning();
-  }
-
-  @Override
   public int getScanDescription() {
     return R.string.qrcode_scanning_connect_lao;
   }
@@ -145,7 +131,6 @@ public class HomeViewModel extends AndroidViewModel
 
     // Establish connection with new address
     networkManager.connect(laoData.server);
-
     openConnecting(laoData.lao);
   }
 
@@ -185,7 +170,13 @@ public class HomeViewModel extends AndroidViewModel
                       .subscribe(
                           () -> {
                             Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                            openLAO(lao.getId());
+                            String laoId = lao.getId();
+                            Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
+                            Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
+                            intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+                            intent.putExtra(
+                                Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+                            getApplication().startActivity(intent);
                           },
                           error ->
                               ErrorUtils.logAndShow(
@@ -199,45 +190,15 @@ public class HomeViewModel extends AndroidViewModel
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
     wallet.importSeed(seed);
     setIsWalletSetUp(true);
-    openWallet();
   }
 
   public void newSeed() {
     wallet.newSeed();
-    mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
   /** Getters for MutableLiveData instances declared above */
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
-  }
-
-  public LiveData<SingleEvent<String>> getOpenLaoEvent() {
-    return mOpenLaoEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-    return mOpenHomeEvent;
-  }
-
-  public LiveData<SingleEvent<String>> getOpenConnectingEvent() {
-    return mOpenConnectingEvent;
-  }
-
-  public LiveData<SingleEvent<HomeViewAction>> getOpenConnectEvent() {
-    return mOpenConnectEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenLaunchEvent() {
-    return mOpenLaunchEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getLaunchNewLaoEvent() {
-    return mLaunchNewLaoEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCancelNewLaoEvent() {
-    return mCancelNewLaoEvent;
   }
 
   public Boolean isWalletSetUp() {
@@ -248,85 +209,62 @@ public class HomeViewModel extends AndroidViewModel
     return mIsWalletSetUp;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenWalletEvent() {
-    return mOpenWalletEvent;
+  public void openHome(FragmentManager manager) {
+    setCurrentFragment(manager, R.id.fragment_home, HomeFragment::newInstance);
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenSeedEvent() {
-    return mOpenSeedEvent;
+  public void openCameraPermission(FragmentManager manager, ActivityResultRegistry registry) {
+    setCurrentFragment(
+        manager, R.id.fragment_camera_perm, () -> CameraPermissionFragment.newInstance(registry));
   }
 
-  public LiveData<SingleEvent<String>> getOpenLaoWalletEvent() {
-    return mOpenLaoWalletEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenSettingsEvent() {
-    return mOpenSettingsEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
-    return mOpenSocialMediaEvent;
-  }
-
-  /*
-   * Methods that modify the state or post an Event to update the UI.
-   */
-
-  public void openLAO(String laoId) {
-    mOpenLaoEvent.postValue(new SingleEvent<>(laoId));
-  }
-
-  public void openHome() {
-    mOpenHomeEvent.postValue(new SingleEvent<>(true));
+  public void openLaunch(FragmentManager manager) {
+    setCurrentFragment(manager, R.id.fragment_launch, LaunchFragment::newInstance);
   }
 
   public void openConnecting(String laoId) {
-    mOpenConnectingEvent.postValue(new SingleEvent<>(laoId));
+    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    getApplication().startActivity(intent);
   }
 
-  public void openWallet() {
-    mOpenWalletEvent.postValue(new SingleEvent<>(isWalletSetUp()));
+  public void openQrCodeScanning(FragmentManager manager) {
+    setCurrentFragment(manager, R.id.fragment_qrcode, QRCodeScanningFragment::new);
   }
 
-  public void openLaoWallet(String laoId) {
-    mOpenLaoWalletEvent.postValue(new SingleEvent<>(laoId));
+  public void openSeedWallet(FragmentManager manager) {
+    setCurrentFragment(manager, R.id.fragment_seed_wallet, SeedWalletFragment::new);
   }
 
-  public void openConnect() {
-    if (checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-      openQrCodeScanning();
+  public void openWallet(FragmentManager manager) {
+    if (isWalletSetUp()) {
+      setCurrentFragment(manager, R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
     } else {
-      openCameraPermission();
+      setCurrentFragment(manager, R.id.fragment_wallet, WalletFragment::newInstance);
     }
   }
 
-  public void openQrCodeScanning() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.SCAN));
+  public void openLao(String laoId) {
+    Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
+    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    getApplication().startActivity(intent);
   }
 
-  public void openCameraPermission() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.REQUEST_CAMERA_PERMISSION));
-  }
-
-  public void openLaunch() {
-    mOpenLaunchEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void openSettings() {
-    mOpenSettingsEvent.setValue(new SingleEvent<>(true));
+  public void openLaoWallet(String laoId) {
+    Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
+    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
+    getApplication().startActivity(intent);
   }
 
   public void openSocialMedia() {
-    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void launchNewLao() {
-    mLaunchNewLaoEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void cancelNewLao() {
-    mCancelNewLaoEvent.setValue(new SingleEvent<>(true));
+    Intent intent = new Intent(getApplication(), SocialMediaActivity.class);
+    Log.d(HomeViewModel.TAG, "Trying to open social media");
+    intent.putExtra(OPENED_FROM, HomeViewModel.TAG);
+    getApplication().startActivity(intent);
   }
 
   public void setLaoName(String name) {
@@ -340,6 +278,22 @@ public class HomeViewModel extends AndroidViewModel
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
-    openWallet();
+  }
+
+  /**
+   * Set the current fragment in the container of the activity
+   *
+   * @param manager of the fragments
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = manager.findFragmentById(id);
+    // If the fragment was not created yet, create it now
+    if (fragment == null) fragment = fragmentSupplier.get();
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(manager, fragment, R.id.fragment_container_home);
   }
 }
