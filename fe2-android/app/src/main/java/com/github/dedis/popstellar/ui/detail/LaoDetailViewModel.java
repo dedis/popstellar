@@ -28,7 +28,8 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -51,8 +52,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class LaoDetailViewModel extends AndroidViewModel
-    implements CameraPermissionViewModel, QRCodeScanningViewModel {
+public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
@@ -1129,15 +1129,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openAttendeesList(String rollCallId) {
     mOpenAttendeesListEvent.postValue(new SingleEvent<>(rollCallId));
-  }
-
-  @Override
-  public void onPermissionGranted() {
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      openQrCodeScanningRollCall();
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      openAddWitness();
-    }
   }
 
   @Override

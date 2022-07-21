@@ -1,39 +1,30 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.*;
-import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.function.Supplier;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+import static com.github.dedis.popstellar.ui.home.HomeViewModel.setCurrentFragment;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -55,7 +46,7 @@ public class HomeActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    setupHomeFragment();
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
     mViewModel = obtainViewModel(this);
 
@@ -70,142 +61,14 @@ public class HomeActivity extends AppCompatActivity {
     navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar();
 
-    subscribeOpenHomeEvents();
     subscribeWalletEvents();
     subscribeSocialMediaEvents();
-    subscribeLaoRelatedEvents();
-    subscribeSettingsEvents();
-  }
-
-  private void subscribeOpenHomeEvents() {
-    // Subscribe to "open home" event
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupHomeFragment();
-              }
-            });
-  }
-
-  private void subscribeLaoRelatedEvents() {
-    // Subscribe to "open lao" event
-    mViewModel
-        .getOpenLaoEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String laoId = stringEvent.getContentIfNotHandled();
-              if (laoId != null) {
-                openLaoDetails(laoId);
-              }
-            });
-
-    // Subscribe to "open connecting" event
-    mViewModel
-        .getOpenConnectingEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String event = stringEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupConnectingActivity(event);
-              }
-            });
-
-    // Subscribe to "open connect" event
-    mViewModel
-        .getOpenConnectEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
-              if (action != null) {
-                switch (action) {
-                  case SCAN:
-                    setupScanFragment();
-                    break;
-                  case REQUEST_CAMERA_PERMISSION:
-                    setupCameraPermissionFragment();
-                    break;
-                }
-              }
-            });
-
-    // Subscribe to "open launch" event
-    mViewModel
-        .getOpenLaunchEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupLaunchFragment();
-              }
-            });
-  }
-
-  private void subscribeSettingsEvents() {
-    // Subscribe to open settings event
-    mViewModel
-        .getOpenSettingsEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSettingsActivity();
-              }
-            });
   }
 
   private void subscribeWalletEvents() {
 
     MenuItem connectItem = navbar.getMenu().getItem(CONNECT_POSITION);
     MenuItem launchItem = navbar.getMenu().getItem(LAUNCH_POSITION);
-
-    // Subscribe to "open Seed" event
-    mViewModel
-        .getOpenSeedEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                setupSeedWalletFragment();
-              }
-            });
-
-    // Subscribe to "open wallet" event
-    mViewModel
-        .getOpenWalletEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean isSetUp = booleanEvent.getContentIfNotHandled();
-              if (isSetUp != null) {
-                if (isSetUp) {
-                  setupContentWalletFragment();
-                } else {
-                  setupWalletFragment();
-                }
-              }
-            });
-
-    // Subscribe to "open lao wallet" event
-    mViewModel
-        .getOpenLaoWalletEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String laoId = stringEvent.getContentIfNotHandled();
-              if (laoId != null) {
-                openContentWallet(laoId);
-              }
-            });
 
     mViewModel
         .getIsWalletSetUpEvent()
@@ -226,24 +89,11 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    mViewModel.openHome();
+    mViewModel.openHome(getSupportFragmentManager());
   }
 
   private void subscribeSocialMediaEvents() {
-
     MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
-
-    // Subscribe to "open social media" event
-    mViewModel
-        .getOpenSocialMediaEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaActivity();
-              }
-            });
 
     // Subscribe to lao adding event to adapt the social media menu item
     mViewModel
@@ -279,7 +129,9 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == R.id.settings) {
-      mViewModel.openSettings();
+      Intent intent = new Intent(this, SettingsActivity.class);
+      Log.d(HomeViewModel.TAG, "Trying to open settings");
+      startActivity(intent);
       return true;
     } else {
       return super.onOptionsItemSelected(item);
@@ -290,110 +142,18 @@ public class HomeActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(HomeViewModel.class);
   }
 
-  private void setupHomeFragment() {
-    setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
-  }
-
-  private void setupScanFragment() {
-    setCurrentFragment(R.id.fragment_qrcode, QRCodeScanningFragment::new);
-  }
-
-  private void setupCameraPermissionFragment() {
-    // Setup result listener to open the connect tab once the permission is granted
-    getSupportFragmentManager()
-        .setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openConnect());
-
-    setCurrentFragment(
-        R.id.fragment_camera_perm,
-        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
-  }
-
-  private void setupLaunchFragment() {
-    setCurrentFragment(R.id.fragment_launch, LaunchFragment::newInstance);
-  }
-
-  private void setupConnectingActivity(String laoId) {
-    Intent intent = new Intent(this, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    startActivity(intent);
-  }
-
-  private void setupWalletFragment() {
-    setCurrentFragment(R.id.fragment_wallet, WalletFragment::newInstance);
-  }
-
-  private void setupContentWalletFragment() {
-    setCurrentFragment(R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
-  }
-
-  private void setupSeedWalletFragment() {
-    setCurrentFragment(R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
-  }
-
-  private void setupSettingsActivity() {
-    Intent intent = new Intent(this, SettingsActivity.class);
-    Log.d(TAG, "Trying to open settings");
-    startActivity(intent);
-  }
-
-  private void setupSocialMediaActivity() {
-    Intent intent = new Intent(this, SocialMediaActivity.class);
-    Log.d(TAG, "Trying to open social media");
-    intent.putExtra(OPENED_FROM, TAG);
-    startActivity(intent);
-  }
-
-  private void openLaoDetails(String laoId) {
-    openLaoDetailActivity(laoId, true);
-  }
-
-  private void openContentWallet(String laoId) {
-    openLaoDetailActivity(laoId, false);
-  }
-
-  private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
-    Intent intent = new Intent(this, LaoDetailActivity.class);
-    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    if (openLaoDetail) {
-      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    } else {
-      intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
-    }
-    startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
-  }
-
-  /**
-   * Set the current fragment in the container of the activity
-   *
-   * @param id of the fragment
-   * @param fragmentSupplier provides the fragment if it is missing
-   */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) {
-      fragment = fragmentSupplier.get();
-    }
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_home);
-  }
-
   public void setupNavigationBar() {
     navbar.setOnItemSelectedListener(
         item -> {
           int id = item.getItemId();
           if (id == R.id.home_home_menu) {
-            mViewModel.openHome();
+            mViewModel.openHome(getSupportFragmentManager());
           } else if (id == R.id.home_connect_menu) {
             handleConnectNavigation();
           } else if (id == R.id.home_launch_menu) {
             handleLaunchNavigation();
           } else if (id == R.id.home_wallet_menu) {
-            mViewModel.openWallet();
+            mViewModel.openWallet(getSupportFragmentManager());
           } else if (id == R.id.home_social_media_menu) {
             handleSocialMediaNavigation();
           }
@@ -405,7 +165,7 @@ public class HomeActivity extends AppCompatActivity {
     if (mViewModel.getLAOs().getValue() == null) {
       ErrorUtils.logAndShow(
           getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
-      revertToHome();
+      showHomeTab();
     } else {
       mViewModel.openSocialMedia();
     }
@@ -413,18 +173,35 @@ public class HomeActivity extends AppCompatActivity {
 
   private void handleConnectNavigation() {
     if (checkWalletInitialization()) {
-      mViewModel.openConnect();
+      openConnect();
     } else {
-      revertToHome();
+      showHomeTab();
     }
   }
 
   private void handleLaunchNavigation() {
     if (checkWalletInitialization()) {
-      mViewModel.openLaunch();
+      mViewModel.openLaunch(getSupportFragmentManager());
     } else {
-      revertToHome();
+      showHomeTab();
     }
+  }
+
+  public void openConnect() {
+    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+      mViewModel.openQrCodeScanning(getSupportFragmentManager());
+    } else {
+      requestCameraPermission();
+    }
+  }
+
+  public void requestCameraPermission() {
+    // Setup result listener to open the connect tab once the permission is granted
+    getSupportFragmentManager()
+        .setFragmentResultListener(
+            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openConnect());
+
+    mViewModel.openCameraPermission(getSupportFragmentManager(), getActivityResultRegistry());
   }
 
   /**
@@ -445,7 +222,7 @@ public class HomeActivity extends AppCompatActivity {
     return true;
   }
 
-  private void revertToHome() {
+  private void showHomeTab() {
     new Handler(Looper.getMainLooper())
         .postDelayed(
             () -> navbar.setSelectedItemId(R.id.home_home_menu),

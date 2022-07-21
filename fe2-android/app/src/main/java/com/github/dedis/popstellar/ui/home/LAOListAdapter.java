@@ -53,7 +53,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     cardView.setOnClickListener(
         v -> {
           if (openLaoDetail) {
-            homeViewModel.openLAO(lao.getId());
+            homeViewModel.openLao(lao.getId());
           } else {
             homeViewModel.openLaoWallet(lao.getId());
           }
