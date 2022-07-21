@@ -158,15 +158,12 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
         networkManager
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
-            .doOnComplete(() -> Log.d(TAG, "got success result for create lao"))
-            // Send subscribe and catchup
+            .doOnComplete(
+                () -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
             .toObservable()
             .flatMapCompletable(a -> networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
-                () -> {
-                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                  openLao(activity, lao.getId());
-                },
+                () -> openLao(activity, lao.getId()),
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_create_lao)));
