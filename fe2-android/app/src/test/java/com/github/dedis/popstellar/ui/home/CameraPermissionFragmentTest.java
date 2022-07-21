@@ -25,9 +25,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.allowCameraButton;
 import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.getRequestKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /** Test for the CameraPermissionFragment */
 @HiltAndroidTest

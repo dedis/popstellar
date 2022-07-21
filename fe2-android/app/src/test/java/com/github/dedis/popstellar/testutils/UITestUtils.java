@@ -2,18 +2,14 @@ package com.github.dedis.popstellar.testutils;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.view.*;
 import android.widget.Button;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.core.app.ApplicationProvider;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.*;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowToast;
 

@@ -8,10 +8,7 @@ import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
-import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
-import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
-import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
@@ -22,24 +19,13 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.github.novacrypto.bip39.MnemonicGenerator;
-import io.github.novacrypto.bip39.MnemonicValidator;
-import io.github.novacrypto.bip39.SeedCalculator;
-import io.github.novacrypto.bip39.Validation.InvalidChecksumException;
-import io.github.novacrypto.bip39.Validation.InvalidWordCountException;
-import io.github.novacrypto.bip39.Validation.UnexpectedWhiteSpaceException;
-import io.github.novacrypto.bip39.Validation.WordNotFoundException;
-import io.github.novacrypto.bip39.Words;
+import io.github.novacrypto.bip39.*;
+import io.github.novacrypto.bip39.Validation.*;
 import io.github.novacrypto.bip39.wordlists.English;
 
 /**

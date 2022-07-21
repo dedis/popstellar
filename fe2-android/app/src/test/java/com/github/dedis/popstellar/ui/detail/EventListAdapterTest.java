@@ -8,9 +8,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.IntentUtils;
+import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
 
 import org.junit.Rule;
@@ -21,18 +19,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;

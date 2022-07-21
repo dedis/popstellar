@@ -20,9 +20,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.applyButton;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.pageTitle;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.serverUrlEditText;
+import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

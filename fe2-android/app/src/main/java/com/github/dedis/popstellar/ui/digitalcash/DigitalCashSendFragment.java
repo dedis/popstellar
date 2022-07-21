@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -23,10 +21,7 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory

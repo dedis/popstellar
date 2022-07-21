@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.ui.wallet;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
@@ -13,9 +11,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class WalletListAdapter extends BaseAdapter {
 

@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
 import android.graphics.Bitmap;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;

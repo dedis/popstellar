@@ -18,9 +18,7 @@ import java.util.concurrent.TimeUnit;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class CreateLaoTest {
 

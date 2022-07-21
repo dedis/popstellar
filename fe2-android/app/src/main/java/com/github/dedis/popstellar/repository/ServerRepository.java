@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.repository;
 
 import com.github.dedis.popstellar.model.objects.Server;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

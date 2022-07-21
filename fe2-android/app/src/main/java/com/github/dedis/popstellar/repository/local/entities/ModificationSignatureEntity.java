@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.repository.local.entities;
 
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import androidx.room.*;
 
 @Entity
 @SuppressWarnings("NotNullFieldNotInitialized")

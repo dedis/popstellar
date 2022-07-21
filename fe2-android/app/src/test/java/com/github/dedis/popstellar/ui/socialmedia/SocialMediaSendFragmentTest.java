@@ -18,13 +18,8 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.entryBoxChirpText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.nullLaoIdToastText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.sendChirpButton;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

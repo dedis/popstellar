@@ -8,14 +8,9 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.STARTING;
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.WAITING;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;

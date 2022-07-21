@@ -4,10 +4,7 @@ import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
 import java.util.Objects;
 
-import ch.epfl.dedis.lib.crypto.Ed25519Point;
-import ch.epfl.dedis.lib.crypto.Ed25519Scalar;
-import ch.epfl.dedis.lib.crypto.Point;
-import ch.epfl.dedis.lib.crypto.Scalar;
+import ch.epfl.dedis.lib.crypto.*;
 import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import io.reactivex.annotations.NonNull;
 

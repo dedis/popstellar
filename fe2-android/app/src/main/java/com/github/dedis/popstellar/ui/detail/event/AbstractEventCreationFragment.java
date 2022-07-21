@@ -14,18 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.detail.event.pickers.DatePickerFragment;
-import com.github.dedis.popstellar.ui.detail.event.pickers.PickerConstant;
-import com.github.dedis.popstellar.ui.detail.event.pickers.TimePickerFragment;
+import com.github.dedis.popstellar.ui.detail.event.pickers.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Multiples Event Creation Fragment have in common that they implement start/end date and start/end

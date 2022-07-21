@@ -35,9 +35,14 @@ ij_xml_space_around_equals_in_attribute = false
 ij_xml_space_inside_empty_tag = true
 
 ij_xml_use_custom_settings = true
-ij_java_class_count_to_use_import_on_demand = 2
-ij_java_packages_to_use_import_on_demand = 2
-ij_java_names_count_to_use_import_on_demand = 2
+
+[*.java]
+end_of_line = lf
+charset = utf-8
+
+ij_java_class_count_to_use_import_on_demand = 3
+ij_java_packages_to_use_import_on_demand = 3
+ij_java_names_count_to_use_import_on_demand = 3
 
 [*.gradle]
 indent_style = space

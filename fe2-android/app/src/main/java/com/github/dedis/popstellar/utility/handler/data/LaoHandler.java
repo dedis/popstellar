@@ -4,27 +4,14 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.PendingUpdate;
-import com.github.dedis.popstellar.model.objects.Server;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
-import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
+import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.utility.error.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /** Lao messages handler class */
 public final class LaoHandler {

@@ -7,27 +7,21 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.IntentUtils;
+import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.google.gson.Gson;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
+import org.junit.rules.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
@@ -36,18 +30,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.digitalCashButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentContainer;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.identityButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.identityFragmentId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailFragmentId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.socialMediaButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.toolBarBackButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.witnessButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.witnessingFragmentId;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 

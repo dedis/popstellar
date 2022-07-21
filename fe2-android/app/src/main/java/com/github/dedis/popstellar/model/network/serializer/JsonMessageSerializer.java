@@ -2,16 +2,8 @@ package com.github.dedis.popstellar.model.network.serializer;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.Message;
-import com.github.dedis.popstellar.model.network.method.Method;
-import com.github.dedis.popstellar.model.network.method.Query;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.github.dedis.popstellar.model.network.method.*;
+import com.google.gson.*;
 
 import java.lang.reflect.Type;
 

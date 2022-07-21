@@ -13,18 +13,12 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateSignature;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class StateLaoTest {
 

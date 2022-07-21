@@ -3,32 +3,17 @@ package com.github.dedis.popstellar.utility.handler.data;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {

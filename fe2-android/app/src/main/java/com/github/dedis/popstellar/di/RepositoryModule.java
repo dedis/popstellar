@@ -12,9 +12,7 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 
 import javax.inject.Singleton;
 
-import dagger.Binds;
-import dagger.Module;
-import dagger.Provides;
+import dagger.*;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 

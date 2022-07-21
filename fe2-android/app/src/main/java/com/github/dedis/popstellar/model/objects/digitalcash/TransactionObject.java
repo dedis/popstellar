@@ -2,16 +2,10 @@ package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.InputObject;
-import com.github.dedis.popstellar.model.objects.OutputObject;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class TransactionObject {
 

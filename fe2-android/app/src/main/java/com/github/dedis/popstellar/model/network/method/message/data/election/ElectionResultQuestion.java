@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ElectionResultQuestion {
 

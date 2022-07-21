@@ -4,11 +4,7 @@ import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /** Class representing a Node for consensus. */
 public final class ConsensusNode {

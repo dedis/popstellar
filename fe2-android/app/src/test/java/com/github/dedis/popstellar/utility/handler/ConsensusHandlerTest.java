@@ -4,26 +4,11 @@ import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.ConsensusNode;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
@@ -39,28 +24,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {

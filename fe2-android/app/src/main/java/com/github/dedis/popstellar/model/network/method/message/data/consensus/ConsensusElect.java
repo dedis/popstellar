@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.google.gson.annotations.SerializedName;
 

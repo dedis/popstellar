@@ -14,22 +14,11 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.launchButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.socialMediaButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.walletButton;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.launchFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.newWalletButton;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

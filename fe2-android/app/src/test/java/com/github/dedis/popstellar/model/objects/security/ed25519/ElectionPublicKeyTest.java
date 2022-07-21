@@ -11,9 +11,7 @@ import java.nio.charset.StandardCharsets;
 import ch.epfl.dedis.lib.crypto.Ed25519Pair;
 import ch.epfl.dedis.lib.crypto.Point;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ElectionPublicKeyTest {
 

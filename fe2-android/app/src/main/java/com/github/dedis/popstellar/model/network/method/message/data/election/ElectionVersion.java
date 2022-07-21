@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Version of an election: - OPEN_BALLOT: normal process - SECRET_BALLOT: vote is encrypted with

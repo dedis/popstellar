@@ -3,12 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.digitalcas
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /** The transaction object */
 public final class Transaction {

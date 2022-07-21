@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;

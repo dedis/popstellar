@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.election.adapters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 

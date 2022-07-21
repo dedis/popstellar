@@ -4,9 +4,7 @@ import android.os.Bundle;
 
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenario;
 
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * Helper object used when creating a fake result listener of a fragment.

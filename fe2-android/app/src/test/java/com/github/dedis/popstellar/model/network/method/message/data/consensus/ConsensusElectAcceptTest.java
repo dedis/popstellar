@@ -9,10 +9,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import org.junit.Test;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ConsensusElectAcceptTest {
 

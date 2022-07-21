@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 
 import org.junit.Before;
 import org.junit.Test;

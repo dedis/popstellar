@@ -10,9 +10,7 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ConsensusFailureTest {
 

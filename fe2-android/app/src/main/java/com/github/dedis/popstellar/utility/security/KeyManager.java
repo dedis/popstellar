@@ -4,34 +4,18 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
-import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
-import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
-import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
-import com.google.crypto.tink.CleartextKeysetHandle;
-import com.google.crypto.tink.JsonKeysetWriter;
-import com.google.crypto.tink.KeysetHandle;
+import com.github.dedis.popstellar.utility.error.keys.*;
+import com.google.crypto.tink.*;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Comparator;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
