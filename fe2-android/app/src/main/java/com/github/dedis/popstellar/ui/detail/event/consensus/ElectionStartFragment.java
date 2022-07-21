@@ -54,7 +54,6 @@ public class ElectionStartFragment extends Fragment {
   private Button electionStart;
   private TextView electionStatus;
 
-
   public ElectionStartFragment() {
     // Required empty public constructor
   }
@@ -176,14 +175,11 @@ public class ElectionStartFragment extends Fragment {
     disposables.add(disposable);
   }
 
-  private void setupButtonListeners(
-      LaoDetailViewModel mLaoDetailViewModel,
-      String electionId) {
+  private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
     electionStart.setOnClickListener(
         clicked ->
             mLaoDetailViewModel.sendConsensusElect(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started")
-        );
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
   }
 
   private void updateStartAndStatus(

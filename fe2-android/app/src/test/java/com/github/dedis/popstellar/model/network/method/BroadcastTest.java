@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.model.network.method;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -14,6 +10,10 @@ import com.google.gson.Gson;
 import org.junit.Test;
 
 import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 public class BroadcastTest {
   private static final Channel CHANNEL = Channel.fromString("root/stuff");

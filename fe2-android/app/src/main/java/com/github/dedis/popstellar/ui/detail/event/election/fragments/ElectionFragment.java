@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 
-import static com.github.dedis.popstellar.utility.Constants.DISABLED_ALPHA;
-import static com.github.dedis.popstellar.utility.Constants.ENABLED_ALPHA;
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
-
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -29,6 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.Locale;
+
+import static com.github.dedis.popstellar.utility.Constants.DISABLED_ALPHA;
+import static com.github.dedis.popstellar.utility.Constants.ENABLED_ALPHA;
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 public class ElectionFragment extends Fragment {
 

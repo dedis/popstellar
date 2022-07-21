@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.lenient;
-
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -44,6 +40,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.lenient;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -60,7 +60,8 @@ public class TransactionCoinHandlerTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = SENDER.getEncoded();
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
+  private static final ScriptInput SCRIPTTXIN =
+      new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
@@ -77,7 +78,8 @@ public class TransactionCoinHandlerTest {
   private static final long TIMESTAMP = 0;
 
   // Transaction
-  private static final Transaction TRANSACTION = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
+  private static final Transaction TRANSACTION =
+      new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
   private Lao lao;
   private RollCall rollCall;
@@ -144,4 +146,3 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, lao.getPubKeyByHash().size());
   }
 }
-

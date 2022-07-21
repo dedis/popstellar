@@ -101,7 +101,8 @@ public class SeedWalletFragment extends Fragment {
               "Yes",
               (dialog, which) -> {
                 try {
-                  mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWalletText.getText().toString());
+                  mHomeViewModel.importSeed(
+                      mWalletSeedFragBinding.seedWalletText.getText().toString());
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(

@@ -160,7 +160,6 @@ public class Election extends Event {
     openVoteByPublicKey.put(senderPk, votesCopy);
   }
 
-
   public void putSenderByMessageId(PublicKey senderPk, MessageID messageId) {
     if (senderPk == null || messageId == null) {
       throw new IllegalArgumentException("Sender public key or message id cannot be null.");
@@ -270,11 +269,11 @@ public class Election extends Event {
    *     Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
    */
   public static String generateElectionVoteId(
-          String electionId,
-          String questionId,
-          Integer voteIndex,
-          String writeIn,
-          boolean writeInEnabled) {
+      String electionId,
+      String questionId,
+      Integer voteIndex,
+      String writeIn,
+      boolean writeInEnabled) {
     // If write_in is enabled the id is formed with the write_in string
     // If write_in is not enabled the id is formed with the vote indexes (formatted as int1, int2,
     // ). The vote are concatenated and brackets are removed from the array toString representation
@@ -309,6 +308,7 @@ public class Election extends Event {
   /**
    * Computes the hash for the registered votes, when terminating an election (sorted by message
    * id's alphabetical order)
+   *
    * @return the hash of all registered votes
    */
   public String computerRegisteredVotes() {
@@ -355,8 +355,8 @@ public class Election extends Event {
       ElectionPublicKey key = new ElectionPublicKey(electionKeyToBase64);
       // Encrypt the indice
       String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
-      ElectionEncryptedVote encryptedVote = new
-              ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
+      ElectionEncryptedVote encryptedVote =
+          new ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
       encryptedVotes.add(encryptedVote);
     }
     return encryptedVotes;
@@ -365,31 +365,31 @@ public class Election extends Event {
   @Override
   public String toString() {
     return "Election{"
-            + "channel='"
-            + channel
-            + '\''
-            + ", id='"
-            + id
-            + '\''
-            + ", name='"
-            + name
-            + '\''
-            + ", creation="
-            + creation
-            + ", start="
-            + start
-            + ", end="
-            + end
-            + ", electionQuestions="
-            + Arrays.toString(electionQuestions.toArray())
-            + ", voteMap="
-            + openVoteByPublicKey
-            + ", messageMap="
-            + messageMap
-            + ", state="
-            + state
-            + ", results="
-            + results
-            + '}';
+        + "channel='"
+        + channel
+        + '\''
+        + ", id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", creation="
+        + creation
+        + ", start="
+        + start
+        + ", end="
+        + end
+        + ", electionQuestions="
+        + Arrays.toString(electionQuestions.toArray())
+        + ", voteMap="
+        + openVoteByPublicKey
+        + ", messageMap="
+        + messageMap
+        + ", state="
+        + state
+        + ", results="
+        + results
+        + '}';
   }
 }

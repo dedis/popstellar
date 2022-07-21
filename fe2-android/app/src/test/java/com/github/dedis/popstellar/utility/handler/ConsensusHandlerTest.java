@@ -1,19 +1,5 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -61,6 +47,20 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.reactivex.Completable;
+
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
@@ -114,7 +114,8 @@ public class ConsensusHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    messageHandler =
+        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);

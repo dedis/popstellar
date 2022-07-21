@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static org.junit.Assert.assertEquals;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -29,6 +25,10 @@ import java.util.List;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

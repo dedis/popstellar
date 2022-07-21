@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,6 +32,8 @@ import java.util.EnumMap;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {

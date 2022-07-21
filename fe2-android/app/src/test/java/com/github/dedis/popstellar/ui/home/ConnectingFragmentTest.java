@@ -1,16 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.cancelButton;
-import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.connectingText;
-import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.laoConnectingText;
-import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.progressBar;
-
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -32,6 +21,17 @@ import org.mockito.junit.MockitoTestRule;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.cancelButton;
+import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.connectingText;
+import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.laoConnectingText;
+import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.progressBar;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

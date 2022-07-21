@@ -1,5 +1,17 @@
 package com.github.dedis.popstellar.ui.home;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -18,18 +30,6 @@ import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.launchF
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.newWalletButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
-
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

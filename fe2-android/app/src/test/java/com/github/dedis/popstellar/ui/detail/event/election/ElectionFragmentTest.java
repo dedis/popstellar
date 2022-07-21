@@ -1,33 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.containerId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionActionButton;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentEndTime;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentStartTime;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentStatus;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentTitle;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionManagementButton;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -62,6 +34,34 @@ import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.containerId;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionActionButton;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentEndTime;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentStartTime;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentStatus;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionFragmentTitle;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.electionManagementButton;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

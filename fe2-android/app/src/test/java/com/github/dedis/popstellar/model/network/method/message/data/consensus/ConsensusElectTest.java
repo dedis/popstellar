@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -11,6 +7,10 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ConsensusElectTest {
 
@@ -78,8 +78,8 @@ public class ConsensusElectTest {
   public void jsonValidationTest() {
     JsonTestUtils.testData(consensusElect);
     String jsonInvalid =
-            JsonTestUtils.loadFile(
-                    "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
+        JsonTestUtils.loadFile(
+            "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid));
   }
 }

@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.ui.pages.settings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class SettingsPageObject {
 

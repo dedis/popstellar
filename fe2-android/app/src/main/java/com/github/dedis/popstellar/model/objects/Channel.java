@@ -104,7 +104,9 @@ public class Channel {
     return segments.size() == 2;
   }
 
-  /** @return the LAO ID contained in this channel */
+  /**
+   * @return the LAO ID contained in this channel
+   */
   public String extractLaoId() {
     if (segments.isEmpty())
       throw new IllegalStateException(
@@ -130,7 +132,9 @@ public class Channel {
     return segments.get(1);
   }
 
-  /** @return the protocol like String representation of the channel (/root/abc/efg) */
+  /**
+   * @return the protocol like String representation of the channel (/root/abc/efg)
+   */
   public String getAsString() {
     return ROOT_CHANNEL + segments.stream().map(e -> "/" + e).collect(Collectors.joining());
   }

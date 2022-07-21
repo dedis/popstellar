@@ -1,16 +1,5 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.entryBoxChirpText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.nullLaoIdToastText;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.sendChirpButton;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -25,6 +14,17 @@ import org.junit.runner.RunWith;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.entryBoxChirpText;
+import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.nullLaoIdToastText;
+import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.sendChirpButton;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

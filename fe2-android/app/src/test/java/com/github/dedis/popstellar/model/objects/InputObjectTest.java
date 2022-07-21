@@ -1,8 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -12,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
 
 public class InputObjectTest {
   private static final int TX_OUT_INDEX = 0;

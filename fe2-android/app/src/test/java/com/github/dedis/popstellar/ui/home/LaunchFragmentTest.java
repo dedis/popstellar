@@ -1,25 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.bodyText;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.cancelButtonLaunch;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.confirmButtonLaunch;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.laoNameEntry;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.titleText;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
@@ -51,6 +31,26 @@ import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.bodyText;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.cancelButtonLaunch;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.confirmButtonLaunch;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.laoNameEntry;
+import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.titleText;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

@@ -1,40 +1,5 @@
 package com.github.dedis.popstellar.di;
 
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.ACCEPT;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.DELETE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.GREET;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.KEY;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.POST_TRANSACTION;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROMISE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROPOSE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.REOPEN;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.RESULT;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.SETUP;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.STATE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.UPDATE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CHIRP;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MESSAGE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
-
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
@@ -78,6 +43,41 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
+
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ACCEPT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.DELETE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.GREET;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.KEY;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.POST_TRANSACTION;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROMISE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROPOSE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.REOPEN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.RESULT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.SETUP;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.STATE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.UPDATE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CHIRP;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MESSAGE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -149,7 +149,7 @@ public abstract class DataRegistryModule {
         POST_TRANSACTION,
         PostTransactionCoin.class,
         TransactionCoinHandler::handlePostTransactionCoin);
-            
+
     return builder.build();
   }
 }

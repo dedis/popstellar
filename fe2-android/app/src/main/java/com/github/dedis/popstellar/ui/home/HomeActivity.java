@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +37,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint

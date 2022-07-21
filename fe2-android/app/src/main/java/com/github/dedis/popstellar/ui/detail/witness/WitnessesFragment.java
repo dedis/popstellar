@@ -17,19 +17,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class WitnessesFragment extends Fragment {
 
-
   public WitnessesFragment() {
     // Required empty public constructor
   }
 
   public static WitnessesFragment newInstance() {
     return new WitnessesFragment();
-    }
+  }
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+  @Override
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.witnesses_fragment, container, false);
     LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
@@ -52,5 +50,5 @@ public class WitnessesFragment extends Fragment {
     viewModel.getWitnesses().observe(getViewLifecycleOwner(), adapter::replaceList);
 
     return view;
-    }
+  }
 }

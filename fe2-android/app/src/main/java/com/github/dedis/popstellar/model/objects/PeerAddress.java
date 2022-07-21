@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /** Represents an peer address */

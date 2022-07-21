@@ -1,21 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.containerId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.managementButton;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallEndTime;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallStartTime;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallStatusText;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallTitle;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -53,6 +37,22 @@ import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.containerId;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.managementButton;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallEndTime;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallStartTime;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallStatusText;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.rollCallTitle;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

@@ -1,16 +1,16 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
 
 public class ElectionVoteTest {
 
@@ -20,16 +20,18 @@ public class ElectionVoteTest {
   private final Integer vote = 2;
   private final String writeIn = "My write in ballot option";
   private final ElectionVote electionVote1 =
-          new ElectionVote(questionId, vote, false, writeIn, electionId);
+      new ElectionVote(questionId, vote, false, writeIn, electionId);
   private final ElectionVote electionVote2 =
-          new ElectionVote(questionId, vote, true, writeIn, electionId);
+      new ElectionVote(questionId, vote, true, writeIn, electionId);
 
   // Hash values util for testing
-  private final String expectedIdNoWriteIn = Election
-          .generateElectionVoteId(electionId, questionId, electionVote1.getVote(), writeIn, false);
+  private final String expectedIdNoWriteIn =
+      Election.generateElectionVoteId(
+          electionId, questionId, electionVote1.getVote(), writeIn, false);
   private final String wrongFormatId = Hash.hash("Vote", electionId, electionVote2.getQuestionId());
-  private final String expectedIdWithWriteIn = Election
-          .generateElectionVoteId(electionId, questionId, electionVote2.getVote(), writeIn, true);
+  private final String expectedIdWithWriteIn =
+      Election.generateElectionVoteId(
+          electionId, questionId, electionVote2.getVote(), writeIn, true);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
@@ -67,10 +69,7 @@ public class ElectionVoteTest {
     assertNotEquals(electionVote1, electionVote2);
     assertEquals(electionVote1, new ElectionVote(questionId, vote, false, writeIn, electionId));
     assertNotEquals(electionVote1, new ElectionVote("random", vote, false, writeIn, electionId));
-    assertNotEquals(
-            electionVote1,
-            new ElectionVote(
-                    questionId, 0, false, writeIn, electionId));
+    assertNotEquals(electionVote1, new ElectionVote(questionId, 0, false, writeIn, electionId));
     assertNotEquals(electionVote1, new ElectionVote(questionId, vote, false, writeIn, "random"));
 
     // Here because writeInEnabled is false it will be computed as null making both elections the
@@ -79,23 +78,15 @@ public class ElectionVoteTest {
 
     // Here because writeInEnabled is true the list of votes should be computed as null making both
     // election the same
-    assertEquals(
-            electionVote2,
-            new ElectionVote(
-                    questionId, 2, true, writeIn, electionId));
+    assertEquals(electionVote2, new ElectionVote(questionId, 2, true, writeIn, electionId));
   }
 
   @Test
   public void toStringTest() {
     String format =
-            String.format("ElectionVote{"
-                            + "id='%s', "
-                            + "questionId='%s', "
-                            + "vote=%s}",
-                    expectedIdNoWriteIn,
-                    questionId,
-                    vote);
+        String.format(
+            "ElectionVote{" + "id='%s', " + "questionId='%s', " + "vote=%s}",
+            expectedIdNoWriteIn, questionId, vote);
     assertEquals(format, electionVote1.toString());
   }
-
 }

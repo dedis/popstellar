@@ -1,5 +1,52 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
+
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Completable;
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -33,47 +80,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.when;
-
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import javax.inject.Inject;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
 
 @LargeTest
 @HiltAndroidTest
@@ -539,11 +545,17 @@ public class ElectionSetupFragmentTest {
     versionChoice().perform(click());
     onData(anything()).atPosition(0).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
+        .check(
+            matches(
+                withSpinnerText(
+                    containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
 
     versionChoice().perform(click());
     onData(anything()).atPosition(1).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
+        .check(
+            matches(
+                withSpinnerText(
+                    containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
   }
 }

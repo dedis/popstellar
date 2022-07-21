@@ -44,28 +44,27 @@
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/close_qr_description" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:visibility="@{view_model.getShowProperties() ? View.GONE : View.VISIBLE }"
-      >
+      android:visibility="@{view_model.getShowProperties() ? View.GONE : View.VISIBLE }">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lao_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-      <TextView
-        android:id="@+id/lao_detail_title"
-        style="@style/title_style"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@{view_model.getCurrentLaoName}"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+          android:id="@+id/lao_detail_title"
+          style="@style/title_style"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@{view_model.getCurrentLaoName}"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
           android:id="@+id/qr_code_icon"
@@ -170,7 +169,6 @@
         app:layout_constraintTop_toTopOf="@id/add_roll_call"
         app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
         app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

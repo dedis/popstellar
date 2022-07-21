@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.network.method;
 
-import static org.junit.Assert.assertEquals;
-
 import com.github.dedis.popstellar.model.objects.Channel;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class UnsubscribeTest {
 

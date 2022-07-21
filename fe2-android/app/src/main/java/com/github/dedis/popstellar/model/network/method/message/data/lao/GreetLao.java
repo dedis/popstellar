@@ -1,12 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,17 +61,17 @@ public class GreetLao extends Data {
   // Set of getters for t
   @NonNull
   public PublicKey getFrontendKey() {
-        return frontendKey;
-      }
+    return frontendKey;
+  }
 
   @NonNull
   public String getAddress() {
-        return address;
-      }
+    return address;
+  }
 
   public List<PeerAddress> getPeers() {
-      return peers;
-    }
+    return peers;
+  }
 
   @NonNull
   public String getId() {
@@ -98,8 +100,8 @@ public class GreetLao extends Data {
 
   @Override
   public int hashCode() {
-        return java.util.Objects.hash(frontendKey, address, peers);
-      }
+    return java.util.Objects.hash(frontendKey, address, peers);
+  }
 
   @NonNull
   @Override
@@ -119,14 +121,13 @@ public class GreetLao extends Data {
         + '}';
   }
 
-    @Override
-    public String getObject() {
-      return Objects.LAO.getObject();
-    }
+  @Override
+  public String getObject() {
+    return Objects.LAO.getObject();
+  }
 
-    @Override
-    public String getAction() {
-      return Action.GREET.getAction();
-    }
+  @Override
+  public String getAction() {
+    return Action.GREET.getAction();
+  }
 }
-

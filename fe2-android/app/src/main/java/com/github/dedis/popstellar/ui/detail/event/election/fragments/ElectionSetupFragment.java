@@ -250,7 +250,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           }
 
           String electionName = electionNameText.getText().toString();
-  
+
           Log.d(
               TAG,
               "Creating election with version "

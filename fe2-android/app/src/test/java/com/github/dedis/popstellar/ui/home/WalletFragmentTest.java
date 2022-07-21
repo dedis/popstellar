@@ -1,5 +1,22 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.widget.Button;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.ui.wallet.WalletFragment;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
@@ -22,23 +39,6 @@ import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcome
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcomeText2;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.welcomeText3;
 import static org.hamcrest.Matchers.allOf;
-
-import android.widget.Button;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoTestRule;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

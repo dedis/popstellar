@@ -65,7 +65,6 @@ public class TransactionObject {
     return lockTime;
   }
 
-
   public int getVersion() {
     return version;
   }
@@ -175,9 +174,7 @@ public class TransactionObject {
    */
   public static long getMiniLaoPerReceiverSetTransaction(
       List<TransactionObject> transaction, PublicKey receiver) {
-    return transaction.stream()
-        .mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver))
-        .sum();
+    return transaction.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
   }
 
   /**

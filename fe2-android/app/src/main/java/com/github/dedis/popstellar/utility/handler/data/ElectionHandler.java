@@ -1,10 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
-
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -29,6 +24,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -103,6 +103,7 @@ public final class ElectionHandler {
 
   /**
    * Process an OpenElection message.
+   *
    * @param context the HandlerContext of the message
    * @param openElection the message that was received
    */
@@ -120,12 +121,11 @@ public final class ElectionHandler {
       election.setEventState(OPENED);
     }
 
-    //Sets the start time to now
+    // Sets the start time to now
     election.setStart(Instant.now().getEpochSecond());
     Log.d(TAG, "election opened " + election.getStartTimestamp());
     lao.updateElection(election.getId(), election);
   }
-
 
   /**
    * Process an ElectionEnd message.
@@ -214,6 +214,7 @@ public final class ElectionHandler {
 
   /**
    * Simple way to handle a election key, add the given key to the given election
+   *
    * @param context context
    * @param electionKey key to add
    */

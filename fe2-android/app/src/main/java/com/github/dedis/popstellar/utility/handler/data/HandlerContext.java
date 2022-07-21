@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;

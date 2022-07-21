@@ -334,7 +334,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
       if (getCurrentLaoValue().getTransactionByUser().containsKey(pubK) && !coinBase) {
         processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
       } else {
-        inputs.add(processSignInput(privK, pubK, outputs, Collections.singletonMap(transactionHash, index), transactionHash));
+        inputs.add(
+            processSignInput(
+                privK,
+                pubK,
+                outputs,
+                Collections.singletonMap(transactionHash, index),
+                transactionHash));
       }
 
       Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
@@ -375,15 +381,19 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   private Input processSignInput(
-      PrivateKey privK, PublicKey pubK, List<Output> outputs, Map<String, Integer> transactionInpMap, String currentHash)
+      PrivateKey privK,
+      PublicKey pubK,
+      List<Output> outputs,
+      Map<String, Integer> transactionInpMap,
+      String currentHash)
       throws GeneralSecurityException {
     Signature sig =
         privK.sign(
             new Base64URLData(
-                Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                        outputs, transactionInpMap)
+                Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, transactionInpMap)
                     .getBytes(StandardCharsets.UTF_8)));
-    return new Input(currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
+    return new Input(
+        currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
   }
 
   public LiveData<String> getLaoId() {
@@ -508,7 +518,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       transactionInpMap.put(transactionHash, index);
     }
 
-    for (String currentHash: transactionInpMap.keySet()) {
+    for (String currentHash : transactionInpMap.keySet()) {
       inputs.add(processSignInput(privK, pubK, outputs, transactionInpMap, currentHash));
     }
   }

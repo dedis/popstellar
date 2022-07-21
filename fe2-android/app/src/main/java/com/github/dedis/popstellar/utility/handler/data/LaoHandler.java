@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
@@ -20,6 +21,7 @@ import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,11 +73,11 @@ public final class LaoHandler {
 
     /* Creation channel coin*/
     context
-            .getMessageSender()
-            .subscribe(channel.subChannel("coin"))
-            .subscribe(
-                    () -> Log.d(TAG, "subscription to the coin channel was a success"),
-                    error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
+        .getMessageSender()
+        .subscribe(channel.subChannel("coin"))
+        .subscribe(
+            () -> Log.d(TAG, "subscription to the coin channel was a success"),
+            error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
 
     laoRepository.updateNodes(channel);
   }

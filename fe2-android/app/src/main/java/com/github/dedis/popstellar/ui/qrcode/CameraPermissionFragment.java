@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 /** Fragment handling permission granting for the camera */
 @AndroidEntryPoint

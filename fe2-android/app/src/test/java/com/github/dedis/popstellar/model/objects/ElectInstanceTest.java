@@ -1,10 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.model.objects.ElectInstance.State.STARTING;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.assertEquals;
-
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
@@ -17,6 +12,11 @@ import org.mockito.internal.util.collections.Sets;
 
 import java.util.Map;
 import java.util.Set;
+
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.STARTING;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.junit.Assert.assertEquals;
 
 public class ElectInstanceTest {
 

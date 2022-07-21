@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-
-import org.junit.Test;
 
 public class ScriptOutputTest {
   public static final String TYPE = "P2PKH";

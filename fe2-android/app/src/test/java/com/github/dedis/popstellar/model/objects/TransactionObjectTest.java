@@ -1,11 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
@@ -29,6 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class TransactionObjectTest {
 
@@ -304,7 +304,6 @@ public class TransactionObjectTest {
           new OutputObject(
               o.getValue(),
               new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
-
     }
 
     builder.setInputs(inpObj);

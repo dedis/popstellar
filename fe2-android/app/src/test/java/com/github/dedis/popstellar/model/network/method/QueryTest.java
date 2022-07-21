@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.model.network.method;
 
-import static org.junit.Assert.assertNotEquals;
-
 import com.github.dedis.popstellar.model.objects.Channel;
 
 import junit.framework.TestCase;
 
 import java.util.Objects;
+
+import static org.junit.Assert.assertNotEquals;
 
 public class QueryTest extends TestCase {
   private static final Channel CHANNEL = Channel.fromString("root/stuff");

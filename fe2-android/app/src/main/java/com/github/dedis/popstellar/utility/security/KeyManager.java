@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.security;
 
-import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
-
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
@@ -37,6 +35,8 @@ import java.util.Comparator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 
 /** Service managing keys and providing easy access to the main device key and PoP Tokens */
 @Singleton

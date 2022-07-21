@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTURE;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
-
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTURE;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;

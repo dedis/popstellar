@@ -1,17 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endDateView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endTimeView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startDateView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startTimeView;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 
@@ -32,6 +20,18 @@ import java.util.Locale;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endDateView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endTimeView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startDateView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startTimeView;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @LargeTest
 @HiltAndroidTest

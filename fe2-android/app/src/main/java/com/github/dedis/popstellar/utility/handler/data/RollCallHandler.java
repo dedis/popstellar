@@ -129,7 +129,6 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
-
     lao.updateRollCall(closes, rollCall);
     lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));

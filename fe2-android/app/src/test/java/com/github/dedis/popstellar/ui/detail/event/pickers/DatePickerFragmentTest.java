@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.pickers;
 
-import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.DatePickerPageObject.getBundleResponseKey;
-import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.DatePickerPageObject.getRequestKey;
-import static org.junit.Assert.assertEquals;
-
 import android.widget.DatePicker;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -21,6 +17,10 @@ import java.util.concurrent.TimeoutException;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.DatePickerPageObject.getBundleResponseKey;
+import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.DatePickerPageObject.getRequestKey;
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

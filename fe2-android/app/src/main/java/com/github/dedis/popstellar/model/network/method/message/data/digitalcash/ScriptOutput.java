@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 // The script describing the TxOut unlock mechanism
@@ -13,7 +14,7 @@ public final class ScriptOutput {
   private final String pubKeyHash; // Hash of the recipient’s public key
 
   /**
-   * @param type       Type of script
+   * @param type Type of script
    * @param pubKeyHash Hash of the recipient’s public key
    */
   public ScriptOutput(String type, String pubKeyHash) {

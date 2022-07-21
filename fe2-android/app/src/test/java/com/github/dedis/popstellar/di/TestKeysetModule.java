@@ -1,8 +1,5 @@
 package com.github.dedis.popstellar.di;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
 import com.google.crypto.tink.KeysetHandle;
@@ -20,6 +17,9 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.components.SingletonComponent;
 import dagger.hilt.testing.TestInstallIn;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test module replacing KeysetModule with mock ones so that it can be independent from an android

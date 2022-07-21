@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network;
 
-import static org.junit.Assert.assertEquals;
-
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -13,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 public class JsonTestUtils {
 

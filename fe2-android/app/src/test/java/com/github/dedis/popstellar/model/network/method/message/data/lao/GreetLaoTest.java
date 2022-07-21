@@ -1,18 +1,20 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class GreetLaoTest {
 
@@ -32,33 +34,33 @@ public class GreetLaoTest {
   }
 
   @Test
-  public void getActionTest(){
+  public void getActionTest() {
     assertEquals(Action.GREET.getAction(), GREETING_MSG.getAction());
   }
 
   @Test
-  public void getObjectTest(){
+  public void getObjectTest() {
     assertEquals(Objects.LAO.getObject(), GREETING_MSG.getObject());
   }
 
   @Test
-  public void getFrontendKeyTest(){
+  public void getFrontendKeyTest() {
     assertEquals(new PublicKey(RANDOM_KEY), GREETING_MSG.getFrontendKey());
   }
 
   @Test
-  public void getAddressTest(){
+  public void getAddressTest() {
     assertEquals(RANDOM_ADDRESS, GREETING_MSG.getAddress());
   }
 
   @Test
-  public void getPeersTest(){
+  public void getPeersTest() {
     List<PeerAddress> peersList = new ArrayList<>(RANDOM_PEER_LIST);
     assertEquals(GREETING_MSG.getPeers(), peersList);
   }
 
   @Test
-  public void equalsTest(){
+  public void equalsTest() {
     GreetLao GREETING_MSG_2 = new GreetLao(LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, RANDOM_PEER_LIST);
     PeerAddress RANDOM_PEER_2 = new PeerAddress("123");
 
@@ -82,7 +84,7 @@ public class GreetLaoTest {
   }
 
   @Test
-  public void toStringTest(){
+  public void toStringTest() {
     List<PeerAddress> listTest = new ArrayList<>(RANDOM_PEER_LIST);
     String greetingToString =
         String.format(

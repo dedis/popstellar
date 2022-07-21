@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObjectBuilder;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertThrows;
 
 public class TransactionObjectBuilderTest {
   private static final TransactionObjectBuilder builder = new TransactionObjectBuilder();

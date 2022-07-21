@@ -185,7 +185,9 @@ public class ElectionSetupViewPagerAdapter
     isAnInputValid.setValue(false);
   }
 
-  /** @return the indexes of election question where input is valid */
+  /**
+   * @return the indexes of election question where input is valid
+   */
   public List<Integer> getValidInputs() {
     List<Integer> listOfValidInputs = new ArrayList<>();
     for (Integer i : listOfValidQuestions) {

@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import static android.text.format.DateUtils.getRelativeTimeSpanString;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -16,6 +14,8 @@ import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.List;
+
+import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
 public class ChirpListAdapter extends BaseAdapter {
 

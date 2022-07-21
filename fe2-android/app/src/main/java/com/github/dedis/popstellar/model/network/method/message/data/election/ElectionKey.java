@@ -8,8 +8,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * ElectionKey message is sent by the backend after opening an election with
- * SECRET_BALLOT option, it should contain the public key to encrypt the votes.
+ * ElectionKey message is sent by the backend after opening an election with SECRET_BALLOT option,
+ * it should contain the public key to encrypt the votes.
  */
 public class ElectionKey extends Data {
 
@@ -22,7 +22,7 @@ public class ElectionKey extends Data {
   private String electionVoteKey;
 
   public ElectionKey(@NonNull String electionId, @NonNull String electionVoteKey) {
-    this.electionId=electionId;
+    this.electionId = electionId;
     this.electionVoteKey = electionVoteKey;
   }
 
@@ -32,7 +32,7 @@ public class ElectionKey extends Data {
   }
 
   @NonNull
-  public String getElectionId(){
+  public String getElectionId() {
     return electionId;
   }
 
@@ -47,7 +47,7 @@ public class ElectionKey extends Data {
   }
 
   @Override
-  public boolean equals(Object o){
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
@@ -66,9 +66,8 @@ public class ElectionKey extends Data {
 
   @NonNull
   @Override
-  public String toString(){
+  public String toString() {
     return String.format(
         "ElectionKey{election='%s', election_key='%s'}", electionId, electionVoteKey);
   }
-
 }

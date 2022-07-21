@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -42,6 +40,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
+
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel

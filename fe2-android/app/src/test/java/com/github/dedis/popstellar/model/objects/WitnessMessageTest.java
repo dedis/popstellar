@@ -1,8 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -10,6 +7,9 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import org.junit.Test;
 
 import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class WitnessMessageTest {
   private static final PublicKey PK = Base64DataUtils.generatePublicKey();
