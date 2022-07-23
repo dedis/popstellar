@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +39,9 @@ public class GlobalNetworkManagerTest {
         new GlobalNetworkManager(repository, handler, factory, gson, new TestSchedulerProvider());
     verify(factory).createConnection(anyString());
 
-    networkManager.getMessageSender().unsubscribe(Channel.ROOT);
+    Completable sendMessage = networkManager.getMessageSender().unsubscribe(Channel.ROOT);
+    verify(firstConnection, never()).sendMessage(any());
+    sendMessage.subscribe();
     verify(firstConnection).sendMessage(any());
   }
 
