@@ -72,7 +72,11 @@ public class ContentWalletFragment extends Fragment {
             builder.setTitle(R.string.logout_title);
             builder.setMessage(R.string.logout_message);
             builder.setPositiveButton(
-                R.string.confirm, (dialog, which) -> mHomeViewModel.logoutWallet());
+                R.string.confirm,
+                (dialog, which) -> {
+                  mHomeViewModel.logoutWallet();
+                  mHomeViewModel.openWallet(getParentFragmentManager());
+                });
             builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
             logoutAlert = builder.create();
             logoutAlert.show();
@@ -101,7 +105,7 @@ public class ContentWalletFragment extends Fragment {
     RecyclerView recyclerView = mWalletContentBinding.laoList;
 
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, false);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), false);
 
     recyclerView.setAdapter(mListAdapter);
   }

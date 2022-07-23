@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
@@ -147,34 +147,25 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
    * message and publishes it to the root channel. It observers the response in the background and
    * switches to the home screen on success.
    */
-  @SuppressLint("CheckResult")
-  public void launchLao() {
+  public void launchLao(Activity activity) {
     String laoName = mLaoName.getValue();
 
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
+    Lao lao = new Lao(createLao.getId());
 
     disposables.add(
         networkManager
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
+            .doOnComplete(() -> Log.d(TAG, "got success result for create lao"))
+            // Send subscribe and catchup
+            .toObservable()
+            .flatMapCompletable(a -> networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
                 () -> {
-                  Log.d(TAG, "got success result for create lao");
-                  Lao lao = new Lao(createLao.getId());
-
-                  // Send subscribe and catchup
-                  networkManager
-                      .getMessageSender()
-                      .subscribe(lao.getChannel())
-                      .subscribe(
-                          () -> {
-                            Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                            openLao(lao.getId());
-                          },
-                          error ->
-                              ErrorUtils.logAndShow(
-                                  getApplication(), TAG, error, R.string.error_create_lao));
+                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
+                  openLao(activity, lao.getId());
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -238,27 +229,27 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     }
   }
 
-  public void openLao(String laoId) {
-    Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
+  public static void openLao(Activity activity, String laoId) {
+    Intent intent = new Intent(activity.getApplicationContext(), LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    getApplication().startActivity(intent);
+    activity.startActivity(intent);
   }
 
-  public void openLaoWallet(String laoId) {
-    Intent intent = new Intent(getApplication(), LaoDetailActivity.class);
+  public static void openLaoWallet(Activity activity, String laoId) {
+    Intent intent = new Intent(activity.getApplicationContext(), LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
-    getApplication().startActivity(intent);
+    activity.startActivity(intent);
   }
 
-  public void openSocialMedia() {
-    Intent intent = new Intent(getApplication(), SocialMediaActivity.class);
+  public static void openSocialMedia(Activity activity) {
+    Intent intent = new Intent(activity, SocialMediaActivity.class);
     Log.d(HomeViewModel.TAG, "Trying to open social media");
     intent.putExtra(OPENED_FROM, HomeViewModel.TAG);
-    getApplication().startActivity(intent);
+    activity.startActivity(intent);
   }
 
   public void setLaoName(String name) {

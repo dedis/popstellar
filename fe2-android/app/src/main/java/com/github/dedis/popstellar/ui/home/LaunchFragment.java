@@ -49,7 +49,8 @@ public final class LaunchFragment extends Fragment {
   }
 
   private void setupLaunchButton() {
-    mLaunchFragBinding.buttonLaunch.setOnClickListener(v -> mHomeViewModel.launchLao());
+    mLaunchFragBinding.buttonLaunch.setOnClickListener(
+        v -> mHomeViewModel.launchLao(requireActivity()));
   }
 
   private void setupCancelButton() {

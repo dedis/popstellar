@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.app.Activity;
 import android.view.*;
 import android.widget.TextView;
 
@@ -14,15 +15,14 @@ import java.util.List;
 
 public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListItemViewHolder> {
 
-  private final HomeViewModel homeViewModel;
+  private final Activity activity;
 
   private List<Lao> laos;
 
   private final boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
-
-    this.homeViewModel = homeViewModel;
+  public LAOListAdapter(List<Lao> laos, Activity activity, boolean openLaoDetail) {
+    this.activity = activity;
     setList(laos);
     this.openLaoDetail = openLaoDetail;
   }
@@ -53,9 +53,9 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     cardView.setOnClickListener(
         v -> {
           if (openLaoDetail) {
-            homeViewModel.openLao(lao.getId());
+            HomeViewModel.openLao(activity, lao.getId());
           } else {
-            homeViewModel.openLaoWallet(lao.getId());
+            HomeViewModel.openLaoWallet(activity, lao.getId());
           }
         });
 

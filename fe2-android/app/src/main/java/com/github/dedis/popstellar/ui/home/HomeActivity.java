@@ -167,7 +167,7 @@ public class HomeActivity extends AppCompatActivity {
           getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
       showHomeTab();
     } else {
-      mViewModel.openSocialMedia();
+      HomeViewModel.openSocialMedia(this);
     }
   }
 
