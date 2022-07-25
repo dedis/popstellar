@@ -92,19 +92,22 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     startDateEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate);
+          openPickerDialog(
+              DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onStartDate);
         });
 
     endDateEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate);
+          openPickerDialog(
+              DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onEndDate);
         });
 
     startTimeEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime);
+          openPickerDialog(
+              TimePickerFragment.newInstance(), TimePickerFragment.TAG, this::onStartTime);
         });
 
     endTimeEditText.setOnClickListener(

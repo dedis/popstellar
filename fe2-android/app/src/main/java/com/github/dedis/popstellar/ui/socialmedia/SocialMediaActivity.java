@@ -1,18 +1,18 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaActivity extends AppCompatActivity {
   private SocialMediaViewModel mViewModel;
-  public static final String OPENED_FROM = "OPENED_FROM";
+
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
 
@@ -38,10 +38,12 @@ public class SocialMediaActivity extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
-    if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
-      mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
-      mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
-    }
+    String laoId = getIntent().getExtras().getString(LAO_ID);
+    String laoName = getIntent().getExtras().getString(LAO_NAME);
+
+    if (laoId != null) mViewModel.setLaoId(laoId);
+    if (laoName != null) mViewModel.setLaoName(laoName);
+
     setupSocialMediaHomeFragment();
     setupNavigationBar();
 
@@ -169,20 +171,42 @@ public class SocialMediaActivity extends AppCompatActivity {
   }
 
   public void setupSocialMediaHomeFragment() {
-    setCurrentFragment(R.id.fragment_social_media_home, SocialMediaHomeFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_social_media_home,
+        SocialMediaHomeFragment::newInstance);
   }
 
   public void setupSocialMediaSearchFragment() {
-    setCurrentFragment(R.id.fragment_social_media_search, SocialMediaSearchFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_social_media_search,
+        SocialMediaSearchFragment::newInstance);
   }
 
   public void setupSocialMediaFollowingFragment() {
     setCurrentFragment(
-        R.id.fragment_social_media_following, SocialMediaFollowingFragment::newInstance);
+        getSupportFragmentManager(),
+        R.id.fragment_social_media_following,
+        SocialMediaFollowingFragment::newInstance);
   }
 
   public void setupSocialMediaProfileFragment() {
-    setCurrentFragment(R.id.fragment_social_media_profile, SocialMediaProfileFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_social_media_profile,
+        SocialMediaProfileFragment::newInstance);
+  }
+
+  public static Intent newInstance(Context ctx, String laoId, String laoName) {
+    Intent intent = new Intent(ctx, SocialMediaActivity.class);
+    intent.putExtra(LAO_ID, laoId);
+    intent.putExtra(LAO_NAME, laoName);
+    return intent;
+  }
+
+  public static Intent newInstance(Context ctx) {
+    return new Intent(ctx, SocialMediaActivity.class);
   }
 
   /**
@@ -191,13 +215,9 @@ public class SocialMediaActivity extends AppCompatActivity {
    * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_social_media);
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    ActivityUtils.setFragmentInContainer(
+        manager, R.id.fragment_container_social_media, id, fragmentSupplier);
   }
 }

@@ -23,6 +23,10 @@ public final class TimePickerFragment extends AppCompatDialogFragment
 
   public static final String TAG = TimePickerFragment.class.getSimpleName();
 
+  public static TimePickerFragment newInstance() {
+    return new TimePickerFragment();
+  }
+
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     final Calendar current = Calendar.getInstance();
