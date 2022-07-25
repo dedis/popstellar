@@ -5,12 +5,6 @@ import { Timestamp } from '../Timestamp';
 const NOW = 1620255600;
 const TIMESTAMP = 1620455700;
 
-export const FIXED_SYSTEM_TIME = new Date(NOW * 1000); // 5 May 2021
-
-// disable the passage of time for this unit test
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
-
 describe('Timestamp object', () => {
   it('EpochNow function works', () => {
     expect(Timestamp.EpochNow().valueOf()).toStrictEqual(NOW);
@@ -60,9 +54,7 @@ describe('Timestamp object', () => {
     });
 
     it('works with a Number as argument', () => {
-      // Doesn't work
-      // eslint-disable-next-line no-new-wrappers
-      const n = new Number(12345); // This is for testing purposes only
+      const n = Number(12345);
       const timestamp = new Timestamp(n);
       expect(timestamp.valueOf()).toStrictEqual(12345);
     });

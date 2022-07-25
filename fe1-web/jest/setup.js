@@ -29,9 +29,3 @@ jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 // make functions return a value independent of the CI locale
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
-
-const FIXED_SYSTEM_TIME = new Date(1620255600 * 1000); // 5 May 2021
-
-jest.useFakeTimers('modern');
-jest.setSystemTime(FIXED_SYSTEM_TIME);
-jest.useRealTimers();
