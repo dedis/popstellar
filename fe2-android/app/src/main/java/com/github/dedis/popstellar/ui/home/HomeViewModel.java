@@ -66,7 +66,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   /** Dependencies for this class */
   private final Gson gson;
 
-  private final LAORepository laoRepository;
   private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
@@ -83,7 +82,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
       GlobalNetworkManager networkManager) {
     super(application);
 
-    this.laoRepository = laoRepository;
     this.gson = gson;
     this.keyManager = keyManager;
     this.wallet = wallet;
@@ -91,7 +89,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+            laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -183,8 +181,10 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     return mLAOs;
   }
 
-  public Boolean isWalletSetUp() {
-    return mIsWalletSetUp.getValue();
+  public boolean isWalletSetUp() {
+    Boolean setup = mIsWalletSetUp.getValue();
+    if (setup == null) return false;
+    else return setup;
   }
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
@@ -253,7 +253,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     this.mLaoName.setValue(name);
   }
 
-  public void setIsWalletSetUp(Boolean isSetUp) {
+  public void setIsWalletSetUp(boolean isSetUp) {
     this.mIsWalletSetUp.setValue(isSetUp);
   }
 
