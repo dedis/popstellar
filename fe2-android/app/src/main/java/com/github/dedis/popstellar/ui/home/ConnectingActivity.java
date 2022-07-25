@@ -105,7 +105,8 @@ public class ConnectingActivity extends AppCompatActivity {
     disposables.add(
         replay.subscribe(
             v -> {
-              if (v.toString().contains("OnConnectionOpened")) {
+              Log.d(TAG, "connect message is " + v);
+              if (v instanceof WebSocket.Event.OnConnectionOpened) {
                 Log.d(TAG, "connection opened with new server address");
                 handleConnecting(channelId);
               }
