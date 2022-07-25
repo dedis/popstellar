@@ -39,22 +39,33 @@ public class ConnectingActivity extends AppCompatActivity {
     handleOpenConnection(channelId);
   }
 
-  private void openLaoDetailActivity(String laoId) {
-    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
+  /**
+   * Waits in background for the connection to the new server address to be opened And then starts
+   * call for the subscribe and catchup process
+   *
+   * @param channelId the id of the lao
+   */
+  private void handleOpenConnection(String channelId) {
+    // Sets the lao id displayed to users
+    TextView connectingText = findViewById(R.id.connecting_lao);
+    connectingText.setText(channelId);
 
-    Intent intent = new Intent(this, LaoDetailActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    // This object will allow us to get all the event of the underlying observable, even if they
+    // were emitted prior to the subscribe
+    ConnectableObservable<WebSocket.Event> replay =
+        networkManager.getMessageSender().getConnectEvents().replay();
+    disposables.add(
+        replay.subscribe(
+            v -> {
+              Log.d(TAG, "connect message is " + v);
+              if (v instanceof WebSocket.Event.OnConnectionOpened) {
+                Log.d(TAG, "connection opened with new server address");
+                handleConnecting(channelId);
+              }
+            }));
 
-    startActivity(intent);
-  }
-
-  private void openHomeActivity() {
-    Log.d(TAG, "Opening Home activity");
-
-    Intent intent = new Intent(this, HomeActivity.class);
-    startActivity(intent);
-    finish();
+    // Now that we observe the events we let the observable know it can begin to emit events
+    replay.connect();
   }
 
   /**
@@ -87,32 +98,21 @@ public class ConnectingActivity extends AppCompatActivity {
     cancelButton.setOnClickListener(v -> openHomeActivity());
   }
 
-  /**
-   * Waits in background for the connection to the new server address to be opened And then starts
-   * call for the subscribe and catchup process
-   *
-   * @param channelId the id of the lao
-   */
-  private void handleOpenConnection(String channelId) {
-    // Sets the lao id displayed to users
-    TextView connectingText = findViewById(R.id.connecting_lao);
-    connectingText.setText(channelId);
+  private void openLaoDetailActivity(String laoId) {
+    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
 
-    // This object will allow us to get all the event of the underlying observable, even if they
-    // were emitted prior to the subscribe
-    ConnectableObservable<WebSocket.Event> replay =
-        networkManager.getMessageSender().getConnectEvents().replay();
-    disposables.add(
-        replay.subscribe(
-            v -> {
-              Log.d(TAG, "connect message is " + v);
-              if (v instanceof WebSocket.Event.OnConnectionOpened) {
-                Log.d(TAG, "connection opened with new server address");
-                handleConnecting(channelId);
-              }
-            }));
+    Intent intent = new Intent(this, LaoDetailActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
 
-    // Now that we observe the events we let the observable know it can begin to emit events
-    replay.connect();
+    startActivity(intent);
+  }
+
+  private void openHomeActivity() {
+    Log.d(TAG, "Opening Home activity");
+
+    Intent intent = new Intent(this, HomeActivity.class);
+    startActivity(intent);
+    finish();
   }
 }
