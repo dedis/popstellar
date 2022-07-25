@@ -1,18 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class StateMeetingTest {
   private static final String LAO_ID = "some lao id";

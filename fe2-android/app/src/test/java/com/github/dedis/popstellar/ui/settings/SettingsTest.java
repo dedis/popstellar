@@ -1,15 +1,5 @@
 package com.github.dedis.popstellar.ui.settings;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.applyButton;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.pageTitle;
-import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.serverUrlEditText;
-
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -23,6 +13,14 @@ import org.junit.runner.RunWith;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static com.github.dedis.popstellar.ui.pages.settings.SettingsPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

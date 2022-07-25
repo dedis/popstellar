@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
-
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 // The script describing the unlock mechanism
@@ -21,9 +21,9 @@ public final class ScriptInput {
   // Transaction //with all txin txout
 
   /**
-   * @param type            The script describing the unlock mechanism
+   * @param type The script describing the unlock mechanism
    * @param pubKeyRecipient The recipient’s public key
-   * @param sig             Signature on all txins and txouts using the recipient's private key
+   * @param sig Signature on all txins and txouts using the recipient's private key
    */
   public ScriptInput(String type, PublicKey pubKeyRecipient, Signature sig) {
     this.type = type;

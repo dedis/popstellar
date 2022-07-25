@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.repository.local.entities;
 
-import androidx.room.Embedded;
-import androidx.room.Junction;
-import androidx.room.Relation;
+import androidx.room.*;
 
 import java.util.List;
 

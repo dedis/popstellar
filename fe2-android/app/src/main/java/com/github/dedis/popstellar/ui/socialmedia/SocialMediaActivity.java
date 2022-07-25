@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
+import android.view.*;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;

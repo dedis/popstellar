@@ -1,26 +1,22 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.tokenTitle;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentText1;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentText2;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /** Enumerate the different low level messages' method */
 public enum Method {

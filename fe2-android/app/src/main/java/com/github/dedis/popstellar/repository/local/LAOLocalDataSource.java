@@ -2,12 +2,7 @@ package com.github.dedis.popstellar.repository.local;
 
 import com.github.dedis.popstellar.repository.LAODataSource.Local;
 import com.github.dedis.popstellar.repository.local.dao.LAODao;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
-import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
-import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
-import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+import com.github.dedis.popstellar.repository.local.entities.*;
 
 import java.util.List;
 

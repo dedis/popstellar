@@ -1,17 +1,11 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -29,11 +23,11 @@ import com.github.dedis.popstellar.utility.Constants;
 import net.glxn.qrgen.android.QRCode;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.Locale;
+import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {

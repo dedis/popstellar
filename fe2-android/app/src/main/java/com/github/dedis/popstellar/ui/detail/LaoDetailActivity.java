@@ -1,21 +1,13 @@
 package com.github.dedis.popstellar.ui.detail;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_ID;
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_NAME;
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.*;
+import androidx.appcompat.app.*;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -24,22 +16,14 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -50,6 +34,8 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.*;
 
 @AndroidEntryPoint
 public class LaoDetailActivity extends AppCompatActivity {

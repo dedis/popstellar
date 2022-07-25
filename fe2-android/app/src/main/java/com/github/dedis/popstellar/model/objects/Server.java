@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 /**
- * A basic instance of the server what will be created while handling the
- * Greeting election message
+ * A basic instance of the server what will be created while handling the Greeting election message
  */
 public class Server {
 
@@ -47,5 +47,4 @@ public class Server {
   public String getServerAddress() {
     return serverAddress;
   }
-
 }

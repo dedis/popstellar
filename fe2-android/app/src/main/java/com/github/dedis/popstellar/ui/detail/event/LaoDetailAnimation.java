@@ -3,10 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.*;
 
 /**
  * Heavily inspired by

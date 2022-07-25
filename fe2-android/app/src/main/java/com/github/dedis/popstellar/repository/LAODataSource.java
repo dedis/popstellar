@@ -2,12 +2,7 @@ package com.github.dedis.popstellar.repository;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
-import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
-import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
-import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+import com.github.dedis.popstellar.repository.local.entities.*;
 import com.tinder.scarlet.WebSocket;
 
 import java.util.List;

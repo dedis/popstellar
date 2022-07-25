@@ -1,11 +1,5 @@
 package com.github.dedis.popstellar.model.objects.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
 import com.google.crypto.tink.KeysetHandle;
@@ -17,6 +11,10 @@ import net.i2p.crypto.eddsa.Utils;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PrivateKeyTest {
 

@@ -6,29 +6,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -40,13 +27,7 @@ import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -334,7 +315,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
       if (getCurrentLaoValue().getTransactionByUser().containsKey(pubK) && !coinBase) {
         processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
       } else {
-        inputs.add(processSignInput(privK, pubK, outputs, Collections.singletonMap(transactionHash, index), transactionHash));
+        inputs.add(
+            processSignInput(
+                privK,
+                pubK,
+                outputs,
+                Collections.singletonMap(transactionHash, index),
+                transactionHash));
       }
 
       Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
@@ -375,15 +362,19 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   private Input processSignInput(
-      PrivateKey privK, PublicKey pubK, List<Output> outputs, Map<String, Integer> transactionInpMap, String currentHash)
+      PrivateKey privK,
+      PublicKey pubK,
+      List<Output> outputs,
+      Map<String, Integer> transactionInpMap,
+      String currentHash)
       throws GeneralSecurityException {
     Signature sig =
         privK.sign(
             new Base64URLData(
-                Transaction.computeSigOutputsPairTxOutHashAndIndex(
-                        outputs, transactionInpMap)
+                Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, transactionInpMap)
                     .getBytes(StandardCharsets.UTF_8)));
-    return new Input(currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
+    return new Input(
+        currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
   }
 
   public LiveData<String> getLaoId() {
@@ -508,7 +499,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       transactionInpMap.put(transactionHash, index);
     }
 
-    for (String currentHash: transactionInpMap.keySet()) {
+    for (String currentHash : transactionInpMap.keySet()) {
       inputs.add(processSignInput(privK, pubK, outputs, transactionInpMap, currentHash));
     }
   }

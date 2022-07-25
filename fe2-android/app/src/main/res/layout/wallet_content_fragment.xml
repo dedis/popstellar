@@ -16,7 +16,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
       android:id="@+id/title_wallet"
       android:textStyle="bold"
@@ -25,7 +24,7 @@
       android:gravity="center"
       android:text="@string/content_title"
       style="@style/title_style"
-      app:layout_constraintTop_toTopOf="parent"/>
+      app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
       android:id="@+id/welcome_screen"

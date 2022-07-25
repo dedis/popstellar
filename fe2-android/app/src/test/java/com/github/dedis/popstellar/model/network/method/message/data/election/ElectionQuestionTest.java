@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
@@ -12,6 +8,10 @@ import org.junit.Test;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ElectionQuestionTest {
 
@@ -27,11 +27,19 @@ public class ElectionQuestionTest {
   private final List<String> ballotOptions1 = Arrays.asList("a", "b");
   private final List<String> ballotOptions2 = Arrays.asList("a", "b");
   private final List<Boolean> allWriteIns = Arrays.asList(false, false);
-    private final ElectionSetup electionSetup =
-            new ElectionSetup(
-                    allWriteIns, name, now, now, end, allMethods, laoId, Arrays.asList(ballotOptions1, ballotOptions2), allQuestions, version
-            );
-    private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+  private final ElectionSetup electionSetup =
+      new ElectionSetup(
+          allWriteIns,
+          name,
+          now,
+          now,
+          end,
+          allMethods,
+          laoId,
+          Arrays.asList(ballotOptions1, ballotOptions2),
+          allQuestions,
+          version);
+  private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
 
   @Test
   public void electionQuestionGetterReturnsCorrectId() {

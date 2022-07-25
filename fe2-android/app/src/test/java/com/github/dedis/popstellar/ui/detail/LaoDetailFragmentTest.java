@@ -1,40 +1,5 @@
 package com.github.dedis.popstellar.ui.detail;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.cameraPermissionId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentContainer;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailFragmentId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addElectionButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addElectionText;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addEventButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addRollCallButton;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.addRollCallText;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.connectQrCode;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.eventList;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.qrCodeIcon;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.qrCodeLayout;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.titleTextView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.ballotOptionAtPosition;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.electionName;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.questionText;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.submit;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateConfirmButton;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCallCreateTitle;
-import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.rollCreateOpenButton;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -51,25 +16,16 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cr
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.IntentUtils;
+import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.*;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
@@ -87,11 +43,22 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailFragmentPageObject.*;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.*;
+import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallCreatePageObject.*;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @LargeTest
 @HiltAndroidTest

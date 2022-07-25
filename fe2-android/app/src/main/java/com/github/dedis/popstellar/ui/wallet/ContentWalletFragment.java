@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.home.LAOListAdapter;
+import com.github.dedis.popstellar.ui.home.*;
 
 import java.util.ArrayList;
 

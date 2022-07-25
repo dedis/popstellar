@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
-/**
- * Object representing a transaction output to use as an input for this transaction
- */
+/** Object representing a transaction output to use as an input for this transaction */
 public final class Input {
 
   @SerializedName("tx_out_hash")
@@ -18,9 +17,9 @@ public final class Input {
   private ScriptInput script; // The script describing the unlock mechanism
 
   /**
-   * @param txOutHash  Previous (to-be-used) transaction hash
+   * @param txOutHash Previous (to-be-used) transaction hash
    * @param txOutIndex index of the previous to-be-used transaction
-   * @param script     The script describing the unlock mechanism
+   * @param script The script describing the unlock mechanism
    */
   public Input(String txOutHash, int txOutIndex, ScriptInput script) {
     this.script = script;
@@ -36,11 +35,9 @@ public final class Input {
     return txOutIndex;
   }
 
-
   public ScriptInput getScript() {
     return script;
   }
-
 
   @Override
   public String toString() {

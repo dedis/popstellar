@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 // Object representing an output of this transaction
@@ -13,14 +14,13 @@ public final class Output {
   private final ScriptOutput script; // The script describing the TxOut unlock mechanism
 
   /**
-   * @param value  the value of the output transaction, expressed in miniLAOs
+   * @param value the value of the output transaction, expressed in miniLAOs
    * @param script The script describing the TxOut unlock mechanism
    */
   public Output(long value, ScriptOutput script) {
     this.value = value;
     this.script = script;
   }
-
 
   public long getValue() {
     return value;

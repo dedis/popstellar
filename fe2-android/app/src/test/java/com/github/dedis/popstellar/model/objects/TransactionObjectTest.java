@@ -1,34 +1,18 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObjectBuilder;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.*;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.*;
 
 public class TransactionObjectTest {
 
@@ -304,7 +288,6 @@ public class TransactionObjectTest {
           new OutputObject(
               o.getValue(),
               new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
-
     }
 
     builder.setInputs(inpObj);

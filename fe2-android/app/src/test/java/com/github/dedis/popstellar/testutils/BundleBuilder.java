@@ -37,7 +37,9 @@ public class BundleBuilder {
     return this;
   }
 
-  /** @return the built bundle */
+  /**
+   * @return the built bundle
+   */
   public Bundle build() {
     return bundle;
   }

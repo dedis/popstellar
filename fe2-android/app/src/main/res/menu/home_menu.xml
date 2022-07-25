@@ -3,21 +3,21 @@
   <item
     android:id="@+id/home_home_menu"
     android:icon="@drawable/ic_common_home_opaque_foreground"
-    android:title="@string/tab_home"/>
+    android:title="@string/tab_home" />
   <item
     android:id="@+id/home_connect_menu"
     android:icon="@drawable/ic_home_connect_opaque_foreground"
-    android:title="@string/tab_connect"/>
+    android:title="@string/tab_connect" />
   <item
     android:id="@+id/home_launch_menu"
     android:icon="@drawable/ic_home_launch_opaque_foreground"
-    android:title="@string/tab_launch"/>
+    android:title="@string/tab_launch" />
   <item
     android:id="@+id/home_wallet_menu"
     android:icon="@drawable/ic_home_wallet_foreground"
-    android:title="@string/tab_wallet"/>
+    android:title="@string/tab_wallet" />
   <item
     android:id="@+id/home_social_media_menu"
     android:icon="@drawable/ic_common_social_media_transparent_foreground"
-    android:title="@string/tab_social_media"/>
+    android:title="@string/tab_social_media" />
 </menu>

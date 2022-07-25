@@ -1,18 +1,13 @@
 package com.github.dedis.popstellar.ui.pages.detail.event.election;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withHint;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.childAtPosition;
-import static org.hamcrest.Matchers.allOf;
-
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.UITestUtils.childAtPosition;
+import static org.hamcrest.Matchers.allOf;
 
 public class ElectionSetupPageObject {
 

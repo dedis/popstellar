@@ -1,12 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
-
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +21,7 @@ import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
-import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
+import com.github.dedis.popstellar.ui.wallet.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -39,6 +32,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint

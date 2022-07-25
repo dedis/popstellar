@@ -55,7 +55,7 @@
       android:layout_width="match_parent"
       android:layout_height="@dimen/cast_vote_dynamic_height"
       app:layout_constraintBottom_toTopOf="@+id/swipe_indicator"
-      app:layout_constraintTop_toBottomOf="@id/guideline_title"/>
+      app:layout_constraintTop_toBottomOf="@id/guideline_title" />
 
     <me.relex.circleindicator.CircleIndicator3
       android:id="@+id/swipe_indicator"

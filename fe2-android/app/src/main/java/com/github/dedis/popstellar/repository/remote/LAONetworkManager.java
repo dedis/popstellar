@@ -3,15 +3,9 @@ package com.github.dedis.popstellar.repository.remote;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.ResultMessages;
-import com.github.dedis.popstellar.model.network.method.Broadcast;
-import com.github.dedis.popstellar.model.network.method.Catchup;
-import com.github.dedis.popstellar.model.network.method.Publish;
-import com.github.dedis.popstellar.model.network.method.Query;
-import com.github.dedis.popstellar.model.network.method.Subscribe;
-import com.github.dedis.popstellar.model.network.method.Unsubscribe;
+import com.github.dedis.popstellar.model.network.answer.*;
+import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -29,9 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;

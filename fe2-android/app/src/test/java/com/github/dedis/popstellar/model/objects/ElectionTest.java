@@ -1,5 +1,19 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.security.elGamal.*;
+import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.*;
+
+import java.time.Instant;
+import java.util.*;
+
+import ch.epfl.dedis.lib.exception.CothorityCryptoException;
+
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventType.ELECTION;
@@ -7,34 +21,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPrivateKey;
-import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 
 public class ElectionTest {
 
