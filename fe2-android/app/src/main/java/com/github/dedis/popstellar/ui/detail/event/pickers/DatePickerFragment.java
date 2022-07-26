@@ -5,9 +5,9 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AppCompatDialogFragment;
-
 import java.util.Calendar;
+
+import androidx.appcompat.app.AppCompatDialogFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -25,6 +25,10 @@ public final class DatePickerFragment extends AppCompatDialogFragment
     implements DatePickerDialog.OnDateSetListener {
 
   public static final String TAG = DatePickerFragment.class.getSimpleName();
+
+  public static DatePickerFragment newInstance() {
+    return new DatePickerFragment();
+  }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
