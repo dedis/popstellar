@@ -17,10 +17,8 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
@@ -78,17 +76,9 @@ public class LaoDetailActivity extends AppCompatActivity {
                 setupLaoFragment();
               }
             });
-    // Subscribe to "open home" event
-    setupHomeActivity();
-
-    // Subscribe to "open identity" event
-    setupIdentityFragment();
 
     // Subscribe to " open social media " event
     setupSocialMediaActivity();
-
-    // Subscribe to " open witness message" event
-    setupWitnessMessageFragment();
 
     // Subscribe to "open witnessing" event
     setupWitnessing();
@@ -250,7 +240,7 @@ public class LaoDetailActivity extends AppCompatActivity {
       Fragment fragment =
           getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
       if (fragment instanceof LaoDetailFragment) {
-        openHome();
+        mViewModel.openHome(this);
       } else {
         navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
       }
@@ -272,42 +262,6 @@ public class LaoDetailActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
-  private void setupHomeActivity() {
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                openHome();
-              }
-            });
-  }
-
-  private void openHome() {
-    Intent intent = new Intent(this, HomeActivity.class);
-    setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-    startActivity(intent);
-    finish();
-  }
-
-  private void setupIdentityFragment() {
-    mViewModel
-        .getOpenIdentityEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              PublicKey publicKey = stringEvent.getContentIfNotHandled();
-              if (publicKey != null) {
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_identity,
-                    () -> IdentityFragment.newInstance(publicKey));
-              }
-            });
-  }
-
   private void setupSocialMediaActivity() {
     mViewModel
         .getOpenSocialMediaEvent()
@@ -321,22 +275,6 @@ public class LaoDetailActivity extends AppCompatActivity {
                         this,
                         mViewModel.getCurrentLaoValue().getId(),
                         mViewModel.getCurrentLaoValue().getName()));
-              }
-            });
-  }
-
-  private void setupWitnessMessageFragment() {
-    mViewModel
-        .getOpenWitnessMessageEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_witness_message,
-                    WitnessMessageFragment::newInstance);
               }
             });
   }
@@ -498,7 +436,7 @@ public class LaoDetailActivity extends AppCompatActivity {
           if (id == R.id.lao_detail_event_list_menu) {
             setupLaoFragment();
           } else if (id == R.id.lao_detail_identity_menu) {
-            mViewModel.openIdentity();
+            mViewModel.openIdentity(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_witnessing_menu) {
             mViewModel.openWitnessing();
           } else if (id == R.id.lao_detail_digital_cash_menu) {

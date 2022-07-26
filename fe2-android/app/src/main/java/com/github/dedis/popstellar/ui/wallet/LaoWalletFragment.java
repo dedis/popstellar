@@ -63,7 +63,7 @@ public class LaoWalletFragment extends Fragment {
             });
 
     mLaoWalletFragmentBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openHome());
+        clicked -> mLaoDetailViewModel.openHome(requireActivity()));
   }
 
   private void setupWalletListAdapter() {

@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.detail;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -27,6 +29,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -61,12 +64,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<PublicKey>> mOpenIdentityEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
       new MutableLiveData<>();
 
@@ -719,18 +717,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mLaoAttendedRollCalls;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-    return mOpenHomeEvent;
-  }
-
-  public LiveData<SingleEvent<PublicKey>> getOpenIdentityEvent() {
-    return mOpenIdentityEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenWitnessMessageEvent() {
-    return mOpenWitnessMessageEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getShowPropertiesEvent() {
     return mShowPropertiesEvent;
   }
@@ -913,9 +899,9 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void openHome() {
+  public void openHome(Activity activity) {
     if (currentRollCallId.equals("")) {
-      mOpenHomeEvent.setValue(new SingleEvent<>(true));
+      activity.startActivity(HomeActivity.newIntent(activity));
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_home));
     }
@@ -929,9 +915,12 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenCastVotesEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openIdentity() {
+  public void openIdentity(FragmentManager manager) {
     if (currentRollCallId.equals("")) {
-      mOpenIdentityEvent.setValue(new SingleEvent<>(keyManager.getMainPublicKey()));
+      LaoDetailActivity.setCurrentFragment(
+          manager,
+          R.id.fragment_identity,
+          () -> IdentityFragment.newInstance(keyManager.getMainPublicKey()));
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
     }
