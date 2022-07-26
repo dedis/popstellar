@@ -121,7 +121,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
-                mLaoDetailViewModel.openLaoDetail();
+                mLaoDetailViewModel.openLaoDetail(getParentFragmentManager());
               }
             });
   }
@@ -136,7 +136,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void setupCancelButton() {
-    mFragBinding.rollCallCancel.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
+    mFragBinding.rollCallCancel.setOnClickListener(
+        v -> mLaoDetailViewModel.openLaoDetail(getParentFragmentManager()));
   }
 
   private void createRollCall(boolean open) {

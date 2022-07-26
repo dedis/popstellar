@@ -193,7 +193,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
-                mLaoDetailViewModel.openLaoDetail();
+                mLaoDetailViewModel.openLaoDetail(getParentFragmentManager());
               }
             });
   }
@@ -280,7 +280,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   /** Setups the cancel button, that brings back to LAO detail page */
   private void setupElectionCancelButton() {
     cancelButton = mSetupElectionFragBinding.electionCancelButton;
-    cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
+    cancelButton.setOnClickListener(
+        v -> mLaoDetailViewModel.openLaoDetail(getParentFragmentManager()));
   }
 
   /**

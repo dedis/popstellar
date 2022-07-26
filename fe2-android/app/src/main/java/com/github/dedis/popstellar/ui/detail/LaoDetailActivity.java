@@ -18,7 +18,6 @@ import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragme
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
@@ -59,22 +58,10 @@ public class LaoDetailActivity extends AppCompatActivity {
         .getExtras()
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
         .equals(Constants.LAO_DETAIL_EXTRA)) {
-      setupLaoFragment();
+      mViewModel.openLaoDetail(getSupportFragmentManager());
     } else {
       setupLaoWalletFragment();
     }
-
-    // Subscribe to "open lao detail event"
-    mViewModel
-        .getOpenLaoDetailEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupLaoFragment();
-              }
-            });
 
     // Subscribe to "new lao event" event
     handleNewEvent();
@@ -110,7 +97,7 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanSingleEvent -> {
               Boolean event = booleanSingleEvent.getContentIfNotHandled();
               if (event != null) {
-                setupLaoFragment();
+                mViewModel.openLaoDetail(getSupportFragmentManager());
               }
             });
 
@@ -127,25 +114,6 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
-
-    mViewModel
-        .getOpenDigitalCashEvent()
-        .observe(
-            this,
-            booleanSingleEvent -> {
-              Boolean event = booleanSingleEvent.getContentIfNotHandled();
-              if (event != null) {
-                openDigitalCash();
-              }
-            });
-  }
-
-  private void openDigitalCash() {
-    Intent intent = new Intent(this, DigitalCashActivity.class);
-
-    intent.putExtra(Constants.LAO_ID_EXTRA, mViewModel.getCurrentLaoValue().getId());
-    intent.putExtra(Constants.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
-    startActivity(intent);
   }
 
   private void subscribeWalletEvents() {
@@ -235,11 +203,6 @@ public class LaoDetailActivity extends AppCompatActivity {
       actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
-  }
-
-  private void setupLaoFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
   private void setupCreateRollCallFragment() {
@@ -396,13 +359,13 @@ public class LaoDetailActivity extends AppCompatActivity {
         item -> {
           int id = item.getItemId();
           if (id == R.id.lao_detail_event_list_menu) {
-            setupLaoFragment();
+            mViewModel.openLaoDetail(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_identity_menu) {
             mViewModel.openIdentity(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_witnessing_menu) {
             mViewModel.openWitnessing(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_digital_cash_menu) {
-            mViewModel.openDigitalCash();
+            mViewModel.openDigitalCash(this);
           } else if (id == R.id.lao_detail_social_media_menu) {
             mViewModel.openSocialMedia(this);
           }

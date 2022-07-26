@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
@@ -66,9 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mNewLaoEventCreationEvent =
@@ -300,7 +298,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes) {
+  public void sendVote(List<ElectionVote> votes, FragmentManager manager) {
     Election election = mCurrentElection.getValue();
 
     if (election == null) {
@@ -336,7 +334,7 @@ public class LaoDetailViewModel extends AndroidViewModel
           networkManager
               .getMessageSender()
               .publish(token, electionChannel, vote)
-              .doFinally(this::openLaoDetail)
+              .doFinally(() -> openLaoDetail(manager))
               .subscribe(
                   () -> {
                     Log.d(TAG, "sent a vote successfully");
@@ -677,10 +675,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * Getters for MutableLiveData instances declared above
    */
-  public LiveData<SingleEvent<Boolean>> getOpenLaoDetailEvent() {
-    return mOpenLaoDetailEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenElectionResultsEvent() {
     return mOpenElectionResultsEvent;
   }
@@ -895,8 +889,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  public void openLaoDetail() {
-    mOpenLaoDetailEvent.postValue(new SingleEvent<>(true));
+  public void openLaoDetail(FragmentManager manager) {
+    LaoDetailActivity.setCurrentFragment(
+        manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
   public void openCastVotes() {
@@ -920,12 +915,10 @@ public class LaoDetailViewModel extends AndroidViewModel
             activity, getCurrentLaoValue().getId(), getCurrentLaoValue().getName()));
   }
 
-  public void openDigitalCash() {
-    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
-    return mOpenDigitalCashEvent;
+  public void openDigitalCash(Activity activity) {
+    activity.startActivity(
+        DigitalCashActivity.newIntent(
+            activity, getCurrentLaoValue().getId(), getCurrentLaoValue().getName()));
   }
 
   public void endElectionEvent() {
