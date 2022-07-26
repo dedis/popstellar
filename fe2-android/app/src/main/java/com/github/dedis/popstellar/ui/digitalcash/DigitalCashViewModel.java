@@ -183,29 +183,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
    * Methods that modify the state or post an Event to update the UI.
    */
   public void setCurrentSelectedItem(int item) {
-    // Prevents infinite loop
-    if (item != currentSelectedItem.getValue()) {
-      currentSelectedItem.postValue(item);
-    }
+    currentSelectedItem.postValue(item);
   }
 
   public void openHome() {
-    setCurrentSelectedItem(R.id.digital_cash_home_menu);
-  }
-
-  public void openHistory() {
-    setCurrentSelectedItem(R.id.digital_cash_history_menu);
-  }
-
-  public void openIssue() {
-    setCurrentSelectedItem(R.id.digital_cash_issue_menu);
-  }
-
-  public void openReceive() {
-    setCurrentSelectedItem(R.id.digital_cash_receive_menu);
-  }
-
-  public void openSend() {
     setCurrentSelectedItem(R.id.digital_cash_home_menu);
   }
 

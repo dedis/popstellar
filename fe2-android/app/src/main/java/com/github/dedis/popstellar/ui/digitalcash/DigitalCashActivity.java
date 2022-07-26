@@ -103,34 +103,39 @@ public class DigitalCashActivity extends AppCompatActivity {
     navbar.setOnItemSelectedListener(
         item -> {
           int id = item.getItemId();
-          mViewModel.setCurrentSelectedItem(id);
-          if (id == R.id.digital_cash_home_menu) {
-            Log.d(TAG, "Opening home fragment");
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_home,
-                DigitalCashHomeFragment::newInstance);
-          } else if (id == R.id.digital_cash_history_menu) {
-            Log.d(TAG, "Opening history fragment");
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_history,
-                DigitalCashHistoryFragment::newInstance);
-          } else if (id == R.id.digital_cash_send_menu) {
-            Log.d(TAG, "Opening send fragment");
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_send,
-                DigitalCashSendFragment::newInstance);
-          } else if (id == R.id.digital_cash_receive_menu) {
-            Log.d(TAG, "Opening receive fragment");
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_receive,
-                DigitalCashReceiveFragment::newInstance);
-          } else if (id == R.id.digital_cash_issue_menu) {
-            Log.d(TAG, "Trying to open issue fragment");
-            handleOpenIssue();
+          if (id != mViewModel.getCurrentSelectedItem().getValue()) {
+            // This prevents the update to be done multiple times. It is done here rather than
+            // in viewModel because otherwise this would be executed twice
+            mViewModel.setCurrentSelectedItem(id);
+          } else {
+            if (id == R.id.digital_cash_home_menu) {
+              Log.d(TAG, "Opening home fragment");
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_home,
+                  DigitalCashHomeFragment::newInstance);
+            } else if (id == R.id.digital_cash_history_menu) {
+              Log.d(TAG, "Opening history fragment");
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_history,
+                  DigitalCashHistoryFragment::newInstance);
+            } else if (id == R.id.digital_cash_send_menu) {
+              Log.d(TAG, "Opening send fragment");
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_send,
+                  DigitalCashSendFragment::newInstance);
+            } else if (id == R.id.digital_cash_receive_menu) {
+              Log.d(TAG, "Opening receive fragment");
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_receive,
+                  DigitalCashReceiveFragment::newInstance);
+            } else if (id == R.id.digital_cash_issue_menu) {
+              Log.d(TAG, "Trying to open issue fragment");
+              handleOpenIssue();
+            }
           }
           return true;
         });
@@ -144,7 +149,6 @@ public class DigitalCashActivity extends AppCompatActivity {
         .equals(mViewModel.getKeyManager().getMainPublicKey())) {
       ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
     } else {
-      Log.d(TAG, "Opening issue fragment");
       setCurrentFragment(
           getSupportFragmentManager(),
           R.id.fragment_digital_cash_issue,
