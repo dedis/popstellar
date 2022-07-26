@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.os.Bundle;
 import android.view.*;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +9,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.time.Instant;
 
@@ -20,6 +20,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SocialMediaSendFragment extends Fragment {
   private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
+
+  public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   public static SocialMediaSendFragment newInstance() {
     return new SocialMediaSendFragment();
@@ -47,32 +49,17 @@ public class SocialMediaSendFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     setupSendChirpButton();
-
-    // Subscribe to "send chirp" event
-    mSocialMediaViewModel
-        .getSendNewChirpEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                sendNewChirp();
-              }
-            });
   }
 
   private void setupSendChirpButton() {
-    mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(
-        v -> mSocialMediaViewModel.sendNewChirpEvent());
+    mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
   }
 
   private void sendNewChirp() {
-    // Trying to send a chirp when no LAO has been chosen in the application will not send it and
-    // make a toast appear
+    // Trying to send a chirp when no LAO has been chosen in the application will not send it, will
+    // make a toast appear and will log the error
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
-      Toast.makeText(
-              requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getContext(), TAG, R.string.error_no_lao);
     } else {
       mSocialMediaViewModel.sendChirp(
           mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),

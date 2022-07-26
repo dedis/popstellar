@@ -4,18 +4,14 @@ import android.os.*;
 import android.view.*;
 import android.widget.ListView;
 
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.utility.ActivityUtils;
 
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -55,35 +51,11 @@ public class SocialMediaHomeFragment extends Fragment {
     setupListViewAdapter();
     setupListUpdate();
     setupSwipeRefresh();
-
-    // Subscribe to "open send" event
-    mSocialMediaViewModel
-        .getOpenSendEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaSendFragment();
-              }
-            });
-
-    // Subscribe to "delete chirp" event
-    mSocialMediaViewModel
-        .getDeleteChirpEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            messageIDEvent -> {
-              MessageID chirpId = messageIDEvent.getContentIfNotHandled();
-              if (chirpId != null) {
-                deleteChirp(chirpId);
-              }
-            });
   }
 
   private void setupSendButton() {
     mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v -> mSocialMediaViewModel.openSend());
+        v -> mSocialMediaViewModel.openSend(requireActivity().getSupportFragmentManager()));
   }
 
   private void setupSwipeRefresh() {
@@ -104,10 +76,6 @@ public class SocialMediaHomeFragment extends Fragment {
         });
   }
 
-  private void setupSocialMediaSendFragment() {
-    setCurrentFragment(R.id.fragment_social_media_send, SocialMediaSendFragment::newInstance);
-  }
-
   private void setupListViewAdapter() {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
     mChirpListAdapter =
@@ -122,27 +90,5 @@ public class SocialMediaHomeFragment extends Fragment {
             getViewLifecycleOwner(),
             newLaoId ->
                 mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId)));
-  }
-
-  private void deleteChirp(MessageID chirpId) {
-    mSocialMediaViewModel.deleteChirp(chirpId, Instant.now().getEpochSecond());
-  }
-
-  /**
-   * Set the current fragment in the container of the activity
-   *
-   * @param id of the fragment
-   * @param fragmentSupplier provides the fragment if it is missing
-   */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = requireActivity().getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        requireActivity().getSupportFragmentManager(),
-        fragment,
-        R.id.fragment_container_social_media);
   }
 }

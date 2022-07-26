@@ -270,6 +270,7 @@
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
+  <string name="social_media_title">popstellar - %s</string>
 
   <!--  Content description -->
   <string name="qr_code_description">Open Qr code image</string>
