@@ -68,7 +68,9 @@ public class DigitalCashActivity extends AppCompatActivity {
   }
 
   public void openLao() {
-    LaoDetailActivity.newIntentForLao(this, mViewModel.getCurrentLao().getValue().getId());
+    Intent intent =
+        LaoDetailActivity.newIntentForLao(this, mViewModel.getCurrentLao().getValue().getId());
+    startActivity(intent);
   }
 
   @Override
@@ -79,7 +81,7 @@ public class DigitalCashActivity extends AppCompatActivity {
       if (fragment instanceof DigitalCashHomeFragment) {
         openLao();
       } else {
-        navbar.setSelectedItemId(R.id.digital_cash_home_menu);
+        mViewModel.openHome();
       }
       return true;
     }
