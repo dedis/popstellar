@@ -61,7 +61,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-
   private final MutableLiveData<Integer> currentSelectedItem = new MutableLiveData<>(0);
 
   /* Is used to change the lao Coin amount on the home fragment*/
