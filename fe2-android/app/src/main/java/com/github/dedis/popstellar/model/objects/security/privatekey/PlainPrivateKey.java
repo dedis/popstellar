@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.model.objects.security.privatekey;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 

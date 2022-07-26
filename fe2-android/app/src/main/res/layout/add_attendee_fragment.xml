@@ -13,7 +13,7 @@
     app:layout_constraintBottom_toTopOf="@id/add_attendee_confirm_cancel"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+    app:layout_constraintTop_toTopOf="parent" />
 
   <LinearLayout
     android:id="@+id/add_attendee_number"

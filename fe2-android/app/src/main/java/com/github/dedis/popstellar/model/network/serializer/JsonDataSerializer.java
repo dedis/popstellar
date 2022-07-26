@@ -1,16 +1,7 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.google.gson.*;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -63,5 +54,4 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     return obj;
   }
-
 }

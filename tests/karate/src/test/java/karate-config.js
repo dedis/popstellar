@@ -36,13 +36,14 @@ function fn() {
       const android = {};
       android["desiredConfig"] = {
         "app" : "../../fe2-android/app/build/outputs/apk/debug/app-debug.apk",
-        "newCommandTimeout" : 300,
+        "newCommandTimeout" : 1000,
         "platformVersion" : "9.0",
         "platformName" : "Android",
         "connectHardwareKeyboard" : true,
         "deviceName" : "emulator-5554",
         "avd" : "Pixel_4_API_30",
-        "automationName" : "UiAutomator2"
+        "automationName" : "UiAutomator2",
+        "autoGrantPermissions" : true
       }
       config["android"] = android
     }

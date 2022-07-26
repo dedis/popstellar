@@ -1,9 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static org.junit.Assert.assertEquals;
-
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ServerTest {
 

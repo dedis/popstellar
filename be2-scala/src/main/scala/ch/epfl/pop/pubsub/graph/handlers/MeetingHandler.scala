@@ -13,10 +13,10 @@ case object MeetingHandler extends MessageHandler {
         val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
         Await.result(ask, duration)
       case _ => Right(PipelineError(
-        ErrorCodes.INVALID_DATA.id,
-        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
-        rpcMessage.id
-      ))
+          ErrorCodes.INVALID_DATA.id,
+          s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
+          rpcMessage.id
+        ))
     }
   }
 

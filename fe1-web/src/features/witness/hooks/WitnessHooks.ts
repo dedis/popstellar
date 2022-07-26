@@ -17,17 +17,9 @@ export namespace WitnessHooks {
   };
 
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
+   * A hook returning the current lao id or throws an error of there is none
    */
-  export const useCurrentLaoId = () => {
-    const laoId = useWitnessContext().useCurrentLaoId();
-
-    if (!laoId) {
-      throw new Error('You are currently not connected to a lao!');
-    }
-    return laoId;
-  };
+  export const useAssertCurrentLaoId = () => useWitnessContext().useAssertCurrentLaoId();
 
   /**
    * Gets discard notifications action creator

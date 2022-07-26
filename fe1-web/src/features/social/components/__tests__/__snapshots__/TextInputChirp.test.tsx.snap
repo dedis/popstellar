@@ -45,6 +45,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
           "width": 520,
         }
       }
+      value=""
     />
     <View
       style={
@@ -164,6 +165,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
           "width": 520,
         }
       }
+      value=""
     />
     <View
       style={
@@ -287,6 +289,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
           "width": 520,
         }
       }
+      value=""
     />
     <View
       style={
@@ -412,6 +415,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
           "width": 520,
         }
       }
+      value=""
     />
     <View
       style={

@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.InputObject;
-import com.github.dedis.popstellar.model.objects.OutputObject;
+import com.github.dedis.popstellar.model.objects.*;
 
 import java.util.List;
 

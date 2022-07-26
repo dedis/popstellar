@@ -10,16 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
@@ -80,13 +71,8 @@ public final class Lao {
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
+    // This will throw an exception if name is null or empty
     this(generateLaoId(organizer, creation, name));
-    if (name == null) {
-      throw new IllegalArgumentException("The name of the Lao is null");
-    }
-    if (name.isEmpty()) {
-      throw new IllegalArgumentException("The name of the Lao is empty");
-    }
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
@@ -174,13 +160,10 @@ public final class Lao {
    * @param attendees List<PublicKey> of the roll call attendees
    */
   public void updateTransactionHashMap(List<PublicKey> attendees) {
-    Iterator<PublicKey> iterator = attendees.iterator();
     pubKeyByHash = new HashMap<>();
     pubKeyByHash.put(organizer.computeHash(), organizer);
-    while (iterator.hasNext()) {
-      PublicKey current = iterator.next();
-      pubKeyByHash.put(current.computeHash(), current);
-    }
+    attendees.forEach(publicKey -> pubKeyByHash.put(publicKey.computeHash(), publicKey));
+
     // also update the history and the current transaction per attendees
     // both map have to be set to empty again
     transactionByUser = new HashMap<>();

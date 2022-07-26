@@ -41,7 +41,7 @@ const CreateRollCall = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
-  const laoId = RollCallHooks.useCurrentLaoId();
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(

@@ -53,7 +53,7 @@ object JsonRpcRequestExample {
   final val CREATE_LAO_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoWrongSender, id)
   final val CREATE_LAO_EMPTY_NAME_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateLaoEmptyName, id)
 
-  //for GreetLao testing
+  // for GreetLao testing
   private final val laoChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId"))
   private final val electionChannelGreet: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + Base64Data.encode("election"))
   private final val paramsWithGreetLao: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_GREET_LAO)
@@ -96,7 +96,7 @@ object JsonRpcRequestExample {
   final val OPEN_ROLL_CALL_WRONG_OPENS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCallWrongOpens, id)
   final val OPEN_ROLL_CALL_VALID_OPENS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenRollCallValidOpens, id)
 
-  //for CloseRollCall testing
+  // for CloseRollCall testing
   private final val paramsWithCloseRollCall: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WORKING)
   private final val paramsWithCloseRollCallWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_TIMESTAMP)
   private final val paramsWithCloseRollCallWrongId: ParamsWithMessage = new ParamsWithMessage(rollCallChannel, MESSAGE_CLOSE_ROLL_CALL_WRONG_ID)
@@ -165,7 +165,7 @@ object JsonRpcRequestExample {
   final val SETUP_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithSetupElectionWrongOwner, id)
   final val SETUP_ELECTION_WRONG_QUESTION_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithSetupElectionWrongQuestionId, id)
 
-  //For OpenElection testing
+  // For OpenElection testing
   private final val electionChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + Base64Data.encode("election"))
   private final val paramsWithOpenElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_OPEN_ELECTION_WORKING)
   private final val paramsWithOpenElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_OPEN_ELECTION_WRONG_TIMESTAMP)
@@ -178,7 +178,7 @@ object JsonRpcRequestExample {
   final val OPEN_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenElectionWrongLaoId, id)
   final val OPEN_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithOpenElectionWrongOwner, id)
 
-  //For KeyElection testing
+  // For KeyElection testing
   private final val paramsWithKeyElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WORKING)
   private final val paramsWithKeyElectionWrongElectionId: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WRONG_ELECTION_ID)
   private final val paramsWithKeyElectionWrongOwner: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_KEY_ELECTION_WRONG_OWNER)
@@ -186,7 +186,7 @@ object JsonRpcRequestExample {
   final val KEY_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongElectionId, id)
   final val KEY_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongOwner, id)
 
-  //For CastVoteElection testing
+  // For CastVoteElection testing
   private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ELECTION_ID)
   private final val paramsWithCastVoteElection: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WORKING)
   private final val paramsWithCastVoteElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_TIMESTAMP)
@@ -205,8 +205,7 @@ object JsonRpcRequestExample {
   final val CAST_VOTE_ELECTION_INVALID_BALLOT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionInvalidBallot, id)
   final val CAST_VOTE_ELECTION_INVALID_VOTE_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionInvalidVoteId, id)
 
-
-  //For EndElection testing
+  // For EndElection testing
   private final val paramsWithEndElection: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_END_ELECTION_WORKING)
   private final val paramsWithEndElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_END_ELECTION_WRONG_TIMESTAMP)
   private final val paramsWithEndElectionWrongId: ParamsWithMessage = new ParamsWithMessage(electionChannel, MESSAGE_END_ELECTION_WRONG_ID)
@@ -218,7 +217,7 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
 
-  //for WitnessMessage testing
+  // for WitnessMessage testing
   private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)
   private final val paramsWithWitnessMessageWrongSignature: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_SIGNATURE)
   private final val paramsWithWitnessMessageWrongOwner: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WRONG_OWNER)
@@ -232,8 +231,8 @@ object JsonRpcRequestExample {
   private final val paramsWithCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING)
   private final val paramsWithCreateMeetingWrongChannel: ParamsWithMessage = new ParamsWithMessage(laoChannelMeetingWrong, MESSAGE_CREATE_MEETING_WRONG_CHANNEL)
   private final val paramsWithWrongDataCreateMeeting: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_WRONG_DATA)
-  private final val paramsWithCreateMeetingInvalidCreation: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_CREATION) 
-  private final val paramsWithCreateMeetingInvalidStart: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_START) 
+  private final val paramsWithCreateMeetingInvalidCreation: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_CREATION)
+  private final val paramsWithCreateMeetingInvalidStart: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_START)
   private final val paramsWithCreateMeetingInvalidStartEnd: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_START_BIGGER_THAN_END)
   private final val paramsWithCreateMeetingInvalidEnd: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_CREATE_MEETING_SMALL_END)
   private final val paramsWithStateMeetingValid: ParamsWithMessage = new ParamsWithMessage(laoChannelMeeting, MESSAGE_STATE_MEETING)
@@ -252,7 +251,7 @@ object JsonRpcRequestExample {
   final val CREATE_MEETING_INVALID_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidStart, id)
   final val CREATE_MEETING_INVALID_STARTEND_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidStartEnd, id)
   final val CREATE_MEETING_INVALID_END_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCreateMeetingInvalidEnd, id)
-  final val STATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingValid, id) 
+  final val STATE_MEETING_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingValid, id)
   final val STATE_MEETING_INVALID_DATA_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidData, id)
   final val STATE_MEETING_INVALID_CREATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidCreation, id)
   final val STATE_MEETING_INVALID_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingInvalidStart, id)
@@ -261,7 +260,7 @@ object JsonRpcRequestExample {
   final val STATE_MEETING_BIG_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingBigStart, id)
   final val STATE_MEETING_WRONGWITNESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingWrongWitness, id)
   final val STATE_MEETING_SMALLMODIFICATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallModificationTime, id)
-  
+
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
 }

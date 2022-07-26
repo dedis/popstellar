@@ -1,43 +1,18 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionKey;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
-import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -46,9 +21,7 @@ import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -56,14 +29,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import io.reactivex.Completable;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {

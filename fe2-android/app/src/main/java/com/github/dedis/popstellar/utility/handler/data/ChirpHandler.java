@@ -4,9 +4,7 @@ import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Chirp;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;

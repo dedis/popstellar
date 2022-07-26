@@ -13,10 +13,10 @@ class TransactionSuite extends FunSuite with Matchers {
 
     val strings = {
       def rec(node: Any): List[String] = node match {
-        case s: String => List(s)
+        case s: String        => List(s)
         case data: Base64Data => List(data.toString)
-        case n: Int => List(n.toString)
-        case n: Long => List(n.toString)
+        case n: Int           => List(n.toString)
+        case n: Long          => List(n.toString)
         case node: Product =>
           val elements = node.productElementNames zip node.productIterator to SortedMap
           elements.values.toList.flatMap { rec }

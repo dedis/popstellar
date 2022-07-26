@@ -20,7 +20,7 @@ const onConfirmEventCreation = jest.fn();
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
@@ -42,9 +42,9 @@ describe('EvotingHooks', () => {
     });
   });
 
-  describe('useCurrentLaoId', () => {
+  describe('useAssertCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
+      const { result } = renderHook(() => EvotingHooks.useAssertCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });

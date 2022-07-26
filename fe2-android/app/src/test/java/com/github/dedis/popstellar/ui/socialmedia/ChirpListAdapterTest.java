@@ -1,9 +1,5 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static org.junit.Assert.assertEquals;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -11,24 +7,22 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Chirp;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.security.*;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

@@ -2,21 +2,16 @@ package com.github.dedis.popstellar.model.network.method.message;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Container of a high level message.
@@ -25,7 +20,7 @@ import java.util.List;
  */
 public final class MessageGeneral {
 
-  private final String TAG = MessageGeneral.class.getSimpleName();
+  private static final String TAG = MessageGeneral.class.getSimpleName();
 
   private final PublicKey sender;
   private final Base64URLData dataBuf;
@@ -114,22 +109,23 @@ public final class MessageGeneral {
     }
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "MessageGeneral{"
-        + "sender="
+        + "sender='"
         + getSender()
         + '\''
-        + ", data="
+        + ", data='"
         + getData()
-        + ", signature='"
+        + "', signature='"
         + getSignature()
         + '\''
         + ", messageId='"
         + getMessageId()
         + '\''
-        + ", witnessSignatures="
+        + ", witnessSignatures='"
         + Arrays.toString(witnessSignatures.toArray())
-        + '}';
+        + "'}";
   }
 }

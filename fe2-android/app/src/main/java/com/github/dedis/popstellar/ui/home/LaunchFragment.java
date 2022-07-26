@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,7 +82,6 @@ public final class LaunchFragment extends Fragment {
 
   private void launchLao() {
     mHomeViewModel.launchLao();
-    // mHomeViewModel.openHome();
   }
 
   private void cancelLaoLaunch() {

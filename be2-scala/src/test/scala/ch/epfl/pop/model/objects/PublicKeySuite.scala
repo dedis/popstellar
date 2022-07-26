@@ -6,7 +6,9 @@ import spray.json._
 class PublicKeySuite extends FunSuite with Matchers {
   private val data = {
     val source = scala.io.Source.fromFile("../tests/data/keypair.json")
-    val payload = try source.mkString finally source.close()
+    val payload =
+      try source.mkString
+      finally source.close()
 
     import DefaultJsonProtocol._
     payload.parseJson

@@ -9,66 +9,35 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEncryptedVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.ConsensusNode;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
-import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
-import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -345,9 +314,9 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     Log.d(
-            TAG,
-            "sending a new vote in election : "
-                    + election
+        TAG,
+        "sending a new vote in election : "
+            + election
             + " with election start time"
             + election.getStartTimestamp());
     Lao lao = getCurrentLaoValue();
@@ -365,8 +334,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       } else {
         List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
         vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
-        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
-                .show();
+        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
       }
       Channel electionChannel = election.getChannel();
       Log.d(TAG, PUBLISH_MESSAGE);
@@ -391,11 +359,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-
   /**
    * Creates new Election event.
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
+   *
    * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
@@ -426,9 +394,17 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Channel channel = lao.getChannel();
     ElectionSetup electionSetup =
-            new ElectionSetup(
-                    writeIn, name, creation, start, end, votingMethod, lao.getId(), ballotOptions, question, electionVersion
-            );
+        new ElectionSetup(
+            writeIn,
+            name,
+            creation,
+            start,
+            end,
+            votingMethod,
+            lao.getId(),
+            ballotOptions,
+            question,
+            electionVersion);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =

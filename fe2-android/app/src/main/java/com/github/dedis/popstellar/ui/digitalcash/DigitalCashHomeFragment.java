@@ -1,11 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
-import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
-
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +17,8 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.List;
+
+import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHomeFragment#newInstance} factory

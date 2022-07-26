@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import util.examples.data.{TestKeyPairs, KeyPairWithHash}
 import spray.json._
 
-
 object WitnessMessageExamples {
 
   val keyPair: KeyPairWithHash = TestKeyPairs.keypairs(1)

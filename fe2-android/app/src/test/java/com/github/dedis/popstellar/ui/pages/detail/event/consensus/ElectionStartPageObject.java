@@ -1,17 +1,17 @@
 package com.github.dedis.popstellar.ui.pages.detail.event.consensus;
 
+import androidx.test.espresso.DataInteraction;
+import androidx.test.espresso.ViewInteraction;
+
+import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-
-import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.ViewInteraction;
-
-import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.ConsensusNode;
 
 public class ElectionStartPageObject {
 

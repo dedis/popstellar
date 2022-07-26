@@ -2,21 +2,12 @@ package com.github.dedis.popstellar.utility.handler.data;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.InputObject;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.OutputObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObjectBuilder;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TransactionCoinHandler {
   public static final String TAG = TransactionCoinHandler.class.getSimpleName();

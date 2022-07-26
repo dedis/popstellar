@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +11,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
@@ -254,21 +254,43 @@ public class DigitalCashActivity extends AppCompatActivity {
 
   public void setupFragment(int id) {
     if (id == R.id.fragment_digital_cash_home) {
-      setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
+      setCurrentFragment(
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_home,
+          DigitalCashHomeFragment::newInstance);
     } else if (id == R.id.fragment_digital_cash_history) {
       setCurrentFragment(
-          R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_history,
+          DigitalCashHistoryFragment::newInstance);
     } else if (id == R.id.fragment_digital_cash_send) {
-      setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
+      setCurrentFragment(
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_send,
+          DigitalCashSendFragment::newInstance);
     } else if (id == R.id.fragment_digital_cash_receive) {
       setCurrentFragment(
-          R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_receive,
+          DigitalCashReceiveFragment::newInstance);
     } else if (id == R.id.fragment_digital_cash_issue) {
-      setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+      setCurrentFragment(
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_issue,
+          DigitalCashIssueFragment::newInstance);
     } else if (id == R.id.fragment_digital_cash_receipt) {
       setCurrentFragment(
-          R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
+          getSupportFragmentManager(),
+          R.id.fragment_digital_cash_receipt,
+          DigitalCashReceiptFragment::newInstance);
     }
+  }
+
+  public static Intent newIntent(Context ctx, String laoId, String laoName) {
+    Intent intent = new Intent(ctx, DigitalCashActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.LAO_NAME, laoName);
+    return intent;
   }
 
   /**
@@ -277,13 +299,9 @@ public class DigitalCashActivity extends AppCompatActivity {
    * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_digital_cash);
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    ActivityUtils.setFragmentInContainer(
+        manager, R.id.fragment_container_digital_cash, id, fragmentSupplier);
   }
 }

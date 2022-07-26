@@ -12,17 +12,14 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
-/**
- * Helper object to generate test data
- */
+/** Helper object to generate test data
+  */
 object HighLevelMessageGenerator {
 
   private val EMPTY_BASE_64 = Base64Data.encode("")
 
-  /**
-   * Helper class used to build Mid level protocol Messages
-   *
-   */
+  /** Helper class used to build Mid level protocol Messages
+    */
   sealed class MessageBuilder {
     /* Builder params */
     private var data: Base64Data = EMPTY_BASE_64
@@ -60,18 +57,22 @@ object HighLevelMessageGenerator {
     }
   }
 
-  /**
-   * Helper class used to build High Level Messages with decoded and parsed data
-   *
-   * @param message mid-level message builder
-   */
+  /** Helper class used to build High Level Messages with decoded and parsed data
+    *
+    * @param message
+    *   mid-level message builder
+    */
   sealed class HLMessageBuilder(var message: MessageBuilder) {
-    /** * Builder params ***/
+
+    /** * Builder params **
+      */
     private var id = Some(1)
     private var payload: String = ""
     private var methodType: MethodType.MethodType = _
     private var paramsChannel: Channel = Channel.ROOT_CHANNEL
-    /** ********************/
+
+    /** *******************
+      */
     private var messageData: MessageData = _
     private var params: ParamsWithMessage = _
 
@@ -95,20 +96,22 @@ object HighLevelMessageGenerator {
       this
     }
 
-    /**
-     * This method must not be called before the payload and methodType are set
-     *
-     * @param objType    conversion object type
-     * @param actionType conversion action type
-     * @return Typed High level JsonRpcRequest with decoded and parsed data (MessageData)
-     */
-    //TODO : implement other object types and actions
+    /** This method must not be called before the payload and methodType are set
+      *
+      * @param objType
+      *   conversion object type
+      * @param actionType
+      *   conversion action type
+      * @return
+      *   Typed High level JsonRpcRequest with decoded and parsed data (MessageData)
+      */
+    // TODO : implement other object types and actions
     def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
 
       assume(payload.trim.nonEmpty && methodType != null)
 
       (objType, actionType) match {
-        //Roll Calls
+        // Roll Calls
         case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
           messageData = CreateRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
@@ -124,7 +127,7 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        //Social Media
+        // Social Media
         case (ObjectType.REACTION, ActionType.ADD) =>
           messageData = AddReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
@@ -145,7 +148,7 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        //Election
+        // Election
         case (ObjectType.ELECTION, ActionType.SETUP) =>
           messageData = SetupElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
@@ -171,13 +174,13 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        //Witness
+        // Witness
         case (ObjectType.MESSAGE, ActionType.WITNESS) =>
           messageData = WitnessMessage.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        //Digital cash
+        // Digital cash
         case (ObjectType.COIN, ActionType.POST_TRANSACTION) =>
           messageData = PostTransaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)

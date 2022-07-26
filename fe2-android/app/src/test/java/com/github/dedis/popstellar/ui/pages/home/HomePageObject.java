@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.ui.pages.home;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
  * Page object of {@Link HomeActivity}
@@ -39,7 +39,7 @@ public class HomePageObject {
     return onView(withId(R.id.home_social_media_menu));
   }
 
-  public static ViewInteraction navBar(){
+  public static ViewInteraction navBar() {
     return onView(withId(R.id.home_nav_bar));
   }
 

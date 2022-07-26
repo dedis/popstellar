@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.utility.error;
 
 import com.github.dedis.popstellar.R;
 
-public class NoLAOException extends GenericException{
+public class NoLAOException extends GenericException {
 
   @Override
   public int getUserMessage() {

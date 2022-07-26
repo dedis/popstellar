@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 import util.examples.Election.SetupElectionExamples.ELECTION_ID
 
-
 object CastVoteElectionExamples {
 
   final val SENDER: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION
@@ -22,14 +21,12 @@ object CastVoteElectionExamples {
   final val VOTE_ID = Hash.fromStrings("Vote", ID.toString, QUESTION_ID.toString, VOTE.get.head.toString)
   final val VOTES: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(Left(1)), None))
 
-
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
   val invalidVotes: List[VoteElection] = List(VoteElection(VOTE_ID, invalidId, Some(Left(1)), None))
   val invalidBallot: List[VoteElection] = List(VoteElection(VOTE_ID, QUESTION_ID, Some(Left(2)), None))
-  val invalidVoteId:  List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(Left(1)), None))
-
+  val invalidVoteId: List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(Left(1)), None))
 
   val workingCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, VOTES)
   val DATA_CAST_VOTE_MESSAGE: Hash = Hash(Base64Data.encode(workingCastVoteElection.toJson.toString))

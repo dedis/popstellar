@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
@@ -21,7 +19,8 @@ public class CastVote<E> extends Data {
   private final String electionId; // Id of the election
 
   // Votes, either votes is null or encrypted votes is null depending on the value of the election
-  // Type must be specified upon creation of the cast vote (either ElectionVote or ElectionEncryptedVote)
+  // Type must be specified upon creation of the cast vote (either ElectionVote or
+  // ElectionEncryptedVote)
   @SerializedName(value = "votes")
   private final List<E> votes;
 
@@ -118,5 +117,4 @@ public class CastVote<E> extends Data {
         + Arrays.toString(votes.toArray())
         + '}';
   }
-
 }

@@ -5,7 +5,6 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
 
-
 object CreateLaoExamples {
 
   def getJsonRequestFromMessage(msg: Message): JsonRpcRequest = {
@@ -71,9 +70,6 @@ object CreateLaoExamples {
     witness_signatures = witnessSigs
   )
 
-  final lazy val allCreateReq: LazyList[Message] = LazyList(createLao, laoCreateIdInvalid,
-    laoCreateAdditionalParam,
-    laoCreateMissingParams,
-    laoCreateOrgNot64)
+  final lazy val allCreateReq: LazyList[Message] = LazyList(createLao, laoCreateIdInvalid, laoCreateAdditionalParam, laoCreateMissingParams, laoCreateOrgNot64)
 
 }

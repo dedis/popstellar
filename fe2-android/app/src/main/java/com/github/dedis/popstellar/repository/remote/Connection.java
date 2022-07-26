@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.repository.remote;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
-import com.tinder.scarlet.Lifecycle;
-import com.tinder.scarlet.ShutdownReason;
-import com.tinder.scarlet.WebSocket;
+import com.tinder.scarlet.*;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;

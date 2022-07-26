@@ -13,12 +13,10 @@ import util.examples.data.{AddChirpMessages, AddReactionMessages, DeleteChirpMes
 
 import scala.concurrent.duration.FiniteDuration
 
-
 class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
-
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -69,8 +67,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
             system.log.info("Responding with a Ack")
 
             sender() ! DbActor.DbActorAck()
-          }
-          else {
+          } else {
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a NAck")
 

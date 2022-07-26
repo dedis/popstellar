@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.ui.qrcode;
 
 import android.util.SparseArray;
 
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.FocusingProcessor;
-import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.*;
 import com.google.android.gms.vision.barcode.Barcode;
 
 /**

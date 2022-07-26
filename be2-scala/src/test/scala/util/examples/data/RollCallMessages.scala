@@ -6,11 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.RollCallMessagesTrait
 
-/**
- * Generates high level RollCall Messages from protocol folder
- * For content validation: all the params are required
- * For handling: id, message with decoded data, channel are required
- */
+/** Generates high level RollCall Messages from protocol folder For content validation: all the params are required For handling: id, message with decoded data, channel are required
+  */
 object CreateRollCallMessages extends RollCallMessagesTrait {
 
   override val action: ActionType = ActionType.CREATE
@@ -18,9 +15,8 @@ object CreateRollCallMessages extends RollCallMessagesTrait {
 
   final val createRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_create.json")()
 
-  //TODO: Generate other Create RollCall messages
+  // TODO: Generate other Create RollCall messages
 }
-
 
 object OpenRollCallMessages extends RollCallMessagesTrait {
 
@@ -30,7 +26,7 @@ object OpenRollCallMessages extends RollCallMessagesTrait {
 
   final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_open.json")()
 
-  //TODO: Generate other Open RollCall messages
+  // TODO: Generate other Open RollCall messages
 }
 
 object CloseRollCallMessages extends RollCallMessagesTrait {
@@ -41,7 +37,7 @@ object CloseRollCallMessages extends RollCallMessagesTrait {
 
   final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_close.json")()
 
-  //TODO: Generate other Close RollCall messages
+  // TODO: Generate other Close RollCall messages
 }
 
 object ReopenRollCallMessages extends RollCallMessagesTrait {
@@ -52,9 +48,9 @@ object ReopenRollCallMessages extends RollCallMessagesTrait {
 
   final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("reopen_call_close.json")()
 
-  //TODO: Generate other Close RollCall messages
+  // TODO: Generate other Close RollCall messages
 }
 
 object RollCallCustomBuilders {
-  //TODO: Add here custom highlevel message builders to forge data
+  // TODO: Add here custom highlevel message builders to forge data
 }

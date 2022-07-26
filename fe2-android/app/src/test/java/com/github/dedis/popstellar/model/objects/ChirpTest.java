@@ -1,14 +1,14 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import org.junit.Test;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ChirpTest {
   private static final MessageID ID = generateMessageID();

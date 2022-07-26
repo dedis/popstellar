@@ -6,7 +6,6 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia.DeleteReaction
 import ch.epfl.pop.model.objects._
 import spray.json._
 
-
 object DeleteReactionExamples {
 
   final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)

@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.util.TypedValue;
 import android.view.View;
 

@@ -13,12 +13,11 @@ final case class ElectionData(electionId: Hash, keyPair: KeyPair) {
 
 object ElectionData extends Parsable {
   def apply(
-             id: Hash
-           ): ElectionData =
+      id: Hash
+  ): ElectionData =
     ElectionData(id, KeyPair())
 
   override def buildFromJson(payload: String): ElectionData = payload.parseJson.asJsObject.convertTo[ElectionData]
 
   def getName: String = "electionData"
 }
-

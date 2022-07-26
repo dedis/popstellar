@@ -12,7 +12,6 @@ import ch.epfl.pop.storage.DbActor
 import scala.concurrent._
 import scala.util.{Failure, Success}
 
-
 case object LaoValidator extends MessageDataContentValidator {
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateLao", rpcMessage.id)
@@ -115,7 +114,9 @@ case object LaoValidator extends MessageDataContentValidator {
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash
             val expectedHash: Hash = Hash.fromStrings(
-              retrievedMessage.sender.toString, laoCreationMessage.creation.toString, laoCreationMessage.name
+              retrievedMessage.sender.toString,
+              laoCreationMessage.creation.toString,
+              laoCreationMessage.name
             )
 
             if (!validateTimestampStaleness(data.last_modified)) {
@@ -130,7 +131,7 @@ case object LaoValidator extends MessageDataContentValidator {
               Left(rpcMessage)
             }
           case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+          case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))

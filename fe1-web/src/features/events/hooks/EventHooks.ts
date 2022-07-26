@@ -15,9 +15,9 @@ export namespace EventHooks {
   };
 
   /**
-   * Gets the current lao id
+   * Gets the current lao id or throws an error of there is none
    */
-  export const useCurrentLaoId = () => useEventsContext().useCurrentLaoId();
+  export const useAssertCurrentLaoId = () => useEventsContext().useAssertCurrentLaoId();
 
   /**
    * Gets whether the current user is organizer of the current lao

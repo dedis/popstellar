@@ -3,13 +3,7 @@ package com.github.dedis.popstellar.model.network.serializer;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;

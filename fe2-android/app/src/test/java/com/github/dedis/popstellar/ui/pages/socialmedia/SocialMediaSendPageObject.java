@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.ui.pages.socialmedia;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import androidx.annotation.StringRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
  * This is the page object of SocialMediaSendFragment

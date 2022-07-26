@@ -3,9 +3,7 @@ package com.github.dedis.popstellar.ui.detail;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -22,9 +20,7 @@ import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
-import com.github.dedis.popstellar.ui.detail.event.EventListDivider;
-import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.event.*;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 

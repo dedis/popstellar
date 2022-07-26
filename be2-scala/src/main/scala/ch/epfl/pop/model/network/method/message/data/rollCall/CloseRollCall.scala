@@ -9,27 +9,24 @@ import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 import spray.json._
 
 final case class CloseRollCall(
-                                update_id: Hash,
-                                closes: Hash,
-                                closed_at: Timestamp,
-                                attendees: List[PublicKey]
-                              ) extends MessageData {
+    update_id: Hash,
+    closes: Hash,
+    closed_at: Timestamp,
+    attendees: List[PublicKey]
+) extends MessageData {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.CLOSE
 }
 
 object CloseRollCall extends Parsable {
   def apply(
-             update_id: Hash,
-             closes: Hash,
-             closed_at: Timestamp,
-             attendees: List[PublicKey]
-           ): CloseRollCall = {
+      update_id: Hash,
+      closes: Hash,
+      closed_at: Timestamp,
+      attendees: List[PublicKey]
+  ): CloseRollCall = {
     new CloseRollCall(update_id, closes, closed_at, attendees)
   }
 
   override def buildFromJson(payload: String): CloseRollCall = payload.parseJson.asJsObject.convertTo[CloseRollCall]
 }
-
-
-

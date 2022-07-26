@@ -1,21 +1,8 @@
 package com.github.dedis.popstellar.repository.local.dao;
 
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Transaction;
-import androidx.room.Update;
+import androidx.room.*;
 
-import com.github.dedis.popstellar.repository.local.entities.Channel;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
-import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRefEntity;
-import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
-import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
-import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+import com.github.dedis.popstellar.repository.local.entities.*;
 
 import java.util.List;
 import java.util.stream.Collectors;

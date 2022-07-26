@@ -6,10 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.data.traits.ElectionMessagesTrait
 
-/**
- * Generates high level Election Messages from protocol folder
- * For content validation: all the params are required
- */
+/** Generates high level Election Messages from protocol folder For content validation: all the params are required
+  */
 object SetupElectionMessages extends ElectionMessagesTrait {
 
   override val action: ActionType = ActionType.SETUP
@@ -19,9 +17,8 @@ object SetupElectionMessages extends ElectionMessagesTrait {
 
   final val setupElectionSecretBallot: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup_secret_ballot.json")()
 
-  //TODO: Generate other Set Up Election messages
+  // TODO: Generate other Set Up Election messages
 }
-
 
 object OpenElectionMessages extends ElectionMessagesTrait {
 
@@ -31,7 +28,7 @@ object OpenElectionMessages extends ElectionMessagesTrait {
 
   final val openElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_open/election_open.json")()
 
-  //TODO: Generate other Open Election messages
+  // TODO: Generate other Open Election messages
 }
 
 object KeyElectionMessages extends ElectionMessagesTrait {
@@ -44,8 +41,6 @@ object KeyElectionMessages extends ElectionMessagesTrait {
 
 }
 
-
-
 object CastVoteElectionMessages extends ElectionMessagesTrait {
 
   override val action: ActionType = ActionType.CAST_VOTE
@@ -54,7 +49,7 @@ object CastVoteElectionMessages extends ElectionMessagesTrait {
 
   final val castVoteElection: JsonRpcRequest = getJsonRPCRequestFromFile("vote_cast_vote/vote_cast_vote.json")()
 
-  //TODO: Generate other CastVote Election messages
+  // TODO: Generate other CastVote Election messages
 }
 
 object EndElectionMessages extends ElectionMessagesTrait {
@@ -65,5 +60,5 @@ object EndElectionMessages extends ElectionMessagesTrait {
 
   final val endElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_end/election_end.json")()
 
-  //TODO: Generate other Open Election messages
+  // TODO: Generate other Open Election messages
 }

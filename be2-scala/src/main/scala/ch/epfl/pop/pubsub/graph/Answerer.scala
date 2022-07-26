@@ -15,23 +15,27 @@ object Answerer {
   private val CLIENT_BUFFER_SIZE: Int = 256
 
   private def errorResponseString(code: Int, reason: String, rpcId: Option[Int]): String = JsonRpcResponse(
-    RpcValidator.JSON_RPC_VERSION, None, Some(ErrorObject(code, reason)), rpcId
+    RpcValidator.JSON_RPC_VERSION,
+    None,
+    Some(ErrorObject(code, reason)),
+    rpcId
   ).toJson.toString
 
-  /**
-   * Send an answer back to the client (associated to clientActorRef from the answerer)
-   *
-   * @param graphMessage terminal pipeline message
-   * @return the message sent
-   */
+  /** Send an answer back to the client (associated to clientActorRef from the answerer)
+    *
+    * @param graphMessage
+    *   terminal pipeline message
+    * @return
+    *   the message sent
+    */
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
     // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
-    case Left(rpcAnswer: JsonRpcResponse) => TextMessage.Strict(rpcAnswer.toJson.toString)
-    case Left(rpcRequest: JsonRpcRequest) => TextMessage.Strict(rpcRequest.toJson.toString) // propagate server
+    case Left(rpcAnswer: JsonRpcResponse)    => TextMessage.Strict(rpcAnswer.toJson.toString)
+    case Left(rpcRequest: JsonRpcRequest)    => TextMessage.Strict(rpcRequest.toJson.toString) // propagate server
     case Right(pipelineError: PipelineError) =>
       // Convert AnswerGenerator's PipelineErrors into negative JsonRpcResponses and send them back to the client
       TextMessage.Strict(errorResponseString(pipelineError.code, pipelineError.description, pipelineError.rpcId))
-    case m@_ =>
+    case m @ _ =>
       println(s"An unknown error occurred in Answerer.sendAnswer, unexpected input: $m")
       TextMessage.Strict(errorResponseString(ErrorCodes.SERVER_ERROR.id, "Unknown internal server state", None))
   }
@@ -45,7 +49,13 @@ object Answerer {
       // Send the ClientAnswer to clientActorRef. Whenever the stream between the client
       // actor and the actual client (front-end) is broken, the message DisconnectWsHandle
       // is sent to clientActorRef
-      .to(Sink.actorRef(clientActorRef, DisconnectWsHandle, { t: Throwable => println(t); DisconnectWsHandle }))
+      .to(Sink.actorRef(
+        clientActorRef,
+        DisconnectWsHandle,
+        { t: Throwable =>
+          println(t); DisconnectWsHandle
+        }
+      ))
 
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source
@@ -53,8 +63,8 @@ object Answerer {
       .actorRef(
         {
           case akka.actor.Status.Success(s: CompletionStrategy) => s
-          case akka.actor.Status.Success(_) => CompletionStrategy.draining
-          case akka.actor.Status.Success => CompletionStrategy.draining
+          case akka.actor.Status.Success(_)                     => CompletionStrategy.draining
+          case akka.actor.Status.Success                        => CompletionStrategy.draining
         },
         {
           case akka.actor.Status.Failure(cause) => cause

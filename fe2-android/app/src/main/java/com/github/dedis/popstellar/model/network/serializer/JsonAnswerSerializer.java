@@ -1,15 +1,8 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.Result;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.github.dedis.popstellar.model.network.answer.*;
+import com.google.gson.*;
 
 import java.lang.reflect.Type;
 

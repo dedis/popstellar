@@ -9,18 +9,18 @@ import ch.epfl.pop.model.objects.{Hash, Signature}
 import spray.json._
 
 final case class WitnessMessage(
-                                 message_id: Hash,
-                                 signature: Signature,
-                               ) extends MessageData {
+    message_id: Hash,
+    signature: Signature
+) extends MessageData {
   override val _object: ObjectType = ObjectType.MESSAGE
   override val action: ActionType = ActionType.WITNESS
 }
 
 object WitnessMessage extends Parsable {
   def apply(
-             message_id: Hash,
-             signature: Signature,
-           ): WitnessMessage = {
+      message_id: Hash,
+      signature: Signature
+  ): WitnessMessage = {
     new WitnessMessage(message_id, signature)
   }
 

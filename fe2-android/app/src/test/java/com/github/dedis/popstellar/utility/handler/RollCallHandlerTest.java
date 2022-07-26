@@ -1,45 +1,23 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.closeRollCallWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.createRollCallWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.openRollCallWitnessMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -47,11 +25,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 import io.reactivex.Completable;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RollCallHandlerTest {
@@ -85,7 +70,8 @@ public class RollCallHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepository = new LAORepository();
-    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    messageHandler =
+        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
     // Create one LAO
     Lao lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());

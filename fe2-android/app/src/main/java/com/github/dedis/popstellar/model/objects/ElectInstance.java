@@ -2,17 +2,12 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class holding information of a ConsensusElect message and its current states including the

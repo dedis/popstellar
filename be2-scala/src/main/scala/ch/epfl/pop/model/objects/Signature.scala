@@ -10,7 +10,7 @@ final case class Signature(signature: Base64Data) {
 
     Try(ed.verify(this.signature.decode(), message.decode())) match {
       case Success(_) => true
-      case _ => false
+      case _          => false
     }
   }
 

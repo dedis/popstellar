@@ -18,10 +18,10 @@ case object CoinHandler extends MessageHandler {
         Left(rpcMessage)
 
       case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle coin message $rpcMessage. Not a post message",
-        rpcMessage.id
-      ))
+          ErrorCodes.SERVER_ERROR.id,
+          s"Unable to handle coin message $rpcMessage. Not a post message",
+          rpcMessage.id
+        ))
     }
   }
 }

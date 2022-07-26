@@ -15,17 +15,17 @@ import scala.util.{Failure, Success}
 
 trait MessageHandler extends AskPatternConstants {
 
-  /**
-   * May be overridden by the reference of the used DbActor
-   */
+  /** May be overridden by the reference of the used DbActor
+    */
   def dbActor: AskableActorRef = DbActor.getInstance
 
-  /**
-   * Asks the database to store the message contained in <rpcMessage> (or the provided message)
-   *
-   * @param rpcRequest request containing the message
-   * @return the database answer wrapped in a [[scala.concurrent.Future]]
-   */
+  /** Asks the database to store the message contained in <rpcMessage> (or the provided message)
+    *
+    * @param rpcRequest
+    *   request containing the message
+    * @return
+    *   the database answer wrapped in a [[scala.concurrent.Future]]
+    */
   def dbAskWrite(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     val m: Message = rpcRequest.getParamsMessage.getOrElse(
       return Future {
@@ -36,17 +36,17 @@ trait MessageHandler extends AskPatternConstants {
     val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
     askWrite.transformWith {
       case Success(_) => Future(Left(rpcRequest))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
     }
   }
 
-  /**
-   * Asks the database to store the message contained in <rpcMessage> (or the provided message) as well as
-   * propagate its content to clients subscribed to the rpcMessage's channel
-   *
-   * @param rpcRequest request containing the message
-   * @return the database answer wrapped in a [[scala.concurrent.Future]]
-   */
+  /** Asks the database to store the message contained in <rpcMessage> (or the provided message) as well as propagate its content to clients subscribed to the rpcMessage's channel
+    *
+    * @param rpcRequest
+    *   request containing the message
+    * @return
+    *   the database answer wrapped in a [[scala.concurrent.Future]]
+    */
   def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     val m: Message = rpcRequest.getParamsMessage.getOrElse(
       return Future {
@@ -57,19 +57,23 @@ trait MessageHandler extends AskPatternConstants {
     val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
     askWritePropagate.transformWith {
       case Success(_) => Future(Left(rpcRequest))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
     }
   }
 
-  /**
-   * Helper function for broadcasting messages to subscribers
-   *
-   * @param rpcMessage       : message for which we want to generate the broadcast
-   * @param channel          : the Channel in which we read the data
-   * @param broadcastData    : the message data we broadcast converted to Base64Data
-   * @param broadcastChannel : the Channel in which we broadcast
-   * @return the database answer wrapped in a [[scala.concurrent.Future]]
-   */
+  /** Helper function for broadcasting messages to subscribers
+    *
+    * @param rpcMessage
+    *   : message for which we want to generate the broadcast
+    * @param channel
+    *   : the Channel in which we read the data
+    * @param broadcastData
+    *   : the message data we broadcast converted to Base64Data
+    * @param broadcastChannel
+    *   : the Channel in which we broadcast
+    * @return
+    *   the database answer wrapped in a [[scala.concurrent.Future]]
+    */
   def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
@@ -87,7 +91,7 @@ trait MessageHandler extends AskPatternConstants {
 
     combined.transformWith {
       case Success(_) => Future(Left(rpcMessage))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
     }
   }
 }

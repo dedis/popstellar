@@ -1,13 +1,12 @@
 package com.github.dedis.popstellar.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.objects.Server;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ServerRepositoryTest {
 
@@ -22,7 +21,7 @@ public class ServerRepositoryTest {
   public static Server SERVER_2 = new Server(ADDRESS_2, KEY_2);
 
   @Before
-  public void setUp(){
+  public void setUp() {
     serverRepository.addServer(LAO_1, SERVER_1);
     serverRepository.addServer(LAO_2, SERVER_2);
   }

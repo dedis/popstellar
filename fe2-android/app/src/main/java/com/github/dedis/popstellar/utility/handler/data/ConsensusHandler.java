@@ -3,22 +3,15 @@ package com.github.dedis.popstellar.utility.handler.data;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public final class ConsensusHandler {
 

@@ -7845,7 +7845,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_0_ballots_option_0_checkbox"
                                     >
                                       <View
                                         style={
@@ -8038,7 +8038,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_0_ballots_option_1_checkbox"
                                     >
                                       <View
                                         style={
@@ -8422,7 +8422,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_1_ballots_option_0_checkbox"
                                     >
                                       <View
                                         style={
@@ -8615,7 +8615,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_1_ballots_option_1_checkbox"
                                     >
                                       <View
                                         style={
@@ -8767,6 +8767,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 "marginBottom": 16,
                               }
                             }
+                            testID="election_vote_selector"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -14189,7 +14190,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_0_ballots_option_0_checkbox"
                                     >
                                       <View
                                         style={
@@ -14361,7 +14362,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_0_ballots_option_1_checkbox"
                                     >
                                       <View
                                         style={
@@ -14724,7 +14725,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_1_ballots_option_0_checkbox"
                                     >
                                       <View
                                         style={
@@ -14896,7 +14897,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           "padding": 0,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="questions_1_ballots_option_1_checkbox"
                                     >
                                       <View
                                         style={
@@ -15027,6 +15028,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            testID="election_vote_selector"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}

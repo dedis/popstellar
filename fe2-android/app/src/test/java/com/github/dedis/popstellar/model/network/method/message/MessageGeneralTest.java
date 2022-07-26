@@ -1,18 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
 import com.google.gson.Gson;
 
@@ -22,15 +15,18 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class MessageGeneralTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private static final PublicKey ORGANIZER = new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
+  private static final PublicKey ORGANIZER =
+      new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
   private static final long LAO_CREATION = 1623825071;
   private static final String LAO_NAME = "LAO";
 
@@ -124,5 +120,19 @@ public class MessageGeneralTest {
             WITNESS_SIGNATURES);
 
     assertThat(msg.verify(), is(false));
+  }
+
+  @Test
+  public void toStringTest() {
+    MessageGeneral msg =
+        new MessageGeneral(
+            KEY_PAIR.getPublicKey(), DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+    System.out.println(msg);
+    String expected =
+        String.format(
+            "MessageGeneral{sender='%s', data='%s', signature='%s', messageId='%s', "
+                + "witnessSignatures='%s'}",
+            KEY_PAIR.getPublicKey().toString(), DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+    assertEquals(expected, msg.toString());
   }
 }

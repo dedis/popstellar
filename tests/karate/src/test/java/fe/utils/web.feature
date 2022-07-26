@@ -1,8 +1,8 @@
 Feature: web test
 
   Background: App Preset
-    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
-    * configure driver = { type: 'chrome' }
+    * configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
+    #* configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
     # ================= Page Object Start ====================
@@ -20,6 +20,7 @@ Feature: web test
     * def tab_launch_create_lao_selector = "[data-testid='launch_launch_selector']"
 
     # Lao Event List
+    * def past_header_selector = '{^}Past'
     * def add_event_selector = "[data-testid='create_event_selector']"
     * def tab_events_selector = '{}Events'
     * def roll_call_title_selector = "input[data-testid='roll_call_name_selector']"
@@ -29,6 +30,25 @@ Feature: web test
 
     # Roll Call Screen
     * def roll_call_option_selector = "[data-testid='roll_call_options']"
+    * def roll_call_stop_scanning_selector = "[data-testid='roll_call_open_stop_scanning']"
+    * def roll_call_manual_selector = "[data-testid='roll_call_open_add_manually']"
+    * def manual_add_description_selector = '{^}Enter token:'
+    * def manual_add_confirm_selector = '{}Add'
+    * def manual_add_done_selector = '{}Done'
+
+    # Election
+    * def election_name_selector = "[data-testid='election_name_selector']"
+    * def election_question_selector = "[data-testid='question_selector_0']"
+    * def election_ballot_selector_1 = "[data-testid='question_0_ballots_option_0_input']"
+    * def election_ballot_selector_2 = "[data-testid='question_0_ballots_option_1_input']"
+    * def election_confirm_selector = "[data-testid='election_confirm_selector']"
+    * def election_event_selector =   "[data-testid='current_event_selector_0']"
+    * def election_option_selector = "[data-testid='election_option_selector']"
+    * def election_opened_option_selector = "[data-testid='election_opened_option_selector']"
+
+    # Cast vote screen
+    * def cast_vote_button_selector = "[data-testid='election_vote_selector']"
+    * def cast_vote_ballot_selector_2 = "[data-testid='questions_0_ballots_option_1_checkbox']"
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
@@ -58,7 +78,7 @@ Feature: web test
 
     * click(exploring_selector)
     # Click on the connect navigation item
-    * click(tab_connect_selector)
+    * retry(5,1000).click(tab_connect_selector)
     # Click on launch button
     * click(launch_selector)
     # Connect to the backend
@@ -66,7 +86,7 @@ Feature: web test
 
   # Roll call create web procedure
   @name=create_roll_call
-  Scenario: Create a roll call for an already created LAO
+  Scenario: Creates a roll call for an already created LAO
     Given retry(10, 200).click(tab_events_selector)
     And click(add_event_selector)
 
@@ -83,7 +103,7 @@ Feature: web test
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
 
     # Provide roll call required information
-    And input(roll_call_title_selector, constants.RC_NAME)
+    And retry(5, 1000).input(roll_call_title_selector, constants.RC_NAME)
     And input(roll_call_location_selector, 'EPFL')
 
   # Roll call open web procedure
@@ -93,3 +113,92 @@ Feature: web test
     * retry(5,1000).click(roll_call_option_selector)
     * backend.clearBuffer()
     * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 500)")
+
+  @name=close_roll_call
+  Scenario: Closes a roll call with only the organizer attending
+    * wait(1)
+    * retry(5,1000).click(roll_call_option_selector)
+    # We need to start scanning for the organizer token to be added
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Scan Attendees\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * retry(5,1000).click(roll_call_stop_scanning_selector)
+    * backend.clearBuffer()
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 900)")
+    # needed to work
+    * wait(2)
+
+  @name=close_roll_call_w_attendees
+  Scenario: Closes a roll call with 2 attendees and the organizer
+    * wait(1)
+    * retry(5,1000).click(roll_call_option_selector)
+    # We need to start scanning for the organizer token to be added
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Scan Attendees\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * retry(5,1000).click(roll_call_manual_selector)
+
+    # Add attendees
+    * below(manual_add_description_selector).input(token1)
+    * click(manual_add_confirm_selector)
+    * below(manual_add_description_selector).clear()
+    * below(manual_add_description_selector).input(token2)
+    * click(manual_add_confirm_selector)
+    * click(manual_add_done_selector)
+    * retry(5,1000).click(roll_call_stop_scanning_selector)
+    * backend.clearBuffer()
+    * click(roll_call_option_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Close Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    # needed to work
+    * wait(2)
+
+  @name=reopen_roll_call
+  Scenario: Reopen a closed roll call
+    * click(past_header_selector)
+    * retry(5,1000).click(event_name_selector)
+    * wait(1)
+    * click(roll_call_option_selector)
+    * backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Re-open Roll-Call\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(2)
+
+  # Election setup web procedure
+  @name=setup_election
+  Scenario: Create election with 1 question and 2 ballots
+    And click(add_event_selector)
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Create Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(1)
+    * retry(5, 1000).input(election_name_selector, constants.ELECTION_NAME)
+    * input(election_question_selector, constants.QUESTION_CONTENT)
+    * input(election_ballot_selector_1, constants.BALLOT_1)
+    * input(election_ballot_selector_2, constants.BALLOT_2)
+    * backend.clearBuffer()
+    * click(election_confirm_selector)
+
+  # Election open web procedure
+  @name=open_election
+  Scenario: Open election
+    * retry(5,1000).click(election_event_selector)
+    * retry(5,1000).click(election_option_selector)
+    * backend.clearBuffer()
+    * script("setTimeout(() => document.evaluate('//div[text()=\\'Open Election\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * wait(2)
+
+  # Election cast vote web procedure
+  @name=cast_vote
+  Scenario: Cast a vote for the second ballot
+  * wait(1)
+  # Click on second ballot checkbox
+  * click(cast_vote_ballot_selector_2)
+  * wait(1)
+  * backend.clearBuffer()
+  * click(cast_vote_button_selector)
+  * wait(1)
+
+
+  # Election end web procedure
+  @name=end_election
+  Scenario: End an election
+  * wait(1)
+  * retry(5,1000).click(election_opened_option_selector)
+  * script("setTimeout(() => document.evaluate('//div[text()=\\'End Election and Tally Votes\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+  * backend.clearBuffer()
+  * wait(2)
+

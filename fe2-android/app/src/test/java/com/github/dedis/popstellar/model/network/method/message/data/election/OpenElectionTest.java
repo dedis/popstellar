@@ -1,10 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import org.junit.Test;
 
 public class OpenElectionTest {
 
@@ -42,12 +43,13 @@ public class OpenElectionTest {
     assertNotEquals(openElection, new OpenElection(laoId, electionId, 0));
     assertEquals(false, openElection.equals(null));
     assertEquals(openElection, openElection);
-
   }
 
   @Test
   public void toStringTest() {
-    assertEquals("OpenElection{lao='laoId', election='electionId', opened_at=1633099883}", openElection.toString());
+    assertEquals(
+        "OpenElection{lao='laoId', election='electionId', opened_at=1633099883}",
+        openElection.toString());
   }
 
   @Test

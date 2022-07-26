@@ -4,12 +4,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 import com.github.dedis.popstellar.repository.local.dao.LAODao;
-import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRefEntity;
-import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
-import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
-import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+import com.github.dedis.popstellar.repository.local.entities.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

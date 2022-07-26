@@ -1,15 +1,12 @@
 package com.github.dedis.popstellar.model.objects.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
+
+import static org.junit.Assert.*;
 
 public class PoPTokenTest {
 

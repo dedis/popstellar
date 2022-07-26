@@ -39,7 +39,6 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     storage
   }
 
-
   test("read correctly returns empty Option on non-existing key") {
     val storage: DiskStorage = generateDiskStorage()
 
@@ -49,28 +48,28 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("read correctly returns successful READ") {
     val storage: DiskStorage = generateDiskStorage()
 
-    storage.write(BATCH : _*)
-    storage.read(BATCH.last._1) should equal (Some(BATCH.last._2))
+    storage.write(BATCH: _*)
+    storage.read(BATCH.last._1) should equal(Some(BATCH.last._2))
   }
 
   test("write correctly adds tuples one-by-one in db") {
     val storage: DiskStorage = generateDiskStorage()
 
     storage.write(KEY -> VALUE)
-    storage.read(KEY) should equal (Some(VALUE))
+    storage.read(KEY) should equal(Some(VALUE))
 
     storage.write(key(1) -> value(1))
 
-    storage.read(KEY) should equal (Some(VALUE))
-    storage.read(key(1)) should equal (Some(value(1)))
+    storage.read(KEY) should equal(Some(VALUE))
+    storage.read(key(1)) should equal(Some(value(1)))
   }
 
   test("write correctly adds batch tuples in db") {
     val storage: DiskStorage = generateDiskStorage()
 
-    storage.write(BATCH : _*)
+    storage.write(BATCH: _*)
 
-    for ((k, v) <- BATCH) storage.read(k) should equal (Some(v))
+    for ((k, v) <- BATCH) storage.read(k) should equal(Some(v))
   }
 
   test("write correctly does nothing on no tuple add in db") {
@@ -86,7 +85,7 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     val storage: DiskStorage = generateDiskStorage()
 
     val faultyBatch: List[(String, String)] = (KEY, VALUE) :: (null, value(1)) :: (key(2), value(2)) :: Nil
-    an [DbActorNAckException] should be thrownBy storage.write(faultyBatch : _*)
+    an[DbActorNAckException] should be thrownBy storage.write(faultyBatch: _*)
   }
 
   test("delete successfully deletes a key") {
@@ -95,7 +94,7 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     storage.write(KEY -> VALUE)
 
     noException should be thrownBy storage.delete(KEY)
-    storage.delete(KEY) should be ((): Unit)
+    storage.delete(KEY) should be((): Unit)
     storage.read(KEY) shouldBe empty
   }
 
@@ -103,6 +102,6 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     val storage: DiskStorage = generateDiskStorage()
 
     noException should be thrownBy storage.delete(KEY)
-    storage.delete(KEY) should be ((): Unit)
+    storage.delete(KEY) should be((): Unit)
   }
 }

@@ -47,12 +47,12 @@ const mockStore = createStore(
 
 const getContextValue = (isOrganizer: boolean) => ({
   [EVENT_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     eventTypes: [ElectionEventType, MeetingEventType, RollCallEventType],
     useIsLaoOrganizer: () => isOrganizer,
   } as EventReactContext,
   [EVOTING_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     useCurrentLao: () => mockLao,
     addEvent,
     updateEvent,
@@ -60,10 +60,10 @@ const getContextValue = (isOrganizer: boolean) => ({
     useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
   } as EvotingReactContext,
   [MEETING_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
   } as MeetingReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
     makeEventByTypeSelector,

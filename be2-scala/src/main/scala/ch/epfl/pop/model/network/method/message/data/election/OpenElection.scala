@@ -9,21 +9,20 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 final case class OpenElection(
-                               lao: Hash,
-                               election: Hash,
-                               opened_at: Timestamp
-                             ) extends MessageData {
+    lao: Hash,
+    election: Hash,
+    opened_at: Timestamp
+) extends MessageData {
   override val _object: ObjectType = ObjectType.ELECTION
   override val action: ActionType = ActionType.OPEN
 }
 
 object OpenElection extends Parsable {
   def apply(
-             lao: Hash,
-             election: Hash,
-             opened_at: Timestamp
-           ): OpenElection = new OpenElection(lao, election, opened_at)
+      lao: Hash,
+      election: Hash,
+      opened_at: Timestamp
+  ): OpenElection = new OpenElection(lao, election, opened_at)
 
   override def buildFromJson(payload: String): OpenElection = payload.parseJson.asJsObject.convertTo[OpenElection]
 }
-

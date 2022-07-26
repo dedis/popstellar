@@ -22,7 +22,9 @@ public class Base64URLData {
     return Arrays.copyOf(data, data.length);
   }
 
-  /** @return the Base64 - encoded string representation of the data */
+  /**
+   * @return the Base64 - encoded string representation of the data
+   */
   public String getEncoded() {
     return encode(data);
   }

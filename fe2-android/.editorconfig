@@ -36,6 +36,20 @@ ij_xml_space_inside_empty_tag = true
 
 ij_xml_use_custom_settings = true
 
+[*.java]
+end_of_line = lf
+charset = utf-8
+
+; Imports rules, they are not set by the google-java-style plugin so it needs to be set manually
+ij_java_imports_layout = |, android.**, |, androidx.**, |, com.**, |, junit.**, |, net.**, |, org.**, |, java.**, |, javax.**, |, *, |, $*
+ij_java_insert_inner_class_imports = false
+ij_java_layout_static_imports_separately = true
+ij_java_use_single_class_imports = true
+ij_java_blank_lines_before_imports = 1
+ij_java_class_count_to_use_import_on_demand = 3
+ij_java_packages_to_use_import_on_demand = 3
+ij_java_names_count_to_use_import_on_demand = 3
+
 [*.gradle]
 indent_style = space
 indent_size = 4

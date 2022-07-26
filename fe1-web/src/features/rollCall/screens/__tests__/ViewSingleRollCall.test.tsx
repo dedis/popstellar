@@ -65,7 +65,7 @@ mockStore.dispatch(addRollCall(mockRollCallState));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     makeEventByTypeSelector,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
