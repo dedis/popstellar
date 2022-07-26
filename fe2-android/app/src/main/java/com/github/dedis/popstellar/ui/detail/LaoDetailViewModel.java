@@ -29,9 +29,11 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -64,9 +66,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
@@ -714,10 +713,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mLaoAttendedRollCalls;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
-    return mOpenSocialMediaEvent;
-  }
-
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
     return mChooseNewLaoEventTypeEvent;
   }
@@ -919,8 +914,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  public void openSocialMedia() {
-    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
+  public void openSocialMedia(Activity activity) {
+    activity.startActivity(
+        SocialMediaActivity.newInstance(
+            activity, getCurrentLaoValue().getId(), getCurrentLaoValue().getName()));
   }
 
   public void openDigitalCash() {
@@ -1172,11 +1169,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return true;
   }
 
-  public MutableLiveData<SingleEvent<Boolean>> getOpenWitnessing() {
-    return mOpenWitnessing;
-  }
-
-  public void openWitnessing() {
-    mOpenWitnessing.postValue(new SingleEvent<>(true));
+  public void openWitnessing(FragmentManager manager) {
+    LaoDetailActivity.setCurrentFragment(
+        manager, R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 }

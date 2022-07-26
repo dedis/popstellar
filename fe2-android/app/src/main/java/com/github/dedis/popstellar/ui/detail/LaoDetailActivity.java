@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -76,12 +75,6 @@ public class LaoDetailActivity extends AppCompatActivity {
                 setupLaoFragment();
               }
             });
-
-    // Subscribe to " open social media " event
-    setupSocialMediaActivity();
-
-    // Subscribe to "open witnessing" event
-    setupWitnessing();
 
     // Subscribe to "new lao event" event
     handleNewEvent();
@@ -153,19 +146,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     intent.putExtra(Constants.LAO_ID_EXTRA, mViewModel.getCurrentLaoValue().getId());
     intent.putExtra(Constants.LAO_NAME, mViewModel.getCurrentLaoValue().getName());
     startActivity(intent);
-  }
-
-  private void setupWitnessing() {
-    mViewModel
-        .getOpenWitnessing()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupWitnessingFragment();
-              }
-            });
   }
 
   private void subscribeWalletEvents() {
@@ -262,23 +242,6 @@ public class LaoDetailActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
-  private void setupSocialMediaActivity() {
-    mViewModel
-        .getOpenSocialMediaEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                startActivity(
-                    SocialMediaActivity.newInstance(
-                        this,
-                        mViewModel.getCurrentLaoValue().getId(),
-                        mViewModel.getCurrentLaoValue().getName()));
-              }
-            });
-  }
-
   private void setupCreateRollCallFragment() {
     setCurrentFragment(
         getSupportFragmentManager(),
@@ -331,9 +294,8 @@ public class LaoDetailActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
-  private void setupWitnessingFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
+  private static void setupWitnessingFragment(FragmentManager manager) {
+    setCurrentFragment(manager, R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 
   private void setupRollCallTokenFragment(String id) {
@@ -438,11 +400,11 @@ public class LaoDetailActivity extends AppCompatActivity {
           } else if (id == R.id.lao_detail_identity_menu) {
             mViewModel.openIdentity(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_witnessing_menu) {
-            mViewModel.openWitnessing();
+            mViewModel.openWitnessing(getSupportFragmentManager());
           } else if (id == R.id.lao_detail_digital_cash_menu) {
             mViewModel.openDigitalCash();
           } else if (id == R.id.lao_detail_social_media_menu) {
-            mViewModel.openSocialMedia();
+            mViewModel.openSocialMedia(this);
           }
           return true;
         });
