@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
@@ -90,18 +89,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupOpenButton();
     setupCancelButton();
 
-    // Subscribe to "new LAO event creation" event
-    mLaoDetailViewModel
-        .getNewLaoEventCreationEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            eventTypeEvent -> {
-              EventType eventType = eventTypeEvent.getContentIfNotHandled();
-              if (eventType == EventType.ROLL_CALL) {
-                createRollCall(false);
-              }
-            });
-
     // Subscribe to "open new roll call" event
     mLaoDetailViewModel
         .getOpenNewRollCallEvent()
@@ -127,8 +114,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void setupConfirmButton() {
-    confirmButton.setOnClickListener(
-        v -> mLaoDetailViewModel.newLaoEventCreation(EventType.ROLL_CALL));
+    confirmButton.setOnClickListener(v -> createRollCall(false));
   }
 
   private void setupOpenButton() {

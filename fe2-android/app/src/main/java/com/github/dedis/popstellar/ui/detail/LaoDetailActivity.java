@@ -12,7 +12,6 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
@@ -62,9 +61,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
-
-    // Subscribe to "new lao event" event
-    handleNewEvent();
 
     // Subscribe to "open roll call" event
     mViewModel
@@ -159,29 +155,6 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
-  public void handleNewEvent() {
-    mViewModel
-        .getNewLaoEventEvent()
-        .observe(
-            this,
-            eventEvent -> {
-              EventType eventType = eventEvent.getContentIfNotHandled();
-              if (eventType != null) {
-                Log.d(TAG, "event type: " + eventType);
-                switch (eventType) {
-                  case ROLL_CALL:
-                    setupCreateRollCallFragment();
-                    break;
-                  case ELECTION:
-                    setupCreateElectionSetupFragment();
-                    break;
-                  default:
-                    Log.d(TAG, "unknown event type: " + eventType);
-                }
-              }
-            });
-  }
-
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
     if (menuItem.getItemId() == android.R.id.home) {
@@ -203,13 +176,6 @@ public class LaoDetailActivity extends AppCompatActivity {
       actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
-  }
-
-  private void setupCreateRollCallFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_create_roll_call_event,
-        RollCallCreationFragment::newInstance);
   }
 
   private void setupScanFragmentWitness() {
@@ -243,13 +209,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupCameraPermissionFragment();
     }
-  }
-
-  private void setupCreateElectionSetupFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_setup_election_event,
-        ElectionSetupFragment::newInstance);
   }
 
   private void setupLaoWalletFragment() {

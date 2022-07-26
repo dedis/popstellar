@@ -25,7 +25,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -67,10 +66,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<EventType>> mNewLaoEventCreationEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
@@ -707,14 +702,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mLaoAttendedRollCalls;
   }
 
-  public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
-    return mChooseNewLaoEventTypeEvent;
-  }
-
-  public LiveData<SingleEvent<EventType>> getNewLaoEventCreationEvent() {
-    return mNewLaoEventCreationEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenNewRollCallEvent() {
     return mOpenNewRollCallEvent;
   }
@@ -938,24 +925,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void setShowProperties(boolean show) {
     showProperties.postValue(show);
-  }
-
-  /**
-   * Choosing an event type to create on the multiple-choice screen
-   *
-   * @param eventType the event type to create
-   */
-  public void chooseEventType(EventType eventType) {
-    mChooseNewLaoEventTypeEvent.postValue(new SingleEvent<>(eventType));
-  }
-
-  /**
-   * Creating a new event of specified type
-   *
-   * @param eventType the event type of the new event
-   */
-  public void newLaoEventCreation(EventType eventType) {
-    mNewLaoEventCreationEvent.postValue(new SingleEvent<>(eventType));
   }
 
   public void openNewRollCall(Boolean open) {
