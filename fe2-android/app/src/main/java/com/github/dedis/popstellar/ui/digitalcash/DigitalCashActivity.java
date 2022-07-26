@@ -112,28 +112,16 @@ public class DigitalCashActivity extends AppCompatActivity {
           } else {
             if (id == R.id.digital_cash_home_menu) {
               Log.d(TAG, "Opening home fragment");
-              setCurrentFragment(
-                  getSupportFragmentManager(),
-                  R.id.fragment_digital_cash_home,
-                  DigitalCashHomeFragment::newInstance);
+              openHomeFragment();
             } else if (id == R.id.digital_cash_history_menu) {
               Log.d(TAG, "Opening history fragment");
-              setCurrentFragment(
-                  getSupportFragmentManager(),
-                  R.id.fragment_digital_cash_history,
-                  DigitalCashHistoryFragment::newInstance);
+              openHistoryFragment();
             } else if (id == R.id.digital_cash_send_menu) {
               Log.d(TAG, "Opening send fragment");
-              setCurrentFragment(
-                  getSupportFragmentManager(),
-                  R.id.fragment_digital_cash_send,
-                  DigitalCashSendFragment::newInstance);
+              openSendFragment();
             } else if (id == R.id.digital_cash_receive_menu) {
               Log.d(TAG, "Opening receive fragment");
-              setCurrentFragment(
-                  getSupportFragmentManager(),
-                  R.id.fragment_digital_cash_receive,
-                  DigitalCashReceiveFragment::newInstance);
+              openReceiveFragment();
             } else if (id == R.id.digital_cash_issue_menu) {
               Log.d(TAG, "Trying to open issue fragment");
               handleOpenIssue();
@@ -141,6 +129,34 @@ public class DigitalCashActivity extends AppCompatActivity {
           }
           return true;
         });
+  }
+
+  private void openHomeFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_home,
+        DigitalCashHomeFragment::newInstance);
+  }
+
+  private void openHistoryFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_history,
+        DigitalCashHistoryFragment::newInstance);
+  }
+
+  private void openSendFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_send,
+        DigitalCashSendFragment::newInstance);
+  }
+
+  private void openReceiveFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_receive,
+        DigitalCashReceiveFragment::newInstance);
   }
 
   private void handleOpenIssue() {
@@ -151,11 +167,15 @@ public class DigitalCashActivity extends AppCompatActivity {
         .equals(mViewModel.getKeyManager().getMainPublicKey())) {
       ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
     } else {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_issue,
-          DigitalCashIssueFragment::newInstance);
+      openIssueFragment();
     }
+  }
+
+  private void openIssueFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_issue,
+        DigitalCashIssueFragment::newInstance);
   }
 
   public static Intent newIntent(Context ctx, String laoId, String laoName) {
