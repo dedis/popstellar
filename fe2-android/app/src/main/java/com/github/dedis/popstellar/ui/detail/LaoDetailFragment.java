@@ -108,18 +108,6 @@ public class LaoDetailFragment extends Fragment {
 
     // TODO: Add witness handler
 
-    // Subscribe to "show/hide properties" event
-    mLaoDetailViewModel
-        .getShowPropertiesEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                showHideProperties(action);
-              }
-            });
-
     mLaoDetailViewModel
         .getLaoEvents()
         .observe(
@@ -142,12 +130,12 @@ public class LaoDetailFragment extends Fragment {
 
   private void setupQrCodeIconButton() {
     ImageView propertiesButton = requireActivity().findViewById(R.id.qr_code_icon);
-    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
+    propertiesButton.setOnClickListener(clicked -> toggleProperties());
   }
 
   private void setUpQrCloseButton() {
     ImageView closeButton = requireActivity().findViewById(R.id.qr_icon_close);
-    closeButton.setOnClickListener(view -> mLaoDetailViewModel.toggleShowHideProperties());
+    closeButton.setOnClickListener(view -> toggleProperties());
   }
 
   private void setupEventListAdapter() {
@@ -180,14 +168,16 @@ public class LaoDetailFragment extends Fragment {
             });
   }
 
-  private void showHideProperties(Boolean show) {
+  private void toggleProperties() {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-    if (Boolean.TRUE.equals(show)) {
+    if (Boolean.TRUE.equals(mLaoDetailViewModel.getShowProperties().getValue())) {
       LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
       laoDetailQrLayout.setVisibility(View.VISIBLE);
+      mLaoDetailViewModel.setShowProperties(true);
     } else {
       LaoDetailAnimation.fadeOut(laoDetailQrLayout, 1.0f, 0.0f, 500);
       laoDetailQrLayout.setVisibility(View.GONE);
+      mLaoDetailViewModel.setShowProperties(false);
     }
   }
 }

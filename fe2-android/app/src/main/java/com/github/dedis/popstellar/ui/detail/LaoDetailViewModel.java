@@ -65,9 +65,6 @@ public class LaoDetailViewModel extends AndroidViewModel
    * LiveData objects for capturing events like button clicks
    */
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
-      new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
@@ -717,10 +714,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mLaoAttendedRollCalls;
   }
 
-  public LiveData<SingleEvent<Boolean>> getShowPropertiesEvent() {
-    return mShowPropertiesEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
     return mOpenSocialMediaEvent;
   }
@@ -953,10 +946,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
   }
 
-  public void toggleShowHideProperties() {
-    boolean val = showProperties.getValue();
-    showProperties.postValue(!val);
-    mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
+  public void setShowProperties(boolean show) {
+    showProperties.postValue(show);
   }
 
   /**
