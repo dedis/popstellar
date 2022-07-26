@@ -6,11 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -21,10 +17,8 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
-import com.github.dedis.popstellar.ui.qrcode.*;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.*;
-import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
@@ -35,7 +29,6 @@ import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -43,7 +36,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -161,7 +154,11 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
             .toObservable()
             .flatMapCompletable(a -> networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
-                () -> openLao(activity, lao.getId()),
+                () -> {
+                  String laoId = lao.getId();
+                  Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+                  activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
+                },
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_create_lao)));
@@ -176,77 +173,13 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     wallet.newSeed();
   }
 
-  /** Getters for MutableLiveData instances declared above */
+  /** Getters for LiveData instances declared above */
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
 
-  public boolean isWalletSetUp() {
-    Boolean setup = mIsWalletSetUp.getValue();
-    if (setup == null) return false;
-    else return setup;
-  }
-
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return mIsWalletSetUp;
-  }
-
-  public void openHome(FragmentManager manager) {
-    setCurrentFragment(manager, R.id.fragment_home, HomeFragment::newInstance);
-  }
-
-  public void openCameraPermission(FragmentManager manager, ActivityResultRegistry registry) {
-    setCurrentFragment(
-        manager, R.id.fragment_camera_perm, () -> CameraPermissionFragment.newInstance(registry));
-  }
-
-  public void openLaunch(FragmentManager manager) {
-    setCurrentFragment(manager, R.id.fragment_launch, LaunchFragment::newInstance);
-  }
-
-  public void openConnecting(String laoId) {
-    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    getApplication().startActivity(intent);
-  }
-
-  public void openQrCodeScanning(FragmentManager manager) {
-    setCurrentFragment(manager, R.id.fragment_qrcode, QRCodeScanningFragment::new);
-  }
-
-  public void openSeedWallet(FragmentManager manager) {
-    setCurrentFragment(manager, R.id.fragment_seed_wallet, SeedWalletFragment::new);
-  }
-
-  public void openWallet(FragmentManager manager) {
-    if (isWalletSetUp()) {
-      setCurrentFragment(manager, R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
-    } else {
-      setCurrentFragment(manager, R.id.fragment_wallet, WalletFragment::newInstance);
-    }
-  }
-
-  public static void openLao(Activity activity, String laoId) {
-    Intent intent = new Intent(activity.getApplicationContext(), LaoDetailActivity.class);
-    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    activity.startActivity(intent);
-  }
-
-  public static void openLaoWallet(Activity activity, String laoId) {
-    Intent intent = new Intent(activity.getApplicationContext(), LaoDetailActivity.class);
-    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
-    activity.startActivity(intent);
-  }
-
-  public static void openSocialMedia(Activity activity) {
-    Intent intent = new Intent(activity, SocialMediaActivity.class);
-    Log.d(HomeViewModel.TAG, "Trying to open social media");
-    intent.putExtra(OPENED_FROM, HomeViewModel.TAG);
-    activity.startActivity(intent);
   }
 
   public void setLaoName(String name) {
@@ -257,25 +190,21 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     this.mIsWalletSetUp.setValue(isSetUp);
   }
 
+  public boolean isWalletSetUp() {
+    Boolean setup = mIsWalletSetUp.getValue();
+    if (setup == null) return false;
+    else return setup;
+  }
+
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
   }
 
-  /**
-   * Set the current fragment in the container of the activity
-   *
-   * @param manager of the fragments
-   * @param id of the fragment
-   * @param fragmentSupplier provides the fragment if it is missing
-   */
-  public static void setCurrentFragment(
-      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = manager.findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(manager, fragment, R.id.fragment_container_home);
+  public void openConnecting(String laoId) {
+    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+    getApplication().startActivity(intent);
   }
 }

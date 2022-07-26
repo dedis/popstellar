@@ -75,7 +75,8 @@ public class ContentWalletFragment extends Fragment {
                 R.string.confirm,
                 (dialog, which) -> {
                   mHomeViewModel.logoutWallet();
-                  mHomeViewModel.openWallet(getParentFragmentManager());
+                  WalletFragment.openWallet(
+                      getParentFragmentManager(), mHomeViewModel.isWalletSetUp());
                 });
             builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
             logoutAlert = builder.create();

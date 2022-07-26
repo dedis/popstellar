@@ -10,9 +10,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.*;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
@@ -100,7 +100,7 @@ public class WalletFragment extends Fragment {
               (dialog, which) -> {
                 try {
                   mHomeViewModel.importSeed(input.getText().toString());
-                  mHomeViewModel.openWallet(getParentFragmentManager());
+                  openWallet(getParentFragmentManager(), mHomeViewModel.isWalletSetUp());
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
@@ -120,7 +120,17 @@ public class WalletFragment extends Fragment {
     mWalletFragBinding.buttonNewWallet.setOnClickListener(
         v -> {
           mHomeViewModel.newSeed();
-          mHomeViewModel.openSeedWallet(getParentFragmentManager());
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
         });
+  }
+
+  public static void openWallet(FragmentManager manager, boolean isWalletSetup) {
+    if (isWalletSetup) {
+      HomeActivity.setCurrentFragment(
+          manager, R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
+    } else {
+      HomeActivity.setCurrentFragment(manager, R.id.fragment_wallet, WalletFragment::newInstance);
+    }
   }
 }

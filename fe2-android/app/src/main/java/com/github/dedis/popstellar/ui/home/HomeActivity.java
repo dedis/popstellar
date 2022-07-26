@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.content.Context;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.*;
@@ -9,17 +9,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.*;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.*;
+import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -27,17 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.fragment.app.*;
-import androidx.fragment.app.FragmentActivity;
 import dagger.hilt.android.AndroidEntryPoint;
-
-import static com.github.dedis.popstellar.ui.home.HomeViewModel.setCurrentFragment;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -102,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    mViewModel.openHome(getSupportFragmentManager());
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
   }
 
   private void subscribeSocialMediaEvents() {
@@ -160,13 +153,14 @@ public class HomeActivity extends AppCompatActivity {
         item -> {
           int id = item.getItemId();
           if (id == R.id.home_home_menu) {
-            mViewModel.openHome(getSupportFragmentManager());
+            setCurrentFragment(
+                getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
           } else if (id == R.id.home_connect_menu) {
             handleConnectNavigation();
           } else if (id == R.id.home_launch_menu) {
             handleLaunchNavigation();
           } else if (id == R.id.home_wallet_menu) {
-            mViewModel.openWallet(getSupportFragmentManager());
+            WalletFragment.openWallet(getSupportFragmentManager(), mViewModel.isWalletSetUp());
           } else if (id == R.id.home_social_media_menu) {
             handleSocialMediaNavigation();
           }
@@ -180,7 +174,8 @@ public class HomeActivity extends AppCompatActivity {
           getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
       showHomeTab();
     } else {
-      HomeViewModel.openSocialMedia(this);
+      Log.d(HomeViewModel.TAG, "Opening social media activity");
+      startActivity(SocialMediaActivity.newIntent(this));
     }
   }
 
@@ -194,7 +189,8 @@ public class HomeActivity extends AppCompatActivity {
 
   private void handleLaunchNavigation() {
     if (checkWalletInitialization()) {
-      mViewModel.openLaunch(getSupportFragmentManager());
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_launch, LaunchFragment::newInstance);
     } else {
       showHomeTab();
     }
@@ -202,7 +198,8 @@ public class HomeActivity extends AppCompatActivity {
 
   public void openConnect() {
     if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-      mViewModel.openQrCodeScanning(getSupportFragmentManager());
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
     } else {
       requestCameraPermission();
     }
@@ -214,7 +211,10 @@ public class HomeActivity extends AppCompatActivity {
         .setFragmentResultListener(
             CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openConnect());
 
-    mViewModel.openCameraPermission(getSupportFragmentManager(), getActivityResultRegistry());
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_camera_perm,
+        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
   /**

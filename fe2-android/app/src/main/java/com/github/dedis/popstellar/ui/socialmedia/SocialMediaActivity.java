@@ -198,14 +198,14 @@ public class SocialMediaActivity extends AppCompatActivity {
         SocialMediaProfileFragment::newInstance);
   }
 
-  public static Intent newInstance(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId, String laoName) {
     Intent intent = new Intent(ctx, SocialMediaActivity.class);
     intent.putExtra(LAO_ID, laoId);
     intent.putExtra(LAO_NAME, laoName);
     return intent;
   }
 
-  public static Intent newInstance(Context ctx) {
+  public static Intent newIntent(Context ctx) {
     return new Intent(ctx, SocialMediaActivity.class);
   }
 
