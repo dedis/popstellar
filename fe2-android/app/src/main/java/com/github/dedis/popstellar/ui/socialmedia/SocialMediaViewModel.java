@@ -4,8 +4,7 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -111,7 +110,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void setCurrentSelectedItem(int item) {
+  public void setCurrentSelectedItem(@IdRes int item) {
     mCurrentSelectedItem.postValue(item);
   }
 
