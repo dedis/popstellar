@@ -55,7 +55,7 @@ public class SocialMediaHomeFragment extends Fragment {
 
   private void setupSendButton() {
     mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v -> mSocialMediaViewModel.openSend(requireActivity().getSupportFragmentManager()));
+        v -> mSocialMediaViewModel.openSend(getParentFragmentManager()));
   }
 
   private void setupSwipeRefresh() {
