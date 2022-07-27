@@ -181,7 +181,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void setCurrentSelectedItem(int item) {
+  public void setCurrentSelectedItem(@IdRes int item) {
     currentSelectedItem.postValue(item);
   }
 
