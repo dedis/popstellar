@@ -17,7 +17,8 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -37,8 +38,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 @HiltViewModel
-public class HomeViewModel extends AndroidViewModel
-    implements CameraPermissionViewModel, QRCodeScanningViewModel {
+public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -101,11 +101,6 @@ public class HomeViewModel extends AndroidViewModel
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
-  }
-
-  @Override
-  public void onPermissionGranted() {
-    openQrCodeScanning();
   }
 
   @Override

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
@@ -32,7 +33,6 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragmen
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -57,8 +57,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class LaoDetailViewModel extends AndroidViewModel
-    implements CameraPermissionViewModel, QRCodeScanningViewModel {
+public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
@@ -67,8 +66,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
@@ -79,8 +76,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
 
@@ -422,6 +417,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param open true if we want to directly open the roll call
    */
   public void createNewRollCall(
+      FragmentActivity activity,
       String title,
       String description,
       long creation,
@@ -449,7 +445,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 () -> {
                   Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
                   if (open) {
-                    openRollCall(createRollCall.getId());
+                    openRollCall(activity, createRollCall.getId());
                   } else {
                     mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
                   }
@@ -549,7 +545,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @param id the roll call id to open
    */
-  public void openRollCall(String id) {
+  public void openRollCall(FragmentActivity activity, String id) {
     Log.d(TAG, "call openRollCall with id" + id);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -584,7 +580,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   currentRollCallId = openRollCall.getUpdateId();
                   Log.d(TAG, "opening rc with current id = " + currentRollCallId);
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-                  openScanning();
+                  openRollCallScanning(activity);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -687,10 +683,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return scanningAction;
   }
 
-  public void setScanningAction(ScanningAction scanningAction) {
-    this.scanningAction = scanningAction;
-  }
-
   public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
     return mLaoEvents;
   }
@@ -751,14 +743,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<List<WitnessMessage>> getWitnessMessages() {
     return mWitnessMessages;
-  }
-
-  public LiveData<SingleEvent<HomeViewModel.HomeViewAction>> getOpenRollCallEvent() {
-    return mOpenRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<HomeViewModel.HomeViewAction>> getOpenAddWitness() {
-    return mOpenAddWitness;
   }
 
   public LiveData<SingleEvent<String>> getOpenAttendeesListEvent() {
@@ -901,17 +885,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     mEndElectionEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openAddWitness() {
-
-    Lao lao = getCurrentLaoValue();
-    if (lao == null) {
-      Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
-    }
-    witnesses = new HashSet<>(lao.getWitnesses());
-    mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
-  }
-
   public void setShowProperties(boolean show) {
     showProperties.postValue(show);
   }
@@ -998,22 +971,6 @@ public class LaoDetailViewModel extends AndroidViewModel
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void openQrCodeScanningRollCall() {
-    mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
-    mNbAttendeesEvent.postValue(
-        new SingleEvent<>(attendees.size())); // this to display the initial number of attendees
-  }
-
-  public void openCameraPermission() {
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      mOpenRollCallEvent.setValue(
-          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      mOpenAddWitness.setValue(
-          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
-    }
-  }
-
   public void enterRollCall(String id) {
     if (!wallet.isSetUp()) {
       mWalletMessageEvent.setValue(new SingleEvent<>(true));
@@ -1029,17 +986,31 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
-  public void openScanning() {
+  public void openRollCallScanning(FragmentActivity activity) {
+    FragmentManager manager = activity.getSupportFragmentManager();
     if (ContextCompat.checkSelfPermission(
             getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        openQrCodeScanningRollCall();
-      } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-        openAddWitness();
+        LaoDetailActivity.setCurrentFragment(
+            manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
+
+        // this to display the initial number of attendees
+        mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
       }
     } else {
-      openCameraPermission();
+      if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+        // Setup result listener to open the scanning tab once the permission is granted
+        manager.setFragmentResultListener(
+            CameraPermissionFragment.REQUEST_KEY,
+            activity,
+            (k, b) -> openRollCallScanning(activity));
+
+        LaoDetailActivity.setCurrentFragment(
+            manager,
+            R.id.fragment_camera_perm,
+            () -> CameraPermissionFragment.newInstance(activity.getActivityResultRegistry()));
+      }
     }
   }
 
@@ -1054,15 +1025,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openAttendeesList(String rollCallId) {
     mOpenAttendeesListEvent.postValue(new SingleEvent<>(rollCallId));
-  }
-
-  @Override
-  public void onPermissionGranted() {
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      openQrCodeScanningRollCall();
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      openAddWitness();
-    }
   }
 
   @Override

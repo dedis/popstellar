@@ -17,8 +17,6 @@ import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragme
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -61,18 +59,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
-
-    // Subscribe to "open roll call" event
-    mViewModel
-        .getOpenRollCallEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
-              if (action != null) {
-                openScanning(action);
-              }
-            });
 
     // Subscribe to "enter roll call" event
     mViewModel
@@ -165,39 +151,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     if (actionBar != null) {
       actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
       actionBar.setDisplayHomeAsUpEnabled(true);
-    }
-  }
-
-  private void setupScanFragmentWitness() {
-    setCurrentFragment(getSupportFragmentManager(), R.id.qr_code, QRCodeScanningFragment::new);
-  }
-
-  private void setupScanFragmentRollCall() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
-  }
-
-  private void setupCameraPermissionFragment() {
-    // Setup result listener to open the scanning tab once the permission is granted
-    getSupportFragmentManager()
-        .setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openScanning());
-
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_camera_perm,
-        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
-  }
-
-  private void openScanning(HomeViewModel.HomeViewAction action) {
-    if (action.equals(HomeViewModel.HomeViewAction.SCAN)) {
-      if (mViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        setupScanFragmentRollCall();
-      } else {
-        setupScanFragmentWitness();
-      }
-    } else {
-      setupCameraPermissionFragment();
     }
   }
 
