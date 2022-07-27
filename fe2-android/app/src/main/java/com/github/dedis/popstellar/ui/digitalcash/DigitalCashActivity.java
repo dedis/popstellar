@@ -39,13 +39,13 @@ public class DigitalCashActivity extends AppCompatActivity {
     setupNavigationBar();
     setupBackButton();
 
-    subscribeToSelectItemEvents();
+    subscribeToSelectedItemEvents();
     setTheIntent();
 
     mViewModel.openHome();
   }
 
-  private void subscribeToSelectItemEvents() {
+  private void subscribeToSelectedItemEvents() {
     mViewModel
         .getCurrentSelectedItem()
         .observe(

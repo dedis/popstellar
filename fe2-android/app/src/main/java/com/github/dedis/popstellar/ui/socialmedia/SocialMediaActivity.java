@@ -52,7 +52,7 @@ public class SocialMediaActivity extends AppCompatActivity {
     setupNavigationBar();
 
     subscribeToLaoName();
-    subscribeToSelectItemEvents();
+    subscribeToSelectedItemEvents();
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
@@ -139,7 +139,7 @@ public class SocialMediaActivity extends AppCompatActivity {
             });
   }
 
-  private void subscribeToSelectItemEvents() {
+  private void subscribeToSelectedItemEvents() {
     mViewModel
         .getCurrentSelectedItem()
         .observe(
