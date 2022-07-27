@@ -69,9 +69,8 @@ public class DigitalCashActivity extends AppCompatActivity {
   }
 
   public void openLao() {
-    Intent intent =
-        LaoDetailActivity.newIntentForLao(this, mViewModel.getCurrentLao().getValue().getId());
-    startActivity(intent);
+    startActivity(
+        LaoDetailActivity.newIntentForLao(this, mViewModel.getCurrentLao().getValue().getId()));
   }
 
   @Override
