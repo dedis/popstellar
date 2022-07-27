@@ -105,6 +105,8 @@ public class SocialMediaActivity extends AppCompatActivity {
         item -> {
           int itemId = item.getItemId();
           if (itemId != mViewModel.getCurrentSelectedItem().getValue()) {
+            // This prevents the update to be done multiple times. It is done here rather than
+            // in viewModel because otherwise this would be executed twice
             mViewModel.setCurrentSelectedItem(itemId);
           } else {
             if (itemId == R.id.social_media_home_menu) {
