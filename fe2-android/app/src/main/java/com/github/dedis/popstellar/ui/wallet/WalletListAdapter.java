@@ -4,7 +4,7 @@ import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -18,14 +18,14 @@ public class WalletListAdapter extends BaseAdapter {
   private List<RollCall> rollCalls;
   private final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
-  private final LifecycleOwner lifecycleOwner;
+  private final FragmentActivity activity;
   private final LaoDetailViewModel viewModel;
 
   public WalletListAdapter(
-      List<RollCall> rollCalls, LaoDetailViewModel viewModel, LifecycleOwner activity) {
+      List<RollCall> rollCalls, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.viewModel = viewModel;
     setList(rollCalls);
-    lifecycleOwner = activity;
+    this.activity = activity;
   }
 
   public void replaceList(List<RollCall> rollCalls) {
@@ -86,10 +86,11 @@ public class WalletListAdapter extends BaseAdapter {
     if (isOrganizer != null && !isOrganizer) {
       binding.rollcallTokenButton.setVisibility(View.VISIBLE);
       binding.rollcallTokenButton.setOnClickListener(
-          clicked -> viewModel.openRollCallToken(rollCall.getId()));
+          clicked ->
+              viewModel.openRollCallToken(activity.getSupportFragmentManager(), rollCall.getId()));
     }
 
-    binding.setLifecycleOwner(lifecycleOwner);
+    binding.setLifecycleOwner(activity);
     binding.executePendingBindings();
 
     return binding.getRoot();

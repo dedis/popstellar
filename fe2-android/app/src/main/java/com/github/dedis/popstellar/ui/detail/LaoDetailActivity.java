@@ -124,16 +124,6 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
     mViewModel
-        .getOpenRollCallTokenEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String id = stringEvent.getContentIfNotHandled();
-              if (id != null) {
-                setupRollCallTokenFragment(id);
-              }
-            });
-    mViewModel
         .getOpenAttendeesListEvent()
         .observe(
             this,

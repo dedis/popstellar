@@ -70,7 +70,7 @@ public class LaoWalletFragment extends Fragment {
     ListView listView = mLaoWalletFragmentBinding.walletList;
 
     mWalletListAdapter =
-        new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel, getActivity());
+        new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel, requireActivity());
 
     listView.setAdapter(mWalletListAdapter);
   }

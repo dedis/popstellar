@@ -89,18 +89,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupOpenButton();
     setupCancelButton();
 
-    // Subscribe to "open new roll call" event
-    mLaoDetailViewModel
-        .getOpenNewRollCallEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                createRollCall(true);
-              }
-            });
-
     mLaoDetailViewModel
         .getCreatedRollCallEvent()
         .observe(
@@ -118,7 +106,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void setupOpenButton() {
-    openButton.setOnClickListener(v -> mLaoDetailViewModel.openNewRollCall(true));
+    openButton.setOnClickListener(v -> createRollCall(true));
   }
 
   private void setupCancelButton() {

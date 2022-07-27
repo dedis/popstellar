@@ -28,6 +28,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -66,11 +67,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenRollCallTokenEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
       new MutableLiveData<>();
@@ -702,10 +699,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mLaoAttendedRollCalls;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenNewRollCallEvent() {
-    return mOpenNewRollCallEvent;
-  }
-
   public LiveData<Lao> getCurrentLao() {
     return mCurrentLao;
   }
@@ -766,10 +759,6 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<SingleEvent<HomeViewModel.HomeViewAction>> getOpenAddWitness() {
     return mOpenAddWitness;
-  }
-
-  public LiveData<SingleEvent<String>> getOpenRollCallTokenEvent() {
-    return mOpenRollCallTokenEvent;
   }
 
   public LiveData<SingleEvent<String>> getOpenAttendeesListEvent() {
@@ -927,10 +916,6 @@ public class LaoDetailViewModel extends AndroidViewModel
     showProperties.postValue(show);
   }
 
-  public void openNewRollCall(Boolean open) {
-    mOpenNewRollCallEvent.postValue(new SingleEvent<>(open));
-  }
-
   public void openElectionResults(Boolean open) {
     mOpenElectionResultsEvent.postValue(new SingleEvent<>(open));
   }
@@ -1062,8 +1047,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenLaoWalletEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openRollCallToken(String rollCallId) {
-    mOpenRollCallTokenEvent.postValue(new SingleEvent<>(rollCallId));
+  public void openRollCallToken(FragmentManager manager, String rollCallId) {
+    LaoDetailActivity.setCurrentFragment(
+        manager, R.id.fragment_rollcall_token, () -> RollCallTokenFragment.newInstance(rollCallId));
   }
 
   public void openAttendeesList(String rollCallId) {
