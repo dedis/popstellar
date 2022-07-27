@@ -132,10 +132,11 @@ public class SocialMediaActivity extends AppCompatActivity {
         .observe(
             this,
             newLaoName -> {
-              if (newLaoName != null) {
-                Objects.requireNonNull(getSupportActionBar())
-                    .setTitle(String.format(getString(R.string.social_media_title), newLaoName));
+              if (newLaoName == null) {
+                return;
               }
+              Objects.requireNonNull(getSupportActionBar())
+                  .setTitle(String.format(getString(R.string.social_media_title), newLaoName));
             });
   }
 
