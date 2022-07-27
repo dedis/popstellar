@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
 
 import java.util.ArrayList;
@@ -55,7 +56,11 @@ public class SocialMediaHomeFragment extends Fragment {
 
   private void setupSendButton() {
     mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v -> mSocialMediaViewModel.openSend(getParentFragmentManager()));
+        v ->
+            SocialMediaActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_social_media_send,
+                SocialMediaSendFragment::newInstance));
   }
 
   private void setupSwipeRefresh() {

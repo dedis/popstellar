@@ -6,7 +6,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -118,12 +117,6 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void openHome() {
     setCurrentSelectedItem(R.id.social_media_home_menu);
-  }
-
-  public void openSend(FragmentManager manager) {
-    Log.d(TAG, "Opening send");
-    SocialMediaActivity.setCurrentFragment(
-        manager, R.id.fragment_social_media_send, SocialMediaSendFragment::newInstance);
   }
 
   public void setNumberCharsLeft(Integer numberChars) {
