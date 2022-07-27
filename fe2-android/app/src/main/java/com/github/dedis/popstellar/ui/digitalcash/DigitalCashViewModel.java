@@ -4,8 +4,7 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -61,7 +60,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-  private final MutableLiveData<Integer> currentSelectedItem = new MutableLiveData<>(0);
+  private final MutableLiveData<Integer> currentSelectedItem =
+      new MutableLiveData<>(R.id.digital_cash_home_menu);
 
   /* Is used to change the lao Coin amount on the home fragment*/
   private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();

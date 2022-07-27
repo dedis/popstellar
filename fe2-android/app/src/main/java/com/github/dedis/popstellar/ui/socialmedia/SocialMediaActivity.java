@@ -48,7 +48,6 @@ public class SocialMediaActivity extends AppCompatActivity {
     if (laoId != null) mViewModel.setLaoId(laoId);
     if (laoName != null) mViewModel.setLaoName(laoName);
 
-    openSocialMediaHomeFragment();
     setupNavigationBar();
 
     subscribeToLaoName();

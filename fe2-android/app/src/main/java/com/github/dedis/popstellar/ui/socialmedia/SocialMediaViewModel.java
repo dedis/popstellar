@@ -45,7 +45,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * LiveData objects for capturing events
    */
-  private final MutableLiveData<Integer> mCurrentSelectedItem = new MutableLiveData<>(0);
+  private final MutableLiveData<Integer> mCurrentSelectedItem =
+      new MutableLiveData<>(R.id.social_media_home_menu);
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();

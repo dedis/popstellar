@@ -41,9 +41,7 @@ public class DigitalCashActivity extends AppCompatActivity {
     setupBackButton();
 
     subscribeToSelectedItemEvents();
-    setTheIntent();
-
-    mViewModel.openHome();
+    getIntentData();
   }
 
   private void subscribeToSelectedItemEvents() {
@@ -58,7 +56,7 @@ public class DigitalCashActivity extends AppCompatActivity {
             });
   }
 
-  public void setTheIntent() {
+  public void getIntentData() {
     if (getIntent().getExtras() != null) {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
       mViewModel.subscribeToLao(id);
