@@ -14,6 +14,7 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -160,11 +161,9 @@ public class DigitalCashActivity extends AppCompatActivity {
   }
 
   private void handleOpenIssue() {
-    if (!mViewModel
-        .getCurrentLao()
-        .getValue()
-        .getOrganizer()
-        .equals(mViewModel.getKeyManager().getMainPublicKey())) {
+    PublicKey organizerKey = mViewModel.getCurrentLao().getValue().getOrganizer();
+    PublicKey myKey = mViewModel.getKeyManager().getMainPublicKey();
+    if (!myKey.equals(organizerKey)) {
       ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
     } else {
       openIssueFragment();
