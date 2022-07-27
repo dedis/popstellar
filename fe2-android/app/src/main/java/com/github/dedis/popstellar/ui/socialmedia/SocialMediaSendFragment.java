@@ -56,8 +56,8 @@ public class SocialMediaSendFragment extends Fragment {
   }
 
   private void sendNewChirp() {
-    // Trying to send a chirp when no LAO has been chosen in the application will not send it, will
-    // make a toast appear and will log the error
+    // Trying to send a chirp when no LAO has been chosen in the application will not send it, it will
+    // make a toast appear and it will log the error
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
       ErrorUtils.logAndShow(getContext(), TAG, R.string.error_no_lao);
     } else {
