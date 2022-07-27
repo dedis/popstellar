@@ -70,8 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
 
   private void applyChanges() {
     networkManager.connect(entryBoxServerUrl.getText().toString());
-    Intent intent = new Intent(this, HomeActivity.class);
     Log.d(TAG, "Trying to open home");
-    startActivity(intent);
+    startActivity(HomeActivity.newIntent(this));
   }
 }
