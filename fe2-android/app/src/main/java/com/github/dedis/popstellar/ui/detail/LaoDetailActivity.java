@@ -69,17 +69,6 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
-    mViewModel
-        .getCloseRollCallEvent()
-        .observe(
-            this,
-            booleanSingleEvent -> {
-              Boolean event = booleanSingleEvent.getContentIfNotHandled();
-              if (event != null) {
-                mViewModel.openLaoDetail(getSupportFragmentManager());
-              }
-            });
-
     subscribeWalletEvents();
 
     // Subscribe to "open start election" event

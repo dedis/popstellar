@@ -67,10 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Integer>> mAskCloseRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<PublicKey>> mPkRollCallEvent = new MutableLiveData<>();
@@ -584,7 +580,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public void closeRollCall() {
+  public void closeRollCall(FragmentManager manager) {
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -605,7 +601,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   Log.d(TAG, "closed the roll call");
                   currentRollCallId = "";
                   attendees.clear();
-                  mCloseRollCallEvent.setValue(new SingleEvent<>(true));
+                  openLaoDetail(manager);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -724,14 +720,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mNbAttendees;
   }
 
-  public LiveData<SingleEvent<Integer>> getAskCloseRollCallEvent() {
-    return mAskCloseRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
-    return mCloseRollCallEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getCreatedRollCallEvent() {
     return mCreatedRollCallEvent;
   }
@@ -809,11 +797,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    * Methods that modify the state or post an Event to update the UI.
    */
   public void openHome(Activity activity) {
-    if (currentRollCallId.equals("")) {
-      activity.startActivity(HomeActivity.newIntent(activity));
-    } else {
-      mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_home));
-    }
+    activity.startActivity(HomeActivity.newIntent(activity));
   }
 
   public void openLaoDetail(FragmentManager manager) {
@@ -822,14 +806,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   }
 
   public void openIdentity(FragmentManager manager) {
-    if (currentRollCallId.equals("")) {
-      LaoDetailActivity.setCurrentFragment(
-          manager,
-          R.id.fragment_identity,
-          () -> IdentityFragment.newInstance(keyManager.getMainPublicKey()));
-    } else {
-      mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
-    }
+    LaoDetailActivity.setCurrentFragment(
+        manager,
+        R.id.fragment_identity,
+        () -> IdentityFragment.newInstance(keyManager.getMainPublicKey()));
   }
 
   public void openSocialMedia(Activity activity) {
