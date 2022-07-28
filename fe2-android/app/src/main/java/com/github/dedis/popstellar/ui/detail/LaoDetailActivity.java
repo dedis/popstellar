@@ -317,7 +317,7 @@ public class LaoDetailActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 startActivity(
-                    SocialMediaActivity.newInstance(
+                    SocialMediaActivity.newIntent(
                         this,
                         mViewModel.getCurrentLaoValue().getId(),
                         mViewModel.getCurrentLaoValue().getName()));

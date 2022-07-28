@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -46,46 +47,19 @@ public final class LaunchFragment extends Fragment {
 
     setupLaunchButton();
     setupCancelButton();
-
-    // Subscribe to "launch LAO" event
-    mHomeViewModel
-        .getLaunchNewLaoEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                launchLao();
-              }
-            });
-
-    // Subscribe to "cancel launch" event
-    mHomeViewModel
-        .getCancelNewLaoEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                cancelLaoLaunch();
-              }
-            });
   }
 
   private void setupLaunchButton() {
-    mLaunchFragBinding.buttonLaunch.setOnClickListener(v -> mHomeViewModel.launchNewLao());
+    mLaunchFragBinding.buttonLaunch.setOnClickListener(
+        v -> mHomeViewModel.launchLao(requireActivity()));
   }
 
   private void setupCancelButton() {
-    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(v -> mHomeViewModel.cancelNewLao());
-  }
-
-  private void launchLao() {
-    mHomeViewModel.launchLao();
-  }
-
-  private void cancelLaoLaunch() {
-    mLaunchFragBinding.entryBoxLaunch.getText().clear();
-    mHomeViewModel.openHome();
+    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(
+        v -> {
+          mLaunchFragBinding.entryBoxLaunch.getText().clear();
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+        });
   }
 }
