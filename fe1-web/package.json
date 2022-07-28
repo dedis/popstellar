@@ -139,8 +139,5 @@
     "typescript": "^4.4.4",
     "zip-build": "^1.5.0"
   },
-  "jest": {
-    "setupFilesAfterEnv": ["jest/setupAfterEnv.js"]
-  },
   "private": true
 }

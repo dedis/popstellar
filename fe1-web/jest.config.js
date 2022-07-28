@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'jest-expo',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  setupFilesAfterEnv: ["jest-extended"],
+  setupFilesAfterEnv: ["jest-extended", "./jest/setupAfterEnv.js"],
   testPathIgnorePatterns: ["/node_modules/"],
   testMatch: [ "**/?(*.)+(spec|test).[jt]s?(x)" ],
   moduleNameMapper: {
