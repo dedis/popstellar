@@ -67,10 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
-      new MutableLiveData<>(new SingleEvent<>(false));
-
-  private final MutableLiveData<SingleEvent<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Integer>> mAskCloseRollCallEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
@@ -100,6 +96,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
@@ -723,8 +720,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mWitnessMessages;
   }
 
-  public LiveData<SingleEvent<Integer>> getNbAttendeesEvent() {
-    return mNbAttendeesEvent;
+  public LiveData<Integer> getNbAttendees() {
+    return mNbAttendees;
   }
 
   public LiveData<SingleEvent<Integer>> getAskCloseRollCallEvent() {
@@ -848,7 +845,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   }
 
   public void endElectionEvent() {
-    mEndElectionEvent.postValue(new SingleEvent<>(true));
+    // TODO This is not implemented ?
   }
 
   public void setShowProperties(boolean show) {
@@ -953,7 +950,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
             manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
 
         // this to display the initial number of attendees
-        mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
+        mNbAttendees.postValue(attendees.size());
       }
     } else {
       if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
@@ -1024,7 +1021,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
       attendees.add(attendee);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-      mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
+      mNbAttendees.postValue(attendees.size());
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
       witnesses.add(attendee);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));

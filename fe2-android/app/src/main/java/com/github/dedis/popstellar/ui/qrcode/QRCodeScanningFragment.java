@@ -235,15 +235,12 @@ public final class QRCodeScanningFragment extends Fragment {
 
   void observeNbAttendeesEvent() {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
-        .getNbAttendeesEvent()
+        .getNbAttendees()
         .observe(
             getViewLifecycleOwner(),
-            integerEvent -> {
-              Integer event = integerEvent.getContentIfNotHandled();
-              if (event != null) {
-                nbAttendees = event;
-                mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
-              }
+            attendees -> {
+              nbAttendees = attendees;
+              mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
             });
   }
 
