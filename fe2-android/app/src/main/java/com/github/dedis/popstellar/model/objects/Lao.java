@@ -79,6 +79,83 @@ public final class Lao {
     pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
+  /**
+   * Copy constructor
+   *
+   * @param lao the lao to be deep copied in a new object
+   */
+  public Lao(Lao lao) {
+    this.channel = new Channel(lao.channel);
+    this.id = lao.id;
+    this.name = lao.name;
+    this.lastModified = lao.lastModified;
+    this.creation = lao.creation;
+    this.organizer = new PublicKey(lao.organizer);
+    this.modificationId = new MessageID(lao.modificationId);
+    this.witnesses = lao.witnesses.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.witnessMessages =
+        lao.witnessMessages.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new MessageID(entry.getKey()),
+                    entry -> new WitnessMessage(entry.getValue())));
+    this.pendingUpdates =
+        lao.pendingUpdates.stream().map(PendingUpdate::new).collect(Collectors.toSet());
+    this.rollCalls =
+        lao.rollCalls.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> new RollCall(entry.getValue())));
+    this.elections =
+        lao.elections.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> new Election(entry.getValue())));
+    this.allChirps =
+        lao.allChirps.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new MessageID(entry.getKey()), entry -> new Chirp(entry.getValue())));
+    this.chirpsByUser =
+        lao.chirpsByUser.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry ->
+                        entry.getValue().stream()
+                            .map(MessageID::new)
+                            .collect(Collectors.toList())));
+    this.messageIdToElectInstance =
+        lao.messageIdToElectInstance.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new MessageID(entry.getKey()),
+                    entry -> new ElectInstance(entry.getValue())));
+    this.keyToNode =
+        lao.keyToNode.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry -> new ConsensusNode(entry.getValue())));
+    this.pubKeyByHash =
+        lao.pubKeyByHash.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> new PublicKey(entry.getValue())));
+    this.transactionHistoryByUser =
+        lao.transactionHistoryByUser.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry ->
+                        entry.getValue().stream()
+                            .map(TransactionObject::new)
+                            .collect(Collectors.toList())));
+    this.transactionByUser =
+        lao.transactionByUser.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry ->
+                        entry.getValue().stream()
+                            .map(TransactionObject::new)
+                            .collect(Collectors.toList())));
+  }
+
   public void updateRollCall(String prevId, RollCall rollCall) {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");

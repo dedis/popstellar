@@ -1,10 +1,13 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** Class representing a Node for consensus. */
 public final class ConsensusNode {
@@ -19,6 +22,14 @@ public final class ConsensusNode {
     this.publicKey = publicKey;
     this.electInstances = new HashSet<>();
     this.acceptedMessageIds = new HashSet<>();
+  }
+
+  public ConsensusNode(ConsensusNode consensusNode) {
+    this.publicKey = consensusNode.publicKey;
+    this.acceptedMessageIds =
+        consensusNode.acceptedMessageIds.stream().map(MessageID::new).collect(Collectors.toSet());
+    this.electInstances =
+        consensusNode.electInstances.stream().map(ElectInstance::new).collect(Collectors.toSet());
   }
 
   public PublicKey getPublicKey() {
@@ -81,6 +92,7 @@ public final class ConsensusNode {
     this.acceptedMessageIds.add(electMessageId);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 
 public final class ConsensusKey {
@@ -12,6 +14,10 @@ public final class ConsensusKey {
     this.type = type;
     this.id = id;
     this.property = property;
+  }
+
+  public ConsensusKey(ConsensusKey key) {
+    this(key.type, key.id, key.property);
   }
 
   public String getType() {
@@ -46,6 +52,7 @@ public final class ConsensusKey {
         && Objects.equals(property, that.property);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format("ConsensusKey{id='%s', type='%s', property='%s'}", id, type, property);

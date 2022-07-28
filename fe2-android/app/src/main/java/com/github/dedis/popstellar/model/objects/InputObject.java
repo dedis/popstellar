@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -19,6 +21,12 @@ public class InputObject {
     this.txOutIndex = txOutIndex;
   }
 
+  public InputObject(InputObject inputObject) {
+    this.txOutHash = inputObject.txOutHash;
+    this.txOutIndex = inputObject.txOutIndex;
+    this.script = new ScriptInputObject(inputObject.script);
+  }
+
   public String getTxOutHash() {
     return txOutHash;
   }
@@ -35,6 +43,7 @@ public class InputObject {
     return script.getPubKey();
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "InputObject{"

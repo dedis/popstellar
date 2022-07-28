@@ -5,6 +5,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,5 +116,20 @@ public class LAORepository {
 
   public Map<MessageID, MessageGeneral> getMessageById() {
     return messageById;
+  }
+
+  public Optional<LaoView> getLao(String id) {
+    if (laoById.containsKey(id)) {
+      return Optional.of(new LaoView(laoById.get(id).getLao()));
+    }
+    return Optional.empty();
+  }
+
+  public void updateLao(Lao lao) {
+    if (lao == null) {
+      throw new IllegalArgumentException();
+    }
+    Lao deepCopyLao = new Lao(lao);
+    laoById.put(deepCopyLao.getId(), new LAOState(deepCopyLao));
   }
 }

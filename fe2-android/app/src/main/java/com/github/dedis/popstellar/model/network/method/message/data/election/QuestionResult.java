@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
@@ -17,6 +19,10 @@ public class QuestionResult {
     }
     this.ballotOption = ballotOption;
     this.count = count;
+  }
+
+  public QuestionResult(QuestionResult questionResult) {
+    this(questionResult.ballotOption, questionResult.count);
   }
 
   public String getBallot() {
@@ -45,6 +51,7 @@ public class QuestionResult {
     return Objects.hash(ballotOption, count);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "QuestionResult{" + "ballotOption='" + ballotOption + '\'' + ", count=" + count + '}';

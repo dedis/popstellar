@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
@@ -32,6 +34,14 @@ public class ElectionQuestion {
     this.writeIn = writeIn;
     this.votingMethod = votingMethod;
     this.id = Election.generateElectionQuestionId(electionId, question);
+  }
+
+  public ElectionQuestion(ElectionQuestion electionQuestion) {
+    this.id = electionQuestion.id;
+    this.question = electionQuestion.question;
+    this.votingMethod = electionQuestion.votingMethod;
+    this.ballotOptions = new ArrayList<>(electionQuestion.ballotOptions);
+    this.writeIn = electionQuestion.writeIn;
   }
 
   public String getId() {
@@ -76,6 +86,7 @@ public class ElectionQuestion {
         getId(), getVotingMethod(), getWriteIn(), getBallotOptions(), getQuestion());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "ElectionQuestion{"

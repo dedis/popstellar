@@ -28,6 +28,16 @@ public class Chirp {
     this.id = id;
   }
 
+  public Chirp(Chirp chirp) {
+    this.id = new MessageID(chirp.id);
+    this.channel = new Channel(chirp.channel);
+    this.sender = new PublicKey(chirp.sender);
+    this.text = chirp.text;
+    this.timestamp = chirp.timestamp;
+    this.isDeleted = chirp.isDeleted;
+    this.parentId = new MessageID(chirp.parentId);
+  }
+
   public MessageID getId() {
     return id;
   }

@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TransactionObject {
 
@@ -41,6 +42,17 @@ public class TransactionObject {
     this.outputs = outputs;
     this.lockTime = lockTime;
     this.transactionId = transactionId;
+  }
+
+  public TransactionObject(TransactionObject transactionObject) {
+    this.channel = new Channel(transactionObject.channel);
+    this.version = transactionObject.version;
+    this.inputs =
+        transactionObject.inputs.stream().map(InputObject::new).collect(Collectors.toList());
+    this.outputs =
+        transactionObject.outputs.stream().map(OutputObject::new).collect(Collectors.toList());
+    this.lockTime = transactionObject.lockTime;
+    this.transactionId = transactionObject.transactionId;
   }
 
   public Channel getChannel() {

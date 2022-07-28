@@ -24,8 +24,8 @@ public class ElectionEncryptedVote {
    * @param questionId id of the question
    * @param encryptedVote encrypted uniaue indice of the chosen vote
    * @param writeInEnabled indicates if write in is enabled
-   * @param encryptedWriteIn
-   * @param electionId
+   * @param encryptedWriteIn whether the election allows write-in
+   * @param electionId the election id
    */
   public ElectionEncryptedVote(
       @NonNull String questionId,
@@ -43,6 +43,12 @@ public class ElectionEncryptedVote {
     } else {
       this.vote = encryptedVote;
     }
+  }
+
+  public ElectionEncryptedVote(ElectionEncryptedVote electionEncryptedVote) {
+    this.id = electionEncryptedVote.id;
+    this.questionId = electionEncryptedVote.questionId;
+    this.vote = electionEncryptedVote.vote;
   }
 
   @NonNull
@@ -79,6 +85,7 @@ public class ElectionEncryptedVote {
         && Objects.equals(getVote(), that.getVote());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "{" + "id='" + id + '\'' + ", questionId='" + questionId + '\'' + ", vote=" + vote + '}';

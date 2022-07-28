@@ -11,7 +11,8 @@ public class Base64URLData {
   protected final byte[] data;
 
   public Base64URLData(byte[] data) {
-    this.data = data;
+    // Deep copy of byte array
+    this.data = Arrays.copyOf(data, data.length);
   }
 
   public Base64URLData(String data) {

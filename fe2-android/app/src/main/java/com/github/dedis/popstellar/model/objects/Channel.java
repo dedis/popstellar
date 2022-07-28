@@ -25,6 +25,15 @@ public class Channel {
   public static final Channel ROOT = new Channel();
 
   /**
+   * Copy constructor
+   *
+   * @param channel the channel to be deep copied
+   */
+  public Channel(Channel channel) {
+    this.segments = new ArrayList<>(channel.segments);
+  }
+
+  /**
    * Create a Channel from the protocol string representation of it
    *
    * @param value of the channel

@@ -19,6 +19,12 @@ public class ScriptInputObject {
     this.sig = sig;
   }
 
+  public ScriptInputObject(ScriptInputObject scriptInputObject) {
+    this.type = scriptInputObject.type;
+    this.pubKeyRecipient = new PublicKey(scriptInputObject.pubKeyRecipient);
+    this.sig = new Signature(scriptInputObject.sig);
+  }
+
   public Signature getSig() {
     return sig;
   }

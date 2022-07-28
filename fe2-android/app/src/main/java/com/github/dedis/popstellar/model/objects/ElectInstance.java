@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class holding information of a ConsensusElect message and its current states including the
@@ -39,6 +40,21 @@ public final class ElectInstance {
     this.acceptorToMessageId = new HashMap<>();
 
     this.state = State.STARTING;
+  }
+
+  public ElectInstance(ElectInstance electInstance) {
+    this.messageId = new MessageID(electInstance.messageId);
+    this.channel = new Channel(electInstance.channel);
+    this.proposer = new PublicKey(electInstance.proposer);
+    this.elect = new ConsensusElect(electInstance.elect);
+    this.nodes = electInstance.nodes.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.acceptorToMessageId =
+        electInstance.acceptorToMessageId.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry -> new MessageID(entry.getValue())));
+    this.state = electInstance.state;
   }
 
   public MessageID getMessageId() {
@@ -94,6 +110,7 @@ public final class ElectInstance {
     return nodes;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(

@@ -26,6 +26,11 @@ public class PublicKey extends Base64URLData {
     verifier = new Ed25519Verify(this.data);
   }
 
+  public PublicKey(PublicKey organizer) {
+    super(organizer.data); // Deep copy of byte array is done in parent constructor
+    verifier = new Ed25519Verify(organizer.data);
+  }
+
   public boolean verify(Signature signature, Base64URLData data) {
     try {
       verifier.verify(signature.getData(), data.getData());

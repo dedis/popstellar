@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.model.objects.event.*;
@@ -7,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RollCall extends Event {
 
@@ -16,7 +18,7 @@ public class RollCall extends Event {
   private long creation;
   private long start;
   private long end;
-  private final MutableLiveData<EventState> state = new MutableLiveData<>();
+  private final MutableLiveData<EventState> state;
   private Set<PublicKey> attendees;
 
   private String location;
@@ -26,6 +28,7 @@ public class RollCall extends Event {
     this.id = id;
     this.persistentId = id;
     this.attendees = new HashSet<>();
+    this.state = new MutableLiveData<>();
   }
 
   public RollCall(String laoId, long creation, String name) {
@@ -35,6 +38,19 @@ public class RollCall extends Event {
     }
     this.name = name;
     this.creation = creation;
+  }
+
+  public RollCall(RollCall rollCall) {
+    this.id = rollCall.id;
+    this.persistentId = rollCall.persistentId;
+    this.name = rollCall.name;
+    this.creation = rollCall.creation;
+    this.start = rollCall.start;
+    this.end = rollCall.end;
+    this.state = new MutableLiveData<>(rollCall.state.getValue());
+    this.attendees = rollCall.attendees.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.location = rollCall.location;
+    this.description = rollCall.description;
   }
 
   public String getId() {
@@ -178,6 +194,7 @@ public class RollCall extends Event {
     return EventState.CLOSED.equals(state.getValue());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "RollCall{"

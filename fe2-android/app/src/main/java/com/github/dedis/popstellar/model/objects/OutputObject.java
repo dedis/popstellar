@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
 
 public class OutputObject {
@@ -15,6 +17,11 @@ public class OutputObject {
     this.script = script;
   }
 
+  public OutputObject(OutputObject outputObject) {
+    this.value = outputObject.value;
+    this.script = new ScriptOutputObject(outputObject.script);
+  }
+
   public long getValue() {
     return value;
   }
@@ -27,6 +34,7 @@ public class OutputObject {
     return script.getPubKeyHash();
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "OutputObject{" + "value=" + value + ", keyHash=" + getPubKeyHash() + '}';

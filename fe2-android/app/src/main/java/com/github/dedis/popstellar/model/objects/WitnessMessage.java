@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Class to model a message that needs to be signed by witnesses */
 public class WitnessMessage {
@@ -28,6 +29,14 @@ public class WitnessMessage {
   public WitnessMessage(MessageID messageId) {
     witnesses = new HashSet<>();
     this.messageId = messageId;
+  }
+
+  public WitnessMessage(WitnessMessage witnessMessage) {
+    this.messageId = new MessageID(witnessMessage.messageId);
+    this.witnesses =
+        witnessMessage.witnesses.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.title = witnessMessage.title;
+    this.description = witnessMessage.description;
   }
 
   /**

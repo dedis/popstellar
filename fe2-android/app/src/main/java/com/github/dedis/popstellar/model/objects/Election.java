@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
@@ -11,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublic
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Election extends Event {
 
@@ -35,7 +37,7 @@ public class Election extends Event {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private final MutableLiveData<EventState> state = new MutableLiveData<>();
+  private final MutableLiveData<EventState> state;
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
@@ -51,6 +53,54 @@ public class Election extends Event {
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
+    this.state = new MutableLiveData<>();
+  }
+
+  public Election(Election election) {
+    this.channel = new Channel(election.channel);
+    this.id = election.id;
+    this.name = election.name;
+    this.creation = election.creation;
+    this.start = election.start;
+    this.end = election.end;
+    this.electionKey = election.electionKey;
+    this.electionQuestions =
+        election.electionQuestions.stream().map(ElectionQuestion::new).collect(Collectors.toList());
+    this.electionVersion = election.electionVersion;
+    this.openVoteByPublicKey =
+        election.openVoteByPublicKey.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry ->
+                        entry.getValue().stream()
+                            .map(ElectionVote::new)
+                            .collect(Collectors.toList())));
+    this.encryptedVoteByPublicKey =
+        election.encryptedVoteByPublicKey.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new PublicKey(entry.getKey()),
+                    entry ->
+                        entry.getValue().stream()
+                            .map(ElectionEncryptedVote::new)
+                            .collect(Collectors.toList())));
+    this.messageMap =
+        election.messageMap.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> new MessageID(entry.getKey()),
+                    entry -> new PublicKey(entry.getValue())));
+    this.state = new MutableLiveData<>(election.state.getValue());
+    this.results =
+        election.results.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    Map.Entry::getKey,
+                    entry ->
+                        entry.getValue().stream()
+                            .map(QuestionResult::new)
+                            .collect(Collectors.toList())));
   }
 
   public String getElectionKey() {
@@ -347,6 +397,7 @@ public class Election extends Event {
     return encryptedVotes;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "Election{"

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.google.gson.annotations.SerializedName;
@@ -21,6 +23,13 @@ public final class ConsensusElect extends Data {
     this.creation = creation;
     this.key = new ConsensusKey(type, objId, property);
     this.value = value;
+  }
+
+  public ConsensusElect(ConsensusElect consensusElect) {
+    this.instanceId = consensusElect.instanceId;
+    this.key = new ConsensusKey(consensusElect.key);
+    this.creation = consensusElect.creation;
+    this.value = consensusElect.value; // This may break the deep copy principle
   }
 
   public String getInstanceId() {
@@ -70,6 +79,7 @@ public final class ConsensusElect extends Data {
         && java.util.Objects.equals(value, that.value);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(
