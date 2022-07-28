@@ -60,7 +60,7 @@ public class RollCallTokenFragment extends Fragment {
         mLaoDetailViewModel.getCurrentLao().getValue().getRollCall(rollCallId);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + rollCallId);
-      mLaoDetailViewModel.openLaoWallet();
+      mLaoDetailViewModel.openLaoWallet(getParentFragmentManager());
     } else {
       rollCall = optRollCall.get();
     }
@@ -73,7 +73,7 @@ public class RollCallTokenFragment extends Fragment {
       pk = token.getPublicKey().getEncoded();
     } catch (KeyException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
-      mLaoDetailViewModel.openLaoWallet();
+      mLaoDetailViewModel.openLaoWallet(getParentFragmentManager());
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
@@ -92,6 +92,6 @@ public class RollCallTokenFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     mRollCallTokenFragmentBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openLaoWallet());
+        clicked -> mLaoDetailViewModel.openLaoWallet(getParentFragmentManager()));
   }
 }

@@ -52,7 +52,7 @@ public class AttendeesListFragment extends Fragment {
     Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + id);
-      mLaoDetailViewModel.openLaoWallet();
+      mLaoDetailViewModel.openLaoWallet(getParentFragmentManager());
     } else {
       rollCall = optRollCall.get();
     }
@@ -70,7 +70,7 @@ public class AttendeesListFragment extends Fragment {
     setupAttendeesListAdapter();
 
     mAttendeesListBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openLaoWallet());
+        clicked -> mLaoDetailViewModel.openLaoWallet(getParentFragmentManager()));
   }
 
   private void setupAttendeesListAdapter() {

@@ -35,6 +35,7 @@ import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
+import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -66,7 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionResultsEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionFragmentEvent =
@@ -743,10 +743,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mWitnessMessages;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenLaoWalletEvent() {
-    return mOpenLaoWalletEvent;
-  }
-
   public LiveData<SingleEvent<Integer>> getNbAttendeesEvent() {
     return mNbAttendeesEvent;
   }
@@ -1008,8 +1004,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     }
   }
 
-  public void openLaoWallet() {
-    mOpenLaoWalletEvent.postValue(new SingleEvent<>(true));
+  public void openLaoWallet(FragmentManager manager) {
+    LaoDetailActivity.setCurrentFragment(
+        manager, R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   public void openRollCallToken(FragmentManager manager, String rollCallId) {
