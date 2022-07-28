@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
@@ -29,7 +28,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class LaoDetailActivity extends AppCompatActivity {
 
-  private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;
   private BottomNavigationView navbar;
 
@@ -83,9 +81,6 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
 
     subscribeWalletEvents();
-
-    // Subscribe to "open cast votes event" event
-    setupCastVotesFragment();
 
     // Subscribe to "open start election" event
     setupElectionStartFragment();
@@ -162,22 +157,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     builder.setTitle("You have to setup up your wallet before connecting.");
     builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
     builder.show();
-  }
-
-  private void setupCastVotesFragment() {
-    mViewModel
-        .getOpenCastVotes()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_cast_vote,
-                    CastVoteFragment::newInstance);
-              }
-            });
   }
 
   private void setupElectionStartFragment() {

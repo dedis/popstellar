@@ -67,7 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
 
@@ -658,10 +657,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    * Getters for MutableLiveData instances declared above
    */
 
-  public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
-    return mOpenCastVotesEvent;
-  }
-
   public ScanningAction getScanningAction() {
     return scanningAction;
   }
@@ -827,10 +822,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   public void openLaoDetail(FragmentManager manager) {
     LaoDetailActivity.setCurrentFragment(
         manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
-  }
-
-  public void openCastVotes() {
-    mOpenCastVotesEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openIdentity(FragmentManager manager) {

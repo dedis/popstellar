@@ -108,7 +108,10 @@ public class ElectionFragment extends Fragment {
           EventState state = election.getState().getValue();
           switch (state) {
             case OPENED:
-              laoDetailViewModel.openCastVotes();
+              LaoDetailActivity.setCurrentFragment(
+                  getParentFragmentManager(),
+                  R.id.fragment_cast_vote,
+                  CastVoteFragment::newInstance);
               break;
             case RESULTS_READY:
               LaoDetailActivity.setCurrentFragment(
