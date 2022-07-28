@@ -8,7 +8,6 @@ import ch.epfl.pop.pubsub.graph.validators.RollCallValidator.EVENT_HASH_PREFIX
 import spray.json._
 import util.examples.RollCall.CreateRollCallExamples.R_ID
 
-
 object OpenRollCallExamples {
 
   final val SENDER: PublicKey = PublicKey(Base64Data("gUSKTlXcSHfQmHbKYsa0obpotjoc-wwtkeKods9WBcY="))
@@ -44,7 +43,6 @@ object OpenRollCallExamples {
     List.empty,
     Some(wrongTimestampOpenRollCall)
   )
-
 
   val wrongIdOpenRollCall: OpenRollCall = OpenRollCall(invalidId, OPENS, NOT_STALE_OPENED_AT)
   final val MESSAGE_OPEN_ROLL_CALL_WRONG_ID: Message = new Message(

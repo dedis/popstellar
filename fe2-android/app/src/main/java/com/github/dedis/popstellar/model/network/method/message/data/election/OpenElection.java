@@ -1,9 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
 public final class OpenElection extends Data {

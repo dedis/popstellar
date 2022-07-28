@@ -7,13 +7,13 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 
 final case class Message(
-                          data: Base64Data,
-                          sender: PublicKey,
-                          signature: Signature,
-                          message_id: Hash,
-                          witness_signatures: List[WitnessSignaturePair],
-                          decodedData: Option[MessageData]
-                        ) {
+    data: Base64Data,
+    sender: PublicKey,
+    signature: Signature,
+    message_id: Hash,
+    witness_signatures: List[WitnessSignaturePair],
+    decodedData: Option[MessageData]
+) {
   def addWitnessSignature(ws: WitnessSignaturePair): Message =
     Message(data, sender, signature, message_id, ws :: witness_signatures, decodedData)
 
@@ -25,12 +25,12 @@ final case class Message(
 
 object Message extends Parsable {
   def apply(
-             data: Base64Data,
-             sender: PublicKey,
-             signature: Signature,
-             message_id: Hash,
-             witness_signatures: List[WitnessSignaturePair]
-           ): Message = {
+      data: Base64Data,
+      sender: PublicKey,
+      signature: Signature,
+      message_id: Hash,
+      witness_signatures: List[WitnessSignaturePair]
+  ): Message = {
     new Message(data, sender, signature, message_id, witness_signatures, None)
   }
 

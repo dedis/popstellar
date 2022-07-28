@@ -13,7 +13,7 @@ import RemovableTextInput from './RemovableTextInput';
  */
 
 const TextInputList = (props: IPropTypes) => {
-  const { onChange, placeholder } = props;
+  const { onChange, placeholder, testID } = props;
   const [idCount, setIdCount] = useState(1);
   const [userInputs, setUserInputs] = useState([{ id: 0, value: '' }]);
 
@@ -58,7 +58,7 @@ const TextInputList = (props: IPropTypes) => {
 
   return (
     <View>
-      {userInputs.map((option) => (
+      {userInputs.map((option, idx) => (
         <RemovableTextInput
           onChange={updateInput}
           onRemove={removeInput}
@@ -66,6 +66,7 @@ const TextInputList = (props: IPropTypes) => {
           value={option.value}
           placeholder={placeholder}
           key={option.id}
+          testID={testID ? `${testID}_option_${idx}` : undefined}
         />
       ))}
     </View>
@@ -75,10 +76,12 @@ const TextInputList = (props: IPropTypes) => {
 const propTypes = {
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  testID: PropTypes.string,
 };
 TextInputList.propTypes = propTypes;
 TextInputList.defaultProps = {
   placeholder: '',
+  testID: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

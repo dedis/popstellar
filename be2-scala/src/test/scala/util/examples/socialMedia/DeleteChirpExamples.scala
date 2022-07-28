@@ -6,7 +6,6 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia.DeleteChirp
 import ch.epfl.pop.model.objects._
 import spray.json._
 
-
 object DeleteChirpExamples {
 
   final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)

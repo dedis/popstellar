@@ -1,46 +1,12 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
-import static androidx.test.espresso.Espresso.onData;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endDateView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endTimeView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startDateView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startTimeView;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.addBallot;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.addQuestion;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.ballotOptionAtPosition;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.electionName;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.questionText;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.submit;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.versionChoice;
-import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.writeIn;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.when;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -52,28 +18,38 @@ import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSe
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
+
+import org.junit.*;
+import org.junit.rules.*;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.junit.MockitoJUnit;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
 import javax.inject.Inject;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
+
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.action.ViewActions.*;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.*;
+import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.when;
 
 @LargeTest
 @HiltAndroidTest
@@ -539,11 +515,17 @@ public class ElectionSetupFragmentTest {
     versionChoice().perform(click());
     onData(anything()).atPosition(0).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
+        .check(
+            matches(
+                withSpinnerText(
+                    containsString(ElectionVersion.OPEN_BALLOT.getStringBallotVersion()))));
 
     versionChoice().perform(click());
     onData(anything()).atPosition(1).perform(click());
     versionChoice()
-        .check(matches(withSpinnerText(containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
+        .check(
+            matches(
+                withSpinnerText(
+                    containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
   }
 }

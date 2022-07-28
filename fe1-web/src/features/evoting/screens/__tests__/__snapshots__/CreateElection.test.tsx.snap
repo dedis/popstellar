@@ -375,6 +375,7 @@ exports[`CreateElection renders correctly 1`] = `
                                   },
                                 ]
                               }
+                              testID="election_name_selector"
                               value=""
                             />
                           </View>
@@ -493,6 +494,7 @@ exports[`CreateElection renders correctly 1`] = `
                                     },
                                   ]
                                 }
+                                testID="question_selector_0"
                                 value=""
                               />
                             </View>
@@ -523,6 +525,7 @@ exports[`CreateElection renders correctly 1`] = `
                                     "flexDirection": "row",
                                   }
                                 }
+                                testID="question_0_ballots_option_0"
                               >
                                 <View
                                   style={
@@ -556,6 +559,7 @@ exports[`CreateElection renders correctly 1`] = `
                                         },
                                       ]
                                     }
+                                    testID="question_0_ballots_option_0_input"
                                     value=""
                                   />
                                 </View>
@@ -578,6 +582,7 @@ exports[`CreateElection renders correctly 1`] = `
                                       "marginLeft": 16,
                                     }
                                   }
+                                  testID="question_0_ballots_option_0_remove"
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
@@ -709,6 +714,7 @@ exports[`CreateElection renders correctly 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            testID="election_confirm_selector"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}

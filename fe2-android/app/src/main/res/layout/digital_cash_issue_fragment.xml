@@ -19,8 +19,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_select"/>
-
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_select" />
 
     <RadioGroup
       android:layout_width="wrap_content"
@@ -36,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/digital_cash_select_single_member"
-        android:checked="true"/>
+        android:checked="true" />
 
       <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -45,13 +44,13 @@
         android:layout_height="@dimen/spinner_height_digital_cash"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <AutoCompleteTextView
           android:id="@+id/digital_cash_issue_spinner_tv"
           android:hint="@string/digital_cash_select_lao_member"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:inputType="none"
-          />
+          android:inputType="none" />
       </com.google.android.material.textfield.TextInputLayout>
 
       <RadioButton
@@ -80,7 +79,8 @@
       android:layout_height="wrap_content"
       android:ems="10"
       android:hint="@string/digital_cash_amount"
-      android:inputType="numberDecimal"
+      android:inputType="numberSigned"
+      android:digits="0123456789"
       app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_issue"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

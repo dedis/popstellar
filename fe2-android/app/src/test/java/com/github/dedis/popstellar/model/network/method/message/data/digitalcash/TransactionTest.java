@@ -1,20 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
+import com.github.dedis.popstellar.model.objects.security.*;
 
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class TransactionTest {
   // Version
@@ -26,7 +21,8 @@ public class TransactionTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
+  private static final ScriptInput SCRIPTTXIN =
+      new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
@@ -102,7 +98,14 @@ public class TransactionTest {
     Signature sig = single.getScript().getSig();
     PublicKey pk = single.getScript().getPubkey();
 
-    assertTrue(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
+    assertTrue(
+        pk.verify(
+            sig,
+            new Base64URLData(
+                Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                        transactionModel.getOutputs(),
+                        Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()))
+                    .getBytes(StandardCharsets.UTF_8))));
 
     path = "protocol/examples/messageData/coin/post_transaction_bad_signature.json";
     validJson = JsonTestUtils.loadFile(path);
@@ -113,7 +116,13 @@ public class TransactionTest {
     sig = single.getScript().getSig();
     pk = single.getScript().getPubkey();
 
-    assertFalse(pk.verify(sig, new Base64URLData(Transaction.computeSigOutputsPairTxOutHashAndIndex(transactionModel.getOutputs(), Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex())).getBytes(StandardCharsets.UTF_8))));
+    assertFalse(
+        pk.verify(
+            sig,
+            new Base64URLData(
+                Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                        transactionModel.getOutputs(),
+                        Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()))
+                    .getBytes(StandardCharsets.UTF_8))));
   }
-
 }

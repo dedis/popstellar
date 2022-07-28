@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
 class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseElectionTest"
 
@@ -62,7 +62,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT))
   private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
   private final val messagesNotEnd: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING, MESSAGE_OPEN_ELECTION_WORKING)
-  private final val messages: List[Message] =  MESSAGE_END_ELECTION_WORKING :: messagesNotEnd
+  private final val messages: List[Message] = MESSAGE_END_ELECTION_WORKING :: messagesNotEnd
 
   private val keyPair: KeyPair = KeyPair()
   private val electionData: ElectionData = ElectionData(Hash(Base64Data.encode("election")), keyPair)
@@ -140,7 +140,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     })
     system.actorOf(dbActorMock)
   }
-
 
   private def mockDbCastVote: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -254,7 +253,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.actorOf(dbActorMock)
   }
 
-  //Setup Election
+  // Setup Election
   test("Setting up an election works as intended") {
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
@@ -342,7 +341,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //Key Election
+  // Key Election
   test("KeyElection works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
@@ -385,7 +384,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //Open Election
+  // Open Election
   test("Open up an election works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
@@ -431,7 +430,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Open up an election with invalid lao id fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_LAO_ID_RPC)
-   val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_LAO_ID_RPC)
+    val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_LAO_ID_RPC)
     message shouldBe a[Right[_, PipelineError]]
     messageStandardActor shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
@@ -455,7 +454,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //CastVote Election
+  // CastVote Election
   test("Casting a vote works as intended") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
@@ -532,7 +531,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
-    
+
   test("Casting a vote if election is not open should fail") {
     val dbActorRef = mockDbMissingOpenElectionMessage
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
@@ -547,7 +546,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
-  //End Election
+  // End Election
   test("Ending an election works as intended") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)

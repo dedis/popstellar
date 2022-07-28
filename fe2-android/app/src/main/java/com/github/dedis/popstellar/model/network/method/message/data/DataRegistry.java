@@ -10,10 +10,7 @@ import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
 import com.github.dedis.popstellar.utility.handler.data.DataHandler;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /** A registry of Data classes and handlers */
 public final class DataRegistry {

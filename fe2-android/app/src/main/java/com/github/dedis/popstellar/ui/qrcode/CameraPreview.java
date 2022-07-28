@@ -19,9 +19,7 @@ import android.Manifest;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.ViewGroup;
+import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;

@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 import util.examples.Election.CastVoteElectionExamples.VOTE_ID
 
-
 object EndElectionExamples {
 
   final val SENDER: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION

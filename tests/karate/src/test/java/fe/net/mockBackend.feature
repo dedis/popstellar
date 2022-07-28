@@ -42,11 +42,20 @@ Feature: Mock Backend
       """
         function(){
           var VerificationUtils = Java.type("fe.utils.verification.VerificationUtils")
-          return new VerificationUtils();
+          return new VerificationUtils()
         }
       """
 
     * def verificationUtils = call getVerificationUtils
+
+    * def getElectionVerification =
+      """
+        function (){
+          var ElectionVerification = Java.type("fe.utils.verification.ElectionVerification")
+          return new ElectionVerification()
+        }
+      """
+    * def electionVerification = call getElectionVerification
 
     * def  getConstants =
       """
@@ -54,6 +63,12 @@ Feature: Mock Backend
           var Consants = Java.type("common.utils.Constants")
           return new Consants()
         }
+      """
+    * def wait =
+      """
+          function(secs) {
+              java.lang.Thread.sleep(secs*1000)
+          }
       """
 
     * def constants = call getConstants

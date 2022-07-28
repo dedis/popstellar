@@ -10,7 +10,8 @@ public class ElectionVote {
   @SerializedName(value = "id")
   private final String id;
 
-  // Id of the object ElectionVote : Hash(“Vote”||election_id|| || JsonTestUtils.testData(castOpenVote);
+  // Id of the object ElectionVote : Hash(“Vote”||election_id|| ||
+  // JsonTestUtils.testData(castOpenVote);
   @SerializedName(value = "question")
   private final String questionId; // id of the question
 
@@ -29,11 +30,7 @@ public class ElectionVote {
    * @param electionId Id of the election
    */
   public ElectionVote(
-      String questionId,
-      Integer vote,
-      boolean writeInEnabled,
-      String writeIn,
-      String electionId) {
+      String questionId, Integer vote, boolean writeInEnabled, String writeIn, String electionId) {
 
     this.questionId = questionId;
     this.vote = writeInEnabled ? null : vote;
@@ -63,8 +60,8 @@ public class ElectionVote {
     }
     ElectionVote that = (ElectionVote) o;
     return Objects.equals(getQuestionId(), that.getQuestionId())
-            && Objects.equals(getId(), that.getId())
-            && Objects.equals(getVote(), that.getVote());
+        && Objects.equals(getId(), that.getId())
+        && Objects.equals(getVote(), that.getVote());
   }
 
   @Override
@@ -75,14 +72,14 @@ public class ElectionVote {
   @Override
   public String toString() {
     return "ElectionVote{"
-            + "id='"
-            + id
-            + '\''
-            + ", questionId='"
-            + questionId
-            + '\''
-            + ", vote="
-            + vote
-            + '}';
+        + "id='"
+        + id
+        + '\''
+        + ", questionId='"
+        + questionId
+        + '\''
+        + ", vote="
+        + vote
+        + '}';
   }
 }

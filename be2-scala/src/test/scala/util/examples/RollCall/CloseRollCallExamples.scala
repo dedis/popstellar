@@ -8,7 +8,6 @@ import ch.epfl.pop.pubsub.graph.validators.RollCallValidator.EVENT_HASH_PREFIX
 import spray.json._
 import util.examples.RollCall.CreateRollCallExamples.R_ID
 
-
 object CloseRollCallExamples {
 
   final val SENDER: PublicKey = PublicKey(Base64Data("gUSKTlXcSHfQmHbKYsa0obpotjoc-wwtkeKods9WBcY="))
@@ -18,7 +17,7 @@ object CloseRollCallExamples {
   final val NOT_STALE_CLOSED_AT = Timestamp(1649089861L)
   final val CLOSES: Hash = OpenRollCallExamples.UPDATE_ID
   final val UPDATE_ID: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, CLOSES.toString, NOT_STALE_CLOSED_AT.toString)
-  final val ATTENDEES: List[PublicKey]  = List(SENDER)
+  final val ATTENDEES: List[PublicKey] = List(SENDER)
 
   val invalidTimestamp: Timestamp = Timestamp(0)
   val invalidId: Hash = Hash(Base64Data.encode("wrong"))
@@ -45,7 +44,6 @@ object CloseRollCallExamples {
     Some(wrongTimestampCloseRollCall)
   )
 
-
   val wrongIdCloseRollCall: CloseRollCall = CloseRollCall(invalidId, CLOSES, NOT_STALE_CLOSED_AT, ATTENDEES)
   final val MESSAGE_CLOSE_ROLL_CALL_WRONG_ID: Message = new Message(
     Base64Data.encode(wrongIdCloseRollCall.toJson.toString),
@@ -66,7 +64,6 @@ object CloseRollCallExamples {
     List.empty,
     Some(wrongClosesCloseRollCall)
   )
-
 
   val wrongAlreadyClosedCloseRollCall: CloseRollCall = CloseRollCall(CLOSES, CLOSES, NOT_STALE_CLOSED_AT, ATTENDEES)
   final val MESSAGE_CLOSE_ROLL_CALL_ALREADY_CLOSED: Message = new Message(

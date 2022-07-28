@@ -22,5 +22,4 @@
     app:labelVisibilityMode="labeled"
     app:menu="@menu/digital_cash_menu" />
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>

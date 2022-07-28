@@ -1,19 +1,13 @@
 package com.github.dedis.popstellar.ui.pages.home;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
 
-public class ConnectingPageObject {
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-  @IdRes
-  public static int connectingFragmentContainerId() {
-    return R.id.fragment_container_connecting;
-  }
+public class ConnectingPageObject {
 
   public static ViewInteraction connectingText() {
     return onView(withId(R.id.connecting_text));

@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 import util.examples.Election.OpenElectionExamples.workingOpenElection
 
-
 object KeyElectionExamples {
 
   final val SENDER_ELECTION: PublicKey = SetupElectionExamples.SENDER_SETUPELECTION
@@ -39,7 +38,6 @@ object KeyElectionExamples {
     List.empty,
     Some(wrongElectionIdKeyElection)
   )
-
 
   final val MESSAGE_KEY_ELECTION_WRONG_OWNER: Message = new Message(
     Base64Data.encode(workingKeyElection.toJson.toString),

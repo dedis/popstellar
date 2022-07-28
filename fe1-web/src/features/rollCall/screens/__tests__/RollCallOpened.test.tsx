@@ -72,7 +72,7 @@ const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
@@ -143,7 +143,7 @@ describe('RollCallOpened', () => {
   it('shows toast when adding an attendee manually', async () => {
     const { getByTestId } = renderRollCallOpened();
 
-    const addAttendeeButton = getByTestId('roll-call-open-add-manually');
+    const addAttendeeButton = getByTestId('roll_call_open_add_manually');
     fireEvent.press(addAttendeeButton);
 
     const textInput = getByTestId('confirm-modal-input');
@@ -159,7 +159,7 @@ describe('RollCallOpened', () => {
   it('shows toast when trying to add an incorrect token manually', async () => {
     const { getByTestId } = renderRollCallOpened();
 
-    const addAttendeeButton = getByTestId('roll-call-open-add-manually');
+    const addAttendeeButton = getByTestId('roll_call_open_add_manually');
     fireEvent.press(addAttendeeButton);
 
     const textInput = getByTestId('confirm-modal-input');
@@ -174,7 +174,7 @@ describe('RollCallOpened', () => {
   });
 
   it('closes correctly with no attendee', async () => {
-    const button = renderRollCallOpened().getByTestId('roll-call-open-stop-scanning');
+    const button = renderRollCallOpened().getByTestId('roll_call_open_stop_scanning');
 
     await waitFor(() => {
       expect(mockGenerateToken).toHaveBeenCalled();
@@ -190,7 +190,7 @@ describe('RollCallOpened', () => {
   });
 
   it('closes correctly with two attendees', async () => {
-    const button = renderRollCallOpened().getByTestId('roll-call-open-stop-scanning');
+    const button = renderRollCallOpened().getByTestId('roll_call_open_stop_scanning');
 
     await waitFor(() => {
       fakeQrReaderScan(mockPublicKey2.valueOf());

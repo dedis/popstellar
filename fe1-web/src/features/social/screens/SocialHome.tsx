@@ -38,14 +38,18 @@ const SocialHome = (props: IPropTypes) => {
   const toast = useToast();
 
   const publishChirp = () => {
-    requestAddChirp(currentUserPublicKey, inputChirp).catch((err) => {
-      console.error('Failed to post chirp, error:', err);
-      toast.show(`Failed to post chirp, error: ${err}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
+    requestAddChirp(currentUserPublicKey, inputChirp)
+      .then(() => {
+        setInputChirp('');
+      })
+      .catch((err) => {
+        console.error('Failed to post chirp, error:', err);
+        toast.show(`Failed to post chirp, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
-    });
   };
 
   const chirps = useMemo(makeChirpsList, []);
@@ -62,6 +66,8 @@ const SocialHome = (props: IPropTypes) => {
       </View>
       <View style={styles.userFeed}>
         <TextInputChirp
+          testID="new_chirp"
+          value={inputChirp}
           onChangeText={setInputChirp}
           onPress={publishChirp}
           // The publish button is disabled when the user public key is not defined

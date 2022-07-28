@@ -1,17 +1,14 @@
 package com.github.dedis.popstellar.model.objects.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class KeyPairTest {
 
@@ -58,5 +55,4 @@ public class KeyPairTest {
     PublicKey pk = new PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=");
     assertEquals("SGnNfF533PBEUMYPMqBSQY83z5U=", pk.computeHash());
   }
-
 }

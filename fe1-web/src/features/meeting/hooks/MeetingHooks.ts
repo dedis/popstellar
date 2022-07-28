@@ -15,16 +15,8 @@ export namespace MeetingHooks {
   };
 
   /**
-   * Gets the current lao id
-   * @returns The current lao id
+   * Returns the currently active lao id or throws an error if there is none.
+   * Should be used inside react components
    */
-  export const useCurrentLaoId = () => {
-    const laoId = useMeetingContext().useCurrentLaoId();
-
-    if (!laoId) {
-      throw new Error('Error encountered while obtaining current lao id: no active LAO');
-    }
-
-    return laoId;
-  };
+  export const useAssertCurrentLaoId = () => useMeetingContext().useAssertCurrentLaoId();
 }

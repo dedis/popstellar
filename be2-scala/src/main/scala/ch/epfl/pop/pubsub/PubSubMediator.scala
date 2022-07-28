@@ -23,29 +23,28 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
   private var channelMap: mutable.Map[Channel, mutable.Set[ActorRef]] = mutable.Map.empty
   lazy val dbActor: AskableActorRef = DbActor.getInstance
 
-
   private def subscribeTo(channel: Channel, clientActorRef: ActorRef): Future[PubSubMediatorMessage] = {
     val askChannelExistence = dbActor ? DbActor.ChannelExists(channel)
     askChannelExistence.transformWith {
       // if the channel exists in db, we can start thinking about subscribing a client to it
       case Success(_) => channelMap.get(channel) match {
-        // if we have people already subscribed to said channel
-        case Some(set) =>
-          if (set.contains(clientActorRef)) {
-            log.info(s"$clientActorRef already subscribed to '$channel'")
-            Future(SubscribeToAck(channel))
-          } else {
-            log.info(s"Subscribing $clientActorRef to channel '$channel'")
-            set += clientActorRef
-            Future(SubscribeToAck(channel))
-          }
+          // if we have people already subscribed to said channel
+          case Some(set) =>
+            if (set.contains(clientActorRef)) {
+              log.info(s"$clientActorRef already subscribed to '$channel'")
+              Future(SubscribeToAck(channel))
+            } else {
+              log.info(s"Subscribing $clientActorRef to channel '$channel'")
+              set += clientActorRef
+              Future(SubscribeToAck(channel))
+            }
 
-        // if we have no one subscribed to said channel
-        case _ =>
-          log.info(s"Subscribing $clientActorRef to channel '$channel'")
-          channelMap = channelMap ++ List(channel -> mutable.Set(clientActorRef))
-          Future(SubscribeToAck(channel))
-      }
+          // if we have no one subscribed to said channel
+          case _ =>
+            log.info(s"Subscribing $clientActorRef to channel '$channel'")
+            channelMap = channelMap ++ List(channel -> mutable.Set(clientActorRef))
+            Future(SubscribeToAck(channel))
+        }
 
       // db doesn't recognize the channel, thus mediator cannot subscribe anyone to a non existing channel
       case _ =>
@@ -88,7 +87,6 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
     }
   }
 
-
   override def receive: Receive = LoggingReceive {
 
     case PubSubMediator.SubscribeTo(channel, clientActorRef) =>
@@ -101,7 +99,7 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
     case PubSubMediator.Propagate(channel, message) => broadcast(channel, message)
 
-    case m@_ =>
+    case m @ _ =>
       log.error(s"PubSubMediator received an unknown message : $m")
   }
 }
@@ -120,7 +118,6 @@ object PubSubMediator {
 
   // propagate a message to clients subscribed to a particular channel
   final case class Propagate(channel: Channel, message: Message) extends Event
-
 
   sealed trait PubSubMediatorMessage
 

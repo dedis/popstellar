@@ -15,7 +15,6 @@ import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
 import scala.concurrent.Await
 import scala.util.Success
 
-
 object RollCallValidator extends MessageDataContentValidator with EventValidator {
 
   val rollCallValidator = new RollCallValidator(DbActor.getInstance)
@@ -36,19 +35,20 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   override val EVENT_HASH_PREFIX: String = "R"
 
-  /**
-   * @param laoId  LAO id of the channel
-   * @return       Rollcall Data of the channel
-   */
+  /** @param laoId
+    *   LAO id of the channel
+    * @return
+    *   Rollcall Data of the channel
+    */
   private def getRollCallData(laoId: Hash): Option[RollCallData] = {
     val ask = dbActorRef ? DbActor.ReadRollCallData(laoId)
     Await.ready(ask, duration).value match {
       case Some(Success(DbActorReadRollCallDataAck(rollcallData))) => Some(rollcallData)
-      case _ => None
+      case _                                                       => None
     }
   }
 
-  //remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
+  // remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
 
@@ -81,13 +81,13 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  /**
-   * Validates an rpcMessage for OpenRollCall message
-   *
-   * @param rpcMessage rpc message to validate
-   * @return GraphMessage: passes the rpcMessages to Left if successful
-   *         right with pipeline error
-   */
+  /** Validates an rpcMessage for OpenRollCall message
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def validateOpenRollCall(rpcMessage: JsonRpcRequest, validatorName: String = "OpenRollCall"): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, validatorName, rpcMessage.id)
 
@@ -96,7 +96,10 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val data: IOpenRollCall = message.decodedData.get.asInstanceOf[IOpenRollCall]
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(
-          EVENT_HASH_PREFIX, laoId.toString, data.opens.toString, data.opened_at.toString
+          EVENT_HASH_PREFIX,
+          laoId.toString,
+          data.opens.toString,
+          data.opened_at.toString
         )
 
         val sender: PublicKey = message.sender
@@ -128,14 +131,13 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  /**
-   * Validates the rpcMessage for a ReOpenRollCall
-   * similar to [[validateOpenRollCall]]
-   *
-   * @param rpcMessage rpc message to validate
-   * @return GraphMessage: passes the rpcMessages to Left if successful
-   *         right with pipeline error
-   */
+  /** Validates the rpcMessage for a ReOpenRollCall similar to [[validateOpenRollCall]]
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     validateOpenRollCall(rpcMessage, "ReopenRollCall")
   }
@@ -149,7 +151,10 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(
-          EVENT_HASH_PREFIX, laoId.toString, data.closes.toString, data.closed_at.toString
+          EVENT_HASH_PREFIX,
+          laoId.toString,
+          data.closes.toString,
+          data.closed_at.toString
         )
 
         val sender: PublicKey = message.sender
@@ -180,7 +185,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
       case Some(data) => (data.state == OPEN || data.state == REOPEN) && data.updateId == closes
-      case _ => false
+      case _          => false
     }
   }
 }

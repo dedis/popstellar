@@ -9,7 +9,6 @@ import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
 
-
 object Validator {
 
   private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
@@ -20,54 +19,54 @@ object Validator {
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequest) => validateRpcRequest(message)
-      case message@(_: JsonRpcResponse) => validateRpcResponse(message)
-      case _ => Right(validationError(None)) // should never happen
-    }
-    case graphMessage@_ => graphMessage
+        case message @ (_: JsonRpcRequest)  => validateRpcRequest(message)
+        case message @ (_: JsonRpcResponse) => validateRpcResponse(message)
+        case _                              => Right(validationError(None)) // should never happen
+      }
+    case graphMessage @ _ => graphMessage
   }
 
   private def validateMethodContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
-      case _: Broadcast => validateBroadcast(jsonRpcRequest)
-      case _: Catchup => validateCatchup(jsonRpcRequest)
-      case _: Publish => validatePublish(jsonRpcRequest)
-      case _: Subscribe => validateSubscribe(jsonRpcRequest)
-      case _: Unsubscribe => validateUnsubscribe(jsonRpcRequest)
-      case _ => Right(validationError(jsonRpcRequest.id))
-    }
+        case _: Broadcast   => validateBroadcast(jsonRpcRequest)
+        case _: Catchup     => validateCatchup(jsonRpcRequest)
+        case _: Publish     => validatePublish(jsonRpcRequest)
+        case _: Subscribe   => validateSubscribe(jsonRpcRequest)
+        case _: Unsubscribe => validateUnsubscribe(jsonRpcRequest)
+        case _              => Right(validationError(jsonRpcRequest.id))
+      }
     case Left(jsonRpcResponse: JsonRpcResponse) => Right(PipelineError(
-      ErrorCodes.SERVER_ERROR.id,
-      "Unsupported action: MethodValidator was given a response message",
-      jsonRpcResponse.id
-    ))
+        ErrorCodes.SERVER_ERROR.id,
+        "Unsupported action: MethodValidator was given a response message",
+        jsonRpcResponse.id
+      ))
     case _ => graphMessage
   }
 
   private def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
-      case _: Broadcast => validateMessage(jsonRpcRequest)
-      case _: Catchup => graphMessage
-      case _: Publish => validateMessage(jsonRpcRequest)
-      case _: Subscribe => graphMessage
-      case _: Unsubscribe => graphMessage
-      case _ => Right(validationError(jsonRpcRequest.id))
-    }
-    case graphMessage@_ => graphMessage
+        case _: Broadcast   => validateMessage(jsonRpcRequest)
+        case _: Catchup     => graphMessage
+        case _: Publish     => validateMessage(jsonRpcRequest)
+        case _: Subscribe   => graphMessage
+        case _: Unsubscribe => graphMessage
+        case _              => Right(validationError(jsonRpcRequest.id))
+      }
+    case graphMessage @ _ => graphMessage
   }
 
   def validateHighLevelMessage(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(_) => validateJsonRpcContent(graphMessage) match {
-      case Left(_) => validateMethodContent(graphMessage) match {
-        case Left(_) => validateMessageContent(graphMessage) match {
-          case Left(_) => graphMessage
-          case graphMessage@_ => graphMessage
-        }
-        case graphMessage@_ => graphMessage
+        case Left(_) => validateMethodContent(graphMessage) match {
+            case Left(_) => validateMessageContent(graphMessage) match {
+                case Left(_)          => graphMessage
+                case graphMessage @ _ => graphMessage
+              }
+            case graphMessage @ _ => graphMessage
+          }
+        case graphMessage @ _ => graphMessage
       }
-      case graphMessage@_ => graphMessage
-    }
-    case graphMessage@_ => graphMessage
+    case graphMessage @ _ => graphMessage
   }
 
   def validateMessageDataContent(rpcRequest: JsonRpcRequest, registry: MessageRegistry): GraphMessage = {
@@ -75,10 +74,10 @@ object Validator {
     registry.getValidator(_object, action) match {
       case Some(validator) => validator(rpcRequest)
       case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        s"MessageRegistry could not find any data validator for JsonRpcRequest : $rpcRequest'",
-        rpcRequest.getId
-      ))
+          ErrorCodes.SERVER_ERROR.id,
+          s"MessageRegistry could not find any data validator for JsonRpcRequest : $rpcRequest'",
+          rpcRequest.getId
+        ))
     }
   }
 
@@ -89,10 +88,10 @@ object Validator {
   def messageContentValidator(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(rpcRequest: JsonRpcRequest) => validateMessageDataContent(rpcRequest, messageRegistry)
     case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
-      ErrorCodes.SERVER_ERROR.id,
-      "'messageContentValidator' was called on a JsonRpcResponse, which by definition, does not contain any Message layer'",
-      rpcResponse.getId
-    ))
-    case graphMessage@_ => graphMessage
+        ErrorCodes.SERVER_ERROR.id,
+        "'messageContentValidator' was called on a JsonRpcResponse, which by definition, does not contain any Message layer'",
+        rpcResponse.getId
+      ))
+    case graphMessage @ _ => graphMessage
   }
 }

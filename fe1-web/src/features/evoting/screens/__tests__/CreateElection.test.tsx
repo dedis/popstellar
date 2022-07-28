@@ -17,7 +17,7 @@ import CreateElection from '../CreateElection';
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     getCurrentLao: () => mockLao,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     useCurrentLao: () => mockLao,
     useCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,

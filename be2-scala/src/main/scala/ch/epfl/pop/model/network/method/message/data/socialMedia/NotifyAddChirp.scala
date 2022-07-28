@@ -9,20 +9,20 @@ import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp}
 import spray.json._
 
 final case class NotifyAddChirp(
-                                 chirp_id: Hash,
-                                 channel: Channel,
-                                 timestamp: Timestamp
-                               ) extends MessageData {
+    chirp_id: Hash,
+    channel: Channel,
+    timestamp: Timestamp
+) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
   override val action: ActionType = ActionType.NOTIFY_ADD
 }
 
 object NotifyAddChirp extends Parsable {
   def apply(
-             chirp_id: Hash,
-             channel: Channel,
-             timestamp: Timestamp
-           ): NotifyAddChirp = new NotifyAddChirp(chirp_id, channel, timestamp)
+      chirp_id: Hash,
+      channel: Channel,
+      timestamp: Timestamp
+  ): NotifyAddChirp = new NotifyAddChirp(chirp_id, channel, timestamp)
 
   override def buildFromJson(payload: String): NotifyAddChirp = payload.parseJson.asJsObject.convertTo[NotifyAddChirp]
 }

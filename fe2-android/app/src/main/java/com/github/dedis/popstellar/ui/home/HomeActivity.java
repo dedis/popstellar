@@ -1,12 +1,8 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
-
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,21 +10,17 @@ import android.view.MenuItem;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.home.connecting.ConnectingActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
-import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
+import com.github.dedis.popstellar.ui.wallet.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -296,11 +288,12 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupHomeFragment() {
-    setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
   }
 
   private void setupScanFragment() {
-    setCurrentFragment(R.id.fragment_qrcode, QRCodeScanningFragment::new);
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
   }
 
   private void setupCameraPermissionFragment() {
@@ -310,12 +303,14 @@ public class HomeActivity extends AppCompatActivity {
             CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openConnect());
 
     setCurrentFragment(
+        getSupportFragmentManager(),
         R.id.fragment_camera_perm,
         () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
   private void setupLaunchFragment() {
-    setCurrentFragment(R.id.fragment_launch, LaunchFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_launch, LaunchFragment::newInstance);
   }
 
   private void setupConnectingActivity(String laoId) {
@@ -325,15 +320,20 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupWalletFragment() {
-    setCurrentFragment(R.id.fragment_wallet, WalletFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_wallet, WalletFragment::newInstance);
   }
 
   private void setupContentWalletFragment() {
-    setCurrentFragment(R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_content_wallet,
+        ContentWalletFragment::newInstance);
   }
 
   private void setupSeedWalletFragment() {
-    setCurrentFragment(R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
   }
 
   private void setupSettingsActivity() {
@@ -343,10 +343,8 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-    Intent intent = new Intent(this, SocialMediaActivity.class);
     Log.d(TAG, "Trying to open social media");
-    intent.putExtra(OPENED_FROM, TAG);
-    startActivity(intent);
+    startActivity(SocialMediaActivity.newInstance(this));
   }
 
   private void openLaoDetails(String laoId) {
@@ -367,24 +365,6 @@ public class HomeActivity extends AppCompatActivity {
       intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.CONTENT_WALLET_EXTRA);
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
-  }
-
-  /**
-   * Set the current fragment in the container of the activity
-   *
-   * @param id of the fragment
-   * @param fragmentSupplier provides the fragment if it is missing
-   */
-  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was not created yet, create it now
-    if (fragment == null) {
-      fragment = fragmentSupplier.get();
-    }
-
-    // Set the new fragment in the container
-    ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_home);
   }
 
   public void setupNavigationBar() {
@@ -455,5 +435,23 @@ public class HomeActivity extends AppCompatActivity {
         .postDelayed(
             () -> navbar.setSelectedItemId(R.id.home_home_menu),
             getResources().getInteger(R.integer.navigation_reversion_delay));
+  }
+
+  /** Factory method to create a fresh Intent that opens an HomeActivity */
+  public static Intent newIntent(Context ctx) {
+    return new Intent(ctx, HomeActivity.class);
+  }
+
+  /**
+   * Set the current fragment in the container of the home activity
+   *
+   * @param manager the manager of the activity
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    ActivityUtils.setFragmentInContainer(
+        manager, R.id.fragment_container_home, id, fragmentSupplier);
   }
 }

@@ -14,18 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.detail.event.pickers.DatePickerFragment;
-import com.github.dedis.popstellar.ui.detail.event.pickers.PickerConstant;
-import com.github.dedis.popstellar.ui.detail.event.pickers.TimePickerFragment;
+import com.github.dedis.popstellar.ui.detail.event.pickers.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Multiples Event Creation Fragment have in common that they implement start/end date and start/end
@@ -97,19 +92,22 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     startDateEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate);
+          openPickerDialog(
+              DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onStartDate);
         });
 
     endDateEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate);
+          openPickerDialog(
+              DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onEndDate);
         });
 
     startTimeEditText.setOnClickListener(
         v -> {
           clearDates();
-          openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime);
+          openPickerDialog(
+              TimePickerFragment.newInstance(), TimePickerFragment.TAG, this::onStartTime);
         });
 
     endTimeEditText.setOnClickListener(

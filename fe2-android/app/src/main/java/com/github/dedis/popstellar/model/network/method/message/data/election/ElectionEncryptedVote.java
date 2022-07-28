@@ -21,18 +21,23 @@ public class ElectionEncryptedVote {
   private final String vote;
 
   /**
-   * @param questionId       id of the question
-   * @param encryptedVote    encrypted uniaue indice of the chosen vote
-   * @param writeInEnabled   indicates if write in is enabled
+   * @param questionId id of the question
+   * @param encryptedVote encrypted uniaue indice of the chosen vote
+   * @param writeInEnabled indicates if write in is enabled
    * @param encryptedWriteIn
    * @param electionId
    */
   public ElectionEncryptedVote(
-          @NonNull String questionId, @NonNull String encryptedVote, @NonNull Boolean writeInEnabled, String encryptedWriteIn, @NonNull String electionId) {
+      @NonNull String questionId,
+      @NonNull String encryptedVote,
+      @NonNull Boolean writeInEnabled,
+      String encryptedWriteIn,
+      @NonNull String electionId) {
 
     this.questionId = questionId;
     this.id =
-            Election.generateEncryptedElectionVoteId(electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
+        Election.generateEncryptedElectionVoteId(
+            electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled);
     if (Boolean.TRUE.equals(writeInEnabled)) {
       this.vote = null;
     } else {
@@ -46,12 +51,12 @@ public class ElectionEncryptedVote {
   }
 
   @NonNull
-  public String getId(){
+  public String getId() {
     return id;
   }
 
   @NonNull
-  public String getQuestionId(){
+  public String getQuestionId() {
     return questionId;
   }
 
@@ -70,22 +75,12 @@ public class ElectionEncryptedVote {
     }
     ElectionEncryptedVote that = (ElectionEncryptedVote) o;
     return Objects.equals(getQuestionId(), that.getQuestionId())
-            && Objects.equals(getId(), that.getId())
-            && Objects.equals(getVote(), that.getVote());
+        && Objects.equals(getId(), that.getId())
+        && Objects.equals(getVote(), that.getVote());
   }
 
   @Override
   public String toString() {
-    return "{"
-            + "id='"
-            + id
-            + '\''
-            + ", questionId='"
-            + questionId
-            + '\''
-            + ", vote="
-            + vote
-            + '}';
+    return "{" + "id='" + id + '\'' + ", questionId='" + questionId + '\'' + ", vote=" + vote + '}';
   }
-
 }

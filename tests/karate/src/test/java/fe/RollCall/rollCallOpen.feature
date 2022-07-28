@@ -22,6 +22,6 @@ Feature: Open Roll Call
     # Roll Call specific verification
     And match verificationUtils.getObject(open_rc_string) == constants.ROLL_CALL
     * match verificationUtils.getAction(open_rc_string) == constants.OPEN
-    And match rollCallVerification.verifyRollCallUpdateId(open_rc_string) == true
+    And match (rollCallVerification.verifyRollCallUpdateId(open_rc_string, constants.OPEN)) == true
 
     And match backend.receiveNoMoreResponses() == true

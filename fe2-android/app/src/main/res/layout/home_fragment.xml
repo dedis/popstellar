@@ -25,7 +25,6 @@
       android:visibility="gone"
       app:layout_constraintTop_toTopOf="parent" />
 
-
     <LinearLayout
       android:id="@+id/welcome_screen"
       android:layout_width="match_parent"
@@ -38,13 +37,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_title_welcome"
-        style="@style/explication_welcome_style"/>
+        style="@style/explication_welcome_style" />
 
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_body_welcome"
-        style="@style/explication_text_style"/>
+        style="@style/explication_text_style" />
 
     </LinearLayout>
 
@@ -55,8 +54,7 @@
       android:visibility="invisible"
       android:layout_marginTop="@dimen/rv_margin_top"
       app:layout_constraintTop_toBottomOf="@id/home_title"
-      app:layout_constraintBottom_toBottomOf="parent"
-      >
+      app:layout_constraintBottom_toBottomOf="parent">
 
       <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lao_list"

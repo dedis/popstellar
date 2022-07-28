@@ -1,14 +1,16 @@
 package ch.epfl.pop.pubsub.graph
 
-/**
- * All errors encountered during the graph traversal is embedded inside a [[PipelineError]]
- *
- * @param code        error code of the error
- * @param description description of the error
- * @param rpcId       rpc-id of the client request (if available)
- *
- *                    Note: the rpcId is used later in the graph at the 'Answerer' stage
- */
+/** All errors encountered during the graph traversal is embedded inside a [[PipelineError]]
+  *
+  * @param code
+  *   error code of the error
+  * @param description
+  *   description of the error
+  * @param rpcId
+  *   rpc-id of the client request (if available)
+  *
+  * Note: the rpcId is used later in the graph at the 'Answerer' stage
+  */
 final case class PipelineError(code: Int, description: String, rpcId: Option[Int])
 
 object ErrorCodes extends Enumeration {

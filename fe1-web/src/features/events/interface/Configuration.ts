@@ -78,10 +78,10 @@ export interface EventInterface extends FeatureInterface {
 
 export interface EventCompositionConfiguration {
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
+   * Returns the currently active lao id or throws an error if there is none.
+   * Should be used inside react components
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash;
 
   /**
    * Gets whether the current user is organizer of the current lao
@@ -118,7 +118,7 @@ interface EventType {
 export type EventReactContext = Pick<
   EventCompositionConfiguration,
   /* lao */
-  | 'useCurrentLaoId'
+  | 'useAssertCurrentLaoId'
   | 'useIsLaoOrganizer'
   /* other */
   | 'eventTypes'

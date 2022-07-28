@@ -35,6 +35,27 @@ Feature: android page object
 
     # Roll Call Screen
     * def roll_call_action_selector = '#com.github.dedis.popstellar:id/roll_call_management_button'
+    * def roll_call_close_selector = '#com.github.dedis.popstellar:id/add_attendee_confirm'
+    * def roll_call_manual_selector = '#com.github.dedis.popstellar:id/permission_manual_rc'
+    * def allow_camera_selector = '#com.github.dedis.popstellar:id/allow_camera_button'
+    * def manual_add_text_selector = '#com.github.dedis.popstellar:id/manual_add_edit_text'
+    * def manual_add_confirm_selector = '#com.github.dedis.popstellar:id/manual_add_confirm'
+
+    # Election Screen
+    * def add_election_selector = '#com.github.dedis.popstellar:id/add_election'
+    * def election_name_selector = '#com.github.dedis.popstellar:id/election_setup_name'
+    * def election_question_selector = '#com.github.dedis.popstellar:id/election_question'
+    * def election_confirm_selector = '#com.github.dedis.popstellar:id/election_submit_button'
+    * def election_ballot_selector_1 = '#com.github.dedis.popstellar:id/new_ballot_option_text'
+    # This relies on the fact that the ballot 1 has already been modified with an input,
+    # which leaves the second ballot option the only one with the hint text
+    * def election_ballot_selector_2 = '//*[@text="ballot option"]'
+    * def election_management_selector = '#com.github.dedis.popstellar:id/election_management_button'
+    * def election_action_selector = '#com.github.dedis.popstellar:id/election_action_button'
+
+    # Cast vote screen
+    * def cast_vote_ballot_selector_2 = '//*[@text="choice 2"]'
+    * def cast_vote_button_selector = '#com.github.dedis.popstellar:id/cast_vote_button'
 
   @name=basic_setup
   Scenario: Setup connection to the backend and complete wallet initialization
@@ -63,11 +84,11 @@ Feature: android page object
     * click(tab_wallet_confirm_selector)
     * dialog(true)
 
-    * click(launch_selector)
+    * retry(5,1000).click(launch_selector)
 
   # Roll call create android procedure
   @name=create_roll_call
-  Scenario: Create a roll call for an already created LAO
+  Scenario: Creates a roll call for an already created LAO
     When click(add_event_selector)
     And click(add_roll_call_selector)
 
@@ -81,3 +102,70 @@ Feature: android page object
     * backend.clearBuffer()
     * click(roll_call_action_selector)
 
+  @name=close_roll_call
+  Scenario: Closes a roll call with only the organizer attending
+    # Close roll call
+    * retry(5,200).click(roll_call_close_selector)
+    * backend.clearBuffer()
+    * dialog(true)
+
+
+  @name=close_roll_call_w_attendees
+  Scenario: Closes a roll call with 2 attendees and the organizer
+    # Add attendees
+    * input(manual_add_text_selector, token1)
+    * click(manual_add_confirm_selector)
+    * input(manual_add_text_selector, token2)
+    * click(manual_add_confirm_selector)
+    * backend.clearBuffer()
+
+    # wait for popup
+    * wait(3)
+    # Close roll call
+    * click(roll_call_close_selector)
+    * dialog(true)
+
+  # Roll call open android procedure
+  @name=reopen_roll_call
+  Scenario: reopens the created roll-call
+    * click(event_name_selector)
+    * backend.clearBuffer()
+    * click(roll_call_action_selector)
+
+  # Election setup android procedure
+  @name=setup_election
+  Scenario: Create election with 1 question and 2 ballots
+    * retry(5, 1000).click(add_event_selector)
+    * click(add_election_selector)
+    * input(election_name_selector, constants.ELECTION_NAME)
+    * input(election_question_selector, constants.QUESTION_CONTENT)
+    * input(election_ballot_selector_1, constants.BALLOT_1)
+    * input(election_ballot_selector_2, constants.BALLOT_2)
+    * backend.clearBuffer()
+    * click(election_confirm_selector)
+
+  # Election open android procedure
+  @name=open_election
+  Scenario: Open election
+    * click(event_name_selector)
+    * backend.clearBuffer()
+    * click(election_management_selector)
+    * retry(5,1000).dialog(true)
+    * wait(1)
+
+  # Election cast vote android procedure
+  @name=cast_vote
+  Scenario: Cast a vote for the second ballot
+    * click(election_action_selector)
+    * click(cast_vote_ballot_selector_2)
+    * backend.clearBuffer()
+    * click(cast_vote_button_selector)
+    * wait(5)
+
+  @name=end_election
+  Scenario: End an election
+    * click(event_name_selector)
+    * click(election_management_selector)
+    * backend.clearBuffer()
+    * retry(5,1000).dialog(true)
+    * wait(1)

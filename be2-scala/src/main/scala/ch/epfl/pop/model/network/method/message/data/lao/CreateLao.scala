@@ -9,12 +9,12 @@ import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 import spray.json._
 
 final case class CreateLao(
-                            id: Hash,
-                            name: String,
-                            creation: Timestamp,
-                            organizer: PublicKey,
-                            witnesses: List[PublicKey]
-                          ) extends MessageData {
+    id: Hash,
+    name: String,
+    creation: Timestamp,
+    organizer: PublicKey,
+    witnesses: List[PublicKey]
+) extends MessageData {
   override val _object: ObjectType = ObjectType.LAO
   override val action: ActionType = ActionType.CREATE
 }

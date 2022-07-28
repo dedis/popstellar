@@ -77,7 +77,7 @@ const contextValue = (rollCallTokens: RollCallToken[]) => ({
     walletNavigationScreens: [],
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     generateToken,
     hasSeed,
     makeEventByTypeSelector,

@@ -27,7 +27,7 @@ mockStore.dispatch(addMeeting(mockMeeting.toState()));
 
 const contextValue = {
   [MEETING_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
   } as MeetingReactContext,
 };
 

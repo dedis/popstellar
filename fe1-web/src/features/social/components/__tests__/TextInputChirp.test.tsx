@@ -6,20 +6,24 @@ import STRINGS from 'resources/strings';
 
 import TextInputChirp from '../TextInputChirp';
 
-let onChangeText: Function;
-let onPress: Function;
+let text = '';
+const onChangeText = jest.fn((input) => {
+  text = input;
+});
+const onPress = jest.fn();
 const helloWorld = 'Hello World !';
 const emptyPublicKey = new PublicKey('');
 
 beforeEach(() => {
-  onChangeText = jest.fn();
-  onPress = jest.fn();
+  text = '';
+  jest.clearAllMocks();
 });
 
 describe('TextInputChirp', () => {
   it('renders correctly without placeholder', () => {
     const { toJSON } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         currentUserPublicKey={emptyPublicKey}
@@ -32,6 +36,7 @@ describe('TextInputChirp', () => {
     const placeholder = 'Placeholder';
     const { toJSON } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         placeholder={placeholder}
@@ -44,6 +49,7 @@ describe('TextInputChirp', () => {
   it('renders correctly when writing less than 300 chars', () => {
     const { getByPlaceholderText, toJSON } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         currentUserPublicKey={emptyPublicKey}
@@ -62,6 +68,7 @@ describe('TextInputChirp', () => {
       "won't fit. It seems that this message won't fit.";
     const { getByPlaceholderText, toJSON } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         currentUserPublicKey={emptyPublicKey}
@@ -75,6 +82,7 @@ describe('TextInputChirp', () => {
   it('calls onChangeText correctly', () => {
     const { getByPlaceholderText } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         currentUserPublicKey={emptyPublicKey}
@@ -88,6 +96,7 @@ describe('TextInputChirp', () => {
   it('calls onPress correctly', () => {
     const { getByText, getByPlaceholderText } = render(
       <TextInputChirp
+        value={text}
         onChangeText={onChangeText}
         onPress={onPress}
         currentUserPublicKey={emptyPublicKey}

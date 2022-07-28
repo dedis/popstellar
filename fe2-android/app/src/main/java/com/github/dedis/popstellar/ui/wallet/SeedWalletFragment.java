@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -101,7 +99,8 @@ public class SeedWalletFragment extends Fragment {
               "Yes",
               (dialog, which) -> {
                 try {
-                  mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWalletText.getText().toString());
+                  mHomeViewModel.importSeed(
+                      mWalletSeedFragBinding.seedWalletText.getText().toString());
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(

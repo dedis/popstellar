@@ -20,7 +20,6 @@ import util.examples.LaoDataExample
 
 import scala.concurrent.duration.FiniteDuration
 
-
 class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
@@ -80,7 +79,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     system.actorOf(dbActorMock, "MockedDB-ACK")
   }
 
-
   def mockDbElectionNotSetUp: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
@@ -126,7 +124,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     })
     system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
   }
-
 
   def mockDbWithAckEndElection: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -270,7 +267,6 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
 
     system.stop(mockedDB.actorRef)
   }
-
 
   test("CastVoteElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAck

@@ -2,11 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -104,7 +100,9 @@ public class Channel {
     return segments.size() == 2;
   }
 
-  /** @return the LAO ID contained in this channel */
+  /**
+   * @return the LAO ID contained in this channel
+   */
   public String extractLaoId() {
     if (segments.isEmpty())
       throw new IllegalStateException(
@@ -130,7 +128,9 @@ public class Channel {
     return segments.get(1);
   }
 
-  /** @return the protocol like String representation of the channel (/root/abc/efg) */
+  /**
+   * @return the protocol like String representation of the channel (/root/abc/efg)
+   */
   public String getAsString() {
     return ROOT_CHANNEL + segments.stream().map(e -> "/" + e).collect(Collectors.joining());
   }

@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
 class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databaseWitnessTest"
 
@@ -68,7 +68,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     system.actorOf(dbActorMock)
   }
 
-  //WitnessMessage
+  // WitnessMessage
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)

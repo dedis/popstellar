@@ -15,11 +15,10 @@ import scala.util.{Failure, Success, Try}
 object SchemaVerifier {
   private final val objectMapper: ObjectMapper = new ObjectMapper()
 
-  private final val querySchemaPath = "protocol/query/query.json"           // with respect to resources folder
-  private final val dataSchemasPath = "protocol/query/method/message/data"  // with respect to resources folder
+  private final val querySchemaPath = "protocol/query/query.json" // with respect to resources folder
+  private final val dataSchemasPath = "protocol/query/method/message/data" // with respect to resources folder
 
   private final val querySchema: JsonSchema = setupSchemaVerification(querySchemaPath)
-
 
   def setupSchemaVerification(jsonPath: String): JsonSchema = {
     // get input stream of protocol's query.json file from resources folder
@@ -39,7 +38,7 @@ object SchemaVerifier {
 
   private def verifySchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
     try {
-      //in case of invalid JsonString, we catch the exception thrown by the readTree and answer with an error
+      // in case of invalid JsonString, we catch the exception thrown by the readTree and answer with an error
       // creation of a JsonNode containing the information from the input JSON string
       val jsonNode: JsonNode = objectMapper.readTree(jsonString)
       // validation of the input, the result is a set of errors (if no errors, the set is empty)
@@ -47,48 +46,54 @@ object SchemaVerifier {
       val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
       errors match {
         case _ if errors.isEmpty => Success((): Unit)
-        case _ => Failure(new ProtocolException(errors.mkString("; "))) // concatenate all schema validation errors into one
+        case _                   => Failure(new ProtocolException(errors.mkString("; "))) // concatenate all schema validation errors into one
       }
     } catch {
       case e: Exception => Failure(new ProtocolException("Invalid object detected, JSON object expected."))
     }
   }
 
-  /**
-   * Validates a high-level JSON-rpc json string (i.e. *NOT* the data field)
-   *
-   * @param jsonString JSON string representation of the message
-   * @return a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
-   */
+  /** Validates a high-level JSON-rpc json string (i.e. *NOT* the data field)
+    *
+    * @param jsonString
+    *   JSON string representation of the message
+    * @return
+    *   a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
+    */
   def verifyRpcSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
     verifySchema(querySchema, jsonString) match {
       case Success(_) => Left(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
           case Success(Seq(JsNumber(id))) => Some(id.toInt)
-          case _ => None
+          case _                          => None
         }
         Right(PipelineError(ErrorCodes.INVALID_DATA.id, ex.getMessage, rpcId))
     }
   }
 
-  /**
-   * Verifies a low-level data json string
-   * @note use the MessageRegistry to access this function easily
-   *
-   * @param schema schema that should be used to verify the jsonString
-   * @param jsonString JSON string representation of the data field
-   * @return a Success or a Failure depending whether the validation succeeded or not
-   */
+  /** Verifies a low-level data json string
+    * @note
+    *   use the MessageRegistry to access this function easily
+    *
+    * @param schema
+    *   schema that should be used to verify the jsonString
+    * @param jsonString
+    *   JSON string representation of the data field
+    * @return
+    *   a Success or a Failure depending whether the validation succeeded or not
+    */
   def verifyDataSchema(schema: JsonSchema)(jsonString: JsonString): Try[Unit] = verifySchema(schema, jsonString)
 
-  /**
-   * Creates a SchemaVerifier function from the corresponding JsonSchema verifier file
-   * @note used by the MessageRegistry to ease the process of SchemaVerifier functions creation
-   *
-   * @param schemaFileName name of the corresponding schema file wrt. dataSchemasPath
-   * @return a schema validator taking a json string and returning whether the string is conform to the schema file or not
-   */
+  /** Creates a SchemaVerifier function from the corresponding JsonSchema verifier file
+    * @note
+    *   used by the MessageRegistry to ease the process of SchemaVerifier functions creation
+    *
+    * @param schemaFileName
+    *   name of the corresponding schema file wrt. dataSchemasPath
+    * @return
+    *   a schema validator taking a json string and returning whether the string is conform to the schema file or not
+    */
   def createSchemaVerifier(schemaFileName: String): JsonString => Try[Unit] = verifyDataSchema(
     setupSchemaVerification(s"$dataSchemasPath/$schemaFileName")
   )

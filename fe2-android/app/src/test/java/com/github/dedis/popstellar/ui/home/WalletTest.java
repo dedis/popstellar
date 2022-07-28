@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static org.junit.Assert.assertEquals;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.di.TestKeysetModule;
@@ -19,6 +17,8 @@ import java.security.GeneralSecurityException;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

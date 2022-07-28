@@ -46,12 +46,16 @@ const styles = StyleSheet.create({
 });
 
 const TextInputChirp = (props: IPropTypes) => {
-  const { placeholder } = props;
-  const { numberOfLines } = props;
-  const { onPress } = props;
-  const { onChangeText } = props;
-  const { publishIsDisabledCond } = props;
-  const { currentUserPublicKey } = props;
+  const {
+    value,
+    placeholder,
+    numberOfLines,
+    onPress,
+    onChangeText,
+    publishIsDisabledCond,
+    currentUserPublicKey,
+    testID,
+  } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
@@ -71,6 +75,7 @@ const TextInputChirp = (props: IPropTypes) => {
       </View>
       <View style={styles.rightView}>
         <TextInput
+          value={value}
           placeholder={placeholder}
           multiline
           selectTextOnFocus
@@ -80,6 +85,7 @@ const TextInputChirp = (props: IPropTypes) => {
             onChangeText(input);
             setCharsLeft(MAX_CHIRP_CHARS - input.length);
           }}
+          testID={testID ? `${testID}_input` : undefined}
         />
         <View style={styles.buttonView}>
           <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
@@ -87,6 +93,7 @@ const TextInputChirp = (props: IPropTypes) => {
             title={STRINGS.button_publish}
             onPress={() => onPress()}
             disabled={publishIsDisabled}
+            testID={testID ? `${testID}_publish` : undefined}
           />
         </View>
       </View>
@@ -95,12 +102,14 @@ const TextInputChirp = (props: IPropTypes) => {
 };
 
 const propTypes = {
+  value: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   numberOfLines: PropTypes.number,
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
   publishIsDisabledCond: PropTypes.bool,
   currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  testID: PropTypes.string,
 };
 
 TextInputChirp.propTypes = propTypes;
@@ -109,15 +118,18 @@ TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
   publishIsDisabledCond: false,
+  testID: undefined,
 };
 
 type IPropTypes = {
+  value: string;
   placeholder: string;
   numberOfLines: number;
   onPress: Function;
   onChangeText: Function;
   publishIsDisabledCond: boolean;
   currentUserPublicKey: PublicKey;
+  testID?: string;
 };
 
 export default TextInputChirp;

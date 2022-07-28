@@ -1,30 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.lenient;
-
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Input;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.PostTransactionCoin;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptInput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput;
-import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Transaction;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -39,10 +24,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.lenient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionCoinHandlerTest {
@@ -60,7 +46,8 @@ public class TransactionCoinHandlerTest {
   private static final String TYPE = "P2PKH";
   private static final String PUBKEY = SENDER.getEncoded();
   private static final String SIG = "CAFEBABE";
-  private static final ScriptInput SCRIPTTXIN = new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
+  private static final ScriptInput SCRIPTTXIN =
+      new ScriptInput(TYPE, new PublicKey(PUBKEY), new Signature(SIG));
   private static final Input TXIN = new Input(Tx_OUT_HASH, TX_OUT_INDEX, SCRIPTTXIN);
 
   // Creation TXOUT
@@ -77,7 +64,8 @@ public class TransactionCoinHandlerTest {
   private static final long TIMESTAMP = 0;
 
   // Transaction
-  private static final Transaction TRANSACTION = new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
+  private static final Transaction TRANSACTION =
+      new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
   private Lao lao;
   private RollCall rollCall;
@@ -144,4 +132,3 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, lao.getPubKeyByHash().size());
   }
 }
-

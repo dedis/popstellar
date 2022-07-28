@@ -1,12 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
 import android.util.ArraySet;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -22,6 +15,11 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
 import java.util.Set;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
 public class UpdateLaoTest {
 

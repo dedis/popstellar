@@ -128,7 +128,6 @@ class ChannelSuite extends FunSuite with Matchers {
     an[IllegalArgumentException] shouldBe thrownBy(channel)
   }
 
-
   test("Bad LaoId: not encoded in base64 extraction channel test (2)") {
     val laoId = "not_base64_lao_id"
 

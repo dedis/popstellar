@@ -1,13 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTURE;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
-
 import android.annotation.SuppressLint;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,15 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.model.objects.event.EventCategory;
-import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
+
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;

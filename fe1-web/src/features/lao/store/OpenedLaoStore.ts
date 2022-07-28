@@ -1,5 +1,6 @@
 import { dispatch, getStore } from 'core/redux';
 
+import { NoCurrentLaoError } from '../errors/NoCurrentLaoError';
 import { Lao } from '../objects';
 import { setCurrentLao, selectCurrentLao } from '../reducer';
 
@@ -19,7 +20,9 @@ export namespace OpenedLaoStore {
     const lao = selectCurrentLao(getStore().getState());
 
     if (!lao) {
-      throw new Error('Error encountered while accessing storage : no currently opened LAO');
+      throw new NoCurrentLaoError(
+        'Error encountered while accessing storage : no currently opened LAO',
+      );
     }
 
     return lao;

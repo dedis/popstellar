@@ -30,7 +30,7 @@ const mockStore = createStore(
 
 const contextValue = {
   [EVENT_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     eventTypes: [ElectionEventType, MeetingEventType, RollCallEventType],
     useIsLaoOrganizer: () => false,
   } as EventReactContext,

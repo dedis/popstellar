@@ -9,7 +9,6 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, Pipel
 import org.scalatest._
 import util.examples.lao.CreateLaoExamples
 
-
 class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any): Unit = {
@@ -29,9 +28,8 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       Then("it should be of type JsonRpcRequest")
       inside(parsed) {
         case Left(createJsonRpc: JsonRpcRequest) =>
-
           And("it should be of type create lao")
-          createJsonRpc.getDecodedDataHeader should equal ((ObjectType.LAO, ActionType.CREATE))
+          createJsonRpc.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
 
           And("the message params of the JsonRpcRequestCreateLao should not be empty")
           createJsonRpc.getParamsMessage should be(defined)
@@ -63,14 +61,14 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           laoData.id shouldNot be(null)
           noException shouldBe thrownBy(laoData.id.base64Data.decodeToString())
         case Right(_) => fail(s"The message data format should succeed with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
-        case _ => fail(s"The message data format format yielded an unexpected result <$parsed>")
+        case _        => fail(s"The message data format format yielded an unexpected result <$parsed>")
       }
     }
 
   def testBadFormat: (GraphMessage, Any) => Assertion =
     (gm: GraphMessage, _: Any) => {
       Given("a graph message of JsonRpcRequest with bad message data format")
-      //gm
+      // gm
       When("the request is parsed")
       val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
@@ -81,7 +79,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
         case Left(_) => fail(s"parsed message should fail with Right[PipelineError] but was a Left: <$parsed>")
-        case _ => fail(s"parsed message <$parsed> resulted with an unexpected type")
+        case _       => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }
     }
 

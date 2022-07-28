@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /** Enumerates all possible messages objects */
 public enum Objects {

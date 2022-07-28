@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -10,23 +8,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -42,6 +33,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
+
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel

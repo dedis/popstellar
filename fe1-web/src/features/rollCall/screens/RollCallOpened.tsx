@@ -54,7 +54,7 @@ const RollCallOpened = () => {
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
 
-  const laoId = RollCallHooks.useCurrentLaoId();
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
   const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
@@ -166,7 +166,7 @@ const RollCallOpened = () => {
           <View>
             <View style={styles.leftButtons}>
               <PoPTouchableOpacity
-                testID="roll-call-open-stop-scanning"
+                testID="roll_call_open_stop_scanning"
                 onPress={() =>
                   navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
                     eventId: rollCallId,
@@ -184,7 +184,7 @@ const RollCallOpened = () => {
             <View style={styles.rightButtons}>
               <PoPTouchableOpacity
                 onPress={() => setInputModalIsVisible(true)}
-                testID="roll-call-open-add-manually">
+                testID="roll_call_open_add_manually">
                 <PoPIcon name="addPerson" color={Color.accent} size={Icon.size} />
               </PoPTouchableOpacity>
             </View>

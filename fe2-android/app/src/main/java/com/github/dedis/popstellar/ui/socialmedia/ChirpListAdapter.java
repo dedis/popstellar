@@ -1,21 +1,17 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import static android.text.format.DateUtils.getRelativeTimeSpanString;
-
 import android.content.Context;
 import android.graphics.Color;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.List;
+
+import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
 public class ChirpListAdapter extends BaseAdapter {
 

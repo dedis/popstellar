@@ -20,9 +20,9 @@ import util.examples.JsonRpcRequestExample._
 import scala.reflect.io.Directory
 
 class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem"))
-  with FunSuiteLike
-  with ImplicitSender
-  with Matchers with BeforeAndAfterAll with AskPatternConstants {
+    with FunSuiteLike
+    with ImplicitSender
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 
@@ -80,7 +80,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
     message shouldBe a[Right[_, PipelineError]]
   }
 
-  //GreetLao tests
+  // GreetLao tests
   test("LAO greeting works as intended") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_RPC)
     message should equal(Left(GREET_LAO_RPC))
@@ -108,7 +108,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO greeting fails with wrong channel") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_CHANNEL_RPC)
-     message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Right[_, PipelineError]]
   }
 
   test("LAO greeting fails without ParamsWithMessage") {

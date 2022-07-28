@@ -28,7 +28,7 @@ Feature: Create RollCall
     # Roll Call specific verification
     And match verificationUtils.getObject(create_rc_string) == constants.ROLL_CALL
     * match verificationUtils.getAction(create_rc_string) == constants.CREATE
-    * match (rollCallVerification.verifyRollCallName(create_rc_string, constants.RC_NAME)) == true
+    * match verificationUtils.getName(create_rc_string) == constants.RC_NAME
     And match rollCallVerification.verifyRollCallId(create_rc_string) == true
 
     And match backend.receiveNoMoreResponses() == true

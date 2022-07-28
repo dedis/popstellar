@@ -1,14 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ElectionSetup extends Data {
 
@@ -31,25 +28,34 @@ public class ElectionSetup extends Data {
   private final List<ElectionQuestion> questions;
 
   /**
-   * @param writeIn         write in for questions
-   * @param name            name of the election
-   * @param creation        creation timestamp
-   * @param start           start timestamp
-   * @param end             end timestamp
-   * @param votingMethod    voting methods
-   * @param laoId           id of the LAO
-   * @param ballotOptions   ballot options
-   * @param questionList    list of questions
+   * @param writeIn write in for questions
+   * @param name name of the election
+   * @param creation creation timestamp
+   * @param start start timestamp
+   * @param end end timestamp
+   * @param votingMethod voting methods
+   * @param laoId id of the LAO
+   * @param ballotOptions ballot options
+   * @param questionList list of questions
    * @param electionVersion version of the election
    */
   public ElectionSetup(
-          List<Boolean> writeIn, String name, long creation, long start, long end, List<String> votingMethod, String laoId, List<List<String>> ballotOptions, List<String> questionList, ElectionVersion electionVersion) {
+      List<Boolean> writeIn,
+      String name,
+      long creation,
+      long start,
+      long end,
+      List<String> votingMethod,
+      String laoId,
+      List<List<String>> ballotOptions,
+      List<String> questionList,
+      ElectionVersion electionVersion) {
     if (name == null
-            || votingMethod == null
-            || writeIn == null
-            || ballotOptions == null
-            || questionList == null
-            || laoId == null) {
+        || votingMethod == null
+        || writeIn == null
+        || ballotOptions == null
+        || questionList == null
+        || laoId == null) {
       throw new IllegalArgumentException();
     }
     // we don't need to check if end < 0 or start < 0 as it is already covered by other statements

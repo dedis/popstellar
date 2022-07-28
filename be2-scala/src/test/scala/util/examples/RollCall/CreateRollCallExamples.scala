@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator.EVENT_HASH_PREFIX
 import spray.json._
 
-
 object CreateRollCallExamples {
 
   final val SENDER: PublicKey = PublicKey(Base64Data("gUSKTlXcSHfQmHbKYsa0obpotjoc-wwtkeKods9WBcY="))

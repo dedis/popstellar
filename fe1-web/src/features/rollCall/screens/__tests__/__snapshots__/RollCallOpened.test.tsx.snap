@@ -385,7 +385,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    testID="roll-call-open-stop-scanning"
+                                    testID="roll_call_open_stop_scanning"
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
@@ -434,7 +434,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    testID="roll-call-open-add-manually"
+                                    testID="roll_call_open_add_manually"
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
@@ -1121,7 +1121,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    testID="roll-call-open-stop-scanning"
+                                    testID="roll_call_open_stop_scanning"
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
@@ -1170,7 +1170,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
-                                    testID="roll-call-open-add-manually"
+                                    testID="roll_call_open_add_manually"
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}

@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.model.network.answer;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /** A succeed query's answer with a list of MessageGeneral */
 public final class ResultMessages extends Result {
