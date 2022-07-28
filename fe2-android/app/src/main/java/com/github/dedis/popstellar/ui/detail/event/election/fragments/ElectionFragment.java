@@ -111,7 +111,10 @@ public class ElectionFragment extends Fragment {
               laoDetailViewModel.openCastVotes();
               break;
             case RESULTS_READY:
-              laoDetailViewModel.openElectionResults(true);
+              LaoDetailActivity.setCurrentFragment(
+                  getParentFragmentManager(),
+                  R.id.fragment_election_result,
+                  ElectionResultFragment::newInstance);
               break;
             default:
               throw new IllegalStateException(
