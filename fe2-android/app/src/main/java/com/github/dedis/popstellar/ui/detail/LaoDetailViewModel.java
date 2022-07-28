@@ -68,14 +68,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
+  // FIXME These events should be removed once the QRScanning is refactored
   private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
-      new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -714,10 +712,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
 
   public LiveData<Integer> getNbAttendees() {
     return mNbAttendees;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenStartElectionEvent() {
-    return mOpenStartElectionEvent;
   }
 
   public LiveData<List<ConsensusNode>> getNodes() {

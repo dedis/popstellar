@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
@@ -56,9 +55,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
-
-    // Subscribe to "open start election" event
-    setupElectionStartFragment();
   }
 
   @Override
@@ -119,22 +115,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     builder.setTitle("You have to setup up your wallet before connecting.");
     builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
     builder.show();
-  }
-
-  private void setupElectionStartFragment() {
-    mViewModel
-        .getOpenStartElectionEvent()
-        .observe(
-            this,
-            booleanSingleEvent -> {
-              Boolean event = booleanSingleEvent.getContentIfNotHandled();
-              if (event != null) {
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_election_start,
-                    ElectionStartFragment::newInstance);
-              }
-            });
   }
 
   public void setupNavigationBar() {
