@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
@@ -25,6 +25,8 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
+
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
@@ -270,7 +272,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private void setupElectionCancelButton() {
     cancelButton = mSetupElectionFragBinding.electionCancelButton;
     cancelButton.setOnClickListener(
-        v -> mLaoDetailViewModel.openLaoDetail(getParentFragmentManager()));
+        v ->
+            setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_lao_detail,
+                LaoDetailFragment::newInstance));
   }
 
   /**

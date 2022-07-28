@@ -14,6 +14,9 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -51,7 +54,8 @@ public class LaoDetailActivity extends AppCompatActivity {
         .getExtras()
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
         .equals(Constants.LAO_DETAIL_EXTRA)) {
-      mViewModel.openLaoDetail(getSupportFragmentManager());
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
     } else {
       setupLaoWalletFragment();
     }
@@ -63,7 +67,7 @@ public class LaoDetailActivity extends AppCompatActivity {
       Fragment fragment =
           getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
       if (fragment instanceof LaoDetailFragment) {
-        mViewModel.openHome(this);
+        startActivity(HomeActivity.newIntent(this));
       } else {
         navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
       }
@@ -122,15 +126,32 @@ public class LaoDetailActivity extends AppCompatActivity {
         item -> {
           int id = item.getItemId();
           if (id == R.id.lao_detail_event_list_menu) {
-            mViewModel.openLaoDetail(getSupportFragmentManager());
+            setCurrentFragment(
+                getSupportFragmentManager(),
+                R.id.fragment_lao_detail,
+                LaoDetailFragment::newInstance);
           } else if (id == R.id.lao_detail_identity_menu) {
-            mViewModel.openIdentity(getSupportFragmentManager());
+            setCurrentFragment(
+                getSupportFragmentManager(),
+                R.id.fragment_identity,
+                () -> IdentityFragment.newInstance(mViewModel.getPublicKey()));
           } else if (id == R.id.lao_detail_witnessing_menu) {
-            mViewModel.openWitnessing(getSupportFragmentManager());
+            setCurrentFragment(
+                getSupportFragmentManager(),
+                R.id.fragment_witnessing,
+                WitnessingFragment::newInstance);
           } else if (id == R.id.lao_detail_digital_cash_menu) {
-            mViewModel.openDigitalCash(this);
+            startActivity(
+                DigitalCashActivity.newIntent(
+                    this,
+                    mViewModel.getCurrentLaoValue().getId(),
+                    mViewModel.getCurrentLaoValue().getName()));
           } else if (id == R.id.lao_detail_social_media_menu) {
-            mViewModel.openSocialMedia(this);
+            startActivity(
+                SocialMediaActivity.newInstance(
+                    this,
+                    mViewModel.getCurrentLaoValue().getId(),
+                    mViewModel.getCurrentLaoValue().getName()));
           }
           return true;
         });

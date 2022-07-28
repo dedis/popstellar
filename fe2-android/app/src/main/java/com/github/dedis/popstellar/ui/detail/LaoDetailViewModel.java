@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -9,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
@@ -30,13 +28,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.qrcode.*;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -57,6 +49,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @HiltViewModel
 public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -299,7 +294,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
           networkManager
               .getMessageSender()
               .publish(token, electionChannel, vote)
-              .doFinally(() -> openLaoDetail(manager))
+              .doFinally(
+                  () ->
+                      setCurrentFragment(
+                          manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance))
               .subscribe(
                   () -> {
                     Log.d(TAG, "sent a vote successfully");
@@ -373,7 +371,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
             .subscribe(
                 () -> {
                   Log.d(TAG, "setup an election");
-                  openLaoDetail(manager);
+                  setCurrentFragment(
+                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -427,7 +426,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   if (open) {
                     openRollCall(activity, createRollCall.getId());
                   } else {
-                    openLaoDetail(activity.getSupportFragmentManager());
+                    setCurrentFragment(
+                        activity.getSupportFragmentManager(),
+                        R.id.fragment_lao_detail,
+                        LaoDetailFragment::newInstance);
                   }
                 },
                 error ->
@@ -595,7 +597,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   Log.d(TAG, "closed the roll call");
                   currentRollCallId = "";
                   attendees.clear();
-                  openLaoDetail(manager);
+                  setCurrentFragment(
+                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -771,37 +774,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     }
   }
 
-  /*
-   * Methods that modify the state or post an Event to update the UI.
-   */
-  public void openHome(Activity activity) {
-    activity.startActivity(HomeActivity.newIntent(activity));
-  }
-
-  public void openLaoDetail(FragmentManager manager) {
-    LaoDetailActivity.setCurrentFragment(
-        manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
-  }
-
-  public void openIdentity(FragmentManager manager) {
-    LaoDetailActivity.setCurrentFragment(
-        manager,
-        R.id.fragment_identity,
-        () -> IdentityFragment.newInstance(keyManager.getMainPublicKey()));
-  }
-
-  public void openSocialMedia(Activity activity) {
-    activity.startActivity(
-        SocialMediaActivity.newInstance(
-            activity, getCurrentLaoValue().getId(), getCurrentLaoValue().getName()));
-  }
-
-  public void openDigitalCash(Activity activity) {
-    activity.startActivity(
-        DigitalCashActivity.newIntent(
-            activity, getCurrentLaoValue().getId(), getCurrentLaoValue().getName()));
-  }
-
   public void endElectionEvent() {
     // TODO This is not implemented ?
   }
@@ -889,54 +861,37 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
       return;
     }
     String firstLaoId = getCurrentLaoValue().getId();
-    String errorMessage = "failed to retrieve public key from wallet";
+
     try {
       PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
-      LaoDetailActivity.setCurrentFragment(
+      setCurrentFragment(
           activity.getSupportFragmentManager(),
           R.id.fragment_roll_call,
           () -> RollCallFragment.newInstance(publicKey));
     } catch (Exception e) {
-      Log.d(TAG, errorMessage, e);
+      Log.d(TAG, "failed to retrieve public key from wallet", e);
     }
   }
 
   public void openRollCallScanning(FragmentActivity activity) {
     FragmentManager manager = activity.getSupportFragmentManager();
-    if (ContextCompat.checkSelfPermission(
-            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+
+    if (checkSelfPermission(activity.getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
-      if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        LaoDetailActivity.setCurrentFragment(
-            manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
 
-        // this to display the initial number of attendees
-        mNbAttendees.postValue(attendees.size());
-      }
+      setCurrentFragment(manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
+      // this to display the initial number of attendees
+      mNbAttendees.postValue(attendees.size());
     } else {
-      if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        // Setup result listener to open the scanning tab once the permission is granted
-        manager.setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY,
-            activity,
-            (k, b) -> openRollCallScanning(activity));
+      // Setup result listener to open the scanning tab once the permission is granted
+      manager.setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, activity, (k, b) -> openRollCallScanning(activity));
 
-        LaoDetailActivity.setCurrentFragment(
-            manager,
-            R.id.fragment_camera_perm,
-            () -> CameraPermissionFragment.newInstance(activity.getActivityResultRegistry()));
-      }
+      setCurrentFragment(
+          manager,
+          R.id.fragment_camera_perm,
+          () -> CameraPermissionFragment.newInstance(activity.getActivityResultRegistry()));
     }
-  }
-
-  public void openLaoWallet(FragmentManager manager) {
-    LaoDetailActivity.setCurrentFragment(
-        manager, R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-  }
-
-  public void openRollCallToken(FragmentManager manager, String rollCallId) {
-    LaoDetailActivity.setCurrentFragment(
-        manager, R.id.fragment_rollcall_token, () -> RollCallTokenFragment.newInstance(rollCallId));
   }
 
   @Override
@@ -989,10 +944,5 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
       updateLaoWitnesses();
     }
     return true;
-  }
-
-  public void openWitnessing(FragmentManager manager) {
-    LaoDetailActivity.setCurrentFragment(
-        manager, R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 }

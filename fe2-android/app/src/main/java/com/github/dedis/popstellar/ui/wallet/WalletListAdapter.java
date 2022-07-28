@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -94,7 +95,10 @@ public class WalletListAdapter extends BaseAdapter {
       binding.rollcallTokenButton.setVisibility(View.VISIBLE);
       binding.rollcallTokenButton.setOnClickListener(
           clicked ->
-              viewModel.openRollCallToken(activity.getSupportFragmentManager(), rollCall.getId()));
+              LaoDetailActivity.setCurrentFragment(
+                  activity.getSupportFragmentManager(),
+                  R.id.fragment_rollcall_token,
+                  () -> RollCallTokenFragment.newInstance(rollCall.getId())));
     }
 
     binding.setLifecycleOwner(activity);

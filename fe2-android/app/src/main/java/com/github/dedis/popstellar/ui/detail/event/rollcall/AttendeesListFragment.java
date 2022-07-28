@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.AttendeesListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -52,7 +54,8 @@ public class AttendeesListFragment extends Fragment {
     Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + id);
-      mLaoDetailViewModel.openLaoWallet(getParentFragmentManager());
+      LaoDetailActivity.setCurrentFragment(
+          getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
     } else {
       rollCall = optRollCall.get();
     }
@@ -70,7 +73,11 @@ public class AttendeesListFragment extends Fragment {
     setupAttendeesListAdapter();
 
     mAttendeesListBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openLaoWallet(getParentFragmentManager()));
+        clicked ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_lao_wallet,
+                LaoWalletFragment::newInstance));
   }
 
   private void setupAttendeesListAdapter() {

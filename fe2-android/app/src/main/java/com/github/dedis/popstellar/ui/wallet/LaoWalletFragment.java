@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.wallet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.databinding.LaoWalletFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 import java.util.ArrayList;
 
@@ -63,7 +65,10 @@ public class LaoWalletFragment extends Fragment {
             });
 
     mLaoWalletFragmentBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openHome(requireActivity()));
+        clicked -> {
+          Activity activity = requireActivity();
+          activity.startActivity(HomeActivity.newIntent(activity));
+        });
   }
 
   private void setupWalletListAdapter() {
