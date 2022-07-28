@@ -20,23 +20,23 @@ public class DigitalCashPageObject {
   }
 
   public static ViewInteraction sendButton() {
-    return onView(withId(R.id.send_coin));
+    return onView(withId(R.id.digital_cash_send_menu));
   }
 
   public static ViewInteraction receiveButton() {
-    return onView(withId(R.id.receive_coin));
+    return onView(withId(R.id.digital_cash_receive_menu));
   }
 
   public static ViewInteraction historyButton() {
-    return onView(withId(R.id.history_coin));
+    return onView(withId(R.id.digital_cash_history_menu));
   }
 
   public static ViewInteraction homeButton() {
-    return onView(withId(R.id.home_coin));
+    return onView(withId(R.id.digital_cash_home_menu));
   }
 
   public static ViewInteraction issueButton() {
-    return onView(withId(R.id.issue_coin));
+    return onView(withId(R.id.digital_cash_issue_menu));
   }
 
   public static ViewInteraction navBar() {

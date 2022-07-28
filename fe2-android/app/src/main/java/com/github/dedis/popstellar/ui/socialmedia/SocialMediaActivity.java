@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.IdRes;
@@ -25,8 +26,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 /** Activity for the social media */
 @AndroidEntryPoint
 public class SocialMediaActivity extends AppCompatActivity {
-  private SocialMediaViewModel mViewModel;
 
+  private SocialMediaViewModel mViewModel;
+  private BottomNavigationView navbar;
+
+  public static final String TAG = SocialMediaActivity.class.getSimpleName();
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
 
@@ -44,68 +48,10 @@ public class SocialMediaActivity extends AppCompatActivity {
     if (laoId != null) mViewModel.setLaoId(laoId);
     if (laoName != null) mViewModel.setLaoName(laoName);
 
-    setupSocialMediaHomeFragment();
     setupNavigationBar();
 
-    // Subscribe to "lao name" string
-    mViewModel
-        .getLaoName()
-        .observe(
-            this,
-            newLaoName -> {
-              if (newLaoName != null) {
-                Objects.requireNonNull(getSupportActionBar())
-                    .setTitle(String.format("popstellar - %s", newLaoName));
-              }
-            });
-
-    // Subscribe to "open home" event
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaHomeFragment();
-              }
-            });
-
-    // Subscribe to "open search" event
-    mViewModel
-        .getOpenSearchEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaSearchFragment();
-              }
-            });
-
-    // Subscribe to "open following" event
-    mViewModel
-        .getOpenFollowingEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaFollowingFragment();
-              }
-            });
-
-    // Subscribe to "open profile" event
-    mViewModel
-        .getOpenProfileEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaProfileFragment();
-              }
-            });
+    subscribeToLaoName();
+    subscribeToSelectedItemEvents();
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
@@ -152,46 +98,83 @@ public class SocialMediaActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
-    bottomNavigationView.setOnItemSelectedListener(
+  private void setupNavigationBar() {
+    navbar = findViewById(R.id.social_media_nav_bar);
+    navbar.setOnItemSelectedListener(
         item -> {
           int itemId = item.getItemId();
-          if (itemId == R.id.social_media_home_menu) {
-            mViewModel.openHome();
-          } else if (itemId == R.id.social_media_search_menu) {
-            mViewModel.openSearch();
-          } else if (itemId == R.id.social_media_following_menu) {
-            mViewModel.openFollowing();
-          } else if (itemId == R.id.social_media_profile_menu) {
-            mViewModel.openProfile();
+          if (itemId != mViewModel.getCurrentSelectedItem().getValue()) {
+            // This prevents the update to be done multiple times. It is done here rather than
+            // in viewModel because otherwise this would be executed twice
+            mViewModel.setCurrentSelectedItem(itemId);
+          } else {
+            if (itemId == R.id.social_media_home_menu) {
+              Log.d(TAG, "Opening home");
+              openSocialMediaHomeFragment();
+            } else if (itemId == R.id.social_media_search_menu) {
+              Log.d(TAG, "Opening search");
+              openSocialMediaSearchFragment();
+            } else if (itemId == R.id.social_media_following_menu) {
+              Log.d(TAG, "Opening following");
+              openSocialMediaFollowingFragment();
+            } else if (itemId == R.id.social_media_profile_menu) {
+              Log.d(TAG, "Opening profile");
+              openSocialMediaProfileFragment();
+            }
           }
           return true;
         });
   }
 
-  public void setupSocialMediaHomeFragment() {
+  private void subscribeToLaoName() {
+    // Subscribe to "lao name" string
+    mViewModel
+        .getLaoName()
+        .observe(
+            this,
+            newLaoName -> {
+              if (newLaoName == null) {
+                return;
+              }
+              Objects.requireNonNull(getSupportActionBar())
+                  .setTitle(String.format(getString(R.string.social_media_title), newLaoName));
+            });
+  }
+
+  private void subscribeToSelectedItemEvents() {
+    mViewModel
+        .getCurrentSelectedItem()
+        .observe(
+            this,
+            item -> {
+              if (item != null) {
+                navbar.setSelectedItemId(item);
+              }
+            });
+  }
+
+  private void openSocialMediaHomeFragment() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_home,
         SocialMediaHomeFragment::newInstance);
   }
 
-  public void setupSocialMediaSearchFragment() {
+  private void openSocialMediaSearchFragment() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_search,
         SocialMediaSearchFragment::newInstance);
   }
 
-  public void setupSocialMediaFollowingFragment() {
+  private void openSocialMediaFollowingFragment() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_following,
         SocialMediaFollowingFragment::newInstance);
   }
 
-  public void setupSocialMediaProfileFragment() {
+  private void openSocialMediaProfileFragment() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_profile,

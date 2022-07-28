@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -15,9 +14,11 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
@@ -29,7 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashActivity extends AppCompatActivity {
   private DigitalCashViewModel mViewModel;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
-  private BottomNavigationView bottomNavigationView;
+  private BottomNavigationView navbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,26 +40,23 @@ public class DigitalCashActivity extends AppCompatActivity {
     setupNavigationBar();
     setupBackButton();
 
-    setTheIntent();
-    // Subscribe to "open home"
-    openHomeEvent();
-    // Subscribe to "open history"
-    openHistoryEvent();
-    // Subscribe to "open send"
-    openSendEvent();
-    // Subscribe to "open receive"
-    openReceiveEvent();
-    // Subscribe to "open issue"
-    openIssueEvent();
-    // Subscribe to "open receipt"
-    openReceiptEvent();
-    // subscribe to "return to lao"
-    laoReturnEvent();
-
-    mViewModel.openHome();
+    subscribeToSelectedItemEvents();
+    getIntentData();
   }
 
-  public void setTheIntent() {
+  private void subscribeToSelectedItemEvents() {
+    mViewModel
+        .getCurrentSelectedItem()
+        .observe(
+            this,
+            item -> {
+              if (item != null) {
+                navbar.setSelectedItemId(item);
+              }
+            });
+  }
+
+  public void getIntentData() {
     if (getIntent().getExtras() != null) {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
       mViewModel.subscribeToLao(id);
@@ -68,141 +66,9 @@ public class DigitalCashActivity extends AppCompatActivity {
     }
   }
 
-  public void laoReturnEvent() {
-    mViewModel
-        .getOpenReturnLAO()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open return to lao");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                openLaoDetailActivity();
-              }
-            });
-  }
-
-  public void openSendEvent() {
-    mViewModel
-        .getOpenSendEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash send Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_send);
-              }
-            });
-  }
-
-  public void openReceiveEvent() {
-    // Subscribe to "open receive"
-    mViewModel
-        .getOpenReceiveEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash receive Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_receive);
-              }
-            });
-  }
-
-  public void openHomeEvent() {
-    // Subscribe to "open home"
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash home Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_home);
-              }
-            });
-  }
-
-  public void openIssueEvent() {
-    // Subscribe to "open issue"
-    mViewModel
-        .getOpenIssueEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash issue Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-
-              if (event != null) {
-                Log.d(
-                    TAG,
-                    "the key from organizer is : "
-                        + mViewModel.getCurrentLaoValue().getOrganizer().getEncoded());
-                Log.d(
-                    TAG,
-                    "the key from the person is "
-                        + mViewModel.getKeyManager().getMainPublicKey().getEncoded());
-                if (!mViewModel
-                    .getCurrentLaoValue()
-                    .getOrganizer()
-                    .getEncoded()
-                    .equals(mViewModel.getKeyManager().getMainPublicKey().getEncoded())) {
-                  Toast.makeText(this, "You have to be the Lao Organizer", Toast.LENGTH_SHORT)
-                      .show();
-                } else {
-
-                  setupFragment(R.id.fragment_digital_cash_issue);
-                }
-              }
-            });
-  }
-
-  public void openHistoryEvent() {
-    // Subscribe to "open history"
-    mViewModel
-        .getOpenHistoryEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash history Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_history);
-              }
-            });
-  }
-
-  public void openReceiptEvent() {
-    // Subscribe to "open receipt"
-    mViewModel
-        .getOpenReceiptEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Log.d(TAG, "Open digital cash receipt Fragment");
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupFragment(R.id.fragment_digital_cash_receipt);
-              }
-            });
-  }
-
-  public void openLaoDetailActivity() {
-    Intent intent = new Intent(this, LaoDetailActivity.class);
-    Log.d(
-        TAG,
-        "Trying to open lao detail for lao with id " + mViewModel.getCurrentLaoValue().getId());
-    intent.putExtra(Constants.LAO_ID_EXTRA, mViewModel.getCurrentLaoValue().getId());
-    intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-
-    startActivity(intent);
-  }
-
   public void openLao() {
-    mViewModel.returnLAO();
+    startActivity(
+        LaoDetailActivity.newIntentForLao(this, mViewModel.getCurrentLao().getValue().getId()));
   }
 
   @Override
@@ -213,7 +79,7 @@ public class DigitalCashActivity extends AppCompatActivity {
       if (fragment instanceof DigitalCashHomeFragment) {
         openLao();
       } else {
-        bottomNavigationView.setSelectedItemId(R.id.home_coin);
+        mViewModel.openHome();
       }
       return true;
     }
@@ -233,57 +99,79 @@ public class DigitalCashActivity extends AppCompatActivity {
   }
 
   public void setupNavigationBar() {
-    bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
-    bottomNavigationView.setOnItemSelectedListener(
+    navbar = findViewById(R.id.digital_cash_nav_bar);
+    navbar.setOnItemSelectedListener(
         item -> {
           int id = item.getItemId();
-          if (id == R.id.home_coin) {
-            mViewModel.openHome();
-          } else if (id == R.id.history_coin) {
-            mViewModel.openHistory();
-          } else if (id == R.id.send_coin) {
-            mViewModel.openSend();
-          } else if (id == R.id.receive_coin) {
-            mViewModel.openReceive();
-          } else if (id == R.id.issue_coin) {
-            mViewModel.openIssue();
+          if (id != mViewModel.getCurrentSelectedItem().getValue()) {
+            // This prevents the update to be done multiple times. It is done here rather than
+            // in viewModel because otherwise this would be executed twice
+            mViewModel.setCurrentSelectedItem(id);
+          } else {
+            if (id == R.id.digital_cash_home_menu) {
+              Log.d(TAG, "Opening home fragment");
+              openHomeFragment();
+            } else if (id == R.id.digital_cash_history_menu) {
+              Log.d(TAG, "Opening history fragment");
+              openHistoryFragment();
+            } else if (id == R.id.digital_cash_send_menu) {
+              Log.d(TAG, "Opening send fragment");
+              openSendFragment();
+            } else if (id == R.id.digital_cash_receive_menu) {
+              Log.d(TAG, "Opening receive fragment");
+              openReceiveFragment();
+            } else if (id == R.id.digital_cash_issue_menu) {
+              Log.d(TAG, "Trying to open issue fragment");
+              handleOpenIssue();
+            }
           }
           return true;
         });
   }
 
-  public void setupFragment(int id) {
-    if (id == R.id.fragment_digital_cash_home) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_home,
-          DigitalCashHomeFragment::newInstance);
-    } else if (id == R.id.fragment_digital_cash_history) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_history,
-          DigitalCashHistoryFragment::newInstance);
-    } else if (id == R.id.fragment_digital_cash_send) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_send,
-          DigitalCashSendFragment::newInstance);
-    } else if (id == R.id.fragment_digital_cash_receive) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_receive,
-          DigitalCashReceiveFragment::newInstance);
-    } else if (id == R.id.fragment_digital_cash_issue) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_issue,
-          DigitalCashIssueFragment::newInstance);
-    } else if (id == R.id.fragment_digital_cash_receipt) {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_digital_cash_receipt,
-          DigitalCashReceiptFragment::newInstance);
+  private void openHomeFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_home,
+        DigitalCashHomeFragment::newInstance);
+  }
+
+  private void openHistoryFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_history,
+        DigitalCashHistoryFragment::newInstance);
+  }
+
+  private void openSendFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_send,
+        DigitalCashSendFragment::newInstance);
+  }
+
+  private void openReceiveFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_receive,
+        DigitalCashReceiveFragment::newInstance);
+  }
+
+  private void handleOpenIssue() {
+    PublicKey organizerKey = mViewModel.getCurrentLao().getValue().getOrganizer();
+    PublicKey myKey = mViewModel.getKeyManager().getMainPublicKey();
+    if (!myKey.equals(organizerKey)) {
+      ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
+    } else {
+      openIssueFragment();
     }
+  }
+
+  private void openIssueFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_digital_cash_issue,
+        DigitalCashIssueFragment::newInstance);
   }
 
   public static Intent newIntent(Context ctx, String laoId, String laoName) {

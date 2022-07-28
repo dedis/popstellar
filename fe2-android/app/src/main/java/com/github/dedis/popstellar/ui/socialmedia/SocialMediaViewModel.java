@@ -4,12 +4,10 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
@@ -45,14 +43,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * LiveData objects for capturing events
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSearchEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenFollowingEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenProfileEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<MessageID>> mDeleteChirpEvent = new MutableLiveData<>();
-
+  private final MutableLiveData<Integer> mCurrentSelectedItem =
+      new MutableLiveData<>(R.id.social_media_home_menu);
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
@@ -95,34 +87,6 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * Getters for MutableLiveData instances declared above
    */
-  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-    return mOpenHomeEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenSendEvent() {
-    return mOpenSendEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenSearchEvent() {
-    return mOpenSearchEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenFollowingEvent() {
-    return mOpenFollowingEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenProfileEvent() {
-    return mOpenProfileEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getSendNewChirpEvent() {
-    return mSendNewChirpEvent;
-  }
-
-  public LiveData<SingleEvent<MessageID>> getDeleteChirpEvent() {
-    return mDeleteChirpEvent;
-  }
-
   public LiveData<Integer> getNumberCharsLeft() {
     return mNumberCharsLeft;
   }
@@ -139,35 +103,19 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mLaoName;
   }
 
+  public LiveData<Integer> getCurrentSelectedItem() {
+    return mCurrentSelectedItem;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
+  public void setCurrentSelectedItem(@IdRes int item) {
+    mCurrentSelectedItem.postValue(item);
+  }
+
   public void openHome() {
-    mOpenHomeEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openSend() {
-    mOpenSendEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openSearch() {
-    mOpenSearchEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openFollowing() {
-    mOpenFollowingEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openProfile() {
-    mOpenProfileEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void sendNewChirpEvent() {
-    mSendNewChirpEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void deleteChirpEvent(MessageID chirpId) {
-    mDeleteChirpEvent.postValue(new SingleEvent<>(chirpId));
+    setCurrentSelectedItem(R.id.social_media_home_menu);
   }
 
   public void setNumberCharsLeft(Integer numberChars) {
