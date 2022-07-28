@@ -57,18 +57,6 @@ public class LaoDetailActivity extends AppCompatActivity {
       setupLaoWalletFragment();
     }
 
-    // Subscribe to "enter roll call" event
-    mViewModel
-        .getPkRollCallEvent()
-        .observe(
-            this,
-            publicKeySingleEvent -> {
-              PublicKey pk = publicKeySingleEvent.getContentIfNotHandled();
-              if (pk != null) {
-                enterRollCall(pk);
-              }
-            });
-
     subscribeWalletEvents();
 
     // Subscribe to "open start election" event

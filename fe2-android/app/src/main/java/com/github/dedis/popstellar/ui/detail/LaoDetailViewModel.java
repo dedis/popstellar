@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -67,7 +68,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<PublicKey>> mPkRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
   private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
@@ -741,10 +741,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mScanWarningEvent;
   }
 
-  public LiveData<SingleEvent<PublicKey>> getPkRollCallEvent() {
-    return mPkRollCallEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getWalletMessageEvent() {
     return mWalletMessageEvent;
   }
@@ -899,7 +895,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void enterRollCall(String id) {
+  public void enterRollCall(FragmentManager manager, String id) {
     if (!wallet.isSetUp()) {
       mWalletMessageEvent.setValue(new SingleEvent<>(true));
       return;
@@ -908,7 +904,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     String errorMessage = "failed to retrieve public key from wallet";
     try {
       PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
-      mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
+      LaoDetailActivity.setCurrentFragment(
+          manager, R.id.fragment_roll_call, () -> RollCallFragment.newInstance(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
     }
