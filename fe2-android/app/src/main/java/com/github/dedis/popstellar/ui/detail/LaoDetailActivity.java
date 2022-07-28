@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.*;
@@ -14,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
@@ -88,27 +87,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     // Subscribe to "open cast votes event" event
     setupCastVotesFragment();
 
-    // Subscribe to "open election display" event
-    setupElectionResultsFragment();
-
-    // Subscribe to "open manage election" event
-    setupElectionFragment();
-
     // Subscribe to "open start election" event
     setupElectionStartFragment();
   }
 
   private void subscribeWalletEvents() {
-    mViewModel
-        .getOpenLaoWalletEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupLaoWalletFragment();
-              }
-            });
     mViewModel
         .getWalletMessageEvent()
         .observe(
@@ -174,23 +157,6 @@ public class LaoDetailActivity extends AppCompatActivity {
         () -> RollCallFragment.newInstance(pk));
   }
 
-  private void setupElectionFragment() {
-    mViewModel
-        .getOpenElectionFragmentEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                Log.d(TAG, "opening new election fragment");
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_election,
-                    ElectionFragment::newInstance);
-              }
-            });
-  }
-
   public void setUpWalletMessage() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("You have to setup up your wallet before connecting.");
@@ -210,22 +176,6 @@ public class LaoDetailActivity extends AppCompatActivity {
                     getSupportFragmentManager(),
                     R.id.fragment_cast_vote,
                     CastVoteFragment::newInstance);
-              }
-            });
-  }
-
-  private void setupElectionResultsFragment() {
-    mViewModel
-        .getOpenElectionResultsEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setCurrentFragment(
-                    getSupportFragmentManager(),
-                    R.id.fragment_election_result,
-                    ElectionResultFragment::newInstance);
               }
             });
   }

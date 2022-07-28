@@ -67,8 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionFragmentEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
@@ -664,10 +662,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mElectionCreatedEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenElectionFragmentEvent() {
-    return mOpenElectionFragmentEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
     return mOpenCastVotesEvent;
   }
@@ -872,11 +866,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
 
   public void setShowProperties(boolean show) {
     showProperties.postValue(show);
-  }
-
-  public void openElectionFragment(Boolean open) {
-    Log.d(TAG, "openElection in view model");
-    mOpenElectionFragmentEvent.postValue(new SingleEvent<>(open));
   }
 
   /**

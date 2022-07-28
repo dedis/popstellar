@@ -8,14 +8,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 
 import java.util.*;
 
@@ -23,7 +25,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;
-  private final LifecycleOwner lifecycleOwner;
+  private final FragmentActivity activity;
   private final EnumMap<EventCategory, List<Event>> eventsMap;
   private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
@@ -31,12 +33,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
+      List<Event> events, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
     this.eventsMap.put(FUTURE, new ArrayList<>());
-    this.lifecycleOwner = lifecycleOwner;
+    this.activity = activity;
     this.viewModel = viewModel;
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
@@ -148,7 +150,10 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       View.OnClickListener listener =
           view -> {
             viewModel.setCurrentElection(election);
-            viewModel.openElectionFragment(true);
+            LaoDetailActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_election,
+                ElectionFragment::newInstance);
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
 
@@ -275,11 +280,11 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     for (EventCategory category : EventCategory.values()) {
       for (Event event : eventsMap.get(category)) {
         // When we get new events we remove observers of old ones
-        event.getState().removeObservers(lifecycleOwner);
+        event.getState().removeObservers(activity);
       }
     }
     events.forEach( // Adding a listener to each event's state, when changed we update the UI
-        event -> event.getState().observe(lifecycleOwner, eventState -> notifyDataSetChanged()));
+        event -> event.getState().observe(activity, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
   }

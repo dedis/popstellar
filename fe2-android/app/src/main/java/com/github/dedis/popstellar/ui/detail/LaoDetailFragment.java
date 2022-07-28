@@ -159,7 +159,7 @@ public class LaoDetailFragment extends Fragment {
     RecyclerView eventList = mLaoDetailFragBinding.eventList;
 
     mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
+        new EventListAdapter(new ArrayList<>(), mLaoDetailViewModel, requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
