@@ -27,8 +27,6 @@ public class AttendeesListFragment extends Fragment {
   public static final String TAG = AttendeesListFragment.class.getSimpleName();
   public static final String EXTRA_ID = "id";
 
-  private LaoDetailViewModel mLaoDetailViewModel;
-  private AttendeesListAdapter mAttendeesListAdapter;
   private AttendeesListFragmentBinding mAttendeesListBinding;
   private RollCall rollCall;
 
@@ -48,7 +46,7 @@ public class AttendeesListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mAttendeesListBinding = AttendeesListFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     String id = requireArguments().getString(EXTRA_ID);
     Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
@@ -83,7 +81,7 @@ public class AttendeesListFragment extends Fragment {
   private void setupAttendeesListAdapter() {
     ListView listView = mAttendeesListBinding.attendeesList;
 
-    mAttendeesListAdapter =
+    AttendeesListAdapter mAttendeesListAdapter =
         new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()), getActivity());
     listView.setAdapter(mAttendeesListAdapter);
   }

@@ -11,8 +11,6 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.*;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -87,31 +85,6 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setupLaoWalletFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-  }
-
-  private static void setupWitnessingFragment(FragmentManager manager) {
-    setCurrentFragment(manager, R.id.fragment_witnessing, WitnessingFragment::newInstance);
-  }
-
-  private void setupRollCallTokenFragment(String id) {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_rollcall_token,
-        () -> RollCallTokenFragment.newInstance(id));
-  }
-
-  private void setupAttendeesListFragment(String id) {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_attendees_list,
-        () -> AttendeesListFragment.newInstance(id));
-  }
-
-  private void enterRollCall(PublicKey pk) {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_roll_call,
-        () -> RollCallFragment.newInstance(pk));
   }
 
   public static void setUpWalletMessage(Context ctx) {
