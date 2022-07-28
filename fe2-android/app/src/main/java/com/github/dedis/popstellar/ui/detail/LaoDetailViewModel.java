@@ -67,8 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
@@ -337,6 +335,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
    *
+   * @param manager the fragment manager on which to open any activity
    * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
@@ -348,6 +347,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    * @return the id of the newly created election event, null if fails to create the event
    */
   public String createNewElection(
+      FragmentManager manager,
       ElectionVersion electionVersion,
       String name,
       long creation,
@@ -387,7 +387,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
             .subscribe(
                 () -> {
                   Log.d(TAG, "setup an election");
-                  mElectionCreatedEvent.postValue(new SingleEvent<>(true));
+                  openLaoDetail(manager);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -657,10 +657,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * Getters for MutableLiveData instances declared above
    */
-
-  public LiveData<SingleEvent<Boolean>> getElectionCreated() {
-    return mElectionCreatedEvent;
-  }
 
   public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
     return mOpenCastVotesEvent;

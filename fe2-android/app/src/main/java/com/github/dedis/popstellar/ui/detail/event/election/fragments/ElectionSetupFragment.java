@@ -184,18 +184,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     setupElectionCancelButton();
     setupElectionSubmitButton();
-
-    // subscribe to the election create event
-    mLaoDetailViewModel
-        .getElectionCreated()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                mLaoDetailViewModel.openLaoDetail(getParentFragmentManager());
-              }
-            });
   }
 
   /** Setups the submit button that creates the new election */
@@ -265,6 +253,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ", ballotsOptions "
                   + ballotsOptionsFiltered);
           mLaoDetailViewModel.createNewElection(
+              getParentFragmentManager(),
               electionVersion,
               electionName,
               creationTimeInSeconds,
