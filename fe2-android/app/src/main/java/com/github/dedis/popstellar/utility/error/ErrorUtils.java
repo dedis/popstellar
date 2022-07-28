@@ -20,7 +20,21 @@ public class ErrorUtils {
   }
 
   /**
-   * Log and error and show a localized {@link Toast} to the user
+   * Log non-error and show a localized {@link Toast} to the user
+   *
+   * @param context to retrieve the localized messages and show the toast on
+   * @param tag used to log the error
+   * @param action short description of what was happening when the error occurred
+   */
+  public static void logAndShow(Context context, String tag, @StringRes int action) {
+    String message = context.getString(action);
+
+    Log.d(tag, message);
+    displayToast(context, message);
+  }
+
+  /**
+   * Log error and show a localized {@link Toast} to the user
    *
    * <p>action is expected to leave a string placeholder for the error specific message at the last
    * place
@@ -38,11 +52,14 @@ public class ErrorUtils {
     String exceptionMsg = getLocalizedMessage(context, error, action, actionArgs);
 
     Log.e(tag, exceptionMsg, error);
+    displayToast(context, exceptionMsg);
+  }
 
+  private static void displayToast(Context context, String text) {
     // This makes it so that the toast is run on the UI thread
     // Otherwise it would crash
     new Handler(context.getMainLooper())
-        .post(() -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
+        .post(() -> Toast.makeText(context, text, Toast.LENGTH_LONG).show());
   }
 
   private static String getLocalizedMessage(

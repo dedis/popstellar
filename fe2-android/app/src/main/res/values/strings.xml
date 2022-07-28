@@ -245,6 +245,7 @@
   <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
   <string name="digital_cash_send_initial_amount">0</string>
+  <string name="digital_cash_non_organizer_error_issue">Only the organizer may issue coins</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -269,6 +270,7 @@
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
+  <string name="social_media_title">popstellar - %s</string>
 
   <!--  Content description -->
   <string name="qr_code_description">Open Qr code image</string>

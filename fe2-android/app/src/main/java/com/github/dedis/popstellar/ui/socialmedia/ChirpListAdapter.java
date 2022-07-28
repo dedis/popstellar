@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.time.Instant;
 import java.util.List;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
@@ -67,7 +68,8 @@ public class ChirpListAdapter extends BaseAdapter {
     if (socialMediaViewModel.isOwner(publicKey.getEncoded())) {
       ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
       deleteChirp.setVisibility(View.VISIBLE);
-      deleteChirp.setOnClickListener(v -> socialMediaViewModel.deleteChirpEvent(chirp.getId()));
+      deleteChirp.setOnClickListener(
+          v -> socialMediaViewModel.deleteChirp(chirp.getId(), Instant.now().getEpochSecond()));
     }
 
     if (chirp.getIsDeleted()) {

@@ -2,9 +2,9 @@ package com.github.dedis.popstellar.ui.settings;
 
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 import org.junit.Rule;
@@ -30,8 +30,8 @@ public class SettingsTest {
   public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule(order = 1)
-  public final FragmentScenarioRule<SettingsFragment> fragmentRule =
-      FragmentScenarioRule.launch(SettingsFragment.class);
+  public final ActivityScenarioRule<SettingsActivity> activityScenarioRule =
+      new ActivityScenarioRule<>(SettingsActivity.class);
 
   @Test
   public void uiElementsAreDisplayed() {

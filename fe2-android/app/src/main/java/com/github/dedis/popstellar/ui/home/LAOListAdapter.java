@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.app.Activity;
+import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 
@@ -9,20 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 
 import java.util.List;
 
 public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListItemViewHolder> {
 
-  private final HomeViewModel homeViewModel;
+  private static final String TAG = LAOListAdapter.class.getSimpleName();
+
+  private final Activity activity;
 
   private List<Lao> laos;
-
   private final boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
-
-    this.homeViewModel = homeViewModel;
+  public LAOListAdapter(List<Lao> laos, Activity activity, boolean openLaoDetail) {
+    this.activity = activity;
     setList(laos);
     this.openLaoDetail = openLaoDetail;
   }
@@ -52,10 +55,13 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     CardView cardView = holder.cardView;
     cardView.setOnClickListener(
         v -> {
+          String laoId = lao.getId();
           if (openLaoDetail) {
-            homeViewModel.openLAO(lao.getId());
+            Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+            activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
           } else {
-            homeViewModel.openLaoWallet(lao.getId());
+            Log.d(TAG, "Opening lao detail activity on the wallet tab for lao " + laoId);
+            activity.startActivity(LaoDetailActivity.newIntentForWallet(activity, laoId));
           }
         });
 

@@ -80,7 +80,10 @@ public class DigitalCashSendFragment extends Fragment {
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
                       mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
                       mViewModel.updateReceiptAmountEvent(currentAmount);
-                      mViewModel.openReceipt();
+                      DigitalCashActivity.setCurrentFragment(
+                          requireActivity().getSupportFragmentManager(),
+                          R.id.fragment_digital_cash_receipt,
+                          DigitalCashReceiptFragment::newInstance);
                     }
 
                   } catch (KeyException keyException) {

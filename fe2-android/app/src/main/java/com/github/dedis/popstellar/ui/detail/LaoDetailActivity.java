@@ -121,7 +121,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     mViewModel.getCurrentLaoValue().getName()));
           } else if (id == R.id.lao_detail_social_media_menu) {
             startActivity(
-                SocialMediaActivity.newInstance(
+                SocialMediaActivity.newIntent(
                     this,
                     mViewModel.getCurrentLaoValue().getId(),
                     mViewModel.getCurrentLaoValue().getName()));

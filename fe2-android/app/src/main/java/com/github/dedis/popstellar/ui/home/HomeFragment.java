@@ -73,7 +73,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     RecyclerView recyclerView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, true);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), true);
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     recyclerView.setLayoutManager(mLayoutManager);
