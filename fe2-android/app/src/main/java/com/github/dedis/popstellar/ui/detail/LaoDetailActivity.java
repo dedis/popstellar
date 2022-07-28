@@ -110,16 +110,6 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
     mViewModel
-        .getOpenAttendeesListEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String id = stringEvent.getContentIfNotHandled();
-              if (id != null) {
-                setupAttendeesListFragment(id);
-              }
-            });
-    mViewModel
         .getWalletMessageEvent()
         .observe(
             this,

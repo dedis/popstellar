@@ -6,9 +6,12 @@ import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -80,7 +83,11 @@ public class WalletListAdapter extends BaseAdapter {
 
     binding.rollcallAttendeesListButton.setVisibility(View.VISIBLE);
     binding.rollcallAttendeesListButton.setOnClickListener(
-        clicked -> viewModel.openAttendeesList(rollCall.getId()));
+        clicked ->
+            LaoDetailActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_attendees_list,
+                () -> AttendeesListFragment.newInstance(rollCall.getId())));
 
     Boolean isOrganizer = viewModel.isOrganizer().getValue();
     if (isOrganizer != null && !isOrganizer) {
