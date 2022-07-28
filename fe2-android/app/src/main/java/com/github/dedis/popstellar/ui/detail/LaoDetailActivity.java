@@ -57,23 +57,8 @@ public class LaoDetailActivity extends AppCompatActivity {
       setupLaoWalletFragment();
     }
 
-    subscribeWalletEvents();
-
     // Subscribe to "open start election" event
     setupElectionStartFragment();
-  }
-
-  private void subscribeWalletEvents() {
-    mViewModel
-        .getWalletMessageEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setUpWalletMessage();
-              }
-            });
   }
 
   @Override
@@ -129,8 +114,8 @@ public class LaoDetailActivity extends AppCompatActivity {
         () -> RollCallFragment.newInstance(pk));
   }
 
-  public void setUpWalletMessage() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+  public static void setUpWalletMessage(Context ctx) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
     builder.setTitle("You have to setup up your wallet before connecting.");
     builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
     builder.show();

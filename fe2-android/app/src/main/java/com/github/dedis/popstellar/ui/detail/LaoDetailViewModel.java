@@ -68,8 +68,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
-
   private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
@@ -741,10 +739,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mScanWarningEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getWalletMessageEvent() {
-    return mWalletMessageEvent;
-  }
-
   public Election getCurrentElection() {
     return mCurrentElection.getValue();
   }
@@ -895,9 +889,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void enterRollCall(FragmentManager manager, String id) {
+  public void enterRollCall(FragmentActivity activity, String id) {
     if (!wallet.isSetUp()) {
-      mWalletMessageEvent.setValue(new SingleEvent<>(true));
+      LaoDetailActivity.setUpWalletMessage(activity);
       return;
     }
     String firstLaoId = getCurrentLaoValue().getId();
@@ -905,7 +899,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     try {
       PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
       LaoDetailActivity.setCurrentFragment(
-          manager, R.id.fragment_roll_call, () -> RollCallFragment.newInstance(publicKey));
+          activity.getSupportFragmentManager(),
+          R.id.fragment_roll_call,
+          () -> RollCallFragment.newInstance(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
     }
