@@ -88,17 +88,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupConfirmButton();
     setupOpenButton();
     setupCancelButton();
-
-    mLaoDetailViewModel
-        .getCreatedRollCallEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                mLaoDetailViewModel.openLaoDetail(getParentFragmentManager());
-              }
-            });
   }
 
   private void setupConfirmButton() {

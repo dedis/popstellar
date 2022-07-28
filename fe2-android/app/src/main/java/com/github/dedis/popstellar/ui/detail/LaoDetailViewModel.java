@@ -67,8 +67,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
-      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<PublicKey>> mPkRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
@@ -433,7 +431,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   if (open) {
                     openRollCall(activity, createRollCall.getId());
                   } else {
-                    mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
+                    openLaoDetail(activity.getSupportFragmentManager());
                   }
                 },
                 error ->
@@ -718,10 +716,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
 
   public LiveData<Integer> getNbAttendees() {
     return mNbAttendees;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCreatedRollCallEvent() {
-    return mCreatedRollCallEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getOpenStartElectionEvent() {
