@@ -187,7 +187,7 @@ public class LaoDetailFragment extends Fragment {
 
   private void toggleProperties() {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-    if (Boolean.TRUE.equals(mLaoDetailViewModel.getShowProperties().getValue())) {
+    if (Boolean.FALSE.equals(mLaoDetailViewModel.getShowProperties().getValue())) {
       LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
       laoDetailQrLayout.setVisibility(View.VISIBLE);
       mLaoDetailViewModel.setShowProperties(true);
