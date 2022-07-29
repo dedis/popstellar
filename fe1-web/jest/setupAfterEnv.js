@@ -10,3 +10,5 @@ global.beforeAll(() => {
 global.afterAll(() => {
   jest.useRealTimers();
 });
+
+jest.setTimeout(10000);
