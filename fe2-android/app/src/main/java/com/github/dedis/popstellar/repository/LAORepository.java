@@ -125,11 +125,22 @@ public class LAORepository {
     return Optional.empty();
   }
 
+  public Optional<LaoView> getLaoViewByChannel(Channel channel) {
+    return getLao(channel.extractLaoId());
+  }
+
   public void updateLao(Lao lao) {
     if (lao == null) {
       throw new IllegalArgumentException();
     }
     Lao deepCopyLao = new Lao(lao);
     laoById.put(deepCopyLao.getId(), new LAOState(deepCopyLao));
+  }
+
+  public void updateLao(LaoView laoView) {
+    if (laoView == null) {
+      throw new IllegalArgumentException();
+    }
+    updateLao(laoView.getLao());
   }
 }

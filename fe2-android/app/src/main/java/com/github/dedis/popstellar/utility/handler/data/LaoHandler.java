@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.*;
@@ -83,32 +84,37 @@ public final class LaoHandler {
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(updateLao, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
-    if (lao.getLastModified() > updateLao.getLastModified()) {
+    if (laoView.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
       throw new DataHandlingException(
           updateLao, "The current Lao is more up to date than the update lao message");
     }
 
     WitnessMessage message;
-    if (!updateLao.getName().equals(lao.getName())) {
-      message = updateLaoNameWitnessMessage(messageId, updateLao, lao);
-    } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
-      message = updateLaoWitnessesWitnessMessage(messageId, updateLao, lao);
+    if (!updateLao.getName().equals(laoView.getName())) {
+      message = updateLaoNameWitnessMessage(messageId, updateLao, laoView);
+    } else if (!laoView.areWitnessSetsEqual(updateLao.getWitnesses())) {
+      message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
     } else {
       Log.d(TAG, "Cannot set the witness message title to update lao");
       throw new DataHandlingException(
           updateLao, "Cannot set the witness message title to update lao");
     }
 
-    lao.updateWitnessMessage(messageId, message);
-    if (!lao.getWitnesses().isEmpty()) {
+    laoView.updateWitnessMessage(messageId, message);
+    if (!laoView.isWitnessesEmpty()) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao
-      lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
+      laoView.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
     laoRepository.updateNodes(channel);
+    laoRepository.updateLao(laoView);
   }
 
   /**
@@ -124,7 +130,11 @@ public final class LaoHandler {
 
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(stateLao, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
     if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
@@ -144,31 +154,31 @@ public final class LaoHandler {
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
-    lao.setId(stateLao.getId());
-    lao.setWitnesses(stateLao.getWitnesses());
-    lao.setName(stateLao.getName());
-    lao.setLastModified(stateLao.getLastModified());
-    lao.setModificationId(stateLao.getModificationId());
+    laoView.updateLaoState(stateLao);
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
-    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      context.getMessageSender().subscribe(lao.getChannel().subChannel("consensus")).subscribe();
+    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+      context
+          .getMessageSender()
+          .subscribe(laoView.getChannel().subChannel("consensus"))
+          .subscribe();
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
     long targetTime = stateLao.getLastModified();
-    lao.getPendingUpdates()
-        .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
+    laoView.removePendingUpdate(targetTime);
+
+    laoRepository.updateLao(laoView);
     laoRepository.updateNodes(channel);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
-      MessageID messageId, UpdateLao updateLao, Lao lao) {
+      MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
         "Old Name : "
-            + lao.getName()
+            + laoView.getName()
             + "\n"
             + "New Name : "
             + updateLao.getName()
@@ -179,13 +189,13 @@ public final class LaoHandler {
   }
 
   public static WitnessMessage updateLaoWitnessesWitnessMessage(
-      MessageID messageId, UpdateLao updateLao, Lao lao) {
+      MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
     message.setDescription(
         "Lao Name : "
-            + lao.getName()
+            + laoView.getName()
             + "\n"
             + "Message ID : "
             + messageId
@@ -195,30 +205,35 @@ public final class LaoHandler {
     return message;
   }
 
-  public static void handleGreetLao(HandlerContext context, GreetLao greetLao) {
+  public static void handleGreetLao(HandlerContext context, GreetLao greetLao)
+      throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(greetLao, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
     // Check the correctness of the LAO id
-    if (!lao.getId().equals(greetLao.getId())) {
+    if (!laoView.getId().equals(greetLao.getId())) {
       Log.d(
           TAG,
           "Current lao id "
-              + lao.getId()
+              + laoView.getId()
               + " doesn't match the lao id from greetLao message ("
               + greetLao.getId()
               + ")");
       throw new IllegalArgumentException(
-          "Current lao doesn't march the lao id from the greetLao message");
+          "Current lao doesn't match the lao id from the greetLao message");
     }
     Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
 
     Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
 
-    Log.d(TAG, "Adding the server to the repository for lao id : " + lao.getId());
+    Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
     ServerRepository serverRepository = context.getServerRepository();
     serverRepository.addServer(greetLao.getId(), server);
 

@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
@@ -95,7 +96,7 @@ public class LaoHandlerTest {
 
     // Create the expected WitnessMessage
     WitnessMessage expectedMessage =
-        updateLaoNameWitnessMessage(message.getMessageId(), updateLao, lao);
+        updateLaoNameWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
@@ -139,7 +140,8 @@ public class LaoHandlerTest {
   public void testGreetLao() throws DataHandlingException {
     // Create the Greet Lao
     GreetLao greetLao =
-        new GreetLao(lao.getId(), RANDOM_KEY, RANDOM_ADDRESS, Arrays.asList(RANDOM_PEER));
+        new GreetLao(
+            lao.getId(), RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
 
     MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, GSON);
 
@@ -154,7 +156,7 @@ public class LaoHandlerTest {
 
     // Test for invalid LAO Id
     GreetLao greetLao_invalid =
-        new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Arrays.asList(RANDOM_PEER));
+        new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
     MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, GSON);
     assertThrows(
         IllegalArgumentException.class,
