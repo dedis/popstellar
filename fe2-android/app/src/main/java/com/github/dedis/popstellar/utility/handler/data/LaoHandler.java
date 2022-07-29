@@ -8,7 +8,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.utility.error.*;
 
 import java.util.*;
@@ -31,14 +32,10 @@ public final class LaoHandler {
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
     LAORepository laoRepository = context.getLaoRepository();
-    Channel channel = context.getChannel();
+    Channel channel = new Channel(context.getChannel());
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = new Lao(createLao.getId());
-
-    // Adding the newly created LAO to the repository
-    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-    laoRepository.setAllLaoSubject();
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
@@ -46,6 +43,10 @@ public final class LaoHandler {
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
+
+    // Adding the newly created LAO to the repository
+    laoRepository.updateLao(lao);
+    laoRepository.setAllLaoSubject();
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
