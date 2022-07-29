@@ -5,7 +5,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.Set;
+import java.util.*;
 
 public final class LaoView {
 
@@ -78,5 +78,17 @@ public final class LaoView {
 
   public Channel getChannel() {
     return lao.getChannel();
+  }
+
+  public void updateRollCall(String id, RollCall rollCall) {
+    lao.updateRollCall(id, rollCall);
+  }
+
+  public Optional<RollCall> getRollCall(String id) {
+    return lao.getRollCall(id);
+  }
+
+  public void updateTransactionHashMap(List<PublicKey> attendees) {
+    lao.updateTransactionHashMap(attendees);
   }
 }
