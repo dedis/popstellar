@@ -67,7 +67,7 @@ public class LaoTest {
         new HashMap<String, RollCall>() {
           {
             put(rollCallId1, new RollCall(rollCallId1));
-            put(null, new RollCall(null));
+            put(null, new RollCall((String) null));
             put(rollCallId3, new RollCall(rollCallId3));
           }
         });
@@ -160,7 +160,7 @@ public class LaoTest {
   @Test
   public void createLaoNullParametersTest() {
     assertThrows(IllegalArgumentException.class, () -> new Lao(null, ORGANIZER, 2L));
-    assertThrows(IllegalArgumentException.class, () -> new Lao(null));
+    assertThrows(IllegalArgumentException.class, () -> new Lao((String) null));
   }
 
   @Test

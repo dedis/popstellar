@@ -91,7 +91,11 @@ public final class Lao {
     this.lastModified = lao.lastModified;
     this.creation = lao.creation;
     this.organizer = new PublicKey(lao.organizer);
-    this.modificationId = new MessageID(lao.modificationId);
+
+    if (modificationId != null) {
+      this.modificationId = new MessageID(lao.modificationId);
+    }
+
     this.witnesses = lao.witnesses.stream().map(PublicKey::new).collect(Collectors.toSet());
     this.witnessMessages =
         lao.witnessMessages.entrySet().stream()
