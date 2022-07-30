@@ -91,4 +91,14 @@ public final class LaoView {
   public void updateTransactionHashMap(List<PublicKey> attendees) {
     lao.updateTransactionHashMap(attendees);
   }
+
+  public void updateChirps(MessageID messageID, Chirp chirp){
+      lao.updateAllChirps(messageID, new Chirp(chirp));
+  }
+
+  public Optional<Chirp> getChirp(MessageID messageID){
+      Optional<Chirp> optional = lao.getChirp(messageID);
+      return optional.map(Chirp::new); // If optional is empty returns empty
+      // otherwise returns a copy of the Chirp
+  }
 }

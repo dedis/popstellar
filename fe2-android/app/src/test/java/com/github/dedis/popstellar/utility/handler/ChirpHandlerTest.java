@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -92,7 +93,12 @@ public class ChirpHandlerTest {
   public void testHandleAddChirp() throws DataHandlingException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
-    Optional<Chirp> chirpOpt = lao.getChirp(message.getMessageId());
+
+    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
+    assertTrue(laoOpt.isPresent());
+    Lao updatedLao = laoOpt.get().getLao();
+
+    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
     Chirp chirp = chirpOpt.get();
 
@@ -103,7 +109,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = lao.getAllChirps();
+    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
@@ -118,7 +124,11 @@ public class ChirpHandlerTest {
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message2);
 
-    Optional<Chirp> chirpOpt = lao.getChirp(message.getMessageId());
+    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
+    assertTrue(laoOpt.isPresent());
+    Lao updatedLao = laoOpt.get().getLao();
+
+    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
     Chirp chirp = chirpOpt.get();
 
@@ -129,7 +139,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = lao.getAllChirps();
+    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
