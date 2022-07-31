@@ -172,7 +172,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     wallet.newSeed();
   }
 
-  /** Getters for LiveData instances declared above */
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
