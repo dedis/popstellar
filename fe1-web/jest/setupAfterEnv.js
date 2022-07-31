@@ -1,14 +1,24 @@
-import { jest } from '@jest/globals';
+import FakeTimers from '@sinonjs/fake-timers';
 
-const FIXED_SYSTEM_TIME = new Date(1620255600 * 1000).getTime(); // 5 May 2021
+/**
+ * Sets up fake timers for tests.
+ *
+ * @remarks
+ * We use a library because there is an issue between jest.useFakeTimers and asynchronous tests.
+ * (see https://github.com/facebook/jest/issues/10221)
+ */
 
+const FIXED_SYSTEM_TIME = new Date(1620255600 * 1000); // 5 May 2021
+
+let clock;
 global.beforeAll(() => {
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(FIXED_SYSTEM_TIME);
+  clock = FakeTimers.install({
+    now: FIXED_SYSTEM_TIME,
+    shouldAdvanceTime: true,
+    toFake: ['Date'],
+  });
 });
 
 global.afterAll(() => {
-  jest.useRealTimers();
+  clock.uninstall();
 });
-
-jest.setTimeout(10000);
