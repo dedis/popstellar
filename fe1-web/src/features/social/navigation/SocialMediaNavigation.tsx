@@ -6,12 +6,10 @@ import { useSelector } from 'react-redux';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { RollCall } from 'features/rollCall/objects';
-import { makeRollCallSelector } from 'features/rollCall/reducer';
-import { generateToken } from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
+import { SocialHooks } from '../hooks';
+import { SocialConfiguration, SocialFeature } from '../interface';
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
@@ -47,10 +45,10 @@ const iconSelector =
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
-const SocialMediaNavigation = () => {
+const SocialMediaNavigation = (generateToken: SocialConfiguration['generateToken']) => {
   const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
-  const lao = useSelector(selectCurrentLao);
+  const lao = useSelector(SocialHooks.useCurrentLao);
 
   if (lao === undefined) {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
@@ -58,14 +56,13 @@ const SocialMediaNavigation = () => {
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeRollCallSelector(rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+  const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
   useEffect(() => {
     generateToken(lao.id, rollCallId)
       .then((token) => {
-        if (rollCall.containsToken(token)) {
+        if (rollCall?.containsToken(token)) {
           setCurrentUserPublicKey(token.publicKey);
         }
       })

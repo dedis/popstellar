@@ -1,16 +1,14 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/color';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { makeRollCallAttendeesListSelector } from 'features/rollCall/reducer';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
+import { SocialHooks } from '../hooks';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -36,15 +34,14 @@ const styles = StyleSheet.create({
 
 const SocialSearch = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
-  const currentLao = useSelector(selectCurrentLao);
+  const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
     throw new Error('Impossible to open Social media Search if you are not connected to a LAO');
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
-  const attendeesSelect = makeRollCallAttendeesListSelector(rollCallId);
-  const attendees = useSelector(attendeesSelect);
+  const attendees = SocialHooks.useRollCallAttendeesList(rollCallId);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile

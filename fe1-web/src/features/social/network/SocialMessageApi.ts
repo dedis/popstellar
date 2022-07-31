@@ -1,8 +1,7 @@
 import { publish } from 'core/network';
 import { getReactionChannel, getUserSocialChannel, Hash, PublicKey, Timestamp } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
-
+import { Lao } from 'features/lao/objects'; // TODO: Change this
+import { OpenedLaoStore } from 'features/lao/store'; // TODO: Change this
 import { AddChirp, DeleteChirp } from './messages/chirp';
 import { AddReaction } from './messages/reaction';
 

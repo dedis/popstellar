@@ -1,7 +1,7 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'core/redux';
-import { selectCurrentLao } from 'features/lao/reducer';
+import { dispatch } from 'core/redux';
 
+import { SocialConfiguration } from '../interface';
 import { Chirp } from '../objects';
 import { addChirp, deleteChirp } from '../reducer';
 import { AddChirp, DeleteChirp } from './messages/chirp';
@@ -12,73 +12,72 @@ import { AddChirp, DeleteChirp } from './messages/chirp';
 
 /**
  * Handles an addChirp message by storing the chirp sent.
- *
- * @param msg - The extended message for adding a chirp
  */
-export function handleAddChirpMessage(msg: ProcessableMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
-    console.warn('handleAddChirp was called to process an unsupported message');
-    return false;
-  }
+export const handleAddChirpMessage =
+  (getCurrentLaoId: SocialConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
+    if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
+      console.warn('handleAddChirp was called to process an unsupported message');
+      return false;
+    }
 
-  const makeErr = (err: string) => `chirp/add was not processed: ${err}`;
+    const makeErr = (err: string) => `chirp/add was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = selectCurrentLao(storeState);
-  if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
-    return false;
-  }
+    const laoId = getCurrentLaoId();
+    if (!laoId) {
+      console.warn(makeErr('no LAO is currently active'));
+      return false;
+    }
 
-  const messageId = msg.message_id;
-  const { sender } = msg;
-  const chirpMessage = msg.messageData as AddChirp;
+    const messageId = msg.message_id;
+    const { sender } = msg;
+    const chirpMessage = msg.messageData as AddChirp;
 
-  const chirp = new Chirp({
-    id: messageId,
-    sender: sender,
-    text: chirpMessage.text,
-    time: chirpMessage.timestamp,
-    parentId: chirpMessage.parent_id,
-  });
+    const chirp = new Chirp({
+      id: messageId,
+      sender: sender,
+      text: chirpMessage.text,
+      time: chirpMessage.timestamp,
+      parentId: chirpMessage.parent_id,
+    });
 
-  dispatch(addChirp(lao.id, chirp.toState()));
-  return true;
-}
+    dispatch(addChirp(laoId, chirp.toState()));
+    return true;
+  };
 
 /**
  * Handles an deleteChirp message
- *
- * @param msg - The extended message for deleting a chirp
  */
-export function handleDeleteChirpMessage(msg: ProcessableMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.DELETE) {
-    console.warn('handleDeleteChirp was called to process an unsupported message');
-    return false;
-  }
+export const handleDeleteChirpMessage =
+  (getCurrentLaoId: SocialConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
+    if (
+      msg.messageData.object !== ObjectType.CHIRP ||
+      msg.messageData.action !== ActionType.DELETE
+    ) {
+      console.warn('handleDeleteChirp was called to process an unsupported message');
+      return false;
+    }
 
-  const makeErr = (err: string) => `chirp/delete was not processed: ${err}`;
+    const makeErr = (err: string) => `chirp/delete was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = selectCurrentLao(storeState);
-  if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
-    return false;
-  }
+    const laoId = getCurrentLaoId();
+    if (!laoId) {
+      console.warn(makeErr('no LAO is currently active'));
+      return false;
+    }
 
-  const { sender } = msg;
-  const chirpMessage = msg.messageData as DeleteChirp;
+    const { sender } = msg;
+    const chirpMessage = msg.messageData as DeleteChirp;
 
-  const chirp = new Chirp({
-    id: chirpMessage.chirp_id,
-    sender: sender,
-    time: chirpMessage.timestamp,
-    text: '',
-  });
+    const chirp = new Chirp({
+      id: chirpMessage.chirp_id,
+      sender: sender,
+      time: chirpMessage.timestamp,
+      text: '',
+    });
 
-  dispatch(deleteChirp(lao.id, chirp.toState()));
-  return true;
-}
+    dispatch(deleteChirp(laoId, chirp.toState()));
+    return true;
+  };
 
 /**
  * TODO: Handles a NotifyAddChirp message.

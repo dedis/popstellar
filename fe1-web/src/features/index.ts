@@ -100,6 +100,7 @@ export function configureFeatures() {
   });
 
   const socialConfiguration = social.configure(messageRegistry);
+
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
