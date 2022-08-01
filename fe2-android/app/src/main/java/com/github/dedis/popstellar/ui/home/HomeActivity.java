@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
   private static final int LAUNCH_POSITION = 2;
   private static final int SOCIAL_MEDIA_POSITION = 4;
 
-  private HomeViewModel mViewModel;
+  private HomeViewModel viewModel;
 
   private BottomNavigationView navbar;
 
@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    mViewModel = obtainViewModel(this);
+    viewModel = obtainViewModel(this);
     openHomeTab();
 
     // Load all the json schemas in background when the app is started.
@@ -68,12 +68,12 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupNavigationBar() {
-    mViewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
+    viewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
     navbar.setOnItemSelectedListener(
         item -> {
           HomeTab tab = HomeTab.findByMenu(item.getItemId());
           boolean selected = openTab(tab);
-          if (selected) mViewModel.setCurrentTab(tab);
+          if (selected) viewModel.setCurrentTab(tab);
           return selected;
         });
     // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
@@ -87,7 +87,7 @@ public class HomeActivity extends AppCompatActivity {
     MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
 
     // Gray out the launch and connect buttons depending on the wallet state
-    mViewModel
+    viewModel
         .getIsWalletSetUpEvent()
         .observe(
             this,
@@ -101,7 +101,7 @@ public class HomeActivity extends AppCompatActivity {
             });
 
     // Gray out the social media button if no laos were created
-    mViewModel
+    viewModel
         .isSocialMediaEnabled()
         .observe(
             this,
@@ -142,7 +142,7 @@ public class HomeActivity extends AppCompatActivity {
       case LAUNCH:
         return openLaunchTab();
       case WALLET:
-        WalletFragment.openWallet(getSupportFragmentManager(), mViewModel.isWalletSetUp());
+        WalletFragment.openWallet(getSupportFragmentManager(), viewModel.isWalletSetUp());
         return true;
       case SOCIAL:
         openSocialMediaTab();
@@ -158,7 +158,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean openConnectTab() {
-    if (!mViewModel.isWalletSetUp()) {
+    if (!viewModel.isWalletSetUp()) {
       showWalletWarning();
       return false;
     }
@@ -184,7 +184,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean openLaunchTab() {
-    if (!mViewModel.isWalletSetUp()) {
+    if (!viewModel.isWalletSetUp()) {
       showWalletWarning();
       return false;
     }
@@ -199,7 +199,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void openSocialMediaTab() {
-    if (!Boolean.TRUE.equals(mViewModel.isSocialMediaEnabled().getValue())) {
+    if (!Boolean.TRUE.equals(viewModel.isSocialMediaEnabled().getValue())) {
       Toast.makeText(this, R.string.error_no_lao, Toast.LENGTH_SHORT).show();
       return;
     }

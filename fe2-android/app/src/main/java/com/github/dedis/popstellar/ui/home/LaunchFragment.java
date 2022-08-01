@@ -18,7 +18,7 @@ public final class LaunchFragment extends Fragment {
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
   private LaunchFragmentBinding binding;
-  private HomeViewModel mHomeViewModel;
+  private HomeViewModel viewModel;
 
   public static LaunchFragment newInstance() {
     return new LaunchFragment();
@@ -32,7 +32,7 @@ public final class LaunchFragment extends Fragment {
 
     binding = LaunchFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
     binding.setLifecycleOwner(getActivity());
 
     return binding.getRoot();
@@ -48,15 +48,14 @@ public final class LaunchFragment extends Fragment {
 
   private void setupLaunchButton() {
     binding.buttonLaunch.setOnClickListener(
-        v ->
-            mHomeViewModel.launchLao(requireActivity(), binding.laoNameEntry.getText().toString()));
+        v -> viewModel.launchLao(requireActivity(), binding.laoNameEntry.getText().toString()));
   }
 
   private void setupCancelButton() {
     binding.buttonCancelLaunch.setOnClickListener(
         v -> {
           binding.laoNameEntry.getText().clear();
-          mHomeViewModel.setCurrentTab(HomeTab.HOME);
+          viewModel.setCurrentTab(HomeTab.HOME);
         });
   }
 }

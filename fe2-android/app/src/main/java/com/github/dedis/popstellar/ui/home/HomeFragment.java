@@ -21,9 +21,9 @@ public final class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();
 
-  private HomeFragmentBinding mHomeFragBinding;
-  private HomeViewModel mHomeViewModel;
-  private LAOListAdapter mListAdapter;
+  private HomeFragmentBinding binding;
+  private HomeViewModel viewModel;
+  private LAOListAdapter laoListAdapter;
 
   public static HomeFragment newInstance() {
     return new HomeFragment();
@@ -34,14 +34,14 @@ public final class HomeFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mHomeFragBinding = HomeFragmentBinding.inflate(inflater, container, false);
+    binding = HomeFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
 
-    mHomeFragBinding.setViewmodel(mHomeViewModel);
-    mHomeFragBinding.setLifecycleOwner(getActivity());
+    binding.setViewmodel(viewModel);
+    binding.setLifecycleOwner(getActivity());
 
-    return mHomeFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -53,35 +53,35 @@ public final class HomeFragment extends Fragment {
   }
 
   private void setupListUpdates() {
-    mHomeViewModel
+    viewModel
         .getLAOs()
         .observe(
             requireActivity(),
             laos -> {
               Log.d(TAG, "Got a list update");
 
-              mListAdapter.setList(laos);
+              laoListAdapter.setList(laos);
 
               if (!laos.isEmpty()) {
-                mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
-                mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
-                mHomeFragBinding.homeTitle.setVisibility(View.VISIBLE);
+                binding.welcomeScreen.setVisibility(View.GONE);
+                binding.listScreen.setVisibility(View.VISIBLE);
+                binding.homeTitle.setVisibility(View.VISIBLE);
               }
             });
   }
 
   private void setupListAdapter() {
-    RecyclerView recyclerView = mHomeFragBinding.laoList;
+    RecyclerView recyclerView = binding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), true);
+    laoListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), true);
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     recyclerView.setLayoutManager(mLayoutManager);
 
     DividerItemDecoration dividerItemDecoration =
-        new DividerItemDecoration(getContext(), mLayoutManager.getOrientation());
+        new DividerItemDecoration(requireContext(), mLayoutManager.getOrientation());
     recyclerView.addItemDecoration(dividerItemDecoration);
 
-    recyclerView.setAdapter(mListAdapter);
+    recyclerView.setAdapter(laoListAdapter);
   }
 }
