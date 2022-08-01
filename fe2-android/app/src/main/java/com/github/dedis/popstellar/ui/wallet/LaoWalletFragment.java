@@ -43,13 +43,6 @@ public class LaoWalletFragment extends Fragment {
     mLaoWalletFragmentBinding.setViewModel(mLaoDetailViewModel);
     mLaoWalletFragmentBinding.setLifecycleOwner(getActivity());
 
-    return mLaoWalletFragmentBinding.getRoot();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-
     setupWalletListAdapter();
     setupWalletListUpdates();
 
@@ -64,6 +57,8 @@ public class LaoWalletFragment extends Fragment {
 
     mLaoWalletFragmentBinding.backButton.setOnClickListener(
         clicked -> mLaoDetailViewModel.openHome());
+
+    return mLaoWalletFragmentBinding.getRoot();
   }
 
   private void setupWalletListAdapter() {

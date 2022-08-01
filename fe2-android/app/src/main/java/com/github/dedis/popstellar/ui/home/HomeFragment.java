@@ -41,15 +41,10 @@ public final class HomeFragment extends Fragment {
     binding.setViewmodel(viewModel);
     binding.setLifecycleOwner(getActivity());
 
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-
     setupListAdapter();
     setupListUpdates();
+
+    return binding.getRoot();
   }
 
   private void setupListUpdates() {

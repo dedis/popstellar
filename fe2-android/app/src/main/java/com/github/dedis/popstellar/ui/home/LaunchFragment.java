@@ -35,15 +35,10 @@ public final class LaunchFragment extends Fragment {
     viewModel = HomeActivity.obtainViewModel(requireActivity());
     binding.setLifecycleOwner(getActivity());
 
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
     setupLaunchButton();
     setupCancelButton();
+
+    return binding.getRoot();
   }
 
   private void setupLaunchButton() {
