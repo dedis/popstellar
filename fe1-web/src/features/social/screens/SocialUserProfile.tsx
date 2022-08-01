@@ -10,6 +10,7 @@ import BackButton from '../components/BackButton';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
+import { SocialFeature } from 'features/social/interface';
 
 const styles = StyleSheet.create({
   userInnerView: { marginBottom: 15 } as ViewStyle,
@@ -73,3 +74,9 @@ const SocialUserProfile = ({ route }: any) => {
 };
 
 export default SocialUserProfile;
+
+export const SocialUserProfileScreen: SocialFeature.SocialSearchScreen = {
+  id: STRINGS.social_media_navigation_tab_user_profile,
+  Component: SocialUserProfile,
+  headerShown: false,
+};

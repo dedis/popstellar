@@ -10,6 +10,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
+import { SocialFeature } from '../interface';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -95,3 +96,9 @@ type IPropTypes = {
 };
 
 export default SocialHome;
+
+export const SocialHomeScreen: SocialFeature.SocialScreen = {
+  id: STRINGS.social_media_navigation_tab_home,
+  Component: SocialHome,
+  headerShown: false,
+};

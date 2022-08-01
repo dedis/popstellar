@@ -1,3 +1,4 @@
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import { PublicKey } from 'core/objects/PublicKey';
 
@@ -6,6 +7,9 @@ import { SocialFeature } from './Feature';
 export const SOCIAL_FEATURE_IDENTIFIER = 'social';
 
 export interface SocialConfiguration {
+  // objects
+  messageRegistry: MessageRegistry;
+
   /* LAO related functions */
 
   /**

@@ -1,5 +1,4 @@
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
-
+import { SOCIAL_FEATURE_IDENTIFIER, SocialConfiguration } from './interface';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
 import { socialReducer } from './reducer';
@@ -7,11 +6,12 @@ import { socialReducer } from './reducer';
 /**
  * Configures the social media feature
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the social media feature
  */
-export function configure(registry: MessageRegistry) {
-  configureNetwork(registry);
+export function configure(configuration: SocialConfiguration) {
+  configureNetwork(configuration);
   return {
+    identifier: SOCIAL_FEATURE_IDENTIFIER,
     navigation,
     reducers: {
       ...socialReducer,

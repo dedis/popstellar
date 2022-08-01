@@ -1,7 +1,7 @@
 import { RollCallEventType } from './components';
 import * as functions from './functions';
 import { RollCallHooks } from './hooks';
-import { RollCallConfiguration, RollCallInterface, ROLLCALL_FEATURE_IDENTIFIER } from './interface';
+import { ROLLCALL_FEATURE_IDENTIFIER, RollCallConfiguration, RollCallInterface } from './interface';
 import { configureNetwork } from './network';
 import { rollCallReducer } from './reducer';
 import { CreateRollCallScreen, RollCallOpenedScreen, ViewSingleRollCallScreen } from './screens';
@@ -24,6 +24,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
       useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
       useRollCallTokensByLaoId: RollCallHooks.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: RollCallHooks.useRollCallTokenByRollCallId,
+      useRollCallAttendeesList: RollCallHooks.useRollCall,
     },
     context: {
       useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,

@@ -99,7 +99,15 @@ export function configureFeatures() {
     useRollCallTokenByRollCallId: rollCallConfiguration.hooks.useRollCallTokenByRollCallId,
   });
 
-  const socialConfiguration = social.configure(messageRegistry);
+  const socialConfiguration = social.configure({
+    messageRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useRollCallById: rollCallConfiguration.hooks.useRollCallById,
+    useRollCallAttendeesList: () => (), // TODO: Add useRollCallAttendeesList
+    generateToken: walletConfiguration.functions.generateToken,
+  });
 
   const witnessConfiguration = witness.configure({
     enabled: false,
