@@ -93,7 +93,7 @@ public class ContentWalletFragment extends Fragment {
             laos -> {
               Log.d(TAG, "Got a list update");
 
-              mListAdapter.replaceList(laos);
+              mListAdapter.setList(laos);
 
               if (!laos.isEmpty()) {
                 mWalletContentBinding.welcomeScreen.setVisibility(View.GONE);

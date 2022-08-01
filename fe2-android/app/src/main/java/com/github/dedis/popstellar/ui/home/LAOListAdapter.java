@@ -26,15 +26,11 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
   public LAOListAdapter(List<Lao> laos, Activity activity, boolean openLaoDetail) {
     this.activity = activity;
-    setList(laos);
     this.openLaoDetail = openLaoDetail;
-  }
-
-  public void replaceList(List<Lao> laos) {
     setList(laos);
   }
 
-  private void setList(List<Lao> laos) {
+  public void setList(List<Lao> laos) {
     this.laos = laos;
     notifyDataSetChanged();
   }

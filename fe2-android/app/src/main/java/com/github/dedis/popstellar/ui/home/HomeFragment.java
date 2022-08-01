@@ -60,7 +60,7 @@ public final class HomeFragment extends Fragment {
             laos -> {
               Log.d(TAG, "Got a list update");
 
-              mListAdapter.replaceList(laos);
+              mListAdapter.setList(laos);
 
               if (!laos.isEmpty()) {
                 mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
