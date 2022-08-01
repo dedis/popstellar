@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="view_model"
-      type="com.github.dedis.popstellar.ui.home.HomeViewModel" />
-  </data>
-
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_launch"
     android:layout_width="match_parent"
@@ -40,8 +30,7 @@
         android:textStyle="italic" />
 
       <EditText
-        android:id="@+id/entry_box_launch"
-        android:afterTextChanged="@{(edtitable)->view_model.setLaoName(edtitable.toString())}"
+        android:id="@+id/lao_name_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
@@ -74,8 +63,8 @@
           android:layout_marginStart="@dimen/inter_buttons_margin"
           android:gravity="center"
           android:theme="@style/button_style"
-          android:enabled="@{entryBoxLaunch.text.length() > 0}"
-          android:alpha="@{entryBoxLaunch.text.length() > 0 ? 1.0f : 0.3f}"
+          android:enabled="@{laoNameEntry.text.length() > 0}"
+          android:alpha="@{laoNameEntry.text.length() > 0 ? 1.0f : 0.3f}"
           android:text="@string/text_button_launch"
           style="@style/Theme.AppCompat" />
 

@@ -50,12 +50,11 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /** LiveData objects that represent the state in a fragment */
-  private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
+  private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
-  private final LiveData<List<Lao>> mLAOs;
-  private final LiveData<Boolean> mEnableSocialMedia;
+  private final LiveData<List<Lao>> Laos;
+  private final LiveData<Boolean> isSocialMediaEnabled;
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -81,10 +80,10 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     this.wallet = wallet;
     this.networkManager = networkManager;
 
-    mLAOs =
+    Laos =
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
-    mEnableSocialMedia = Transformations.map(mLAOs, laos -> laos != null && !laos.isEmpty());
+    isSocialMediaEnabled = Transformations.map(Laos, laos -> laos != null && !laos.isEmpty());
   }
 
   @Override
@@ -140,9 +139,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
    * message and publishes it to the root channel. It observers the response in the background and
    * switches to the home screen on success.
    */
-  public void launchLao(Activity activity) {
-    String laoName = mLaoName.getValue();
-
+  public void launchLao(Activity activity, String laoName) {
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
     Lao lao = new Lao(createLao.getId());
@@ -181,31 +178,27 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
+    return Laos;
   }
 
   public LiveData<Boolean> isSocialMediaEnabled() {
-    return mEnableSocialMedia;
+    return isSocialMediaEnabled;
   }
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
-    return mIsWalletSetUp;
+    return isWalletSetup;
   }
 
   public void setCurrentTab(HomeTab tab) {
     this.currentTab.postValue(tab);
   }
 
-  public void setLaoName(String name) {
-    this.mLaoName.setValue(name);
-  }
-
   public void setIsWalletSetUp(boolean isSetUp) {
-    this.mIsWalletSetUp.setValue(isSetUp);
+    this.isWalletSetup.setValue(isSetUp);
   }
 
   public boolean isWalletSetUp() {
-    Boolean setup = mIsWalletSetUp.getValue();
+    Boolean setup = isWalletSetup.getValue();
     if (setup == null) return false;
     else return setup;
   }

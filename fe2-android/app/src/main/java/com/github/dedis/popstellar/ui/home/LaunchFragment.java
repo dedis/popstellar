@@ -17,7 +17,7 @@ public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
-  private LaunchFragmentBinding mLaunchFragBinding;
+  private LaunchFragmentBinding binding;
   private HomeViewModel mHomeViewModel;
 
   public static LaunchFragment newInstance() {
@@ -30,14 +30,12 @@ public final class LaunchFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mLaunchFragBinding = LaunchFragmentBinding.inflate(inflater, container, false);
+    binding = LaunchFragmentBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
+    binding.setLifecycleOwner(getActivity());
 
-    mLaunchFragBinding.setViewModel(mHomeViewModel);
-    mLaunchFragBinding.setLifecycleOwner(getActivity());
-
-    return mLaunchFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -49,14 +47,15 @@ public final class LaunchFragment extends Fragment {
   }
 
   private void setupLaunchButton() {
-    mLaunchFragBinding.buttonLaunch.setOnClickListener(
-        v -> mHomeViewModel.launchLao(requireActivity()));
+    binding.buttonLaunch.setOnClickListener(
+        v ->
+            mHomeViewModel.launchLao(requireActivity(), binding.laoNameEntry.getText().toString()));
   }
 
   private void setupCancelButton() {
-    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(
+    binding.buttonCancelLaunch.setOnClickListener(
         v -> {
-          mLaunchFragBinding.entryBoxLaunch.getText().clear();
+          binding.laoNameEntry.getText().clear();
           mHomeViewModel.setCurrentTab(HomeTab.HOME);
         });
   }
