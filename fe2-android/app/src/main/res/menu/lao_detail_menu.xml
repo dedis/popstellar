@@ -18,7 +18,7 @@
     android:title="@string/tab_digital_cash" />
   <item
     android:id="@+id/lao_detail_social_media_menu"
-    android:icon="@drawable/ic_common_social_media_opaque_foreground"
+    android:icon="@drawable/ic_common_social_media_enabled"
     android:title="@string/tab_social_media" />
 
 </menu>

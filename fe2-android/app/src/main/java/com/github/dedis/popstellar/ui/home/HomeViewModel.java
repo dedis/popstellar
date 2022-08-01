@@ -55,6 +55,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
   private final LiveData<List<Lao>> mLAOs;
+  private final LiveData<Boolean> mEnableSocialMedia;
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -83,6 +84,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+    mEnableSocialMedia = Transformations.map(mLAOs, laos -> laos != null && !laos.isEmpty());
   }
 
   @Override
@@ -180,6 +182,10 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
+  }
+
+  public LiveData<Boolean> isSocialMediaEnabled() {
+    return mEnableSocialMedia;
   }
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {

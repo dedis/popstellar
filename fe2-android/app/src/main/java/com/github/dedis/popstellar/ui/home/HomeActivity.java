@@ -12,14 +12,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -28,7 +26,6 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -53,9 +50,8 @@ public class HomeActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-
     mViewModel = obtainViewModel(this);
+    openHomeTab();
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -66,59 +62,56 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     navbar = findViewById(R.id.home_nav_bar);
-    setupNavigationBar();
 
-    subscribeWalletEvents();
-    subscribeSocialMediaEvents();
+    setupNavigationBar();
+    setupNavigationBarListener();
   }
 
-  private void subscribeWalletEvents() {
+  public void setupNavigationBar() {
+    mViewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
+    navbar.setOnItemSelectedListener(
+        item -> {
+          HomeTab tab = HomeTab.findByMenu(item.getItemId());
+          boolean selected = openTab(tab);
+          if (selected) mViewModel.setCurrentTab(tab);
+          return selected;
+        });
+    // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
+    navbar.setOnItemReselectedListener(item -> {});
+  }
 
+  /** Setup the listeners that changes the navigation bar menus */
+  private void setupNavigationBarListener() {
     MenuItem connectItem = navbar.getMenu().getItem(CONNECT_POSITION);
     MenuItem launchItem = navbar.getMenu().getItem(LAUNCH_POSITION);
+    MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
 
+    // Gray out the launch and connect buttons depending on the wallet state
     mViewModel
         .getIsWalletSetUpEvent()
         .observe(
             this,
-            aBoolean -> {
-              // We set transparency of the
-              if (Boolean.TRUE.equals(aBoolean)) {
-                connectItem.setIcon(R.drawable.ic_home_connect_opaque_foreground);
-                launchItem.setIcon(R.drawable.ic_home_launch_opaque_foreground);
-              } else {
-                connectItem.setIcon(R.drawable.ic_home_connect_transparent_foreground);
-                launchItem.setIcon(R.drawable.ic_home_launch_transparent_foreground);
-              }
+            walletSetup -> {
+              // We set the button icon depending on the livedata value
+              boolean setup = Boolean.TRUE.equals(walletSetup);
+              connectItem.setIcon(
+                  setup ? R.drawable.ic_home_connect_enabled : R.drawable.ic_home_connect_disabled);
+              launchItem.setIcon(
+                  setup ? R.drawable.ic_home_launch_enabled : R.drawable.ic_home_launch_disabled);
             });
-  }
 
-  private void subscribeSocialMediaEvents() {
-    MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
-
-    // Subscribe to lao adding event to adapt the social media menu item
+    // Gray out the social media button if no laos were created
     mViewModel
-        .getLAOs()
+        .isSocialMediaEnabled()
         .observe(
             this,
-            laos -> {
-              if (laos.isEmpty()) {
-                socialMediaItem.setIcon(R.drawable.ic_common_social_media_transparent_foreground);
-              } else {
-                socialMediaItem.setIcon(R.drawable.ic_common_social_media_opaque_foreground);
-              }
+            enabled -> {
+              // We set the button icon depending on the livedata value
+              socialMediaItem.setIcon(
+                  Boolean.TRUE.equals(enabled)
+                      ? R.drawable.ic_common_social_media_enabled
+                      : R.drawable.ic_common_social_media_disabled);
             });
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == LAO_DETAIL_REQUEST_CODE) {
-      if (resultCode == RESULT_OK) {
-        startActivity(new Intent(data));
-      }
-    }
   }
 
   @Override
@@ -139,28 +132,10 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-    return new ViewModelProvider(activity).get(HomeViewModel.class);
-  }
-
-  public void setupNavigationBar() {
-    mViewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
-    navbar.setOnItemSelectedListener(
-        item -> {
-          HomeTab tab = HomeTab.findByMenu(item.getItemId());
-          boolean selected = openTab(tab);
-          if (selected) mViewModel.setCurrentTab(tab);
-          return selected;
-        });
-    // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
-    navbar.setOnItemReselectedListener(item -> {});
-  }
-
   private boolean openTab(HomeTab tab) {
     switch (tab) {
       case HOME:
-        setCurrentFragment(
-            getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+        openHomeTab();
         return true;
       case CONNECT:
         return openConnectTab();
@@ -176,6 +151,10 @@ public class HomeActivity extends AppCompatActivity {
         Log.w(TAG, "Unhandled tab type : " + tab);
         return false;
     }
+  }
+
+  private void openHomeTab() {
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
   }
 
   private boolean openConnectTab() {
@@ -220,14 +199,17 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void openSocialMediaTab() {
-    List<Lao> laos = mViewModel.getLAOs().getValue();
-    if (laos == null || laos.isEmpty()) {
+    if (!Boolean.TRUE.equals(mViewModel.isSocialMediaEnabled().getValue())) {
       Toast.makeText(this, R.string.error_no_lao, Toast.LENGTH_SHORT).show();
       return;
     }
 
     Log.d(HomeViewModel.TAG, "Opening social media activity");
     startActivity(SocialMediaActivity.newIntent(this));
+  }
+
+  public static HomeViewModel obtainViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(HomeViewModel.class);
   }
 
   /** Factory method to create a fresh Intent that opens an HomeActivity */
