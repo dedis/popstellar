@@ -156,6 +156,12 @@ public class HomeActivity extends AppCompatActivity {
     navbar.setOnItemReselectedListener(item -> {});
   }
 
+  /**
+   * Open the fragment based on the given tab and the application state
+   *
+   * @param tab to open
+   * @return true if the tab was opened and the menu should be selected on the navigation bar
+   */
   private boolean openTab(HomeTab tab) {
     switch (tab) {
       case HOME:
@@ -179,11 +185,13 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean openConnectTab() {
+    // Check if the wallet is setup
     if (!mViewModel.isWalletSetUp()) {
       showWalletWarning();
       return false;
     }
 
+    // Check for the permission, if it is not granted, ask for it
     if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
       requestCameraPermission();
     else
@@ -205,6 +213,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean openLaunchTab() {
+    // Check if the wallet is setup
     if (!mViewModel.isWalletSetUp()) {
       showWalletWarning();
       return false;
