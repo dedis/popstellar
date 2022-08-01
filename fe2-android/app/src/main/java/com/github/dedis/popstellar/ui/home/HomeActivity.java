@@ -145,7 +145,13 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupNavigationBar() {
     mViewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
-    navbar.setOnItemSelectedListener(item -> openTab(HomeTab.findByMenu(item.getItemId())));
+    navbar.setOnItemSelectedListener(
+        item -> {
+          HomeTab tab = HomeTab.findByMenu(item.getItemId());
+          boolean selected = openTab(tab);
+          if (selected) mViewModel.setCurrentTab(tab);
+          return selected;
+        });
     // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
     navbar.setOnItemReselectedListener(item -> {});
   }
