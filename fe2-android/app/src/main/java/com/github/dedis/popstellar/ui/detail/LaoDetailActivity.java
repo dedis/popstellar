@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.*;
-import androidx.appcompat.app.*;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -52,8 +53,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .getExtras()
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
         .equals(Constants.LAO_DETAIL_EXTRA)) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+      openDetailMenu();
     } else {
       setupLaoWalletFragment();
     }
@@ -82,52 +82,61 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-  private void setupLaoWalletFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-  }
-
-  public static void setUpWalletMessage(Context ctx) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-    builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
-    builder.show();
-  }
-
   public void setupNavigationBar() {
     navbar.setOnItemSelectedListener(
         item -> {
           int id = item.getItemId();
           if (id == R.id.lao_detail_event_list_menu) {
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_lao_detail,
-                LaoDetailFragment::newInstance);
+            openDetailMenu();
           } else if (id == R.id.lao_detail_identity_menu) {
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_identity,
-                () -> IdentityFragment.newInstance(mViewModel.getPublicKey()));
+            openIdentityMenu();
           } else if (id == R.id.lao_detail_witnessing_menu) {
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_witnessing,
-                WitnessingFragment::newInstance);
+            openWitnessMenu();
           } else if (id == R.id.lao_detail_digital_cash_menu) {
-            startActivity(
-                DigitalCashActivity.newIntent(
-                    this,
-                    mViewModel.getCurrentLaoValue().getId(),
-                    mViewModel.getCurrentLaoValue().getName()));
+            openDigitalCashMenu();
           } else if (id == R.id.lao_detail_social_media_menu) {
-            startActivity(
-                SocialMediaActivity.newIntent(
-                    this,
-                    mViewModel.getCurrentLaoValue().getId(),
-                    mViewModel.getCurrentLaoValue().getName()));
+            openSocialMediaMenu();
           }
           return true;
         });
+  }
+
+  private void openSocialMediaMenu() {
+    startActivity(
+        SocialMediaActivity.newIntent(
+            this,
+            mViewModel.getCurrentLaoValue().getId(),
+            mViewModel.getCurrentLaoValue().getName()));
+  }
+
+  private void openDigitalCashMenu() {
+    startActivity(
+        DigitalCashActivity.newIntent(
+            this,
+            mViewModel.getCurrentLaoValue().getId(),
+            mViewModel.getCurrentLaoValue().getName()));
+  }
+
+  private void openWitnessMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
+  }
+
+  private void openIdentityMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_identity,
+        () -> IdentityFragment.newInstance(mViewModel.getPublicKey()));
+  }
+
+  private void openDetailMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+  }
+
+  private void setupLaoWalletFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   /**

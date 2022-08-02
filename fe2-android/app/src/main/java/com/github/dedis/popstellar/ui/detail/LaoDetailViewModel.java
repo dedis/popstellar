@@ -856,10 +856,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   }
 
   public void enterRollCall(FragmentActivity activity, String id) {
-    if (!wallet.isSetUp()) {
-      LaoDetailActivity.setUpWalletMessage(activity);
-      return;
-    }
     String firstLaoId = getCurrentLaoValue().getId();
 
     try {
@@ -871,6 +867,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     } catch (Exception e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
     }
+  }
+
+  public boolean isWalletSetup() {
+    return wallet.isSetUp();
   }
 
   public void openRollCallScanning(FragmentActivity activity) {

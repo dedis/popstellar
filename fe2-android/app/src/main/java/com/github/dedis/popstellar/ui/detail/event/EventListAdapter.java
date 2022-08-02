@@ -1,27 +1,25 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import android.annotation.SuppressLint;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
+
+import android.annotation.*;
 import android.view.*;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.app.*;
+import androidx.cardview.widget.*;
+import androidx.constraintlayout.widget.*;
+import androidx.fragment.app.*;
+import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
+import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
 
 import java.util.*;
-
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;
@@ -162,8 +160,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       RollCall rollCall = (RollCall) event;
       View.OnClickListener listener =
           view -> {
-            viewModel.setCurrentRollCall(rollCall);
-            viewModel.enterRollCall(activity, rollCall.getPersistentId());
+            if (viewModel.isWalletSetup()) {
+              viewModel.setCurrentRollCall(rollCall);
+              viewModel.enterRollCall(activity, rollCall.getPersistentId());
+            } else {
+              showWalletNotSetupWarning();
+            }
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
       eventViewHolder.eventTitle.setText(rollCall.getName());
@@ -287,6 +289,13 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         event -> event.getState().observe(activity, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
+  }
+
+  public void showWalletNotSetupWarning() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    builder.setTitle("You have to setup up your wallet before connecting.");
+    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+    builder.show();
   }
 
   public static class EventViewHolder extends RecyclerView.ViewHolder {
