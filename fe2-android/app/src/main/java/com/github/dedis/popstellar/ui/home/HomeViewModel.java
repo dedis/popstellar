@@ -19,8 +19,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -43,11 +41,6 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
-
-  public enum HomeViewAction {
-    SCAN,
-    REQUEST_CAMERA_PERMISSION
-  }
 
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
