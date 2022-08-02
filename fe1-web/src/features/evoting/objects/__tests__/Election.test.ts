@@ -75,11 +75,6 @@ const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
 
-beforeAll(() => {
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
-});
-
 beforeEach(() => {
   initializeData();
 });
