@@ -91,8 +91,7 @@ public final class Lao {
     this.lastModified = lao.lastModified;
     this.creation = lao.creation;
     this.organizer = new PublicKey(lao.organizer);
-
-    if (modificationId != null) {
+    if (lao.modificationId != null) {
       this.modificationId = new MessageID(lao.modificationId);
     }
 

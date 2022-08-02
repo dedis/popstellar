@@ -51,8 +51,8 @@ public final class LaoView {
     lao.updateWitnessMessage(prevId, witnessMessage);
   }
 
-  public boolean addPendingUpdate(PendingUpdate pendingUpdate) {
-    return lao.getPendingUpdates().add(new PendingUpdate(pendingUpdate));
+  public void addPendingUpdate(PendingUpdate pendingUpdate) {
+    lao.getPendingUpdates().add(new PendingUpdate(pendingUpdate));
   }
 
   public void removePendingUpdate(long targetTime) {
@@ -92,13 +92,13 @@ public final class LaoView {
     lao.updateTransactionHashMap(attendees);
   }
 
-  public void updateChirps(MessageID messageID, Chirp chirp){
-      lao.updateAllChirps(messageID, new Chirp(chirp));
+  public void updateChirps(MessageID messageID, Chirp chirp) {
+    lao.updateAllChirps(messageID, new Chirp(chirp));
   }
 
-  public Optional<Chirp> getChirp(MessageID messageID){
-      Optional<Chirp> optional = lao.getChirp(messageID);
-      return optional.map(Chirp::new); // If optional is empty returns empty
-      // otherwise returns a copy of the Chirp
+  public Optional<Chirp> getChirp(MessageID messageID) {
+    Optional<Chirp> optional = lao.getChirp(messageID);
+    return optional.map(Chirp::new); // If optional is empty returns empty
+    // otherwise returns a copy of the Chirp
   }
 }

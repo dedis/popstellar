@@ -155,7 +155,6 @@ public final class LaoHandler {
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
     laoView.updateLaoState(stateLao);
-
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
       context
