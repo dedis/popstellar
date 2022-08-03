@@ -10,13 +10,14 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 @AndroidEntryPoint
@@ -89,54 +90,23 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupConfirmButton();
     setupOpenButton();
     setupCancelButton();
-
-    // Subscribe to "new LAO event creation" event
-    mLaoDetailViewModel
-        .getNewLaoEventCreationEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            eventTypeEvent -> {
-              EventType eventType = eventTypeEvent.getContentIfNotHandled();
-              if (eventType == EventType.ROLL_CALL) {
-                createRollCall(false);
-              }
-            });
-
-    // Subscribe to "open new roll call" event
-    mLaoDetailViewModel
-        .getOpenNewRollCallEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                createRollCall(true);
-              }
-            });
-
-    mLaoDetailViewModel
-        .getCreatedRollCallEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                mLaoDetailViewModel.openLaoDetail();
-              }
-            });
   }
 
   private void setupConfirmButton() {
-    confirmButton.setOnClickListener(
-        v -> mLaoDetailViewModel.newLaoEventCreation(EventType.ROLL_CALL));
+    confirmButton.setOnClickListener(v -> createRollCall(false));
   }
 
   private void setupOpenButton() {
-    openButton.setOnClickListener(v -> mLaoDetailViewModel.openNewRollCall(true));
+    openButton.setOnClickListener(v -> createRollCall(true));
   }
 
   private void setupCancelButton() {
-    mFragBinding.rollCallCancel.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
+    mFragBinding.rollCallCancel.setOnClickListener(
+        v ->
+            setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_lao_detail,
+                LaoDetailFragment::newInstance));
   }
 
   private void createRollCall(boolean open) {
@@ -147,6 +117,12 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel.createNewRollCall(
-        title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
+        requireActivity(),
+        title,
+        description,
+        creationTimeInSeconds,
+        startTimeInSeconds,
+        endTimeInSeconds,
+        open);
   }
 }

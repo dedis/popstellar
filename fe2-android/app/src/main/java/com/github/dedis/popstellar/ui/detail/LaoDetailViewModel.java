@@ -8,7 +8,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -23,13 +24,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -51,6 +50,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
+
 @HiltViewModel
 public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
@@ -61,63 +63,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<PublicKey>> mOpenIdentityEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessing = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
-      new MutableLiveData<>();
-
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<EventType>> mNewLaoEventCreationEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenRollCallTokenEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionResultsEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionFragmentEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
-      new MutableLiveData<>(new SingleEvent<>(false));
-
-  private final MutableLiveData<SingleEvent<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Integer>> mAskCloseRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<PublicKey>> mPkRollCallEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
-
+  // FIXME These events should be removed once the QRScanning is refactored
   private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
-      new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -130,6 +81,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
@@ -306,7 +258,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes) {
+  public void sendVote(List<ElectionVote> votes, FragmentManager manager) {
     Election election = mCurrentElection.getValue();
 
     if (election == null) {
@@ -342,7 +294,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
           networkManager
               .getMessageSender()
               .publish(token, electionChannel, vote)
-              .doFinally(this::openLaoDetail)
+              .doFinally(
+                  () ->
+                      setCurrentFragment(
+                          manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance))
               .subscribe(
                   () -> {
                     Log.d(TAG, "sent a vote successfully");
@@ -364,6 +319,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
    *
+   * @param manager the fragment manager on which to open any activity
    * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
@@ -375,6 +331,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    * @return the id of the newly created election event, null if fails to create the event
    */
   public String createNewElection(
+      FragmentManager manager,
       ElectionVersion electionVersion,
       String name,
       long creation,
@@ -414,7 +371,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
             .subscribe(
                 () -> {
                   Log.d(TAG, "setup an election");
-                  mElectionCreatedEvent.postValue(new SingleEvent<>(true));
+                  setCurrentFragment(
+                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -438,6 +396,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    * @param open true if we want to directly open the roll call
    */
   public void createNewRollCall(
+      FragmentActivity activity,
       String title,
       String description,
       long creation,
@@ -465,9 +424,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                 () -> {
                   Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
                   if (open) {
-                    openRollCall(createRollCall.getId());
+                    openRollCall(activity, createRollCall.getId());
                   } else {
-                    mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
+                    setCurrentFragment(
+                        activity.getSupportFragmentManager(),
+                        R.id.fragment_lao_detail,
+                        LaoDetailFragment::newInstance);
                   }
                 },
                 error ->
@@ -565,7 +527,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * @param id the roll call id to open
    */
-  public void openRollCall(String id) {
+  public void openRollCall(FragmentActivity activity, String id) {
     Log.d(TAG, "call openRollCall with id" + id);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -600,7 +562,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   currentRollCallId = openRollCall.getUpdateId();
                   Log.d(TAG, "opening rc with current id = " + currentRollCallId);
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-                  openScanning();
+                  openRollCallScanning(activity);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -614,7 +576,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public void closeRollCall() {
+  public void closeRollCall(FragmentManager manager) {
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -635,7 +597,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                   Log.d(TAG, "closed the roll call");
                   currentRollCallId = "";
                   attendees.clear();
-                  mCloseRollCallEvent.setValue(new SingleEvent<>(true));
+                  setCurrentFragment(
+                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -683,32 +646,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * Getters for MutableLiveData instances declared above
    */
-  public LiveData<SingleEvent<Boolean>> getOpenLaoDetailEvent() {
-    return mOpenLaoDetailEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenElectionResultsEvent() {
-    return mOpenElectionResultsEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getElectionCreated() {
-    return mElectionCreatedEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenElectionFragmentEvent() {
-    return mOpenElectionFragmentEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenCastVotes() {
-    return mOpenCastVotesEvent;
-  }
 
   public ScanningAction getScanningAction() {
     return scanningAction;
-  }
-
-  public void setScanningAction(ScanningAction scanningAction) {
-    this.scanningAction = scanningAction;
   }
 
   public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
@@ -717,38 +657,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
 
   public LiveData<List<RollCall>> getLaoAttendedRollCalls() {
     return mLaoAttendedRollCalls;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-    return mOpenHomeEvent;
-  }
-
-  public LiveData<SingleEvent<PublicKey>> getOpenIdentityEvent() {
-    return mOpenIdentityEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenWitnessMessageEvent() {
-    return mOpenWitnessMessageEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getShowPropertiesEvent() {
-    return mShowPropertiesEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
-    return mOpenSocialMediaEvent;
-  }
-
-  public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
-    return mChooseNewLaoEventTypeEvent;
-  }
-
-  public LiveData<SingleEvent<EventType>> getNewLaoEventCreationEvent() {
-    return mNewLaoEventCreationEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenNewRollCallEvent() {
-    return mOpenNewRollCallEvent;
   }
 
   public LiveData<Lao> getCurrentLao() {
@@ -805,44 +713,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     return mWitnessMessages;
   }
 
-  public LiveData<SingleEvent<HomeViewModel.HomeViewAction>> getOpenRollCallEvent() {
-    return mOpenRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<HomeViewModel.HomeViewAction>> getOpenAddWitness() {
-    return mOpenAddWitness;
-  }
-
-  public LiveData<SingleEvent<String>> getOpenRollCallTokenEvent() {
-    return mOpenRollCallTokenEvent;
-  }
-
-  public LiveData<SingleEvent<String>> getOpenAttendeesListEvent() {
-    return mOpenAttendeesListEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenLaoWalletEvent() {
-    return mOpenLaoWalletEvent;
-  }
-
-  public LiveData<SingleEvent<Integer>> getNbAttendeesEvent() {
-    return mNbAttendeesEvent;
-  }
-
-  public LiveData<SingleEvent<Integer>> getAskCloseRollCallEvent() {
-    return mAskCloseRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCloseRollCallEvent() {
-    return mCloseRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getCreatedRollCallEvent() {
-    return mCreatedRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenStartElectionEvent() {
-    return mOpenStartElectionEvent;
+  public LiveData<Integer> getNbAttendees() {
+    return mNbAttendees;
   }
 
   public LiveData<List<ConsensusNode>> getNodes() {
@@ -862,14 +734,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
 
   public LiveData<SingleEvent<String>> getScanWarningEvent() {
     return mScanWarningEvent;
-  }
-
-  public LiveData<SingleEvent<PublicKey>> getPkRollCallEvent() {
-    return mPkRollCallEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getWalletMessageEvent() {
-    return mWalletMessageEvent;
   }
 
   public Election getCurrentElection() {
@@ -910,95 +774,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     }
   }
 
-  /*
-   * Methods that modify the state or post an Event to update the UI.
-   */
-  public void openHome() {
-    if (currentRollCallId.equals("")) {
-      mOpenHomeEvent.setValue(new SingleEvent<>(true));
-    } else {
-      mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_home));
-    }
-  }
-
-  public void openLaoDetail() {
-    mOpenLaoDetailEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openCastVotes() {
-    mOpenCastVotesEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openIdentity() {
-    if (currentRollCallId.equals("")) {
-      mOpenIdentityEvent.setValue(new SingleEvent<>(keyManager.getMainPublicKey()));
-    } else {
-      mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
-    }
-  }
-
-  public void openSocialMedia() {
-    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void openDigitalCash() {
-    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public MutableLiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
-    return mOpenDigitalCashEvent;
-  }
-
   public void endElectionEvent() {
-    mEndElectionEvent.postValue(new SingleEvent<>(true));
+    // TODO This is not implemented ?
   }
 
-  public void openAddWitness() {
-
-    Lao lao = getCurrentLaoValue();
-    if (lao == null) {
-      Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
-    }
-    witnesses = new HashSet<>(lao.getWitnesses());
-    mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
-  }
-
-  public void toggleShowHideProperties() {
-    boolean val = showProperties.getValue();
-    showProperties.postValue(!val);
-    mShowPropertiesEvent.postValue(new SingleEvent<>(!val));
-  }
-
-  /**
-   * Choosing an event type to create on the multiple-choice screen
-   *
-   * @param eventType the event type to create
-   */
-  public void chooseEventType(EventType eventType) {
-    mChooseNewLaoEventTypeEvent.postValue(new SingleEvent<>(eventType));
-  }
-
-  /**
-   * Creating a new event of specified type
-   *
-   * @param eventType the event type of the new event
-   */
-  public void newLaoEventCreation(EventType eventType) {
-    mNewLaoEventCreationEvent.postValue(new SingleEvent<>(eventType));
-  }
-
-  public void openNewRollCall(Boolean open) {
-    mOpenNewRollCallEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void openElectionResults(Boolean open) {
-    mOpenElectionResultsEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void openElectionFragment(Boolean open) {
-    Log.d(TAG, "openElection in view model");
-    mOpenElectionFragmentEvent.postValue(new SingleEvent<>(open));
+  public void setShowProperties(boolean show) {
+    showProperties.postValue(show);
   }
 
   /**
@@ -1074,61 +855,43 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void openQrCodeScanningRollCall() {
-    mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HomeViewAction.SCAN));
-    mNbAttendeesEvent.postValue(
-        new SingleEvent<>(attendees.size())); // this to display the initial number of attendees
-  }
-
-  public void openCameraPermission() {
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      mOpenRollCallEvent.setValue(
-          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      mOpenAddWitness.setValue(
-          new SingleEvent<>(HomeViewModel.HomeViewAction.REQUEST_CAMERA_PERMISSION));
-    }
-  }
-
-  public void enterRollCall(String id) {
-    if (!wallet.isSetUp()) {
-      mWalletMessageEvent.setValue(new SingleEvent<>(true));
-      return;
-    }
+  public void enterRollCall(FragmentActivity activity, String id) {
     String firstLaoId = getCurrentLaoValue().getId();
-    String errorMessage = "failed to retrieve public key from wallet";
+
     try {
       PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
-      mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
+      setCurrentFragment(
+          activity.getSupportFragmentManager(),
+          R.id.fragment_roll_call,
+          () -> RollCallFragment.newInstance(publicKey));
     } catch (Exception e) {
-      Log.d(TAG, errorMessage, e);
+      Log.d(TAG, "failed to retrieve public key from wallet", e);
     }
   }
 
-  public void openScanning() {
-    if (ContextCompat.checkSelfPermission(
-            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+  public boolean isWalletSetup() {
+    return wallet.isSetUp();
+  }
+
+  public void openRollCallScanning(FragmentActivity activity) {
+    FragmentManager manager = activity.getSupportFragmentManager();
+
+    if (checkSelfPermission(activity.getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
-      if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-        openQrCodeScanningRollCall();
-      } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-        openAddWitness();
-      }
+
+      setCurrentFragment(manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
+      // this to display the initial number of attendees
+      mNbAttendees.postValue(attendees.size());
     } else {
-      openCameraPermission();
+      // Setup result listener to open the scanning tab once the permission is granted
+      manager.setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, activity, (k, b) -> openRollCallScanning(activity));
+
+      setCurrentFragment(
+          manager,
+          R.id.fragment_camera_perm,
+          () -> CameraPermissionFragment.newInstance(activity.getActivityResultRegistry()));
     }
-  }
-
-  public void openLaoWallet() {
-    mOpenLaoWalletEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void openRollCallToken(String rollCallId) {
-    mOpenRollCallTokenEvent.postValue(new SingleEvent<>(rollCallId));
-  }
-
-  public void openAttendeesList(String rollCallId) {
-    mOpenAttendeesListEvent.postValue(new SingleEvent<>(rollCallId));
   }
 
   @Override
@@ -1174,20 +937,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
       attendees.add(attendee);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-      mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
+      mNbAttendees.postValue(attendees.size());
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
       witnesses.add(attendee);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
     }
     return true;
-  }
-
-  public MutableLiveData<SingleEvent<Boolean>> getOpenWitnessing() {
-    return mOpenWitnessing;
-  }
-
-  public void openWitnessing() {
-    mOpenWitnessing.postValue(new SingleEvent<>(true));
   }
 }
