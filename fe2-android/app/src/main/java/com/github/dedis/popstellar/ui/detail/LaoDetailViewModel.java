@@ -70,6 +70,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
 
+  private final MutableLiveData<LaoTab> currentTab = new MutableLiveData<>(LaoTab.EVENTS);
+
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -646,6 +648,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   /*
    * Getters for MutableLiveData instances declared above
    */
+
+  public LiveData<LaoTab> getCurrentTab() {
+    return currentTab;
+  }
+
+  public void setCurrentTab(LaoTab tab) {
+    currentTab.postValue(tab);
+  }
 
   public ScanningAction getScanningAction() {
     return scanningAction;

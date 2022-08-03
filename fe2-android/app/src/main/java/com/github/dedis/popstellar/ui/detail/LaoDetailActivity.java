@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.*;
@@ -29,8 +30,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class LaoDetailActivity extends AppCompatActivity {
 
+  private static final String TAG = LaoDetailActivity.class.getSimpleName();
+
   private LaoDetailViewModel mViewModel;
-  private BottomNavigationView navbar;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
@@ -42,9 +44,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
 
-    navbar = findViewById(R.id.lao_detail_nav_bar);
     setupNavigationBar();
-
     setupBackButton();
 
     mViewModel.subscribeToLao(
@@ -53,7 +53,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .getExtras()
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
         .equals(Constants.LAO_DETAIL_EXTRA)) {
-      openDetailMenu();
+      openEventsMenu();
     } else {
       setupLaoWalletFragment();
     }
@@ -67,7 +67,7 @@ public class LaoDetailActivity extends AppCompatActivity {
       if (fragment instanceof LaoDetailFragment) {
         startActivity(HomeActivity.newIntent(this));
       } else {
-        navbar.setSelectedItemId(R.id.lao_detail_event_list_menu);
+        mViewModel.setCurrentTab(LaoTab.EVENTS);
       }
       return true;
     }
@@ -83,30 +83,55 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   public void setupNavigationBar() {
+    BottomNavigationView navbar = findViewById(R.id.lao_detail_nav_bar);
+    mViewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
     navbar.setOnItemSelectedListener(
         item -> {
-          int id = item.getItemId();
-          if (id == R.id.lao_detail_event_list_menu) {
-            openDetailMenu();
-          } else if (id == R.id.lao_detail_identity_menu) {
-            openIdentityMenu();
-          } else if (id == R.id.lao_detail_witnessing_menu) {
-            openWitnessMenu();
-          } else if (id == R.id.lao_detail_digital_cash_menu) {
-            openDigitalCashMenu();
-          } else if (id == R.id.lao_detail_social_media_menu) {
-            openSocialMediaMenu();
-          }
+          LaoTab tab = LaoTab.findByMenu(item.getItemId());
+          openTab(tab);
           return true;
         });
+    // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
+    navbar.setOnItemReselectedListener(item -> {});
   }
 
-  private void openSocialMediaMenu() {
-    startActivity(
-        SocialMediaActivity.newIntent(
-            this,
-            mViewModel.getCurrentLaoValue().getId(),
-            mViewModel.getCurrentLaoValue().getName()));
+  private void openTab(LaoTab tab) {
+    switch (tab) {
+      case EVENTS:
+        openEventsMenu();
+        break;
+      case IDENTITY:
+        openIdentityMenu();
+        break;
+      case WITNESSING:
+        openWitnessMenu();
+        break;
+      case DIGITAL_CASH:
+        openDigitalCashMenu();
+        break;
+      case SOCIAL:
+        openSocialMediaMenu();
+        break;
+      default:
+        Log.w(TAG, "Unhandled tab type : " + tab);
+    }
+  }
+
+  private void openEventsMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+  }
+
+  private void openIdentityMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_identity,
+        () -> IdentityFragment.newInstance(mViewModel.getPublicKey()));
+  }
+
+  private void openWitnessMenu() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 
   private void openDigitalCashMenu() {
@@ -117,21 +142,12 @@ public class LaoDetailActivity extends AppCompatActivity {
             mViewModel.getCurrentLaoValue().getName()));
   }
 
-  private void openWitnessMenu() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
-  }
-
-  private void openIdentityMenu() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_identity,
-        () -> IdentityFragment.newInstance(mViewModel.getPublicKey()));
-  }
-
-  private void openDetailMenu() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+  private void openSocialMediaMenu() {
+    startActivity(
+        SocialMediaActivity.newIntent(
+            this,
+            mViewModel.getCurrentLaoValue().getId(),
+            mViewModel.getCurrentLaoValue().getName()));
   }
 
   private void setupLaoWalletFragment() {
