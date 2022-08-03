@@ -31,9 +31,6 @@ import {
 
 import ViewSingleElection, { ViewSingleElectionScreenHeader } from '../ViewSingleElection';
 
-jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
-jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
-
 const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),
   electionStatus: 'undefined' as ElectionStatus,

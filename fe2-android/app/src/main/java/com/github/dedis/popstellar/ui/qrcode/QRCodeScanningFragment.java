@@ -99,9 +99,6 @@ public final class QRCodeScanningFragment extends Fragment {
 
       // set up the listener for the button that closes the roll call
       setupCloseRollCallButton();
-
-      // Subscribe to "ask close roll call" event
-      observeAskCloseRollCallEvent();
     } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
       // Subscribe to " Witness scan confirm " event
@@ -179,7 +176,9 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setOnDismissListener(dialog -> startCamera());
     builder.setPositiveButton(
         R.string.confirm,
-        (dialog, which) -> ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall());
+        (dialog, which) ->
+            ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .closeRollCall(getParentFragmentManager()));
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     mPreview.stop();
     closeRollCallAlert = builder.create();
@@ -235,15 +234,12 @@ public final class QRCodeScanningFragment extends Fragment {
 
   void observeNbAttendeesEvent() {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
-        .getNbAttendeesEvent()
+        .getNbAttendees()
         .observe(
             getViewLifecycleOwner(),
-            integerEvent -> {
-              Integer event = integerEvent.getContentIfNotHandled();
-              if (event != null) {
-                nbAttendees = event;
-                mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
-              }
+            attendees -> {
+              nbAttendees = attendees;
+              mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
             });
   }
 
@@ -269,20 +265,6 @@ public final class QRCodeScanningFragment extends Fragment {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
                 setupSuccessPopup(event);
-              }
-            });
-  }
-
-  void observeAskCloseRollCallEvent() {
-    // observe events that require current open roll call to be closed
-    ((LaoDetailViewModel) mQRCodeScanningViewModel)
-        .getAskCloseRollCallEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            integerEvent -> {
-              Integer nextFragment = integerEvent.getContentIfNotHandled();
-              if (nextFragment != null) {
-                setupClickCloseListener();
               }
             });
   }

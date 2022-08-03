@@ -38,6 +38,7 @@
     "@react-navigation/routers": "^6.0.1",
     "@react-navigation/stack": "^6.0.7",
     "@reduxjs/toolkit": "^1.5.0",
+    "@sinonjs/fake-timers": "^9.1.2",
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
     "base64url": "^3.0.1",

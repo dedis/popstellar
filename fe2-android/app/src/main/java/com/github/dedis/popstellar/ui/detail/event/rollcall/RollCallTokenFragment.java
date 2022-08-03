@@ -9,12 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
@@ -60,7 +62,8 @@ public class RollCallTokenFragment extends Fragment {
         mLaoDetailViewModel.getCurrentLao().getValue().getRollCall(rollCallId);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + rollCallId);
-      mLaoDetailViewModel.openLaoWallet();
+      LaoDetailActivity.setCurrentFragment(
+          getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
     } else {
       rollCall = optRollCall.get();
     }
@@ -73,7 +76,8 @@ public class RollCallTokenFragment extends Fragment {
       pk = token.getPublicKey().getEncoded();
     } catch (KeyException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
-      mLaoDetailViewModel.openLaoWallet();
+      LaoDetailActivity.setCurrentFragment(
+          getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
@@ -92,6 +96,10 @@ public class RollCallTokenFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     mRollCallTokenFragmentBinding.backButton.setOnClickListener(
-        clicked -> mLaoDetailViewModel.openLaoWallet());
+        clicked ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_lao_wallet,
+                LaoWalletFragment::newInstance));
   }
 }

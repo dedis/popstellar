@@ -86,11 +86,11 @@ public class RollCallFragment extends Fragment {
           switch (state) {
             case CLOSED:
             case CREATED:
-              laoDetailViewModel.openRollCall(rollCall.getId());
+              laoDetailViewModel.openRollCall(requireActivity(), rollCall.getId());
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              laoDetailViewModel.closeRollCall();
+              laoDetailViewModel.closeRollCall(getParentFragmentManager());
               break;
             default:
               throw new IllegalStateException("Roll-Call should not be in a " + state + " state");

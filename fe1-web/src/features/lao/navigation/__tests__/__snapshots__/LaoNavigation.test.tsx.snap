@@ -1631,16 +1631,10 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 </View>
                                               </View>
                                               <View>
-                                                <View
-                                                  style={
-                                                    Object {
-                                                      "flexDirection": "row",
-                                                      "justifyContent": "center",
-                                                    }
-                                                  }
-                                                >
-                                                  [QrCode {"value":"{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}","size":256,"style":{"height":"auto","maxWidth":"300px","width":"100%"},"viewBox":"0 0 256 256"}]
-                                                </View>
+                                                <qrcode
+                                                  value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                                                  visibility={true}
+                                                />
                                               </View>
                                             </View>
                                           </RCTScrollView>

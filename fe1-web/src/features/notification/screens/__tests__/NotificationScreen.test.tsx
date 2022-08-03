@@ -6,7 +6,6 @@ import { combineReducers, createStore } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Timestamp } from 'core/objects';
 import {
   NotificationReactContext,
   NOTIFICATION_FEATURE_IDENTIFIER,
@@ -20,9 +19,6 @@ import { WitnessNotificationType } from 'features/witness/components';
 import { WitnessFeature } from 'features/witness/interface';
 
 import NotificationScreen, { NotificationScreenRightHeader } from '../NotificationScreen';
-
-jest.useFakeTimers('modern');
-jest.setSystemTime(new Date(Timestamp.EpochNow().valueOf() * 1000)); // 5 May 2021
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
