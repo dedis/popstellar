@@ -37,10 +37,6 @@ public class HomeActivity extends AppCompatActivity {
   private final String TAG = HomeActivity.class.getSimpleName();
   public static final int LAO_DETAIL_REQUEST_CODE = 0;
 
-  private static final int CONNECT_POSITION = 1;
-  private static final int LAUNCH_POSITION = 2;
-  private static final int SOCIAL_MEDIA_POSITION = 4;
-
   private HomeViewModel viewModel;
 
   private BottomNavigationView navbar;
@@ -82,9 +78,9 @@ public class HomeActivity extends AppCompatActivity {
 
   /** Setup the listeners that changes the navigation bar menus */
   private void setupNavigationBarListener() {
-    MenuItem connectItem = navbar.getMenu().getItem(CONNECT_POSITION);
-    MenuItem launchItem = navbar.getMenu().getItem(LAUNCH_POSITION);
-    MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
+    MenuItem connectItem = navbar.getMenu().getItem(HomeTab.CONNECT.ordinal());
+    MenuItem launchItem = navbar.getMenu().getItem(HomeTab.LAUNCH.ordinal());
+    MenuItem socialMediaItem = navbar.getMenu().getItem(HomeTab.SOCIAL.ordinal());
 
     // Gray out the launch and connect buttons depending on the wallet state
     viewModel
@@ -163,11 +159,12 @@ public class HomeActivity extends AppCompatActivity {
       return false;
     }
 
-    if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+    if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       requestCameraPermission();
-    else
+    } else {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+    }
     return true;
   }
 
