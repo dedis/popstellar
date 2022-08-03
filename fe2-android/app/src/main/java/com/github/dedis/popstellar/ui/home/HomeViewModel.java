@@ -53,6 +53,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
 
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
   private final LiveData<List<Lao>> mLAOs;
 
   /** Dependencies for this class */
@@ -173,12 +174,20 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   /** Getters for LiveData instances declared above */
+  public LiveData<HomeTab> getCurrentTab() {
+    return currentTab;
+  }
+
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return mIsWalletSetUp;
+  }
+
+  public void setCurrentTab(HomeTab tab) {
+    this.currentTab.postValue(tab);
   }
 
   public void setLaoName(String name) {

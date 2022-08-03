@@ -42,11 +42,13 @@ public class SocialMediaActivity extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
-    String laoId = getIntent().getExtras().getString(LAO_ID);
-    String laoName = getIntent().getExtras().getString(LAO_NAME);
+    if (getIntent().getExtras() != null) {
+      String laoId = getIntent().getExtras().getString(LAO_ID);
+      String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-    if (laoId != null) mViewModel.setLaoId(laoId);
-    if (laoName != null) mViewModel.setLaoName(laoName);
+      if (laoId != null) mViewModel.setLaoId(laoId);
+      if (laoName != null) mViewModel.setLaoName(laoName);
+    }
 
     setupNavigationBar();
 

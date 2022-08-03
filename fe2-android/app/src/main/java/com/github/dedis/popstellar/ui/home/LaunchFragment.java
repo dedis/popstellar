@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -58,8 +57,7 @@ public final class LaunchFragment extends Fragment {
     mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(
         v -> {
           mLaunchFragBinding.entryBoxLaunch.getText().clear();
-          HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+          mHomeViewModel.setCurrentTab(HomeTab.HOME);
         });
   }
 }
