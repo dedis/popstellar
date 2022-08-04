@@ -5,7 +5,9 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
 import java.util.*;
 
@@ -23,10 +25,16 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public static void handlePostTransactionCoin(
-      HandlerContext context, PostTransactionCoin postTransactionCoin) {
+      HandlerContext context, PostTransactionCoin postTransactionCoin)
+      throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
-    Lao lao = laoRepository.getLaoByChannel(channel);
+
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(postTransactionCoin, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
@@ -79,7 +87,9 @@ public class TransactionCoinHandler {
         .setTransactionId(postTransactionCoin.getTransactionId())
         .setInputs(inputs)
         .setOutputs(outputs);
+
     // lao update the history / lao update the last transaction per public key
-    lao.updateTransactionMaps(builder.build());
+    laoView.updateTransactionMaps(builder.build());
+    laoRepository.updateLao(laoView);
   }
 }

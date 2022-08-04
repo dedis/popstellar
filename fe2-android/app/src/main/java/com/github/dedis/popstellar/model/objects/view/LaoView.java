@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects.view;
 
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -121,5 +122,9 @@ public final class LaoView {
 
   public void updateElection(String id, Election election) {
     lao.updateElection(id, new Election(election));
+  }
+
+  public void updateTransactionMaps(TransactionObject transactionObject) {
+    lao.updateTransactionMaps(new TransactionObject(transactionObject));
   }
 }
