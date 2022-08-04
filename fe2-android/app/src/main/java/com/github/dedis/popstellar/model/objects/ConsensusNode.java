@@ -7,7 +7,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /** Class representing a Node for consensus. */
 public final class ConsensusNode {
@@ -25,11 +24,16 @@ public final class ConsensusNode {
   }
 
   public ConsensusNode(ConsensusNode consensusNode) {
-    this.publicKey = consensusNode.publicKey;
-    this.acceptedMessageIds =
-        consensusNode.acceptedMessageIds.stream().map(MessageID::new).collect(Collectors.toSet());
-    this.electInstances =
-        consensusNode.electInstances.stream().map(ElectInstance::new).collect(Collectors.toSet());
+    this.publicKey = new PublicKey(consensusNode.publicKey);
+    this.acceptedMessageIds = consensusNode.acceptedMessageIds;
+    // TODO adapt the codebase so this isn't used by reference
+
+    //
+    // consensusNode.acceptedMessageIds.stream().map(MessageID::new).collect(Collectors.toSet());
+    this.electInstances = consensusNode.electInstances;
+    // TODO adapt the codebase so this isn't used by reference
+    //
+    // consensusNode.electInstances.stream().map(ElectInstance::new).collect(Collectors.toSet());
   }
 
   public PublicKey getPublicKey() {

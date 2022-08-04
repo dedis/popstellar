@@ -4,14 +4,17 @@ import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 public final class ConsensusHandler {
 
@@ -27,20 +30,29 @@ public final class ConsensusHandler {
    * @param context the HandlerContext of the message
    * @param consensusElect the data of the message that was received
    */
-  public static void handleElect(HandlerContext context, ConsensusElect consensusElect) {
+  public static void handleElect(HandlerContext context, ConsensusElect consensusElect)
+      throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
-    Set<PublicKey> nodes = new HashSet<>(lao.getWitnesses());
-    nodes.add(lao.getOrganizer());
+    Log.d(TAG, "handleElect: " + channel + " id " + consensusElect.getInstanceId());
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(consensusElect, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
+
+    Set<PublicKey> nodes = laoView.getWitnesses();
+    nodes.add(laoView.getOrganizer());
 
     ElectInstance electInstance =
         new ElectInstance(messageId, channel, senderPk, nodes, consensusElect);
-    lao.updateElectInstance(electInstance);
-    laoRepository.updateNodes(lao.getChannel());
+    laoView.updateElectInstance(electInstance);
+
+    laoRepository.updateNodes(laoView.getChannel());
+    laoRepository.updateLao(laoView);
   }
 
   public static void handleElectAccept(
@@ -51,9 +63,15 @@ public final class ConsensusHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Log.d(TAG, "handleElect: " + channel + " id " + consensusElectAccept.getInstanceId());
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(consensusElectAccept, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
+
     Optional<ElectInstance> electInstanceOpt =
-        lao.getElectInstance(consensusElectAccept.getMessageId());
+        laoView.getElectInstance(consensusElectAccept.getMessageId());
     if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "elect_accept for invalid messageId : " + consensusElectAccept.getMessageId());
       throw new InvalidMessageIdException(
@@ -63,8 +81,9 @@ public final class ConsensusHandler {
     ElectInstance electInstance = electInstanceOpt.get();
     electInstance.addElectAccept(senderPk, messageId, consensusElectAccept);
 
-    lao.updateElectInstance(electInstance);
-    laoRepository.updateNodes(lao.getChannel());
+    laoView.updateElectInstance(electInstance);
+    laoRepository.updateLao(laoView);
+    laoRepository.updateNodes(laoView.getChannel());
   }
 
   @SuppressWarnings("unused")
@@ -77,9 +96,15 @@ public final class ConsensusHandler {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(consensusLearn.getMessageId());
+    Log.d(TAG, "handleElect: " + channel + " id " + consensusLearn.getInstanceId());
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(consensusLearn, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
+    Optional<ElectInstance> electInstanceOpt =
+        laoView.getElectInstance(consensusLearn.getMessageId());
     if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "learn for invalid messageId : " + consensusLearn.getMessageId());
       throw new InvalidMessageIdException(consensusLearn, consensusLearn.getMessageId());
@@ -90,18 +115,25 @@ public final class ConsensusHandler {
     if (consensusLearn.getLearnValue().isDecision()) {
       electInstance.setState(ElectInstance.State.ACCEPTED);
     }
-    lao.updateElectInstance(electInstance);
-    laoRepository.updateNodes(lao.getChannel());
+    laoView.updateElectInstance(electInstance);
+
+    laoRepository.updateLao(laoView);
+    laoRepository.updateNodes(laoView.getChannel());
   }
 
   public static void handleConsensusFailure(HandlerContext context, ConsensusFailure failure)
-      throws InvalidMessageIdException {
+      throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(failure.getMessageId());
+    Log.d(TAG, "handleElect: " + channel + " id " + failure.getInstanceId());
+    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
+    if (!laoViewOptional.isPresent()) {
+      throw new DataHandlingException(failure, "Unknown LAO");
+    }
+    LaoView laoView = laoViewOptional.get();
 
+    Optional<ElectInstance> electInstanceOpt = laoView.getElectInstance(failure.getMessageId());
     if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "Failure for invalid messageId : " + failure.getMessageId());
       throw new InvalidMessageIdException(failure, failure.getMessageId());
@@ -110,7 +142,9 @@ public final class ConsensusHandler {
     ElectInstance electInstance = electInstanceOpt.get();
 
     electInstance.setState(ElectInstance.State.FAILED);
-    lao.updateElectInstance(electInstance);
-    laoRepository.updateNodes(lao.getChannel());
+    laoView.updateElectInstance(electInstance);
+
+    laoRepository.updateLao(laoView);
+    laoRepository.updateNodes(laoView.getChannel());
   }
 }

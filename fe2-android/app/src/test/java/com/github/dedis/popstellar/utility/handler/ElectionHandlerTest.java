@@ -256,7 +256,7 @@ public class ElectionHandlerTest extends TestCase {
     // First test the Open Ballot version
     // Set up a open ballot election
     ElectionVote electionVote1 = new ElectionVote("1", 1, false, null, election.getId());
-    List<ElectionVote> electionVotes = Arrays.asList(electionVote1);
+    List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
     CastVote<ElectionVote> electionVote =
         new CastVote<>(electionVotes, election.getId(), CREATE_LAO.getId());
 
@@ -296,7 +296,10 @@ public class ElectionHandlerTest extends TestCase {
     listOfVoteIds2.add(electionEncryptedVote2.getId());
     listOfVoteIds2.add(electionEncryptedVote1.getId());
     String expectedHash2 = Hash.hash(listOfVoteIds2.toArray(new String[0]));
-    System.out.println(listOfVoteIds);
-    assertEquals(expectedHash2, electionEncrypted.computerRegisteredVotes());
+    assertEquals(
+        expectedHash2,
+        laoRepository
+            .getElectionByChannel(electionEncrypted.getChannel())
+            .computerRegisteredVotes());
   }
 }

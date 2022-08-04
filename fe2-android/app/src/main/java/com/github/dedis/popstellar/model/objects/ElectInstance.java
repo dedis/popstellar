@@ -124,6 +124,29 @@ public final class ElectInstance {
         state);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectInstance that = (ElectInstance) o;
+    return messageId.equals(that.messageId)
+        && channel.equals(that.channel)
+        && proposer.equals(that.proposer)
+        && elect.equals(that.elect)
+        && nodes.equals(that.nodes)
+        && acceptorToMessageId.equals(that.acceptorToMessageId)
+        && state == that.state;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageId, channel, proposer, elect, nodes, acceptorToMessageId, state);
+  }
+
   /**
    * Generate the id for a consensus instance. This instanceId is used to group all Elect that
    * refers to the same object and property and will be used in every Consensus Data message.

@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class LaoView {
 
@@ -100,5 +101,25 @@ public final class LaoView {
     Optional<Chirp> optional = lao.getChirp(messageID);
     return optional.map(Chirp::new); // If optional is empty returns empty
     // otherwise returns a copy of the Chirp
+  }
+
+  public Set<PublicKey> getWitnesses() {
+    return lao.getWitnesses().stream().map(PublicKey::new).collect(Collectors.toSet());
+  }
+
+  public PublicKey getOrganizer() {
+    return new PublicKey(lao.getOrganizer());
+  }
+
+  public void updateElectInstance(ElectInstance electInstance) {
+    lao.updateElectInstance(electInstance);
+  }
+
+  public Optional<ElectInstance> getElectInstance(MessageID messageId) {
+    return lao.getElectInstance(messageId);
+  }
+
+  public void updateElection(String id, Election election) {
+    lao.updateElection(id, new Election(election));
   }
 }

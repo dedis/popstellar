@@ -126,10 +126,7 @@ public final class Lao {
                             .collect(Collectors.toList())));
     this.messageIdToElectInstance =
         lao.messageIdToElectInstance.entrySet().stream()
-            .collect(
-                Collectors.toMap(
-                    entry -> new MessageID(entry.getKey()),
-                    entry -> new ElectInstance(entry.getValue())));
+            .collect(Collectors.toMap(entry -> new MessageID(entry.getKey()), Map.Entry::getValue));
     this.keyToNode =
         lao.keyToNode.entrySet().stream()
             .collect(
