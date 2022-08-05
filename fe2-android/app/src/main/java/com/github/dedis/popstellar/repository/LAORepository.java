@@ -133,8 +133,14 @@ public class LAORepository {
     if (lao == null) {
       throw new IllegalArgumentException();
     }
-    Lao deepCopyLao = new Lao(lao);
-    laoById.put(deepCopyLao.getId(), new LAOState(deepCopyLao));
+
+    if (laoById.containsKey(lao.getId())) {
+      // If the lao already exists, we can push the next update
+      laoById.get(lao.getId()).publish(lao);
+    } else {
+      // Otherwise, create the state
+      laoById.put(lao.getId(), new LAOState(lao));
+    }
   }
 
   public void updateLao(LaoView laoView) {
