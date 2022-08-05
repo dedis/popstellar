@@ -35,10 +35,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
-  public static final int LAO_DETAIL_REQUEST_CODE = 0;
 
   private HomeViewModel viewModel;
-
   private BottomNavigationView navbar;
 
   @Override
@@ -60,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     navbar = findViewById(R.id.home_nav_bar);
 
     setupNavigationBar();
-    setupNavigationBarListener();
+    setupMenuAvailabilityListeners();
   }
 
   public void setupNavigationBar() {
@@ -77,7 +75,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   /** Setup the listeners that changes the navigation bar menus */
-  private void setupNavigationBarListener() {
+  private void setupMenuAvailabilityListeners() {
     MenuItem connectItem = navbar.getMenu().getItem(HomeTab.CONNECT.ordinal());
     MenuItem launchItem = navbar.getMenu().getItem(HomeTab.LAUNCH.ordinal());
     MenuItem socialMediaItem = navbar.getMenu().getItem(HomeTab.SOCIAL.ordinal());
@@ -101,13 +99,12 @@ public class HomeActivity extends AppCompatActivity {
         .isSocialMediaEnabled()
         .observe(
             this,
-            enabled -> {
-              // We set the button icon depending on the livedata value
-              socialMediaItem.setIcon(
-                  Boolean.TRUE.equals(enabled)
-                      ? R.drawable.ic_common_social_media_enabled
-                      : R.drawable.ic_common_social_media_disabled);
-            });
+            enabled ->
+                // We set the button icon depending on the livedata value
+                socialMediaItem.setIcon(
+                    Boolean.TRUE.equals(enabled)
+                        ? R.drawable.ic_common_social_media_enabled
+                        : R.drawable.ic_common_social_media_disabled));
   }
 
   @Override
@@ -165,8 +162,8 @@ public class HomeActivity extends AppCompatActivity {
       showWalletWarning();
       return false;
     }
-// Check for the permission, if it is not granted, ask for it
 
+    // Check for the permission, if it is not granted, ask for it
     if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       requestCameraPermission();
     } else {

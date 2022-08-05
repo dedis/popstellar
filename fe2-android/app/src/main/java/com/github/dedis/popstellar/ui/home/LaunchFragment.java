@@ -31,9 +31,8 @@ public final class LaunchFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     binding = LaunchFragmentBinding.inflate(inflater, container, false);
-
-    viewModel = HomeActivity.obtainViewModel(requireActivity());
     binding.setLifecycleOwner(getActivity());
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
 
     setupLaunchButton();
     setupCancelButton();

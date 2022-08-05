@@ -55,18 +55,18 @@ public class ContentWalletFragment extends Fragment {
     setupListUpdates();
 
     if (wallet.isSetUp()) {
-      setupWalletContent();
+      createWalletContent();
     }
 
     return mWalletContentBinding.getRoot();
   }
 
-  private void setupWalletContent() {
+  private void createWalletContent() {
     mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
     mWalletContentBinding.logoutButton.setOnClickListener(
         clicked -> {
           if (logoutAlert != null && logoutAlert.isShowing()) {
-            logoutAlert.dismiss();
+            return;
           }
           AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
           builder.setTitle(R.string.logout_title);

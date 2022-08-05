@@ -34,12 +34,11 @@ public final class HomeFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
     binding = HomeFragmentBinding.inflate(inflater, container, false);
-
-    viewModel = HomeActivity.obtainViewModel(requireActivity());
-
-    binding.setViewmodel(viewModel);
     binding.setLifecycleOwner(getActivity());
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
+    binding.setViewmodel(viewModel);
 
     setupListAdapter();
     setupListUpdates();
