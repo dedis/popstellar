@@ -17,8 +17,8 @@ public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
-  private LaunchFragmentBinding mLaunchFragBinding;
-  private HomeViewModel mHomeViewModel;
+  private LaunchFragmentBinding binding;
+  private HomeViewModel viewModel;
 
   public static LaunchFragment newInstance() {
     return new LaunchFragment();
@@ -30,34 +30,26 @@ public final class LaunchFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mLaunchFragBinding = LaunchFragmentBinding.inflate(inflater, container, false);
-
-    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
-
-    mLaunchFragBinding.setViewModel(mHomeViewModel);
-    mLaunchFragBinding.setLifecycleOwner(getActivity());
-
-    return mLaunchFragBinding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
+    binding = LaunchFragmentBinding.inflate(inflater, container, false);
+    binding.setLifecycleOwner(getActivity());
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
 
     setupLaunchButton();
     setupCancelButton();
+
+    return binding.getRoot();
   }
 
   private void setupLaunchButton() {
-    mLaunchFragBinding.buttonLaunch.setOnClickListener(
-        v -> mHomeViewModel.launchLao(requireActivity()));
+    binding.buttonLaunch.setOnClickListener(
+        v -> viewModel.launchLao(requireActivity(), binding.laoNameEntry.getText().toString()));
   }
 
   private void setupCancelButton() {
-    mLaunchFragBinding.buttonCancelLaunch.setOnClickListener(
+    binding.buttonCancelLaunch.setOnClickListener(
         v -> {
-          mLaunchFragBinding.entryBoxLaunch.getText().clear();
-          mHomeViewModel.setCurrentTab(HomeTab.HOME);
+          binding.laoNameEntry.getText().clear();
+          viewModel.setCurrentTab(HomeTab.HOME);
         });
   }
 }

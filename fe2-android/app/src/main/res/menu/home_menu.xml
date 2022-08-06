@@ -6,11 +6,11 @@
     android:title="@string/tab_home" />
   <item
     android:id="@+id/home_connect_menu"
-    android:icon="@drawable/ic_home_connect_opaque_foreground"
+    android:icon="@drawable/ic_home_connect_enabled"
     android:title="@string/tab_connect" />
   <item
     android:id="@+id/home_launch_menu"
-    android:icon="@drawable/ic_home_launch_opaque_foreground"
+    android:icon="@drawable/ic_home_launch_enabled"
     android:title="@string/tab_launch" />
   <item
     android:id="@+id/home_wallet_menu"
@@ -18,6 +18,6 @@
     android:title="@string/tab_wallet" />
   <item
     android:id="@+id/home_social_media_menu"
-    android:icon="@drawable/ic_common_social_media_transparent_foreground"
+    android:icon="@drawable/ic_common_social_media_disabled"
     android:title="@string/tab_social_media" />
 </menu>

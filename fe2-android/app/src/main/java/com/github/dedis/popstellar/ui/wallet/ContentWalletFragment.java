@@ -51,38 +51,37 @@ public class ContentWalletFragment extends Fragment {
     mWalletContentBinding.setViewmodel(mHomeViewModel);
     mWalletContentBinding.setLifecycleOwner(requireActivity());
 
-    return mWalletContentBinding.getRoot();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-
     setupListAdapter();
     setupListUpdates();
 
     if (wallet.isSetUp()) {
-      mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
-      mWalletContentBinding.logoutButton.setOnClickListener(
-          clicked -> {
-            if (logoutAlert != null && logoutAlert.isShowing()) {
-              logoutAlert.dismiss();
-            }
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-            builder.setTitle(R.string.logout_title);
-            builder.setMessage(R.string.logout_message);
-            builder.setPositiveButton(
-                R.string.confirm,
-                (dialog, which) -> {
-                  mHomeViewModel.logoutWallet();
-                  WalletFragment.openWallet(
-                      getParentFragmentManager(), mHomeViewModel.isWalletSetUp());
-                });
-            builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-            logoutAlert = builder.create();
-            logoutAlert.show();
-          });
+      createWalletContent();
     }
+
+    return mWalletContentBinding.getRoot();
+  }
+
+  private void createWalletContent() {
+    mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
+    mWalletContentBinding.logoutButton.setOnClickListener(
+        clicked -> {
+          if (logoutAlert != null && logoutAlert.isShowing()) {
+            return;
+          }
+          AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+          builder.setTitle(R.string.logout_title);
+          builder.setMessage(R.string.logout_message);
+          builder.setPositiveButton(
+              R.string.confirm,
+              (dialog, which) -> {
+                mHomeViewModel.logoutWallet();
+                WalletFragment.openWallet(
+                    getParentFragmentManager(), mHomeViewModel.isWalletSetUp());
+              });
+          builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+          logoutAlert = builder.create();
+          logoutAlert.show();
+        });
   }
 
   private void setupListUpdates() {
@@ -93,7 +92,7 @@ public class ContentWalletFragment extends Fragment {
             laos -> {
               Log.d(TAG, "Got a list update");
 
-              mListAdapter.replaceList(laos);
+              mListAdapter.setList(laos);
 
               if (!laos.isEmpty()) {
                 mWalletContentBinding.welcomeScreen.setVisibility(View.GONE);

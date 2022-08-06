@@ -55,14 +55,10 @@ public class WalletFragment extends Fragment {
     mWalletFragBinding.setViewModel(mHomeViewModel);
     mWalletFragBinding.setLifecycleOwner(activity);
 
-    return mWalletFragBinding.getRoot();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
     setupOwnSeedButton();
     setupNewWalletButton();
+
+    return mWalletFragBinding.getRoot();
   }
 
   private void setupOwnSeedButton() {
