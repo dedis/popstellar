@@ -88,8 +88,10 @@ public class TransactionCoinHandler {
         .setInputs(inputs)
         .setOutputs(outputs);
 
+    Lao lao = laoView.getLao();
+
     // lao update the history / lao update the last transaction per public key
-    laoView.updateTransactionMaps(builder.build());
-    laoRepository.updateLao(laoView);
+    lao.updateTransactionMaps(builder.build());
+    laoRepository.updateLao(lao);
   }
 }

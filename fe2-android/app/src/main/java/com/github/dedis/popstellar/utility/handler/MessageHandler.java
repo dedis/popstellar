@@ -85,7 +85,7 @@ public final class MessageHandler {
         && (channel.isLaoChannel() || channel.isElectionChannel())) {
       Log.d(TAG, "Notifying repository");
       LAOState laoState = laoRepository.getLaoById().get(channel.extractLaoId());
-      laoState.publish(); // Trigger an onNext
+      laoState.publish(laoState.getLao()); // Trigger an onNext
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();
       }

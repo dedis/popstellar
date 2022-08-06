@@ -55,14 +55,14 @@ public final class RollCallHandler {
     rollCall.setEnd(createRollCall.getProposedEnd());
     rollCall.setName(createRollCall.getName());
     rollCall.setLocation(createRollCall.getLocation());
-
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
-    laoView.updateRollCall(rollCall.getId(), rollCall);
-    laoView.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
+    Lao lao = laoView.getLao();
+    lao.updateRollCall(rollCall.getId(), rollCall);
+    lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -98,10 +98,11 @@ public final class RollCallHandler {
     rollCall.setState(EventState.OPENED);
     rollCall.setId(updateId);
 
-    laoView.updateRollCall(opens, rollCall);
-    laoView.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
+    Lao lao = laoView.getLao();
+    lao.updateRollCall(opens, rollCall);
+    lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -139,9 +140,10 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
-    laoView.updateRollCall(closes, rollCall);
-    laoView.updateTransactionHashMap(closeRollCall.getAttendees());
-    laoView.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+    Lao lao = laoView.getLao();
+    lao.updateRollCall(closes, rollCall);
+    lao.updateTransactionHashMap(closeRollCall.getAttendees());
+    lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
     // Subscribe to the digital cash channels
@@ -163,7 +165,7 @@ public final class RollCallHandler {
           e);
     }
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

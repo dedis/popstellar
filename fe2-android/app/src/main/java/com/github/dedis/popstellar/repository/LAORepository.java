@@ -142,11 +142,4 @@ public class LAORepository {
       laoById.put(lao.getId(), new LAOState(lao));
     }
   }
-
-  public void updateLao(LaoView laoView) {
-    if (laoView == null) {
-      throw new IllegalArgumentException();
-    }
-    updateLao(laoView.getLao());
-  }
 }

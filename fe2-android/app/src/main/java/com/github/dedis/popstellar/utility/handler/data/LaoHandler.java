@@ -107,14 +107,16 @@ public final class LaoHandler {
           updateLao, "Cannot set the witness message title to update lao");
     }
 
-    laoView.updateWitnessMessage(messageId, message);
+    Lao lao = laoView.getLao();
+    lao.updateWitnessMessage(messageId, message);
     if (!laoView.isWitnessesEmpty()) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao
-      laoView.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
+      lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
+
     laoRepository.updateNodes(channel);
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -154,7 +156,14 @@ public final class LaoHandler {
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
-    laoView.updateLaoState(stateLao);
+    Lao lao = laoView.getLao();
+
+    lao.setId(stateLao.getId());
+    lao.setWitnesses(stateLao.getWitnesses());
+    lao.setName(stateLao.getName());
+    lao.setLastModified(stateLao.getLastModified());
+    lao.setModificationId(stateLao.getModificationId());
+
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
       context
@@ -165,9 +174,10 @@ public final class LaoHandler {
 
     // Now we're going to remove all pending updates which came prior to this state lao
     long targetTime = stateLao.getLastModified();
-    laoView.removePendingUpdate(targetTime);
+    lao.getPendingUpdates()
+        .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
     laoRepository.updateNodes(channel);
   }
 

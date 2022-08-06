@@ -4,8 +4,7 @@ import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -49,10 +48,11 @@ public final class ConsensusHandler {
 
     ElectInstance electInstance =
         new ElectInstance(messageId, channel, senderPk, nodes, consensusElect);
-    laoView.updateElectInstance(electInstance);
+    Lao lao = laoView.getLao();
+    lao.updateElectInstance(electInstance);
 
     laoRepository.updateNodes(laoView.getChannel());
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
   }
 
   public static void handleElectAccept(
@@ -80,9 +80,10 @@ public final class ConsensusHandler {
 
     ElectInstance electInstance = electInstanceOpt.get();
     electInstance.addElectAccept(senderPk, messageId, consensusElectAccept);
+    Lao lao = laoView.getLao();
+    lao.updateElectInstance(electInstance);
 
-    laoView.updateElectInstance(electInstance);
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
     laoRepository.updateNodes(laoView.getChannel());
   }
 
@@ -115,9 +116,10 @@ public final class ConsensusHandler {
     if (consensusLearn.getLearnValue().isDecision()) {
       electInstance.setState(ElectInstance.State.ACCEPTED);
     }
-    laoView.updateElectInstance(electInstance);
+    Lao lao = laoView.getLao();
+    lao.updateElectInstance(electInstance);
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
     laoRepository.updateNodes(laoView.getChannel());
   }
 
@@ -140,11 +142,11 @@ public final class ConsensusHandler {
     }
 
     ElectInstance electInstance = electInstanceOpt.get();
-
     electInstance.setState(ElectInstance.State.FAILED);
-    laoView.updateElectInstance(electInstance);
+    Lao lao = laoView.getLao();
+    lao.updateElectInstance(electInstance);
 
-    laoRepository.updateLao(laoView);
+    laoRepository.updateLao(lao);
     laoRepository.updateNodes(laoView.getChannel());
   }
 }

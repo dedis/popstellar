@@ -427,6 +427,10 @@ public final class Lao {
     witnesses.forEach(w -> keyToNode.computeIfAbsent(w, ConsensusNode::new));
   }
 
+  public void addPendingUpdate(PendingUpdate pendingUpdate) {
+    pendingUpdates.add(new PendingUpdate(pendingUpdate));
+  }
+
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
   }
