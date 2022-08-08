@@ -12,6 +12,14 @@ public final class LaoView {
 
   private final Lao lao;
 
+  /**
+   * This class offer useful getters for LAO state to handlers and prevent changing its state It is
+   * provided as an intermediate step towards functional handling of Objects. To change the state of
+   * an LAO, one can use getLao() which returns a copy of the wrapped Lao, and update the repository
+   * with said updated LAO.
+   *
+   * @param lao the lao to be wrapped
+   */
   public LaoView(Lao lao) {
     if (lao == null) {
       throw new IllegalArgumentException();
@@ -19,11 +27,6 @@ public final class LaoView {
     this.lao = new Lao(lao);
   }
 
-  /**
-   * This should only be used by the update method of the LAORepository
-   *
-   * @return the wrapped LAO
-   */
   public Lao getLao() {
     return new Lao(lao);
   }
@@ -57,17 +60,19 @@ public final class LaoView {
   }
 
   public Channel getChannel() {
-    return lao.getChannel();
+    return new Channel(lao.getChannel());
   }
 
   public Optional<RollCall> getRollCall(String id) {
-    return lao.getRollCall(id);
+    Optional<RollCall> optional = lao.getRollCall(id);
+    return optional.map(RollCall::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved RollCall
   }
 
   public Optional<Chirp> getChirp(MessageID messageID) {
     Optional<Chirp> optional = lao.getChirp(messageID);
-    return optional.map(Chirp::new); // If optional is empty returns empty
-    // otherwise returns a copy of the Chirp
+    return optional.map(Chirp::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved Chirp
   }
 
   public Set<PublicKey> getWitnesses() {
@@ -79,6 +84,8 @@ public final class LaoView {
   }
 
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
-    return lao.getElectInstance(messageId);
+    Optional<ElectInstance> optional = lao.getElectInstance(messageId);
+    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved ElectInstance
   }
 }
