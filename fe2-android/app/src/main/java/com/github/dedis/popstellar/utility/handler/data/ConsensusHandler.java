@@ -62,7 +62,7 @@ public final class ConsensusHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Log.d(TAG, "handleElect: " + channel + " id " + consensusElectAccept.getInstanceId());
+    Log.d(TAG, "handleElectAccept: " + channel + " id " + consensusElectAccept.getInstanceId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
       throw new UnknownLaoException(channel.extractLaoId());
@@ -96,7 +96,7 @@ public final class ConsensusHandler {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElect: " + channel + " id " + consensusLearn.getInstanceId());
+    Log.d(TAG, "handleLearn: " + channel + " id " + consensusLearn.getInstanceId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
       throw new UnknownLaoException(channel.extractLaoId());
@@ -127,7 +127,7 @@ public final class ConsensusHandler {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElect: " + channel + " id " + failure.getInstanceId());
+    Log.d(TAG, "handleConsensusFailure: " + channel + " id " + failure.getInstanceId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
       throw new UnknownLaoException(channel.extractLaoId());
