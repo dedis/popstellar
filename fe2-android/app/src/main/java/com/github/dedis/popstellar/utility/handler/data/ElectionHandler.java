@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.time.Instant;
 import java.util.*;
@@ -32,7 +33,7 @@ public final class ElectionHandler {
    * @param electionSetup the message that was received
    */
   public static void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -40,7 +41,7 @@ public final class ElectionHandler {
     if (channel.isLaoChannel()) {
       Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
       if (!laoViewOptional.isPresent()) {
-        throw new DataHandlingException(electionSetup, "Unknown LAO");
+        throw new UnknownLaoException(channel.extractLaoId());
       }
 
       LaoView laoView = laoViewOptional.get();
@@ -78,14 +79,14 @@ public final class ElectionHandler {
    * @param electionResult the message that was received
    */
   public static void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws DataHandlingException {
+      throws UnknownLaoException, DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(electionResult, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
     Election election = laoRepository.getElectionByChannel(channel);
@@ -112,14 +113,14 @@ public final class ElectionHandler {
    */
   @SuppressWarnings("unused")
   public static void handleElectionOpen(HandlerContext context, OpenElection openElection)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleOpenElection: channel " + channel);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(openElection, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
     Election election = laoRepository.getElectionByChannel(channel);
@@ -146,14 +147,14 @@ public final class ElectionHandler {
    */
   @SuppressWarnings("unused")
   public static void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionEnd: channel " + channel);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(electionEnd, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
@@ -172,7 +173,7 @@ public final class ElectionHandler {
    * @param castVote the message that was received
    */
   public static void handleCastVote(HandlerContext context, CastVote castVote)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -181,7 +182,7 @@ public final class ElectionHandler {
     Log.d(TAG, "handleCastVote: channel " + channel);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(castVote, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
     Election election = laoRepository.getElectionByChannel(channel);

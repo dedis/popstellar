@@ -10,8 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.InvalidDataException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
@@ -36,7 +35,7 @@ public final class RollCallHandler {
    * @param createRollCall the message that was received
    */
   public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -44,7 +43,7 @@ public final class RollCallHandler {
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(createRollCall, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
@@ -72,7 +71,7 @@ public final class RollCallHandler {
    * @param openRollCall the message that was received
    */
   public static void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -80,7 +79,7 @@ public final class RollCallHandler {
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(openRollCall, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
@@ -113,7 +112,7 @@ public final class RollCallHandler {
    */
   @SuppressLint("CheckResult")
   public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -121,7 +120,7 @@ public final class RollCallHandler {
     Log.d(TAG, "handleCloseRollCall: " + channel);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(closeRollCall, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 

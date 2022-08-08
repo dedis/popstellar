@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -46,7 +47,7 @@ public final class MessageHandler {
       MessageSender messageSender,
       Channel channel,
       MessageGeneral message)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
     laoRepository.getMessageById().put(message.getMessageId(), message);

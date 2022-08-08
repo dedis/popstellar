@@ -9,8 +9,8 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public final class ChirpHandler {
    * @param addChirp the data of the message that was received
    */
   public static void handleChirpAdd(HandlerContext context, AddChirp addChirp)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -39,7 +39,7 @@ public final class ChirpHandler {
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(addChirp, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
     Chirp chirp = new Chirp(messageId);
@@ -62,14 +62,14 @@ public final class ChirpHandler {
    * @param deleteChirp the data of the message that was received
    */
   public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
-      throws DataHandlingException {
+      throws UnknownLaoException, InvalidMessageIdException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleDeleteChirp: " + channel + " id " + deleteChirp.getChirpId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(deleteChirp, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
     Optional<Chirp> chirpOptional = laoView.getChirp(deleteChirp.getChirpId());

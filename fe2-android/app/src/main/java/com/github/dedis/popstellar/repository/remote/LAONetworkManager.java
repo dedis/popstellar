@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
@@ -168,6 +167,8 @@ public class LAONetworkManager implements MessageSender {
     } catch (DataHandlingException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
+    } catch (UnknownLaoException e) {
+      Log.e(TAG, "Error while handling received message", e);
     }
   }
 
@@ -177,6 +178,8 @@ public class LAONetworkManager implements MessageSender {
         messageHandler.handleMessage(repository, this, channel, msg);
       } catch (DataHandlingException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
+      } catch (UnknownLaoException e) {
+        Log.e(TAG, "Error while handling received message", e);
       }
     }
   }

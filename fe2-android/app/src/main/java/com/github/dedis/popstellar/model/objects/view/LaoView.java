@@ -84,8 +84,10 @@ public final class LaoView {
   }
 
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
-    Optional<ElectInstance> optional = lao.getElectInstance(messageId);
-    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
+    // TODO uncomment that when consensus does not rely on call by reference
+    //    Optional<ElectInstance> optional = lao.getElectInstance(messageId);
+    //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
     // returns optional with copy of retrieved ElectInstance
+    return lao.getElectInstance(messageId);
   }
 }

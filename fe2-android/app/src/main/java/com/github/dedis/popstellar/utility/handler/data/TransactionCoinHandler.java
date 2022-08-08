@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 
@@ -25,14 +25,13 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public static void handlePostTransactionCoin(
-      HandlerContext context, PostTransactionCoin postTransactionCoin)
-      throws DataHandlingException {
+      HandlerContext context, PostTransactionCoin postTransactionCoin) throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(postTransactionCoin, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 

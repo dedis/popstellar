@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -81,7 +80,8 @@ public class ConsensusHandlerTest {
   @Mock KeyManager keyManager;
 
   @Before
-  public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
+  public void setup()
+      throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
 
@@ -112,7 +112,7 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  public void handleConsensusTests() throws DataHandlingException {
+  public void handleConsensusTests() throws DataHandlingException, UnknownLaoException {
     // each test need to be run one after another
     handleConsensusElectTest();
     handleConsensusElectAcceptTest();
@@ -120,7 +120,7 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  public void handleConsensusFailure() throws DataHandlingException {
+  public void handleConsensusFailure() throws DataHandlingException, UnknownLaoException {
     // handle an elect from node2 then handle a failure for this elect
     // the state of the node2 for this instanceId should be FAILED
 
@@ -146,7 +146,7 @@ public class ConsensusHandlerTest {
   // handle an elect from node2
   // This should add an attempt from node2 to start a consensus (in this case for starting an
   // election)
-  private void handleConsensusElectTest() throws DataHandlingException {
+  private void handleConsensusElectTest() throws DataHandlingException, UnknownLaoException {
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
 
     Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
@@ -193,7 +193,7 @@ public class ConsensusHandlerTest {
 
   // handle an electAccept from node3 for the elect of node2
   // This test need be run after the elect message was handled, else the messageId would be invalid
-  private void handleConsensusElectAcceptTest() throws DataHandlingException {
+  private void handleConsensusElectAcceptTest() throws DataHandlingException, UnknownLaoException {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
@@ -230,7 +230,7 @@ public class ConsensusHandlerTest {
 
   // handle a learn from node3 for the elect of node2
   // This test need be run after the elect message was handled, else the messageId would be invalid
-  private void handleConsensusLearnTest() throws DataHandlingException {
+  private void handleConsensusLearnTest() throws DataHandlingException, UnknownLaoException {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
@@ -280,7 +280,8 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  public void handleConsensusDoNothingOnBackendMessageTest() throws DataHandlingException {
+  public void handleConsensusDoNothingOnBackendMessageTest()
+      throws DataHandlingException, UnknownLaoException {
     LAORepository mockLAORepository = mock(LAORepository.class);
     Map<MessageID, MessageGeneral> messageById = new HashMap<>();
     Map<String, LAOState> laoStateMap = new HashMap<>();

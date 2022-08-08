@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -70,7 +71,8 @@ public class ChirpHandlerTest {
   @Mock KeyManager keyManager;
 
   @Before
-  public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
+  public void setup()
+      throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
@@ -90,7 +92,7 @@ public class ChirpHandlerTest {
   }
 
   @Test
-  public void testHandleAddChirp() throws DataHandlingException {
+  public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
 
@@ -115,7 +117,7 @@ public class ChirpHandlerTest {
   }
 
   @Test
-  public void testHandleDeleteChirp() throws DataHandlingException {
+  public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
 

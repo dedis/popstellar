@@ -78,7 +78,7 @@ public final class LaoHandler {
    * @param updateLao the message that was received
    */
   public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -86,7 +86,7 @@ public final class LaoHandler {
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(updateLao, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
@@ -126,7 +126,7 @@ public final class LaoHandler {
    * @param stateLao the message that was received
    */
   public static void handleStateLao(HandlerContext context, StateLao stateLao)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
@@ -134,7 +134,7 @@ public final class LaoHandler {
 
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(stateLao, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
@@ -215,14 +215,14 @@ public final class LaoHandler {
   }
 
   public static void handleGreetLao(HandlerContext context, GreetLao greetLao)
-      throws DataHandlingException {
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
     if (!laoViewOptional.isPresent()) {
-      throw new DataHandlingException(greetLao, "Unknown LAO");
+      throw new UnknownLaoException(channel.extractLaoId());
     }
     LaoView laoView = laoViewOptional.get();
 
