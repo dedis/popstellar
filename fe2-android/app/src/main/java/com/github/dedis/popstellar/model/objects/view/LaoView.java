@@ -13,12 +13,12 @@ public final class LaoView {
   private final Lao lao;
 
   /**
-   * This class offer useful getters for LAO state to handlers and prevent changing its state It is
-   * provided as an intermediate step towards functional handling of Objects. To change the state of
-   * an LAO, one can use getLao() which returns a copy of the wrapped Lao, and update the repository
-   * with said updated LAO.
+   * This class offers useful getters for Lao state to handlers and prevents changing its state. It
+   * is provided as an intermediate step towards functional handling of Objects. To change the state
+   * of an Lao, one can use getLao() which returns a copy of the wrapped Lao, and update the
+   * repository with said updated LAO.
    *
-   * @param lao the lao to be wrapped
+   * @param lao the Lao to be wrapped
    */
   public LaoView(Lao lao) {
     if (lao == null) {
