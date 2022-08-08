@@ -286,7 +286,6 @@ public class ConsensusHandlerTest {
     Map<String, LAOState> laoStateMap = new HashMap<>();
     laoStateMap.put(lao.getId(), new LAOState(lao));
     when(mockLAORepository.getMessageById()).thenReturn(messageById);
-    when(mockLAORepository.getLaoById()).thenReturn(laoStateMap);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
     ConsensusPromise promise =
