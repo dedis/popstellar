@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.ui.detail.*;
@@ -25,8 +24,6 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
-
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
@@ -271,12 +268,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   /** Setups the cancel button, that brings back to LAO detail page */
   private void setupElectionCancelButton() {
     cancelButton = mSetupElectionFragBinding.electionCancelButton;
-    cancelButton.setOnClickListener(
-        v ->
-            setCurrentFragment(
-                getParentFragmentManager(),
-                R.id.fragment_lao_detail,
-                LaoDetailFragment::newInstance));
+    cancelButton.setOnClickListener(v -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS));
   }
 
   /**
