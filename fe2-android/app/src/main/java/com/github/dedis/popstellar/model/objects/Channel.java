@@ -2,7 +2,11 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +56,15 @@ public class Channel {
   // root part
   // So for the channel /root/lao_id/election_id, the elements will be [lao_id, election_id]
   @NonNull private final List<String> segments;
+
+  /**
+   * Copy constructor
+   *
+   * @param channel the channel to be deep copied
+   */
+  public Channel(Channel channel) {
+    this.segments = new ArrayList<>(channel.segments);
+  }
 
   private Channel(String... segments) {
     this.segments = Arrays.asList(segments);
