@@ -179,7 +179,7 @@ public class LAONetworkManager implements MessageSender {
       } catch (DataHandlingException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       } catch (UnknownLaoException e) {
-        Log.e(TAG, "Error while handling received message", e);
+        Log.e(TAG, "Error while handling received catchup message", e);
       }
     }
   }
