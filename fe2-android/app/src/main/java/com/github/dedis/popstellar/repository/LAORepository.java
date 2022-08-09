@@ -129,7 +129,7 @@ public class LAORepository {
     return getLao(channel.extractLaoId());
   }
 
-  public void updateLao(Lao lao) {
+  public synchronized void updateLao(Lao lao) {
     if (lao == null) {
       throw new IllegalArgumentException();
     }
