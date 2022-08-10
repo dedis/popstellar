@@ -65,6 +65,10 @@ public class ConnectingActivity extends AppCompatActivity {
               if (v instanceof WebSocket.Event.OnConnectionOpened) {
                 Log.d(TAG, "connection opened with new server address");
                 handleConnecting(laoId, isDestinationHome);
+              } else if (v instanceof WebSocket.Event.OnConnectionFailed) {
+                startActivity(HomeActivity.newIntent(this));
+                disposables.dispose();
+                finish();
               }
             },
             e -> Log.e(TAG, "error on subscription to connection events")));
