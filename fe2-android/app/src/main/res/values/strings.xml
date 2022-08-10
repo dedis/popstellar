@@ -293,6 +293,9 @@
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add witness</string>
 
+  <!--  Storage-->
+  <string name="nothing_stored">no stored data found</string>
+
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
 

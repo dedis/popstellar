@@ -107,9 +107,8 @@ public class SettingsActivity extends AppCompatActivity {
 
   private void restartAndroidApp() {
     Intent homeIntent = HomeActivity.newIntent(this);
-    int mPendingIntentId = 123456;
     PendingIntent mPendingIntent =
-        PendingIntent.getActivity(this, mPendingIntentId, homeIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_IMMUTABLE);
     AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
     System.exit(0);

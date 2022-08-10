@@ -68,6 +68,9 @@ public class ActivityUtils {
       persistentData = (PersistentData) ois.readObject();
       ois.close();
       fis.close();
+    } catch (FileNotFoundException e) {
+      ErrorUtils.logAndShow(context, TAG, e, R.string.nothing_stored);
+      return null;
     } catch (IOException | ClassNotFoundException e) {
       ErrorUtils.logAndShow(context, TAG, e, R.string.error_loading_data);
       return null;
