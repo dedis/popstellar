@@ -56,6 +56,12 @@ public class SocialMediaActivity extends AppCompatActivity {
     subscribeToSelectedItemEvents();
   }
 
+  @Override
+  protected void onPause() {
+    super.onPause();
+    mViewModel.savePersistentData();
+  }
+
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
   }

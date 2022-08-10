@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -58,6 +59,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
+  private final Wallet wallet;
 
   @Inject
   public SocialMediaViewModel(
@@ -65,12 +67,14 @@ public class SocialMediaViewModel extends AndroidViewModel {
       LAORepository laoRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    this.wallet = wallet;
     disposables = new CompositeDisposable();
 
     mLAOs =
@@ -250,5 +254,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     if (laoState == null) return null;
 
     return laoState.getLao();
+  }
+
+  public boolean savePersistentData() {
+    return ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 }
