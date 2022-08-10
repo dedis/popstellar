@@ -7,10 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.io.*;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class ActivityUtils {
@@ -70,5 +75,25 @@ public class ActivityUtils {
 
     Log.d(TAG, "loading of " + persistentData);
     return persistentData;
+  }
+
+  public static boolean activitySavingRoutine(
+      GlobalNetworkManager networkManager, Wallet wallet, Context context) {
+    String serverAddress = networkManager.getCurrentUrl();
+    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
+
+    List<String> seed;
+    try {
+      seed = Arrays.asList(wallet.exportSeed());
+    } catch (GeneralSecurityException e) {
+      e.printStackTrace();
+      return false;
+    }
+    if (seed == null) {
+      // it returns empty array if not initialized
+      throw new IllegalStateException("Seed should not be null");
+    }
+
+    return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
   }
 }

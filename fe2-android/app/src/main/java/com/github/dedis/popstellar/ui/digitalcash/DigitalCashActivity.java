@@ -44,6 +44,12 @@ public class DigitalCashActivity extends AppCompatActivity {
     getIntentData();
   }
 
+  @Override
+  protected void onPause() {
+    super.onPause();
+    mViewModel.savePersistentData();
+  }
+
   private void subscribeToSelectedItemEvents() {
     mViewModel
         .getCurrentSelectedItem()

@@ -26,7 +26,6 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.qrcode.*;
@@ -189,25 +188,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     disposables.dispose();
   }
 
-  public void savePersistentData() {
-    String serverAddress = networkManager.getCurrentUrl();
-    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
-
-    List<String> seed;
-    try {
-      seed = Arrays.asList(wallet.exportSeed());
-    } catch (GeneralSecurityException e) {
-      e.printStackTrace();
-      return;
-    }
-    if (seed == null) {
-      // it returns empty array if not initialized
-      throw new IllegalStateException("Seed should not be null");
-    }
-
-    ActivityUtils.storePersistentData(
-        getApplication().getApplicationContext(),
-        new PersistentData(seed, serverAddress, subscriptions));
+  public boolean savePersistentData() {
+    return ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**
