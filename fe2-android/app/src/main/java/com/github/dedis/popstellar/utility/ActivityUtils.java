@@ -69,12 +69,19 @@ public class ActivityUtils {
       ois.close();
       fis.close();
     } catch (IOException | ClassNotFoundException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
+      ErrorUtils.logAndShow(context, TAG, e, R.string.error_loading_data);
       return null;
     }
 
     Log.d(TAG, "loading of " + persistentData);
     return persistentData;
+  }
+
+  public static boolean clearStorage(Context context) {
+    Log.d(TAG, "clearing data");
+
+    File file = new File(context.getFilesDir(), PERSISTENT_DATA_FILE_NAME);
+    return file.delete();
   }
 
   public static boolean activitySavingRoutine(

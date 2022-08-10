@@ -26,26 +26,23 @@
   <dimen name="rounded_corner_size">10dp</dimen>
   <dimen name="social_media_delete">40dp</dimen>
   <dimen name="qr_code_size">200dp</dimen>
-  <integer name="camera_preview_width">240</integer>
-  <integer name="camera_preview_height">320</integer>
   <dimen name="camera_height">300dp</dimen>
   <dimen name="camera_width">228dp</dimen>
-  <integer name="requested_preview_width">1600</integer>
   <dimen name="camera_close_button_end_margin">8dp</dimen>
-
-  <!-- QR code -->
   <dimen name="channel_qr_code_size">250dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
-
-  <!-- Button -->
   <dimen name="event_buttons_width">110dp</dimen>
+
+  <!-- QR code -->
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
-  <!-- Event -->
+  <!-- Button -->
   <dimen name="election_setup_margin_text">16dp</dimen>
   <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
   <dimen name="election_setup_margin_top">16dp</dimen>
+
+  <!-- Event -->
   <dimen name="election_setup_question_margin">20dp</dimen>
   <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
   <dimen name="event_button_text_size">14sp</dimen>
@@ -58,27 +55,27 @@
   <dimen name="clock_icon_margin_top">30dp</dimen>
   <dimen name="status_margin_top">16dp</dimen>
   <dimen name="event_header_between_texts_margin">5dp</dimen>
-
-  <!--  Event layout-->
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>
   <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
+
+  <!--  Event layout-->
   <dimen name="event_layout_type_start_margin">24dp</dimen>
   <dimen name="event_layout_card_view_height">55dp</dimen>
-
-  <!--  Header layout-->
   <dimen name="header_layout_arrow_side">16dp</dimen>
   <dimen name="header_layout_margin_start">8dp</dimen>
   <dimen name="header_title_text_size">14sp</dimen>
+
+  <!--  Header layout-->
   <dimen name="header_card_view_height">45dp</dimen>
-
-  <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
-
-  <!-- Election setup dimensions -->
   <dimen name="election_setup_titles_margin_start">140dp</dimen>
   <dimen name="election_setup_titles_margin_top">16dp</dimen>
+
+  <!--  Election fragment dimension-->
   <dimen name="election_setup_spinner_width">150dp</dimen>
+
+  <!-- Election setup dimensions -->
   <dimen name="election_setup_spinner_height">40dp</dimen>
   <dimen name="election_setup_spinner_margin_right">10dp</dimen>
   <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
@@ -88,74 +85,80 @@
   <dimen name="guideline_tab">60dp</dimen>
   <dimen name="guideline_titles">140dp</dimen>
   <dimen name="swipe_indicator_height">25dp</dimen>
-
-  <!-- Cast vote dimensions -->
   <dimen name="wallet_divider_height">1dp</dimen>
   <dimen name="wallet_qr_code_size">100dp</dimen>
   <dimen name="wallet_attendee_width">300dp</dimen>
+
+  <!-- Cast vote dimensions -->
   <dimen name="wallet_buttons_height">38dp</dimen>
   <dimen name="wallet_buttons_text_size">12dp</dimen>
-
-  <!-- Wallet dimensions -->
   <dimen name="wallet_sk_width">350dp</dimen>
   <dimen name="wallet_pk_width">200dp</dimen>
   <dimen name="wallet_qr_token_size">130dp</dimen>
+
+  <!-- Wallet dimensions -->
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
   <dimen name="card_view_elevation">1dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
-  <integer name="min_number_lines_seed_text">3</integer>
-
-  <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>
-
-  <!--  LaoDetail Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>
   <dimen name="add_button_margin_end">8dp</dimen>
   <dimen name="qr_icon_start_margin">30dp</dimen>
+
+  <!--  Witnessing dimensions -->
   <dimen name="qr_close_icon_side">30dp</dimen>
+
+  <!--  LaoDetail Fragment dimensions -->
   <dimen name="qr_layout_margin">40dp</dimen>
   <dimen name="qr_layout_elevation">8dp</dimen>
-
-  <!-- Lao list dimensions -->
   <dimen name="rv_margin_top">20dp</dimen>
-
-  <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
   <dimen name="container_top_margin">40dp</dimen>
-
-  <!--  Floating action button dimensions-->
   <dimen name="fab_margin_bottom">30dp</dimen>
+
+  <!-- Lao list dimensions -->
   <dimen name="fab_margin_end">20dp</dimen>
+
+  <!--  Container dimensions -->
   <dimen name="floating_action_button_elevation">8dp</dimen>
   <dimen name="fab_border_width">1dp</dimen>
-  <dimen name="mini_fab_bottom_margin">10dp</dimen>
 
-  <!--  Manual Add dimensions-->
+  <!--  Floating action button dimensions-->
+  <dimen name="mini_fab_bottom_margin">10dp</dimen>
   <dimen name="manual_add_edit_text_size">14sp</dimen>
   <dimen name="manual_add_top_margin">16dp</dimen>
   <dimen name="manual_add_text_button_size">18sp</dimen>
-
-  <!-- Recycler View dimensions  -->
-  <integer name="requested_preview_height">1024</integer>
-  <integer name="navigation_reversion_delay">500</integer>
-
-  <!-- Menu icons dimensions -->
-  <string name="camera_preview_ratio">3:4</string>
-
-  <!--  Home dimensions -->
   <dimen name="home_card_view_height">50dp</dimen>
 
-  <!-- Digital Cash dimensions -->
+  <!--  Manual Add dimensions-->
   <dimen name="qr_digital_cash">200dp</dimen>
   <dimen name="spinner_width_digital_cash">300dp</dimen>
   <dimen name="spinner_height_digital_cash">70dp</dimen>
+
+  <!-- Recycler View dimensions  -->
   <dimen name="history_recycler_view_top_margin">40dp</dimen>
   <dimen name="layout_horizontal_margin">8dp</dimen>
+
+  <!-- Menu icons dimensions -->
   <dimen name="history_card_view_height">40dp</dimen>
+
+  <!--  Home dimensions -->
   <dimen name="history_expanded_bottom_margin">10dp</dimen>
+
+  <!-- Digital Cash dimensions -->
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
+  <integer name="camera_preview_width">240</integer>
+  <integer name="camera_preview_height">320</integer>
+  <integer name="requested_preview_width">1600</integer>
+  <integer name="min_number_lines_seed_text">3</integer>
+  <integer name="requested_preview_height">1024</integer>
+  <integer name="navigation_reversion_delay">500</integer>
+  <string name="camera_preview_ratio">3:4</string>
+
+  <!--  Settings -->
+  <dimen name="settings_in_between_sections">28dp</dimen>
 
 </resources>

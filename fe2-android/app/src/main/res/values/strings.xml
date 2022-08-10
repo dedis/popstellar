@@ -257,6 +257,11 @@
   <string name="server_url">Server URL</string>
   <string name="text_hint_server_url">Enter the server URL</string>
   <string name="apply_button">APPLY</string>
+  <string name="clear_text">clear</string>
+  <string name="storage_title">Storage</string>
+  <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
+  <string name="clear_success">Clearing was successful</string>
+  <string name="clear_failure">Clearing was unsuccessful</string>
 
   <!-- Social Media -->
   <string name="home">HOME</string>

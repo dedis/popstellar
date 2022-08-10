@@ -1,18 +1,21 @@
 package com.github.dedis.popstellar.ui.settings;
 
+import android.app.*;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import javax.inject.Inject;
 
@@ -29,6 +32,8 @@ public class SettingsActivity extends AppCompatActivity {
   private String initialUrl;
   private EditText entryBoxServerUrl;
 
+  private Button clearButton;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -36,6 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     initialUrl = networkManager.getCurrentUrl();
 
+    setupClearButton();
     setupApplyButton();
     setupEntryBox();
   }
@@ -72,5 +78,40 @@ public class SettingsActivity extends AppCompatActivity {
     networkManager.connect(entryBoxServerUrl.getText().toString());
     Log.d(TAG, "Trying to open home");
     startActivity(HomeActivity.newIntent(this));
+  }
+
+  private void setupClearButton() {
+    clearButton = findViewById(R.id.settings_clear_button);
+    clearButton.setOnClickListener(clearListener);
+  }
+
+  private final View.OnClickListener clearListener =
+      v ->
+          new AlertDialog.Builder(this)
+              .setTitle(R.string.confirm_title)
+              .setMessage(R.string.clear_confirmation_text)
+              .setPositiveButton(
+                  R.string.yes,
+                  (dialogInterface, i) -> {
+                    boolean success = ActivityUtils.clearStorage(this);
+                    Toast.makeText(
+                            this,
+                            success ? R.string.clear_success : R.string.clear_failure,
+                            Toast.LENGTH_LONG)
+                        .show();
+
+                    restartAndroidApp();
+                  })
+              .setNegativeButton(R.string.no, null)
+              .show();
+
+  private void restartAndroidApp() {
+    Intent homeIntent = HomeActivity.newIntent(this);
+    int mPendingIntentId = 123456;
+    PendingIntent mPendingIntent =
+        PendingIntent.getActivity(this, mPendingIntentId, homeIntent, PendingIntent.FLAG_IMMUTABLE);
+    AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 }
