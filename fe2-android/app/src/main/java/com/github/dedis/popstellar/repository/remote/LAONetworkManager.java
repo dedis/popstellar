@@ -18,10 +18,11 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
@@ -42,7 +43,7 @@ public class LAONetworkManager implements MessageSender {
 
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
-  private final List<Channel> subscribedChannels = new LinkedList<>();
+  private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
@@ -50,12 +51,14 @@ public class LAONetworkManager implements MessageSender {
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
-      SchedulerProvider schedulerProvider) {
+      SchedulerProvider schedulerProvider,
+      Set<Channel> subscribedChannels) {
     this.repository = repository;
     this.messageHandler = messageHandler;
     this.connection = connection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
+    this.subscribedChannels = subscribedChannels;
 
     // Start the incoming message processing
     processIncomingMessages();
@@ -136,7 +139,11 @@ public class LAONetworkManager implements MessageSender {
     Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
     return request(subscribe)
         // This is used when reconnecting after a lost connection
-        .doOnSuccess(answer -> subscribedChannels.add(channel))
+        .doOnSuccess(
+            answer -> {
+              Log.d(TAG, "Adding " + channel + " to subscriptions");
+              subscribedChannels.add(channel);
+            })
         .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
@@ -150,7 +157,11 @@ public class LAONetworkManager implements MessageSender {
     Unsubscribe unsubscribe = new Unsubscribe(channel, requestCounter.incrementAndGet());
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
-        .doOnSuccess(answer -> subscribedChannels.remove(channel))
+        .doOnSuccess(
+            answer -> {
+              Log.d(TAG, "Removing " + channel + " to subscriptions");
+              subscribedChannels.remove(channel);
+            })
         .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
         .ignoreElement();
   }
@@ -158,6 +169,11 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public Observable<WebSocket.Event> getConnectEvents() {
     return connection.observeConnectionEvents();
+  }
+
+  @Override
+  public Set<Channel> getSubscriptions() {
+    return subscribedChannels.stream().map(Channel::new).collect(Collectors.toSet());
   }
 
   private void handleBroadcast(Broadcast broadcast) {

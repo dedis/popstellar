@@ -46,7 +46,12 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     setupNavigationBar();
     setupBackButton();
+  }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+    Log.d(TAG, "Activity resumed");
     mViewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
     if (getIntent()
@@ -57,6 +62,14 @@ public class LaoDetailActivity extends AppCompatActivity {
     } else {
       setupLaoWalletFragment();
     }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    // This is done here because onDestroy and onStop are not guaranteed to be called in emergency
+    // shutdown
+    mViewModel.savePersistentData();
   }
 
   @Override

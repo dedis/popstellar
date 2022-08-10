@@ -23,6 +23,10 @@ public class Constants {
   /** The extra value given to the RollCallFragment when opened */
   public static final String RC_PK_EXTRA = "pk";
 
+  public static final String ACTIVITY_TO_OPEN_EXTRA = "activity_to_open";
+
+  public static final String HOME_EXTRA = "home";
+
   /** Using the Resources class constant would require a min API of 29 */
   public static final int ID_NULL = 0;
 

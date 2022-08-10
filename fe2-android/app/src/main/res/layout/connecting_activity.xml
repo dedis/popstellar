@@ -37,17 +37,16 @@
     </RelativeLayout>
 
     <TextView
-      android:id="@+id/connecting_lao"
-      style="@style/explication_welcome_style"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
-
-    <TextView
       android:id="@+id/connecting_text"
       style="@style/explication_welcome_style"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/connecting" />
+    <TextView
+      android:id="@+id/connecting_lao"
+      style="@style/explication_welcome_style"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
 
   </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
