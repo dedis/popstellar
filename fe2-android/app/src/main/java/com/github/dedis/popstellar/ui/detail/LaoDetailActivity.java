@@ -41,8 +41,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.lao_detail_activity);
-    viewModel = obtainViewModel(this);
-    navigationViewModel = viewModel;
+    navigationViewModel = viewModel = obtainViewModel(this);
 
     setupNavigationBar(findViewById(R.id.lao_detail_nav_bar));
     setupBackButton();
