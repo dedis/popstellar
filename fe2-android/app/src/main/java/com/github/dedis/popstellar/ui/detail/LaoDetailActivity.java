@@ -88,19 +88,19 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   protected boolean openTab(LaoTab tab) {
     switch (tab) {
       case EVENTS:
-        openEventsMenu();
+        openEventsTab();
         break;
       case IDENTITY:
-        openIdentityMenu();
+        openIdentityTab();
         break;
       case WITNESSING:
-        openWitnessMenu();
+        openWitnessTab();
         break;
       case DIGITAL_CASH:
-        openDigitalCashMenu();
+        openDigitalCashTab();
         break;
       case SOCIAL:
-        openSocialMediaMenu();
+        openSocialMediaTab();
         break;
       default:
         Log.w(TAG, "Unhandled tab type : " + tab);
@@ -113,24 +113,24 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     return LaoTab.EVENTS;
   }
 
-  private void openEventsMenu() {
+  private void openEventsTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
-  private void openIdentityMenu() {
+  private void openIdentityTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_identity,
         () -> IdentityFragment.newInstance(viewModel.getPublicKey()));
   }
 
-  private void openWitnessMenu() {
+  private void openWitnessTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
   }
 
-  private void openDigitalCashMenu() {
+  private void openDigitalCashTab() {
     startActivity(
         DigitalCashActivity.newIntent(
             this,
@@ -138,7 +138,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
             viewModel.getCurrentLaoValue().getName()));
   }
 
-  private void openSocialMediaMenu() {
+  private void openSocialMediaTab() {
     startActivity(
         SocialMediaActivity.newIntent(
             this,
