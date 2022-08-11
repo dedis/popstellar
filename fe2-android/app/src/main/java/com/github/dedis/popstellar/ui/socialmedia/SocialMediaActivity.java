@@ -37,7 +37,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.social_media_activity);
-    mViewModel = obtainViewModel(this);
+    navigationViewModel = mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
     if (getIntent().getExtras() != null) {
