@@ -3,12 +3,13 @@ package com.github.dedis.popstellar.ui.home;
 import androidx.annotation.IdRes;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.navigation.Tab;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** Enum where each element represent a tab in HomeActivity */
-public enum HomeTab {
+public enum HomeTab implements Tab {
   HOME(R.id.home_home_menu),
   CONNECT(R.id.home_connect_menu),
   LAUNCH(R.id.home_launch_menu),
@@ -40,6 +41,7 @@ public enum HomeTab {
   }
 
   @IdRes
+  @Override
   public int getMenuId() {
     return menuId;
   }

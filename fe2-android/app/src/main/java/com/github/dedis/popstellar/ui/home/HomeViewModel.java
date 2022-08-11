@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
@@ -38,7 +39,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @HiltViewModel
-public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
+public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -46,12 +47,13 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
-  private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
+
   private final LiveData<List<Lao>> laos;
   private final LiveData<Boolean> isSocialMediaEnabled;
 
   /** Dependencies for this class */
   private final Gson gson;
+
   private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
@@ -166,10 +168,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   /** Getters for LiveData instances declared above */
-  public LiveData<HomeTab> getCurrentTab() {
-    return currentTab;
-  }
-
   public LiveData<List<Lao>> getLAOs() {
     return laos;
   }
@@ -180,10 +178,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return isWalletSetup;
-  }
-
-  public void setCurrentTab(HomeTab tab) {
-    this.currentTab.postValue(tab);
   }
 
   public void setIsWalletSetUp(boolean isSetUp) {
