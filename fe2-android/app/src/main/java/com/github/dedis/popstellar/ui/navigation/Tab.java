@@ -7,4 +7,6 @@ public interface Tab {
 
   @IdRes
   int getMenuId();
+
+  String getName();
 }

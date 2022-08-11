@@ -43,4 +43,9 @@ public enum SocialMediaTab implements Tab {
   public int getMenuId() {
     return menuId;
   }
+
+  @Override
+  public String getName() {
+    return toString();
+  }
 }

@@ -45,4 +45,9 @@ public enum HomeTab implements Tab {
   public int getMenuId() {
     return menuId;
   }
+
+  @Override
+  public String getName() {
+    return toString();
+  }
 }

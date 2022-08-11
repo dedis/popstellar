@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.navigation;
 
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.navigation.NavigationBarView;
@@ -11,6 +13,8 @@ import com.google.android.material.navigation.NavigationBarView;
  * should call setupNavigationBar with the navigationView as parameter.
  */
 public abstract class NavigationActivity<T extends Tab> extends AppCompatActivity {
+
+  private static final String TAG = NavigationActivity.class.getSimpleName();
 
   protected NavigationViewModel<T> navigationViewModel;
 
@@ -29,8 +33,14 @@ public abstract class NavigationActivity<T extends Tab> extends AppCompatActivit
     navbar.setOnItemSelectedListener(
         item -> {
           T tab = findTabByMenu(item.getItemId());
+          Log.i(TAG, "Opening tab : " + tab.getName());
           boolean selected = openTab(tab);
-          if (selected) navigationViewModel.setCurrentTab(tab);
+          if (selected) {
+            Log.d(TAG, "The tab was successfully opened");
+            navigationViewModel.setCurrentTab(tab);
+          } else {
+            Log.d(TAG, "The tab wasn't opened");
+          }
           return selected;
         });
     // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
