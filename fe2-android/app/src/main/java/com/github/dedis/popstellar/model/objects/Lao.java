@@ -100,7 +100,9 @@ public final class Lao implements Copyable<Lao> {
     this.elections = Copyable.copy(lao.elections);
     this.allChirps = Copyable.copy(lao.allChirps);
     this.chirpsByUser = new HashMap<>(lao.chirpsByUser);
-    this.messageIdToElectInstance = Copyable.copy(lao.messageIdToElectInstance);
+    // FIXME We need to keep the ElectInstance because the current consensus relies on references
+    // (Gabriel Fleischer 11.08.22)
+    this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
     this.keyToNode = Copyable.copy(lao.keyToNode);
     this.pubKeyByHash = new HashMap<>(lao.pubKeyByHash);
     this.transactionHistoryByUser = new HashMap<>(lao.transactionHistoryByUser);
