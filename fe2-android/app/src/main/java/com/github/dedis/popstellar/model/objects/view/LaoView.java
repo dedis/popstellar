@@ -4,9 +4,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public final class LaoView {
 
@@ -60,7 +58,7 @@ public final class LaoView {
   }
 
   public Channel getChannel() {
-    return new Channel(lao.getChannel());
+    return lao.getChannel();
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -76,11 +74,11 @@ public final class LaoView {
   }
 
   public Set<PublicKey> getWitnesses() {
-    return lao.getWitnesses().stream().map(PublicKey::new).collect(Collectors.toSet());
+    return new HashSet<>(lao.getWitnesses());
   }
 
   public PublicKey getOrganizer() {
-    return new PublicKey(lao.getOrganizer());
+    return lao.getOrganizer();
   }
 
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {

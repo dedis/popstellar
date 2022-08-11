@@ -17,11 +17,6 @@ public class OutputObject {
     this.script = script;
   }
 
-  public OutputObject(OutputObject outputObject) {
-    this.value = outputObject.value;
-    this.script = new ScriptOutputObject(outputObject.script);
-  }
-
   public long getValue() {
     return value;
   }

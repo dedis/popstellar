@@ -3,14 +3,14 @@ package com.github.dedis.popstellar.model.objects;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class RollCall extends Event {
+public class RollCall extends Event implements Copyable<RollCall> {
 
   private String id;
   private final String persistentId;
@@ -48,7 +48,7 @@ public class RollCall extends Event {
     this.start = rollCall.start;
     this.end = rollCall.end;
     this.state = new MutableLiveData<>(rollCall.state.getValue());
-    this.attendees = rollCall.attendees.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.attendees = new HashSet<>(rollCall.attendees);
     this.location = rollCall.location;
     this.description = rollCall.description;
   }
@@ -192,6 +192,11 @@ public class RollCall extends Event {
    */
   public boolean isClosed() {
     return EventState.CLOSED.equals(state.getValue());
+  }
+
+  @Override
+  public RollCall copy() {
+    return new RollCall(this);
   }
 
   @NonNull

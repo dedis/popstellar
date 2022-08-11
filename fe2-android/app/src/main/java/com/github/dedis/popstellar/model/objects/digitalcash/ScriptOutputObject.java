@@ -16,11 +16,6 @@ public class ScriptOutputObject {
     this.pubKeyHash = pubKeyHash;
   }
 
-  public ScriptOutputObject(ScriptOutputObject scriptOutputObject) {
-    this.type = scriptOutputObject.type;
-    this.pubKeyHash = scriptOutputObject.pubKeyHash;
-  }
-
   public String getType() {
     return type;
   }

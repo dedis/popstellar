@@ -2,19 +2,19 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class holding information of a ConsensusElect message and its current states including the
  * key/messageId of every node that have accepted this Elect with an ElectAccept.
  */
-public final class ElectInstance {
+public final class ElectInstance implements Copyable<ElectInstance> {
 
   private final MessageID messageId;
   private final Channel channel;
@@ -43,17 +43,12 @@ public final class ElectInstance {
   }
 
   public ElectInstance(ElectInstance electInstance) {
-    this.messageId = new MessageID(electInstance.messageId);
-    this.channel = new Channel(electInstance.channel);
-    this.proposer = new PublicKey(electInstance.proposer);
-    this.elect = new ConsensusElect(electInstance.elect);
-    this.nodes = electInstance.nodes.stream().map(PublicKey::new).collect(Collectors.toSet());
-    this.acceptorToMessageId =
-        electInstance.acceptorToMessageId.entrySet().stream()
-            .collect(
-                Collectors.toMap(
-                    entry -> new PublicKey(entry.getKey()),
-                    entry -> new MessageID(entry.getValue())));
+    this.messageId = electInstance.messageId;
+    this.channel = electInstance.channel;
+    this.proposer = electInstance.proposer;
+    this.elect = electInstance.elect;
+    this.nodes = electInstance.nodes;
+    this.acceptorToMessageId = new HashMap<>(electInstance.acceptorToMessageId);
     this.state = electInstance.state;
   }
 
@@ -161,6 +156,11 @@ public final class ElectInstance {
   public static String generateConsensusId(
       @NonNull String type, @NonNull String id, @NonNull String property) {
     return Hash.hash("consensus", type, id, property);
+  }
+
+  @Override
+  public ElectInstance copy() {
+    return new ElectInstance(this);
   }
 
   public enum State {

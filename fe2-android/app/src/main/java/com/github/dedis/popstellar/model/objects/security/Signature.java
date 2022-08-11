@@ -14,8 +14,4 @@ public class Signature extends Base64URLData {
   public Signature(String data) {
     super(data);
   }
-
-  public Signature(Signature signature) {
-    this(signature.data); // Deep copy of byte array is done in parent constructor
-  }
 }

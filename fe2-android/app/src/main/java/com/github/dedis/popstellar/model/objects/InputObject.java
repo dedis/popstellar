@@ -21,12 +21,6 @@ public class InputObject {
     this.txOutIndex = txOutIndex;
   }
 
-  public InputObject(InputObject inputObject) {
-    this.txOutHash = inputObject.txOutHash;
-    this.txOutIndex = inputObject.txOutIndex;
-    this.script = new ScriptInputObject(inputObject.script);
-  }
-
   public String getTxOutHash() {
     return txOutHash;
   }

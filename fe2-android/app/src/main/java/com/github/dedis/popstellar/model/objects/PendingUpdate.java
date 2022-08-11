@@ -12,11 +12,6 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
     this.messageId = messageId;
   }
 
-  public PendingUpdate(PendingUpdate pendingUpdate) {
-    this.modificationTime = pendingUpdate.modificationTime;
-    this.messageId = new MessageID(pendingUpdate.messageId);
-  }
-
   public long getModificationTime() {
     return modificationTime;
   }

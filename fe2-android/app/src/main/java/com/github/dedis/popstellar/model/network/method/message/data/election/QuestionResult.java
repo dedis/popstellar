@@ -21,10 +21,6 @@ public class QuestionResult {
     this.count = count;
   }
 
-  public QuestionResult(QuestionResult questionResult) {
-    this(questionResult.ballotOption, questionResult.count);
-  }
-
   public String getBallot() {
     return ballotOption;
   }

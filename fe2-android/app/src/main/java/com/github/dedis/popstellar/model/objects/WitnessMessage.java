@@ -2,15 +2,15 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /** Class to model a message that needs to be signed by witnesses */
-public class WitnessMessage {
+public class WitnessMessage implements Copyable<WitnessMessage> {
 
   /** Base 64 URL encoded ID of the message that we want to sign */
   private final MessageID messageId;
@@ -32,9 +32,8 @@ public class WitnessMessage {
   }
 
   public WitnessMessage(WitnessMessage witnessMessage) {
-    this.messageId = new MessageID(witnessMessage.messageId);
-    this.witnesses =
-        witnessMessage.witnesses.stream().map(PublicKey::new).collect(Collectors.toSet());
+    this.messageId = witnessMessage.messageId;
+    this.witnesses = new HashSet<>(witnessMessage.witnesses);
     this.title = witnessMessage.title;
     this.description = witnessMessage.description;
   }
@@ -70,6 +69,11 @@ public class WitnessMessage {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  @Override
+  public WitnessMessage copy() {
+    return new WitnessMessage(this);
   }
 
   @NonNull
