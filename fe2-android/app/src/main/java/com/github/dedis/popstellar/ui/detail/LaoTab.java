@@ -3,12 +3,13 @@ package com.github.dedis.popstellar.ui.detail;
 import androidx.annotation.IdRes;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.navigation.Tab;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** Enum where each element represent a tab in LaoActivity */
-public enum LaoTab {
+public enum LaoTab implements Tab {
   EVENTS(R.id.lao_detail_event_list_menu),
   IDENTITY(R.id.lao_detail_identity_menu),
   WITNESSING(R.id.lao_detail_witnessing_menu),
@@ -40,6 +41,7 @@ public enum LaoTab {
   }
 
   @IdRes
+  @Override
   public int getMenuId() {
     return menuId;
   }

@@ -145,8 +145,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
             .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
             .doOnComplete(
                 () -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
-            .toObservable()
-            .flatMapCompletable(a -> networkManager.getMessageSender().subscribe(lao.getChannel()))
+            .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
                 () -> {
                   String laoId = lao.getId();
