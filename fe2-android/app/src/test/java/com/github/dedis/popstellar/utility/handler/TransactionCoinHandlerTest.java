@@ -131,7 +131,7 @@ public class TransactionCoinHandlerTest {
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(lao.getChannel());
     assertTrue(laoViewOptional.isPresent());
 
-    Lao updatedLao = laoViewOptional.get().getLao();
+    Lao updatedLao = laoViewOptional.get().createLaoCopy();
     assertEquals(1, updatedLao.getTransactionByUser().size());
     assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
     TransactionObject transaction_object =

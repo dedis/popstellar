@@ -57,7 +57,7 @@ public final class RollCallHandler {
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(rollCall.getId(), rollCall);
     lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
 
@@ -97,7 +97,7 @@ public final class RollCallHandler {
     rollCall.setState(EventState.OPENED);
     rollCall.setId(updateId);
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(opens, rollCall);
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
 
@@ -139,7 +139,7 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(closes, rollCall);
     lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));

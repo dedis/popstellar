@@ -4,29 +4,16 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.PendingUpdate;
-import com.github.dedis.popstellar.model.objects.Server;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
-import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /** Lao messages handler class */
 public final class LaoHandler {
@@ -120,7 +107,7 @@ public final class LaoHandler {
           updateLao, "Cannot set the witness message title to update lao");
     }
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, message);
     if (!laoView.isWitnessesEmpty()) {
       // We send a pending update only if there are already some witness that need to sign this
@@ -170,7 +157,7 @@ public final class LaoHandler {
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
 
     lao.setId(stateLao.getId());
     lao.setWitnesses(stateLao.getWitnesses());

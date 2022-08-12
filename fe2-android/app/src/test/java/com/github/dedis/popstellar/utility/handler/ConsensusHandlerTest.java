@@ -133,7 +133,7 @@ public class ConsensusHandlerTest {
     Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
     assertTrue(laoOpt.isPresent());
 
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
     ElectInstance electInstance = electInstanceOpt.get();
@@ -152,7 +152,7 @@ public class ConsensusHandlerTest {
     Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
     assertTrue(laoOpt.isPresent());
 
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
     ElectInstance electInstance = electInstanceOpt.get();
@@ -200,7 +200,7 @@ public class ConsensusHandlerTest {
 
     Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
     assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -238,7 +238,7 @@ public class ConsensusHandlerTest {
 
     Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
     assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());

@@ -64,7 +64,7 @@ public final class ElectionHandler {
       context.getMessageSender().subscribe(election.getChannel()).subscribe();
       Log.d(TAG, "election id " + election.getId());
 
-      Lao lao = laoView.getLao();
+      Lao lao = laoView.createLaoCopy();
       lao.updateElection(election.getId(), election);
       lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
 
@@ -99,7 +99,7 @@ public final class ElectionHandler {
     election.setResults(resultsQuestions);
     election.setEventState(RESULTS_READY);
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElection(election.getId(), election);
 
     laoRepository.updateLao(lao);
@@ -133,7 +133,7 @@ public final class ElectionHandler {
     // Sets the start time to now
     election.setStart(Instant.now().getEpochSecond());
     Log.d(TAG, "election opened " + election.getStartTimestamp());
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElection(election.getId(), election);
 
     laoRepository.updateLao(lao);
@@ -160,7 +160,7 @@ public final class ElectionHandler {
 
     Election election = laoRepository.getElectionByChannel(channel);
     election.setEventState(CLOSED);
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElection(election.getId(), election);
 
     laoRepository.updateLao(lao);
@@ -186,7 +186,7 @@ public final class ElectionHandler {
     }
     LaoView laoView = laoViewOptional.get();
     Election election = laoRepository.getElectionByChannel(channel);
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation()
         || election.getState().getValue() != CLOSED) {

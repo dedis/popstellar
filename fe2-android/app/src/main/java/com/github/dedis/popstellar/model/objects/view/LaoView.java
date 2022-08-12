@@ -15,7 +15,7 @@ public final class LaoView {
   /**
    * This class offers useful getters for Lao state to handlers and prevents changing its state. It
    * is provided as an intermediate step towards functional handling of Objects. To change the state
-   * of an Lao, one can use getLao() which returns a copy of the wrapped Lao, and update the
+   * of an Lao, one can use createLaoCopy() which returns a copy of the wrapped Lao, and update the
    * repository with said updated LAO.
    *
    * @param lao the Lao to be wrapped
@@ -27,7 +27,7 @@ public final class LaoView {
     this.lao = new Lao(lao);
   }
 
-  public Lao getLao() {
+  public Lao createLaoCopy() {
     return new Lao(lao);
   }
 

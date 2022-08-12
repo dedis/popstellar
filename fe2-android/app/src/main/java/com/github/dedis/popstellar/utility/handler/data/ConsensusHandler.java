@@ -47,7 +47,7 @@ public final class ConsensusHandler {
 
     ElectInstance electInstance =
         new ElectInstance(messageId, channel, senderPk, nodes, consensusElect);
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 
     laoRepository.updateNodes(laoView.getChannel());
@@ -79,7 +79,7 @@ public final class ConsensusHandler {
 
     ElectInstance electInstance = electInstanceOpt.get();
     electInstance.addElectAccept(senderPk, messageId, consensusElectAccept);
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 
     laoRepository.updateLao(lao);
@@ -115,7 +115,7 @@ public final class ConsensusHandler {
     if (consensusLearn.getLearnValue().isDecision()) {
       electInstance.setState(ElectInstance.State.ACCEPTED);
     }
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 
     laoRepository.updateLao(lao);
@@ -142,7 +142,7 @@ public final class ConsensusHandler {
 
     ElectInstance electInstance = electInstanceOpt.get();
     electInstance.setState(ElectInstance.State.FAILED);
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 
     laoRepository.updateLao(lao);

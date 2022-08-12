@@ -98,7 +98,7 @@ public class ChirpHandlerTest {
 
     Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
     assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
@@ -128,7 +128,7 @@ public class ChirpHandlerTest {
 
     Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
     assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().getLao();
+    Lao updatedLao = laoOpt.get().createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());

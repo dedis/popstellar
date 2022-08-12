@@ -50,7 +50,7 @@ public final class ChirpHandler {
     chirp.setTimestamp(addChirp.getTimestamp());
     chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(messageId, chirp);
     laoRepository.updateLao(lao);
   }
@@ -86,7 +86,7 @@ public final class ChirpHandler {
       chirp.setText("");
     }
 
-    Lao lao = laoView.getLao();
+    Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(chirp.getId(), chirp);
     laoRepository.updateLao(lao);
   }
