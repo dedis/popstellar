@@ -51,7 +51,7 @@ public final class ChirpHandler {
     chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
 
     Lao lao = laoView.getLao();
-    lao.updateAllChirps(messageId, chirp);
+    lao.updateChirpList(messageId, chirp);
     laoRepository.updateLao(lao);
   }
 
@@ -87,7 +87,7 @@ public final class ChirpHandler {
     }
 
     Lao lao = laoView.getLao();
-    lao.updateAllChirps(chirp.getId(), chirp);
+    lao.updateChirpList(chirp.getId(), chirp);
     laoRepository.updateLao(lao);
   }
 }

@@ -219,7 +219,7 @@ public final class Lao {
    * @param prevId the previous id of a chirp
    * @param chirp the chirp
    */
-  public void updateAllChirps(MessageID prevId, Chirp chirp) {
+  public void updateChirpList(MessageID prevId, Chirp chirp) {
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp is null");
     }
