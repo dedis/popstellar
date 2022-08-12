@@ -38,10 +38,7 @@ public final class ChirpHandler {
 
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
     Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoViewOptional.orElseThrow(() -> new UnknownLaoException(channel.extractLaoId()));
     Chirp chirp = new Chirp(messageId);
 
     chirp.setChannel(channel);
