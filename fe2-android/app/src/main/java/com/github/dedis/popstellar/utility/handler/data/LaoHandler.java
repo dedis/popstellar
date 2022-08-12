@@ -4,16 +4,29 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.PendingUpdate;
+import com.github.dedis.popstellar.model.objects.Server;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
-import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 /** Lao messages handler class */
 public final class LaoHandler {
@@ -125,6 +138,7 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param stateLao the message that was received
    */
+  @SuppressLint("CheckResult")
   public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
@@ -166,10 +180,13 @@ public final class LaoHandler {
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+
       context
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))
-          .subscribe();
+          .subscribe(
+              () -> Log.d(TAG, "Successful subscribe to consensus channel"),
+              e -> Log.d(TAG, "Unsuccessful subscribe to consensus channel : " + e));
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
