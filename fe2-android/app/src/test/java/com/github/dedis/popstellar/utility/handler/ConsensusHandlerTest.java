@@ -8,7 +8,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.*
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
@@ -130,10 +129,9 @@ public class ConsensusHandlerTest {
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, failureMsg);
 
-    Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
-    assertTrue(laoOpt.isPresent());
+    Lao updatedLao =
+        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
-    Lao updatedLao = laoOpt.get().createLaoCopy();
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
     ElectInstance electInstance = electInstanceOpt.get();
@@ -149,10 +147,9 @@ public class ConsensusHandlerTest {
   private void handleConsensusElectTest() throws DataHandlingException, UnknownLaoException {
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
 
-    Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
-    assertTrue(laoOpt.isPresent());
+    Lao updatedLao =
+        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
-    Lao updatedLao = laoOpt.get().createLaoCopy();
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
     ElectInstance electInstance = electInstanceOpt.get();
@@ -198,9 +195,8 @@ public class ConsensusHandlerTest {
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
 
-    Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
-    assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().createLaoCopy();
+    Lao updatedLao =
+        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -236,9 +232,8 @@ public class ConsensusHandlerTest {
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
     messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, learnMsg);
 
-    Optional<LaoView> laoOpt = laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID));
-    assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().createLaoCopy();
+    Lao updatedLao =
+        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());

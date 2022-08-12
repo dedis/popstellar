@@ -9,7 +9,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
@@ -30,7 +29,6 @@ import java.util.*;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.lenient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -128,10 +126,8 @@ public class TransactionCoinHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
 
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(lao.getChannel());
-    assertTrue(laoViewOptional.isPresent());
+    Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 
-    Lao updatedLao = laoViewOptional.get().createLaoCopy();
     assertEquals(1, updatedLao.getTransactionByUser().size());
     assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
     TransactionObject transaction_object =

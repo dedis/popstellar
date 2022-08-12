@@ -39,12 +39,7 @@ public final class ElectionHandler {
     MessageID messageId = context.getMessageId();
 
     if (channel.isLaoChannel()) {
-      Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-      if (!laoViewOptional.isPresent()) {
-        throw new UnknownLaoException(channel.extractLaoId());
-      }
-
-      LaoView laoView = laoViewOptional.get();
+      LaoView laoView = laoRepository.getLaoViewByChannel(channel);
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election =
@@ -84,11 +79,8 @@ public final class ElectionHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
@@ -118,11 +110,8 @@ public final class ElectionHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleOpenElection: channel " + channel);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
     // If created --> open it
@@ -152,11 +141,7 @@ public final class ElectionHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionEnd: channel " + channel);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Election election = laoRepository.getElectionByChannel(channel);
     election.setEventState(CLOSED);
@@ -180,11 +165,8 @@ public final class ElectionHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleCastVote: channel " + channel);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+
     Election election = laoRepository.getElectionByChannel(channel);
     Lao lao = laoView.createLaoCopy();
     // Verify the vote was created before the end of the election or the election is not closed yet

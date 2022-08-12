@@ -84,11 +84,7 @@ public final class LaoHandler {
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
@@ -132,12 +128,7 @@ public final class LaoHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
-
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
     if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
@@ -224,11 +215,7 @@ public final class LaoHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
     if (!laoView.getId().equals(greetLao.getId())) {

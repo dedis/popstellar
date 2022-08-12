@@ -29,13 +29,9 @@ public class TransactionCoinHandler {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
-
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
+
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     // inputs and outputs for the creation

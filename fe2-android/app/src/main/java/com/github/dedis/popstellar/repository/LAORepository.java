@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -125,8 +126,9 @@ public class LAORepository {
     return Optional.empty();
   }
 
-  public Optional<LaoView> getLaoViewByChannel(Channel channel) {
-    return getLao(channel.extractLaoId());
+  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
+    return getLao(channel.extractLaoId())
+        .orElseThrow(() -> new UnknownLaoException(channel.extractLaoId()));
   }
 
   public synchronized void updateLao(Lao lao) {

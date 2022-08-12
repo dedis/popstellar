@@ -36,12 +36,8 @@ public final class ConsensusHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleElect: " + channel + " id " + consensusElect.getInstanceId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
 
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Set<PublicKey> nodes = laoView.getWitnesses();
     nodes.add(laoView.getOrganizer());
 
@@ -63,11 +59,7 @@ public final class ConsensusHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleElectAccept: " + channel + " id " + consensusElectAccept.getInstanceId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Optional<ElectInstance> electInstanceOpt =
         laoView.getElectInstance(consensusElectAccept.getMessageId());
@@ -97,11 +89,7 @@ public final class ConsensusHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleLearn: " + channel + " id " + consensusLearn.getInstanceId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Optional<ElectInstance> electInstanceOpt =
         laoView.getElectInstance(consensusLearn.getMessageId());
@@ -128,11 +116,7 @@ public final class ConsensusHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleConsensusFailure: " + channel + " id " + failure.getInstanceId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Optional<ElectInstance> electInstanceOpt = laoView.getElectInstance(failure.getMessageId());
     if (!electInstanceOpt.isPresent()) {

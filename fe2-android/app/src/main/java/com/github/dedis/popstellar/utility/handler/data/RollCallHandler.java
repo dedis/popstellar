@@ -41,11 +41,7 @@ public final class RollCallHandler {
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     RollCall rollCall = new RollCall(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
@@ -77,11 +73,7 @@ public final class RollCallHandler {
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
@@ -118,11 +110,7 @@ public final class RollCallHandler {
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, "handleCloseRollCall: " + channel);
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();

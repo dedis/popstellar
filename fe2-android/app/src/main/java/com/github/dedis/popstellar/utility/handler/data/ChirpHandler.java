@@ -37,11 +37,7 @@ public final class ChirpHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Chirp chirp = new Chirp(messageId);
 
     chirp.setChannel(channel);
@@ -67,11 +63,8 @@ public final class ChirpHandler {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleDeleteChirp: " + channel + " id " + deleteChirp.getChirpId());
-    Optional<LaoView> laoViewOptional = laoRepository.getLaoViewByChannel(channel);
-    if (!laoViewOptional.isPresent()) {
-      throw new UnknownLaoException(channel.extractLaoId());
-    }
-    LaoView laoView = laoViewOptional.get();
+
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Optional<Chirp> chirpOptional = laoView.getChirp(deleteChirp.getChirpId());
 
     if (!chirpOptional.isPresent()) {
