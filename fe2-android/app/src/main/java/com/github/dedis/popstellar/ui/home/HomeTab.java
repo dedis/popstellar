@@ -19,7 +19,7 @@ public enum HomeTab implements Tab {
   private static final List<HomeTab> ALL = Arrays.asList(values());
 
   /**
-   * Find a tab based on its menu id, throws an exception when no the match the id
+   * Find a tab based on its menu id, throws an exception when no tab match the id
    *
    * @param menuId of the menu
    * @return the tab corresponding to the given menu id
