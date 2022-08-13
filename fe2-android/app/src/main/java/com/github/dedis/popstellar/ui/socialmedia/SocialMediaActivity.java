@@ -42,11 +42,13 @@ public class SocialMediaActivity extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
-    String laoId = getIntent().getExtras().getString(LAO_ID);
-    String laoName = getIntent().getExtras().getString(LAO_NAME);
+    if (getIntent().getExtras() != null) {
+      String laoId = getIntent().getExtras().getString(LAO_ID);
+      String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-    if (laoId != null) mViewModel.setLaoId(laoId);
-    if (laoName != null) mViewModel.setLaoName(laoName);
+      if (laoId != null) mViewModel.setLaoId(laoId);
+      if (laoName != null) mViewModel.setLaoName(laoName);
+    }
 
     setupNavigationBar();
 
@@ -181,14 +183,14 @@ public class SocialMediaActivity extends AppCompatActivity {
         SocialMediaProfileFragment::newInstance);
   }
 
-  public static Intent newInstance(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId, String laoName) {
     Intent intent = new Intent(ctx, SocialMediaActivity.class);
     intent.putExtra(LAO_ID, laoId);
     intent.putExtra(LAO_NAME, laoName);
     return intent;
   }
 
-  public static Intent newInstance(Context ctx) {
+  public static Intent newIntent(Context ctx) {
     return new Intent(ctx, SocialMediaActivity.class);
   }
 

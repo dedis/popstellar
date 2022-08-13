@@ -22,11 +22,6 @@ import { WalletHome } from '../index';
 
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
-jest.mock('core/components/QRCode.tsx', () => 'qrcode');
-
-// disable animations
-jest.useFakeTimers('modern');
-jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 
 const mockRCName = 'myRollCall';
 const mockRCLocation = 'location';

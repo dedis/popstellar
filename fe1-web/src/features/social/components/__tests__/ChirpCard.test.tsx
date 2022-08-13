@@ -58,9 +58,6 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
-// Ionicons and snapshot tests do not work nice together
-// See https://github.com/expo/expo/issues/3566
-jest.mock('@expo/vector-icons');
 // endregion
 
 const contextValue = {
@@ -79,6 +76,7 @@ beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 });
+// endregion
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {

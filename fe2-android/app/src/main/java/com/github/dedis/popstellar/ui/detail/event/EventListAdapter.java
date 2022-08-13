@@ -1,29 +1,29 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import android.annotation.SuppressLint;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
+
+import android.annotation.*;
 import android.view.*;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.app.*;
+import androidx.cardview.widget.*;
+import androidx.constraintlayout.widget.*;
+import androidx.fragment.app.*;
+import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
 
 import java.util.*;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
-
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;
-  private final LifecycleOwner lifecycleOwner;
+  private final FragmentActivity activity;
   private final EnumMap<EventCategory, List<Event>> eventsMap;
   private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
@@ -31,12 +31,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
+      List<Event> events, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
     this.eventsMap.put(FUTURE, new ArrayList<>());
-    this.lifecycleOwner = lifecycleOwner;
+    this.activity = activity;
     this.viewModel = viewModel;
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
@@ -148,7 +148,10 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       View.OnClickListener listener =
           view -> {
             viewModel.setCurrentElection(election);
-            viewModel.openElectionFragment(true);
+            LaoDetailActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_election,
+                ElectionFragment::newInstance);
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
 
@@ -157,8 +160,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       RollCall rollCall = (RollCall) event;
       View.OnClickListener listener =
           view -> {
-            viewModel.setCurrentRollCall(rollCall);
-            viewModel.enterRollCall(rollCall.getPersistentId());
+            if (viewModel.isWalletSetup()) {
+              viewModel.setCurrentRollCall(rollCall);
+              viewModel.enterRollCall(activity, rollCall.getPersistentId());
+            } else {
+              showWalletNotSetupWarning();
+            }
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
       eventViewHolder.eventTitle.setText(rollCall.getName());
@@ -275,13 +282,20 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     for (EventCategory category : EventCategory.values()) {
       for (Event event : eventsMap.get(category)) {
         // When we get new events we remove observers of old ones
-        event.getState().removeObservers(lifecycleOwner);
+        event.getState().removeObservers(activity);
       }
     }
     events.forEach( // Adding a listener to each event's state, when changed we update the UI
-        event -> event.getState().observe(lifecycleOwner, eventState -> notifyDataSetChanged()));
+        event -> event.getState().observe(activity, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
+  }
+
+  public void showWalletNotSetupWarning() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    builder.setTitle("You have to setup up your wallet before connecting.");
+    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+    builder.show();
   }
 
   public static class EventViewHolder extends RecyclerView.ViewHolder {
