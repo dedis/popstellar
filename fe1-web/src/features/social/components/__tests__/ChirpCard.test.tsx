@@ -17,7 +17,7 @@ import ChirpCard from '../ChirpCard';
 
 // region test data
 const TIMESTAMP = 1609455600; // 31 December 2020
-const sender = new PublicKey('Douglas Adams');
+const sender = mockPopToken.publicKey;
 const ID = new Hash('1234');
 
 const chirp = new Chirp({
@@ -44,7 +44,6 @@ const chirp1 = new Chirp({
 });
 // endregion
 
-// region mocks
 jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -58,7 +57,6 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
-// endregion
 
 const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
@@ -71,12 +69,6 @@ const contextValue = {
     generateToken: () => mockPopToken,
   },
 };
-
-beforeAll(() => {
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
-});
-// endregion
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
@@ -147,8 +139,4 @@ describe('ChirpCard', () => {
       expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID);
     });
   });
-});
-
-afterAll(() => {
-  jest.useRealTimers();
 });

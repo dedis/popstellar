@@ -61,7 +61,7 @@ describe('SocialHome', () => {
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
             component={SocialHome}
-            params={{ currentUserPublicKey: mockKeyPair.publicKey }}
+            params={{ currentUserPublicKey: mockPopToken.publicKey }}
           />
         </FeatureContext.Provider>
       </Provider>,
@@ -73,7 +73,7 @@ describe('SocialHome', () => {
     fireEvent.press(getByTestId('new_chirp_publish'));
 
     await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockKeyPair.publicKey, mockText);
+      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText);
       expect(requestAddChirp).toHaveBeenCalledTimes(1);
     });
   });
