@@ -1,11 +1,14 @@
-import PropTypes from 'prop-types';
+import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -19,6 +22,7 @@ import { makeChirpsList } from '../reducer';
 /**
  * UI for the Social Media home screen component
  */
+
 const styles = StyleSheet.create({
   viewCenter: {
     alignSelf: 'center',
@@ -34,8 +38,17 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const SocialHome = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_home>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
+const SocialHome = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { currentUserPublicKey } = route.params;
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -89,16 +102,6 @@ const SocialHome = (props: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialHome.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey;
 };
 
 export default SocialHome;

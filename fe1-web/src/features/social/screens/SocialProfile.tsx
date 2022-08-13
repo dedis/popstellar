@@ -1,11 +1,14 @@
-import PropTypes from 'prop-types';
+import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon, TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
@@ -20,8 +23,17 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
 const styles = socialMediaProfileStyles;
 
-const SocialProfile = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_profile>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
+const SocialProfile = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { currentUserPublicKey } = route.params;
   const userChirps = useMemo(
     () => makeChirpsListOfUser(currentUserPublicKey),
     [currentUserPublicKey],
@@ -60,16 +72,6 @@ const SocialProfile = (props: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialProfile.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey;
 };
 
 export default SocialProfile;

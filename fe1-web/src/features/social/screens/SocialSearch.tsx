@@ -1,8 +1,12 @@
-import PropTypes from 'prop-types';
+import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock } from 'core/components';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
@@ -16,6 +20,7 @@ import { SocialFeature } from '../interface';
  * For now, it is used to show all the attendees of the last roll call so that everyone can follow
  * whoever they want.
  */
+
 const styles = StyleSheet.create({
   viewCenter: {
     alignSelf: 'center',
@@ -33,8 +38,17 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const SocialSearch = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_attendee_list>,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
+
+const SocialSearch = () => {
+  const route = useRoute<NavigationProps['route']>();
+  const { currentUserPublicKey } = route.params;
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -47,7 +61,7 @@ const SocialSearch = (props: IPropTypes) => {
       'Impossible to open social media search: last tokenized roll call id is undefined',
     );
   }
-  const attendees = SocialHooks.useRollCallAttendeesList(rollCallId);
+  const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile
@@ -77,16 +91,6 @@ const SocialSearch = (props: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialSearch.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey;
 };
 
 export default SocialSearch;

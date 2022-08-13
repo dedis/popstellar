@@ -1,11 +1,12 @@
+import { Reducer } from 'redux';
+
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import { PublicKey } from 'core/objects/PublicKey';
 
+import { SOCIAL_REDUCER_PATH, SocialLaoReducerState } from '../reducer';
 import { SocialFeature } from './Feature';
-import { SOCIAL_REDUCER_PATH, SocialLaoReducerState } from 'features/social/reducer';
-import { Reducer } from 'redux';
 
 export const SOCIAL_FEATURE_IDENTIFIER = 'social';
 

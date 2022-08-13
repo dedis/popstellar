@@ -22,14 +22,18 @@ const SocialSearchNavigation = (props: IPropTypes) => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name={STRINGS.social_media_navigation_tab_attendee_list}>
-        {() => <SocialSearch currentUserPublicKey={currentUserPublicKey} />}
-      </Stack.Screen>
+      <Stack.Screen
+        name={STRINGS.social_media_navigation_tab_attendee_list}
+        component={SocialSearch}
+        initialParams={{
+          currentUserPublicKey,
+        }}
+      />
       <Stack.Screen
         name={STRINGS.social_media_navigation_tab_user_profile}
         component={SocialUserProfile}
         initialParams={{
-          currentUserPublicKey: currentUserPublicKey,
+          currentUserPublicKey,
           userPublicKey: currentUserPublicKey,
         }}
       />
