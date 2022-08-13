@@ -9,7 +9,7 @@ import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from 'features/social/interface';
+import { SocialFeature } from '../interface';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -42,6 +42,11 @@ const SocialSearch = (props: IPropTypes) => {
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
+  if (!rollCallId) {
+    throw new Error(
+      'Impossible to open social media search: last tokenized roll call id is undefined',
+    );
+  }
   const attendees = SocialHooks.useRollCallAttendeesList(rollCallId);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
@@ -89,5 +94,4 @@ export default SocialSearch;
 export const SocialSearchScreen: SocialFeature.SocialScreen = {
   id: STRINGS.social_media_navigation_tab_search,
   Component: SocialSearch,
-  headerShown: false,
 };

@@ -2,9 +2,8 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash } from 'core/objects';
-import { SOCIAL_FEATURE_IDENTIFIER } from 'features/social/interface/Configuration';
 
-import { SocialReactContext } from '../interface';
+import { SOCIAL_FEATURE_IDENTIFIER, SocialReactContext } from '../interface';
 
 export namespace SocialHooks {
   export const useSocialContext = (): SocialReactContext => {
@@ -23,6 +22,11 @@ export namespace SocialHooks {
   export const useCurrentLao = () => {
     return useSocialContext().useCurrentLao();
   };
+
+  /**
+   * Gets the current lao id
+   */
+  export const useCurrentLaoId = () => useSocialContext().useCurrentLaoId();
 
   /**
    * Gets the roll call for a given id

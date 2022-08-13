@@ -49,7 +49,11 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestAddChirp without parentId', async () => {
-    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText);
+    await msApi.requestAddChirp(
+      new PublicKey(testKeyPair.publicKey),
+      mockText,
+      new Hash(mockLaoId),
+    );
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];

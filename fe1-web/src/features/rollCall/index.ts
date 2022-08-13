@@ -24,7 +24,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
       useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
       useRollCallTokensByLaoId: RollCallHooks.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: RollCallHooks.useRollCallTokenByRollCallId,
-      useRollCallAttendeesList: RollCallHooks.useRollCall,
+      useRollCallAttendeesById: RollCallHooks.useRollCallAttendeesById,
     },
     context: {
       useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,

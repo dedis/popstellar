@@ -1,8 +1,11 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PopToken } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
 import { PublicKey } from 'core/objects/PublicKey';
 
 import { SocialFeature } from './Feature';
+import { SOCIAL_REDUCER_PATH, SocialLaoReducerState } from 'features/social/reducer';
+import { Reducer } from 'redux';
 
 export const SOCIAL_FEATURE_IDENTIFIER = 'social';
 
@@ -30,6 +33,12 @@ export interface SocialConfiguration {
    */
   getCurrentLaoId: () => Hash | undefined;
 
+  /**
+   * Returns the currently active lao id. Should be used inside react components
+   * @returns The current lao or undefined if there is none.
+   */
+  useCurrentLaoId: () => Hash | undefined;
+
   /* Roll Calls */
 
   /**
@@ -45,7 +54,7 @@ export interface SocialConfiguration {
    * @param rollCallId - The id of the roll call
    * @returns The list of public keys of the attendees
    */
-  useRollCallAttendeesList: (rollCallId: Hash | string) => PublicKey[];
+  useRollCallAttendeesById: (rollCallId: Hash | string) => PublicKey[];
 
   /* Events */
 
@@ -63,10 +72,20 @@ export type SocialReactContext = Pick<
   /* lao */
   | 'useCurrentLao'
   | 'getCurrentLao'
+  | 'useCurrentLaoId'
   | 'getCurrentLaoId'
   /* roll call */
   | 'useRollCallById'
-  | 'useRollCallAttendeesList'
+  | 'useRollCallAttendeesById'
   /* wallet */
   | 'generateToken'
 >;
+
+export interface SocialInterface extends FeatureInterface {
+  socialScreens: SocialFeature.SocialScreen[];
+  socialSearchScreens: SocialFeature.SocialSearchScreen[];
+  context: SocialReactContext;
+  reducers: {
+    [SOCIAL_REDUCER_PATH]: Reducer<SocialLaoReducerState>;
+  };
+}

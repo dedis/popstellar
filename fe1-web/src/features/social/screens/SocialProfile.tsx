@@ -77,5 +77,4 @@ export default SocialProfile;
 export const SocialProfileScreen: SocialFeature.SocialScreen = {
   id: STRINGS.social_media_navigation_tab_profile,
   Component: SocialProfile,
-  headerShown: false,
 };

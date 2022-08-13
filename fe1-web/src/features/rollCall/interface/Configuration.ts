@@ -119,7 +119,7 @@ export interface RollCallInterface extends FeatureInterface {
     useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
     useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
 
-    useRollCallAttendeesList: (rollCallId: string) => PublicKey[];
+    useRollCallAttendeesById: (rollCallId: Hash | string) => PublicKey[];
   };
 
   context: RollCallReactContext;

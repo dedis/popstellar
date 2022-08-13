@@ -27,7 +27,7 @@ interface SocialReducerState {
 }
 
 // Root state for the Social Reducer
-interface SocialLaoReducerState {
+export interface SocialLaoReducerState {
   // Associates a given LAO ID with the whole representation of its social media
   byLaoId: Record<string, SocialReducerState>;
 }
@@ -43,7 +43,8 @@ const initialState: SocialLaoReducerState = {
   },
 };
 
-const socialReducerPath = 'social';
+/* Name of the social media slice in storage */
+export const SOCIAL_REDUCER_PATH = 'social';
 
 // helper function to find where to insert the new chirp in ascending time order
 function findInsertIdx(array: string[], byId: Record<string, ChirpState>, element: number): number {
@@ -62,13 +63,18 @@ function findInsertIdx(array: string[], byId: Record<string, ChirpState>, elemen
 }
 
 const socialSlice = createSlice({
-  name: socialReducerPath,
+  name: SOCIAL_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a chirp to the list of chirps
     addChirp: {
       prepare(laoId: Hash | string, chirp: ChirpState): any {
-        return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            chirp: chirp,
+          },
+        };
       },
       reducer(
         state,
@@ -115,7 +121,12 @@ const socialSlice = createSlice({
     // Delete a chirp in the list of chirps
     deleteChirp: {
       prepare(laoId: Hash | string, chirp: ChirpState): any {
-        return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            chirp: chirp,
+          },
+        };
       },
       reducer(
         state,
@@ -159,7 +170,12 @@ const socialSlice = createSlice({
     // Add reactions to a chirp
     addReaction: {
       prepare(laoId: Hash | string, reaction: ReactionState): any {
-        return { payload: { laoId: laoId.valueOf(), reaction: reaction } };
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            reaction: reaction,
+          },
+        };
       },
       reducer(
         state,
@@ -202,10 +218,10 @@ export const { addChirp, deleteChirp, addReaction } = socialSlice.actions;
 export const socialReduce = socialSlice.reducer;
 
 export default {
-  [socialReducerPath]: socialSlice.reducer,
+  [SOCIAL_REDUCER_PATH]: socialSlice.reducer,
 };
 
-export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath];
+export const getSocialState = (state: any): SocialLaoReducerState => state[SOCIAL_REDUCER_PATH];
 
 export const makeChirpsList = () =>
   createSelector(

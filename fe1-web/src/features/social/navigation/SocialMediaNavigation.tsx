@@ -56,6 +56,11 @@ const SocialMediaNavigation = (generateToken: SocialConfiguration['generateToken
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
+  if (rollCallId === undefined) {
+    throw new Error(
+      'Last tokenized roll call id is undefined, impossible to access to Social Media',
+    );
+  }
   const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
@@ -70,7 +75,7 @@ const SocialMediaNavigation = (generateToken: SocialConfiguration['generateToken
       .catch(() => {
         /* noop */
       });
-  }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
+  }, [generateToken, lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
 
   return (
     <Tab.Navigator

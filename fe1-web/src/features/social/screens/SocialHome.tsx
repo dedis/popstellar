@@ -10,6 +10,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
+import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
@@ -37,9 +38,14 @@ const SocialHome = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
+  const laoId = SocialHooks.useCurrentLaoId();
+
+  if (laoId === undefined) {
+    throw new Error('Impossible to render Social Home, current lao id is undefined');
+  }
 
   const publishChirp = () => {
-    requestAddChirp(currentUserPublicKey, inputChirp)
+    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -100,5 +106,4 @@ export default SocialHome;
 export const SocialHomeScreen: SocialFeature.SocialScreen = {
   id: STRINGS.social_media_navigation_tab_home,
   Component: SocialHome,
-  headerShown: false,
 };

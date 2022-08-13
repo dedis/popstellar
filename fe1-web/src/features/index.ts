@@ -104,8 +104,9 @@ export function configureFeatures() {
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
-    useRollCallAttendeesList: () => (), // TODO: Add useRollCallAttendeesList
+    useRollCallAttendeesById: rollCallConfiguration.hooks.useRollCallAttendeesById,
     generateToken: walletConfiguration.functions.generateToken,
   });
 
