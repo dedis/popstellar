@@ -2,10 +2,13 @@ package com.github.dedis.popstellar.model.objects.security;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.Arrays;
 import java.util.Base64;
 
 /** Represents a data that can be encoded into a Base64 form */
+@Immutable
 public class Base64URLData {
 
   protected final byte[] data;

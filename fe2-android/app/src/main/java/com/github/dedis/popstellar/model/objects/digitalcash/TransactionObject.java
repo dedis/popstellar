@@ -2,11 +2,13 @@ package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
 
+@Immutable
 public class TransactionObject {
 
   public static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";

@@ -2,9 +2,11 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
 /** Represents an peer address */
+@Immutable
 public class PeerAddress {
 
   // Purpose of this class is that, in the future, the content of the peers field will contain

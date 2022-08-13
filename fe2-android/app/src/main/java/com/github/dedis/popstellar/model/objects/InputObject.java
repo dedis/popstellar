@@ -2,10 +2,13 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+@Immutable
 public class InputObject {
+
   private final String txOutHash;
   private final int txOutIndex;
   private final ScriptInputObject script;

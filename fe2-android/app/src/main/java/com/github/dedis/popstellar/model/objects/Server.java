@@ -2,18 +2,20 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 /**
  * A basic instance of the server what will be created while handling the Greeting election message
  */
+@Immutable
 public class Server {
 
   // Canonical address of the server
-  @NonNull private String serverAddress;
+  @NonNull private final String serverAddress;
 
   // The public key of the server that can be used to send encrypted messages
-  @NonNull private PublicKey publicKey;
+  @NonNull private final PublicKey publicKey;
 
   // NOTE: There is no need to store peers: ServerAddress[] here.
   // As soon as a GreetLao message arrives in the future, we connect to all peers. The server
