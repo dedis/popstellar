@@ -37,7 +37,7 @@ public interface Copyable<T> {
    *
    * @param source map
    * @param <E> type of key
-   * @param <T> type of value inside the list
+   * @param <T> type of value inside the list (assumed to be immutable)
    * @return the copy
    */
   static <E, T> Map<E, List<T>> copyMapOfList(Map<E, List<T>> source) {
