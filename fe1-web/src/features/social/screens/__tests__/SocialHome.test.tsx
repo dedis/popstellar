@@ -3,12 +3,12 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/utils';
+import { mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { SocialMediaNavigationContext } from '../../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
@@ -21,7 +21,7 @@ jest.mock('features/social/network/SocialMessageApi', () => {
   };
 });
 
-const contextValue = {
+const featureContextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
@@ -31,6 +31,11 @@ const contextValue = {
     useRollCallAttendeesById: () => [],
     generateToken: () => mockPopToken,
   },
+};
+
+const socialContextValue = {
+  currentUserPublicKey: mockPopToken.publicKey,
+  userPublicKey: mockPopToken.publicKey,
 };
 
 beforeEach(() => {
@@ -44,11 +49,10 @@ describe('SocialHome', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator
-            component={SocialHome}
-            params={{ currentUserPublicKey: mockKeyPair.publicKey }}
-          />
+        <FeatureContext.Provider value={featureContextValue}>
+          <SocialMediaNavigationContext.Provider value={socialContextValue}>
+            <SocialHome />
+          </SocialMediaNavigationContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -58,11 +62,10 @@ describe('SocialHome', () => {
   it('is possible to publish chirps', async () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator
-            component={SocialHome}
-            params={{ currentUserPublicKey: mockPopToken.publicKey }}
-          />
+        <FeatureContext.Provider value={featureContextValue}>
+          <SocialMediaNavigationContext.Provider value={socialContextValue}>
+            <SocialHome />
+          </SocialMediaNavigationContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );

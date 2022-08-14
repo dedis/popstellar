@@ -1,20 +1,15 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon, TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import { SocialFeature } from '../interface';
+import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -25,18 +20,8 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
 const styles = socialMediaProfileStyles;
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_profile>,
-  CompositeScreenProps<
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
-  >
->;
-
 const SocialProfile = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { currentUserPublicKey } = route.params;
-  const userPublicKey = new PublicKey(currentUserPublicKey);
+  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
   const userChirps = useMemo(
     () => makeChirpsListOfUser(currentUserPublicKey),
     [currentUserPublicKey],
@@ -52,14 +37,14 @@ const SocialProfile = () => {
   }
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={userPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   return (
     <ScreenWrapper>
       <View style={styles.viewCenter}>
         <View style={styles.topView}>
-          <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
+          <ProfileIcon publicKey={currentUserPublicKey} size={8} scale={10} />
           <View style={styles.textView}>
             <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
             <Text>{`${userChirpList.length} ${

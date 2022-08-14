@@ -1,20 +1,16 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
+import { useContext } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon, TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import BackButton from '../components/BackButton';
 import { SocialFeature } from '../interface';
+import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -23,28 +19,17 @@ const styles = StyleSheet.create({
   userInnerView: { marginBottom: 15 } as ViewStyle,
 });
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_user_profile>,
-  CompositeScreenProps<
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
-  >
->;
-
 /**
  * UI for the profile of a user.
  */
 const SocialUserProfile = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { currentUserPublicKey, userPublicKey } = route.params;
-  const currentPublicKey = new PublicKey(currentUserPublicKey);
-  const publicKey = new PublicKey(userPublicKey);
+  const { currentUserPublicKey, userPublicKey } = useContext(SocialMediaNavigationContext);
 
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   const displayNoUser = () => (
@@ -71,9 +56,9 @@ const SocialUserProfile = () => {
               testID="backButtonUserProfile"
             />
           </View>
-          <ProfileIcon publicKey={publicKey} size={8} scale={10} />
+          <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
           <View style={socialMediaProfileStyles.textView}>
-            <Text style={socialMediaProfileStyles.profileText}>{userPublicKey}</Text>
+            <Text style={socialMediaProfileStyles.profileText}>{userPublicKey.valueOf()}</Text>
             <Text>{`${userChirpList.length} ${
               userChirpList.length === 1 ? 'chirp' : 'chirps'
             }`}</Text>

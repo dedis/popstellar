@@ -1,5 +1,4 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
@@ -14,8 +13,7 @@ import { SocialSearch, SocialUserProfile } from '../screens';
 
 const Stack = createStackNavigator<SocialSearchParamList>();
 
-const SocialSearchNavigation = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
+const SocialSearchNavigation = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -24,30 +22,13 @@ const SocialSearchNavigation = (props: IPropTypes) => {
       <Stack.Screen
         name={STRINGS.social_media_navigation_tab_attendee_list}
         component={SocialSearch}
-        initialParams={{
-          currentUserPublicKey,
-        }}
       />
       <Stack.Screen
         name={STRINGS.social_media_navigation_tab_user_profile}
         component={SocialUserProfile}
-        initialParams={{
-          currentUserPublicKey,
-          userPublicKey: currentUserPublicKey,
-        }}
       />
     </Stack.Navigator>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.string.isRequired,
-};
-
-SocialSearchNavigation.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: string;
 };
 
 export default SocialSearchNavigation;

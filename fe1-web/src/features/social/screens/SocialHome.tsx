@@ -1,25 +1,20 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
+import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
-import { PublicKey } from 'core/objects';
 
 /**
  * UI for the Social Media home screen component
@@ -40,18 +35,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_home>,
-  CompositeScreenProps<
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
-  >
->;
-
 const SocialHome = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { currentUserPublicKey } = route.params;
-  const userPublicKey = new PublicKey(currentUserPublicKey);
+  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -61,7 +46,7 @@ const SocialHome = () => {
   }
 
   const publishChirp = () => {
-    requestAddChirp(userPublicKey, inputChirp, laoId)
+    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -79,7 +64,7 @@ const SocialHome = () => {
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={userPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   return (
@@ -96,7 +81,7 @@ const SocialHome = () => {
             onPress={publishChirp}
             // The publish button is disabled when the user public key is not defined
             publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
-            currentUserPublicKey={userPublicKey}
+            currentUserPublicKey={currentUserPublicKey}
           />
           <FlatList
             data={chirpList}

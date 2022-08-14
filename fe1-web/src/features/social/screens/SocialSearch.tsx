@@ -1,13 +1,9 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
+import { useContext } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
@@ -15,6 +11,7 @@ import STRINGS from 'resources/strings';
 import { UserListItem } from '../components';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
+import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -39,18 +36,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_attendee_list>,
-  CompositeScreenProps<
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
-  >
->;
-
 const SocialSearch = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { currentUserPublicKey } = route.params;
-  const userPublicKey = new PublicKey(currentUserPublicKey);
+  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -64,6 +51,7 @@ const SocialSearch = () => {
     );
   }
   const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
+  console.log(attendees);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile
@@ -71,7 +59,11 @@ const SocialSearch = () => {
       return null;
     }
     return (
-      <UserListItem laoId={currentLao.id} publicKey={item} currentUserPublicKey={userPublicKey} />
+      <UserListItem
+        laoId={currentLao.id}
+        publicKey={item}
+        currentUserPublicKey={currentUserPublicKey}
+      />
     );
   };
 

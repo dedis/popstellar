@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useState } from 'react';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -12,6 +13,10 @@ import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
+export const SocialMediaNavigationContext = React.createContext({
+  currentUserPublicKey: new PublicKey(''),
+  userPublicKey: new PublicKey(''),
+});
 
 const iconSelector =
   (routeName: string) =>
@@ -44,7 +49,7 @@ const iconSelector =
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
-  const [currentUserPublicKey, setCurrentUserPublicKey] = useState('');
+  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
   const lao = SocialHooks.useCurrentLao();
 
@@ -65,7 +70,7 @@ const SocialMediaNavigation = () => {
     .generateToken(lao.id, rollCallId)
     .then((token) => {
       if (rollCall?.containsToken(token)) {
-        setCurrentUserPublicKey(token.publicKey.valueOf());
+        setCurrentUserPublicKey(token.publicKey);
       }
     })
     // If an error happens when generating the token, it should not affect the Social Media
@@ -74,46 +79,35 @@ const SocialMediaNavigation = () => {
     });
 
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: iconSelector(route.name),
+    <SocialMediaNavigationContext.Provider
+      value={{
+        currentUserPublicKey,
+        userPublicKey: currentUserPublicKey,
+      }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: iconSelector(route.name),
 
-        tabBarActiveTintColor: Color.accent,
-        tabBarInactiveTintColor: Color.inactive,
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      })}>
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_home}
-        component={SocialHome}
-        initialParams={{
-          currentUserPublicKey,
-        }}
-      />
-      <Tab.Screen name={STRINGS.social_media_navigation_tab_search}>
-        {() => <SocialSearchNavigation currentUserPublicKey={currentUserPublicKey} />}
-      </Tab.Screen>
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_follows}
-        component={SocialFollows}
-        initialParams={{
-          currentUserPublicKey,
-        }}
-      />
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_profile}
-        component={SocialProfile}
-        initialParams={{
-          currentUserPublicKey,
-        }}
-      />
-    </Tab.Navigator>
+          tabBarActiveTintColor: Color.accent,
+          tabBarInactiveTintColor: Color.inactive,
+          headerLeftContainerStyle: {
+            paddingLeft: Spacing.contentSpacing,
+          },
+          headerRightContainerStyle: {
+            paddingRight: Spacing.contentSpacing,
+          },
+          headerTitleStyle: Typography.topNavigationHeading,
+          headerTitleAlign: 'center',
+        })}>
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_home} component={SocialHome} />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_search}
+          component={SocialSearchNavigation}
+        />
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
+      </Tab.Navigator>
+    </SocialMediaNavigationContext.Provider>
   );
 };
 
