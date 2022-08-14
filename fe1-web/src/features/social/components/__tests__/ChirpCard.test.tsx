@@ -122,21 +122,21 @@ describe('ChirpCard', () => {
       const { getByTestId } = renderChirp(chirp, sender);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoIdHash);
     });
 
     it('adds thumbs down correctly', () => {
       const { getByTestId } = renderChirp(chirp, sender);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoIdHash);
     });
 
     it('adds heart correctly', () => {
       const { getByTestId } = renderChirp(chirp, sender);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoIdHash);
     });
   });
 });

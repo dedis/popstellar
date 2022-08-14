@@ -73,7 +73,7 @@ describe('SocialHome', () => {
     fireEvent.press(getByTestId('new_chirp_publish'));
 
     await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText);
+      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoIdHash);
       expect(requestAddChirp).toHaveBeenCalledTimes(1);
     });
   });
