@@ -224,6 +224,7 @@ export function configureFeatures() {
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
       [digitalCashComposition.identifier]: digitalCashComposition.context,
+      [socialConfiguration.identifier]: socialConfiguration.context,
     },
   };
 }

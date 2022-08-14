@@ -1,10 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
-import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -46,9 +44,9 @@ const iconSelector =
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
-  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
+  const [currentUserPublicKey, setCurrentUserPublicKey] = useState('');
 
-  const lao = useSelector(SocialHooks.useCurrentLao);
+  const lao = SocialHooks.useCurrentLao();
 
   if (lao === undefined) {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
@@ -67,7 +65,7 @@ const SocialMediaNavigation = () => {
     .generateToken(lao.id, rollCallId)
     .then((token) => {
       if (rollCall?.containsToken(token)) {
-        setCurrentUserPublicKey(token.publicKey);
+        setCurrentUserPublicKey(token.publicKey.valueOf());
       }
     })
     // If an error happens when generating the token, it should not affect the Social Media

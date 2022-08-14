@@ -6,6 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
@@ -18,6 +19,7 @@ import { SocialFeature } from '../interface';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
+import { PublicKey } from 'core/objects';
 
 /**
  * UI for the Social Media home screen component
@@ -49,6 +51,7 @@ type NavigationProps = CompositeScreenProps<
 const SocialHome = () => {
   const route = useRoute<NavigationProps['route']>();
   const { currentUserPublicKey } = route.params;
+  const userPublicKey = new PublicKey(currentUserPublicKey);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -58,7 +61,7 @@ const SocialHome = () => {
   }
 
   const publishChirp = () => {
-    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
+    requestAddChirp(userPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -76,31 +79,33 @@ const SocialHome = () => {
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={userPublicKey} />
   );
 
   return (
-    <View style={styles.viewCenter}>
-      <View style={styles.homeTextView}>
-        <TextBlock text={STRINGS.social_media_navigation_tab_home} />
+    <ScreenWrapper>
+      <View style={styles.viewCenter}>
+        <View style={styles.homeTextView}>
+          <TextBlock text={STRINGS.social_media_navigation_tab_home} />
+        </View>
+        <View style={styles.userFeed}>
+          <TextInputChirp
+            testID="new_chirp"
+            value={inputChirp}
+            onChangeText={setInputChirp}
+            onPress={publishChirp}
+            // The publish button is disabled when the user public key is not defined
+            publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
+            currentUserPublicKey={userPublicKey}
+          />
+          <FlatList
+            data={chirpList}
+            renderItem={renderChirpState}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        </View>
       </View>
-      <View style={styles.userFeed}>
-        <TextInputChirp
-          testID="new_chirp"
-          value={inputChirp}
-          onChangeText={setInputChirp}
-          onPress={publishChirp}
-          // The publish button is disabled when the user public key is not defined
-          publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
-          currentUserPublicKey={currentUserPublicKey}
-        />
-        <FlatList
-          data={chirpList}
-          renderItem={renderChirpState}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
-    </View>
+    </ScreenWrapper>
   );
 };
 

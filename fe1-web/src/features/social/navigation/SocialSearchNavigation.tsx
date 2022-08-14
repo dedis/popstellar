@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import { SocialSearch, SocialUserProfile } from '../screens';
@@ -42,13 +41,13 @@ const SocialSearchNavigation = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  currentUserPublicKey: PropTypes.string.isRequired,
 };
 
 SocialSearchNavigation.prototype = propTypes;
 
 type IPropTypes = {
-  currentUserPublicKey: PublicKey;
+  currentUserPublicKey: string;
 };
 
 export default SocialSearchNavigation;

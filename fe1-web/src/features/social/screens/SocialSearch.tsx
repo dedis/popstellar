@@ -4,6 +4,7 @@ import * as React from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
@@ -49,6 +50,7 @@ type NavigationProps = CompositeScreenProps<
 const SocialSearch = () => {
   const route = useRoute<NavigationProps['route']>();
   const { currentUserPublicKey } = route.params;
+  const userPublicKey = new PublicKey(currentUserPublicKey);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -69,27 +71,25 @@ const SocialSearch = () => {
       return null;
     }
     return (
-      <UserListItem
-        laoId={currentLao.id}
-        publicKey={item}
-        currentUserPublicKey={currentUserPublicKey}
-      />
+      <UserListItem laoId={currentLao.id} publicKey={item} currentUserPublicKey={userPublicKey} />
     );
   };
 
   return (
-    <View style={styles.viewCenter}>
-      <View style={styles.titleTextView}>
-        <TextBlock text={STRINGS.attendees_of_last_roll_call} />
+    <ScreenWrapper>
+      <View style={styles.viewCenter}>
+        <View style={styles.titleTextView}>
+          <TextBlock text={STRINGS.attendees_of_last_roll_call} />
+        </View>
+        <View style={styles.attendeesList}>
+          <FlatList
+            data={attendees}
+            renderItem={renderItem}
+            keyExtractor={(publicKey) => publicKey.valueOf()}
+          />
+        </View>
       </View>
-      <View style={styles.attendeesList}>
-        <FlatList
-          data={attendees}
-          renderItem={renderItem}
-          keyExtractor={(publicKey) => publicKey.valueOf()}
-        />
-      </View>
-    </View>
+    </ScreenWrapper>
   );
 };
 
