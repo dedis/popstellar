@@ -1,4 +1,4 @@
-// Package be1_go defines the logger.
+// Package popstellar defines the logger.
 //
 // This logger is inspired by the DEDIS Ledger Architecture global logger.
 // (https://github.com/dedis/dela/blob/master/mod.go)
@@ -9,7 +9,7 @@
 //   LLVL=error ./pop organizer --pk "<base64url encoded pk>" serve
 //   LLVL=warn ./pop organizer --pk "<base64url encoded pk>" serve
 //
-package be1_go
+package popstellar
 
 import (
 	"os"

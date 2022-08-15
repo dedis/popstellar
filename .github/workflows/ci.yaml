@@ -106,13 +106,13 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Setup Go 1.x
-        uses: actions/setup-go@v2
+      - name: Use go >= 1.18  
+        uses: actions/setup-go@v3
         with:
-          go-version: ^1.16
+          go-version: '>=1.18'
 
       - name: Setup repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
@@ -134,7 +134,9 @@ jobs:
 
       - name: Format
         if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: make check-fmt ; if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
+        run: |
+          make check-fmt
+          if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
 
       - name: Run check target
         if: ${{ matrix.platform == 'ubuntu-latest' }}
