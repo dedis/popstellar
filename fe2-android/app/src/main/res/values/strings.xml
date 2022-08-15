@@ -33,6 +33,7 @@
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
   <string name="allow_camera_button">Allow camera</string>
   <string name="connecting">Connecting to</string>
+  <string name="stored_channels">stored channels</string>
 
   <!-- Launch -->
   <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>

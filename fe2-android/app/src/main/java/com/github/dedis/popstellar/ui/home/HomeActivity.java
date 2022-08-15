@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -59,6 +60,14 @@ public class HomeActivity extends AppCompatActivity {
 
     setupNavigationBar();
     setupMenuAvailabilityListeners();
+
+    restoreStoredState();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    viewModel.savePersistentData();
   }
 
   public void setupNavigationBar() {
@@ -209,6 +218,11 @@ public class HomeActivity extends AppCompatActivity {
 
     Log.d(HomeViewModel.TAG, "Opening social media activity");
     startActivity(SocialMediaActivity.newIntent(this));
+  }
+
+  private void restoreStoredState() {
+    PersistentData data = ActivityUtils.loadPersistentData(this);
+    viewModel.restoreConnections(data);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

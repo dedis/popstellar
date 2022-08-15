@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,11 +13,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -35,8 +35,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
@@ -46,12 +44,14 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
+
   private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
   private final LiveData<List<Lao>> laos;
   private final LiveData<Boolean> isSocialMediaEnabled;
 
   /** Dependencies for this class */
   private final Gson gson;
+
   private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
@@ -116,7 +116,43 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
     // Establish connection with new address
     networkManager.connect(laoData.server);
-    openConnecting(laoData.lao);
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForDetail(
+                getApplication().getApplicationContext(), laoData.lao));
+  }
+
+  protected void restoreConnections(PersistentData data) {
+    if (data == null) {
+      return;
+    }
+    Log.d(TAG, "Saved state found : " + data);
+
+    if (!isWalletSetUp()) {
+      Log.d(TAG, "Restoring wallet");
+      String appended = String.join(" ", data.getWalletSeed());
+      try {
+        importSeed(appended);
+      } catch (GeneralSecurityException | SeedValidationException e) {
+        Log.e(TAG, "error importing seed from memory");
+        return;
+      }
+    }
+
+    if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
+      Log.d(TAG, "current state is up to date");
+      return;
+    }
+    Log.d(TAG, "restoring connections");
+    networkManager.connect(data.getServerAddress(), data.getSubscriptions());
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
+  }
+
+  public void savePersistentData() {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /** onCleared is used to cancel all subscriptions to observables. */
@@ -135,21 +171,29 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   public void launchLao(Activity activity, String laoName) {
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
-    Lao lao = new Lao(createLao.getId());
 
     disposables.add(
         networkManager
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
-            .doOnComplete(
-                () -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
-            .toObservable()
-            .flatMapCompletable(a -> networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
                 () -> {
-                  String laoId = lao.getId();
-                  Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
-                  activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
+                  Log.d(TAG, "got success result for create lao");
+                  Lao lao = new Lao(createLao.getId());
+
+                  // Send subscribe and catchup
+                  networkManager
+                      .getMessageSender()
+                      .subscribe(lao.getChannel())
+                      .subscribe(
+                          () -> {
+                            Log.d(TAG, "subscribing to LAO with id " + lao.getId());
+                            activity.startActivity(
+                                LaoDetailActivity.newIntentForLao(activity, lao.getId()));
+                          },
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  getApplication(), TAG, error, R.string.error_create_lao));
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -199,12 +243,5 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
-  }
-
-  public void openConnecting(String laoId) {
-    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    getApplication().startActivity(intent);
   }
 }

@@ -5,11 +5,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Channel;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PersistentData implements Serializable {
 

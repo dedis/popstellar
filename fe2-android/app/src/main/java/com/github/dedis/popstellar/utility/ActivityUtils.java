@@ -15,7 +15,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class ActivityUtils {
@@ -91,6 +91,9 @@ public class ActivityUtils {
       GlobalNetworkManager networkManager, Wallet wallet, Context context) {
     String serverAddress = networkManager.getCurrentUrl();
     Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
+    if (subscriptions == null) {
+      subscriptions = new HashSet<>();
+    }
 
     String[] seed;
     try {
@@ -103,7 +106,14 @@ public class ActivityUtils {
       // it returns empty array if not initialized
       throw new IllegalStateException("Seed should not be null");
     }
-
+    Log.d(
+        TAG,
+        "seed "
+            + Arrays.toString(seed)
+            + " address "
+            + serverAddress
+            + " subscriptions "
+            + subscriptions);
     return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
   }
 }
