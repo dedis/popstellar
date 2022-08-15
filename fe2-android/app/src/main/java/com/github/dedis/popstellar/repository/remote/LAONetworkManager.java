@@ -175,7 +175,7 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Set<Channel> getSubscriptions() {
-    return null;
+    return new HashSet<>(subscribedChannels);
   }
 
   private void handleBroadcast(Broadcast broadcast) {

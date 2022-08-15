@@ -42,8 +42,8 @@ public class ConnectingActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onDestroy() {
-    super.onDestroy();
+  public void onPause() {
+    super.onPause();
     disposables.dispose();
   }
 
@@ -58,10 +58,7 @@ public class ConnectingActivity extends AppCompatActivity {
 
     // Sets the lao id displayed to users
     TextView connectingText = findViewById(R.id.connecting_lao);
-    connectingText.setText(
-        isDestinationHome
-            ? getString(R.string.stored_channels)
-            : laoId); // Sets the lao id displayed to users
+    connectingText.setText(isDestinationHome ? getString(R.string.stored_channels) : laoId);
 
     // This object will allow us to get all the event of the underlying observable, even if they
     // were emitted prior to the subscribe
