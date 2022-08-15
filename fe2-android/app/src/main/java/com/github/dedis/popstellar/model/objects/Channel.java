@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * <p>It is implemented in a functional manner to avoid any unintended modification
  */
-public class Channel {
+public class Channel implements Serializable {
 
   private static final String ROOT_CHANNEL = "/root";
   private static final String DELIMITER = "/";
