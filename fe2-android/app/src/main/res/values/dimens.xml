@@ -158,4 +158,6 @@
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
 
+  <!--  Settings -->
+  <dimen name="settings_margin_in_between_sections">28dp</dimen>
 </resources>
