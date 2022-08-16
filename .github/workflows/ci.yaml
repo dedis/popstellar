@@ -106,10 +106,10 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Use go >= 1.18  
+      - name: Use go >= 1.19  
         uses: actions/setup-go@v3
         with:
-          go-version: '>=1.18'
+          go-version: '>=1.19'
 
       - name: Setup repo
         uses: actions/checkout@v3
