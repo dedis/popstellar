@@ -8,8 +8,9 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
+import { SocialMediaContext } from '../context';
+import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -21,10 +22,15 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 const styles = socialMediaProfileStyles;
 
 const SocialProfile = () => {
-  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
+  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const laoId = SocialHooks.useCurrentLaoId();
+  if (!laoId) {
+    throw new Error('Impossible to render Social Profile, current lao id is undefined');
+  }
+
   const userChirps = useMemo(
-    () => makeChirpsListOfUser(currentUserPublicKey),
-    [currentUserPublicKey],
+    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPublicKey),
+    [currentUserPublicKey, laoId],
   );
   const userChirpList = useSelector(userChirps);
 

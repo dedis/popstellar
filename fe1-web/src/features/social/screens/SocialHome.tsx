@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -9,9 +9,9 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
+import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialHome = () => {
-  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
+  const { currentUserPublicKey } = useContext(SocialMediaContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -60,8 +60,7 @@ const SocialHome = () => {
       });
   };
 
-  const chirps = useMemo(makeChirpsList, []);
-  const chirpList = useSelector(chirps);
+  const chirpList = useSelector(makeChirpsList(laoId.valueOf()));
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />

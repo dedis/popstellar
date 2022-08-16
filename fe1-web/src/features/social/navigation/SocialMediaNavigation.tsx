@@ -7,15 +7,13 @@ import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
-export const CurrentUserPublicKeyContext = React.createContext({
-  currentUserPublicKey: new PublicKey(''),
-});
 
 const iconSelector =
   (routeName: string) =>
@@ -78,7 +76,7 @@ const SocialMediaNavigation = () => {
     });
 
   return (
-    <CurrentUserPublicKeyContext.Provider
+    <SocialMediaContext.Provider
       value={{
         currentUserPublicKey,
       }}>
@@ -105,7 +103,7 @@ const SocialMediaNavigation = () => {
         <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
         <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
       </Tab.Navigator>
-    </CurrentUserPublicKeyContext.Provider>
+    </SocialMediaContext.Provider>
   );
 };
 

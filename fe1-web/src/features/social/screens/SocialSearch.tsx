@@ -9,9 +9,9 @@ import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
+import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialSearch = () => {
-  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
+  const { currentUserPublicKey } = useContext(SocialMediaContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {

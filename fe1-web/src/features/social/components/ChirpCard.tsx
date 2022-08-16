@@ -88,13 +88,13 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { currentUserPublicKey } = props;
   const toast = useToast();
-  const reactionList = useMemo(makeReactionsList, []);
-  const reactions = useSelector(reactionList)[chirp.id.toString()];
   const laoId = SocialHooks.useCurrentLaoId();
-
   if (laoId === undefined) {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
+
+  const reactionList = useMemo(() => makeReactionsList(laoId.valueOf()), [laoId]);
+  const reactions = useSelector(reactionList)[chirp.id.toString()];
 
   const zero = '  0';
   const thumbsUp = reactions ? reactions['👍'] : 0;

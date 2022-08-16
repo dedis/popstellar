@@ -7,8 +7,8 @@ import { mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/ut
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
+import { SocialMediaContext } from '../../context';
 import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import { CurrentUserPublicKeyContext } from '../../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
@@ -49,9 +49,9 @@ describe('SocialHome', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={featureContextValue}>
-          <CurrentUserPublicKeyContext.Provider value={socialContextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
             <SocialHome />
-          </CurrentUserPublicKeyContext.Provider>
+          </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -62,9 +62,9 @@ describe('SocialHome', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={featureContextValue}>
-          <CurrentUserPublicKeyContext.Provider value={socialContextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
             <SocialHome />
-          </CurrentUserPublicKeyContext.Provider>
+          </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );

@@ -15,8 +15,9 @@ import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import BackButton from '../components/BackButton';
+import { SocialMediaContext } from '../context';
+import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -37,12 +38,16 @@ type NavigationProps = CompositeScreenProps<
  * UI for the profile of a user.
  */
 const SocialUserProfile = () => {
-  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
+  const { currentUserPublicKey } = useContext(SocialMediaContext);
   const route = useRoute<NavigationProps['route']>();
   const { userPkString } = route.params;
   const userPublicKey = new PublicKey(userPkString);
+  const laoId = SocialHooks.useCurrentLaoId();
+  if (!laoId) {
+    throw new Error('Impossible to render Social Profile, current lao id is undefined');
+  }
 
-  const userChirps = makeChirpsListOfUser(userPublicKey);
+  const userChirps = makeChirpsListOfUser(laoId.valueOf())(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
