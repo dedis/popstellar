@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	be1_go "popstellar"
+	popstellar "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
 	"popstellar/channel/coin"
@@ -568,7 +568,7 @@ func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities,
 	socket socket.Socket) *generalChirping.Channel {
 
 	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, popstellar.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
@@ -579,7 +579,7 @@ func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities,
 func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
 	chirpingChannelPath := c.channelID + social + publicKey
 
-	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
+	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, popstellar.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
