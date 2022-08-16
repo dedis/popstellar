@@ -11,7 +11,7 @@ import STRINGS from 'resources/strings';
 import { ChirpCard, TextInputChirp } from '../components';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
+import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialHome = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
+  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();

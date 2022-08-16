@@ -8,7 +8,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import { SocialMediaNavigationContext } from '../../navigation/SocialMediaNavigation';
+import { CurrentUserPublicKeyContext } from '../../navigation/SocialMediaNavigation';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
@@ -35,7 +35,6 @@ const featureContextValue = {
 
 const socialContextValue = {
   currentUserPublicKey: mockPopToken.publicKey,
-  userPublicKey: mockPopToken.publicKey,
 };
 
 beforeEach(() => {
@@ -50,9 +49,9 @@ describe('SocialHome', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={featureContextValue}>
-          <SocialMediaNavigationContext.Provider value={socialContextValue}>
+          <CurrentUserPublicKeyContext.Provider value={socialContextValue}>
             <SocialHome />
-          </SocialMediaNavigationContext.Provider>
+          </CurrentUserPublicKeyContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -63,9 +62,9 @@ describe('SocialHome', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={featureContextValue}>
-          <SocialMediaNavigationContext.Provider value={socialContextValue}>
+          <CurrentUserPublicKeyContext.Provider value={socialContextValue}>
             <SocialHome />
-          </SocialMediaNavigationContext.Provider>
+          </CurrentUserPublicKeyContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
     );

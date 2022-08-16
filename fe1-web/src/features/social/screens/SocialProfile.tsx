@@ -9,7 +9,7 @@ import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import { SocialFeature } from '../interface';
-import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
+import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -21,7 +21,7 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 const styles = socialMediaProfileStyles;
 
 const SocialProfile = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
+  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
   const userChirps = useMemo(
     () => makeChirpsListOfUser(currentUserPublicKey),
     [currentUserPublicKey],

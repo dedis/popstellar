@@ -13,9 +13,8 @@ import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
-export const SocialMediaNavigationContext = React.createContext({
+export const CurrentUserPublicKeyContext = React.createContext({
   currentUserPublicKey: new PublicKey(''),
-  userPublicKey: new PublicKey(''),
 });
 
 const iconSelector =
@@ -79,10 +78,9 @@ const SocialMediaNavigation = () => {
     });
 
   return (
-    <SocialMediaNavigationContext.Provider
+    <CurrentUserPublicKeyContext.Provider
       value={{
         currentUserPublicKey,
-        userPublicKey: currentUserPublicKey,
       }}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -107,7 +105,7 @@ const SocialMediaNavigation = () => {
         <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
         <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
       </Tab.Navigator>
-    </SocialMediaNavigationContext.Provider>
+    </CurrentUserPublicKeyContext.Provider>
   );
 };
 

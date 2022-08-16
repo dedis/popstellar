@@ -11,7 +11,7 @@ import STRINGS from 'resources/strings';
 import { UserListItem } from '../components';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialMediaNavigationContext } from '../navigation/SocialMediaNavigation';
+import { CurrentUserPublicKeyContext } from '../navigation/SocialMediaNavigation';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialSearch = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaNavigationContext);
+  const { currentUserPublicKey } = useContext(CurrentUserPublicKeyContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -58,13 +58,7 @@ const SocialSearch = () => {
     if (item.valueOf() === currentUserPublicKey.valueOf()) {
       return null;
     }
-    return (
-      <UserListItem
-        laoId={currentLao.id}
-        publicKey={item}
-        currentUserPublicKey={currentUserPublicKey}
-      />
-    );
+    return <UserListItem laoId={currentLao.id} publicKey={item} />;
   };
 
   return (
