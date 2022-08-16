@@ -4,20 +4,20 @@
 // directory. More information about the subcommands is available by
 // executing the binary with a -h flag
 //
-//  ./pop -h
-//  NAME:
-//    pop - backend for the PoP project
+//	./pop -h
+//	NAME:
+//	  pop - backend for the PoP project
 //
-//  USAGE:
-//    pop [global options] command [command options] [arguments...]
+//	USAGE:
+//	  pop [global options] command [command options] [arguments...]
 //
-//  COMMANDS:
-//     organizer  manage the organizer
-//     witness    manage the witness
-//     help, h    Shows a list of commands or help for one command
+//	COMMANDS:
+//	   organizer  manage the organizer
+//	   witness    manage the witness
+//	   help, h    Shows a list of commands or help for one command
 //
-//  GLOBAL OPTIONS:
-//     --help, -h  show help (default: false)
+//	GLOBAL OPTIONS:
+//	   --help, -h  show help (default: false)
 package main
 
 import (

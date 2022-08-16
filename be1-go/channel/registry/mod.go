@@ -31,19 +31,18 @@ func NewMessageRegistry() MessageRegistry {
 // function. The callback function will have to cast the interface it receives
 // to the concrete type. For example:
 //
-//   // define a callback
-//   func execElect(msg interface) error {
-//     m, ok := msg.(messagedata.ConsensusElect)
-//     if !ok {...}
-//     // ...
-//   }
+//	// define a callback
+//	func execElect(msg interface) error {
+//	  m, ok := msg.(messagedata.ConsensusElect)
+//	  if !ok {...}
+//	  // ...
+//	}
 //
-//   // register the "elect" type
-//   registry.register(messagedata.ConsensusElect{}, execElect)
+//	// register the "elect" type
+//	registry.register(messagedata.ConsensusElect{}, execElect)
 //
-//   // when we need to process a message we call "processMsg"
-//   err = registry.processMsg(msg)
-//
+//	// when we need to process a message we call "processMsg"
+//	err = registry.processMsg(msg)
 func (m MessageRegistry) Register(msg messagedata.MessageData, f func(message.Message,
 	interface{}, socket.Socket) error) {
 
