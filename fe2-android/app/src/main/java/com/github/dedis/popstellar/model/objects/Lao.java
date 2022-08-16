@@ -42,9 +42,9 @@ public final class Lao {
   // Some useful map for the digital cash
   private Map<String, PublicKey> pubKeyByHash;
   // Map for the history
-  private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
+  private Map<PublicKey, Set<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, List<TransactionObject>> transactionByUser;
+  private Map<PublicKey, Set<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -200,16 +200,17 @@ public final class Lao {
       if (transactionByUser.containsKey(current)
           && (transactionObject.isCoinBaseTransaction()
               || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
-        transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
-        List<TransactionObject> list = new ArrayList<>(transactionByUser.get(current));
-        list.add(transactionObject);
-        transactionByUser.replace(current, list);
+        transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
+        Set<TransactionObject> set = new HashSet<>(transactionByUser.get(current));
+        set.add(transactionObject);
+        transactionByUser.replace(current, set);
       } else {
-        transactionByUser.put(current, Collections.singletonList(transactionObject));
+
+        transactionByUser.put(current, new HashSet<>(Collections.singleton(transactionObject)));
       }
 
       // Add the transaction in the history / for the sender and the receiver
-      transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
+      transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
       if (!transactionHistoryByUser.get(current).add(transactionObject)) {
         throw new IllegalStateException("Problem occur by updating the transaction history");
       }
@@ -391,11 +392,11 @@ public final class Lao {
         .collect(Collectors.toList());
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
+  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
     return transactionHistoryByUser;
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
+  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
     return transactionByUser;
   }
 

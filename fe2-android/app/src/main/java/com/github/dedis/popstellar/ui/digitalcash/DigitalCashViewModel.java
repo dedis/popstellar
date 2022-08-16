@@ -75,7 +75,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
-  private final LiveData<List<TransactionObject>> mTransactionHistory;
+  private final LiveData<Set<TransactionObject>> mTransactionHistory;
 
   /*
    * Dependencies for this class
@@ -109,14 +109,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
             mCurrentLao,
             lao -> {
               try {
-                if (lao == null) return new ArrayList<>();
-                List<TransactionObject> historyList =
+                if (lao == null) return new HashSet<>();
+                Set<TransactionObject> historySet =
                     lao.getTransactionHistoryByUser()
                         .get(keyManager.getValidPoPToken(lao).getPublicKey());
-                if (historyList == null) {
-                  return new ArrayList<>();
+                if (historySet == null) {
+                  return new HashSet<>();
                 }
-                return new ArrayList<>(historyList);
+                return new HashSet<>(historySet);
               } catch (KeyException e) {
                 Log.d(TAG, "error retrieving token: " + e);
                 return null;
@@ -430,10 +430,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
+    Set<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(new HashSet<>(transactions), pubK)
             - amountFromReceiver;
     Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
     outputs.add(outputSender);
@@ -449,7 +449,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     }
   }
 
-  public LiveData<List<TransactionObject>> getTransactionHistory() {
+  public LiveData<Set<TransactionObject>> getTransactionHistory() {
     return mTransactionHistory;
   }
 }

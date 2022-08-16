@@ -187,7 +187,7 @@ public class TransactionObjectTest {
     InputObject input = new InputObject(Hash.hash("none"), 0, scriptTxInput);
     List<InputObject> listInput = Collections.singletonList(input);
     builder.setInputs(listInput);
-    assertEquals(true, builder.build().isSender(sender));
+    assertTrue(builder.build().isSender(sender));
   }
 
   // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
@@ -234,11 +234,12 @@ public class TransactionObjectTest {
     assertEquals(
         32,
         TransactionObject.getMiniLaoPerReceiverSetTransaction(
-            Collections.singletonList(transactionObject), sender));
+            new HashSet<>(Collections.singletonList(transactionObject)), sender));
     List<TransactionObject> list = new ArrayList<>();
     list.add(transactionObject);
     list.add(transactionObject);
-    assertEquals(64, TransactionObject.getMiniLaoPerReceiverSetTransaction(list, sender));
+    assertEquals(
+        64, TransactionObject.getMiniLaoPerReceiverSetTransaction(new HashSet<>(list), sender));
   }
 
   // test int get_index_transaction(PublicKey publicKey)
