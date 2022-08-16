@@ -1,7 +1,9 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
+@Immutable
 public class PendingUpdate implements Comparable<PendingUpdate> {
 
   private final long modificationTime;
@@ -10,11 +12,6 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
   public PendingUpdate(long modificationTime, MessageID messageId) {
     this.modificationTime = modificationTime;
     this.messageId = messageId;
-  }
-
-  public PendingUpdate(PendingUpdate pendingUpdate) {
-    this.modificationTime = pendingUpdate.modificationTime;
-    this.messageId = new MessageID(pendingUpdate.messageId);
   }
 
   public long getModificationTime() {

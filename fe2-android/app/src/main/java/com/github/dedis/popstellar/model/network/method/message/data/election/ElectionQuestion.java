@@ -30,18 +30,10 @@ public class ElectionQuestion {
       String electionId) {
 
     this.question = question;
-    this.ballotOptions = ballotOptions;
+    this.ballotOptions = Collections.unmodifiableList(ballotOptions);
     this.writeIn = writeIn;
     this.votingMethod = votingMethod;
     this.id = Election.generateElectionQuestionId(electionId, question);
-  }
-
-  public ElectionQuestion(ElectionQuestion electionQuestion) {
-    this.id = electionQuestion.id;
-    this.question = electionQuestion.question;
-    this.votingMethod = electionQuestion.votingMethod;
-    this.ballotOptions = new ArrayList<>(electionQuestion.ballotOptions);
-    this.writeIn = electionQuestion.writeIn;
   }
 
   public String getId() {
@@ -57,7 +49,7 @@ public class ElectionQuestion {
   }
 
   public List<String> getBallotOptions() {
-    return Collections.unmodifiableList(ballotOptions);
+    return ballotOptions;
   }
 
   public String getVotingMethod() {

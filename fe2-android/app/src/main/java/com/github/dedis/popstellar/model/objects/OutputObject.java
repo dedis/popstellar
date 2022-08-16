@@ -2,9 +2,12 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
 
+@Immutable
 public class OutputObject {
+
   private final long value;
   private final ScriptOutputObject script;
 
@@ -15,11 +18,6 @@ public class OutputObject {
   public OutputObject(long value, ScriptOutputObject script) {
     this.value = value;
     this.script = script;
-  }
-
-  public OutputObject(OutputObject outputObject) {
-    this.value = outputObject.value;
-    this.script = new ScriptOutputObject(outputObject.script);
   }
 
   public long getValue() {

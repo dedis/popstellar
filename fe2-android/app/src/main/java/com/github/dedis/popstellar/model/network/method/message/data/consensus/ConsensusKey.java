@@ -16,10 +16,6 @@ public final class ConsensusKey {
     this.property = property;
   }
 
-  public ConsensusKey(ConsensusKey key) {
-    this(key.type, key.id, key.property);
-  }
-
   public String getType() {
     return type;
   }

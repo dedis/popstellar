@@ -2,12 +2,13 @@ package com.github.dedis.popstellar.model.objects.digitalcash;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Immutable
 public class TransactionObject {
 
   public static final String TX_OUT_HASH_COINBASE = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
@@ -35,24 +36,12 @@ public class TransactionObject {
       List<OutputObject> outputs,
       long lockTime,
       String transactionId) {
-
     this.channel = channel;
     this.version = version;
-    this.inputs = inputs;
-    this.outputs = outputs;
+    this.inputs = Collections.unmodifiableList(new ArrayList<>(inputs));
+    this.outputs = Collections.unmodifiableList(new ArrayList<>(outputs));
     this.lockTime = lockTime;
     this.transactionId = transactionId;
-  }
-
-  public TransactionObject(TransactionObject transactionObject) {
-    this.channel = new Channel(transactionObject.channel);
-    this.version = transactionObject.version;
-    this.inputs =
-        transactionObject.inputs.stream().map(InputObject::new).collect(Collectors.toList());
-    this.outputs =
-        transactionObject.outputs.stream().map(OutputObject::new).collect(Collectors.toList());
-    this.lockTime = transactionObject.lockTime;
-    this.transactionId = transactionObject.transactionId;
   }
 
   public Channel getChannel() {

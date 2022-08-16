@@ -45,12 +45,6 @@ public class ElectionEncryptedVote {
     }
   }
 
-  public ElectionEncryptedVote(ElectionEncryptedVote electionEncryptedVote) {
-    this.id = electionEncryptedVote.id;
-    this.questionId = electionEncryptedVote.questionId;
-    this.vote = electionEncryptedVote.vote;
-  }
-
   @NonNull
   public String getVote() {
     return vote;

@@ -40,12 +40,6 @@ public class ElectionVote {
         Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
   }
 
-  public ElectionVote(ElectionVote electionVote) {
-    this.id = electionVote.id;
-    this.questionId = electionVote.id;
-    this.vote = electionVote.vote;
-  }
-
   public String getId() {
     return id;
   }

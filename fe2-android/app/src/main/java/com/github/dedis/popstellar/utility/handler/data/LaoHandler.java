@@ -33,7 +33,7 @@ public final class LaoHandler {
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
     LAORepository laoRepository = context.getLaoRepository();
-    Channel channel = new Channel(context.getChannel());
+    Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = new Lao(createLao.getId());

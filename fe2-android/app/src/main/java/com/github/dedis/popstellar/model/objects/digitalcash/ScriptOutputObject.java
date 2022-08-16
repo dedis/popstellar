@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
+
+@Immutable
 public class ScriptOutputObject {
 
   // Type of script
@@ -14,11 +17,6 @@ public class ScriptOutputObject {
   public ScriptOutputObject(String type, String pubKeyHash) {
     this.type = type;
     this.pubKeyHash = pubKeyHash;
-  }
-
-  public ScriptOutputObject(ScriptOutputObject scriptOutputObject) {
-    this.type = scriptOutputObject.type;
-    this.pubKeyHash = scriptOutputObject.pubKeyHash;
   }
 
   public String getType() {

@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
  *
  * <p>It is implemented in a functional manner to avoid any unintended modification
  */
+@Immutable
 public class Channel {
 
   private static final String ROOT_CHANNEL = "/root";
@@ -23,15 +26,6 @@ public class Channel {
 
   /** Root channel, every client is subscribed to it. */
   public static final Channel ROOT = new Channel();
-
-  /**
-   * Copy constructor
-   *
-   * @param channel the channel to be deep copied
-   */
-  public Channel(Channel channel) {
-    this.segments = new ArrayList<>(channel.segments);
-  }
 
   /**
    * Create a Channel from the protocol string representation of it
