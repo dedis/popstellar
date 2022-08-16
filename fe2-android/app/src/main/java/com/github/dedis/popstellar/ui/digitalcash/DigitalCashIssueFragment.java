@@ -159,7 +159,7 @@ public class DigitalCashIssueFragment extends Fragment {
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      mViewModel.openHome();
+      mViewModel.setCurrentTab(DigitalCashTab.HOME);
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),

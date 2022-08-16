@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.home;
+package com.github.dedis.popstellar.ui.digitalcash;
 
 import androidx.annotation.IdRes;
 
@@ -8,15 +8,14 @@ import com.github.dedis.popstellar.ui.navigation.Tab;
 import java.util.Arrays;
 import java.util.List;
 
-/** Enum where each element represent a tab in HomeActivity */
-public enum HomeTab implements Tab {
-  HOME(R.id.home_home_menu),
-  CONNECT(R.id.home_connect_menu),
-  LAUNCH(R.id.home_launch_menu),
-  WALLET(R.id.home_wallet_menu),
-  SOCIAL(R.id.home_social_media_menu);
+public enum DigitalCashTab implements Tab {
+  HOME(R.id.digital_cash_home_menu),
+  HISTORY(R.id.digital_cash_history_menu),
+  SEND(R.id.digital_cash_send_menu),
+  RECEIVE(R.id.digital_cash_receive_menu),
+  ISSUE(R.id.digital_cash_issue_menu);
 
-  private static final List<HomeTab> ALL = Arrays.asList(values());
+  private static final List<DigitalCashTab> ALL = Arrays.asList(values());
 
   /**
    * Find a tab based on its menu id, throws an exception when no tab match the id
@@ -24,8 +23,8 @@ public enum HomeTab implements Tab {
    * @param menuId of the menu
    * @return the tab corresponding to the given menu id
    */
-  public static HomeTab findByMenu(@IdRes int menuId) {
-    for (HomeTab tab : ALL) {
+  public static DigitalCashTab findByMenu(@IdRes int menuId) {
+    for (DigitalCashTab tab : ALL) {
       if (tab.menuId == menuId) {
         return tab;
       }
@@ -36,7 +35,7 @@ public enum HomeTab implements Tab {
 
   @IdRes private final int menuId;
 
-  HomeTab(@IdRes int menuId) {
+  DigitalCashTab(@IdRes int menuId) {
     this.menuId = menuId;
   }
 
