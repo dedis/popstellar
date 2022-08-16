@@ -56,6 +56,14 @@ public class SocialMediaActivity extends AppCompatActivity {
     subscribeToSelectedItemEvents();
   }
 
+  @Override
+  protected void onPause() {
+    // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
+    // circumstances
+    super.onPause();
+    mViewModel.savePersistentData();
+  }
+
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
   }

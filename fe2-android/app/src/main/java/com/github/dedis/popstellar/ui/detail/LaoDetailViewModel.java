@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -923,6 +924,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   public boolean addManually(String data) {
     Log.d(TAG, "Key manually submitted with value: " + data);
     return handleAttendeeAddition(data);
+  }
+
+  public void savePersistentData() {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**

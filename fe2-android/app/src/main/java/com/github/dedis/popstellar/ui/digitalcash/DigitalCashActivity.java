@@ -44,6 +44,14 @@ public class DigitalCashActivity extends AppCompatActivity {
     getIntentData();
   }
 
+  @Override
+  protected void onPause() {
+    // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
+    // circumstances
+    super.onPause();
+    mViewModel.savePersistentData();
+  }
+
   private void subscribeToSelectedItemEvents() {
     mViewModel
         .getCurrentSelectedItem()

@@ -11,12 +11,12 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -84,6 +84,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
+  private final Wallet wallet;
   private final CompositeDisposable disposables;
 
   @Inject
@@ -92,12 +93,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       LAORepository laoRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    this.wallet = wallet;
+
     disposables = new CompositeDisposable();
 
     mTransactionHistory =
@@ -410,6 +414,11 @@ public class DigitalCashViewModel extends AndroidViewModel {
     } else {
       return true;
     }
+  }
+
+  public void savePersistentData() {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   private void processNotCoinbaseTransaction(
