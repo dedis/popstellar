@@ -55,7 +55,7 @@
     "react-blockies": "^1.4.1",
     "react-datepicker": "^3.3.0",
     "react-dom": "17.0.2",
-    "react-native": "^0.65.1",
+    "react-native": "^0.69.4",
     "react-native-action-sheet": "^2.2.0",
     "react-native-elements": "^3.4.2",
     "react-native-flipper": "^0.105.0",
