@@ -39,7 +39,8 @@ public class Wallet {
   private static final String PURPOSE = "888";
   private static final String ACCOUNT = "0";
   private byte[] seed;
-  private Aead aead;
+  private String[] mnemonic;
+  private final Aead aead;
 
   /** Class constructor, initialize the wallet keyset. */
   @Inject
@@ -100,34 +101,10 @@ public class Wallet {
   }
 
   /**
-   * Method that encode the seed into a form that is easier for humans to securely back-up and
-   * retrieve.
-   *
-   * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
-   *     the key set manager is not init return a empty array.
-   * @throws GeneralSecurityException if an error occurs
+   * @return the list of mnemonic words associated with the seed
    */
-  public String[] exportSeed() throws GeneralSecurityException {
-    SecureRandom random = new SecureRandom();
-    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
-
-    List<CharSequence> words = new LinkedList<>();
-    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-    generator.createMnemonic(entropy, words::add);
-
-    String[] wordsFiltered =
-        words.stream()
-            .filter(s -> !s.equals(" ")) // Filter out spaces
-            .map(CharSequence::toString)
-            .toArray(String[]::new);
-
-    Log.d(TAG, "the array of word generated:" + Arrays.toString(wordsFiltered));
-
-    seed =
-        aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
-    Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
-
-    return wordsFiltered;
+  public String[] exportSeed() {
+    return mnemonic.clone();
   }
 
   /**
@@ -146,7 +123,7 @@ public class Wallet {
         | UnexpectedWhiteSpaceException e) {
       throw new SeedValidationException(e);
     }
-
+    mnemonic = words.split(" ");
     seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
     Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
   }
@@ -166,9 +143,24 @@ public class Wallet {
   }
 
   /** Initialized the wallet with a new random seed */
-  public void newSeed() {
+  public void newSeed() throws GeneralSecurityException {
     SecureRandom random = new SecureRandom();
-    seed = random.generateSeed(64);
+    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+
+    List<CharSequence> words = new LinkedList<>();
+    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
+    generator.createMnemonic(entropy, words::add);
+
+    mnemonic =
+        words.stream()
+            .filter(s -> !s.equals(" ")) // Filter out spaces
+            .map(CharSequence::toString)
+            .toArray(String[]::new);
+
+    Log.d(TAG, "the array of word generated:" + Arrays.toString(mnemonic));
+
+    seed =
+        aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
     Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
   }
 

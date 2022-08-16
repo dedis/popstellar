@@ -131,7 +131,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   private final Wallet wallet;
   private String currentRollCallId = ""; // used to know which roll call to close
   private Set<PublicKey> attendees = new HashSet<>();
-  private Set<PublicKey> witnesses =
+  private final Set<PublicKey> witnesses =
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
   private ScanningAction scanningAction;
 

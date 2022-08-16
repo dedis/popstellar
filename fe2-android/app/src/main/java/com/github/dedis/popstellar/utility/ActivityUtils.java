@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.io.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -96,12 +95,7 @@ public class ActivityUtils {
     }
 
     String[] seed;
-    try {
-      seed = wallet.exportSeed();
-    } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Error exporting wallet seed : " + e);
-      return false;
-    }
+    seed = wallet.exportSeed();
     if (seed == null) {
       // it returns empty array if not initialized
       throw new IllegalStateException("Seed should not be null");

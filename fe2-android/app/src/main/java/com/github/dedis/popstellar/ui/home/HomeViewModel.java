@@ -205,7 +205,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     setIsWalletSetUp(true);
   }
 
-  public void newSeed() {
+  public void newSeed() throws GeneralSecurityException {
     wallet.newSeed();
   }
 
