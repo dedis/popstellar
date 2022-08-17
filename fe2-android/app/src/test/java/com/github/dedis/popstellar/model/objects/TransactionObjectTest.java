@@ -287,7 +287,7 @@ public class TransactionObjectTest {
       outObj.add(
           new OutputObject(
               o.getValue(),
-              new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubkeyHash())));
+              new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubKeyHash())));
     }
 
     builder.setInputs(inpObj);

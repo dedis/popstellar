@@ -72,7 +72,7 @@ public class TransactionCoinHandler {
       }
       ScriptOutputObject script =
           new ScriptOutputObject(
-              current.getScript().getType(), current.getScript().getPubkeyHash());
+              current.getScript().getType(), current.getScript().getPubKeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
     builder
