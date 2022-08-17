@@ -9,7 +9,6 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -173,7 +172,7 @@ func loadConfig(c *cli.Context) (config, error) {
 
 	configPath := c.String("config")
 	if configPath != "" {
-		configBuf, err := ioutil.ReadFile(configPath)
+		configBuf, err := os.ReadFile(configPath)
 		if err != nil {
 			return config, xerrors.Errorf("failed to read config file: %v", err)
 		}

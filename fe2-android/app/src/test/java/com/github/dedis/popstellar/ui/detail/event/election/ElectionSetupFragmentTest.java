@@ -9,21 +9,23 @@ import androidx.test.filters.LargeTest;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.*;
-import org.junit.rules.*;
+import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,6 +36,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
+import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.*;
@@ -41,6 +44,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.*;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionSetupPageObject.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,6 +82,7 @@ public class ElectionSetupFragmentTest {
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
+  @BindValue @Mock LAORepository repository;
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
 
@@ -92,18 +97,21 @@ public class ElectionSetupFragmentTest {
     DATE = DATE_FORMAT.format(today.getTime());
   }
 
-  private final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
-      FragmentScenarioRule.launch(ElectionSetupFragment.class);
+  @Rule(order = 0)
+  public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
 
-  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+  @Rule(order = 1)
+  public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-  private final TestRule setupRule =
+  @Rule(order = 2)
+  public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
         protected void before() {
           // Injection with hilt
           hiltRule.inject();
 
+          when(repository.getLaoObservable(any())).thenReturn(BehaviorSubject.createDefault(LAO));
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
 
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
@@ -112,27 +120,22 @@ public class ElectionSetupFragmentTest {
         }
       };
 
-  @Rule
-  public final RuleChain chain =
-      RuleChain.outerRule(MockitoJUnit.testRule(this))
-          .around(hiltRule)
-          .around(setupRule)
-          .around(fragmentRule);
+  @Rule(order = 3)
+  public final ActivityFragmentScenarioRule<LaoDetailActivity, ElectionSetupFragment> fragmentRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoDetailActivity.class,
+          new BundleBuilder()
+              .putString(laoIdExtra(), LAO.getId())
+              .putString(fragmentToOpenExtra(), laoDetailValue())
+              .build(),
+          containerId(),
+          ElectionSetupFragment.class,
+          ElectionSetupFragment::new);
 
   private ElectionSetup getInterceptedElectionSetupMsg() {
     ArgumentCaptor<ElectionSetup> captor = ArgumentCaptor.forClass(ElectionSetup.class);
     Mockito.verify(messageSender, atLeast(1)).publish(any(), any(), captor.capture());
     return captor.getValue();
-  }
-
-  private void setupViewModel() {
-    fragmentRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setCurrentLao(LAO);
-            });
   }
 
   @Test
@@ -358,8 +361,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void multiplePluralityQuestionsTest() {
-    setupViewModel();
-
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
     pickValidDateAndTime();
 
@@ -429,8 +430,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void cannotSubmitWithoutElectionNameElectionTest() {
-    setupViewModel();
-
     pickValidDateAndTime();
 
     // Add Question 1, with 2 ballots options, no write in
@@ -447,8 +446,6 @@ public class ElectionSetupFragmentTest {
   @Test
   public void canWithoutDateAndTimeTest() {
     // Since now suggested start and end time are provided
-    setupViewModel();
-
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
     // Add Question 1, with 2 ballots options, no write in
     questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
@@ -460,8 +457,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void cannotSubmitWithoutQuestionTest() {
-    setupViewModel();
-
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
     pickValidDateAndTime();
 
@@ -477,8 +472,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void cannotSubmitWithoutAllBallotTest() {
-    setupViewModel();
-
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
     pickValidDateAndTime();
 
@@ -492,8 +485,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void cannotSubmitWithIdenticalBallotTest() {
-    setupViewModel();
-
     electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
     pickValidDateAndTime();
 
@@ -509,8 +500,6 @@ public class ElectionSetupFragmentTest {
   /** Basic test for sanity of spinner content */
   @Test
   public void canChooseVotingVersion() {
-    setupViewModel();
-
     // By default, the spinner is set to OPEN_BALLOT
     versionChoice().perform(click());
     onData(anything()).atPosition(0).perform(click());

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:id="@+id/home_coin"
+    android:id="@+id/digital_cash_home_menu"
     android:icon="@drawable/ic_digicash_home"
     android:iconTint="@color/colorPrimaryDark"
     android:title="@string/digital_cash_home" />
   <item
-    android:id="@+id/send_coin"
+    android:id="@+id/digital_cash_send_menu"
     android:icon="@drawable/ic_digicash_send"
     android:iconTint="@color/colorPrimary"
     android:title="@string/digital_cash_send" />
   <item
-    android:id="@+id/receive_coin"
+    android:id="@+id/digital_cash_receive_menu"
     android:icon="@drawable/ic_digicash_receive"
     android:iconTint="@color/colorPrimary"
     android:title="@string/digital_cash_receive" />
 
   <item
-    android:id="@+id/history_coin"
+    android:id="@+id/digital_cash_history_menu"
     android:icon="@drawable/ic_digicash_history"
     android:title="@string/digital_cash_history"
     android:iconTint="@color/colorPrimaryDark" />
 
   <item
-    android:id="@+id/issue_coin"
+    android:id="@+id/digital_cash_issue_menu"
     android:icon="@drawable/ic_digicash_issue"
     android:title="@string/digital_cash_issue"
     android:iconTint="@color/black" />

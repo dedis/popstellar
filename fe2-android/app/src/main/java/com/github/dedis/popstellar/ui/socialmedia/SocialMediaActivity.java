@@ -4,17 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,9 +24,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the social media */
 @AndroidEntryPoint
-public class SocialMediaActivity extends AppCompatActivity {
+public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
+
   private SocialMediaViewModel mViewModel;
 
+  public static final String TAG = SocialMediaActivity.class.getSimpleName();
   public static final String LAO_ID = "LAO_ID";
   public static final String LAO_NAME = "LAO_NAME";
 
@@ -35,77 +37,20 @@ public class SocialMediaActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.social_media_activity);
-    mViewModel = obtainViewModel(this);
+    navigationViewModel = mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
-    String laoId = getIntent().getExtras().getString(LAO_ID);
-    String laoName = getIntent().getExtras().getString(LAO_NAME);
+    if (getIntent().getExtras() != null) {
+      String laoId = getIntent().getExtras().getString(LAO_ID);
+      String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-    if (laoId != null) mViewModel.setLaoId(laoId);
-    if (laoName != null) mViewModel.setLaoName(laoName);
+      if (laoId != null) mViewModel.setLaoId(laoId);
+      if (laoName != null) mViewModel.setLaoName(laoName);
+    }
 
-    setupSocialMediaHomeFragment();
-    setupNavigationBar();
+    setupNavigationBar(findViewById(R.id.social_media_nav_bar));
 
-    // Subscribe to "lao name" string
-    mViewModel
-        .getLaoName()
-        .observe(
-            this,
-            newLaoName -> {
-              if (newLaoName != null) {
-                Objects.requireNonNull(getSupportActionBar())
-                    .setTitle(String.format("popstellar - %s", newLaoName));
-              }
-            });
-
-    // Subscribe to "open home" event
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaHomeFragment();
-              }
-            });
-
-    // Subscribe to "open search" event
-    mViewModel
-        .getOpenSearchEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaSearchFragment();
-              }
-            });
-
-    // Subscribe to "open following" event
-    mViewModel
-        .getOpenFollowingEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaFollowingFragment();
-              }
-            });
-
-    // Subscribe to "open profile" event
-    mViewModel
-        .getOpenProfileEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaProfileFragment();
-              }
-            });
+    subscribeToLaoName();
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
@@ -152,60 +97,88 @@ public class SocialMediaActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
-    bottomNavigationView.setOnItemSelectedListener(
-        item -> {
-          int itemId = item.getItemId();
-          if (itemId == R.id.social_media_home_menu) {
-            mViewModel.openHome();
-          } else if (itemId == R.id.social_media_search_menu) {
-            mViewModel.openSearch();
-          } else if (itemId == R.id.social_media_following_menu) {
-            mViewModel.openFollowing();
-          } else if (itemId == R.id.social_media_profile_menu) {
-            mViewModel.openProfile();
-          }
-          return true;
-        });
+  private void subscribeToLaoName() {
+    // Subscribe to "lao name" string
+    mViewModel
+        .getLaoName()
+        .observe(
+            this,
+            newLaoName -> {
+              if (newLaoName == null) {
+                return;
+              }
+              Objects.requireNonNull(getSupportActionBar())
+                  .setTitle(String.format(getString(R.string.social_media_title), newLaoName));
+            });
   }
 
-  public void setupSocialMediaHomeFragment() {
+  @Override
+  protected SocialMediaTab findTabByMenu(int menuId) {
+    return SocialMediaTab.findByMenu(menuId);
+  }
+
+  @Override
+  protected boolean openTab(SocialMediaTab tab) {
+    switch (tab) {
+      case HOME:
+        openHomeTab();
+        break;
+      case SEARCH:
+        openSearchTab();
+        break;
+      case FOLLOWING:
+        openFollowingTab();
+        break;
+      case PROFILE:
+        openProfileTab();
+        break;
+      default:
+        Log.w(TAG, "Unhandled tab type : " + tab);
+    }
+    return true;
+  }
+
+  @Override
+  protected SocialMediaTab getDefaultTab() {
+    return SocialMediaTab.HOME;
+  }
+
+  private void openHomeTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_home,
         SocialMediaHomeFragment::newInstance);
   }
 
-  public void setupSocialMediaSearchFragment() {
+  private void openSearchTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_search,
         SocialMediaSearchFragment::newInstance);
   }
 
-  public void setupSocialMediaFollowingFragment() {
+  private void openFollowingTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_following,
         SocialMediaFollowingFragment::newInstance);
   }
 
-  public void setupSocialMediaProfileFragment() {
+  private void openProfileTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_social_media_profile,
         SocialMediaProfileFragment::newInstance);
   }
 
-  public static Intent newInstance(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId, String laoName) {
     Intent intent = new Intent(ctx, SocialMediaActivity.class);
     intent.putExtra(LAO_ID, laoId);
     intent.putExtra(LAO_NAME, laoName);
     return intent;
   }
 
-  public static Intent newInstance(Context ctx) {
+  public static Intent newIntent(Context ctx) {
     return new Intent(ctx, SocialMediaActivity.class);
   }
 

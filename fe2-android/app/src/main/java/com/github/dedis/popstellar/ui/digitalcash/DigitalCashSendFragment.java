@@ -80,7 +80,10 @@ public class DigitalCashSendFragment extends Fragment {
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
                       mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
                       mViewModel.updateReceiptAmountEvent(currentAmount);
-                      mViewModel.openReceipt();
+                      DigitalCashActivity.setCurrentFragment(
+                          requireActivity().getSupportFragmentManager(),
+                          R.id.fragment_digital_cash_receipt,
+                          DigitalCashReceiptFragment::newInstance);
                     }
 
                   } catch (KeyException keyException) {
@@ -128,7 +131,7 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       myArray = mViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      mViewModel.openHome();
+      mViewModel.setCurrentTab(DigitalCashTab.HOME);
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();

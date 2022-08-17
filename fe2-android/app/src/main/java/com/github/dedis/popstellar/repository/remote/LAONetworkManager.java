@@ -185,36 +185,35 @@ public class LAONetworkManager implements MessageSender {
   }
 
   private Single<Answer> request(Query query) {
-    Single<Answer> answerSingle =
-        connection
-            .observeMessage() // Observe incoming messages
-            .filter(Answer.class::isInstance) // Filter the Answers
-            .map(Answer.class::cast)
-            // This specific request has an id, only let the related Answer pass
-            .filter(answer -> answer.getId() == query.getRequestId())
-            .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
-            // Transform from an Observable to a Single
-            // This Means that we expect a result before the source is disposed and an error will be
-            // produced if no value is received.
-            .firstOrError()
-            // If we receive an error, transform the flow to a Failure
-            .flatMap(
-                answer -> {
-                  if (answer instanceof Error) {
-                    return Single.error(new JsonRPCErrorException((Error) answer));
-                  } else {
-                    return Single.just(answer);
-                  }
-                })
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.mainThread())
-            // Add a timeout to automatically dispose of the flow and end with a failure
-            .timeout(5, TimeUnit.SECONDS)
-            .cache();
-    // Only send the message after the single is created to make sure it is already waiting
-    // before the answer is received
-    connection.sendMessage(query);
-    return answerSingle;
+    return connection
+        .observeMessage() // Observe incoming messages
+        // Send the message upon subscription the the incoming messages. That way we are
+        // certain the reply will be processed and the message is only sent when an observer
+        // subscribes to the request answer.
+        .doOnSubscribe(d -> connection.sendMessage(query))
+        .filter(Answer.class::isInstance) // Filter for Answers
+        .map(Answer.class::cast)
+        // This specific request has an id, only let the related Answer pass
+        .filter(answer -> answer.getId() == query.getRequestId())
+        .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
+        // Transform from an Observable to a Single
+        // This Means that we expect a result before the source is disposed and an error
+        // will be produced if no value is received.
+        .firstOrError()
+        // If we receive an error, transform the flow to a Failure
+        .flatMap(
+            answer -> {
+              if (answer instanceof Error) {
+                return Single.error(new JsonRPCErrorException((Error) answer));
+              } else {
+                return Single.just(answer);
+              }
+            })
+        .subscribeOn(schedulerProvider.io())
+        .observeOn(schedulerProvider.mainThread())
+        // Add a timeout to automatically dispose of the flow and end with a failure
+        .timeout(5, TimeUnit.SECONDS)
+        .cache();
   }
 
   @Override
