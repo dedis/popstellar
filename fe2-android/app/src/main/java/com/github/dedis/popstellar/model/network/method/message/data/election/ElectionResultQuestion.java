@@ -1,7 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.*;
 
+@Immutable
 public class ElectionResultQuestion {
 
   private final String id;
@@ -12,7 +15,7 @@ public class ElectionResultQuestion {
       throw new IllegalArgumentException();
     }
     this.id = id;
-    this.result = result;
+    this.result = Collections.unmodifiableList(result);
   }
 
   public String getId() {

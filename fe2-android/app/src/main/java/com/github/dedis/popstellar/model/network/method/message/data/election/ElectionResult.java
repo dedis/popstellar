@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 
 import java.util.*;
 
+@Immutable
 public class ElectionResult extends Data {
 
   private final List<ElectionResultQuestion> questions;

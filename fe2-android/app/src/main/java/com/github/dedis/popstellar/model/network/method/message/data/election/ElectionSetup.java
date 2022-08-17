@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+@Immutable
 public class ElectionSetup extends Data {
 
   private final String id;
@@ -117,7 +119,7 @@ public class ElectionSetup extends Data {
   }
 
   public List<ElectionQuestion> getQuestions() {
-    return questions;
+    return new ArrayList<>(questions);
   }
 
   public String getLao() {
