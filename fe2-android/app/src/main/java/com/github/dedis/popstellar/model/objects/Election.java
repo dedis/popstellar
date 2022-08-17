@@ -216,7 +216,11 @@ public class Election extends Event implements Copyable<Election> {
       throw new IllegalArgumentException("the list of winners should not be null");
     }
     for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      List<QuestionResult> questionResults = new ArrayList<>(resultQuestion.getResult());
+      List<QuestionResult> questionResults = new ArrayList<>();
+      if (resultQuestion.getResult() != null) {
+        questionResults.addAll(resultQuestion.getResult());
+      }
+
       String questionId = resultQuestion.getId();
       if (questionResults == null) {
         results.put(questionId, new ArrayList<>());
