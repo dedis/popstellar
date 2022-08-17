@@ -46,6 +46,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -76,10 +77,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<Election> mCurrentElection =
-      new MutableLiveData<>(); // Represents the current election being opened in a fragment
-  private final MutableLiveData<RollCall> mCurrentRollCall =
-      new MutableLiveData<>(); // Represents the current roll-call being opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -129,6 +126,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final CompositeDisposable disposables;
   private final Gson gson;
   private final Wallet wallet;
+
+  private Election currentElection = null;
+  private RollCall currentRollCall = null;
   private String currentRollCallId = ""; // used to know which roll call to close
   private Set<PublicKey> attendees = new HashSet<>();
   private Set<PublicKey> witnesses =
@@ -261,7 +261,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param votes the corresponding votes for that election
    */
   public void sendVote(List<ElectionVote> votes, FragmentManager manager) {
-    Election election = mCurrentElection.getValue();
+    Election election = currentElection;
 
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
@@ -736,11 +736,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public Election getCurrentElection() {
-    return mCurrentElection.getValue();
+    return currentElection;
   }
 
   public void setCurrentElection(Election e) {
-    mCurrentElection.setValue(e);
+    currentElection = e;
   }
 
   public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
@@ -748,11 +748,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public RollCall getCurrentRollCall() {
-    return mCurrentRollCall.getValue();
+    return currentRollCall;
   }
 
   public void setCurrentRollCall(RollCall rc) {
-    mCurrentRollCall.setValue(rc);
+    currentRollCall = rc;
   }
 
   public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
@@ -785,37 +785,30 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * Method to update the list of witnesses of a Lao by sending an updateLao msg and a stateLao msg
    * to the backend
    */
-  public void updateLaoWitnesses() {
+  public Completable updateLaoWitnesses() {
     Log.d(TAG, "Updating lao witnesses ");
 
     Lao lao = getCurrentLaoValue();
-
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
+
     Channel channel = lao.getChannel();
     KeyPair mainKey = keyManager.getMainKeyPair();
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
         new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(channel, msg)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "updated lao witnesses");
-                  dispatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
-                },
-                error ->
-                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao));
-    disposables.add(disposable);
+    return networkManager
+        .getMessageSender()
+        .publish(channel, msg)
+        .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
+        .andThen(dispatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg));
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
-  private void dispatchLaoUpdate(
+  private Completable dispatchLaoUpdate(
       String desc, UpdateLao updateLao, Lao lao, Channel channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
@@ -828,14 +821,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             updateLao.getWitnesses(),
             new ArrayList<>());
 
-    disposables.add(
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, stateLao)
-            .subscribe(
-                () -> Log.d(TAG, "updated " + desc),
-                error ->
-                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_state_lao)));
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, stateLao)
+        .doOnComplete(() -> Log.d(TAG, "updated " + desc));
   }
 
   public void subscribeToLao(String laoId) {
@@ -921,26 +910,26 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @return true if an attendee was added false otherwise
    */
   private boolean handleAttendeeAddition(String data) {
-    PublicKey attendee;
+    PublicKey publicKey;
     try {
-      attendee = new PublicKey(data);
+      publicKey = new PublicKey(data);
     } catch (IllegalArgumentException e) {
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;
     }
-    if (attendees.contains(attendee) || witnesses.contains(attendee)) {
+    if (attendees.contains(publicKey) || witnesses.contains(publicKey)) {
       mScanWarningEvent.postValue(
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
-      attendees.add(attendee);
+      attendees.add(publicKey);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
       mNbAttendees.postValue(attendees.size());
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
-      witnesses.add(attendee);
+      witnesses.add(publicKey);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
-      updateLaoWitnesses();
+      updateLaoWitnesses().subscribe(() -> Log.d(TAG, "Witness " + publicKey + " added"));
     }
     return true;
   }
