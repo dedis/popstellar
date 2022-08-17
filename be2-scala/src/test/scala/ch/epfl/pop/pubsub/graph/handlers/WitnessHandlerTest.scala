@@ -9,7 +9,9 @@ import ch.epfl.pop.model.objects.{Base64Data, DbActorNAckException, Hash, Signat
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorAddWitnessSignatureAck
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.matchers.should.Matchers
 import util.examples.data.WitnessMessages
 import util.examples.lao.CreateLaoExamples.{SENDER, createLao}
 

@@ -3,7 +3,8 @@ package ch.epfl.pop.json
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects._
 import org.scalatest.Inspectors.forEvery
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class HighLevelProtocolSuite extends FunSuite with Matchers {
 

@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.objects
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 import util.examples.LaoDataExample
 
 class AddressSuite extends FunSuite with Matchers {

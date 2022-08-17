@@ -5,7 +5,9 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
-import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
+import org.scalatest.{GivenWhenThen, Inside}
+import org.scalatest.flatspec.{AnyFlatSpec => FlatSpec}
+import org.scalatest.matchers.should.Matchers
 import util.examples.lao.CreateLaoExamples
 
 class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
