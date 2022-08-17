@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -11,6 +12,7 @@ import java.time.Instant;
 import java.util.*;
 
 /** Data sent when creating a new LAO */
+@Immutable
 public class CreateLao extends Data {
 
   private final String id;
@@ -38,7 +40,7 @@ public class CreateLao extends Data {
     this.name = name;
     this.creation = creation;
     this.organizer = organizer;
-    this.witnesses = witnesses;
+    this.witnesses = new ArrayList<>(witnesses);
   }
 
   public CreateLao(String name, PublicKey organizer) {

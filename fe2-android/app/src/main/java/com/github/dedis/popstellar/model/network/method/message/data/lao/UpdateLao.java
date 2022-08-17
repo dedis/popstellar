@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -11,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.*;
 
 /** Data sent to update the lao specifications */
+@Immutable
 public class UpdateLao extends Data {
 
   private final String id;
@@ -39,7 +41,7 @@ public class UpdateLao extends Data {
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
-    this.witnesses = witnesses;
+    this.witnesses = new HashSet<>(witnesses);
   }
 
   @Override

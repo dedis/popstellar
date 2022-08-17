@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
@@ -43,6 +44,7 @@ public class StateLao extends Data {
    * @param witnesses list of witnesses of the LAO
    * @throws IllegalArgumentException if the id is not valid
    */
+  @Immutable
   public StateLao(
       String id,
       String name,
@@ -61,8 +63,8 @@ public class StateLao extends Data {
     this.lastModified = lastModified;
     this.organizer = organizer;
     this.modificationId = modificationId;
-    this.witnesses = witnesses;
-    this.modificationSignatures = modificationSignatures;
+    this.witnesses = new HashSet<>(witnesses);
+    this.modificationSignatures = new ArrayList<>(modificationSignatures);
   }
 
   @Override
@@ -154,6 +156,6 @@ public class StateLao extends Data {
   }
 
   public List<PublicKeySignaturePair> getModificationSignatures() {
-    return modificationSignatures;
+    return new ArrayList<>(modificationSignatures);
   }
 }
