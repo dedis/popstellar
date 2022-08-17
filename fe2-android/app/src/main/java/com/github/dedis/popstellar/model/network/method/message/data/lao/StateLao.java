@@ -64,7 +64,11 @@ public class StateLao extends Data {
     this.organizer = organizer;
     this.modificationId = modificationId;
     this.witnesses = new HashSet<>(witnesses);
-    this.modificationSignatures = new ArrayList<>(modificationSignatures);
+
+    this.modificationSignatures = new ArrayList<>();
+    if (modificationSignatures != null) {
+      this.modificationSignatures.addAll(modificationSignatures);
+    }
   }
 
   @Override

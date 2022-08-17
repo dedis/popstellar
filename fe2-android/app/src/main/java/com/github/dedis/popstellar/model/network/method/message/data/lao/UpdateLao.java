@@ -41,7 +41,10 @@ public class UpdateLao extends Data {
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
-    this.witnesses = new HashSet<>(witnesses);
+    this.witnesses = new HashSet<>();
+    if (witnesses != null) {
+      this.witnesses.addAll(witnesses);
+    }
   }
 
   @Override
