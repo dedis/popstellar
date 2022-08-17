@@ -28,6 +28,7 @@ import java.util.*;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.lenient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -126,9 +127,11 @@ public class TransactionCoinHandlerTest {
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransactionHistoryByUser().size());
-    TransactionObject transaction_object =
-        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey()).get(0);
-    assertEquals(transaction_object.getChannel(), coinChannel);
+    Set<TransactionObject> transactionObjects =
+        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
+    assertTrue(
+        transactionObjects.stream()
+            .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
     assertEquals(1, lao.getPubKeyByHash().size());
   }
 }

@@ -15,6 +15,8 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyP
 import static org.junit.Assert.*;
 
 public class TransactionObjectTest {
+  KeyPair senderKey = generateKeyPair();
+  PublicKey sender = senderKey.getPublicKey();
 
   @Test
   public void getChannelTest() throws GeneralSecurityException {
@@ -30,8 +32,6 @@ public class TransactionObjectTest {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
 
     ScriptInputObject scriptTxIn;
@@ -48,8 +48,6 @@ public class TransactionObjectTest {
   @Test
   public void getOutputsTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
     String pubKeyHash = sender.computeHash();
     ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
@@ -82,9 +80,6 @@ public class TransactionObjectTest {
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
-
     String type = "P2PKH";
     String pubKey = sender.getEncoded();
     ScriptInputObject scriptTxIn;
@@ -99,8 +94,7 @@ public class TransactionObjectTest {
   @Test
   public void getReceiversHashTransactionTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
+
     String type = "P2PKH";
     String pubKeyHash = sender.computeHash();
     ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
@@ -138,8 +132,6 @@ public class TransactionObjectTest {
   @Test
   public void getReceiversTransactionTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
     String pubkeyhash = sender.computeHash();
     ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubkeyhash);
@@ -155,9 +147,7 @@ public class TransactionObjectTest {
   @Test
   public void getIsReceiverTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    // SENDER
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
+
     String type = "P2PKH";
     String pubKeyHash = sender.computeHash();
     ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
@@ -180,8 +170,6 @@ public class TransactionObjectTest {
   @Test
   public void getIsSenderTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
     String type = "P2PKH";
     ScriptInputObject scriptTxInput = new ScriptInputObject(type, sender, new Signature("qqchose"));
     InputObject input = new InputObject(Hash.hash("none"), 0, scriptTxInput);
@@ -194,8 +182,6 @@ public class TransactionObjectTest {
   @Test
   public void getMiniLaoPerReceiverTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
 
     String type = "P2PKH";
     // RECEIVER
@@ -220,9 +206,7 @@ public class TransactionObjectTest {
   // test getMiniLaoPerReceiverSetTransaction
   @Test
   public void getMiniLaoPerReceiverSetTransactionTest() throws GeneralSecurityException {
-    TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
+    TransactionObjectBuilder builder = getValidTransactionBuilder("a");
     String type = "P2PKH";
     String pubKeyHash = sender.computeHash();
     ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
@@ -235,19 +219,20 @@ public class TransactionObjectTest {
         32,
         TransactionObject.getMiniLaoPerReceiverSetTransaction(
             new HashSet<>(Collections.singletonList(transactionObject)), sender));
-    List<TransactionObject> list = new ArrayList<>();
-    list.add(transactionObject);
-    list.add(transactionObject);
-    assertEquals(
-        64, TransactionObject.getMiniLaoPerReceiverSetTransaction(new HashSet<>(list), sender));
+    Set<TransactionObject> set = new HashSet<>();
+    assertTrue(set.add(transactionObject));
+    assertFalse(set.add(transactionObject));
+
+    TransactionObjectBuilder builder2 = getValidTransactionBuilder("2");
+    TransactionObject transactionObject2 = builder2.build();
+    assertTrue(set.add(transactionObject2));
+    assertEquals(64, TransactionObject.getMiniLaoPerReceiverSetTransaction(set, sender));
   }
 
   // test int get_index_transaction(PublicKey publicKey)
   @Test
   public void getIndexTransactionTest() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
 
     String type = "P2PKH";
     // RECEIVER
@@ -299,10 +284,12 @@ public class TransactionObjectTest {
   }
 
   private TransactionObjectBuilder getValidTransactionBuilder() throws GeneralSecurityException {
-    TransactionObjectBuilder builder = new TransactionObjectBuilder();
+    return getValidTransactionBuilder("a");
+  }
 
-    KeyPair senderKey = generateKeyPair();
-    PublicKey sender = senderKey.getPublicKey();
+  private TransactionObjectBuilder getValidTransactionBuilder(String transactionId)
+      throws GeneralSecurityException {
+    TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     String type = "P2PKH";
     int txOutIndex = 0;
@@ -327,7 +314,7 @@ public class TransactionObjectTest {
 
     builder.setLockTime(0);
     builder.setVersion(0);
-    builder.setTransactionId("a");
+    builder.setTransactionId(transactionId);
     return builder;
   }
 }
