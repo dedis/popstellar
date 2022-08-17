@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 /** Data sent to create a new meeting */
+@Immutable
 public class CreateMeeting extends Data {
 
   private final String id;
