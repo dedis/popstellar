@@ -13,9 +13,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -26,6 +26,9 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.disposables.CompositeDisposable;
+
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment handling the QR code scanning */
 @AndroidEntryPoint
@@ -44,6 +47,8 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Override
   public void onAttach(@NonNull Context context) {
@@ -142,6 +147,7 @@ public final class QRCodeScanningFragment extends Fragment {
     if (mPreview != null) {
       mPreview.release();
     }
+    disposables.dispose();
   }
 
   private void startCamera() throws SecurityException {
@@ -177,8 +183,18 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setPositiveButton(
         R.string.confirm,
         (dialog, which) ->
-            ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .closeRollCall(getParentFragmentManager()));
+            disposables.add(
+                ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                    .closeRollCall()
+                    .subscribe(
+                        () ->
+                            setCurrentFragment(
+                                getParentFragmentManager(),
+                                R.id.fragment_lao_detail,
+                                LaoDetailFragment::newInstance),
+                        error ->
+                            ErrorUtils.logAndShow(
+                                requireContext(), TAG, error, R.string.error_close_rollcall))));
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     mPreview.stop();
     closeRollCallAlert = builder.create();

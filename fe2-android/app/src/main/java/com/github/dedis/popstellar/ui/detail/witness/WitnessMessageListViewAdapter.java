@@ -2,32 +2,51 @@ package com.github.dedis.popstellar.ui.detail.witness;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
+
+import io.reactivex.disposables.CompositeDisposable;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
+  private static final String TAG = WitnessMessageListViewAdapter.class.getSimpleName();
   private final LaoDetailViewModel viewModel;
 
   private List<WitnessMessage> messages;
 
-  private final LifecycleOwner lifecycleOwner;
+  private final FragmentActivity activity;
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public WitnessMessageListViewAdapter(
-      List<WitnessMessage> messages, LaoDetailViewModel viewModel, LifecycleOwner activity) {
+      List<WitnessMessage> messages, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.viewModel = viewModel;
+    this.activity = activity;
     setList(messages);
-    lifecycleOwner = activity;
+
+    activity
+        .getLifecycle()
+        .addObserver(
+            (LifecycleEventObserver)
+                (source, event) -> {
+                  if (event.getTargetState() == Lifecycle.State.DESTROYED) {
+                    disposables.dispose();
+                  }
+                });
   }
 
   public void replaceList(List<WitnessMessage> messages) {
@@ -85,7 +104,20 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                     + messages.get(position).getMessageId());
             adb.setNegativeButton("Cancel", null);
             adb.setPositiveButton(
-                "Confirm", (dialog, which) -> viewModel.signMessage(messages.get(position)));
+                "Confirm",
+                (dialog, which) ->
+                    disposables.add(
+                        viewModel
+                            .signMessage(messages.get(position))
+                            .subscribe(
+                                () ->
+                                    Log.d(
+                                        TAG,
+                                        "Verifying the signature of  message  with id: "
+                                            + messages.get(position).getMessageId()),
+                                error ->
+                                    ErrorUtils.logAndShow(
+                                        activity, TAG, error, R.string.error_sign_message))));
           } else {
             adb.setTitle("You are not a witness");
             adb.setMessage("You need to be a witness in order to sign this message");
@@ -98,7 +130,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
     binding.setMessage(messages.get(position));
     binding.setViewmodel(viewModel);
-    binding.setLifecycleOwner(lifecycleOwner);
+    binding.setLifecycleOwner(activity);
 
     binding.executePendingBindings();
 

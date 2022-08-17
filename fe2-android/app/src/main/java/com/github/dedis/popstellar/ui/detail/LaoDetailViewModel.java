@@ -36,7 +36,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
-import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,8 +44,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -578,71 +576,53 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public void closeRollCall(FragmentManager manager) {
+  public Completable closeRollCall() {
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
     long end = Instant.now().getEpochSecond();
     Channel channel = lao.getChannel();
     CloseRollCall closeRollCall =
         new CloseRollCall(lao.getId(), currentRollCallId, end, new ArrayList<>(attendees));
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "closed the roll call");
-                  currentRollCallId = "";
-                  attendees.clear();
-                  setCurrentFragment(
-                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_close_rollcall));
-    disposables.add(disposable);
+
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
+        .doOnComplete(
+            () -> {
+              Log.d(TAG, "closed the roll call");
+              currentRollCallId = "";
+              attendees.clear();
+            });
   }
 
-  public void signMessage(WitnessMessage witnessMessage) {
+  public Completable signMessage(WitnessMessage witnessMessage) {
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
     Channel channel = lao.getChannel();
+    return Single.fromCallable(() -> keyManager.getMainKeyPair())
+        .flatMapCompletable(
+            keyPair -> {
+              // Generate the signature of the message
+              Signature signature = keyPair.sign(witnessMessage.getMessageId());
 
-    try {
-      KeyPair mainKey = keyManager.getMainKeyPair();
-      // Generate the signature of the message
-      Signature signature = mainKey.sign(witnessMessage.getMessageId());
+              Log.d(TAG, PUBLISH_MESSAGE);
+              WitnessMessageSignature signatureMessage =
+                  new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
 
-      Log.d(TAG, PUBLISH_MESSAGE);
-      WitnessMessageSignature signatureMessage =
-          new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
-      disposables.add(
-          networkManager
-              .getMessageSender()
-              .publish(keyManager.getMainKeyPair(), channel, signatureMessage)
-              .subscribe(
-                  () ->
-                      Log.d(
-                          TAG,
-                          "Verifying the signature of  message  with id: "
-                              + witnessMessage.getMessageId()),
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_sign_message)));
-
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+              return networkManager
+                  .getMessageSender()
+                  .publish(keyManager.getMainKeyPair(), channel, signatureMessage);
+            });
   }
 
   /** Getters for MutableLiveData instances declared above */
@@ -800,6 +780,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     UpdateLao updateLao =
         new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
+
     return networkManager
         .getMessageSender()
         .publish(channel, msg)

@@ -16,9 +16,9 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -26,7 +26,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.disposables.CompositeDisposable;
 
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
@@ -48,6 +50,8 @@ public class RollCallFragment extends Fragment {
   private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
   private final EnumMap<EventState, Integer> managementIconMap = buildManagementIconMap();
   private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public RollCallFragment() {
     // Required empty public constructor
@@ -90,7 +94,20 @@ public class RollCallFragment extends Fragment {
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              laoDetailViewModel.closeRollCall(getParentFragmentManager());
+              disposables.add(
+                  laoDetailViewModel
+                      .closeRollCall()
+                      .subscribe(
+                          () -> {
+                            Log.d(TAG, "closed the roll call");
+                            setCurrentFragment(
+                                getParentFragmentManager(),
+                                R.id.fragment_lao_detail,
+                                LaoDetailFragment::newInstance);
+                          },
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  requireContext(), TAG, error, R.string.error_close_rollcall)));
               break;
             default:
               throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
@@ -106,6 +123,12 @@ public class RollCallFragment extends Fragment {
     retrieveAndDisplayPublicKey(view);
 
     return view;
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    disposables.dispose();
   }
 
   private void setUpStateDependantContent() {
