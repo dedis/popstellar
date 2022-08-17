@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Channel;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
  *
  * <p>Does not expect any answer
  */
+@Immutable
 public final class Broadcast extends Message {
 
   private final MessageGeneral message;
