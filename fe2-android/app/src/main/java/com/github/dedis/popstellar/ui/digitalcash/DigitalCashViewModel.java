@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -19,7 +18,6 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -33,9 +31,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
@@ -60,7 +58,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       new MutableLiveData<>();
 
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
 
   /* Is used to change the lao Coin amount on the home fragment*/
@@ -84,7 +81,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
-  private final CompositeDisposable disposables;
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
   public DigitalCashViewModel(
@@ -98,7 +95,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
-    disposables = new CompositeDisposable();
 
     mTransactionHistory =
         Transformations.map(
@@ -203,117 +199,86 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    * Post a transaction to your channel
    *
    * <p>Publish a Message General containing a PostTransaction data
+   *
+   * @return a Single emitting the sent transaction object
    */
-  public void postTransaction(
-      Map<String, String> receiverandvalue, long locktime, boolean coinBase) {
+  public Single<Transaction> postTransaction(
+      Map<String, String> receiverValues, long lockTime, boolean coinBase) {
 
     /* Check if a Lao exist */
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Single.error(new IllegalStateException("There is no lao subscription"));
     }
 
-    try {
-      PrivateKey privK;
-      PublicKey pubK;
-      PoPToken token = keyManager.getValidPoPToken(lao);
+    // Find correct keypair
+    return Single.fromCallable(
+            () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(lao))
+        .flatMap(
+            keyPair -> {
+              PostTransactionCoin postTxn =
+                  createPostTransaction(keyPair, receiverValues, lockTime, coinBase);
+              MessageGeneral msg = new MessageGeneral(keyPair, postTxn, gson);
+              Channel channel = lao.getChannel().subChannel(COIN);
+              return networkManager
+                  .getMessageSender()
+                  .publish(channel, msg)
+                  .toSingleDefault(postTxn.getTransaction());
+            });
+  }
 
-      if (coinBase) {
-        KeyPair kp = keyManager.getMainKeyPair();
-        privK = kp.getPrivateKey();
-        pubK = kp.getPublicKey();
-      } else {
-        privK = token.getPrivateKey();
-        pubK = token.getPublicKey();
-      }
-
-      // first make the output
-      List<Output> outputs = new ArrayList<>();
-      long amountFromReceiver = 0;
-      for (Map.Entry<String, String> current : receiverandvalue.entrySet()) {
-        amountFromReceiver += computeOutputs(current, outputs);
-      }
-
-      // Then make the inputs
-      // First there would be only one Input
-
-      // Case no transaction before
-      String transactionHash = TransactionObject.TX_OUT_HASH_COINBASE;
-      int index = 0;
-
-      List<Input> inputs = new ArrayList<>();
-      if (getCurrentLaoValue().getTransactionByUser().containsKey(pubK) && !coinBase) {
-        processNotCoinbaseTransaction(privK, pubK, outputs, amountFromReceiver, inputs);
-      } else {
-        inputs.add(
-            processSignInput(
-                privK,
-                pubK,
-                outputs,
-                Collections.singletonMap(transactionHash, index),
-                transactionHash));
-      }
-
-      Transaction transaction = new Transaction(VERSION, inputs, outputs, locktime);
-
-      PostTransactionCoin postTransactionCoin = new PostTransactionCoin(transaction);
-
-      Channel channel = lao.getChannel().subChannel(COIN);
-
-      Log.d(TAG, PUBLISH_MESSAGE);
-
-      MessageGeneral msg = new MessageGeneral(token, postTransactionCoin, gson);
-
-      Disposable disposable =
-          networkManager
-              .getMessageSender()
-              .publish(token, channel, postTransactionCoin)
-              .subscribe(
-                  () -> {
-                    Log.d(TAG, "Post transaction with the message id: " + msg.getMessageId());
-                    Toast.makeText(
-                            getApplication().getApplicationContext(),
-                            R.string.digital_cash_post_transaction,
-                            Toast.LENGTH_LONG)
-                        .show();
-                    Log.d(TAG, "The transaction send " + lao.getTransactionByUser().toString());
-                    Log.d(
-                        TAG,
-                        "The transaction history " + lao.getTransactionHistoryByUser().toString());
-                  },
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_post_transaction));
-
-      disposables.add(disposable);
-    } catch (KeyException | GeneralSecurityException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+  private PostTransactionCoin createPostTransaction(
+      KeyPair keyPair, Map<String, String> receiverValues, long lockTime, boolean coinBase)
+      throws GeneralSecurityException {
+    // first make the output
+    List<Output> outputs = new ArrayList<>();
+    long amountFromReceiver = 0;
+    for (Map.Entry<String, String> current : receiverValues.entrySet()) {
+      amountFromReceiver += computeOutputs(current, outputs);
     }
+
+    // Then make the inputs
+    // First there would be only one Input
+
+    // Case no transaction before
+    String transactionHash = TransactionObject.TX_OUT_HASH_COINBASE;
+    int index = 0;
+
+    List<Input> inputs = new ArrayList<>();
+    if (getCurrentLaoValue().getTransactionByUser().containsKey(keyPair.getPublicKey())
+        && !coinBase) {
+      processNotCoinbaseTransaction(keyPair, outputs, amountFromReceiver, inputs);
+    } else {
+      inputs.add(
+          processSignInput(
+              keyPair, outputs, Collections.singletonMap(transactionHash, index), transactionHash));
+    }
+
+    Transaction transaction = new Transaction(VERSION, inputs, outputs, lockTime);
+
+    return new PostTransactionCoin(transaction);
   }
 
   private Input processSignInput(
-      PrivateKey privK,
-      PublicKey pubK,
+      KeyPair keyPair,
       List<Output> outputs,
       Map<String, Integer> transactionInpMap,
       String currentHash)
       throws GeneralSecurityException {
     Signature sig =
-        privK.sign(
+        keyPair.sign(
             new Base64URLData(
                 Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, transactionInpMap)
                     .getBytes(StandardCharsets.UTF_8)));
     return new Input(
-        currentHash, transactionInpMap.get(currentHash), new ScriptInput(TYPE, pubK, sig));
+        currentHash,
+        transactionInpMap.get(currentHash),
+        new ScriptInput(TYPE, keyPair.getPublicKey(), sig));
   }
 
   public LiveData<String> getLaoId() {
     return mLaoId;
-  }
-
-  public LiveData<String> getLaoName() {
-    return mLaoName;
   }
 
   public void setLaoId(String laoId) {
@@ -322,10 +287,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public void setRollCallId(String rollCallId) {
     this.mRollCallId.setValue(rollCallId);
-  }
-
-  public void setLaoName(String laoName) {
-    mLaoName.setValue(laoName);
   }
 
   public LAORepository getLaoRepository() {
@@ -401,30 +362,28 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   }
 
   private void processNotCoinbaseTransaction(
-      PrivateKey privK,
-      PublicKey pubK,
-      List<Output> outputs,
-      long amountFromReceiver,
-      List<Input> inputs)
+      KeyPair keyPair, List<Output> outputs, long amountFromReceiver, List<Input> inputs)
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
+    List<TransactionObject> transactions =
+        getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
             - amountFromReceiver;
-    Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
+    Output outputSender =
+        new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
     outputs.add(outputSender);
     Map<String, Integer> transactionInpMap = new HashMap<>();
     for (TransactionObject transactionPrevious : transactions) {
       transactionHash = transactionPrevious.getTransactionId();
-      index = transactionPrevious.getIndexTransaction(pubK);
+      index = transactionPrevious.getIndexTransaction(keyPair.getPublicKey());
       transactionInpMap.put(transactionHash, index);
     }
 
     for (String currentHash : transactionInpMap.keySet()) {
-      inputs.add(processSignInput(privK, pubK, outputs, transactionInpMap, currentHash));
+      inputs.add(processSignInput(keyPair, outputs, transactionInpMap, currentHash));
     }
   }
 

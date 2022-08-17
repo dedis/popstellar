@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -20,8 +21,11 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
+
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
@@ -31,6 +35,8 @@ public class DigitalCashSendFragment extends Fragment {
   private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
   private DigitalCashSendFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public DigitalCashSendFragment() {
     // Required empty constructor
@@ -104,6 +110,13 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+
+    disposables.dispose();
+  }
+
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
@@ -165,7 +178,28 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false);
+      disposables.add(
+          mViewModel
+              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
+              .subscribe(
+                  txn -> {
+                    Toast.makeText(
+                            requireContext(),
+                            R.string.digital_cash_post_transaction,
+                            Toast.LENGTH_LONG)
+                        .show();
+                    Log.d(TAG, "Sent transaction : " + txn);
+                  },
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_post_transaction);
+                    }
+                  }));
       mViewModel.updateLaoCoinEvent();
     }
   }

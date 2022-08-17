@@ -14,12 +14,16 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
@@ -27,13 +31,18 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint
 public class DigitalCashIssueFragment extends Fragment {
+
+  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
-  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+
   private int selectOneMember;
   private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
   private int selectAllLaoWitnesses;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   /**
    * Use this factory method to create a new instance of this fragment using the provided
@@ -63,6 +72,13 @@ public class DigitalCashIssueFragment extends Fragment {
     setupSendCoinButton();
     setUpGetPostTransactionEvent();
     setTheAdapterRollCallAttendee();
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+
+    disposables.dispose();
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */
@@ -185,7 +201,28 @@ public class DigitalCashIssueFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true);
+      disposables.add(
+          mViewModel
+              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
+              .subscribe(
+                  txn -> {
+                    Toast.makeText(
+                            requireContext(),
+                            R.string.digital_cash_post_transaction,
+                            Toast.LENGTH_LONG)
+                        .show();
+                    Log.d(TAG, "Sent transaction : " + txn);
+                  },
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_post_transaction);
+                    }
+                  }));
       mViewModel.updateLaoCoinEvent();
     }
   }
