@@ -2,10 +2,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
+@Immutable
 public class NotifyDeleteChirp extends Data {
 
   @SerializedName("chirp_id")
