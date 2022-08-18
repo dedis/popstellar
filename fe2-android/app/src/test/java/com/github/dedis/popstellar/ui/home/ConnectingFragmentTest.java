@@ -44,7 +44,10 @@ public class ConnectingFragmentTest {
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
               ConnectingActivity.class,
-              new BundleBuilder().putString(Constants.LAO_ID_EXTRA, LAO_ID).build()));
+              new BundleBuilder()
+                  .putString(Constants.LAO_ID_EXTRA, LAO_ID)
+                  .putString(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA)
+                  .build()));
 
   @Before
   public void setup() {

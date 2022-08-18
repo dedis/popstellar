@@ -89,17 +89,15 @@ public class ActivityUtils {
   public static boolean activitySavingRoutine(
       GlobalNetworkManager networkManager, Wallet wallet, Context context) {
     String serverAddress = networkManager.getCurrentUrl();
+    if (serverAddress == null) {
+      return false;
+    }
     Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
     if (subscriptions == null) {
       subscriptions = new HashSet<>();
     }
 
-    String[] seed;
-    seed = wallet.exportSeed();
-    if (seed == null) {
-      // it returns empty array if not initialized
-      throw new IllegalStateException("Seed should not be null");
-    }
+    String[] seed = wallet.exportSeed();
     Log.d(
         TAG,
         "seed "

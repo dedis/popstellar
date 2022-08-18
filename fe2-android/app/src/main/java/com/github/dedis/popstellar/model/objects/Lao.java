@@ -211,9 +211,7 @@ public final class Lao {
 
       // Add the transaction in the history / for the sender and the receiver
       transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-      if (!transactionHistoryByUser.get(current).add(transactionObject)) {
-        throw new IllegalStateException("Problem occur by updating the transaction history");
-      }
+      transactionHistoryByUser.get(current).add(transactionObject);
     }
     Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
     Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());

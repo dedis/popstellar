@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.*;
@@ -45,6 +46,7 @@ public class LaoDetailActivityTest {
   @Inject Gson gson;
 
   @BindValue @Mock LAORepository laoRepository;
+  @BindValue @Mock Wallet wallet;
 
   // Hilt rule
   private final HiltAndroidRule hiltAndroidRule = new HiltAndroidRule(this);
@@ -57,6 +59,23 @@ public class LaoDetailActivityTest {
 
           when(laoRepository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
+
+          when(wallet.exportSeed())
+              .thenReturn(
+                  new String[] {
+                    "jar",
+                    "together",
+                    "minor",
+                    "alley",
+                    "glow",
+                    "hybrid",
+                    "village",
+                    "creek",
+                    "meadow",
+                    "atom",
+                    "travel",
+                    "bracket"
+                  });
         }
       };
   // Activity scenario rule that starts the activity.

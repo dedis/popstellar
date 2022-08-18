@@ -4,8 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.*;
@@ -38,6 +37,7 @@ public class EventListAdapterTest {
   private static final RollCall ROLL_CALL2 = new RollCall("54321");
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock Wallet wallet;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -57,6 +57,23 @@ public class EventListAdapterTest {
               .thenReturn(BehaviorSubject.createDefault(LAO));
           when(repository.getAllLaos())
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
+
+          when(wallet.exportSeed())
+              .thenReturn(
+                  new String[] {
+                    "jar",
+                    "together",
+                    "minor",
+                    "alley",
+                    "glow",
+                    "hybrid",
+                    "village",
+                    "creek",
+                    "meadow",
+                    "atom",
+                    "travel",
+                    "bracket"
+                  });
         }
       };
 

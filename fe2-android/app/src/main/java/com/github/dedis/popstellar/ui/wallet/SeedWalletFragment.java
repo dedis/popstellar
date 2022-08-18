@@ -71,6 +71,7 @@ public class SeedWalletFragment extends Fragment {
     String[] exportSeed = new String[0];
     String err = "Error import key, try again";
     try {
+      wallet.newSeed();
       exportSeed = wallet.exportSeed();
     } catch (Exception e) {
       Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();

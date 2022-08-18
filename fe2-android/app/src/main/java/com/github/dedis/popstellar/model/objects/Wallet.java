@@ -104,6 +104,9 @@ public class Wallet {
    * @return the list of mnemonic words associated with the seed
    */
   public String[] exportSeed() {
+    if (mnemonic == null) {
+      return new String[0];
+    }
     return mnemonic.clone();
   }
 
