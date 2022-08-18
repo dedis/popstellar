@@ -57,6 +57,8 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar(navbar);
     setupMenuAvailabilityListeners(navbar);
+
+    restoreStoredState();
   }
 
   @Override

@@ -172,6 +172,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   public void launchLao(Activity activity, String laoName) {
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
+    Lao lao = new Lao(createLao.getId());
 
     disposables.add(
         networkManager

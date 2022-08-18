@@ -26,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
 
-  private SocialMediaViewModel mViewModel;
+  private SocialMediaViewModel viewModel;
 
   public static final String TAG = SocialMediaActivity.class.getSimpleName();
   public static final String LAO_ID = "LAO_ID";
@@ -37,15 +37,15 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.social_media_activity);
-    navigationViewModel = mViewModel = obtainViewModel(this);
+    navigationViewModel = viewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
     if (getIntent().getExtras() != null) {
       String laoId = getIntent().getExtras().getString(LAO_ID);
       String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-      if (laoId != null) mViewModel.setLaoId(laoId);
-      if (laoName != null) mViewModel.setLaoName(laoName);
+      if (laoId != null) viewModel.setLaoId(laoId);
+      if (laoName != null) viewModel.setLaoName(laoName);
     }
 
     setupNavigationBar(findViewById(R.id.social_media_nav_bar));
@@ -58,7 +58,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
     // circumstances
     super.onPause();
-    mViewModel.savePersistentData();
+    viewModel.savePersistentData();
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
@@ -73,7 +73,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
 
     // Adding all currently opened lao name to the submenu
-    mViewModel
+    viewModel
         .getLAOs()
         .observe(
             this,
@@ -95,11 +95,11 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
     int i = item.getItemId();
-    List<Lao> laos = mViewModel.getLAOs().getValue();
+    List<Lao> laos = viewModel.getLAOs().getValue();
     if (laos != null && i >= 0 && i < laos.size()) {
       Lao lao = laos.get(i);
-      mViewModel.setLaoId(lao.getId());
-      mViewModel.setLaoName(lao.getName());
+      viewModel.setLaoId(lao.getId());
+      viewModel.setLaoName(lao.getName());
       return true;
     }
     return super.onOptionsItemSelected(item);
@@ -107,7 +107,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
 
   private void subscribeToLaoName() {
     // Subscribe to "lao name" string
-    mViewModel
+    viewModel
         .getLaoName()
         .observe(
             this,

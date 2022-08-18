@@ -33,10 +33,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
 
   private LaoDetailViewModel viewModel;
 
-  public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
-    return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
-  }
-
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -61,7 +57,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
     // circumstances
     super.onPause();
-    mViewModel.savePersistentData();
+    viewModel.savePersistentData();
   }
 
   @Override
@@ -157,6 +153,10 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupLaoWalletFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+  }
+
+  public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
   }
 
   /**

@@ -46,7 +46,7 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
     // circumstances
     super.onPause();
-    mViewModel.savePersistentData();
+    viewModel.savePersistentData();
   }
 
   public void loadIntentData() {
