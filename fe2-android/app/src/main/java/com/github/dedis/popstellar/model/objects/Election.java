@@ -222,7 +222,7 @@ public class Election extends Event implements Copyable<Election> {
       }
 
       String questionId = resultQuestion.getId();
-      if (questionResults == null) {
+      if (resultQuestion.getResult() == null) {
         results.put(questionId, new ArrayList<>());
       } else {
         questionResults.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
