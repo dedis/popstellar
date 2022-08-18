@@ -19,7 +19,13 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       }
     }
   >
-    {"name":"person","size":40,"color":"black"}
+    <blockies
+      bgColor="#ffffff"
+      scale={5}
+      seed=""
+      size={8}
+      spotColor="#008ec2"
+    />
   </View>
   <View
     style={
@@ -139,7 +145,13 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       }
     }
   >
-    {"name":"person","size":40,"color":"black"}
+    <blockies
+      bgColor="#ffffff"
+      scale={5}
+      seed=""
+      size={8}
+      spotColor="#008ec2"
+    />
   </View>
   <View
     style={
@@ -263,7 +275,13 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       }
     }
   >
-    {"name":"person","size":40,"color":"black"}
+    <blockies
+      bgColor="#ffffff"
+      scale={5}
+      seed=""
+      size={8}
+      spotColor="#008ec2"
+    />
   </View>
   <View
     style={
@@ -278,6 +296,132 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       numberOfLines={5}
       onChangeText={[Function]}
       placeholder="Placeholder"
+      selectTextOnFocus={true}
+      style={
+        Object {
+          "alignContent": "flex-end",
+          "borderColor": "gray",
+          "borderWidth": 1,
+          "fontSize": 18,
+          "padding": 10,
+          "width": 520,
+        }
+      }
+      value=""
+    />
+    <View
+      style={
+        Object {
+          "alignSelf": "flex-end",
+          "flexDirection": "row",
+          "fontSize": 18,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "black",
+            "fontSize": 25,
+            "lineHeight": 26,
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
+        }
+      >
+        300
+      </Text>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": true,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        nativeID="animatedComponent"
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
+          style={
+            Array [
+              Object {},
+              Object {},
+            ]
+          }
+        >
+          <Text
+            disabled={true}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+                Object {
+                  "color": "#cdcdcd",
+                },
+              ]
+            }
+          >
+            Publish
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`TextInputChirp renders correctly with undefined public key 1`] = `
+<View
+  style={
+    Object {
+      "borderColor": "gray",
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "width": 60,
+      }
+    }
+  >
+    {"name":"person","size":40,"color":"black"}
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
+      }
+    }
+  >
+    <TextInput
+      multiline={true}
+      numberOfLines={5}
+      onChangeText={[Function]}
+      placeholder="Your chirp"
       selectTextOnFocus={true}
       style={
         Object {
@@ -389,7 +533,13 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
       }
     }
   >
-    {"name":"person","size":40,"color":"black"}
+    <blockies
+      bgColor="#ffffff"
+      scale={5}
+      seed=""
+      size={8}
+      spotColor="#008ec2"
+    />
   </View>
   <View
     style={

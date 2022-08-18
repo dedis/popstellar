@@ -5,7 +5,7 @@ import { RollCall, RollCallState } from '../../objects';
 import {
   addRollCall,
   getRollCallById,
-  makeRollCallAttendeesSelector,
+  makeRollCallAttendeesListSelector,
   makeRollCallByIdSelector,
   makeRollCallSelector,
   removeRollCall,
@@ -260,7 +260,7 @@ describe('RollCallReducer', () => {
   describe('makeRollCallAttendeesList', () => {
     it('should return the attendee list', () => {
       expect(
-        makeRollCallAttendeesSelector(mockRollCallState.id)({
+        makeRollCallAttendeesListSelector(mockRollCallState.id)({
           [ROLLCALL_REDUCER_PATH]: {
             byId: { [mockRollCallState.id]: mockRollCallState },
             allIds: [mockRollCallState.id],
@@ -272,7 +272,7 @@ describe('RollCallReducer', () => {
 
     it('should return an empty list if the attendee list is undefined', () => {
       expect(
-        makeRollCallAttendeesSelector(mockRollCallState.id)({
+        makeRollCallAttendeesListSelector(mockRollCallState.id)({
           [ROLLCALL_REDUCER_PATH]: {
             byId: {
               [mockRollCallState.id]: {
@@ -289,7 +289,7 @@ describe('RollCallReducer', () => {
 
     it('should return an empty list, given undefined', () => {
       expect(
-        makeRollCallAttendeesSelector(undefined)({
+        makeRollCallAttendeesListSelector(undefined)({
           [ROLLCALL_REDUCER_PATH]: {
             byId: { [mockRollCallState.id]: mockRollCallState },
             allIds: [mockRollCallState.id],
@@ -301,7 +301,7 @@ describe('RollCallReducer', () => {
 
     it('should return an empty list, given an invalid id', () => {
       expect(
-        makeRollCallAttendeesSelector('someId')({
+        makeRollCallAttendeesListSelector('someId')({
           [ROLLCALL_REDUCER_PATH]: {
             byId: { [mockRollCallState.id]: mockRollCallState },
             allIds: [mockRollCallState.id],

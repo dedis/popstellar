@@ -9,7 +9,7 @@ import { isDefined } from 'core/types';
 import { ROLLCALL_FEATURE_IDENTIFIER, RollCallFeature, RollCallReactContext } from '../interface';
 import { RollCall } from '../objects';
 import {
-  makeRollCallAttendeesSelector,
+  makeRollCallAttendeesListSelector,
   makeRollCallByIdSelector,
   makeRollCallSelector,
 } from '../reducer';
@@ -29,9 +29,9 @@ export namespace RollCallHooks {
    */
   export const useAssertCurrentLaoId = () => useRollCallContext().useAssertCurrentLaoId();
 
-  export const useRollCallById = (rollCallId: Hash | string) => {
+  export const useRollCallById = (rollCallId: Hash | string | undefined) => {
     const rollCallSelector = useMemo(
-      () => makeRollCallSelector(rollCallId.valueOf()),
+      () => makeRollCallSelector(rollCallId?.valueOf()),
       [rollCallId],
     );
     return useSelector(rollCallSelector);
@@ -41,9 +41,9 @@ export namespace RollCallHooks {
    * Gets the list of attendees for a roll call.
    * @param rollCallId - The id of the roll call
    */
-  export const useRollCallAttendeesById = (rollCallId: Hash | string) => {
+  export const useAttendeesByRollCallId = (rollCallId: Hash | string | undefined) => {
     const rollCallAttendeesSelector = useMemo(
-      () => makeRollCallAttendeesSelector(rollCallId.valueOf()),
+      () => makeRollCallAttendeesListSelector(rollCallId?.valueOf()),
       [rollCallId],
     );
     return useSelector(rollCallAttendeesSelector);

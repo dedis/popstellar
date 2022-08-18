@@ -45,13 +45,7 @@ const SocialSearch = () => {
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
-  if (!rollCallId) {
-    throw new Error(
-      'Impossible to open social media search: last tokenized roll call id is undefined',
-    );
-  }
   const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
-  console.log(attendees);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile

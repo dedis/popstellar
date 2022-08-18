@@ -111,7 +111,7 @@ export interface RollCallInterface extends FeatureInterface {
   };
 
   hooks: {
-    useRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+    useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
     useRollCallsByLaoId: (laoId: string) => {
       [rollCallId: string]: RollCall;
     };
@@ -119,7 +119,7 @@ export interface RollCallInterface extends FeatureInterface {
     useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
     useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
 
-    useRollCallAttendeesById: (rollCallId: Hash | string) => PublicKey[];
+    useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
   };
 
   context: RollCallReactContext;

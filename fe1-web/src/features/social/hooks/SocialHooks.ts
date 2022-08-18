@@ -31,7 +31,7 @@ export namespace SocialHooks {
   /**
    * Gets the roll call for a given id
    */
-  export const useRollCallById = (rollCallId: Hash | string) =>
+  export const useRollCallById = (rollCallId: Hash | string | undefined) =>
     useSocialContext().useRollCallById(rollCallId);
 
   /**
@@ -43,6 +43,6 @@ export namespace SocialHooks {
    * Gets the attendees list for a roll call given its id.
    * @param rollCallId
    */
-  export const useRollCallAttendeesById = (rollCallId: Hash | string) =>
+  export const useRollCallAttendeesById = (rollCallId: Hash | string | undefined) =>
     useSocialContext().useRollCallAttendeesById(rollCallId);
 }

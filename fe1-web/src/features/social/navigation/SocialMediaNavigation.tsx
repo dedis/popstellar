@@ -46,7 +46,9 @@ const iconSelector =
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
-  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
+  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(
+    undefined as unknown as PublicKey,
+  );
 
   const lao = SocialHooks.useCurrentLao();
 
@@ -56,11 +58,6 @@ const SocialMediaNavigation = () => {
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  if (rollCallId === undefined) {
-    throw new Error(
-      'Last tokenized roll call id is undefined, impossible to access to Social Media',
-    );
-  }
   const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
   SocialHooks.useSocialContext()

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -60,7 +60,8 @@ const SocialHome = () => {
       });
   };
 
-  const chirpList = useSelector(makeChirpsList(laoId.valueOf()));
+  const chirps = useMemo(() => makeChirpsList(laoId.valueOf()), [laoId]);
+  const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
@@ -79,7 +80,7 @@ const SocialHome = () => {
             onChangeText={setInputChirp}
             onPress={publishChirp}
             // The publish button is disabled when the user public key is not defined
-            publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
+            publishIsDisabledCond={!currentUserPublicKey}
             currentUserPublicKey={currentUserPublicKey}
           />
           <FlatList

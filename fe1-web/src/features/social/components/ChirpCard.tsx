@@ -85,8 +85,7 @@ const styles = StyleSheet.create({
 const FOUR_SECONDS = 4000;
 
 const ChirpCard = (props: IPropTypes) => {
-  const { chirp } = props;
-  const { currentUserPublicKey } = props;
+  const { chirp, currentUserPublicKey } = props;
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
   if (laoId === undefined) {

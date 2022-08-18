@@ -199,7 +199,7 @@ export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
  *
  * @param rollCallId - The id of the roll call
  */
-export const makeRollCallAttendeesSelector = (rollCallId: Hash | string | undefined) => {
+export const makeRollCallAttendeesListSelector = (rollCallId: Hash | string | undefined) => {
   const rollCallIdString = rollCallId?.valueOf();
 
   return createSelector(

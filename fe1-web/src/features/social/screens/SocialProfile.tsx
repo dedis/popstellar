@@ -34,7 +34,7 @@ const SocialProfile = () => {
   );
   const userChirpList = useSelector(userChirps);
 
-  if (!currentUserPublicKey || currentUserPublicKey.valueOf() === '') {
+  if (!currentUserPublicKey) {
     return (
       <View style={styles.textUnavailableView}>
         <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
