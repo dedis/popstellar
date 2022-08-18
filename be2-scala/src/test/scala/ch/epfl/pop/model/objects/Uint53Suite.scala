@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.objects
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class Uint53Suite extends FunSuite with Matchers {
   import Uint53._

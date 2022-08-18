@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -36,7 +37,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
-public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
+public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -176,24 +177,14 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
         networkManager
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
+            .doOnComplete(
+                () -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
+            .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
             .subscribe(
                 () -> {
-                  Log.d(TAG, "got success result for create lao");
-                  Lao lao = new Lao(createLao.getId());
-
-                  // Send subscribe and catchup
-                  networkManager
-                      .getMessageSender()
-                      .subscribe(lao.getChannel())
-                      .subscribe(
-                          () -> {
-                            Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                            activity.startActivity(
-                                LaoDetailActivity.newIntentForLao(activity, lao.getId()));
-                          },
-                          error ->
-                              ErrorUtils.logAndShow(
-                                  getApplication(), TAG, error, R.string.error_create_lao));
+                  String laoId = lao.getId();
+                  Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+                  activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -210,10 +201,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   /** Getters for LiveData instances declared above */
-  public LiveData<HomeTab> getCurrentTab() {
-    return currentTab;
-  }
-
   public LiveData<List<Lao>> getLAOs() {
     return laos;
   }
@@ -224,10 +211,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return isWalletSetup;
-  }
-
-  public void setCurrentTab(HomeTab tab) {
-    this.currentTab.postValue(tab);
   }
 
   public void setIsWalletSetUp(boolean isSetUp) {

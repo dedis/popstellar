@@ -10,7 +10,9 @@ import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.validators.SchemaVerifierSuite._
 import ch.epfl.pop.storage.DbActor
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 
 import scala.concurrent.duration.FiniteDuration

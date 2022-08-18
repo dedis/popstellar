@@ -4,7 +4,8 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -16,7 +17,7 @@ import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -37,7 +38,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class DigitalCashViewModel extends AndroidViewModel {
+public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
@@ -60,13 +61,11 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-  private final MutableLiveData<Integer> currentSelectedItem =
-      new MutableLiveData<>(R.id.digital_cash_home_menu);
 
   /* Is used to change the lao Coin amount on the home fragment*/
   private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
 
-  /* Update the receipt after sending a transactionn*/
+  /* Update the receipt after sending a transaction */
   private final MutableLiveData<SingleEvent<String>> updateReceiptAddressEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
@@ -130,10 +129,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
-  public MutableLiveData<Integer> getCurrentSelectedItem() {
-    return currentSelectedItem;
-  }
-
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
     return postTransactionEvent;
   }
@@ -185,14 +180,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void setCurrentSelectedItem(@IdRes int item) {
-    currentSelectedItem.postValue(item);
-  }
-
-  public void openHome() {
-    setCurrentSelectedItem(R.id.digital_cash_home_menu);
-  }
-
   public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
     for (PublicKey current : getAttendeesFromTheRollCall()) {
       if (current.getEncoded().equals(encodedPub)) {
@@ -433,7 +420,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     Set<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(new HashSet<>(transactions), pubK)
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, pubK)
             - amountFromReceiver;
     Output outputSender = new Output(amountSender, new ScriptOutput(TYPE, pubK.computeHash()));
     outputs.add(outputSender);

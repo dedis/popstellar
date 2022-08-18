@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.network
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class JsonRpcResponseSuite extends FunSuite with Matchers {
   test("Constructor/apply works as intended") {

@@ -12,13 +12,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -33,20 +33,18 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends NavigationActivity<HomeTab> {
 
   private final String TAG = HomeActivity.class.getSimpleName();
 
   private HomeViewModel viewModel;
-  private BottomNavigationView navbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    viewModel = obtainViewModel(this);
-    openHomeTab();
+    navigationViewModel = viewModel = obtainViewModel(this);
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -56,12 +54,9 @@ public class HomeActivity extends AppCompatActivity {
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
 
-    navbar = findViewById(R.id.home_nav_bar);
-
-    setupNavigationBar();
-    setupMenuAvailabilityListeners();
-
-    restoreStoredState();
+    BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
+    setupNavigationBar(navbar);
+    setupMenuAvailabilityListeners(navbar);
   }
 
   @Override
@@ -72,21 +67,8 @@ public class HomeActivity extends AppCompatActivity {
     viewModel.savePersistentData();
   }
 
-  public void setupNavigationBar() {
-    viewModel.getCurrentTab().observe(this, tab -> navbar.setSelectedItemId(tab.getMenuId()));
-    navbar.setOnItemSelectedListener(
-        item -> {
-          HomeTab tab = HomeTab.findByMenu(item.getItemId());
-          boolean selected = openTab(tab);
-          if (selected) viewModel.setCurrentTab(tab);
-          return selected;
-        });
-    // Set an empty reselect listener to disable the onSelectListener when pressing multiple times
-    navbar.setOnItemReselectedListener(item -> {});
-  }
-
   /** Setup the listeners that changes the navigation bar menus */
-  private void setupMenuAvailabilityListeners() {
+  private void setupMenuAvailabilityListeners(BottomNavigationView navbar) {
     MenuItem connectItem = navbar.getMenu().getItem(HomeTab.CONNECT.ordinal());
     MenuItem launchItem = navbar.getMenu().getItem(HomeTab.LAUNCH.ordinal());
     MenuItem socialMediaItem = navbar.getMenu().getItem(HomeTab.SOCIAL.ordinal());
@@ -136,13 +118,19 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  protected HomeTab findTabByMenu(int menuId) {
+    return HomeTab.findByMenu(menuId);
+  }
+
   /**
    * Open the fragment based on the given tab and the application state
    *
    * @param tab to open
    * @return true if the tab was opened and the menu should be selected on the navigation bar
    */
-  private boolean openTab(HomeTab tab) {
+  @Override
+  protected boolean openTab(HomeTab tab) {
     switch (tab) {
       case HOME:
         openHomeTab();
@@ -161,6 +149,11 @@ public class HomeActivity extends AppCompatActivity {
         Log.w(TAG, "Unhandled tab type : " + tab);
         return false;
     }
+  }
+
+  @Override
+  protected HomeTab getDefaultTab() {
+    return HomeTab.HOME;
   }
 
   private void openHomeTab() {

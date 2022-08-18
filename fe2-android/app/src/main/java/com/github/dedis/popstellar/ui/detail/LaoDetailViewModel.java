@@ -28,6 +28,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -55,7 +56,8 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @HiltViewModel
-public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
+public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
+    implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
@@ -70,8 +72,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<LaoTab> currentTab = new MutableLiveData<>(LaoTab.EVENTS);
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -646,18 +646,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements QRCodeScanni
     }
   }
 
-  /*
-   * Getters for MutableLiveData instances declared above
-   */
-
-  public LiveData<LaoTab> getCurrentTab() {
-    return currentTab;
-  }
-
-  public void setCurrentTab(LaoTab tab) {
-    currentTab.postValue(tab);
-  }
-
+  /** Getters for MutableLiveData instances declared above */
   public ScanningAction getScanningAction() {
     return scanningAction;
   }

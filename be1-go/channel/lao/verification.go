@@ -191,7 +191,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	return nil
 }
 
-//TODO modif Noemien ??
+// TODO modif Noemien ??
 // verifyMessageRollCallClose checks the roll_call#close message data is valid.
 func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCallClose) error {
 	c.log.Info().Msgf("verifying roll_call#close message of roll call with update id %s",

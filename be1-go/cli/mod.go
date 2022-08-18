@@ -5,10 +5,8 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/rs/zerolog/log"
-	"go.dedis.ch/kyber/v3"
 	"net/url"
-	be1_go "popstellar"
+	popstellar "popstellar"
 	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
@@ -17,6 +15,9 @@ import (
 	"popstellar/network/socket"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog/log"
+	"go.dedis.ch/kyber/v3"
 
 	"github.com/gorilla/websocket"
 
@@ -30,7 +31,7 @@ const organizer string = "organizer"
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the organizer or the witness
 func Serve(cliCtx *cli.Context, user string) error {
-	log := be1_go.Logger
+	log := popstellar.Logger
 
 	if user != organizer && user != witness {
 		return xerrors.Errorf("unrecognized user, should be \"organizer\" or \"witness\"")
@@ -135,7 +136,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	log := be1_go.Logger
+	log := popstellar.Logger
 
 	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
 	u, err := url.Parse(urlString)

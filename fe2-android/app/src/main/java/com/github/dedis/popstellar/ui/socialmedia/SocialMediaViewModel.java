@@ -4,7 +4,8 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -18,6 +19,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -34,7 +36,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
-public class SocialMediaViewModel extends AndroidViewModel {
+public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
@@ -44,8 +46,6 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * LiveData objects for capturing events
    */
-  private final MutableLiveData<Integer> mCurrentSelectedItem =
-      new MutableLiveData<>(R.id.social_media_home_menu);
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
@@ -108,20 +108,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mLaoName;
   }
 
-  public LiveData<Integer> getCurrentSelectedItem() {
-    return mCurrentSelectedItem;
-  }
-
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void setCurrentSelectedItem(@IdRes int item) {
-    mCurrentSelectedItem.postValue(item);
-  }
-
-  public void openHome() {
-    setCurrentSelectedItem(R.id.social_media_home_menu);
-  }
 
   public void setNumberCharsLeft(Integer numberChars) {
     mNumberCharsLeft.setValue(numberChars);
