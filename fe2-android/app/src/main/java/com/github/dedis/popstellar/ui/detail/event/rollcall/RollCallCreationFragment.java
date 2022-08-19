@@ -10,11 +10,15 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 @AndroidEntryPoint
@@ -49,6 +53,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
           // Nothing needed here
         }
       };
+
+  public static final CompositeDisposable disposables = new CompositeDisposable();
 
   public static RollCallCreationFragment newInstance() {
     return new RollCallCreationFragment();
@@ -109,13 +115,27 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
-    mLaoDetailViewModel.createNewRollCall(
-        requireActivity(),
-        title,
-        description,
-        creationTimeInSeconds,
-        startTimeInSeconds,
-        endTimeInSeconds,
-        open);
+    Single<String> createRollCall =
+        mLaoDetailViewModel.createNewRollCall(
+            title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
+
+    if (open) {
+      disposables.add(
+          createRollCall
+              .flatMapCompletable(mLaoDetailViewModel::openRollCall)
+              .subscribe(
+                  // Open the scanning fragment when everything is done
+                  () -> mLaoDetailViewModel.openRollCallScanning(requireActivity()),
+                  error ->
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_create_rollcall)));
+    } else {
+      disposables.add(
+          createRollCall.subscribe(
+              id -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS),
+              error ->
+                  ErrorUtils.logAndShow(
+                      requireContext(), TAG, error, R.string.error_create_rollcall)));
+    }
   }
 }

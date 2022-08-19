@@ -393,49 +393,27 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param creation the creation time of the roll call
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
-   * @param open true if we want to directly open the roll call
+   * @return A Single emitting the id of the created rollcall
    */
-  public void createNewRollCall(
-      FragmentActivity activity,
-      String title,
-      String description,
-      long creation,
-      long proposedStart,
-      long proposedEnd,
-      boolean open) {
+  public Single<String> createNewRollCall(
+      String title, String description, long creation, long proposedStart, long proposedEnd) {
     Log.d(TAG, "creating a new roll call with title " + title);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Single.error(new IllegalStateException("There is no lao subscription"));
     }
-    Channel channel = lao.getChannel();
+
     // FIXME Location : Lausanne ?
     CreateRollCall createRollCall =
         new CreateRollCall(
             title, creation, proposedStart, proposedEnd, "Lausanne", description, lao.getId());
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, createRollCall)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
-                  if (open) {
-                    openRollCall(activity, createRollCall.getId());
-                  } else {
-                    setCurrentFragment(
-                        activity.getSupportFragmentManager(),
-                        R.id.fragment_lao_detail,
-                        LaoDetailFragment::newInstance);
-                  }
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_create_rollcall));
-    disposables.add(disposable);
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), lao.getChannel(), createRollCall)
+        .toSingleDefault(createRollCall.getId());
   }
 
   /**
@@ -527,24 +505,37 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param id the roll call id to open
    */
-  public void openRollCall(FragmentActivity activity, String id) {
+  public Completable openRollCall(String id) {
     Log.d(TAG, "call openRollCall with id" + id);
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
+
     long openedAt = Instant.now().getEpochSecond();
-    Channel channel = lao.getChannel();
-    String laoId = lao.getId();
     Optional<RollCall> optRollCall = lao.getRollCall(id);
     if (!optRollCall.isPresent()) {
-      Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoId);
-      return;
+      Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + lao.getId());
+      return Completable.error(new NoRollCallException(lao));
     }
+
     RollCall rollCall = optRollCall.get();
     OpenRollCall openRollCall =
-        new OpenRollCall(laoId, id, openedAt, rollCall.getState().getValue());
+        new OpenRollCall(lao.getId(), id, openedAt, rollCall.getState().getValue());
+
+    Channel channel = lao.getChannel();
+
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, openRollCall)
+        .doOnComplete(() -> openRollCall(openRollCall.getUpdateId(), lao, rollCall));
+  }
+
+  private void openRollCall(String currentId, Lao lao, RollCall rollCall) {
+    currentRollCallId = currentId;
+    Log.d(TAG, "opening rollcall with current id = " + currentRollCallId);
+    scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
@@ -553,22 +544,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
 
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, openRollCall)
-            .subscribe(
-                () -> {
-                  currentRollCallId = openRollCall.getUpdateId();
-                  Log.d(TAG, "opening rc with current id = " + currentRollCallId);
-                  scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-                  openRollCallScanning(activity);
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_open_rollcall));
-
-    disposables.add(disposable);
+    // this to display the initial number of attendees
+    mNbAttendees.postValue(attendees.size());
   }
 
   /**
@@ -608,7 +585,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
-    Channel channel = lao.getChannel();
     return Single.fromCallable(() -> keyManager.getMainKeyPair())
         .flatMapCompletable(
             keyPair -> {
@@ -621,7 +597,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
               return networkManager
                   .getMessageSender()
-                  .publish(keyManager.getMainKeyPair(), channel, signatureMessage);
+                  .publish(keyManager.getMainKeyPair(), lao.getChannel(), signatureMessage);
             });
   }
 
@@ -849,8 +825,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         == PackageManager.PERMISSION_GRANTED) {
 
       setCurrentFragment(manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
-      // this to display the initial number of attendees
-      mNbAttendees.postValue(attendees.size());
     } else {
       // Setup result listener to open the scanning tab once the permission is granted
       manager.setFragmentResultListener(

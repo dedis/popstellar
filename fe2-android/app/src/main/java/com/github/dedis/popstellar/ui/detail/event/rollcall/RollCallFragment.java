@@ -90,7 +90,14 @@ public class RollCallFragment extends Fragment {
           switch (state) {
             case CLOSED:
             case CREATED:
-              laoDetailViewModel.openRollCall(requireActivity(), rollCall.getId());
+              disposables.add(
+                  laoDetailViewModel
+                      .openRollCall(rollCall.getId())
+                      .subscribe(
+                          () -> laoDetailViewModel.openRollCallScanning(requireActivity()),
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  requireContext(), TAG, error, R.string.error_open_rollcall)));
               break;
             case OPENED:
               // will add the scan to this fragment in the future
