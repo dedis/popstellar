@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -182,14 +181,12 @@ public class DigitalCashSendFragment extends Fragment {
           mViewModel
               .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
               .subscribe(
-                  txn -> {
-                    Toast.makeText(
-                            requireContext(),
-                            R.string.digital_cash_post_transaction,
-                            Toast.LENGTH_LONG)
-                        .show();
-                    Log.d(TAG, "Sent transaction : " + txn);
-                  },
+                  () ->
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_post_transaction,
+                              Toast.LENGTH_LONG)
+                          .show(),
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {

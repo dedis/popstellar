@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -202,20 +203,20 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    *
    * @return a Single emitting the sent transaction object
    */
-  public Single<Transaction> postTransaction(
+  public Completable postTransaction(
       Map<String, String> receiverValues, long lockTime, boolean coinBase) {
 
     /* Check if a Lao exist */
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return Single.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
     // Find correct keypair
     return Single.fromCallable(
             () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(lao))
-        .flatMap(
+        .flatMapCompletable(
             keyPair -> {
               PostTransactionCoin postTxn =
                   createPostTransaction(keyPair, receiverValues, lockTime, coinBase);
@@ -224,7 +225,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
               return networkManager
                   .getMessageSender()
                   .publish(channel, msg)
-                  .toSingleDefault(postTxn.getTransaction());
+                  .doOnComplete(
+                      () -> Log.d(TAG, "Successfully sent post transaction message : " + postTxn));
             });
   }
 

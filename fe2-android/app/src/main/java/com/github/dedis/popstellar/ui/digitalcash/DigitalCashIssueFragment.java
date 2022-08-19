@@ -205,14 +205,12 @@ public class DigitalCashIssueFragment extends Fragment {
           mViewModel
               .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
               .subscribe(
-                  txn -> {
-                    Toast.makeText(
-                            requireContext(),
-                            R.string.digital_cash_post_transaction,
-                            Toast.LENGTH_LONG)
-                        .show();
-                    Log.d(TAG, "Sent transaction : " + txn);
-                  },
+                  () ->
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_post_transaction,
+                              Toast.LENGTH_LONG)
+                          .show(),
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
