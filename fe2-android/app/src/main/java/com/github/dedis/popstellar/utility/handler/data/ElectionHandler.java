@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
 import java.time.Instant;
@@ -34,6 +35,7 @@ public final class ElectionHandler {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
+    MessageSender messageSender = context.getMessageSender();
 
     if (channel.isLaoChannel()) {
       Lao lao = laoRepository.getLaoByChannel(channel);
@@ -53,7 +55,12 @@ public final class ElectionHandler {
       election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
-      context.getMessageSender().subscribe(election.getChannel()).subscribe();
+      messageSender.addToDisposableContainer(
+          messageSender
+              .subscribe(election.getChannel())
+              .subscribe(
+                  () -> Log.d(TAG, "subscription to " + election.getChannel() + " was a success"),
+                  error -> Log.d(TAG, "error subscribing to " + election.getChannel())));
       Log.d(TAG, "election id " + election.getId());
       lao.updateElection(election.getId(), election);
 

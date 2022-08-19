@@ -67,4 +67,11 @@ public interface MessageSender extends Disposable {
    * @return an Observable of WebSocket events of the underlying connection
    */
   Observable<WebSocket.Event> getConnectEvents();
+
+  /**
+   * Adds the disposable to the container of disposables of the message sender
+   *
+   * @param disposable the disposable to add
+   */
+  void addToDisposableContainer(Disposable disposable);
 }

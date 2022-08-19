@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
@@ -9,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidDataException;
 import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
@@ -99,12 +99,12 @@ public final class RollCallHandler {
    * @param context the HandlerContext of the message
    * @param closeRollCall the message that was received
    */
-  @SuppressLint("CheckResult")
   public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
+    MessageSender messageSender = context.getMessageSender();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
@@ -129,15 +129,14 @@ public final class RollCallHandler {
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
-    // Subscribe to the digital cash channels
     try {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
-      context
-          .getMessageSender()
-          .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
-          .subscribe(
-              () -> Log.d(TAG, "subscription a success"),
-              error -> Log.d(TAG, "subscription error"));
+      messageSender.addToDisposableContainer(
+          messageSender
+              .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
+              .subscribe(
+                  () -> Log.d(TAG, "subscription a success"),
+                  error -> Log.d(TAG, "subscription error")));
 
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");

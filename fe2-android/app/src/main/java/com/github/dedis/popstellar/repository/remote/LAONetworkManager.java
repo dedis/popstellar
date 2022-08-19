@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
@@ -158,6 +159,11 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public Observable<WebSocket.Event> getConnectEvents() {
     return connection.observeConnectionEvents();
+  }
+
+  @Override
+  public void addToDisposableContainer(Disposable disposable) {
+    disposables.add(disposable);
   }
 
   private void handleBroadcast(Broadcast broadcast) {
