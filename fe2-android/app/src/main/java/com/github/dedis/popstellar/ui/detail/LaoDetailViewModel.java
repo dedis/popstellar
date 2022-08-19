@@ -326,9 +326,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param votingMethod the type of voting method (e.g Plurality)
    * @param ballotOptions the list of ballot options
    * @param question the question associated to the election
-   * @return the id of the newly created election event, null if fails to create the event
    */
-  public String createNewElection(
+  public Completable createNewElection(
       FragmentManager manager,
       ElectionVersion electionVersion,
       String name,
@@ -344,7 +343,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return null;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
     Channel channel = lao.getChannel();
@@ -362,23 +361,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             electionVersion);
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, electionSetup)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "setup an election");
-                  setCurrentFragment(
-                      manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_create_election));
-
-    disposables.add(disposable);
-
-    return electionSetup.getId();
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, electionSetup);
   }
 
   /**
@@ -424,8 +409,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param type the type of object the consensus refers to (e.g. election)
    * @param property the property the value refers to (e.g. "state")
    * @param value the proposed new value for the property (e.g. "started")
+   * @return A single emitting the published message
    */
-  public void sendConsensusElect(
+  public Single<MessageGeneral> sendConsensusElect(
       long creation, String objId, String type, String property, Object value) {
     Log.d(
         TAG,
@@ -435,25 +421,15 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Single.error(new IllegalStateException("There is no lao subscription"));
     }
     Channel channel = lao.getChannel().subChannel("consensus");
-
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), consensusElect, gson);
 
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(channel, msg)
-            .subscribe(
-                () -> Log.d(TAG, "created a consensus with message id : " + msg.getMessageId()),
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_start_election));
-    disposables.add(disposable);
+    return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
   }
 
   /**
@@ -464,7 +440,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param electInstance the corresponding ElectInstance
    * @param accept true if accepted, false if rejected
    */
-  public void sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
+  public Completable sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
     MessageID messageId = electInstance.getMessageId();
     Log.d(
         TAG,
@@ -476,24 +452,16 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept)
-            .subscribe(
-                () -> Log.d(TAG, "sent an elect_accept successfully"),
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_consensus_accept));
-
-    disposables.add(disposable);
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept);
   }
 
   /**

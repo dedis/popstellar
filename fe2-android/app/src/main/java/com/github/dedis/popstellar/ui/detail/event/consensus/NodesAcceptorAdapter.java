@@ -1,27 +1,35 @@
 package com.github.dedis.popstellar.ui.detail.event.consensus;
 
+import android.util.Log;
 import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.*;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
 import java.util.Optional;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 public class NodesAcceptorAdapter extends BaseAdapter {
 
+  private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
   private List<ConsensusNode> nodes;
   private final ConsensusNode ownNode;
   private final String instanceId;
   private final LaoDetailViewModel laoDetailViewModel;
   private final LifecycleOwner lifecycleOwner;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public NodesAcceptorAdapter(
       List<ConsensusNode> nodes,
@@ -34,6 +42,15 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     this.instanceId = instanceId;
     this.laoDetailViewModel = laoDetailViewModel;
     this.lifecycleOwner = lifecycleOwner;
+    lifecycleOwner
+        .getLifecycle()
+        .addObserver(
+            (LifecycleEventObserver)
+                (owner, event) -> {
+                  if (event.getTargetState() == Lifecycle.State.DESTROYED) {
+                    disposables.dispose();
+                  }
+                });
   }
 
   public void setList(List<ConsensusNode> nodes) {
@@ -100,8 +117,18 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     lastElectInstance.ifPresent(
         electInstance ->
             binding.nodeButton.setOnClickListener(
-                clicked -> laoDetailViewModel.sendConsensusElectAccept(electInstance, true)));
-
+                clicked ->
+                    disposables.add(
+                        laoDetailViewModel
+                            .sendConsensusElectAccept(electInstance, true)
+                            .subscribe(
+                                () -> Log.d(TAG, "sent an elect_accept successfully"),
+                                error ->
+                                    ErrorUtils.logAndShow(
+                                        parent.getContext(),
+                                        TAG,
+                                        error,
+                                        R.string.error_consensus_accept)))));
     binding.setLifecycleOwner(lifecycleOwner);
     binding.executePendingBindings();
 
