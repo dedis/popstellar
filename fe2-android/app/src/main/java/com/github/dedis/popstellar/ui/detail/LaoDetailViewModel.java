@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.ui.detail;
 
-import android.Manifest;
 import android.app.Application;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,7 +27,8 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
-import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -50,7 +49,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @HiltViewModel
@@ -816,25 +814,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public boolean isWalletSetup() {
     return wallet.isSetUp();
-  }
-
-  public void openRollCallScanning(FragmentActivity activity) {
-    FragmentManager manager = activity.getSupportFragmentManager();
-
-    if (checkSelfPermission(activity.getApplicationContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-
-      setCurrentFragment(manager, R.id.add_attendee_layout, QRCodeScanningFragment::new);
-    } else {
-      // Setup result listener to open the scanning tab once the permission is granted
-      manager.setFragmentResultListener(
-          CameraPermissionFragment.REQUEST_KEY, activity, (k, b) -> openRollCallScanning(activity));
-
-      setCurrentFragment(
-          manager,
-          R.id.fragment_camera_perm,
-          () -> CameraPermissionFragment.newInstance(activity.getActivityResultRegistry()));
-    }
   }
 
   @Override
