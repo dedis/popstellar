@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 
+@Immutable
 public class ScriptInputObject {
+
   private final String type;
   private final PublicKey pubKeyRecipient;
   private final Signature sig;

@@ -2,11 +2,12 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 /** Class modeling a Chirp */
-public class Chirp {
+public class Chirp implements Copyable<Chirp> {
 
   private static final int MAX_CHIRP_CHARS = 300;
 
@@ -26,6 +27,16 @@ public class Chirp {
       throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
+  }
+
+  public Chirp(Chirp chirp) {
+    this.id = chirp.id;
+    this.channel = chirp.channel;
+    this.sender = chirp.sender;
+    this.text = chirp.text;
+    this.timestamp = chirp.timestamp;
+    this.isDeleted = chirp.isDeleted;
+    this.parentId = chirp.parentId;
   }
 
   public MessageID getId() {
@@ -90,6 +101,11 @@ public class Chirp {
 
   public void setParentId(MessageID parentId) {
     this.parentId = parentId;
+  }
+
+  @Override
+  public Chirp copy() {
+    return new Chirp(this);
   }
 
   @NonNull

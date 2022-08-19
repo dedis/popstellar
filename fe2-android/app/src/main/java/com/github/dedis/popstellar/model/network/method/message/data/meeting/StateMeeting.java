@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /** Data received to track the state of a meeting */
 public class StateMeeting extends Data {
@@ -67,7 +67,7 @@ public class StateMeeting extends Data {
     this.start = start;
     this.end = end;
     this.modificationId = modificationId;
-    this.modificationSignatures = modificationSignatures;
+    this.modificationSignatures = new ArrayList<>(modificationSignatures);
   }
 
   public String getId() {
@@ -103,7 +103,7 @@ public class StateMeeting extends Data {
   }
 
   public List<String> getModificationSignatures() {
-    return modificationSignatures;
+    return new ArrayList<>(modificationSignatures);
   }
 
   @Override

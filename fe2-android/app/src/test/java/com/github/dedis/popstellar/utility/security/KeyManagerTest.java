@@ -85,7 +85,7 @@ public class KeyManagerTest {
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
     assertEquals(token, manager.getValidPoPToken(lao));
-    assertEquals(token, manager.getValidPoPToken(lao, rollCall1));
+    assertEquals(token, manager.getValidPoPToken(lao.getId(), rollCall1));
 
     // make sure that rollcall1 was taken and not rollcall2 as the oldest is rollcall 1
     verify(wallet, atLeast(1)).recoverKey(eq(lao.getId()), eq(rollCall1.getId()), any());

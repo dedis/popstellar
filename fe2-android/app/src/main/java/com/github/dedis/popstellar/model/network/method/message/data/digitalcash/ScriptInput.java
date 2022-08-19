@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 // The script describing the unlock mechanism
 
+@Immutable
 public final class ScriptInput {
 
   @SerializedName("type")
@@ -17,7 +19,8 @@ public final class ScriptInput {
   private final PublicKey pubKeyRecipient; // The recipient’s public key
 
   @SerializedName("sig")
-  private Signature sig; // Signature on all txins and txouts using the recipient's private key
+  private final Signature
+      sig; // Signature on all txins and txouts using the recipient's private key
   // Transaction //with all txin txout
 
   /**
@@ -33,10 +36,6 @@ public final class ScriptInput {
 
   public Signature getSig() {
     return sig;
-  }
-
-  public void setSig(Signature sig) {
-    this.sig = sig;
   }
 
   public String getType() {

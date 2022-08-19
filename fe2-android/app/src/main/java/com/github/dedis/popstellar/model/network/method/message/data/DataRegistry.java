@@ -5,8 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.data.DataHandler;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
@@ -45,7 +44,7 @@ public final class DataRegistry {
    * @throws DataHandlingException if an error occurs or if there was no handler
    */
   public void handle(HandlerContext context, Data data, Objects obj, Action action)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     Optional.ofNullable(mapping.get(pair(obj, action)))
         .orElseThrow(() -> new UnhandledDataTypeException(data, obj + "#" + action))
         .handleData(context, data);
@@ -133,7 +132,8 @@ public final class DataRegistry {
      * @throws DataHandlingException if an error occurs or if the dataHandler is null
      */
     @SuppressWarnings("unchecked")
-    public void handleData(HandlerContext context, Data data) throws DataHandlingException {
+    public void handleData(HandlerContext context, Data data)
+        throws DataHandlingException, UnknownLaoException {
       if (dataHandler == null) {
         throw new UnhandledDataTypeException(data, key.object + "#" + key.action);
       }

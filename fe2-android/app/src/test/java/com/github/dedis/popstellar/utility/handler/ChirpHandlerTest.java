@@ -8,10 +8,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -69,7 +71,8 @@ public class ChirpHandlerTest {
   @Mock KeyManager keyManager;
 
   @Before
-  public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
+  public void setup()
+      throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
@@ -89,10 +92,15 @@ public class ChirpHandlerTest {
   }
 
   @Test
-  public void testHandleAddChirp() throws DataHandlingException {
+  public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
-    Optional<Chirp> chirpOpt = lao.getChirp(message.getMessageId());
+
+    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
+    assertTrue(laoOpt.isPresent());
+    Lao updatedLao = laoOpt.get().createLaoCopy();
+
+    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
     Chirp chirp = chirpOpt.get();
 
@@ -103,13 +111,13 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = lao.getAllChirps();
+    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
 
   @Test
-  public void testHandleDeleteChirp() throws DataHandlingException {
+  public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
 
@@ -118,7 +126,11 @@ public class ChirpHandlerTest {
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message2);
 
-    Optional<Chirp> chirpOpt = lao.getChirp(message.getMessageId());
+    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
+    assertTrue(laoOpt.isPresent());
+    Lao updatedLao = laoOpt.get().createLaoCopy();
+
+    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
     Chirp chirp = chirpOpt.get();
 
@@ -129,7 +141,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = lao.getAllChirps();
+    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }

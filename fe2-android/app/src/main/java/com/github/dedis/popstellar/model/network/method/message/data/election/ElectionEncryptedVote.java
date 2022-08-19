@@ -2,11 +2,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
+@Immutable
 public class ElectionEncryptedVote {
 
   // Id of the object ElectionVote :
@@ -24,8 +26,8 @@ public class ElectionEncryptedVote {
    * @param questionId id of the question
    * @param encryptedVote encrypted uniaue indice of the chosen vote
    * @param writeInEnabled indicates if write in is enabled
-   * @param encryptedWriteIn
-   * @param electionId
+   * @param encryptedWriteIn whether the election allows write-in
+   * @param electionId the election id
    */
   public ElectionEncryptedVote(
       @NonNull String questionId,
@@ -79,6 +81,7 @@ public class ElectionEncryptedVote {
         && Objects.equals(getVote(), that.getVote());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "{" + "id='" + id + '\'' + ", questionId='" + questionId + '\'' + ", vote=" + vote + '}';

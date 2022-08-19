@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -12,7 +14,7 @@ import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
 
-public class Election extends Event {
+public class Election extends Event implements Copyable<Election> {
 
   private Channel channel;
   private String id;
@@ -35,7 +37,7 @@ public class Election extends Event {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private final MutableLiveData<EventState> state = new MutableLiveData<>();
+  private final MutableLiveData<EventState> state;
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
@@ -51,6 +53,25 @@ public class Election extends Event {
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
+    this.state = new MutableLiveData<>();
+  }
+
+  public Election(Election election) {
+    this.channel = election.channel;
+    this.id = election.id;
+    this.name = election.name;
+    this.creation = election.creation;
+    this.start = election.start;
+    this.end = election.end;
+    this.electionKey = election.electionKey;
+    this.electionQuestions = new ArrayList<>(election.electionQuestions);
+    this.electionVersion = election.electionVersion;
+    this.openVoteByPublicKey = new HashMap<>(election.openVoteByPublicKey);
+    this.encryptedVoteByPublicKey = Copyable.copyMapOfList(election.encryptedVoteByPublicKey);
+    this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
+    messageMap.putAll(election.messageMap);
+    this.state = new MutableLiveData<>(election.state.getValue());
+    this.results = Copyable.copyMapOfList(election.results);
   }
 
   public String getElectionKey() {
@@ -195,9 +216,13 @@ public class Election extends Event {
       throw new IllegalArgumentException("the list of winners should not be null");
     }
     for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      List<QuestionResult> questionResults = resultQuestion.getResult();
+      List<QuestionResult> questionResults = new ArrayList<>();
+      if (resultQuestion.getResult() != null) {
+        questionResults.addAll(resultQuestion.getResult());
+      }
+
       String questionId = resultQuestion.getId();
-      if (questionResults == null) {
+      if (resultQuestion.getResult() == null) {
         results.put(questionId, new ArrayList<>());
       } else {
         questionResults.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
@@ -347,6 +372,12 @@ public class Election extends Event {
     return encryptedVotes;
   }
 
+  @Override
+  public Election copy() {
+    return new Election(this);
+  }
+
+  @NonNull
   @Override
   public String toString() {
     return "Election{"

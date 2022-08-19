@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
+@Immutable
 public final class AcceptValue {
 
   @SerializedName("accepted_try")

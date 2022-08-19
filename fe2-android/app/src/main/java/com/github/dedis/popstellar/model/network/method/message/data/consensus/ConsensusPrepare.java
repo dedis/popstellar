@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
+@Immutable
 public final class ConsensusPrepare extends Data {
 
   @SerializedName("instance_id")

@@ -1,21 +1,24 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
 /** The transaction object */
+@Immutable
 public final class Transaction {
 
   @SerializedName(value = "version")
   private final int version; // The version of the transaction inputs
 
   @SerializedName(value = "inputs")
-  private List<Input> inputs; // [Array[Objects]] array of output transactions to use as inputs
+  private final List<Input>
+      inputs; // [Array[Objects]] array of output transactions to use as inputs
 
   @SerializedName(value = "outputs")
-  private List<Output> outputs; // [Array[Objects]] array of outputs from this transactions
+  private final List<Output> outputs; // [Array[Objects]] array of outputs from this transactions
 
   @SerializedName("lock_time")
   private final long lockTime; // LockTime
@@ -42,11 +45,11 @@ public final class Transaction {
   }
 
   public List<Input> getInputs() {
-    return inputs;
+    return new ArrayList<>(inputs);
   }
 
   public List<Output> getOutputs() {
-    return outputs;
+    return new ArrayList<>(outputs);
   }
 
   public long getLockTime() {
@@ -79,7 +82,7 @@ public final class Transaction {
     for (Output currentTxout : outputs) {
       // Script
       // PubKeyHash
-      collectTransaction.add(currentTxout.getScript().getPubkeyHash());
+      collectTransaction.add(currentTxout.getScript().getPubKeyHash());
       // Type
       collectTransaction.add(currentTxout.getScript().getType());
       // Value
@@ -148,7 +151,7 @@ public final class Transaction {
     for (Output current : outputs) {
       sig.add(String.valueOf(current.getValue()));
       sig.add(current.getScript().getType());
-      sig.add(current.getScript().getPubkeyHash());
+      sig.add(current.getScript().getPubKeyHash());
     }
 
     return String.join("", sig.toArray(new String[0]));

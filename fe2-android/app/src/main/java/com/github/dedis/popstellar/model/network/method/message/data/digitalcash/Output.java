@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
 // Object representing an output of this transaction
+@Immutable
 public final class Output {
 
   @SerializedName("value")

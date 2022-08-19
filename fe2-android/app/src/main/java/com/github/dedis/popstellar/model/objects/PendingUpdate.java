@@ -1,7 +1,9 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
+@Immutable
 public class PendingUpdate implements Comparable<PendingUpdate> {
 
   private final long modificationTime;

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects.security;
 
 import android.util.Log;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /** A public key that can be used to verify a signature */
+@Immutable
 public class PublicKey extends Base64URLData {
 
   private static final String TAG = PublicKey.class.getSimpleName();

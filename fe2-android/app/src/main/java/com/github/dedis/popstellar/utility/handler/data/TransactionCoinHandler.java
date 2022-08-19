@@ -5,7 +5,9 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 
@@ -23,12 +25,13 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public static void handlePostTransactionCoin(
-      HandlerContext context, PostTransactionCoin postTransactionCoin) {
+      HandlerContext context, PostTransactionCoin postTransactionCoin) throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
-    Lao lao = laoRepository.getLaoByChannel(channel);
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
+
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     // inputs and outputs for the creation
@@ -69,7 +72,7 @@ public class TransactionCoinHandler {
       }
       ScriptOutputObject script =
           new ScriptOutputObject(
-              current.getScript().getType(), current.getScript().getPubkeyHash());
+              current.getScript().getType(), current.getScript().getPubKeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
     builder
@@ -79,7 +82,11 @@ public class TransactionCoinHandler {
         .setTransactionId(postTransactionCoin.getTransactionId())
         .setInputs(inputs)
         .setOutputs(outputs);
+
+    Lao lao = laoView.createLaoCopy();
+
     // lao update the history / lao update the last transaction per public key
     lao.updateTransactionMaps(builder.build());
+    laoRepository.updateLao(lao);
   }
 }

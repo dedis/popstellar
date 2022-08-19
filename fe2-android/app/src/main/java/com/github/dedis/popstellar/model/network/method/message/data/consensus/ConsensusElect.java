@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import androidx.annotation.*;
+
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
-import com.google.gson.annotations.SerializedName;
+import com.github.dedis.popstellar.model.objects.*;
+import com.google.gson.annotations.*;
 
 public final class ConsensusElect extends Data {
 
@@ -70,6 +72,7 @@ public final class ConsensusElect extends Data {
         && java.util.Objects.equals(value, that.value);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(
