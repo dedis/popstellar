@@ -256,13 +256,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public void sendVote(List<ElectionVote> votes, FragmentManager manager) {
+  public Completable sendVote(List<ElectionVote> votes, FragmentManager manager) {
     Election election = currentElection;
 
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
-      return;
+      return Completable.error(new IllegalStateException("There is no election"));
     }
+
     Log.d(
         TAG,
         "sending a new vote in election : "
@@ -272,44 +273,30 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no lao subscription"));
     }
 
-    try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
-      CastVote vote;
-      // Construct the cast vote depending if the messages need to be encrypted or not
-      if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        vote = new CastVote<>(votes, election.getId(), lao.getId());
-      } else {
-        List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-        vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
-        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
-      }
-      Channel electionChannel = election.getChannel();
-      Log.d(TAG, PUBLISH_MESSAGE);
-      Disposable disposable =
-          networkManager
-              .getMessageSender()
-              .publish(token, electionChannel, vote)
-              .doFinally(
-                  () ->
-                      setCurrentFragment(
-                          manager, R.id.fragment_lao_detail, LaoDetailFragment::newInstance))
-              .subscribe(
-                  () -> {
-                    Log.d(TAG, "sent a vote successfully");
-                    // Toast ? + send back to election screen or details screen ?
-                    Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
-                        .show();
-                  },
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_send_vote));
-      disposables.add(disposable);
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+    return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .flatMapCompletable(
+            token -> {
+              CastVote vote = createCastVote(votes, election, lao);
+
+              Channel electionChannel = election.getChannel();
+              return networkManager.getMessageSender().publish(token, electionChannel, vote);
+            });
+  }
+
+  @NonNull
+  private CastVote createCastVote(List<ElectionVote> votes, Election election, Lao lao) {
+    CastVote vote;
+    if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+      vote = new CastVote<>(votes, election.getId(), lao.getId());
+    } else {
+      List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
+      vote = new CastVote<>(encryptedVotes, election.getId(), lao.getId());
+      Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
     }
+    return vote;
   }
 
   /**
