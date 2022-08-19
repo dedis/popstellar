@@ -46,7 +46,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
@@ -189,13 +188,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param e election to be opened
    */
-  public void openElection(Election e) {
-
+  public Completable openElection(Election e) {
     Log.d(TAG, "opening election with name : " + e.getName());
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no election"));
     }
 
     Channel channel = e.getChannel();
@@ -205,26 +203,17 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     OpenElection openElection = new OpenElection(laoId, e.getId(), e.getStartTimestamp());
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, openElection)
-            .subscribe(
-                () -> Log.d(TAG, "opened election successfully")
-                // stay on the election fragment for now
-                ,
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_open_election));
-    disposables.add(disposable);
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, openElection);
   }
 
-  public void endElection(Election election) {
+  public Completable endElection(Election election) {
     Log.d(TAG, "ending election with name : " + election.getName());
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Completable.error(new IllegalStateException("There is no election"));
     }
 
     Channel channel = election.getChannel();
@@ -233,20 +222,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, electionEnd)
-            .subscribe(
-                () -> {
-                  Log.d(TAG, "ended election successfully");
-                  endElectionEvent();
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_end_election));
-
-    disposables.add(disposable);
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), channel, electionEnd);
   }
 
   /**
@@ -680,10 +658,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     } else {
       mCurrentElectionVotes.getValue().set(position, votes);
     }
-  }
-
-  public void endElectionEvent() {
-    // TODO This is not implemented ?
   }
 
   public void setShowProperties(boolean show) {

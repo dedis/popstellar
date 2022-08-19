@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -16,13 +17,18 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 import static com.github.dedis.popstellar.utility.Constants.*;
 
 public class ElectionFragment extends Fragment {
+
+  private static final String TAG = ElectionFragment.class.getSimpleName();
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
@@ -44,6 +50,8 @@ public class ElectionFragment extends Fragment {
   private final EnumMap<EventState, Integer> actionIconMap = buildActionIconMap();
   private final EnumMap<EventState, Integer> actionTextMap = buildActionTextMap();
   private final EnumMap<EventState, Boolean> actionEnablingMap = buildActionEnablingMap();
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public static ElectionFragment newInstance() {
     return new ElectionFragment();
@@ -82,7 +90,18 @@ public class ElectionFragment extends Fragment {
                   .setMessage(R.string.election_confirm_open)
                   .setPositiveButton(
                       R.string.yes,
-                      (dialogInterface, i) -> laoDetailViewModel.openElection(election))
+                      (dialogInterface, i) ->
+                          disposables.add(
+                              laoDetailViewModel
+                                  .openElection(election)
+                                  .subscribe(
+                                      () -> Log.d(TAG, "opened election successfully"),
+                                      error ->
+                                          ErrorUtils.logAndShow(
+                                              requireContext(),
+                                              TAG,
+                                              error,
+                                              R.string.error_open_election))))
                   .setNegativeButton(R.string.no, null)
                   .show();
               break;
@@ -92,7 +111,18 @@ public class ElectionFragment extends Fragment {
                   .setMessage(R.string.election_confirm_close)
                   .setPositiveButton(
                       R.string.yes,
-                      (dialogInterface, i) -> laoDetailViewModel.endElection(election))
+                      (dialogInterface, i) ->
+                          disposables.add(
+                              laoDetailViewModel
+                                  .endElection(election)
+                                  .subscribe(
+                                      () -> Log.d(TAG, "ended election successfully"),
+                                      error ->
+                                          ErrorUtils.logAndShow(
+                                              requireContext(),
+                                              TAG,
+                                              error,
+                                              R.string.error_end_election))))
                   .setNegativeButton(R.string.no, null)
                   .show();
               break;
@@ -128,6 +158,12 @@ public class ElectionFragment extends Fragment {
     election.getState().observe(getViewLifecycleOwner(), eventState -> setupElectionContent());
 
     return view;
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    disposables.dispose();
   }
 
   private void setupElectionContent() {
