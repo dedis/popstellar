@@ -140,7 +140,9 @@ public class LAONetworkManager implements MessageSender {
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
-        .flatMapCompletable(answer -> catchup(channel));
+        .flatMapCompletable(answer -> catchup(channel))
+        .doOnComplete(
+            () -> Log.d(TAG, "Successfully subscribed and catchup to channel " + channel));
   }
 
   @Override
@@ -164,11 +166,9 @@ public class LAONetworkManager implements MessageSender {
     try {
       messageHandler.handleMessage(
           repository, this, broadcast.getChannel(), broadcast.getMessage());
-    } catch (DataHandlingException e) {
+    } catch (DataHandlingException | UnknownLaoException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
-    } catch (UnknownLaoException e) {
-      Log.e(TAG, "Error while handling received message", e);
     }
   }
 
@@ -176,9 +176,7 @@ public class LAONetworkManager implements MessageSender {
     for (MessageGeneral msg : messages) {
       try {
         messageHandler.handleMessage(repository, this, channel, msg);
-      } catch (DataHandlingException e) {
-        Log.e(TAG, "Error while handling received catchup message", e);
-      } catch (UnknownLaoException e) {
+      } catch (DataHandlingException | UnknownLaoException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }
