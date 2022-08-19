@@ -3,7 +3,9 @@ package ch.epfl.pop.storage
 import java.io.File
 
 import ch.epfl.pop.model.objects.DbActorNAckException
-import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 import scala.collection.concurrent.TrieMap
 import scala.reflect.io.Directory

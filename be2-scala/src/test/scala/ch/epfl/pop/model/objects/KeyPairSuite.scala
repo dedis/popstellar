@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.objects
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class KeyPairSuite extends FunSuite with Matchers {
   test("Encrypt and decrypt a message return the original message") {

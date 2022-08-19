@@ -4,7 +4,9 @@ import java.nio.charset.StandardCharsets
 
 import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.Inspectors.forEvery
-import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 /*Helper object for testing*/
 case class TestObj(ed_signer: Ed25519Sign, keyPair: Ed25519Sign.KeyPair)

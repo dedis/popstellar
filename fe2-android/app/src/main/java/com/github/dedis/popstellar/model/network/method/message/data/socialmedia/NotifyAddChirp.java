@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to broadcast AddChirp to the general channel */
+@Immutable
 public class NotifyAddChirp extends Data {
 
   @SerializedName("chirp_id")

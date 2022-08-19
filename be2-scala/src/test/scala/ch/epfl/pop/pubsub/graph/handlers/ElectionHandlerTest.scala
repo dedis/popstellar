@@ -9,7 +9,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.matchers.should.Matchers
 import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.EndElectionExamples._
 import util.examples.Election.OpenElectionExamples._

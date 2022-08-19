@@ -2,7 +2,8 @@ package ch.epfl.pop.model.objects
 
 import ch.epfl.pop.model.network.method.message.Message
 import com.google.crypto.tink.subtle.Ed25519Sign
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 
 class LaoDataSuite extends FunSuite with Matchers {

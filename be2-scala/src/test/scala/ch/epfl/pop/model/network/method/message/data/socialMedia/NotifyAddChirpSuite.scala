@@ -3,7 +3,8 @@ package ch.epfl.pop.model.network.method.message.data.socialMedia
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Timestamp}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 import spray.json._
 
 class NotifyAddChirpSuite extends FunSuite with Matchers {

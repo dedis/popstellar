@@ -2,8 +2,11 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.Objects;
 
+@Immutable
 public final class ConsensusKey {
 
   private final String type;

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -18,6 +19,7 @@ import java.util.*;
  *
  * <p>It is encapsulated inside low level messages
  */
+@Immutable
 public final class MessageGeneral {
 
   private static final String TAG = MessageGeneral.class.getSimpleName();
@@ -42,7 +44,7 @@ public final class MessageGeneral {
     this.data = data;
     this.messageId = messageID;
     this.signature = signature;
-    this.witnessSignatures = witnessSignatures;
+    this.witnessSignatures = new ArrayList<>(witnessSignatures);
   }
 
   public MessageGeneral(KeyPair keyPair, Data data, Gson gson) {
@@ -83,7 +85,7 @@ public final class MessageGeneral {
   }
 
   public List<PublicKeySignaturePair> getWitnessSignatures() {
-    return this.witnessSignatures;
+    return new ArrayList<>(witnessSignatures);
   }
 
   public Data getData() {

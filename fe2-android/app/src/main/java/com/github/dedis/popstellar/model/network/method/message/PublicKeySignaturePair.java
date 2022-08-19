@@ -2,9 +2,11 @@ package com.github.dedis.popstellar.model.network.method.message;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 
+@Immutable
 public class PublicKeySignaturePair {
 
   private final PublicKey witness;

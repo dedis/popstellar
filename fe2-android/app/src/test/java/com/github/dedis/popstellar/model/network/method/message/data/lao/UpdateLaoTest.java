@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import android.util.ArraySet;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -14,6 +12,7 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
@@ -33,7 +32,7 @@ public class UpdateLaoTest {
 
   @Test
   public void generateUpdateLaoIdTest() {
-    UpdateLao updateLao = new UpdateLao(organizer, time, name, time, new ArraySet<>());
+    UpdateLao updateLao = new UpdateLao(organizer, time, name, time, new HashSet<>());
     // Hash(organizer||creation||name)
     String expectedId = Hash.hash(organizer.getEncoded(), Long.toString(time), updateLao.getName());
     assertThat(updateLao.getId(), is(expectedId));

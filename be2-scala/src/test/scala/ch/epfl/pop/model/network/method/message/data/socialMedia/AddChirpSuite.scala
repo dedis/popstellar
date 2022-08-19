@@ -4,7 +4,8 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirpExample._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Timestamp
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 import spray.json._
 
 class AddChirpSuite extends FunSuite with Matchers {
