@@ -62,10 +62,8 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
   }
 
   @Override
-  protected void onPause() {
-    // Done in onPause because it is the only lifecycle "end" method guaranteed to be called in all
-    // circumstances
-    super.onPause();
+  public void onStop() {
+    super.onStop();
     viewModel.savePersistentData();
   }
 
