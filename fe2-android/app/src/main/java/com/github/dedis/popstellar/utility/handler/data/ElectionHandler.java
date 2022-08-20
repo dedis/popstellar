@@ -157,7 +157,8 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
-  public static void handleCastVote(HandlerContext context, CastVote castVote)
+  @SuppressWarnings("unchecked") // Because of the way CastVote is designed, this must be done
+  public static void handleCastVote(HandlerContext context, CastVote<?> castVote)
       throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
@@ -192,9 +193,10 @@ public final class ElectionHandler {
       if (previousMessageCreation <= castVote.getCreation()) {
         // Filter given the content of the vote
         if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-          election.putOpenBallotVotesBySender(senderPk, castVote.getVotes());
+          election.putOpenBallotVotesBySender(senderPk, (List<ElectionVote>) castVote.getVotes());
         } else {
-          election.putEncryptedVotesBySender(senderPk, castVote.getVotes());
+          election.putEncryptedVotesBySender(
+              senderPk, (List<ElectionEncryptedVote>) castVote.getVotes());
         }
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
