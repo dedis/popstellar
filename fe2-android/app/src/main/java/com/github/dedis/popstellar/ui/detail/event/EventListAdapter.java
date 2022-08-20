@@ -1,25 +1,33 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
-
-import android.annotation.*;
+import android.annotation.SuppressLint;
 import android.view.*;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.*;
-import androidx.cardview.widget.*;
-import androidx.constraintlayout.widget.*;
-import androidx.fragment.app.*;
-import androidx.recyclerview.widget.*;
+import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.ui.detail.*;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.*;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
+
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private final LaoDetailViewModel viewModel;
@@ -162,7 +170,15 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
           view -> {
             if (viewModel.isWalletSetup()) {
               viewModel.setCurrentRollCall(rollCall);
-              viewModel.enterRollCall(activity, rollCall.getPersistentId());
+              try {
+                PoPToken token = viewModel.getCurrentPopToken();
+                setCurrentFragment(
+                    activity.getSupportFragmentManager(),
+                    R.id.fragment_roll_call,
+                    () -> RollCallFragment.newInstance(token.getPublicKey()));
+              } catch (KeyException e) {
+                ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
+              }
             } else {
               showWalletNotSetupWarning();
             }

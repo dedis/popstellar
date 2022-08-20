@@ -261,7 +261,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           disposables.add(
               mLaoDetailViewModel
                   .createNewElection(
-                      getParentFragmentManager(),
                       electionVersion,
                       electionName,
                       creationTimeInSeconds,

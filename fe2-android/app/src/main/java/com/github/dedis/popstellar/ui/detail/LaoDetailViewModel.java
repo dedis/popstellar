@@ -6,8 +6,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -25,7 +23,6 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -48,15 +45,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-
 @HiltViewModel
 public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
-  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
   /*
    * LiveData objects for capturing events like button clicks
@@ -77,7 +71,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
@@ -124,10 +117,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   private Election currentElection = null;
   private RollCall currentRollCall = null;
-  private String currentRollCallId = ""; // used to know which roll call to close
-  private Set<PublicKey> attendees = new HashSet<>();
-  private Set<PublicKey> witnesses =
-      new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
+  private String currentRollCallId = "";
+  // used to know which roll call to close
+  private final Set<PublicKey> attendees = new HashSet<>();
+  // used to dynamically update the set of witnesses when WR code scanned
+  private final Set<PublicKey> witnesses = new HashSet<>();
   private ScanningAction scanningAction;
 
   @Inject
@@ -234,7 +228,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(List<ElectionVote> votes, FragmentManager manager) {
+  public Completable sendVote(List<ElectionVote> votes) {
     Election election = currentElection;
 
     if (election == null) {
@@ -257,7 +251,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
         .flatMapCompletable(
             token -> {
-              CastVote vote = createCastVote(votes, election, lao);
+              CastVote<?> vote = createCastVote(votes, election, lao);
 
               Channel electionChannel = election.getChannel();
               return networkManager.getMessageSender().publish(token, electionChannel, vote);
@@ -265,8 +259,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   @NonNull
-  private CastVote createCastVote(List<ElectionVote> votes, Election election, Lao lao) {
-    CastVote vote;
+  private CastVote<?> createCastVote(List<ElectionVote> votes, Election election, Lao lao) {
+    CastVote<?> vote;
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
       vote = new CastVote<>(votes, election.getId(), lao.getId());
     } else {
@@ -282,7 +276,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * <p>Publish a GeneralMessage containing ElectionSetup data.
    *
-   * @param manager the fragment manager on which to open any activity
    * @param electionVersion the version of the election
    * @param name the name of the election
    * @param creation the creation time of the election
@@ -293,7 +286,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param question the question associated to the election
    */
   public Completable createNewElection(
-      FragmentManager manager,
       ElectionVersion electionVersion,
       String name,
       long creation,
@@ -467,7 +459,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     currentRollCallId = currentId;
     Log.d(TAG, "opening rollcall with current id = " + currentRollCallId);
     scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-    attendees = new HashSet<>(rollCall.getAttendees());
+    attendees.addAll(rollCall.getAttendees());
 
     try {
       attendees.add(keyManager.getPoPToken(lao, rollCall).getPublicKey());
@@ -516,7 +508,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       return Completable.error(new UnknownLaoException());
     }
 
-    return Single.fromCallable(() -> keyManager.getMainKeyPair())
+    return Single.fromCallable(keyManager::getMainKeyPair)
         .flatMapCompletable(
             keyPair -> {
               // Generate the signature of the message
@@ -560,13 +552,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public LiveData<String> getCurrentLaoName() {
     return mCurrentLaoName;
-  }
-
-  public void setCurrentLaoName(String laoName) {
-    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName().getValue())) {
-      Log.d(TAG, "New name for current LAO: " + laoName);
-      mLaoName.setValue(laoName);
-    }
   }
 
   public LiveData<Boolean> isOrganizer() {
@@ -688,12 +673,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .getMessageSender()
         .publish(channel, msg)
         .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
-        .andThen(dispatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg));
+        .andThen(dispatchLaoUpdate(updateLao, lao, channel, msg));
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
   private Completable dispatchLaoUpdate(
-      String desc, UpdateLao updateLao, Lao lao, Channel channel, MessageGeneral msg) {
+      UpdateLao updateLao, Lao lao, Channel channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
             updateLao.getId(),
@@ -708,7 +693,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, stateLao)
-        .doOnComplete(() -> Log.d(TAG, "updated " + desc));
+        .doOnComplete(() -> Log.d(TAG, "updated lao with " + stateLao));
   }
 
   public void subscribeToLao(String laoId) {
@@ -727,18 +712,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                 error -> Log.d(TAG, "error updating LAO")));
   }
 
-  public void enterRollCall(FragmentActivity activity, String id) {
-    String firstLaoId = getCurrentLaoValue().getId();
-
-    try {
-      PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
-      setCurrentFragment(
-          activity.getSupportFragmentManager(),
-          R.id.fragment_roll_call,
-          () -> RollCallFragment.newInstance(publicKey));
-    } catch (Exception e) {
-      Log.d(TAG, "failed to retrieve public key from wallet", e);
-    }
+  public PoPToken getCurrentPopToken() throws KeyException {
+    return keyManager.getPoPToken(getCurrentLaoValue(), currentRollCall);
   }
 
   public boolean isWalletSetup() {
@@ -792,7 +767,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
       witnesses.add(publicKey);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
-      updateLaoWitnesses().subscribe(() -> Log.d(TAG, "Witness " + publicKey + " added"));
+      disposables.add(
+          updateLaoWitnesses()
+              .subscribe(
+                  () -> Log.d(TAG, "Witness " + publicKey + " added"),
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_update_lao)));
     }
     return true;
   }

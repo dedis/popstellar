@@ -71,7 +71,7 @@ public class CastVoteFragment extends Fragment {
 
         disposables.add(
             mLaoDetailViewModel
-                .sendVote(electionVotes, getParentFragmentManager())
+                .sendVote(electionVotes)
                 .subscribe(
                     () -> {
                       Log.d(TAG, "sent a vote successfully");
