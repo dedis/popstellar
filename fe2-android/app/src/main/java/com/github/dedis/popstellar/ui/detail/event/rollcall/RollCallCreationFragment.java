@@ -145,7 +145,11 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     } else {
       disposables.add(
           createRollCall.subscribe(
-              id -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS),
+              id ->
+                  setCurrentFragment(
+                      getParentFragmentManager(),
+                      R.id.fragment_lao_detail,
+                      LaoDetailFragment::newInstance),
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
