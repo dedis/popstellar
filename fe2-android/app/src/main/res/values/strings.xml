@@ -322,5 +322,6 @@
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
+  <string name="unknown_election_exception">Unknown election</string>
 
 </resources>

@@ -29,7 +29,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -193,7 +193,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no election"));
+      return Completable.error(new UnknownElectionException());
     }
 
     Channel channel = e.getChannel();
@@ -213,7 +213,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no election"));
+      return Completable.error(new UnknownElectionException());
     }
 
     Channel channel = election.getChannel();
@@ -239,7 +239,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     if (election == null) {
       Log.d(TAG, "failed to retrieve current election");
-      return Completable.error(new IllegalStateException("There is no election"));
+      return Completable.error(new UnknownElectionException());
     }
 
     Log.d(
@@ -251,7 +251,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
@@ -308,7 +308,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     Channel channel = lao.getChannel();
@@ -349,7 +349,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Single.error(new IllegalStateException("There is no lao subscription"));
+      return Single.error(new UnknownLaoException());
     }
 
     // FIXME Location : Lausanne ?
@@ -386,7 +386,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Single.error(new IllegalStateException("There is no lao subscription"));
+      return Single.error(new UnknownLaoException());
     }
     Channel channel = lao.getChannel().subChannel("consensus");
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
@@ -417,7 +417,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     ConsensusElectAccept consensusElectAccept =
@@ -441,7 +441,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     long openedAt = Instant.now().getEpochSecond();
@@ -489,7 +489,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     long end = Instant.now().getEpochSecond();
@@ -513,7 +513,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     return Single.fromCallable(() -> keyManager.getMainKeyPair())
@@ -674,7 +674,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     Channel channel = lao.getChannel();

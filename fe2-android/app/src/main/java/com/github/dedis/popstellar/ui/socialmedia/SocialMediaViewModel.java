@@ -133,7 +133,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return Single.error(new IllegalStateException("There is no lao subscription"));
+      return Single.error(new UnknownLaoException());
     }
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
@@ -154,7 +154,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return Single.error(new IllegalStateException("There is no lao subscription"));
+      return Single.error(new UnknownLaoException());
     }
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);

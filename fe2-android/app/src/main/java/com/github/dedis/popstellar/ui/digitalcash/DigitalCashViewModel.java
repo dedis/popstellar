@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -210,7 +211,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new IllegalStateException("There is no lao subscription"));
+      return Completable.error(new UnknownLaoException());
     }
 
     // Find correct keypair
