@@ -650,6 +650,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return scanningAction;
   }
 
+  public void setScanningAction(ScanningAction scanningAction) {
+    this.scanningAction = scanningAction;
+  }
+
   public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
     return mLaoEvents;
   }
@@ -933,11 +937,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
-    if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
+    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
       attendees.add(attendee);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
       mNbAttendees.postValue(attendees.size());
-    } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
+    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
       witnesses.add(attendee);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
