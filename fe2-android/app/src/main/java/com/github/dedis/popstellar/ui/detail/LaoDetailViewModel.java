@@ -32,6 +32,7 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -529,6 +530,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return scanningAction;
   }
 
+  public void setScanningAction(ScanningAction scanningAction) {
+    this.scanningAction = scanningAction;
+  }
+
   public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
     return mLaoEvents;
   }
@@ -760,11 +765,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
-    if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
+    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
       attendees.add(publicKey);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
       mNbAttendees.postValue(attendees.size());
-    } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
+    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
       witnesses.add(publicKey);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       disposables.add(

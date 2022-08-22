@@ -123,8 +123,6 @@ public class LaoDetailFragment extends Fragment {
     setupEventListAdapter();
     setupEventListUpdates();
 
-    // TODO: Add witness handler
-
     mLaoDetailViewModel
         .getLaoEvents()
         .observe(
