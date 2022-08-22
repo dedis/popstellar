@@ -43,7 +43,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-  private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
   private static final String COIN = "coin";
 
