@@ -74,6 +74,9 @@ public class LAORepository {
     return laosSubject;
   }
 
+  /**
+   * @deprecated This function is moving to #getAllLaoIds()
+   */
   @Deprecated
   public Observable<List<Lao>> getAllLaos() {
     return laosSubject.map(set -> set.stream().map(laoById::get).collect(Collectors.toList()));
@@ -81,10 +84,7 @@ public class LAORepository {
 
   public Observable<Lao> getLaoObservable(String laoId) {
     Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
-    if (!subjectById.containsKey(laoId)) {
-      subjectById.put(laoId, BehaviorSubject.create());
-    }
-
+    subjectById.computeIfAbsent(laoId, id -> BehaviorSubject.create());
     return subjectById.get(laoId);
   }
 
