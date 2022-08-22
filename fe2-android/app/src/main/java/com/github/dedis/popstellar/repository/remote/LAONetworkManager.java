@@ -111,9 +111,10 @@ public class LAONetworkManager implements MessageSender {
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
-        .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
-        .doOnSuccess(messages -> handleMessages(messages, channel))
         .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
+        .doOnSuccess(
+            msgs -> Log.d(TAG, "Received catchup response on " + channel + ", retrieved : " + msgs))
+        .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
 
@@ -126,7 +127,9 @@ public class LAONetworkManager implements MessageSender {
   public Completable publish(Channel channel, MessageGeneral msg) {
     Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
-    return request(publish).ignoreElement();
+    return request(publish)
+        .ignoreElement()
+        .doOnComplete(() -> Log.d(TAG, "Successfully published " + msg));
   }
 
   @Override
@@ -134,9 +137,10 @@ public class LAONetworkManager implements MessageSender {
     Log.d(TAG, "sending a subscribe on the channel " + channel);
     Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
     return request(subscribe)
+        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
-        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
+        .doOnSuccess(a -> Log.d(TAG, "Subscribed to " + channel + ", sending catchup message"))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
@@ -152,6 +156,7 @@ public class LAONetworkManager implements MessageSender {
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.remove(channel))
+        .doOnSuccess(a -> Log.d(TAG, "Unsubscribed from " + channel + ""))
         .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
         .ignoreElement();
   }
