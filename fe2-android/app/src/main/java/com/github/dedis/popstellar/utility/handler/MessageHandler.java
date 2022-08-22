@@ -4,13 +4,12 @@ import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -48,7 +47,7 @@ public final class MessageHandler {
       MessageSender messageSender,
       Channel channel,
       MessageGeneral message)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
     laoRepository.getMessageById().put(message.getMessageId(), message);
@@ -64,31 +63,5 @@ public final class MessageHandler {
         data,
         dataObj,
         dataAction);
-
-    notifyLaoUpdate(laoRepository, data, channel);
-  }
-
-  /**
-   * Keep the UI up to date by notifying all observers the updated LAO state.
-   *
-   * <p>The LAO is updated if the channel of the message is a LAO channel and the message is not a
-   * WitnessSignatureMessage.
-   *
-   * <p>If a LAO has been created or modified then the LAO lists in the LAORepository are updated.
-   *
-   * @param laoRepository the repository to access the LAO lists
-   * @param data the data received
-   * @param channel the channel of the message received
-   */
-  private void notifyLaoUpdate(LAORepository laoRepository, Data data, Channel channel) {
-    if (!(data instanceof WitnessMessageSignature)
-        && (channel.isLaoChannel() || channel.isElectionChannel())) {
-      Log.d(TAG, "Notifying repository");
-      LAOState laoState = laoRepository.getLaoById().get(channel.extractLaoId());
-      laoState.publish(); // Trigger an onNext
-      if (data instanceof StateLao || data instanceof CreateLao) {
-        laoRepository.setAllLaoSubject();
-      }
-    }
   }
 }

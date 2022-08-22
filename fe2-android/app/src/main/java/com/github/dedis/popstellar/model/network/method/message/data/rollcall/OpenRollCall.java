@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to open a roll call */
+@Immutable
 public class OpenRollCall extends Data {
 
   @SerializedName("update_id")

@@ -103,22 +103,22 @@ public class KeyManager {
             .max(Comparator.comparing(RollCall::getEnd))
             .orElseThrow(() -> new NoRollCallException(lao));
 
-    return getValidPoPToken(lao, rollCall);
+    return getValidPoPToken(lao.getId(), rollCall);
   }
 
   /**
    * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail if the user
    * did not attend the roll call or if the token cannot be generated
    *
-   * @param lao we want to retrieve the PoP Token from
+   * @param laoId of the lao we want to retrieve the PoP Token from
    * @param rollCall we want to retrieve the PoP Token from
    * @return the generated token if present in the rollcall
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
-  public PoPToken getValidPoPToken(Lao lao, RollCall rollCall) throws KeyException {
-    return wallet.recoverKey(lao.getId(), rollCall.getPersistentId(), rollCall.getAttendees());
+  public PoPToken getValidPoPToken(String laoId, RollCall rollCall) throws KeyException {
+    return wallet.recoverKey(laoId, rollCall.getPersistentId(), rollCall.getAttendees());
   }
 
   @VisibleForTesting

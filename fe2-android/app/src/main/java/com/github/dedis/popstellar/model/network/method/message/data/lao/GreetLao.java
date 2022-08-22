@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
@@ -10,6 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+@Immutable
 public class GreetLao extends Data {
 
   @NonNull
@@ -19,16 +21,16 @@ public class GreetLao extends Data {
   // Backend sender address
   @NonNull
   @SerializedName("frontend")
-  private PublicKey frontendKey;
+  private final PublicKey frontendKey;
 
   // Backend server address
   @NonNull
   @SerializedName("address")
-  private String address;
+  private final String address;
 
   // Backend "peer", list of addresses of future (1 Client / multiple Servers) communication
   @SerializedName("peers")
-  private List<PeerAddress> peers;
+  private final List<PeerAddress> peers;
 
   /**
    * Constructor for a Greeting Message
@@ -67,7 +69,7 @@ public class GreetLao extends Data {
   }
 
   public List<PeerAddress> getPeers() {
-    return peers;
+    return new ArrayList<>(peers);
   }
 
   @NonNull

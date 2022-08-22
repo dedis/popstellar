@@ -3,6 +3,9 @@ package com.github.dedis.popstellar.model.objects;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
  *
  * <p>It is implemented in a functional manner to avoid any unintended modification
  */
+@Immutable
 public class Channel implements Serializable {
 
   private static final String ROOT_CHANNEL = "/root";

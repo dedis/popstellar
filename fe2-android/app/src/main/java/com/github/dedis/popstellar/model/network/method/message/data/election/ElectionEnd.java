@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
 
+@Immutable
 public class ElectionEnd extends Data {
 
   @SerializedName(value = "election")

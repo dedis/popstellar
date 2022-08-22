@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,15 +10,16 @@ import com.google.gson.annotations.SerializedName;
  * ElectionKey message is sent by the backend after opening an election with SECRET_BALLOT option,
  * it should contain the public key to encrypt the votes.
  */
+@Immutable
 public class ElectionKey extends Data {
 
   // Id of the election
   @SerializedName("election")
-  private String electionId;
+  private final String electionId;
 
   // Public key of the election for casting encrypted votes
   @SerializedName("election_key")
-  private String electionVoteKey;
+  private final String electionVoteKey;
 
   public ElectionKey(@NonNull String electionId, @NonNull String electionVoteKey) {
     this.electionId = electionId;

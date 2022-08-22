@@ -2,9 +2,11 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
+@Immutable
 public final class OpenElection extends Data {
 
   @NonNull

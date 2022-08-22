@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -13,7 +14,7 @@ import java.util.*;
  * Class holding information of a ConsensusElect message and its current states including the
  * key/messageId of every node that have accepted this Elect with an ElectAccept.
  */
-public final class ElectInstance {
+public final class ElectInstance implements Copyable<ElectInstance> {
 
   private final MessageID messageId;
   private final Channel channel;
@@ -39,6 +40,16 @@ public final class ElectInstance {
     this.acceptorToMessageId = new HashMap<>();
 
     this.state = State.STARTING;
+  }
+
+  public ElectInstance(ElectInstance electInstance) {
+    this.messageId = electInstance.messageId;
+    this.channel = electInstance.channel;
+    this.proposer = electInstance.proposer;
+    this.elect = electInstance.elect;
+    this.nodes = electInstance.nodes;
+    this.acceptorToMessageId = new HashMap<>(electInstance.acceptorToMessageId);
+    this.state = electInstance.state;
   }
 
   public MessageID getMessageId() {
@@ -94,6 +105,7 @@ public final class ElectInstance {
     return nodes;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(
@@ -105,6 +117,29 @@ public final class ElectInstance {
         elect.toString(),
         nodes.toString(),
         state);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectInstance that = (ElectInstance) o;
+    return messageId.equals(that.messageId)
+        && channel.equals(that.channel)
+        && proposer.equals(that.proposer)
+        && elect.equals(that.elect)
+        && nodes.equals(that.nodes)
+        && acceptorToMessageId.equals(that.acceptorToMessageId)
+        && state == that.state;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageId, channel, proposer, elect, nodes, acceptorToMessageId, state);
   }
 
   /**
@@ -121,6 +156,11 @@ public final class ElectInstance {
   public static String generateConsensusId(
       @NonNull String type, @NonNull String id, @NonNull String property) {
     return Hash.hash("consensus", type, id, property);
+  }
+
+  @Override
+  public ElectInstance copy() {
+    return new ElectInstance(this);
   }
 
   public enum State {

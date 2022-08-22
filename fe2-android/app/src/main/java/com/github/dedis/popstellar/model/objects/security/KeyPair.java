@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects.security;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.crypto.tink.PublicKeySign;
 
 import java.security.GeneralSecurityException;
@@ -12,6 +13,7 @@ import java.util.Objects;
  *
  * <p>This object does not actually store the private key as is it safely stored by another module.
  */
+@Immutable
 public class KeyPair {
 
   private final PrivateKey privateKey;

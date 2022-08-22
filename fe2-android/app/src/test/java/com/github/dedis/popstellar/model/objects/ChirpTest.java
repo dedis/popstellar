@@ -18,7 +18,7 @@ public class ChirpTest {
 
   @Test
   public void createChirpWithNullId() {
-    assertThrows(IllegalArgumentException.class, () -> new Chirp(null));
+    assertThrows(IllegalArgumentException.class, () -> new Chirp((MessageID) null));
   }
 
   @Test

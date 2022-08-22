@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -122,9 +123,10 @@ public class TransactionCoinHandlerTest {
   }
 
   @Test
-  public void testHandlePostTransactionCoin() throws DataHandlingException {
+  public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
+//
     assertEquals(1, lao.getTransactionByUser().size());
     assertEquals(1, lao.getTransactionHistoryByUser().size());
     Set<TransactionObject> transactionObjects =
@@ -132,6 +134,16 @@ public class TransactionCoinHandlerTest {
     assertTrue(
         transactionObjects.stream()
             .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
+//
+
+    Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
+
+    assertEquals(1, updatedLao.getTransactionByUser().size());
+    assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
+    TransactionObject transaction_object =
+        updatedLao.getTransactionByUser().get(SENDER_KEY.getPublicKey()).get(0);
+    assertEquals(transaction_object.getChannel(), coinChannel);
+//
     assertEquals(1, lao.getPubKeyByHash().size());
   }
 }

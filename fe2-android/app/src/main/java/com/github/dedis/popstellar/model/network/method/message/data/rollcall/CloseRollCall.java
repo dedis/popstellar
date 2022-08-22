@@ -2,15 +2,17 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /** Data sent to close a Roll-Call */
+@Immutable
 public class CloseRollCall extends Data {
 
   @SerializedName("update_id")
@@ -36,7 +38,7 @@ public class CloseRollCall extends Data {
     this.updateId = RollCall.generateCloseRollCallId(laoId, closes, closedAt);
     this.closes = closes;
     this.closedAt = closedAt;
-    this.attendees = attendees;
+    this.attendees = new ArrayList<>(attendees);
   }
 
   @Override
@@ -62,7 +64,7 @@ public class CloseRollCall extends Data {
   }
 
   public List<PublicKey> getAttendees() {
-    return attendees;
+    return new ArrayList<>(attendees);
   }
 
   @Override

@@ -1,16 +1,26 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.*;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.qrcode.*;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public class WitnessesFragment extends Fragment {
+
+  private LaoDetailViewModel viewModel;
 
   public WitnessesFragment() {
     // Required empty public constructor
@@ -25,11 +35,10 @@ public class WitnessesFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.witnesses_fragment, container, false);
-    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    // FIXME Was removed during refactor, the functionality needs to be added back
-    // FloatingActionButton fab = view.findViewById(R.id.add_witness_button);
-    // fab.setOnClickListener(v -> viewModel.openAddWitness());
+    FloatingActionButton fab = view.findViewById(R.id.add_witness_button);
+    fab.setOnClickListener(v -> openAddWitness());
 
     RecyclerView recyclerView = view.findViewById(R.id.witness_list);
 
@@ -46,5 +55,26 @@ public class WitnessesFragment extends Fragment {
     viewModel.getWitnesses().observe(getViewLifecycleOwner(), adapter::replaceList);
 
     return view;
+  }
+
+  private void openAddWitness() {
+    FragmentManager manager = getParentFragmentManager();
+
+    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        == PackageManager.PERMISSION_GRANTED) {
+
+      viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+      setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
+    } else {
+      // Setup result listener to open the scanning tab once the permission is granted
+      manager.setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openAddWitness());
+
+      setCurrentFragment(
+          manager,
+          R.id.fragment_camera_perm,
+          () ->
+              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
+    }
   }
 }

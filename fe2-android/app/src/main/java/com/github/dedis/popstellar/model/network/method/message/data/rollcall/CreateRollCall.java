@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import androidx.annotation.Nullable;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
@@ -9,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Optional;
 
 /** Data sent to create a Roll-Call */
+@Immutable
 public class CreateRollCall extends Data {
 
   private final String id;

@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
 // The script describing the TxOut unlock mechanism
+@Immutable
 public final class ScriptOutput {
 
   @SerializedName("type")
@@ -26,7 +28,7 @@ public final class ScriptOutput {
     return type;
   }
 
-  public String getPubkeyHash() {
+  public String getPubKeyHash() {
     return pubKeyHash;
   }
 
@@ -44,7 +46,7 @@ public final class ScriptOutput {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getType(), getPubkeyHash());
+    return Objects.hash(getType(), getPubKeyHash());
   }
 
   @Override

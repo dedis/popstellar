@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.objects.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
+
+@Immutable
 public class ScriptOutputObject {
 
   // Type of script

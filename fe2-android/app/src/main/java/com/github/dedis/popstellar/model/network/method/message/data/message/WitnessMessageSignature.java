@@ -2,12 +2,14 @@ package com.github.dedis.popstellar.model.network.method.message.data.message;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to attest the message as a witness */
+@Immutable
 public class WitnessMessageSignature extends Data {
 
   @SerializedName("message_id")
