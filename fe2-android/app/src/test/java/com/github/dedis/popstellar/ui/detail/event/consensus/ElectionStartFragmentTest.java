@@ -13,7 +13,6 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
@@ -118,7 +117,7 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepository.getLaoById().put(LAO_ID, new LAOState(lao));
+          laoRepository.updateLao(lao);
           laoRepository.updateNodes(lao.getChannel());
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);

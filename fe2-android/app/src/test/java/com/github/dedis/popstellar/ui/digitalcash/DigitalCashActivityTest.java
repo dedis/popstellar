@@ -10,7 +10,6 @@ import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
@@ -127,8 +126,6 @@ public class DigitalCashActivityTest {
               .thenReturn(BehaviorSubject.createDefault(LAO));
           when(repository.getAllLaos())
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
-          when(repository.getLaoById())
-              .thenReturn(Collections.singletonMap(LAO_ID, new LAOState(LAO)));
           when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(networkManager.getMessageSender()).thenReturn(messageSender);

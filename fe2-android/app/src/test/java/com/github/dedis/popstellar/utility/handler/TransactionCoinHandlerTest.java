@@ -9,7 +9,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -106,8 +107,7 @@ public class TransactionCoinHandlerTest {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-    laoRepository.setAllLaoSubject();
+    laoRepository.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);

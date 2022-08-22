@@ -8,7 +8,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.*
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -69,11 +70,9 @@ public class ConsensusHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
-  private ServerRepository serverRepository;
 
   private MessageGeneral electMsg;
   private MessageID messageId;
-  private Lao lao;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -88,7 +87,8 @@ public class ConsensusHandlerTest {
 
     laoRepository = new LAORepository();
     messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+        new MessageHandler(
+            DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
@@ -96,7 +96,6 @@ public class ConsensusHandlerTest {
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
-    lao = laoRepository.getLaoById().get(LAO_ID).getLao();
   }
 
   /**
@@ -279,8 +278,6 @@ public class ConsensusHandlerTest {
       throws DataHandlingException, UnknownLaoException {
     LAORepository mockLAORepository = mock(LAORepository.class);
     Map<MessageID, MessageGeneral> messageById = new HashMap<>();
-    Map<String, LAOState> laoStateMap = new HashMap<>();
-    laoStateMap.put(lao.getId(), new LAOState(lao));
     when(mockLAORepository.getMessageById()).thenReturn(messageById);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);

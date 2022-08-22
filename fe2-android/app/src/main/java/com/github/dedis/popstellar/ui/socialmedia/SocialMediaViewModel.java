@@ -16,10 +16,10 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -235,9 +235,11 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   @Nullable
   private Lao getLao(String laoId) {
-    LAOState laoState = laoRepository.getLaoById().get(laoId);
-    if (laoState == null) return null;
-
-    return laoState.getLao();
+    // TODO Fully move to an LaoView here (and throw the exception further)
+    try {
+      return laoRepository.getLaoView(laoId).createLaoCopy();
+    } catch (UnknownLaoException e) {
+      return null;
+    }
   }
 }

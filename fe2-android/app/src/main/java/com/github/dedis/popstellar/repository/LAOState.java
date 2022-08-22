@@ -5,7 +5,6 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.objects.Lao;
 
 import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
 /**
@@ -22,9 +21,9 @@ public class LAOState {
    *
    * @param lao the lao
    */
-  public LAOState(Lao lao) {
+  public LAOState(Lao lao, Subject<Lao> publisher) {
     this.lao = lao;
-    this.publisher = BehaviorSubject.createDefault(lao);
+    this.publisher = publisher;
   }
 
   /**

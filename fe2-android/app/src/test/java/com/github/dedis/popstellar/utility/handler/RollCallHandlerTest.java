@@ -10,7 +10,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.ServerRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -53,7 +54,6 @@ public class RollCallHandlerTest {
 
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
-  private ServerRepository serverRepository;
 
   private RollCall rollCall;
 
@@ -72,7 +72,8 @@ public class RollCallHandlerTest {
 
     laoRepository = new LAORepository();
     messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+        new MessageHandler(
+            DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     // Create one LAO
     Lao lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -89,8 +90,7 @@ public class RollCallHandlerTest {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-    laoRepository.setAllLaoSubject();
+    laoRepository.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);

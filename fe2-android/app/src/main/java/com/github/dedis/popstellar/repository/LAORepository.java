@@ -16,37 +16,27 @@ import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 
 @Singleton
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
 
-  // State for LAO
-  private final Map<String, LAOState> laoById;
+  private final HashMap<String, Lao> laoById = new HashMap<>();
+  private final HashMap<String, Subject<Lao>> subjectById = new HashMap<>();
+  private final BehaviorSubject<Set<String>> laosSubject = BehaviorSubject.create();
 
+  // ============ Lao Unrelated data ===============
   // State for Messages
-  private final Map<MessageID, MessageGeneral> messageById;
-
-  // Observable for view models that need access to all LAO Names
-  private final BehaviorSubject<List<Lao>> allLaoSubject;
-
+  private final Map<MessageID, MessageGeneral> messageById = new HashMap<>();
   // Observable for view models that need access to all Nodes
-  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
+  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
+      new HashMap<>();
 
   @Inject
   public LAORepository() {
-    laoById = new HashMap<>();
-    messageById = new HashMap<>();
-    allLaoSubject = BehaviorSubject.create();
-    channelToNodesSubject = new HashMap<>();
-  }
-
-  /** Set allLaoSubject to contain all LAOs */
-  public void setAllLaoSubject() {
-    Log.d(TAG, "posted allLaos to allLaoSubject");
-    allLaoSubject.onNext(
-        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
+    // Constructor required by Hilt
   }
 
   /**
@@ -77,21 +67,62 @@ public class LAORepository {
    */
   public Lao getLaoByChannel(Channel channel) {
     Log.d(TAG, "querying lao for channel " + channel);
-    return laoById.get(channel.extractLaoId()).getLao();
+    return laoById.get(channel.extractLaoId());
   }
 
+  public Observable<Set<String>> getAllLaoIds() {
+    return laosSubject;
+  }
+
+  @Deprecated
   public Observable<List<Lao>> getAllLaos() {
-    return allLaoSubject;
+    return laosSubject.map(set -> set.stream().map(laoById::get).collect(Collectors.toList()));
   }
 
   public Observable<Lao> getLaoObservable(String laoId) {
     Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
-    return laoById.get(laoId).getObservable();
+    if (!subjectById.containsKey(laoId)) {
+      subjectById.put(laoId, BehaviorSubject.create());
+    }
+
+    return subjectById.get(laoId);
   }
 
-  public Map<String, LAOState> getLaoById() {
-    return laoById;
+  public LaoView getLaoView(String id) throws UnknownLaoException {
+    Lao lao = laoById.get(id);
+    if (lao == null) {
+      throw new UnknownLaoException(id);
+    }
+
+    return new LaoView(lao);
   }
+
+  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
+    return getLaoView(channel.extractLaoId());
+  }
+
+  public synchronized void updateLao(Lao lao) {
+    if (lao == null) {
+      throw new IllegalArgumentException();
+    }
+
+    if (laoById.containsKey(lao.getId())) {
+      // If the lao already exists, we can push the next update
+      laoById.put(lao.getId(), lao);
+      // Update observer if present
+      Subject<Lao> subject = subjectById.get(lao.getId());
+      if (subject != null) {
+        subject.onNext(lao);
+      }
+    } else {
+      // Otherwise, create the entry
+      laoById.put(lao.getId(), lao);
+      // Update lao list
+      laosSubject.onNext(laoById.keySet());
+    }
+  }
+
+  // ============ Lao Unrelated functions ===============
 
   /**
    * Return an Observable to the list of nodes in a given channel.
@@ -117,31 +148,5 @@ public class LAORepository {
 
   public Map<MessageID, MessageGeneral> getMessageById() {
     return messageById;
-  }
-
-  public Optional<LaoView> getLao(String id) {
-    if (laoById.containsKey(id)) {
-      return Optional.of(new LaoView(laoById.get(id).getLao()));
-    }
-    return Optional.empty();
-  }
-
-  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
-    return getLao(channel.extractLaoId())
-        .orElseThrow(() -> new UnknownLaoException(channel.extractLaoId()));
-  }
-
-  public synchronized void updateLao(Lao lao) {
-    if (lao == null) {
-      throw new IllegalArgumentException();
-    }
-
-    if (laoById.containsKey(lao.getId())) {
-      // If the lao already exists, we can push the next update
-      laoById.get(lao.getId()).publish(lao);
-    } else {
-      // Otherwise, create the state
-      laoById.put(lao.getId(), new LAOState(lao));
-    }
   }
 }
