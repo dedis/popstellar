@@ -126,24 +126,15 @@ public class TransactionCoinHandlerTest {
   public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
     messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
-//
-    assertEquals(1, lao.getTransactionByUser().size());
-    assertEquals(1, lao.getTransactionHistoryByUser().size());
-    Set<TransactionObject> transactionObjects =
-        lao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
-    assertTrue(
-        transactionObjects.stream()
-            .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
-//
-
     Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 
     assertEquals(1, updatedLao.getTransactionByUser().size());
     assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
-    TransactionObject transaction_object =
-        updatedLao.getTransactionByUser().get(SENDER_KEY.getPublicKey()).get(0);
-    assertEquals(transaction_object.getChannel(), coinChannel);
-//
+    Set<TransactionObject> transactionObjects =
+        updatedLao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
+    assertTrue(
+        transactionObjects.stream()
+            .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
     assertEquals(1, lao.getPubKeyByHash().size());
   }
 }
