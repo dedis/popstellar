@@ -42,13 +42,10 @@ public class ActivityUtils {
   public static boolean storePersistentData(Context context, PersistentData data) {
     Log.d(TAG, "Initiating storage of " + data);
 
-    try {
-      FileOutputStream fos =
-          context.openFileOutput(PERSISTENT_DATA_FILE_NAME, Context.MODE_PRIVATE);
-      ObjectOutputStream oos = new ObjectOutputStream(fos);
+    try (ObjectOutputStream oos =
+        new ObjectOutputStream(
+            context.openFileOutput(PERSISTENT_DATA_FILE_NAME, Context.MODE_PRIVATE))) {
       oos.writeObject(data);
-      oos.close();
-      fos.close();
     } catch (IOException e) {
       ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
       return false;
@@ -61,12 +58,9 @@ public class ActivityUtils {
     Log.d(TAG, "Initiating loading of data");
 
     PersistentData persistentData;
-    try {
-      FileInputStream fis = context.openFileInput(PERSISTENT_DATA_FILE_NAME);
-      ObjectInputStream ois = new ObjectInputStream(fis);
+    try (ObjectInputStream ois =
+        new ObjectInputStream(context.openFileInput(PERSISTENT_DATA_FILE_NAME))) {
       persistentData = (PersistentData) ois.readObject();
-      ois.close();
-      fis.close();
     } catch (FileNotFoundException e) {
       ErrorUtils.logAndShow(context, TAG, e, R.string.nothing_stored);
       return null;
