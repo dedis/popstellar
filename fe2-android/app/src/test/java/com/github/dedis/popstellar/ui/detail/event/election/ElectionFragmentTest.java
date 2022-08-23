@@ -2,15 +2,17 @@ package com.github.dedis.popstellar.ui.detail.event.election;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
@@ -42,8 +44,9 @@ import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageO
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.ElectionFragmentPageObject.*;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -72,7 +75,10 @@ public class ElectionFragmentTest {
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
+
+  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -98,6 +104,9 @@ public class ElectionFragmentTest {
           election.setStart(START);
           election.setEnd(END);
           election.setEventState(CREATED);
+
+          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
         }
       };
 
@@ -140,8 +149,17 @@ public class ElectionFragmentTest {
   }
 
   @Test
-  public void managementButtonCreatedTest() {
+  public void managementButtonOpensElectionWhenCreated() {
     electionManagementButton().check(matches(withText("OPEN")));
+    electionManagementButton().perform(click());
+    dialogPositiveButton().performClick();
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verify(messageSenderHelper.getMockedSender())
+        .publish(any(), eq(election.getChannel()), any(OpenElection.class));
+    messageSenderHelper.assertSubscriptions();
   }
 
   @Test
@@ -157,9 +175,18 @@ public class ElectionFragmentTest {
   }
 
   @Test
-  public void managementButtonOpenTest() {
+  public void managementButtonEndElectionWhenOpened() {
     openElection();
     electionManagementButton().check(matches(withText("CLOSE")));
+    electionManagementButton().perform(click());
+    dialogPositiveButton().performClick();
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verify(messageSenderHelper.getMockedSender())
+        .publish(any(), eq(election.getChannel()), any(ElectionEnd.class));
+    messageSenderHelper.assertSubscriptions();
   }
 
   @Test
