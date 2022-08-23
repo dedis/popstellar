@@ -38,7 +38,7 @@ type NavigationProps = CompositeScreenProps<
  * UI for the profile of a user.
  */
 const SocialUserProfile = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const route = useRoute<NavigationProps['route']>();
   const { userPkString } = route.params;
   const userPublicKey = new PublicKey(userPkString);
@@ -51,7 +51,7 @@ const SocialUserProfile = () => {
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
   );
 
   const displayNoUser = () => (

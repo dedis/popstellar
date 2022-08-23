@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialHome = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -46,7 +46,7 @@ const SocialHome = () => {
   }
 
   const publishChirp = () => {
-    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
+    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -64,7 +64,7 @@ const SocialHome = () => {
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
   );
 
   return (
@@ -80,8 +80,8 @@ const SocialHome = () => {
             onChangeText={setInputChirp}
             onPress={publishChirp}
             // The publish button is disabled when the user public key is not defined
-            publishIsDisabledCond={!currentUserPublicKey}
-            currentUserPublicKey={currentUserPublicKey}
+            publishIsDisabledCond={!currentUserPopTokenPublicKey}
+            currentUserPublicKey={currentUserPopTokenPublicKey}
           />
           <FlatList
             data={chirpList}

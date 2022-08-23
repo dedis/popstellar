@@ -22,19 +22,19 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 const styles = socialMediaProfileStyles;
 
 const SocialProfile = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const laoId = SocialHooks.useCurrentLaoId();
   if (!laoId) {
     throw new Error('Impossible to render Social Profile, current lao id is undefined');
   }
 
   const userChirps = useMemo(
-    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPublicKey),
-    [currentUserPublicKey, laoId],
+    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPopTokenPublicKey),
+    [currentUserPopTokenPublicKey, laoId],
   );
   const userChirpList = useSelector(userChirps);
 
-  if (!currentUserPublicKey) {
+  if (!currentUserPopTokenPublicKey) {
     return (
       <View style={styles.textUnavailableView}>
         <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
@@ -43,16 +43,16 @@ const SocialProfile = () => {
   }
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
   );
 
   return (
     <ScreenWrapper>
       <View style={styles.viewCenter}>
         <View style={styles.topView}>
-          <ProfileIcon publicKey={currentUserPublicKey} size={8} scale={10} />
+          <ProfileIcon publicKey={currentUserPopTokenPublicKey} size={8} scale={10} />
           <View style={styles.textView}>
-            <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
+            <Text style={styles.profileText}>{currentUserPopTokenPublicKey.valueOf()}</Text>
             <Text>{`${userChirpList.length} ${
               userChirpList.length === 1 ? 'chirp' : 'chirps'
             }`}</Text>

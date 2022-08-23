@@ -7,5 +7,5 @@ import { PublicKey } from 'core/objects';
  * feature.
  */
 export const SocialMediaContext = React.createContext({
-  currentUserPublicKey: new PublicKey(''),
+  currentUserPopTokenPublicKey: undefined as unknown as PublicKey,
 });
