@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
-import QrReader from 'react-qr-reader';
-
+// import QrReader from 'react-qr-reader';
 import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -43,7 +42,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
   },
-  flipButtonContainer: { ...QrCodeScannerUIElementContainer, alignSelf: 'flex-end' } as ViewStyle,
+  flipButtonContainer: {
+    ...QrCodeScannerUIElementContainer,
+    alignSelf: 'flex-end',
+  } as ViewStyle,
   flipButton: {
     alignSelf: 'flex-end',
     marginLeft: 'auto',
@@ -88,13 +90,15 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     <View style={styles.container}>
       <View style={styles.camera}>
         {showCamera && (
-          <QrReader
+          <Text>No QR reader</Text>
+          /* <QrReader
             delay={300}
             onError={handleError}
             onScan={handleScan}
             facingMode={facingMode}
             className="qr-code-scanner"
           />
+        */
         )}
       </View>
       <View style={styles.uiContainer}>
