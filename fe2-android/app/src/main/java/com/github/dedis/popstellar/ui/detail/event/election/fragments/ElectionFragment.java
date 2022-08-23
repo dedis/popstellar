@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -95,7 +94,7 @@ public class ElectionFragment extends Fragment {
                               laoDetailViewModel
                                   .openElection(election)
                                   .subscribe(
-                                      () -> Log.d(TAG, "opened election successfully"),
+                                      () -> {},
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),
@@ -116,7 +115,7 @@ public class ElectionFragment extends Fragment {
                               laoDetailViewModel
                                   .endElection(election)
                                   .subscribe(
-                                      () -> Log.d(TAG, "ended election successfully"),
+                                      () -> {},
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),

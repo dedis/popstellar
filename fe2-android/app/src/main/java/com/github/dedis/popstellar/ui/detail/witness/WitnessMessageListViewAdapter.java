@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.detail.witness;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.*;
 import android.widget.BaseAdapter;
 
@@ -110,11 +109,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                         viewModel
                             .signMessage(messages.get(position))
                             .subscribe(
-                                () ->
-                                    Log.d(
-                                        TAG,
-                                        "Verifying the signature of  message  with id: "
-                                            + messages.get(position).getMessageId()),
+                                () -> {},
                                 error ->
                                     ErrorUtils.logAndShow(
                                         activity, TAG, error, R.string.error_sign_message))));

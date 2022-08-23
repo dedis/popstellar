@@ -272,7 +272,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                       questionsFiltered)
                   .subscribe(
                       () -> {
-                        Log.d(TAG, "setup an election");
                         setCurrentFragment(
                             getParentFragmentManager(),
                             R.id.fragment_lao_detail,

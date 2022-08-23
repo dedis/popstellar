@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -83,7 +82,7 @@ public class SocialMediaSendFragment extends Fragment {
                   null,
                   Instant.now().getEpochSecond())
               .subscribe(
-                  msg -> Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId()),
+                  msg -> {},
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {

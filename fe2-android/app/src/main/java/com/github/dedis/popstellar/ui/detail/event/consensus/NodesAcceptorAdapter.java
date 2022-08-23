@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.consensus;
 
-import android.util.Log;
 import android.view.*;
 import android.widget.BaseAdapter;
 
@@ -122,7 +121,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
                         laoDetailViewModel
                             .sendConsensusElectAccept(electInstance, true)
                             .subscribe(
-                                () -> Log.d(TAG, "sent an elect_accept successfully"),
+                                () -> {},
                                 error ->
                                     ErrorUtils.logAndShow(
                                         parent.getContext(),

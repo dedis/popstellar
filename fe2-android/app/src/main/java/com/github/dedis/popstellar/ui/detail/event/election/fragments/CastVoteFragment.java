@@ -74,7 +74,6 @@ public class CastVoteFragment extends Fragment {
                 .sendVote(electionVotes)
                 .subscribe(
                     () -> {
-                      Log.d(TAG, "sent a vote successfully");
                       setCurrentFragment(
                           getParentFragmentManager(),
                           R.id.fragment_lao_detail,

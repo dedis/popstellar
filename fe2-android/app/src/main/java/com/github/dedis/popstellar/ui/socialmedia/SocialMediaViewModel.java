@@ -139,6 +139,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =
@@ -160,6 +161,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
     return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =

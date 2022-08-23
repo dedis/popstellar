@@ -111,7 +111,6 @@ public class RollCallFragment extends Fragment {
                       .closeRollCall()
                       .subscribe(
                           () -> {
-                            Log.d(TAG, "closed the roll call");
                             setCurrentFragment(
                                 getParentFragmentManager(),
                                 R.id.fragment_lao_detail,

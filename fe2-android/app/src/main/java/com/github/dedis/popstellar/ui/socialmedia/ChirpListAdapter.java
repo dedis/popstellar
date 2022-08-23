@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -97,10 +96,8 @@ public class ChirpListAdapter extends BaseAdapter {
                   socialMediaViewModel
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(
-                          msg -> {
-                            Log.d(TAG, "Deleted chirp with messageId: " + msg.getMessageId());
-                            Toast.makeText(context, "Deleted chirp!", Toast.LENGTH_LONG).show();
-                          },
+                          msg ->
+                              Toast.makeText(context, "Deleted chirp!", Toast.LENGTH_LONG).show(),
                           error ->
                               ErrorUtils.logAndShow(
                                   context, TAG, error, R.string.error_delete_chirp))));

@@ -174,9 +174,7 @@ public class ElectionStartFragment extends Fragment {
                     .sendConsensusElect(
                         Instant.now().getEpochSecond(), electionId, "election", "state", "started")
                     .subscribe(
-                        msg ->
-                            Log.d(
-                                TAG, "created a consensus with message id : " + msg.getMessageId()),
+                        msg -> {},
                         error ->
                             ErrorUtils.logAndShow(
                                 requireContext(), TAG, error, R.string.error_start_election))));
