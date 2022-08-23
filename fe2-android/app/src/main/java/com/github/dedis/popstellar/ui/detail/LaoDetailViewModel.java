@@ -32,7 +32,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
-import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -250,6 +249,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
 
     return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoP Token to send votes : " + token))
         .flatMapCompletable(
             token -> {
               CastVote<?> vote = createCastVote(votes, election, lao);
@@ -458,7 +458,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   private void openRollCall(String currentId, Lao lao, RollCall rollCall) {
     currentRollCallId = currentId;
-    Log.d(TAG, "opening rollcall with current id = " + currentRollCallId);
+    Log.d(TAG, "opening rollcall with id " + currentRollCallId);
     scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
     attendees.addAll(rollCall.getAttendees());
 
@@ -495,7 +495,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
         .doOnComplete(
             () -> {
-              Log.d(TAG, "closed the roll call");
+              Log.d(TAG, "closed the roll call with id " + currentRollCallId);
               currentRollCallId = "";
               attendees.clear();
             });
