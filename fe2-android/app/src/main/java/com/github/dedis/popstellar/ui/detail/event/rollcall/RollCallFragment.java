@@ -107,12 +107,11 @@ public class RollCallFragment extends Fragment {
                   laoDetailViewModel
                       .closeRollCall()
                       .subscribe(
-                          () -> {
-                            setCurrentFragment(
-                                getParentFragmentManager(),
-                                R.id.fragment_lao_detail,
-                                LaoDetailFragment::newInstance);
-                          },
+                          () ->
+                              setCurrentFragment(
+                                  getParentFragmentManager(),
+                                  R.id.fragment_lao_detail,
+                                  LaoDetailFragment::newInstance),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_close_rollcall)));
