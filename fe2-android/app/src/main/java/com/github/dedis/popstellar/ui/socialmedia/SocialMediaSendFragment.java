@@ -16,7 +16,6 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 
 /** Fragment where we can write and send a chirp */
 @AndroidEntryPoint
@@ -26,8 +25,6 @@ public class SocialMediaSendFragment extends Fragment {
 
   private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public static SocialMediaSendFragment newInstance() {
     return new SocialMediaSendFragment();
@@ -57,13 +54,6 @@ public class SocialMediaSendFragment extends Fragment {
     setupSendChirpButton();
   }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    disposables.dispose();
-  }
-
   private void setupSendChirpButton() {
     mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
   }
@@ -75,7 +65,7 @@ public class SocialMediaSendFragment extends Fragment {
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
-      disposables.add(
+      mSocialMediaViewModel.addDisposable(
           mSocialMediaViewModel
               .sendChirp(
                   mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),

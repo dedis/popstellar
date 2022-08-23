@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
@@ -41,8 +40,6 @@ public class DigitalCashIssueFragment extends Fragment {
   private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
   private int selectAllLaoWitnesses;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   /**
    * Use this factory method to create a new instance of this fragment using the provided
@@ -72,13 +69,6 @@ public class DigitalCashIssueFragment extends Fragment {
     setupSendCoinButton();
     setUpGetPostTransactionEvent();
     setTheAdapterRollCallAttendee();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    disposables.dispose();
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */
@@ -201,7 +191,7 @@ public class DigitalCashIssueFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      disposables.add(
+      mViewModel.addDisposable(
           mViewModel
               .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
               .subscribe(

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 import me.relex.circleindicator.CircleIndicator3;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
@@ -39,8 +38,6 @@ public class CastVoteFragment extends Fragment {
 
   private Button voteButton;
   private LaoDetailViewModel mLaoDetailViewModel;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   private final View.OnClickListener buttonListener =
       v -> {
@@ -69,7 +66,7 @@ public class CastVoteFragment extends Fragment {
           electionVotes.add(electionVote);
         }
 
-        disposables.add(
+        mLaoDetailViewModel.addDisposable(
             mLaoDetailViewModel
                 .sendVote(electionVotes)
                 .subscribe(
@@ -146,12 +143,6 @@ public class CastVoteFragment extends Fragment {
 
     voteButton.setOnClickListener(buttonListener);
     return mCastVoteFragBinding.getRoot();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    disposables.dispose();
   }
 
   private List<Integer> setEmptyVoteList() {

@@ -21,8 +21,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import io.reactivex.disposables.CompositeDisposable;
-
 import static com.github.dedis.popstellar.utility.Constants.*;
 
 public class ElectionFragment extends Fragment {
@@ -49,8 +47,6 @@ public class ElectionFragment extends Fragment {
   private final EnumMap<EventState, Integer> actionIconMap = buildActionIconMap();
   private final EnumMap<EventState, Integer> actionTextMap = buildActionTextMap();
   private final EnumMap<EventState, Boolean> actionEnablingMap = buildActionEnablingMap();
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public static ElectionFragment newInstance() {
     return new ElectionFragment();
@@ -90,7 +86,7 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          disposables.add(
+                          laoDetailViewModel.addDisposable(
                               laoDetailViewModel
                                   .openElection(election)
                                   .subscribe(
@@ -111,7 +107,7 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          disposables.add(
+                          laoDetailViewModel.addDisposable(
                               laoDetailViewModel
                                   .endElection(election)
                                   .subscribe(
@@ -157,12 +153,6 @@ public class ElectionFragment extends Fragment {
     election.getState().observe(getViewLifecycleOwner(), eventState -> setupElectionContent());
 
     return view;
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    disposables.dispose();
   }
 
   private void setupElectionContent() {

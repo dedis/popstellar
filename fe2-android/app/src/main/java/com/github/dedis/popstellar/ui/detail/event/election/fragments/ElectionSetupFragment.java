@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 import me.relex.circleindicator.CircleIndicator3;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
@@ -83,8 +82,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
               isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());
         }
       };
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public static ElectionSetupFragment newInstance() {
     return new ElectionSetupFragment();
@@ -192,12 +189,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     setupElectionSubmitButton();
   }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    disposables.dispose();
-  }
-
   /** Setups the submit button that creates the new election */
   private void setupElectionSubmitButton() {
     submitButton.setOnClickListener(
@@ -258,7 +249,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   questionsFiltered,
                   ballotsOptionsFiltered));
 
-          disposables.add(
+          mLaoDetailViewModel.addDisposable(
               mLaoDetailViewModel
                   .createNewElection(
                       electionVersion,

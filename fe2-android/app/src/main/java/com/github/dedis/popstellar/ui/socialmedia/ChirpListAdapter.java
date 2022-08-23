@@ -5,10 +5,6 @@ import android.graphics.Color;
 import android.view.*;
 import android.widget.*;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -16,8 +12,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.time.Instant;
 import java.util.List;
-
-import io.reactivex.disposables.CompositeDisposable;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
@@ -28,25 +22,14 @@ public class ChirpListAdapter extends BaseAdapter {
   private final SocialMediaViewModel socialMediaViewModel;
   private final Context context;
   private final LayoutInflater layoutInflater;
-  private final CompositeDisposable disposables = new CompositeDisposable();
   private List<Chirp> chirps;
 
   public ChirpListAdapter(
-      FragmentActivity activity, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
-    this.context = activity;
+      Context ctx, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
+    this.context = ctx;
     this.socialMediaViewModel = socialMediaViewModel;
     this.chirps = chirps;
-    layoutInflater = LayoutInflater.from(activity);
-
-    activity
-        .getLifecycle()
-        .addObserver(
-            (LifecycleEventObserver)
-                (source, event) -> {
-                  if (event.getTargetState() == Lifecycle.State.DESTROYED) {
-                    disposables.dispose();
-                  }
-                });
+    layoutInflater = LayoutInflater.from(ctx);
   }
 
   public void replaceList(List<Chirp> chirps) {
@@ -92,7 +75,7 @@ public class ChirpListAdapter extends BaseAdapter {
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(
           v ->
-              disposables.add(
+              socialMediaViewModel.addDisposable(
                   socialMediaViewModel
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(

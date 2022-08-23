@@ -169,7 +169,7 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
     electionStart.setOnClickListener(
         clicked ->
-            disposables.add(
+            mLaoDetailViewModel.addDisposable(
                 mLaoDetailViewModel
                     .sendConsensusElect(
                         Instant.now().getEpochSecond(), electionId, "election", "state", "started")

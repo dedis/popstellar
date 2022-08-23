@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
@@ -60,8 +59,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
           // Nothing needed here
         }
       };
-
-  public static final CompositeDisposable disposables = new CompositeDisposable();
 
   public static RollCallCreationFragment newInstance() {
     return new RollCallCreationFragment();
@@ -102,12 +99,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupCancelButton();
   }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    disposables.dispose();
-  }
-
   private void setupConfirmButton() {
     confirmButton.setOnClickListener(v -> createRollCall(false));
   }
@@ -133,7 +124,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
             title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
 
     if (open) {
-      disposables.add(
+      mLaoDetailViewModel.addDisposable(
           createRollCall
               .flatMapCompletable(mLaoDetailViewModel::openRollCall)
               .subscribe(
@@ -143,7 +134,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));
     } else {
-      disposables.add(
+      mLaoDetailViewModel.addDisposable(
           createRollCall.subscribe(
               id ->
                   setCurrentFragment(

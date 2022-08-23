@@ -26,7 +26,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
@@ -47,8 +46,6 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Override
   public void onAttach(@NonNull Context context) {
@@ -147,7 +144,10 @@ public final class QRCodeScanningFragment extends Fragment {
     if (mPreview != null) {
       mPreview.release();
     }
-    disposables.dispose();
+  }
+
+  private LaoDetailViewModel getLaoViewModel() {
+    return (LaoDetailViewModel) mQRCodeScanningViewModel;
   }
 
   private void startCamera() throws SecurityException {
@@ -183,18 +183,19 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setPositiveButton(
         R.string.confirm,
         (dialog, which) ->
-            disposables.add(
-                ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                    .closeRollCall()
-                    .subscribe(
-                        () ->
-                            setCurrentFragment(
-                                getParentFragmentManager(),
-                                R.id.fragment_lao_detail,
-                                LaoDetailFragment::newInstance),
-                        error ->
-                            ErrorUtils.logAndShow(
-                                requireContext(), TAG, error, R.string.error_close_rollcall))));
+            getLaoViewModel()
+                .addDisposable(
+                    getLaoViewModel()
+                        .closeRollCall()
+                        .subscribe(
+                            () ->
+                                setCurrentFragment(
+                                    getParentFragmentManager(),
+                                    R.id.fragment_lao_detail,
+                                    LaoDetailFragment::newInstance),
+                            error ->
+                                ErrorUtils.logAndShow(
+                                    requireContext(), TAG, error, R.string.error_close_rollcall))));
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     mPreview.stop();
     closeRollCallAlert = builder.create();
@@ -236,7 +237,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   void observeWarningEvent() {
-    ((LaoDetailViewModel) mQRCodeScanningViewModel)
+    getLaoViewModel()
         .getScanWarningEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -249,7 +250,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   void observeNbAttendeesEvent() {
-    ((LaoDetailViewModel) mQRCodeScanningViewModel)
+    getLaoViewModel()
         .getNbAttendees()
         .observe(
             getViewLifecycleOwner(),
@@ -260,7 +261,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   void observeWitnessScanConfirmEvent() {
-    ((LaoDetailViewModel) mQRCodeScanningViewModel)
+    getLaoViewModel()
         .getWitnessScanConfirmEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -273,7 +274,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   void observeAttendeeScanConfirmEvent() {
-    ((LaoDetailViewModel) mQRCodeScanningViewModel)
+    getLaoViewModel()
         .getAttendeeScanConfirmEvent()
         .observe(
             getViewLifecycleOwner(),

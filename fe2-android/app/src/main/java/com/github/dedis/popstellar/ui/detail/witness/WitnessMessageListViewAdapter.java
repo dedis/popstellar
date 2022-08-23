@@ -7,8 +7,6 @@ import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
@@ -17,8 +15,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
-
-import io.reactivex.disposables.CompositeDisposable;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
@@ -29,23 +25,12 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   private List<WitnessMessage> messages;
 
   private final FragmentActivity activity;
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public WitnessMessageListViewAdapter(
       List<WitnessMessage> messages, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.viewModel = viewModel;
     this.activity = activity;
     setList(messages);
-
-    activity
-        .getLifecycle()
-        .addObserver(
-            (LifecycleEventObserver)
-                (source, event) -> {
-                  if (event.getTargetState() == Lifecycle.State.DESTROYED) {
-                    disposables.dispose();
-                  }
-                });
   }
 
   public void replaceList(List<WitnessMessage> messages) {
@@ -105,7 +90,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
             adb.setPositiveButton(
                 "Confirm",
                 (dialog, which) ->
-                    disposables.add(
+                    viewModel.addDisposable(
                         viewModel
                             .signMessage(messages.get(position))
                             .subscribe(

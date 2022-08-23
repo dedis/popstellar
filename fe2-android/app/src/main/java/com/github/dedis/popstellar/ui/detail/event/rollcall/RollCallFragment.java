@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
@@ -55,8 +54,6 @@ public class RollCallFragment extends Fragment {
   private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
   private final EnumMap<EventState, Integer> managementIconMap = buildManagementIconMap();
   private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public RollCallFragment() {
     // Required empty public constructor
@@ -95,7 +92,7 @@ public class RollCallFragment extends Fragment {
           switch (state) {
             case CLOSED:
             case CREATED:
-              disposables.add(
+              laoDetailViewModel.addDisposable(
                   laoDetailViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
@@ -106,7 +103,7 @@ public class RollCallFragment extends Fragment {
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              disposables.add(
+              laoDetailViewModel.addDisposable(
                   laoDetailViewModel
                       .closeRollCall()
                       .subscribe(
@@ -134,12 +131,6 @@ public class RollCallFragment extends Fragment {
     retrieveAndDisplayPublicKey(view);
 
     return view;
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    disposables.dispose();
   }
 
   private void openScanning() {

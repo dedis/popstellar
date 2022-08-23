@@ -24,8 +24,6 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
-import io.reactivex.disposables.CompositeDisposable;
-
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
  * method to create an instance of this fragment.
@@ -34,8 +32,6 @@ public class DigitalCashSendFragment extends Fragment {
   private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
   private DigitalCashSendFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public DigitalCashSendFragment() {
     // Required empty constructor
@@ -109,13 +105,6 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    disposables.dispose();
-  }
-
   public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
@@ -177,7 +166,7 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      disposables.add(
+      mViewModel.addDisposable(
           mViewModel
               .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
               .subscribe(

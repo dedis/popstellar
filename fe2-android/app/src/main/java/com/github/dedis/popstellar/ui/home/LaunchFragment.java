@@ -15,8 +15,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
 /** Fragment used to display the Launch UI */
 @AndroidEntryPoint
@@ -26,8 +24,6 @@ public final class LaunchFragment extends Fragment {
 
   private LaunchFragmentBinding binding;
   private HomeViewModel viewModel;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public static LaunchFragment newInstance() {
     return new LaunchFragment();
@@ -53,7 +49,7 @@ public final class LaunchFragment extends Fragment {
     binding.buttonLaunch.setOnClickListener(
         v -> {
           Context ctx = requireContext();
-          Disposable disposable =
+          viewModel.addDisposable(
               viewModel
                   .launchLao(binding.laoNameEntry.getText().toString())
                   .subscribe(
@@ -61,8 +57,7 @@ public final class LaunchFragment extends Fragment {
                         Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
                         startActivity(LaoDetailActivity.newIntentForLao(ctx, laoId));
                       },
-                      error -> ErrorUtils.logAndShow(ctx, TAG, error, R.string.error_create_lao));
-          disposables.add(disposable);
+                      error -> ErrorUtils.logAndShow(ctx, TAG, error, R.string.error_create_lao)));
         });
   }
 
@@ -72,12 +67,5 @@ public final class LaunchFragment extends Fragment {
           binding.laoNameEntry.getText().clear();
           viewModel.setCurrentTab(HomeTab.HOME);
         });
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    disposables.dispose();
   }
 }

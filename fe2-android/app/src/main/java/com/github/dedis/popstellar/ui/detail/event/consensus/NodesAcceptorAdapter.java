@@ -4,7 +4,7 @@ import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
@@ -17,8 +17,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import java.util.List;
 import java.util.Optional;
 
-import io.reactivex.disposables.CompositeDisposable;
-
 public class NodesAcceptorAdapter extends BaseAdapter {
 
   private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
@@ -27,8 +25,6 @@ public class NodesAcceptorAdapter extends BaseAdapter {
   private final String instanceId;
   private final LaoDetailViewModel laoDetailViewModel;
   private final LifecycleOwner lifecycleOwner;
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public NodesAcceptorAdapter(
       List<ConsensusNode> nodes,
@@ -41,15 +37,6 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     this.instanceId = instanceId;
     this.laoDetailViewModel = laoDetailViewModel;
     this.lifecycleOwner = lifecycleOwner;
-    lifecycleOwner
-        .getLifecycle()
-        .addObserver(
-            (LifecycleEventObserver)
-                (owner, event) -> {
-                  if (event.getTargetState() == Lifecycle.State.DESTROYED) {
-                    disposables.dispose();
-                  }
-                });
   }
 
   public void setList(List<ConsensusNode> nodes) {
@@ -117,7 +104,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
         electInstance ->
             binding.nodeButton.setOnClickListener(
                 clicked ->
-                    disposables.add(
+                    laoDetailViewModel.addDisposable(
                         laoDetailViewModel
                             .sendConsensusElectAccept(electInstance, true)
                             .subscribe(

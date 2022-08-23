@@ -32,6 +32,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -55,6 +57,8 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
 
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
   public HomeViewModel(
       @NonNull Application application,
@@ -74,6 +78,12 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
     isSocialMediaEnabled = Transformations.map(laos, laoSet -> laoSet != null && !laoSet.isEmpty());
+  }
+
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    disposables.dispose();
   }
 
   @Override
@@ -178,5 +188,18 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
     getApplication().startActivity(intent);
+  }
+
+  /**
+   * This function should be used to add disposable object generated from subscription to sent
+   * messages flows
+   *
+   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
+   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
+   *
+   * @param disposable to add
+   */
+  public void addDisposable(Disposable disposable) {
+    this.disposables.add(disposable);
   }
 }
