@@ -46,7 +46,6 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
-  private final MutableLiveData<HomeTab> currentTab = new MutableLiveData<>(HomeTab.HOME);
   private final LiveData<List<Lao>> laos;
   private final LiveData<Boolean> isSocialMediaEnabled;
 
