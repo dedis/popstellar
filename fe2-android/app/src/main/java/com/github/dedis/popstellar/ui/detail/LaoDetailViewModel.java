@@ -52,7 +52,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
-  private static final String PUBLISH_MESSAGE = "sending publish message";
   /*
    * LiveData objects for capturing events like button clicks
    */
@@ -188,7 +187,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new UnknownElectionException());
+      return Completable.error(new UnknownLaoException());
     }
 
     Channel channel = e.getChannel();
@@ -197,7 +196,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     // The time will have to be modified on the backend
     OpenElection openElection = new OpenElection(laoId, e.getId(), e.getStartTimestamp());
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, openElection);
@@ -208,7 +206,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new UnknownElectionException());
+      return Completable.error(new UnknownLaoException());
     }
 
     Channel channel = election.getChannel();
@@ -216,7 +214,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     ElectionEnd electionEnd =
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, electionEnd);
@@ -319,7 +316,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             question,
             electionVersion);
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, electionSetup);
@@ -351,7 +347,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         new CreateRollCall(
             title, creation, proposedStart, proposedEnd, "Lausanne", description, lao.getId());
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), lao.getChannel(), createRollCall)
@@ -385,7 +380,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Channel channel = lao.getChannel().subChannel("consensus");
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), consensusElect, gson);
 
     return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -417,7 +411,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
-    Log.d(TAG, PUBLISH_MESSAGE);
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept);
@@ -516,7 +509,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
               // Generate the signature of the message
               Signature signature = keyPair.sign(witnessMessage.getMessageId());
 
-              Log.d(TAG, PUBLISH_MESSAGE);
+              Log.d(TAG, "Signed message id, resulting signature : " + signature);
               WitnessMessageSignature signatureMessage =
                   new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
 

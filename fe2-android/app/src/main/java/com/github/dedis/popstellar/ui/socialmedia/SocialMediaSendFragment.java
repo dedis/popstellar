@@ -77,10 +77,10 @@ public class SocialMediaSendFragment extends Fragment {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
                       ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_sending_chirp);
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
                     } else {
                       ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_post_transaction);
+                          requireContext(), TAG, error, R.string.error_sending_chirp);
                     }
                   }));
       mSocialMediaViewModel.setCurrentTab(SocialMediaTab.HOME);
