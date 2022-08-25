@@ -18,7 +18,7 @@ export interface ServerReducerState {
   byLaoId: {
     [laoId: string]: {
       byAddress: {
-        [address: ServerAddress]: ServerState;
+        [address: string]: ServerState;
       };
       allAddresses: ServerAddress[];
       backendKeyByFrontendKey: {
@@ -43,7 +43,7 @@ const serverSlice = createSlice({
 
       let laoState = {
         byAddress: {} as {
-          [address: ServerAddress]: ServerState;
+          [address: string]: ServerState;
         },
         allAddresses: [] as string[],
         backendKeyByFrontendKey: {} as {
@@ -151,17 +151,21 @@ export const getServerPublicKeyByAddress = (
   return undefined;
 };
 
+const sGetServerState = (state: any) => getServerState(state);
+const sGetLaoState = (state: any) => getLaosState(state);
+const sGetServersByLaoId = (state: any) => getServerState(state).byLaoId;
+
 /**
- * A function that creats a selector that retrieve the public key of the lao organizer's backend
+ * A function that creates a selector that retrieve the public key of the lao organizer's backend
  * @param laoId The lao id
  * @returns The public key of the lao organizer's backend and undefined if there is none
  */
 export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
   createSelector(
     // First input: The server state
-    (state) => getServerState(state),
+    sGetServerState,
     // Second input: The laos state
-    (state) => getLaosState(state),
+    sGetLaoState,
     // Selector: returns the server object associated to the given address
     (serverState: ServerReducerState, laoState: LaoReducerState): PublicKey | undefined => {
       // if there is no current lao, return undefined
@@ -190,7 +194,7 @@ export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
 export const makeServerSelector = (laoId: string, address: ServerAddress) =>
   createSelector(
     // First input: map of lao ids to servers
-    (state) => getServerState(state).byLaoId,
+    sGetServersByLaoId,
     // Selector: returns the server object associated to the given address
     (byLaoId: ServerReducerState['byLaoId']): LaoServer | undefined => {
       if (laoId in byLaoId && address in byLaoId[laoId].byAddress) {

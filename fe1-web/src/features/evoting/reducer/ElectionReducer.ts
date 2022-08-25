@@ -73,6 +73,8 @@ export default {
   [ELECTION_REDUCER_PATH]: electionSlice.reducer,
 };
 
+const sGetElectionsById = (state: any) => getElectionState(state).byId;
+
 /**
  * Creates a selector that retrieves an election by its id
  * @param electionId The if of the election / event to retrieve
@@ -83,7 +85,7 @@ export const makeElectionSelector = (electionId: Hash | string) => {
 
   return createSelector(
     // First input: a map of ids to elections
-    (state) => getElectionState(state).byId,
+    sGetElectionsById,
     // Selector: returns the selected election
     (electionById: Record<string, ElectionState>): Election | undefined => {
       if (!(electionIdString in electionById)) {

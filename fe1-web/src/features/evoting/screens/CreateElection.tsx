@@ -9,10 +9,10 @@ import {
   ConfirmModal,
   DatePicker,
   DismissModal,
-  TextInputList,
-  Input,
   DropdownSelector,
+  Input,
   PoPTextButton,
+  TextInputList,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -218,6 +218,8 @@ const CreateElection = () => {
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
       {questions.map((value, idx) => (
+        // FIXME: Do not use index in key
+        // eslint-disable-next-line react/no-array-index-key
         <View key={idx.toString()}>
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_question} {idx + 1}
@@ -227,7 +229,14 @@ const CreateElection = () => {
             testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
-                prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
+                prev.map((item, id) =>
+                  id === idx
+                    ? {
+                        ...item,
+                        question: text,
+                      }
+                    : item,
+                ),
               )
             }
             placeholder={STRINGS.election_create_question_placeholder}
@@ -240,7 +249,12 @@ const CreateElection = () => {
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
-                  id === idx ? { ...item, ballot_options: ballot_options } : item,
+                  id === idx
+                    ? {
+                        ...item,
+                        ballot_options: ballot_options,
+                      }
+                    : item,
                 ),
               )
             }

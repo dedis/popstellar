@@ -76,7 +76,7 @@ export default ElectionListItem;
 /**
  * Creates an event type object that can then be passed to the event feature
  */
-export const ElectionEventType: EvotingInterface['eventTypes']['0'] = {
+export const ElectionEventType: EvotingInterface['eventTypes'][0] = {
   eventType: Election.EVENT_TYPE,
   eventName: STRINGS.election_event_name,
   navigationNames: {

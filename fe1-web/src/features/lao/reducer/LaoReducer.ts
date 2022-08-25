@@ -258,12 +258,19 @@ export const {
 
 export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];
 
+// Selector helper functions
+const sGetCurrentLaoId = (state: any) => getLaosState(state)?.currentId;
+const sGetLaosById = (state: any) => getLaosState(state).byId;
+const sGetAllIds = (state: any) => getLaosState(state).allIds;
+const sGetId = (id: string | undefined) => () => id;
+const sGetUserPublicKey = (state: any) => getKeyPairState(state)?.keyPair?.publicKey;
+
 export function makeLao(id: string | undefined = undefined) {
   return createSelector(
     // First input: all LAOs map
-    (state) => getLaosState(state).byId,
+    sGetLaosById,
     // Second input: current LAO id
-    (state) => id || getLaosState(state).currentId,
+    sGetId(id) || sGetCurrentLaoId,
     // Selector: returns a LaoState -- should it return a Lao object?
     (laoMap: Record<string, LaoState>, currentId: string | undefined): Lao | undefined => {
       if (currentId === undefined || !(currentId in laoMap)) {
@@ -300,14 +307,14 @@ export const selectCurrentLao = makeLao();
 
 export const selectCurrentLaoId = createSelector(
   // First input: current LAO id
-  (state) => getLaosState(state).currentId,
+  sGetCurrentLaoId,
   (currentId: string | undefined): Hash | undefined =>
     currentId ? new Hash(currentId) : undefined,
 );
 
 export const selectLaoIdToNameMap = createSelector(
   // First input: current LAO id
-  (state) => getLaosState(state).byId,
+  sGetLaosById,
   (byId: Record<string, LaoState>): Record<string, string> =>
     Object.keys(byId).reduce((obj, laoId) => {
       obj[laoId] = byId[laoId].name;
@@ -317,16 +324,16 @@ export const selectLaoIdToNameMap = createSelector(
 
 export const selectLaoIdsList = createSelector(
   // Input: sorted LAO ids list
-  (state) => getLaosState(state).allIds,
+  sGetAllIds,
   // Selector: returns an array of LaoIDs
   (laoIds: string[]): Hash[] => laoIds.map((laoId) => new Hash(laoId)),
 );
 
 export const selectLaosList = createSelector(
   // First input: all LAOs map
-  (state) => getLaosState(state).byId,
+  sGetLaosById,
   // Second input: sorted LAO ids list
-  (state) => getLaosState(state).allIds,
+  sGetAllIds,
   // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
   (laoMap: Record<string, LaoState>, laoIds: string[]): Lao[] =>
     laoIds.map((id) => Lao.fromState(laoMap[id])),
@@ -334,7 +341,7 @@ export const selectLaosList = createSelector(
 
 export const selectLaosMap = createSelector(
   // First input: all LAOs map
-  (state) => getLaosState(state).byId,
+  sGetLaosById,
   // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
   (laoMap: Record<string, LaoState>): Record<string, Lao> =>
     Object.keys(laoMap).reduce((acc, id) => {
@@ -351,11 +358,11 @@ export const selectLaosMap = createSelector(
 export const makeIsLaoOrganizerSelector = (laoId?: string) =>
   createSelector(
     // First input: all LAOs map
-    (state) => getLaosState(state).byId,
+    sGetLaosById,
     // Second input: current LAO id
-    (state) => laoId || getLaosState(state)?.currentId,
+    sGetId(laoId) || sGetCurrentLaoId,
     // Third input: the public key of the user
-    (state) => getKeyPairState(state)?.keyPair?.publicKey,
+    sGetUserPublicKey,
     // Selector: returns whether the user is an organizer of the current lao
     (
       laoMap: Record<string, LaoState>,
@@ -374,11 +381,11 @@ export const selectIsLaoOrganizer = makeIsLaoOrganizerSelector();
 export const makeIsLaoWitnessSelector = (laoId?: string) =>
   createSelector(
     // First input: all LAOs map
-    (state) => getLaosState(state).byId,
+    sGetLaosById,
     // Second input: current LAO id
-    (state) => laoId || getLaosState(state)?.currentId,
+    sGetId(laoId) || sGetCurrentLaoId,
     // Third input: the public key of the user
-    (state) => getKeyPairState(state)?.keyPair?.publicKey,
+    sGetUserPublicKey,
     // Selector: returns whether the user is a witness of the current lao
     (
       laoMap: Record<string, LaoState>,

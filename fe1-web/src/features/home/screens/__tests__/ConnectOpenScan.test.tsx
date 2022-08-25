@@ -1,25 +1,14 @@
-import { useNavigation } from '@react-navigation/core';
-import { act, render, waitFor } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import React from 'react';
 // @ts-ignore
-import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import {
-  mockAddress,
-  mockChannel,
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockReduxAction,
-} from '__tests__/utils';
+import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { subscribeToChannel } from 'core/network';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
-import { ConnectToLao } from 'features/home/objects';
-import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
+import { resubscribeToLao } from 'features/lao/functions';
 import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
@@ -45,13 +34,15 @@ jest.mock('@react-navigation/core', () => {
 
 // Is mocked
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const { navigate: mockNavigate, addListener } = useNavigation();
+// const { navigate: mockNavigate, addListener } = useNavigation();
 
+/*
 const didFocus = () =>
   // call focus event listener
   (addListener as jest.Mock).mock.calls
     .filter(([eventName]) => eventName === 'focus')
     .forEach((args) => args[1]());
+*/
 
 const mockConnection = 0;
 
@@ -84,7 +75,8 @@ const contextValue = {
 const mockStore = createStore(combineReducers(laoReducer));
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
-describe.skip('ConnectOpenScan', () => {
+// TODO: Fix react-qr-reader for commented tests to work
+describe('ConnectOpenScan', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>
@@ -96,8 +88,8 @@ describe.skip('ConnectOpenScan', () => {
     expect(component).toMatchSnapshot();
   });
 
-  // TODO: Fix react-qr-reader for it to work
-  it.skip('can connect to a lao', async () => {
+  /*
+  it('can connect to a lao', async () => {
     render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -126,4 +118,5 @@ describe.skip('ConnectOpenScan', () => {
       expect(mockNavigate).toHaveBeenCalledTimes(1);
     });
   });
+  */
 });
