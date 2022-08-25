@@ -60,8 +60,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -400,8 +392,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -419,8 +409,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -477,8 +465,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -594,8 +580,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -740,8 +724,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -759,8 +741,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -817,8 +797,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -934,8 +912,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1080,8 +1056,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1099,8 +1073,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1157,8 +1129,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1274,8 +1244,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1420,8 +1388,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1439,8 +1405,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1497,8 +1461,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1614,8 +1576,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1760,8 +1720,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1779,8 +1737,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1837,8 +1793,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1954,8 +1908,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2100,8 +2052,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2119,8 +2069,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2177,8 +2125,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2294,8 +2240,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2440,8 +2384,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2459,8 +2401,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2517,8 +2457,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2634,8 +2572,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2780,8 +2716,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2799,8 +2733,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2857,8 +2789,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2974,8 +2904,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -3120,8 +3048,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3139,8 +3065,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3197,8 +3121,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3314,8 +3236,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -3460,8 +3380,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3479,8 +3397,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3537,8 +3453,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3654,8 +3568,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -3800,8 +3712,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3819,8 +3729,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3877,8 +3785,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3994,8 +3900,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -4140,8 +4044,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -4159,8 +4061,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -4217,8 +4117,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -4334,8 +4232,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -4549,8 +4445,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -4608,8 +4502,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -5038,8 +4930,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -5097,8 +4987,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -5481,8 +5369,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -5500,8 +5386,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -5558,8 +5442,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -5675,8 +5557,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -5973,8 +5853,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -6032,8 +5910,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -6433,8 +6309,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -6492,8 +6366,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -6840,8 +6712,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -6859,8 +6729,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -6917,8 +6785,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -7034,8 +6900,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -7193,8 +7057,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -7212,8 +7074,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -7270,8 +7130,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -7387,8 +7245,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -7716,8 +7572,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -7775,8 +7629,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -7826,9 +7678,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8019,9 +7869,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8293,8 +8141,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -8352,8 +8198,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -8403,9 +8247,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8596,9 +8438,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8784,8 +8624,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             >
                               <View
                                 accessible={true}
-                                collapsable={false}
-                                nativeID="animatedComponent"
                                 style={
                                   Object {
                                     "opacity": 1,
@@ -8904,8 +8742,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -8923,8 +8759,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -8981,8 +8815,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -9098,8 +8930,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -9336,8 +9166,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -9395,8 +9223,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -9796,8 +9622,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -9855,8 +9679,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -10203,8 +10025,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -10222,8 +10042,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -10280,8 +10098,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -10397,8 +10213,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -10529,8 +10343,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -10548,8 +10360,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -10606,8 +10416,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -10723,8 +10531,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -10938,8 +10744,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -10997,8 +10801,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -11427,8 +11229,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -11486,8 +11286,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -11870,8 +11668,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -11889,8 +11685,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -11947,8 +11741,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -12064,8 +11856,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -12362,8 +12152,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -12399,8 +12187,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -12800,8 +12586,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -12837,8 +12621,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -13185,8 +12967,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -13204,8 +12984,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -13262,8 +13040,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -13379,8 +13155,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -13538,8 +13312,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -13557,8 +13329,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -13615,8 +13385,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -13732,8 +13500,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -14061,8 +13827,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -14120,8 +13884,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -14171,9 +13933,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14343,9 +14103,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14596,8 +14354,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -14655,8 +14411,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -14706,9 +14460,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14878,9 +14630,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         }
                                       }
                                       accessible={true}
-                                      collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -15045,8 +14795,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             >
                               <View
                                 accessible={true}
-                                collapsable={false}
-                                nativeID="animatedComponent"
                                 style={
                                   Object {
                                     "opacity": 1,
@@ -15165,8 +14913,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -15184,8 +14930,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -15242,8 +14986,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -15359,8 +15101,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -15597,8 +15337,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -15656,8 +15394,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -16057,8 +15793,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                   }
                                 />
                                 <View
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -16116,8 +15850,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                               </View>
                             </View>
                             <View
-                              collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -16464,8 +16196,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -16483,8 +16213,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -16541,8 +16269,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -16658,8 +16384,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {

@@ -35,8 +35,6 @@ exports[`PoPButton renders correctly without disabled 1`] = `
   >
     <View
       accessible={true}
-      collapsable={false}
-      nativeID="animatedComponent"
       style={
         Object {
           "opacity": 1,

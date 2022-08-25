@@ -60,8 +60,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -360,9 +352,11 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               }
                             >
                               <TextInput
+                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Server URI"
+                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -383,6 +377,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     },
                                   ]
                                 }
+                                underlineColorAndroid="transparent"
                                 value="ws://localhost:9000/organizer/client"
                               />
                             </View>
@@ -413,9 +408,11 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               }
                             >
                               <TextInput
+                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="LAO ID"
+                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -436,6 +433,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     },
                                   ]
                                 }
+                                underlineColorAndroid="transparent"
                                 value=""
                               />
                             </View>
@@ -474,8 +472,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               >
                                 <View
                                   accessible={true}
-                                  collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "opacity": 1,

@@ -60,8 +60,6 @@ exports[`LaoList renders correctly with no item 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`LaoList renders correctly with no item 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`LaoList renders correctly with no item 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`LaoList renders correctly with no item 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -395,8 +387,6 @@ exports[`LaoList renders correctly with one item 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -414,8 +404,6 @@ exports[`LaoList renders correctly with one item 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -472,8 +460,6 @@ exports[`LaoList renders correctly with one item 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -589,8 +575,6 @@ exports[`LaoList renders correctly with one item 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {

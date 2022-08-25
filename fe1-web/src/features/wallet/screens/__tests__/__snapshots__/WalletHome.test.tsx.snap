@@ -60,8 +60,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -789,8 +781,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -808,8 +798,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -866,8 +854,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -983,8 +969,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {

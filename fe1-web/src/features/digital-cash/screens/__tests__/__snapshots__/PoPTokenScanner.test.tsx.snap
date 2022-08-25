@@ -60,8 +60,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -334,7 +326,9 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             }
                           }
                         >
-                          <View />
+                          <Text>
+                            No QR reader
+                          </Text>
                         </View>
                         <View
                           style={
@@ -472,8 +466,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -491,8 +483,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -549,8 +539,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -666,8 +654,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -746,7 +732,9 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                             }
                           }
                         >
-                          <View />
+                          <Text>
+                            No QR reader
+                          </Text>
                         </View>
                         <View
                           style={

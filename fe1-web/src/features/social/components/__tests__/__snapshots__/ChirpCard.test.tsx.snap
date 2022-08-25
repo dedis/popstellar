@@ -148,8 +148,6 @@ Array [
     >
       <View
         accessible={true}
-        collapsable={false}
-        nativeID="animatedComponent"
         style={Object {}}
       />
     </RNGestureHandlerButton>
@@ -228,8 +226,6 @@ Array [
             >
               <View
                 accessible={true}
-                collapsable={false}
-                nativeID="animatedComponent"
                 style={
                   Object {
                     "opacity": 1,
@@ -301,8 +297,6 @@ Array [
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -589,8 +583,6 @@ Array [
     >
       <View
         accessible={true}
-        collapsable={false}
-        nativeID="animatedComponent"
         style={Object {}}
       />
     </RNGestureHandlerButton>
@@ -669,8 +661,6 @@ Array [
             >
               <View
                 accessible={true}
-                collapsable={false}
-                nativeID="animatedComponent"
                 style={
                   Object {
                     "opacity": 1,
@@ -742,8 +732,6 @@ Array [
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -1055,8 +1043,6 @@ Array [
     >
       <View
         accessible={true}
-        collapsable={false}
-        nativeID="animatedComponent"
         style={Object {}}
       />
     </RNGestureHandlerButton>
@@ -1135,8 +1121,6 @@ Array [
             >
               <View
                 accessible={true}
-                collapsable={false}
-                nativeID="animatedComponent"
                 style={
                   Object {
                     "opacity": 1,
@@ -1208,8 +1192,6 @@ Array [
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -1521,8 +1503,6 @@ Array [
     >
       <View
         accessible={true}
-        collapsable={false}
-        nativeID="animatedComponent"
         style={Object {}}
       />
     </RNGestureHandlerButton>
@@ -1601,8 +1581,6 @@ Array [
             >
               <View
                 accessible={true}
-                collapsable={false}
-                nativeID="animatedComponent"
                 style={
                   Object {
                     "opacity": 1,
@@ -1674,8 +1652,6 @@ Array [
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -1962,8 +1938,6 @@ Array [
     >
       <View
         accessible={true}
-        collapsable={false}
-        nativeID="animatedComponent"
         style={Object {}}
       />
     </RNGestureHandlerButton>
@@ -2042,8 +2016,6 @@ Array [
             >
               <View
                 accessible={true}
-                collapsable={false}
-                nativeID="animatedComponent"
                 style={
                   Object {
                     "opacity": 1,
@@ -2115,8 +2087,6 @@ Array [
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,

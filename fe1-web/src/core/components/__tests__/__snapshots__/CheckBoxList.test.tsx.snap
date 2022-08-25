@@ -49,9 +49,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
@@ -106,9 +104,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
@@ -163,9 +159,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
@@ -265,9 +259,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
@@ -343,9 +335,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
@@ -421,9 +411,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
         }
       }
       accessible={true}
-      collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
       onClick={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}

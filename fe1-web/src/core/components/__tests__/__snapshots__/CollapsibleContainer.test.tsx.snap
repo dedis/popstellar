@@ -336,8 +336,6 @@ Array [
         }
       />
       <View
-        collapsable={false}
-        nativeID="animatedComponent"
         style={
           Object {
             "transform": Array [
@@ -373,8 +371,6 @@ Array [
     </View>
   </View>,
   <View
-    collapsable={false}
-    nativeID="animatedComponent"
     style={
       Object {
         "maxHeight": "0%",
@@ -516,8 +512,6 @@ Array [
         }
       />
       <View
-        collapsable={false}
-        nativeID="animatedComponent"
         style={
           Object {
             "transform": Array [
@@ -575,8 +569,6 @@ Array [
     </View>
   </View>,
   <View
-    collapsable={false}
-    nativeID="animatedComponent"
     style={
       Object {
         "maxHeight": "0%",

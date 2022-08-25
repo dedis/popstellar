@@ -60,8 +60,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -334,7 +326,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                             }
                           }
                         >
-                          <View />
+                          <Text>
+                            No QR reader
+                          </Text>
                         </View>
                         <View
                           style={
@@ -615,9 +609,11 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                               }
                             >
                               <TextInput
+                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Attendee token"
+                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -639,6 +635,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   ]
                                 }
                                 testID="confirm-modal-input"
+                                underlineColorAndroid="transparent"
                                 value=""
                               />
                             </View>
@@ -796,8 +793,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -815,8 +810,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -873,8 +866,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -990,8 +981,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1070,7 +1059,9 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                             }
                           }
                         >
-                          <View />
+                          <Text>
+                            No QR reader
+                          </Text>
                         </View>
                         <View
                           style={
@@ -1351,9 +1342,11 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                               }
                             >
                               <TextInput
+                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Attendee token"
+                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -1375,6 +1368,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   ]
                                 }
                                 testID="confirm-modal-input"
+                                underlineColorAndroid="transparent"
                                 value=""
                               />
                             </View>

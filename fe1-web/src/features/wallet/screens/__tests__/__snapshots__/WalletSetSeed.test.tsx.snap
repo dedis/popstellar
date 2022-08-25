@@ -60,8 +60,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -354,9 +346,11 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 My 12 word seed 🔑 is ...
                               </Text>
                               <TextInput
+                                allowFontScaling={true}
                                 defaultValue=""
                                 onChangeText={[Function]}
                                 placeholder="grape sock height they tiny voyage kid young domain trumpet three patrol"
+                                rejectResponderTermination={true}
                                 selectTextOnFocus={true}
                                 style={
                                   Array [
@@ -376,6 +370,7 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                     },
                                   ]
                                 }
+                                underlineColorAndroid="transparent"
                               />
                               <View
                                 accessible={true}
@@ -411,8 +406,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
                                     style={
                                       Object {
                                         "opacity": 1,
@@ -493,8 +486,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                 >
                                   <View
                                     accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
                                     style={
                                       Object {
                                         "opacity": 1,

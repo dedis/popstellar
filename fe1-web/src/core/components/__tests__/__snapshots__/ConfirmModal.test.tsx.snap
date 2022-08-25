@@ -29,8 +29,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
   >
     <View
       accessible={true}
-      collapsable={false}
-      nativeID="animatedComponent"
       style={Object {}}
     />
   </RNGestureHandlerButton>
@@ -109,8 +107,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -182,8 +178,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         >
           <View
             accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
               Object {
                 "opacity": 1,
@@ -261,8 +255,6 @@ exports[`ConfirmModal renders correctly 1`] = `
   >
     <View
       accessible={true}
-      collapsable={false}
-      nativeID="animatedComponent"
       style={Object {}}
     />
   </RNGestureHandlerButton>
@@ -341,8 +333,6 @@ exports[`ConfirmModal renders correctly 1`] = `
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -414,8 +404,6 @@ exports[`ConfirmModal renders correctly 1`] = `
         >
           <View
             accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
               Object {
                 "opacity": 1,
@@ -493,8 +481,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
   >
     <View
       accessible={true}
-      collapsable={false}
-      nativeID="animatedComponent"
       style={Object {}}
     />
   </RNGestureHandlerButton>
@@ -573,8 +559,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -620,9 +604,11 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         }
       >
         <TextInput
+          allowFontScaling={true}
           editable={true}
           onChangeText={[Function]}
           placeholder=""
+          rejectResponderTermination={true}
           style={
             Array [
               Object {
@@ -644,6 +630,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
             ]
           }
           testID="confirm-modal-input"
+          underlineColorAndroid="transparent"
           value=""
         />
       </View>
@@ -682,8 +669,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         >
           <View
             accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
               Object {
                 "opacity": 1,

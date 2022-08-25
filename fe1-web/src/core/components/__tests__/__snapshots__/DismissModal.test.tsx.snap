@@ -101,8 +101,6 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         >
           <View
             accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
               Object {
                 "opacity": 1,
@@ -252,8 +250,6 @@ exports[`DismissModal renders correctly 1`] = `
         >
           <View
             accessible={true}
-            collapsable={false}
-            nativeID="animatedComponent"
             style={
               Object {
                 "opacity": 1,

@@ -88,8 +88,6 @@ exports[`UserListItem renders correctly 1`] = `
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -175,8 +173,6 @@ exports[`UserListItem renders correctly 1`] = `
           >
             <View
               accessible={true}
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,

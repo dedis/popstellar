@@ -60,8 +60,6 @@ exports[`Identity renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -79,8 +77,6 @@ exports[`Identity renders correctly 1`] = `
             />
           </View>
           <View
-            collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -137,8 +133,6 @@ exports[`Identity renders correctly 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
-                  collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -254,8 +248,6 @@ exports[`Identity renders correctly 1`] = `
             }
           >
             <View
-              collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -322,9 +314,7 @@ exports[`Identity renders correctly 1`] = `
                           }
                         }
                         accessible={true}
-                        collapsable={false}
                         focusable={true}
-                        nativeID="animatedComponent"
                         onClick={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
@@ -424,8 +414,10 @@ exports[`Identity renders correctly 1`] = `
                         }
                       >
                         <TextInput
+                          allowFontScaling={true}
                           editable={false}
                           placeholder="John Doe"
+                          rejectResponderTermination={true}
                           style={
                             Array [
                               Object {
@@ -449,6 +441,7 @@ exports[`Identity renders correctly 1`] = `
                               },
                             ]
                           }
+                          underlineColorAndroid="transparent"
                           value=""
                         />
                       </View>
@@ -479,8 +472,10 @@ exports[`Identity renders correctly 1`] = `
                         }
                       >
                         <TextInput
+                          allowFontScaling={true}
                           editable={false}
                           placeholder="LAO Organizer"
+                          rejectResponderTermination={true}
                           style={
                             Array [
                               Object {
@@ -504,6 +499,7 @@ exports[`Identity renders correctly 1`] = `
                               },
                             ]
                           }
+                          underlineColorAndroid="transparent"
                           value=""
                         />
                       </View>
@@ -534,8 +530,10 @@ exports[`Identity renders correctly 1`] = `
                         }
                       >
                         <TextInput
+                          allowFontScaling={true}
                           editable={false}
                           placeholder="DEDIS Lab"
+                          rejectResponderTermination={true}
                           style={
                             Array [
                               Object {
@@ -559,6 +557,7 @@ exports[`Identity renders correctly 1`] = `
                               },
                             ]
                           }
+                          underlineColorAndroid="transparent"
                           value=""
                         />
                       </View>
@@ -589,8 +588,10 @@ exports[`Identity renders correctly 1`] = `
                         }
                       >
                         <TextInput
+                          allowFontScaling={true}
                           editable={false}
                           placeholder="john.doe@epfl.ch"
+                          rejectResponderTermination={true}
                           style={
                             Array [
                               Object {
@@ -614,6 +615,7 @@ exports[`Identity renders correctly 1`] = `
                               },
                             ]
                           }
+                          underlineColorAndroid="transparent"
                           value=""
                         />
                       </View>
@@ -644,8 +646,10 @@ exports[`Identity renders correctly 1`] = `
                         }
                       >
                         <TextInput
+                          allowFontScaling={true}
                           editable={false}
                           placeholder="+41 12 345 67 89"
+                          rejectResponderTermination={true}
                           style={
                             Array [
                               Object {
@@ -669,6 +673,7 @@ exports[`Identity renders correctly 1`] = `
                               },
                             ]
                           }
+                          underlineColorAndroid="transparent"
                           value=""
                         />
                       </View>
