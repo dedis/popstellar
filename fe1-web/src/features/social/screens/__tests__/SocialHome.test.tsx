@@ -34,7 +34,7 @@ const featureContextValue = {
 };
 
 const socialContextValue = {
-  currentUserPublicKey: mockPopToken.publicKey,
+  currentUserPopTokenPublicKey: mockPopToken.publicKey,
 };
 
 beforeEach(() => {

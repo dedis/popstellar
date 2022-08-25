@@ -85,10 +85,12 @@ exports[`SocialHome renders correctly 1`] = `
             }
           >
             <TextInput
+              allowFontScaling={true}
               multiline={true}
               numberOfLines={5}
               onChangeText={[Function]}
               placeholder="Your chirp"
+              rejectResponderTermination={true}
               selectTextOnFocus={true}
               style={
                 Object {
@@ -101,6 +103,7 @@ exports[`SocialHome renders correctly 1`] = `
                 }
               }
               testID="new_chirp_input"
+              underlineColorAndroid="transparent"
               value=""
             />
             <View
@@ -133,9 +136,7 @@ exports[`SocialHome renders correctly 1`] = `
                   }
                 }
                 accessible={true}
-                collapsable={false}
                 focusable={true}
-                nativeID="animatedComponent"
                 onClick={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
@@ -183,12 +184,16 @@ exports[`SocialHome renders correctly 1`] = `
         </View>
         <RCTScrollView
           data={Array []}
+          disableVirtualization={false}
           getItem={[Function]}
           getItemCount={[Function]}
+          horizontal={false}
+          initialNumToRender={10}
           keyExtractor={[Function]}
+          maxToRenderPerBatch={10}
           onContentSizeChange={[Function]}
+          onEndReachedThreshold={2}
           onLayout={[Function]}
-          onMomentumScrollBegin={[Function]}
           onMomentumScrollEnd={[Function]}
           onScroll={[Function]}
           onScrollBeginDrag={[Function]}
@@ -197,7 +202,9 @@ exports[`SocialHome renders correctly 1`] = `
           renderItem={[Function]}
           scrollEventThrottle={50}
           stickyHeaderIndices={Array []}
+          updateCellsBatchingPeriod={50}
           viewabilityConfigCallbackPairs={Array []}
+          windowSize={21}
         >
           <View />
         </RCTScrollView>
