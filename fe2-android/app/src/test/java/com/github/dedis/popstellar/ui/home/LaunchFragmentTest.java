@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.home;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -12,12 +13,10 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -84,12 +83,15 @@ public class LaunchFragmentTest {
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<HomeActivity, LaunchFragment> activityScenarioRule =
-      ActivityFragmentScenarioRule.launchIn(
-          HomeActivity.class,
-          homeFragmentContainerId(),
-          LaunchFragment.class,
-          LaunchFragment::newInstance);
+  public ActivityScenarioRule<HomeActivity> activityScenarioRule =
+      new ActivityScenarioRule<>(HomeActivity.class);
+
+  @Before
+  public void setup() {
+    // Open the launch tab
+    initializeWallet();
+    launchButton().perform(click());
+  }
 
   @Test
   public final void uiElementsAreDisplayed() {

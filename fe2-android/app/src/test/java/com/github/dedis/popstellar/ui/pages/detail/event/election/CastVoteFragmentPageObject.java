@@ -22,6 +22,6 @@ public class CastVoteFragmentPageObject {
   }
 
   public static ViewInteraction castVoteButton() {
-    return onView(withId(R.id.cast_vote_pager));
+    return onView(withId(R.id.cast_vote_button));
   }
 }
