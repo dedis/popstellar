@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-// import QrReader from 'react-qr-reader';
+
 import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
 
 // FIXME: Remove CSS imports in order to support native apps
 // At the time of writing expo-camera nor expo-barcode-scanner work in web builds
@@ -56,8 +54,10 @@ const styles = StyleSheet.create({
   },
 });
 
+// TODO: Fix react-qr-reader
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const toast = useToast();
+  // const toast = useToast();
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
 
@@ -77,6 +77,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     }
   }, []);
 
+  /*
   const handleError = (err: string | Error) => {
     console.error(err);
     toast.show(err.toString(), {
@@ -85,6 +86,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
       duration: FOUR_SECONDS,
     });
   };
+  */
 
   return (
     <View style={styles.container}>
