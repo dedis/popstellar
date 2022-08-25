@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-import org.robolectric.shadows.ShadowLog;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -123,7 +122,6 @@ public class CastVoteFragmentTest {
 
   @Before
   public void setUpViewModel() {
-    ShadowLog.stream = System.out;
     fragmentRule
         .getScenario()
         .onFragment(
@@ -165,6 +163,8 @@ public class CastVoteFragmentTest {
   @Test
   public void castVoteButtonIsEnabledWhenAnElementIsClicked() {
     onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
+    castVotePager().perform(swipeLeft());
+    onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
     castVoteButton().check(matches(isEnabled()));
   }
 
