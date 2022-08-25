@@ -92,6 +92,8 @@ export const getElectionKeyByElectionId = (
   return undefined;
 };
 
+const sGetElectionsById = (state: any) => getElectionKeyState(state).byElectionId;
+
 /**
  * Creates a election key selector for a given election id. Can for example be used in useSelector()
  * @param electionId The election id
@@ -100,7 +102,7 @@ export const getElectionKeyByElectionId = (
 export const makeElectionKeySelector = (electionId: string) =>
   createSelector(
     // First input: map of lao ids to servers
-    (state) => getElectionKeyState(state).byElectionId,
+    sGetElectionsById,
     // Selector: returns the election key associated to the given election id
     (byElectionId: ElectionKeyReducerState['byElectionId']): ElectionPublicKey | undefined => {
       if (electionId in byElectionId) {

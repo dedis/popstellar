@@ -129,6 +129,8 @@ export function getMessage(
   return id in state.byId ? ExtendedMessage.fromState(state.byId[id]) : undefined;
 }
 
+const sGetMessagesById = (state: any) => getMessagesState(state).byId;
+
 /**
  * Creates a redux-toolkit selector that memoizes the result if the input do not change
  * Intended for the use in combination with useSelector()
@@ -138,7 +140,7 @@ export function getMessage(
 export const makeMessageSelector = (messageId: string) =>
   createSelector(
     // First input: map of message ids to messages
-    (state) => getMessagesState(state).byId,
+    sGetMessagesById,
     (byId: Record<string, ExtendedMessageState>): ExtendedMessage | undefined => {
       if (messageId in byId) {
         return ExtendedMessage.fromState(byId[messageId]);

@@ -94,7 +94,12 @@ const eventSlice = createSlice({
     // Remove a Event to the list of known Events
     removeEvent: {
       prepare(laoId: Hash | string, eventId: Hash | string): any {
-        return { payload: { laoId: laoId.valueOf(), eventId: eventId.valueOf() } };
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            eventId: eventId.valueOf(),
+          },
+        };
       },
       reducer(
         state,
@@ -130,16 +135,20 @@ export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventSlice
 
 export const getEventState = (state: any): EventReducerState => state[EVENT_REDUCER_PATH];
 
+const sGetAllEventsIds = (laoId: string) => (state: any) =>
+  getEventState(state).byLaoId[laoId]?.allIds;
+const sGetEventsById = (state: any) => getEventState(state).byId;
+
 /**
  * Creates a selector that returns a list of all events for a given lao id
  * @param laoId The id of the lao the events should be retrieved for
  */
 export const makeEventListSelector = (laoId: string) =>
   createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state).byLaoId[laoId]?.allIds,
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state).byId,
+    // First input: Get all event ids for the given lao id
+    sGetAllEventsIds(laoId),
+    // Second input: Get all events across all LAOs
+    sGetEventsById,
     // Selector: returns an array of EventStates -- should it return an array of Event objects?
     (allIds: string[] | undefined, byId): EventState[] => {
       if (!allIds) {
@@ -160,7 +169,7 @@ export const makeEventSelector = (eventId: Hash | string | undefined) => {
 
   return createSelector(
     // First input: Get all events for a given lao
-    (state) => getEventState(state).byId,
+    sGetEventsById,
     // Selector: returns the state of a given event
     (eventsById): EventState | undefined => {
       if (!eventIdString || !(eventIdString in eventsById)) {
@@ -193,14 +202,15 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
 /**
  * Returns all events of a certain type for a certain lao.
  *
- * @param eventType
+ * @param laoId - The id of the lao
+ * @param eventType - The type of event
  */
 export const makeEventByTypeSelector = (laoId: string, eventType: string) =>
   createSelector(
     // First input: Get all event ids for the given lao id
-    (state) => getEventState(state).byLaoId[laoId]?.allIds,
+    sGetAllEventsIds(laoId),
     // Second input: Get all events across all LAOs
-    (state) => getEventState(state).byId,
+    sGetEventsById,
     // Selector: returns a map of lao ids to a map of event its to event states
     (
       eventIds: string[] | undefined,
