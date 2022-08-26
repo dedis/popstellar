@@ -259,18 +259,18 @@ export const {
 export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];
 
 // Selector helper functions
-const sGetCurrentLaoId = (state: any) => getLaosState(state)?.currentId;
+const sGetCurrentLaoId = (state: any) => getLaosState(state).currentId;
 const sGetLaosById = (state: any) => getLaosState(state).byId;
 const sGetAllIds = (state: any) => getLaosState(state).allIds;
 const sGetId = (id: string | undefined) => () => id;
 const sGetUserPublicKey = (state: any) => getKeyPairState(state)?.keyPair?.publicKey;
 
-export function makeLao(id: string | undefined = undefined) {
+export function makeLao() {
   return createSelector(
     // First input: all LAOs map
     sGetLaosById,
     // Second input: current LAO id
-    sGetId(id) || sGetCurrentLaoId,
+    sGetCurrentLaoId,
     // Selector: returns a LaoState -- should it return a Lao object?
     (laoMap: Record<string, LaoState>, currentId: string | undefined): Lao | undefined => {
       if (currentId === undefined || !(currentId in laoMap)) {
@@ -360,7 +360,7 @@ export const makeIsLaoOrganizerSelector = (laoId?: string) =>
     // First input: all LAOs map
     sGetLaosById,
     // Second input: current LAO id
-    sGetId(laoId) || sGetCurrentLaoId,
+    laoId ? sGetId(laoId) : sGetCurrentLaoId,
     // Third input: the public key of the user
     sGetUserPublicKey,
     // Selector: returns whether the user is an organizer of the current lao
@@ -375,15 +375,14 @@ export const selectIsLaoOrganizer = makeIsLaoOrganizerSelector();
 
 /**
  * Creates a selector that returns whether the current user is a witness
- * of the given lao. Defaults to the current lao.
- * @param laoId Id of the lao the selector should be created for
+ * of the current lao.
  */
 export const makeIsLaoWitnessSelector = (laoId?: string) =>
   createSelector(
     // First input: all LAOs map
     sGetLaosById,
     // Second input: current LAO id
-    sGetId(laoId) || sGetCurrentLaoId,
+    laoId ? sGetId(laoId) : sGetCurrentLaoId,
     // Third input: the public key of the user
     sGetUserPublicKey,
     // Selector: returns whether the user is a witness of the current lao

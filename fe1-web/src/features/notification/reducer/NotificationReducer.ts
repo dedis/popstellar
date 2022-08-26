@@ -169,6 +169,8 @@ export const getNotificationState = (state: any): NotificationReducerState =>
 // Selector helper functions
 const sGetAllUnreadNotificationsIdsForLao = (laoId: string) => (state: any) =>
   getNotificationState(state).byLaoId[laoId]?.unreadIds;
+const sGetAllReadNotificationsIdsForLao = (laoId: string) => (state: any) =>
+  getNotificationState(state).byLaoId[laoId]?.readIds;
 const sGetNotificationsByIdForLao = (laoId: string) => (state: any) =>
   getNotificationState(state).byLaoId[laoId]?.byId;
 const sGetNotificationState = (state: any) => getNotificationState(state);
@@ -231,7 +233,7 @@ export const makeReadNotificationsSelector = (laoId: string) =>
     // First input: a map containing all notifications
     sGetNotificationsByIdForLao(laoId),
     // Second input: all ids of read notifications
-    sGetAllUnreadNotificationsIdsForLao(laoId),
+    sGetAllReadNotificationsIdsForLao(laoId),
     // Selector: returns all read notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
