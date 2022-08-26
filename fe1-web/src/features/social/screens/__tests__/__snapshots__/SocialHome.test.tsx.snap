@@ -85,12 +85,10 @@ exports[`SocialHome renders correctly 1`] = `
             }
           >
             <TextInput
-              allowFontScaling={true}
               multiline={true}
               numberOfLines={5}
               onChangeText={[Function]}
               placeholder="Your chirp"
-              rejectResponderTermination={true}
               selectTextOnFocus={true}
               style={
                 Object {
@@ -103,7 +101,6 @@ exports[`SocialHome renders correctly 1`] = `
                 }
               }
               testID="new_chirp_input"
-              underlineColorAndroid="transparent"
               value=""
             />
             <View
@@ -136,7 +133,9 @@ exports[`SocialHome renders correctly 1`] = `
                   }
                 }
                 accessible={true}
+                collapsable={false}
                 focusable={true}
+                nativeID="animatedComponent"
                 onClick={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
